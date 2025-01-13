@@ -11,7 +11,7 @@ import DatabaseWrites from '../databaseProxy/index.js';
 import { allUsersByRole } from '../databaseProxy/UserRoles.js';
 import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
-import { ProductTransitionType, RoleId, WorkflowType } from '../public/prisma.js';
+import { ProductTransitionType, RoleId } from '../public/prisma.js';
 import type {
   Snapshot,
   StateNode,
@@ -70,7 +70,7 @@ export class Workflow {
         ProductId: productId,
         DateTransition: new Date(),
         TransitionType: ProductTransitionType.StartWorkflow,
-        WorkflowType: WorkflowType.Startup
+        WorkflowType: config.workflowType
       }
     });
     await Queues.UserTasks.add(`Create UserTasks for Product #${productId}`, {
@@ -147,7 +147,8 @@ export class Workflow {
           select: {
             Id: true,
             ProductType: true,
-            WorkflowOptions: true
+            WorkflowOptions: true,
+            Type: true
           }
         }
       }
@@ -161,6 +162,7 @@ export class Workflow {
       state: instance.State,
       context: JSON.parse(instance.Context) as WorkflowInstanceContext,
       config: {
+        workflowType: instance.WorkflowDefinition.Type,
         productType: instance.WorkflowDefinition.ProductType,
         options: new Set(instance.WorkflowDefinition.WorkflowOptions)
       }
@@ -189,8 +191,7 @@ export class Workflow {
 
   /** Transform state machine definition into something more easily usable by the visualization algorithm */
   public serializeForVisualization(): StateNode[] {
-    const machine = StartupWorkflow;
-    const states = Object.entries(machine.states).filter(([k, v]) =>
+    const states = Object.entries(StartupWorkflow.states).filter(([k, v]) =>
       includeStateOrTransition(this.config, v.meta?.includeWhen)
     );
     const lookup = states.map((s) => s[0]);
@@ -363,7 +364,7 @@ export class Workflow {
       InitialState: Workflow.stateName(state),
       DestinationState: Workflow.targetStringFromEvent(t),
       Command: t.meta.type !== ActionType.Auto ? t.eventType : null,
-      WorkflowType: WorkflowType.Startup // TODO: Change this once we support more workflow types
+      WorkflowType: config.workflowType
     };
   }
 
@@ -477,7 +478,7 @@ export class Workflow {
           Command: command ?? null,
           DateTransition: new Date(),
           Comment: comment ?? null,
-          WorkflowType: WorkflowType.Startup // TODO: Change this once we support more workflow types
+          WorkflowType: this.config.workflowType
         }
       });
     }

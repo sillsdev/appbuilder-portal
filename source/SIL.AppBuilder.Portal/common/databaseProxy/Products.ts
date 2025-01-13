@@ -2,9 +2,8 @@ import type { Prisma } from '@prisma/client';
 import { Workflow } from 'sil.appbuilder.portal.common';
 import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
-import { WorkflowType } from '../public/prisma.js';
-import { delete as deleteInstance } from './WorkflowInstances.js';
 import type { RequirePrimitive } from './utility.js';
+import { delete as deleteInstance } from './WorkflowInstances.js';
 
 export async function create(
   productData: RequirePrimitive<Prisma.ProductsUncheckedCreateInput>
@@ -45,10 +44,11 @@ export async function create(
         })
       )?.Workflow;
 
-      if (flowDefinition?.Type === WorkflowType.Startup) {
+      if (flowDefinition) {
         await Workflow.create(res.Id, {
           productType: flowDefinition.ProductType,
-          options: new Set(flowDefinition.WorkflowOptions)
+          options: new Set(flowDefinition.WorkflowOptions),
+          workflowType: flowDefinition.Type
         });
       }
     }

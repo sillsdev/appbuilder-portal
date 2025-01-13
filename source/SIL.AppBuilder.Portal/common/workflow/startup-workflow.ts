@@ -1,6 +1,6 @@
 import { assign, setup } from 'xstate';
 import { BullMQ, Queues } from '../index.js';
-import { RoleId } from '../public/prisma.js';
+import { RoleId, WorkflowType } from '../public/prisma.js';
 import type {
   WorkflowContext,
   WorkflowEvent,
@@ -42,7 +42,7 @@ export const StartupWorkflow = setup({
     events: {} as WorkflowEvent
   }
 }).createMachine({
-  id: 'StartupWorkflow',
+  id: 'WorkflowDefinition',
   initial: WorkflowState.Start,
   context: ({ input }) => ({
     instructions: null,
@@ -53,6 +53,7 @@ export const StartupWorkflow = setup({
     /** Reset to false on exit */
     includeArtifacts: false,
     environment: {},
+    workflowType: input.workflowType,
     productType: input.productType,
     options: input.options,
     productId: input.productId,
@@ -65,27 +66,43 @@ export const StartupWorkflow = setup({
         jump({
           target: WorkflowState.Approval,
           filter: {
-            options: { has: WorkflowOptions.ApprovalProcess }
+            options: { has: WorkflowOptions.ApprovalProcess },
+            workflowType: { is: WorkflowType.Startup }
           }
         }),
         jump({
           target: WorkflowState.Approval_Pending,
           filter: {
-            options: { has: WorkflowOptions.ApprovalProcess }
+            options: { has: WorkflowOptions.ApprovalProcess },
+            workflowType: { is: WorkflowType.Startup }
           }
         }),
         jump({
           target: WorkflowState.Terminated,
           filter: {
-            options: { has: WorkflowOptions.ApprovalProcess }
+            options: { has: WorkflowOptions.ApprovalProcess },
+            workflowType: { is: WorkflowType.Startup }
           }
         }),
-        jump({ target: WorkflowState.Product_Creation }),
-        jump({ target: WorkflowState.App_Builder_Configuration }),
+        jump({
+          target: WorkflowState.Product_Creation,
+          filter: {
+            workflowType: { is: WorkflowType.Startup }
+          }
+        }),
+        jump({
+          target: WorkflowState.App_Builder_Configuration,
+          filter: {
+            workflowType: { is: WorkflowType.Startup }
+          }
+        }),
         jump(
           {
             target: WorkflowState.Author_Configuration,
-            filter: { options: { has: WorkflowOptions.AllowTransferToAuthors } }
+            filter: {
+              options: { has: WorkflowOptions.AllowTransferToAuthors },
+              workflowType: { is: WorkflowType.Startup }
+            }
           },
           [hasAuthors]
         ),
@@ -109,28 +126,40 @@ export const StartupWorkflow = setup({
         jump({
           target: WorkflowState.App_Store_Preview,
           filter: {
-            productType: { is: ProductType.Android_GooglePlay }
+            productType: { is: ProductType.Android_GooglePlay },
+            workflowType: { is: WorkflowType.Startup }
           }
         }),
         jump({
           target: WorkflowState.Create_App_Store_Entry,
           filter: {
-            productType: { is: ProductType.Android_GooglePlay }
+            productType: { is: ProductType.Android_GooglePlay },
+            workflowType: { is: WorkflowType.Startup }
           }
         }),
         jump({ target: WorkflowState.Verify_and_Publish }),
         jump({ target: WorkflowState.Product_Publish }),
         jump({
           target: WorkflowState.Make_It_Live,
-          filter: { productType: { is: ProductType.Android_GooglePlay } }
+          filter: {
+            productType: { is: ProductType.Android_GooglePlay },
+            workflowType: { is: WorkflowType.Startup }
+          }
         }),
         jump({ target: WorkflowState.Published }),
         {
-          guard: ({ context }) => context.options.has(WorkflowOptions.ApprovalProcess),
+          guard: ({ context }) =>
+            context.options.has(WorkflowOptions.ApprovalProcess) &&
+            context.workflowType === WorkflowType.Startup,
           target: WorkflowState.Approval
         },
         {
+          guard: ({ context }) => context.workflowType === WorkflowType.Startup,
           target: WorkflowState.Product_Creation
+        },
+        {
+          guard: ({ context }) => context.workflowType !== WorkflowType.Startup,
+          target: WorkflowState.Product_Build
         }
       ],
       on: {
@@ -141,14 +170,29 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.Auto,
               includeWhen: {
-                options: { has: WorkflowOptions.ApprovalProcess }
+                options: { has: WorkflowOptions.ApprovalProcess },
+                workflowType: { is: WorkflowType.Startup }
               }
             },
             target: WorkflowState.Approval
           },
           {
-            meta: { type: ActionType.Auto },
+            meta: {
+              type: ActionType.Auto,
+              includeWhen: {
+                workflowType: { is: WorkflowType.Startup }
+              }
+            },
             target: WorkflowState.Product_Creation
+          },
+          {
+            meta: {
+              type: ActionType.Auto,
+              includeWhen: {
+                workflowType: { not: WorkflowType.Startup }
+              }
+            },
+            target: WorkflowState.Product_Build
           }
         ]
       }
@@ -156,7 +200,8 @@ export const StartupWorkflow = setup({
     [WorkflowState.Approval]: {
       meta: {
         includeWhen: {
-          options: { has: WorkflowOptions.ApprovalProcess }
+          options: { has: WorkflowOptions.ApprovalProcess },
+          workflowType: { is: WorkflowType.Startup }
         }
       },
       entry: assign({
@@ -198,7 +243,8 @@ export const StartupWorkflow = setup({
     [WorkflowState.Approval_Pending]: {
       meta: {
         includeWhen: {
-          options: { has: WorkflowOptions.ApprovalProcess }
+          options: { has: WorkflowOptions.ApprovalProcess },
+          workflowType: { is: WorkflowType.Startup }
         }
       },
       entry: [
@@ -233,7 +279,8 @@ export const StartupWorkflow = setup({
     [WorkflowState.Terminated]: {
       meta: {
         includeWhen: {
-          options: { has: WorkflowOptions.ApprovalProcess }
+          options: { has: WorkflowOptions.ApprovalProcess },
+          workflowType: { is: WorkflowType.Startup }
         }
       },
       entry: assign({
@@ -243,14 +290,22 @@ export const StartupWorkflow = setup({
       type: 'final'
     },
     [WorkflowState.Product_Creation]: {
+      meta: {
+        includeWhen: {
+          workflowType: { is: WorkflowType.Startup }
+        }
+      },
       entry: [
         assign({ instructions: 'waiting' }),
         ({ context }) => {
-          Queues.Miscellaneous.add(`Create Product #${context.productId}`, {
-            type: BullMQ.JobType.Product_Create,
-            productId: context.productId
-          },
-          BullMQ.Retry5e5);
+          Queues.Miscellaneous.add(
+            `Create Product #${context.productId}`,
+            {
+              type: BullMQ.JobType.Product_Create,
+              productId: context.productId
+            },
+            BullMQ.Retry5e5
+          );
         }
       ],
       on: {
@@ -261,6 +316,11 @@ export const StartupWorkflow = setup({
       }
     },
     [WorkflowState.App_Builder_Configuration]: {
+      meta: {
+        includeWhen: {
+          workflowType: { is: WorkflowType.Startup }
+        }
+      },
       entry: assign({
         instructions: ({ context }) =>
           context.productType === ProductType.Android_GooglePlay
@@ -321,7 +381,8 @@ export const StartupWorkflow = setup({
     [WorkflowState.Author_Configuration]: {
       meta: {
         includeWhen: {
-          options: { has: WorkflowOptions.AllowTransferToAuthors }
+          options: { has: WorkflowOptions.AllowTransferToAuthors },
+          workflowType: { is: WorkflowType.Startup }
         }
       },
       entry: assign({
@@ -435,21 +496,25 @@ export const StartupWorkflow = setup({
           instructions: 'waiting'
         }),
         ({ context }) => {
-          Queues.Builds.add(`Build Product #${context.productId}`, {
-            type: BullMQ.JobType.Build_Product,
-            productId: context.productId,
-            defaultTargets: context.productType === ProductType.Android_S3
-              ? 'apk'
-              : context.productType === ProductType.AssetPackage
-                ? 'asset-package'
-                : context.productType === ProductType.Web
-                  ? 'html'
-                  : //ProductType.Android_GooglePlay
-                //default
-                  'apk play-listing',
-            environment: context.environment
-          },
-          BullMQ.Retry5e5);
+          Queues.Builds.add(
+            `Build Product #${context.productId}`,
+            {
+              type: BullMQ.JobType.Build_Product,
+              productId: context.productId,
+              defaultTargets:
+                context.productType === ProductType.Android_S3
+                  ? 'apk'
+                  : context.productType === ProductType.AssetPackage
+                    ? 'asset-package'
+                    : context.productType === ProductType.Web
+                      ? 'html'
+                      : //ProductType.Android_GooglePlay
+                    //default
+                      'apk play-listing',
+              environment: context.environment
+            },
+            BullMQ.Retry5e5
+          );
         }
       ],
       on: {
@@ -458,12 +523,14 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.Auto,
               includeWhen: {
-                productType: { is: ProductType.Android_GooglePlay }
+                productType: { is: ProductType.Android_GooglePlay },
+                workflowType: { is: WorkflowType.Startup }
               }
             },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
-              !context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID],
+              !context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID] &&
+              context.workflowType !== WorkflowType.Startup,
             target: WorkflowState.App_Store_Preview
           },
           {
@@ -484,7 +551,8 @@ export const StartupWorkflow = setup({
     [WorkflowState.App_Store_Preview]: {
       meta: {
         includeWhen: {
-          productType: { is: ProductType.Android_GooglePlay }
+          productType: { is: ProductType.Android_GooglePlay },
+          workflowType: { is: WorkflowType.Startup }
         }
       },
       entry: assign({
@@ -553,7 +621,8 @@ export const StartupWorkflow = setup({
     [WorkflowState.Create_App_Store_Entry]: {
       meta: {
         includeWhen: {
-          productType: { is: ProductType.Android_GooglePlay }
+          productType: { is: ProductType.Android_GooglePlay },
+          workflowType: { is: WorkflowType.Startup }
         }
       },
       entry: assign({
@@ -689,22 +758,25 @@ export const StartupWorkflow = setup({
       entry: [
         assign({ instructions: 'waiting' }),
         ({ context }) => {
-          Queues.Publishing.add(`Publish Product #${context.productId}`, {
-            type: BullMQ.JobType.Publish_Product,
-            productId: context.productId,
-            defaultChannel: 'production', //default unless overriden by WorkflowDefinition.Properties or ProductDefinition.Properties
-            defaultTargets: 
-            context.productType === ProductType.Android_S3
-              ? 's3-bucket'
-              : context.productType === ProductType.Web
-                ? 'rclone'
-                : //ProductType.Android_GooglePlay
-                //ProductType.AssetPackage
-                //default
-                'google-play',
-            environment: context.environment
-          },
-          BullMQ.Retry5e5);
+          Queues.Publishing.add(
+            `Publish Product #${context.productId}`,
+            {
+              type: BullMQ.JobType.Publish_Product,
+              productId: context.productId,
+              defaultChannel: 'production', //default unless overriden by WorkflowDefinition.Properties or ProductDefinition.Properties
+              defaultTargets:
+                context.productType === ProductType.Android_S3
+                  ? 's3-bucket'
+                  : context.productType === ProductType.Web
+                    ? 'rclone'
+                    : //ProductType.Android_GooglePlay
+                    //ProductType.AssetPackage
+                    //default
+                    'google-play',
+              environment: context.environment
+            },
+            BullMQ.Retry5e5
+          );
         }
       ],
       on: {
@@ -713,12 +785,14 @@ export const StartupWorkflow = setup({
             meta: {
               type: ActionType.Auto,
               includeWhen: {
-                productType: { is: ProductType.Android_GooglePlay }
+                productType: { is: ProductType.Android_GooglePlay },
+                workflowType: { is: WorkflowType.Startup }
               }
             },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
-              !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING],
+              !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] &&
+              context.workflowType !== WorkflowType.Startup,
             target: WorkflowState.Make_It_Live
           },
           {
@@ -738,7 +812,8 @@ export const StartupWorkflow = setup({
     [WorkflowState.Make_It_Live]: {
       meta: {
         includeWhen: {
-          productType: { is: ProductType.Android_GooglePlay }
+          productType: { is: ProductType.Android_GooglePlay },
+          workflowType: { is: WorkflowType.Startup }
         }
       },
       entry: assign({

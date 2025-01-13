@@ -1,5 +1,5 @@
 import { and, type TransitionConfig } from 'xstate';
-import type { RoleId } from './prisma.js';
+import type { RoleId, WorkflowType } from './prisma.js';
 
 export enum ActionType {
   /** Automated Action */
@@ -127,6 +127,7 @@ export type WorkflowContext = WorkflowInstanceContext & WorkflowInput;
 export type WorkflowConfig = {
   options: Set<WorkflowOptions>;
   productType: ProductType;
+  workflowType: WorkflowType;
 };
 
 export type WorkflowInput = WorkflowConfig & {
@@ -147,6 +148,11 @@ export type MetaFilter = {
     | { any: Set<ProductType> } // productType is any of the provided
     | { not: ProductType } // productType is not the provided
     | { none: Set<ProductType> }; // productType is none of the provided
+  workflowType?:
+    | { is: WorkflowType } // workflowType is the provided
+    | { any: Set<WorkflowType> } // workflowType is any of the provided
+    | { not: WorkflowType } // workflowType is not the provided
+    | { none: Set<WorkflowType> }; // workflowType is none of the provided
 };
 
 export type WorkflowStateMeta = { includeWhen?: MetaFilter };
@@ -195,6 +201,21 @@ export function includeStateOrTransition(config: WorkflowConfig, filter?: MetaFi
     } else {
       // productType is none of the provided
       include &&= !filter.productType.none.has(config.productType);
+    }
+  }
+  if (include && filter.workflowType) {
+    if ('is' in filter.workflowType) {
+      // workflowType is the provided
+      include &&= config.workflowType === filter.workflowType.is;
+    } else if ('any' in filter.workflowType) {
+      // workflowType is any of the provided
+      include &&= filter.workflowType.any.has(config.workflowType);
+    } else if ('not' in filter.workflowType) {
+      // workflowType is not the provided
+      include &&= config.workflowType !== filter.workflowType.not;
+    } else {
+      // workflowType is none of the provided
+      include &&= !filter.workflowType.none.has(config.workflowType);
     }
   }
   return include;
