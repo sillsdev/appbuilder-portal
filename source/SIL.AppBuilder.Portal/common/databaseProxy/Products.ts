@@ -13,7 +13,7 @@ export async function create(
     !(await validateProductBase(
       productData.ProjectId,
       productData.ProductDefinitionId,
-      productData.StoreId,
+      productData.StoreId ?? undefined,
       productData.StoreLanguageId ?? undefined
     ))
   )
@@ -243,7 +243,7 @@ async function validateProductBase(
 }
 
 async function updateProjectDateActive(projectId: number) {
-  const project = await prisma.projects.findUnique({
+  const project = await prisma.projects.findUniqueOrThrow({
     where: {
       Id: projectId
     },
@@ -267,7 +267,7 @@ async function updateProjectDateActive(projectId: number) {
   let dateActive = new Date(0);
   project.Products.forEach((product) => {
     if (product.WorkflowInstance) {
-      if (product.DateUpdated > dateActive) {
+      if (product.DateUpdated && product.DateUpdated > dateActive) {
         dateActive = product.DateUpdated;
       }
     }
