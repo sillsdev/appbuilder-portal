@@ -26,13 +26,13 @@ import {
   TerminalStates,
   WorkflowState
 } from '../public/workflow.js';
-import { StartupWorkflow } from './startup-workflow.js';
+import { WorkflowStateMachine } from './state-machine.js';
 
 /**
  * Wraps a workflow instance and provides methods to interact.
  */
 export class Workflow {
-  private flow: Actor<typeof StartupWorkflow> | null;
+  private flow: Actor<typeof WorkflowStateMachine> | null;
   private productId: string;
   private currentState: XStateNode<WorkflowContext, WorkflowEvent> | null;
   private config: WorkflowConfig;
@@ -51,7 +51,7 @@ export class Workflow {
 
     const check = await flow.checkAuthorsAndReviewers();
 
-    flow.flow = createActor(StartupWorkflow, {
+    flow.flow = createActor(WorkflowStateMachine, {
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
@@ -90,9 +90,9 @@ export class Workflow {
     if (!snap) { return null; }
     const flow = new Workflow(productId, snap.config);
     const check = await flow.checkAuthorsAndReviewers();
-    flow.flow = createActor(StartupWorkflow, {
+    flow.flow = createActor(WorkflowStateMachine, {
       snapshot: snap
-        ? StartupWorkflow.resolveState({
+        ? WorkflowStateMachine.resolveState({
           value: snap.state,
           context: {
             ...snap.context,
@@ -177,7 +177,7 @@ export class Workflow {
   /** Returns a list of valid transitions from the provided state. */
   public static availableTransitionsFromName(stateName: string, config: WorkflowConfig) {
     return Workflow.availableTransitionsFromNode(
-      StartupWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
+      WorkflowStateMachine.getStateNodeById(Workflow.stateIdFromName(stateName)),
       config
     );
   }
@@ -191,7 +191,7 @@ export class Workflow {
 
   /** Transform state machine definition into something more easily usable by the visualization algorithm */
   public serializeForVisualization(): StateNode[] {
-    const states = Object.entries(StartupWorkflow.states).filter(([k, v]) =>
+    const states = Object.entries(WorkflowStateMachine.states).filter(([k, v]) =>
       includeStateOrTransition(this.config, v.meta?.includeWhen)
     );
     const lookup = states.map((s) => s[0]);
@@ -249,7 +249,7 @@ export class Workflow {
   private async inspect(event: InspectedSnapshotEvent): Promise<void> {
     const old = this.currentState;
     const xSnap = this.flow!.getSnapshot();
-    this.currentState = StartupWorkflow.getStateNodeById(`#${StartupWorkflow.id}.${xSnap.value}`);
+    this.currentState = WorkflowStateMachine.getStateNodeById(`#${WorkflowStateMachine.id}.${xSnap.value}`);
 
     if (old && Workflow.stateName(old) !== xSnap.value) {
       await this.updateProductTransitions(
@@ -401,7 +401,7 @@ export class Workflow {
       Workflow.transitionFromState(
         stateName === WorkflowState.Start
           ? Workflow.availableTransitionsFromName(WorkflowState.Start, config)[0][0]!.target![0]
-          : StartupWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
+          : WorkflowStateMachine.getStateNodeById(Workflow.stateIdFromName(stateName)),
         productId,
         config,
         users
@@ -485,15 +485,15 @@ export class Workflow {
   }
 
   private static stateName(s: XStateNode<WorkflowContext, WorkflowEvent>): string {
-    return s.id.replace(StartupWorkflow.id + '.', '');
+    return s.id.replace(WorkflowStateMachine.id + '.', '');
   }
 
   private static stateIdFromName(s: string): string {
-    return StartupWorkflow.id + '.' + s;
+    return WorkflowStateMachine.id + '.' + s;
   }
 
   private static nodeFromName(s: string): XStateNode<WorkflowContext, WorkflowEvent> {
-    return StartupWorkflow.getStateNodeById(Workflow.stateIdFromName(s));
+    return WorkflowStateMachine.getStateNodeById(Workflow.stateIdFromName(s));
   }
 
   private static targetStringFromEvent(
@@ -503,7 +503,7 @@ export class Workflow {
       e
         .toJSON()
         .target?.at(0)
-        ?.replace('#' + StartupWorkflow.id + '.', '') || ''
+        ?.replace('#' + WorkflowStateMachine.id + '.', '') || ''
     );
   }
 
