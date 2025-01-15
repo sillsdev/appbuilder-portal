@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { PageData } from './$types';
-  import { instructions } from './instructions';
   import SortTable from '$lib/components/SortTable.svelte';
-  import { superForm } from 'sveltekit-superforms';
   import * as m from '$lib/paraglide/messages';
   import { bytesToHumanSize } from '$lib/utils';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
+  import { instructions } from './instructions';
 
   export let data: PageData;
   const { form, enhance, submit } = superForm(data.taskForm, {
@@ -30,7 +30,7 @@
     {#if data.actions?.length}
       <div class="flex flex-row gap-x-3">
         {#each data.actions as action}
-          <label class="btn">
+          <label class="btn btn-primary">
             {action}<!-- TODO: i18n (after MVP) -->
             <input
               type="radio"
