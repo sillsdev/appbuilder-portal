@@ -1,4 +1,5 @@
 <script lang="ts">
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import * as m from '$lib/paraglide/messages';
   import { bytesToHumanSize } from '$lib/utils';
@@ -14,6 +15,7 @@
       }
     }
   });
+  let urlCopied = false;
 </script>
 
 <div class="p-5">
@@ -139,12 +141,27 @@
         <div class="label">
           <span class="label-text">{m.tasks_appProjectURL()}</span>
         </div>
-        <input
-          type="text"
-          class="input input-bordered w-full"
-          readonly
-          value={data.fields.projectURL}
-        />
+        <span class="input input-bordered w-full flex flex-row gap-2 items-center">
+          <input type="text" class="grow" readonly value={data.fields.projectURL} />
+          <button
+            class="cursor-copy"
+            on:click={() => {
+              if (data.fields.projectURL) {
+                navigator.clipboard.writeText(data.fields.projectURL);
+                urlCopied = true;
+                setTimeout(() => {
+                  urlCopied = false;
+                }, 5000);
+              }
+            }}
+          >
+            {#if urlCopied}
+              <IconContainer icon="mdi:check" width={24} class="text-success" />
+            {:else}
+              <IconContainer icon="mdi:content-copy" width={24} />
+            {/if}
+          </button>
+        </span>
       </label>
     {/if}
     {#if data.fields.displayProductDescription && data.fields.appType && data.fields.projectLanguageCode}
