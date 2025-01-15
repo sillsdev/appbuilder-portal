@@ -255,7 +255,7 @@
         {:else}
           {#each data.project.Products as product}
             <div class="rounded-md border border-slate-400 w-full my-2">
-              <div class="bg-base-300 p-2 flex flex-row rounded-t-md">
+              <div class="bg-neutral p-2 flex flex-row rounded-t-md">
                 <span class="grow min-w-0">
                   <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
                   {product.ProductDefinition.Name}
@@ -400,7 +400,7 @@
       </form>
     </div>
     <div class="space-y-2 min-w-0 flex-auto sidebararea">
-      <div class="bg-base-300 card card-bordered border-slate-400 rounded-md max-w-full">
+      <div class="bg-neutral card card-bordered border-slate-400 rounded-md max-w-full">
         <form
           action="?/editOwnerGroup"
           bind:this={ownerSettingsForm}
@@ -518,7 +518,7 @@
       </div>
 
       <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
-        <div class="bg-base-300">
+        <div class="bg-neutral">
           <h2>{m.project_side_authors_title()}</h2>
         </div>
         <div class="p-2">
@@ -538,7 +538,7 @@
             <p class="p-2">{m.project_side_authors_empty()}</p>
           {/if}
         </div>
-        <div class="bg-base-300 p-2">
+        <div class="bg-neutral p-2">
           <form action="?/addAuthor" method="post" use:authorEnhance>
             <div class="flex place-content-between space-x-2">
               <select
@@ -560,7 +560,7 @@
         </div>
       </div>
       <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
-        <div class="bg-base-300">
+        <div class="bg-neutral">
           <h2>{m.project_side_reviewers_title()}</h2>
         </div>
         <div class="p-2">
@@ -580,7 +580,7 @@
             <p class="p-2">{m.project_side_reviewers_empty()}</p>
           {/if}
         </div>
-        <div class="p-2 bg-base-300">
+        <div class="p-2 bg-neutral">
           <form action="?/addReviewer" method="post" use:reviewerEnhance>
             <div class="flex flex-col place-content-between space-y-2">
               <div class="flex flex-col gap-2 reviewerform">
