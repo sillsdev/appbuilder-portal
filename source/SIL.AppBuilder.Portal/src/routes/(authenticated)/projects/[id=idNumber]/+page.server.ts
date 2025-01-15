@@ -290,6 +290,17 @@ export const actions = {
       return fail(403);
     const form = await superValidate(event.request, valibot(addProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    const checkRepository = await prisma.projects.findUnique({
+      where: {
+        Id: parseInt(event.params.id)
+      },
+      select: {
+        WorkflowProjectUrl: true
+      }
+    });
+    if (!checkRepository?.WorkflowProjectUrl) {
+      return error(400, 'Project Repository not Yet Initialized');
+    }
     const productId = await DatabaseWrites.products.create({
       ProjectId: parseInt(event.params.id),
       ProductDefinitionId: form.data.productDefinitionId,

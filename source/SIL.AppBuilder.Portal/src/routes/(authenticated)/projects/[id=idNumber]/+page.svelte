@@ -113,13 +113,13 @@
           <p>{data.project?.Description}</p>
         </div>
         {#if data.project?.WorkflowProjectUrl}
-        <div>
-          <span>{m.project_side_repositoryLocation()}:</span>
-          <br />
-          <p class="rounded-md text-nowrap overflow-x-scroll bg-base-200 p-3 pt-2 mt-2">
-            {data.project?.WorkflowProjectUrl}
-          </p>
-        </div>
+          <div>
+            <span>{m.project_side_repositoryLocation()}:</span>
+            <br />
+            <p class="rounded-md text-nowrap overflow-x-scroll bg-base-200 p-3 pt-2 mt-2">
+              {data.project?.WorkflowProjectUrl}
+            </p>
+          </div>
         {/if}
       </div>
       <div class="flex flex-row place-content-between items-end">
@@ -132,7 +132,7 @@
         <button
           class="btn btn-outline"
           on:click={() => addProductModal?.showModal()}
-          disabled={!data.productsToAdd.length}
+          disabled={!(data.productsToAdd.length && data.project.WorkflowProjectUrl)}
         >
           {m.project_products_add()}
         </button>
