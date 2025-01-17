@@ -57,7 +57,6 @@ export const load = (async ({ params, url, locals }) => {
           Reviewers: snap?.context.includeReviewers
             ? {
               select: {
-                Id: true,
                 Name: true,
                 Email: true
               }
@@ -122,11 +121,9 @@ export const load = (async ({ params, url, locals }) => {
               : undefined //include all
       },
       select: {
-        ProductBuildId: true,
         ArtifactType: true,
         FileSize: true,
-        Url: true,
-        Id: true
+        Url: true
       }
     })
     : [];

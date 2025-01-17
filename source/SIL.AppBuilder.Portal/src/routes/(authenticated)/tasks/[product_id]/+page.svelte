@@ -213,11 +213,6 @@
         data={data.files}
         columns={[
           {
-            id: 'buildId',
-            header: m.tasks_files_buildId(),
-            data: (f) => f.ProductBuildId
-          },
-          {
             id: 'artifactType',
             header: m.project_type(),
             data: (f) => f.ArtifactType,
@@ -235,12 +230,6 @@
             header: m.tasks_files_link(),
             data: (f) => f.Url,
             render: (u) => `<a class="link" href="${u}">${u}</a>`
-          },
-          {
-            id: 'fileId',
-            header: m.tasks_files_fileId(),
-            data: (f) => f.Id,
-            sortable: true
           }
         ]}
       />
@@ -253,12 +242,6 @@
         className="max-h-96"
         data={data.reviewers}
         columns={[
-          {
-            id: 'id',
-            header: m.common_id(),
-            data: (r) => r.Id,
-            sortable: true
-          },
           {
             id: 'name',
             header: m.common_name(),
