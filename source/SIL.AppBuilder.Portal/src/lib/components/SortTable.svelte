@@ -3,8 +3,8 @@
   @component
 -->
 <script lang="ts">
-  import { languageTag } from '$lib/paraglide/runtime';
   import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
+  import { languageTag } from '$lib/paraglide/runtime';
   import { createEventDispatcher } from 'svelte';
   export let data: { [key: string]: any }[];
   /** Definition of the columns for the table */
@@ -143,7 +143,7 @@
     line-height: inherit;
     position: sticky;
     top: 0;
-    @apply bg-base-100;
+    @apply bg-neutral;
   }
   .direction-arrow {
     display: inline-block;
@@ -153,5 +153,8 @@
   }
   label {
     @apply select-none cursor-pointer;
+  }
+  th, td {
+    @apply border;
   }
 </style>
