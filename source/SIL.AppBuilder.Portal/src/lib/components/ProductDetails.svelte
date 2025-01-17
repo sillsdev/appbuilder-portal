@@ -99,7 +99,10 @@
                   </span>
                 {/if}
                 <br />
-                <a href={transition.Comment.replace('system.build-failed,', '')}>
+                <a
+                  class="link link-info"
+                  href={transition.Comment.replace('system.build-failed,', '')}
+                >
                   {m.project_products_publications_console()}
                 </a>
               {:else}

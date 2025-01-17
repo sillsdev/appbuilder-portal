@@ -66,7 +66,7 @@
                     {/if}
                     <br />
                     <a
-                      class="link"
+                      class="link link-info"
                       href={task.Comment.replace(/system\.(build|publish)-failed,/, '')}
                     >
                       {m.project_products_publications_console()}
