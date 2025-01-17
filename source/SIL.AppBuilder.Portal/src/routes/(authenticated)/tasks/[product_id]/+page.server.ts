@@ -196,8 +196,12 @@ export const actions = {
       });
     }
 
-    redirect(302, '/tasks'); // keep the redirect for now. It takes a bit to update the db.
-    //TODO: maybe switch to just a page reload to show the new instructions once we use sockets? As it is right now, the `waiting` instructions will never be shown because of this redirect.
+    const project = await prisma.products.findUnique({
+      where: { Id: params.product_id },
+      select: { Project: { select: { Id: true } } }
+    });
+
+    redirect(302, `/projects/${project?.Project.Id}`);
   }
 } satisfies Actions;
 
