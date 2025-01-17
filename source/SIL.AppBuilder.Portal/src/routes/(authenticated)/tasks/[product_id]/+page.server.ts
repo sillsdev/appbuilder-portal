@@ -196,12 +196,12 @@ export const actions = {
       });
     }
 
-    const project = await prisma.products.findUnique({
+    const product = await prisma.products.findUnique({
       where: { Id: params.product_id },
-      select: { Project: { select: { Id: true } } }
+      select: { ProjectId: true }
     });
 
-    redirect(302, `/projects/${project?.Project.Id}`);
+    redirect(302, `/projects/${product?.ProjectId}`);
   }
 } satisfies Actions;
 
