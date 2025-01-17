@@ -272,11 +272,7 @@ export class Workflow {
         }
       });
       if (xSnap.value in TerminalStates) {
-        await DatabaseWrites.workflowInstances.delete({
-          where: {
-            ProductId: this.productId
-          }
-        });
+        await DatabaseWrites.workflowInstances.delete(this.productId);
       } else {
         await this.createSnapshot(xSnap.context);
         // This will also create the dummy entries in the ProductTransitions table
