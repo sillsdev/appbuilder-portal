@@ -229,9 +229,12 @@
             id: 'url',
             header: m.tasks_files_link(),
             data: (f) => f.Url,
-            render: (u) => `<a class="link" href="${u}">${u}</a>`
+            render: (u) => `<a class="link" href="${u}" target="_blank">${u}</a>`
           }
         ]}
+        onRowClick={(data) => {
+          window.open(data.Url, '_blank')?.focus();
+        }}
       />
     </div>
   {/if}

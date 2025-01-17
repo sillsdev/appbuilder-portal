@@ -6,7 +6,7 @@
   import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
   import { languageTag } from '$lib/paraglide/runtime';
   import { createEventDispatcher } from 'svelte';
-  export let data: { [key: string]: any }[];
+  export let data: Record<string, any>[];
   /** Definition of the columns for the table */
   export let columns: {
     /** Internal id, used for determining which column is being sorted */
@@ -23,6 +23,15 @@
   export let className: string = '';
   /** If this is true, will defer sorting to the server instead */
   export let serverSide: boolean = false;
+  /** If this is defined, will handle a click on a row */
+  export let onRowClick:
+    | undefined
+    | ((
+        rowData: (typeof data)[0],
+        event: MouseEvent & {
+          currentTarget: EventTarget & HTMLTableRowElement;
+        }
+      ) => void) = undefined;
 
   /** Current field being sorted. Defaults to first field where `sortable === true` */
   let current = columns.find((c) => c.sortable)!;
@@ -115,7 +124,11 @@
     </thead>
     <tbody>
       {#each data as d}
-        <tr>
+        <tr
+          on:click={(e) => {
+            if (onRowClick) onRowClick(d, e);
+          }}
+        >
           {#each columns as c}
             <td>
               {#if c.render}
@@ -154,7 +167,8 @@
   label {
     @apply select-none cursor-pointer;
   }
-  th, td {
+  th,
+  td {
     @apply border;
   }
 </style>
