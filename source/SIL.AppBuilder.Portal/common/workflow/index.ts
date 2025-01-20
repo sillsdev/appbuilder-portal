@@ -11,7 +11,7 @@ import DatabaseWrites from '../databaseProxy/index.js';
 import { allUsersByRole } from '../databaseProxy/UserRoles.js';
 import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
-import { ProductTransitionType, RoleId } from '../public/prisma.js';
+import { ProductTransitionType, RoleId, WorkflowType } from '../public/prisma.js';
 import type {
   Snapshot,
   StateNode,
@@ -307,22 +307,30 @@ export class Workflow {
       productType: undefined,
       options: undefined
     } as WorkflowInstanceContext;
+    const prodDefinition = (await prisma.products.findUnique({
+      where: {
+        Id: this.productId
+      },
+      select: {
+        ProductDefinition: {
+          select: {
+            WorkflowId: true,
+            RebuildWorkflowId: true,
+            RepublishWorkflowId: true
+          }
+        }
+      }
+    }))!.ProductDefinition;
     return DatabaseWrites.workflowInstances.upsert(this.productId, {
       create: {
         State: Workflow.stateName(this.currentState!),
         Context: JSON.stringify(context),
-        WorkflowDefinitionId: (await prisma.products.findUnique({
-          where: {
-            Id: this.productId
-          },
-          select: {
-            ProductDefinition: {
-              select: {
-                WorkflowId: true
-              }
-            }
-          }
-        }))!.ProductDefinition.WorkflowId
+        WorkflowDefinitionId:
+          context.workflowType === WorkflowType.Rebuild
+            ? prodDefinition.RebuildWorkflowId
+            : context.workflowType === WorkflowType.Republish
+              ? prodDefinition.RepublishWorkflowId
+              : prodDefinition.WorkflowId
       },
       update: {
         State: Workflow.stateName(this.currentState!),

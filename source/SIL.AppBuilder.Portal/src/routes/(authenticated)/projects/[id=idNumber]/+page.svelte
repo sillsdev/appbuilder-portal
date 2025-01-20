@@ -21,27 +21,17 @@
   const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm, {
     resetForm: true
   });
-  const { form: authorDeleteForm, enhance: authorDeleteEnhance } = superForm(
-    data.deleteAuthorForm,
-    {
-      warnings: {
-        duplicateId: false
-      }
+  const { enhance: authorDeleteEnhance } = superForm(data.deleteAuthorForm, {
+    warnings: {
+      duplicateId: false
     }
-  );
-  const { form: reviewerDeleteForm, enhance: reviewerDeleteEnhance } = superForm(
-    data.deleteReviewerForm,
-    {
-      warnings: {
-        duplicateId: false
-      }
+  });
+  const { enhance: reviewerDeleteEnhance } = superForm(data.deleteReviewerForm, {
+    warnings: {
+      duplicateId: false
     }
-  );
-  const {
-    form: addProductForm,
-    enhance: addProductEnhance,
-    submit: addProductSubmit
-  } = superForm(data.addProductForm);
+  });
+  const { enhance: addProductEnhance } = superForm(data.addProductForm);
   function openModal(id: string) {
     (window[('modal' + id) as any] as any).showModal();
   }
@@ -271,7 +261,6 @@
                   {getRelativeTime(product.DatePublished)}
                 </span>
                 <span>
-                  <!-- TODO: also need any actions given by api? -->
                   <div role="button" class="dropdown" tabindex="0">
                     <div class="btn btn-ghost px-1">
                       <IconContainer icon="charm:menu-kebab" width="20" />
@@ -280,6 +269,26 @@
                       class="dropdown-content bottom-12 right-0 p-1 bg-base-200 z-10 rounded-md min-w-36 w-auto shadow-lg"
                     >
                       <ul class="menu menu-compact overflow-hidden rounded-md">
+                        {#if !product.WorkflowInstance && product.ProductDefinition.RebuildWorkflowId !== null}
+                          <li class="w-full rounded-none">
+                            <form action="?/rebuildProduct" method="post" use:enhance>
+                              <input type="hidden" name="id" value={product.Id} />
+                              <button type="submit" class="text-nowrap">
+                                {m.products_actions_rebuild()}
+                              </button>
+                            </form>
+                          </li>
+                        {/if}
+                        {#if !product.WorkflowInstance && product.ProductDefinition.RepublishWorkflowId !== null}
+                          <li class="w-full rounded-none">
+                            <form action="?/republishProduct" method="post" use:enhance>
+                              <input type="hidden" name="id" value={product.Id} />
+                              <button type="submit" class="text-nowrap">
+                                {m.products_actions_republish()}
+                              </button>
+                            </form>
+                          </li>
+                        {/if}
                         <li class="w-full rounded-none">
                           <button class="text-nowrap" on:click={() => openModal(product.Id)}>
                             {m.project_products_popup_details()}
@@ -298,7 +307,7 @@
                             </span>
                           </li>
                         {/if}
-                        {#if data.session?.user.roles.find((role) => role[1] === RoleId.SuperAdmin)}
+                        {#if data.session?.user.roles.find((role) => role[1] === RoleId.SuperAdmin) && !!product.WorkflowInstance}
                           <li class="w-full-rounded-none">
                             <a href="/workflow-instances/{product.Id}">
                               {m.common_workflow()}
@@ -319,29 +328,31 @@
                   </div>
                 </span>
               </div>
-              <div class="p-2 flex gap-1">
-                <span class="text-red-500">
-                  {m.tasks_waiting({
-                    // waiting since EITHER (the last task exists) -> that task's creation time
-                    // OR (there are no tasks for this product) -> the last completed transition's completion time
-                    waitTime: getRelativeTime(
-                      product.UserTasks.slice(-1)[0]?.DateCreated ??
-                        product.PreviousTransition?.DateTransition ??
-                        null
-                    )
+              {#if product.WorkflowInstance}
+                <div class="p-2 flex gap-1">
+                  <span class="text-red-500">
+                    {m.tasks_waiting({
+                      // waiting since EITHER (the last task exists) -> that task's creation time
+                      // OR (there are no tasks for this product) -> the last completed transition's completion time
+                      waitTime: getRelativeTime(
+                        product.UserTasks.slice(-1)[0]?.DateCreated ??
+                          product.PreviousTransition?.DateTransition ??
+                          null
+                      )
+                    })}
+                  </span>
+                  {m.tasks_forNames({
+                    allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
+                    activityName: product.ActiveTransition?.InitialState ?? ''
+                    // activityName appears to show up blank primarily at the very startup of a new product?
                   })}
-                </span>
-                {m.tasks_forNames({
-                  allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
-                  activityName: product.ActiveTransition?.InitialState ?? ''
-                  // activityName appears to show up blank primarily at the very startup of a new product?
-                })}
-                {#if product.UserTasks.slice(-1)[0]?.UserId === $page.data.session?.user.userId}
-                  <a class="link mx-2" href="/tasks/{product.Id}">
-                    {m.common_continue()}
-                  </a>
-                {/if}
-              </div>
+                  {#if product.UserTasks.slice(-1)[0]?.UserId === $page.data.session?.user.userId}
+                    <a class="link mx-2" href="/tasks/{product.Id}">
+                      {m.common_continue()}
+                    </a>
+                  {/if}
+                </div>
+              {/if}
               <ProductDetails {product} />
             </div>
           {/each}
