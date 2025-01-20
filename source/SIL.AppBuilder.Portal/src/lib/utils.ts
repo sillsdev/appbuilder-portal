@@ -1,3 +1,5 @@
+import { toast } from '@zerodevx/svelte-toast';
+
 export function bytesToHumanSize(bytes: bigint | null) {
   if (bytes === null) {
     return '--';
@@ -13,3 +15,9 @@ export function bytesToHumanSize(bytes: bigint | null) {
     return bytes + ' bytes';
   }
 }
+
+function pushToast(type: 'info' | 'success' | 'warning' | 'error', message: string) {
+  toast.push(message, { pausable: true, classes: [type] });
+}
+export { pushToast as toast };
+

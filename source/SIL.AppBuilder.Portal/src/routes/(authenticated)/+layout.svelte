@@ -6,9 +6,9 @@
   import { HamburgerIcon } from '$lib/icons';
   import * as m from '$lib/paraglide/messages';
   import { signOut } from '@auth/sveltekit/client';
+  import { SvelteToast } from '@zerodevx/svelte-toast';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
   import type { LayoutData } from './$types';
-
   export let data: LayoutData;
 
   let drawerToggle: HTMLInputElement;
@@ -217,6 +217,7 @@
     </div>
     <div class="drawer-content grow items-start justify-start">
       <slot />
+      <SvelteToast />
     </div>
   </div>
 </div>

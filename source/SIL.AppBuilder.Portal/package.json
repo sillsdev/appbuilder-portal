@@ -33,6 +33,7 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vvo/tzdb": "^6.142.0",
+    "@zerodevx/svelte-toast": "^0.9.6",
     "autoprefixer": "^10.4.16",
     "commander": "^11.1.0",
     "daisyui": "^4.12.10",

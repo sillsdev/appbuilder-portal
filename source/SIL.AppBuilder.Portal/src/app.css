@@ -23,3 +23,44 @@ a.link {
 * {
   font-size: 15px;
 }
+
+._toastContainer {
+  @apply toast toast-top toast-end;
+}
+
+._toastItem {
+  /*!important is necessary to take precedence over svelte-toast's internal styling*/
+  @apply bg-info !important;
+  align-items: flex-start !important;
+}
+
+.success > ._toastItem {
+  @apply bg-success !important;
+}
+
+.warning > ._toastItem {
+  @apply bg-warning !important;
+}
+
+.error > ._toastItem {
+  @apply bg-error !important;
+}
+
+._toastMsg {
+  /* text-wrap might not work in older browsers... */
+  @apply text-sm text-wrap;
+}
+
+._toastBtn {
+  width: 10%;
+  height: 100%;
+  padding-top: 0.5rem;
+}
+
+._toastBtn::after {
+  align-items: flex-start !important;
+}
+
+._toastBar {
+  --toastBarBackground: #ffffffb0;
+}
