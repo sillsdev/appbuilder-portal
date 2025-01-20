@@ -120,7 +120,7 @@ async function deleteProduct(productId: string) {
     BullMQ.Retry5e5
   );
   return prisma.$transaction([
-    deleteInstance(productId),
+    deleteInstance(productId, product!.Project.Id),
     prisma.userTasks.deleteMany({
       where: {
         ProductId: productId

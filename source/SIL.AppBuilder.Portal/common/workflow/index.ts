@@ -87,7 +87,9 @@ export class Workflow {
   /** Restore from a snapshot in the database. */
   public static async restore(productId: string): Promise<Workflow | null> {
     const snap = await Workflow.getSnapshot(productId);
-    if (!snap) { return null; }
+    if (!snap) {
+      return null;
+    }
     const flow = new Workflow(productId, snap.config);
     const check = await flow.checkAuthorsAndReviewers();
     flow.flow = createActor(WorkflowStateMachine, {
@@ -249,7 +251,9 @@ export class Workflow {
   private async inspect(event: InspectedSnapshotEvent): Promise<void> {
     const old = this.currentState;
     const xSnap = this.flow!.getSnapshot();
-    this.currentState = WorkflowStateMachine.getStateNodeById(`#${WorkflowStateMachine.id}.${xSnap.value}`);
+    this.currentState = WorkflowStateMachine.getStateNodeById(
+      `#${WorkflowStateMachine.id}.${xSnap.value}`
+    );
 
     if (old && Workflow.stateName(old) !== xSnap.value) {
       await this.updateProductTransitions(
@@ -273,7 +277,11 @@ export class Workflow {
         }
       });
       if (xSnap.value in TerminalStates) {
-        await DatabaseWrites.workflowInstances.delete(this.productId);
+        const product = await prisma.products.findUnique({
+          where: { Id: this.productId },
+          select: { ProjectId: true }
+        });
+        await DatabaseWrites.workflowInstances.delete(this.productId, product.ProjectId);
       } else {
         await this.createSnapshot(xSnap.context);
         // This will also create the dummy entries in the ProductTransitions table
@@ -299,28 +307,22 @@ export class Workflow {
       productType: undefined,
       options: undefined
     } as WorkflowInstanceContext;
-    return DatabaseWrites.workflowInstances.upsert({
-      where: {
-        ProductId: this.productId
-      },
+    return DatabaseWrites.workflowInstances.upsert(this.productId, {
       create: {
-        ProductId: this.productId,
         State: Workflow.stateName(this.currentState!),
         Context: JSON.stringify(context),
-        WorkflowDefinitionId: (
-          await prisma.products.findUnique({
-            where: {
-              Id: this.productId
-            },
-            select: {
-              ProductDefinition: {
-                select: {
-                  WorkflowId: true
-                }
+        WorkflowDefinitionId: (await prisma.products.findUnique({
+          where: {
+            Id: this.productId
+          },
+          select: {
+            ProductDefinition: {
+              select: {
+                WorkflowId: true
               }
             }
-          })
-        )!.ProductDefinition.WorkflowId
+          }
+        }))!.ProductDefinition.WorkflowId
       },
       update: {
         State: Workflow.stateName(this.currentState!),
@@ -373,16 +375,14 @@ export class Workflow {
     productId: string,
     config: WorkflowConfig
   ): Promise<Prisma.ProductTransitionsCreateManyInput[]> {
-    const projectId = (
-      await prisma.products.findUnique({
-        where: {
-          Id: productId
-        },
-        select: {
-          ProjectId: true
-        }
-      })
-    )!.ProjectId;
+    const projectId = (await prisma.products.findUnique({
+      where: {
+        Id: productId
+      },
+      select: {
+        ProjectId: true
+      }
+    }))!.ProjectId;
     const allUsers = await allUsersByRole(projectId);
     const users = Object.fromEntries(
       (
