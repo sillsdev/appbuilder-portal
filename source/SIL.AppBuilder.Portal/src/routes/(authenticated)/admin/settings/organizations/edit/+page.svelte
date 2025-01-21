@@ -6,6 +6,7 @@
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -23,6 +24,7 @@
     onUpdated({ form }) {
       if (form.valid) {
         goto(localizeHref(base));
+        toast('success', m.admin_settings_organizations_editSuccess());
       } else {
         // ISSUE: #1107 Add toasts for server-side errors?
         console.warn(form.errors);

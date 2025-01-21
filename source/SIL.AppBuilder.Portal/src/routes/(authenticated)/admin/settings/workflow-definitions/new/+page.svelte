@@ -5,7 +5,7 @@
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-  import { enumNumVals } from '$lib/utils';
+  import { enumNumVals, toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
   import { WorkflowType } from 'sil.appbuilder.portal.common/prisma';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
@@ -26,6 +26,7 @@
     onUpdated({ form }) {
       if (form.valid) {
         goto(localizeHref(base));
+        toast('success', m.admin_settings_workflowDefinitions_workflowAdded());
       } else {
         // ISSUE: #1107 Add toasts for server-side errors?
         console.warn(form.errors);

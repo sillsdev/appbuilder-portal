@@ -3,6 +3,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import GroupsSelector from '../GroupsSelector.svelte';
@@ -25,6 +26,12 @@
         setTimeout(() => {
           window.location.href = localizeHref('/users');
         }, 2000);
+        toast(
+          'success',
+          m.organizationMembership_invite_create_success({ email: event.form.data.email })
+        );
+      } else {
+        toast('error', m.organizationMembership_invite_create_error());
       }
     }
   });
