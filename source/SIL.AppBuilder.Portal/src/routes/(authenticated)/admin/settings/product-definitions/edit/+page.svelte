@@ -1,9 +1,10 @@
 <script lang="ts">
-  import SuperDebug, { superForm } from 'sveltekit-superforms';
-  import * as m from '$lib/paraglide/messages';
-  import type { ActionData, PageData } from './$types';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import * as m from '$lib/paraglide/messages';
+  import { toast } from '$lib/utils';
+  import { superForm } from 'sveltekit-superforms';
+  import type { ActionData, PageData } from './$types';
 
   export let data: PageData;
   export let form: ActionData;
@@ -12,7 +13,10 @@
   const rebuildWorkflows = data.options.workflows.filter((w) => w.Type === 2);
   const republishWorkflows = data.options.workflows.filter((w) => w.Type === 3);
 
-  $: if (form?.ok) goto('/admin/settings/product-definitions');
+  $: if (form?.ok) {
+    goto('/admin/settings/product-definitions');
+    toast('success', m.admin_settings_productDefinitions_editSuccess());
+  }
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->

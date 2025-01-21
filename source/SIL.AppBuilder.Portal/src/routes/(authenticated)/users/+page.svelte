@@ -4,6 +4,7 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { toast } from '$lib/utils';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
   import { writable } from 'svelte/store';
   import { superForm, type FormResult } from 'sveltekit-superforms';
@@ -33,6 +34,19 @@
       }
     }
   });
+
+  function getUserLockMessage(locked: boolean, success: boolean): string {
+    if (success) {
+      if (locked) {
+        return m.users_operations_lock_success();
+      }
+      return m.users_operations_unlock_success();
+    }
+    if (locked) {
+      return m.users_operations_lock_error();
+    }
+    return m.users_operations_unlock_error();
+  }
 </script>
 
 <div class="w-full">
@@ -130,8 +144,13 @@
                 action="?/lock"
                 class="form-control"
                 use:svk_enhance={() => {
-                  return async ({ update }) => {
+                  return async ({ result, update }) => {
                     await update({ reset: false, invalidateAll: false });
+                    console.log(result);
+                    toast(
+                      result.type === 'success' ? 'success' : 'error',
+                      getUserLockMessage(!user.A, result.type === 'success')
+                    );
                   };
                 }}
               >

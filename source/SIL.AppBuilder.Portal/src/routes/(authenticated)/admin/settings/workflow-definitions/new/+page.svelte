@@ -2,10 +2,11 @@
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
+  import { toast } from '$lib/utils';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
+  import { superForm } from 'sveltekit-superforms';
   import { businessFlows } from '../common';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 
@@ -14,6 +15,7 @@
     onUpdated(event) {
       if (event.form.valid) {
         goto('/admin/settings/workflow-definitions');
+        toast('success', m.admin_settings_workflowDefinitions_workflowAdded());
       }
     }
   });

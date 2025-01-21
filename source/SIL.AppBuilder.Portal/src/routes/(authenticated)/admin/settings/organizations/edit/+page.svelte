@@ -4,6 +4,7 @@
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { toast } from '$lib/utils';
   import { superForm } from 'sveltekit-superforms';
   import type { ActionData, PageData } from './$types';
 
@@ -17,7 +18,10 @@
     dataType: 'json'
   });
 
-  $: if (form?.ok) goto('/admin/settings/organizations');
+  $: if (form?.ok) {
+    goto('/admin/settings/organizations');
+    toast('success', m.admin_settings_organizations_editSuccess());
+  }
   $: getStoreInfo = (store: (typeof $superFormData)['stores'][0]) =>
     data.options.stores.find((s) => s.Id === store.storeId);
 </script>

@@ -2,10 +2,11 @@
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { superForm } from 'sveltekit-superforms';
-  import type { ActionData, PageData } from './$types';
+  import { toast } from '$lib/utils';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
+  import { superForm } from 'sveltekit-superforms';
   import { businessFlows } from '../common';
+  import type { ActionData, PageData } from './$types';
 
   export let data: PageData;
   export let form: ActionData;
@@ -32,7 +33,10 @@
     }
   ];
 
-  $: if (form?.ok) goto('/admin/settings/workflow-definitions');
+  $: if (form?.ok) {
+    goto('/admin/settings/workflow-definitions');
+    toast('success', m.admin_settings_workflowDefinitions_workflowUpdated());
+  }
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->

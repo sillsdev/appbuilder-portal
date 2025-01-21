@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { toast } from '$lib/utils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -11,6 +12,7 @@
     onUpdated(event) {
       if (event.form.valid) {
         goto('/admin/settings/organizations');
+        toast('success', m.admin_settings_organizations_addSuccess());
       }
     }
   });

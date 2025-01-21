@@ -1,9 +1,10 @@
 <script lang="ts">
-  import * as m from '$lib/paraglide/messages';
-  import { superForm } from 'sveltekit-superforms';
-  import type { ActionData, PageData } from './$types';
-  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { goto } from '$app/navigation';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import * as m from '$lib/paraglide/messages';
+  import { toast } from '$lib/utils';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 
@@ -11,6 +12,7 @@
     onUpdated(event) {
       if (event.form.valid) {
         goto('/admin/settings/store-types');
+        toast('success', m.admin_settings_storeTypes_addSuccess());
       }
     }
   });

@@ -1,15 +1,19 @@
 <script lang="ts">
-  import SuperDebug, { superForm } from 'sveltekit-superforms';
-  import * as m from '$lib/paraglide/messages';
-  import type { ActionData, PageData } from './$types';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import * as m from '$lib/paraglide/messages';
+  import { toast } from '$lib/utils';
+  import { superForm } from 'sveltekit-superforms';
+  import type { ActionData, PageData } from './$types';
 
   export let data: PageData;
   export let form: ActionData;
   const { form: superFormData, enhance, allErrors } = superForm(data.form);
 
-  $: if (form?.ok) goto('/admin/settings/store-types');
+  $: if (form?.ok) {
+    goto('/admin/settings/store-types');
+    toast('success', m.admin_settings_storeTypes_editSuccess());
+  }
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->

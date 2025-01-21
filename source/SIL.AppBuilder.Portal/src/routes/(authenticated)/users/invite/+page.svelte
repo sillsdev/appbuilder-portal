@@ -1,6 +1,7 @@
 <script lang="ts">
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { toast } from '$lib/utils';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
   import { superForm } from 'sveltekit-superforms';
   import GroupsSelector from '../GroupsSelector.svelte';
@@ -19,6 +20,12 @@
         setTimeout(() => {
           window.location.href = '/users';
         }, 2000);
+        toast(
+          'success',
+          m.organizationMembership_invite_create_success({ email: event.form.data.email })
+        );
+      } else {
+        toast('error', m.organizationMembership_invite_create_error());
       }
     }
   });
