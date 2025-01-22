@@ -11,7 +11,7 @@ import type { PageServerLoad } from './$types';
 
 const bulkProjectOperationSchema = v.object({
   operation: v.nullable(v.picklist(['archive', 'reactivate'])),
-  projects: v.array(v.object({ Id: idSchema, OwnerId: idSchema, Archived: v.boolean() }))
+  projects: v.array(v.object({ Id: idSchema, OwnerId: idSchema, DateArchived: v.nullable(v.date()) }))
 });
 
 function whereStatements(
@@ -128,7 +128,7 @@ export const actions: Actions = {
 
     return { form, ok: true, query: { data: pruneProjects(projects), count } };
   },
-  archive: async (event) => {
+  bulkAction: async (event) => {
     const session = await event.locals.auth();
     if (!session) return fail(403);
     const orgId = parseInt(event.params.id!);
@@ -142,11 +142,11 @@ export const actions: Actions = {
       return fail(403);
     }
 
-    await Promise.all(
-      form.data.projects.map(async ({ Id }) => {
+    form.data.projects = await Promise.all(
+      form.data.projects.map(async (old) => {
         const project = await prisma.projects.findUnique({
           where: {
-            Id: Id
+            Id: old.Id
           },
           select: {
             Id: true,
@@ -154,8 +154,9 @@ export const actions: Actions = {
           }
         });
         if (form.data.operation === 'archive' && !project?.DateArchived) {
-          await DatabaseWrites.projects.update(Id, {
-            DateArchived: new Date()
+          const timestamp = new Date();
+          await DatabaseWrites.projects.update(old.Id, {
+            DateArchived: timestamp
           });
           /*await Queues.UserTasks.add(`Delete UserTasks for Archived Project #${Id}`, {
             type: BullMQ.JobType.UserTasks_Modify,
@@ -165,8 +166,9 @@ export const actions: Actions = {
               type: BullMQ.UserTasks.OpType.Delete
             }
           });*/
-        } else if (form.data.operation === 'reactivate' && !!project?.DateArchived) {
-          await DatabaseWrites.projects.update(Id, {
+          return { ...old, DateArchived: timestamp };
+        } else if (form.data.operation === 'reactivate' && project?.DateArchived !== null) {
+          await DatabaseWrites.projects.update(old.Id, {
             DateArchived: null
           });
           /*await Queues.UserTasks.add(`Create UserTasks for Reactivated Project #${Id}`, {
@@ -177,7 +179,9 @@ export const actions: Actions = {
               type: BullMQ.UserTasks.OpType.Create
             }
           });*/
+          return { ...old, DateArchived: null };
         }
+        return old;
       })
     );
 
