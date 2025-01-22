@@ -8,7 +8,6 @@
   import { canModifyProject } from '$lib/projects/common';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
-  import { writable } from 'svelte/store';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -17,9 +16,6 @@
 
   let selectedProjects: { Id: number; OwnerId: number; Archived: boolean }[] = [];
 
-  const projects = writable(data.projects);
-  const count = writable(data.count);
-
   const {
     form: pageForm,
     enhance: pageEnhance,
@@ -27,25 +23,24 @@
   } = superForm(data.pageForm, {
     dataType: 'json',
     resetForm: false,
+    invalidateAll: false,
     onChange(event) {
       if (!(event.paths.includes('langCode') || event.paths.includes('search'))) {
         pageSubmit();
       }
     },
     onUpdate(event) {
-      const data = event.result.data as FormResult<{
+      const returnedData = event.result.data as FormResult<{
         query: { data: PrunedProject[]; count: number };
       }>;
-      if (event.form.valid && data.query) {
-        projects.set(data.query.data);
-        count.set(data.query.count);
+      if (event.form.valid && returnedData.query) {
+        data.projects = returnedData.query.data;
+        data.count = returnedData.query.count;
       }
     }
   });
 
   afterNavigate((navigation) => {
-    projects.set(data.projects);
-    count.set(data.count);
     $pageForm.organizationId = data.pageForm.data.organizationId;
   });
 
@@ -160,23 +155,17 @@
       </button>
     </form>
     <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
-      <a
-        class="action btn btn-outline"
-        href="/projects/import/{$pageForm.organizationId}"
-      >
+      <a class="action btn btn-outline" href="/projects/import/{$pageForm.organizationId}">
         {m.project_importProjects()}
       </a>
-      <a
-        class="action btn btn-outline"
-        href="/projects/new/{$pageForm.organizationId}"
-      >
+      <a class="action btn btn-outline" href="/projects/new/{$pageForm.organizationId}">
         {m.sidebar_addProject()}
       </a>
     </div>
   </div>
-  {#if $projects.length > 0}
+  {#if data.projects.length > 0}
     <div class="w-full relative p-4">
-      {#each $projects as project}
+      {#each data.projects as project}
         <ProjectCard {project}>
           <span slot="checkbox">
             <input
@@ -202,7 +191,11 @@
     }}
   >
     <div class="w-full flex flex-row place-content-start p-4 space-between-4 flex-wrap gap-1">
-      <Pagination bind:size={$pageForm.page.size} total={$count} bind:page={$pageForm.page.page} />
+      <Pagination
+        bind:size={$pageForm.page.size}
+        total={data.count}
+        bind:page={$pageForm.page.page}
+      />
     </div>
   </form>
 </div>
