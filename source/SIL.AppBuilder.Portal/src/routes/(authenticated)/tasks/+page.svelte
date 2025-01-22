@@ -68,6 +68,7 @@
                     <a
                       class="link link-info"
                       href={task.Comment.replace(/system\.(build|publish)-failed,/, '')}
+                      target="_blank"
                     >
                       {m.project_products_publications_console()}
                     </a>

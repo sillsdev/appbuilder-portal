@@ -116,6 +116,7 @@
                 <a
                   class="link link-info"
                   href={transition.Comment.replace('system.build-failed,', '')}
+                  target="_blank"
                 >
                   {m.project_products_publications_console()}
                 </a>
