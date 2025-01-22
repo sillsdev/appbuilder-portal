@@ -41,7 +41,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
     WorkflowBuildId: 0
   });
   job.updateProgress(20);
-  const params = await getWorkflowParameters(productData.WorkflowInstance.Id);
+  const params = await getWorkflowParameters(productData.WorkflowInstance.Id, 'build');
   job.updateProgress(30);
   const env = await addProductPropertiesToEnvironment(job.data.productId);
   job.updateProgress(40);

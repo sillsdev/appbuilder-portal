@@ -48,7 +48,7 @@ export async function addProductPropertiesToEnvironment(productId: string) {
   } as Environment;
 }
 
-export async function getWorkflowParameters(workflowInstanceId: number, scope?: string) {
+export async function getWorkflowParameters(workflowInstanceId: number, scope: 'build' | 'publish') {
   const instance = await prisma.workflowInstances.findUnique({
     where: {
       Id: workflowInstanceId
