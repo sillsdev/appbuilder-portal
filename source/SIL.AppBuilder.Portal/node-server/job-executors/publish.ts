@@ -78,8 +78,6 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     const flow = await Workflow.restore(job.data.productId);
     // TODO: Send notification of failure
     flow.send({ type: WorkflowAction.Publish_Failed, userId: null, comment: response.message });
-    job.updateProgress(100);
-    return 0;
   } else {
     await DatabaseWrites.products.update(job.data.productId, {
       WorkflowPublishId: response.id
@@ -110,9 +108,14 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
       },
       BullMQ.RepeatEveryMinute
     );
-    job.updateProgress(100);
-    return response;
+    
   }
+  job.updateProgress(100);
+  return {
+    response,
+    params,
+    env
+  };
 }
 
 export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
