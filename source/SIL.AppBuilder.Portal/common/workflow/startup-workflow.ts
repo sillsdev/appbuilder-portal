@@ -348,7 +348,11 @@ export const StartupWorkflow = setup({
     [WorkflowState.Synchronize_Data]: {
       entry: assign({
         instructions: 'synchronize_data',
-        includeFields: ['storeDescription', 'listingLanguageCode']
+        includeFields: ['storeDescription', 'listingLanguageCode'],
+        includeArtifacts: true
+      }),
+      exit: assign({
+        includeArtifacts: false
       }),
       on: {
         [WorkflowAction.Continue]: {
