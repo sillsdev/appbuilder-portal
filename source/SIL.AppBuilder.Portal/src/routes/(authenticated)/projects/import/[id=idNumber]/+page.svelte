@@ -32,7 +32,6 @@
   });
 
   let reader: FileReader;
-  let lastModified = 0;
 
   // set to null *only* if the file has been parsed *and* there are no errors
   let parseErrors: ReturnType<typeof flatten<typeof importJSONSchema>> | null = {};
@@ -90,17 +89,13 @@
           on:change={(e) => {
             if (e.currentTarget?.files?.length) {
               parseErrors = {};
-              lastModified = e.currentTarget.files[0].lastModified;
               reader.readAsText(e.currentTarget.files[0]);
             }
           }}
           on:cancel={(e) => {
             if (e.currentTarget?.files?.length) {
-              if (e.currentTarget.files[0].lastModified > lastModified) {
-                parseErrors = {};
-                lastModified = e.currentTarget.files[0].lastModified;
-                reader.readAsText(e.currentTarget.files[0]);
-              }
+              parseErrors = {};
+              reader.readAsText(e.currentTarget.files[0]);
             }
           }}
         />
