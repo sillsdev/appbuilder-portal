@@ -42,12 +42,19 @@
     reader = new FileReader();
 
     reader.onloadend = (ev) => {
-      const res = safeParse(importJSONSchema, JSON.parse((reader.result as string) ?? ''));
-      if (res.success) {
-        $form.json = res.output;
-        parseErrors = null;
-      } else {
-        parseErrors = flatten<typeof importJSONSchema>(res.issues);
+      try {
+        const res = safeParse(importJSONSchema, JSON.parse((reader.result as string) ?? ''));
+        returnedErrors = [];
+        if (res.success) {
+          $form.json = res.output;
+          parseErrors = null;
+        } else {
+          parseErrors = flatten<typeof importJSONSchema>(res.issues);
+        }
+      }
+      catch (e) {
+        //@ts-expect-error I just want to add the error!
+        parseErrors = { root: [e] };
       }
     };
   });
