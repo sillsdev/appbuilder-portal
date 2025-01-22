@@ -178,7 +178,7 @@ export const actions: Actions = {
               Name: pj.Name,
               GroupId: form.data.group,
               OwnerId: session.user.userId,
-              Language: pj.Language, // TODO: validate language code?
+              Language: pj.Language,
               TypeId: form.data.type,
               Description: pj.Description ?? '',
               IsPublic: pj.IsPublic,
