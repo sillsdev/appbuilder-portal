@@ -60,7 +60,7 @@ export namespace Build {
   export interface Product {
     type: JobType.Build_Product;
     productId: string;
-    targets: string;
+    defaultTargets: string;
     environment: { [key: string]: string };
   }
   export interface Check {
@@ -93,8 +93,8 @@ export namespace Publish {
   export interface Product {
     type: JobType.Publish_Product;
     productId: string;
-    channel: Channels;
-    targets: string;
+    defaultChannel: Channels;
+    defaultTargets: string;
     environment: { [key: string]: string };
   }
 

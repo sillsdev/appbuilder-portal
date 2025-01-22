@@ -434,7 +434,7 @@ export const StartupWorkflow = setup({
           Queues.Builds.add(`Build Product #${context.productId}`, {
             type: BullMQ.JobType.Build_Product,
             productId: context.productId,
-            targets: context.productType === ProductType.Android_S3
+            defaultTargets: context.productType === ProductType.Android_S3
               ? 'apk'
               : context.productType === ProductType.AssetPackage
                 ? 'asset-package'
@@ -688,8 +688,8 @@ export const StartupWorkflow = setup({
           Queues.Publishing.add(`Publish Product #${context.productId}`, {
             type: BullMQ.JobType.Publish_Product,
             productId: context.productId,
-            channel: 'production', //default unless overriden by WorkflowDefinition.Properties or ProductDefinition.Properties
-            targets: 
+            defaultChannel: 'production', //default unless overriden by WorkflowDefinition.Properties or ProductDefinition.Properties
+            defaultTargets: 
             context.productType === ProductType.Android_S3
               ? 's3-bucket'
               : context.productType === ProductType.Web
