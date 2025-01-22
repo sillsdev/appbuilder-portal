@@ -2,6 +2,7 @@
   import * as m from '$lib/paraglide/messages';
   import { getTimeDateString } from '$lib/timeUtils';
   import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
+  import IconContainer from './IconContainer.svelte';
 
   export let product: {
     Id: string;
@@ -39,11 +40,24 @@
     }
     return '';
   }
+
+  let detailsModal: HTMLDialogElement;
 </script>
 
-<dialog id="modal{product.Id}" class="modal">
+<dialog bind:this={detailsModal} id="modal{product.Id}" class="modal">
   <div class="modal-box w-11/12 max-w-6xl">
-    <h2>{m.project_products_transitions_productDetails()}</h2>
+    <div class="flex flex-row">
+      <h2 class="grow">{m.project_products_transitions_productDetails()}</h2>
+      <button
+        class="btn btn-ghost"
+        type="button"
+        on:click={() => {
+          detailsModal?.close();
+        }}
+      >
+        <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+      </button>
+    </div>
     <table class="table">
       <thead>
         <tr>
@@ -99,7 +113,11 @@
                   </span>
                 {/if}
                 <br />
-                <a href={transition.Comment.replace('system.build-failed,', '')}>
+                <a
+                  class="link link-info"
+                  href={transition.Comment.replace('system.build-failed,', '')}
+                  target="_blank"
+                >
                   {m.project_products_publications_console()}
                 </a>
               {:else}

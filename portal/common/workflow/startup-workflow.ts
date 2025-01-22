@@ -1,4 +1,5 @@
 import { assign, setup } from 'xstate';
+import { BullMQ, Queues } from '../index.js';
 import { RoleId } from '../public/prisma.js';
 import type {
   WorkflowContext,
@@ -9,6 +10,7 @@ import type {
 } from '../public/workflow.js';
 import {
   ActionType,
+  ENVKeys,
   ProductType,
   WorkflowAction,
   WorkflowOptions,
@@ -243,9 +245,12 @@ export const StartupWorkflow = setup({
     [WorkflowState.Product_Creation]: {
       entry: [
         assign({ instructions: 'waiting' }),
-        () => {
-          // TODO: hook into build engine
-          console.log('Creating Product');
+        ({ context }) => {
+          Queues.Miscellaneous.add(`Create Product #${context.productId}`, {
+            type: BullMQ.JobType.Product_Create,
+            productId: context.productId
+          },
+          BullMQ.Retry5e5);
         }
       ],
       on: {
@@ -293,10 +298,10 @@ export const StartupWorkflow = setup({
             }
           },
           actions: assign({
-            environment: ({ context }) => {
-              context.environment.googlePlayExisting = true;
-              return context.environment;
-            }
+            environment: ({ context }) => ({
+              ...context.environment,
+              [ENVKeys.GOOGLE_PLAY_EXISTING]: '1'
+            })
           }),
           target: WorkflowState.Product_Build
         },
@@ -343,7 +348,11 @@ export const StartupWorkflow = setup({
     [WorkflowState.Synchronize_Data]: {
       entry: assign({
         instructions: 'synchronize_data',
-        includeFields: ['storeDescription', 'listingLanguageCode']
+        includeFields: ['storeDescription', 'listingLanguageCode'],
+        includeArtifacts: true
+      }),
+      exit: assign({
+        includeArtifacts: false
       }),
       on: {
         [WorkflowAction.Continue]: {
@@ -425,9 +434,22 @@ export const StartupWorkflow = setup({
         assign({
           instructions: 'waiting'
         }),
-        () => {
-          // TODO: hook into build engine
-          console.log('Building Product');
+        ({ context }) => {
+          Queues.Builds.add(`Build Product #${context.productId}`, {
+            type: BullMQ.JobType.Build_Product,
+            productId: context.productId,
+            defaultTargets: context.productType === ProductType.Android_S3
+              ? 'apk'
+              : context.productType === ProductType.AssetPackage
+                ? 'asset-package'
+                : context.productType === ProductType.Web
+                  ? 'html'
+                  : //ProductType.Android_GooglePlay
+                //default
+                  'apk play-listing',
+            environment: context.environment
+          },
+          BullMQ.Retry5e5);
         }
       ],
       on: {
@@ -441,15 +463,15 @@ export const StartupWorkflow = setup({
             },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
-              !context.environment.googlePlayUploaded,
+              !context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID],
             target: WorkflowState.App_Store_Preview
           },
           {
             meta: { type: ActionType.Auto },
             guard: ({ context }) =>
               context.productType !== ProductType.Android_GooglePlay ||
-              !!context.environment.googlePlayExisting ||
-              !!context.environment.googlePlayUploaded,
+              context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] === '1' ||
+              !!context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID],
             target: WorkflowState.Verify_and_Publish
           }
         ],
@@ -538,10 +560,10 @@ export const StartupWorkflow = setup({
         instructions: 'create_app_entry',
         includeFields: ['storeDescription', 'listingLanguageCode'],
         includeArtifacts: true,
-        environment: ({ context }) => {
-          context.environment.googlePlayDraft = true;
-          return context.environment;
-        }
+        environment: ({ context }) => ({
+          ...context.environment,
+          [ENVKeys.GOOGLE_PLAY_DRAFT]: '1'
+        })
       }),
       exit: assign({ includeArtifacts: false }),
       on: {
@@ -554,12 +576,13 @@ export const StartupWorkflow = setup({
                 options: { has: WorkflowOptions.AdminStoreAccess }
               }
             },
-            actions: assign({
-              environment: ({ context }) => {
-                context.environment.googlePlayUploaded = true;
-                return context.environment;
-              }
-            }),
+            actions: ({ context }) => {
+              // Given that the Set Google Play Uploaded action in S1 require DB and BuildEngine queries, this is probably the best way to do this
+              Queues.Miscellaneous.add(`Get VersionCode for Product #${context.productId}`, {
+                type: BullMQ.JobType.Product_GetVersionCode,
+                productId: context.productId
+              });
+            },
             target: WorkflowState.Verify_and_Publish
           },
           {
@@ -570,12 +593,12 @@ export const StartupWorkflow = setup({
                 options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
               }
             },
-            actions: assign({
-              environment: ({ context }) => {
-                context.environment.googlePlayUploaded = true;
-                return context.environment;
-              }
-            }),
+            actions: ({ context }) => {
+              Queues.Miscellaneous.add(`Get VersionCode for Product #${context.productId}`, {
+                type: BullMQ.JobType.Product_GetVersionCode,
+                productId: context.productId
+              });
+            },
             target: WorkflowState.Verify_and_Publish
           }
         ],
@@ -665,9 +688,23 @@ export const StartupWorkflow = setup({
     [WorkflowState.Product_Publish]: {
       entry: [
         assign({ instructions: 'waiting' }),
-        () => {
-          // TODO: hook into build engine
-          console.log('Publishing Product');
+        ({ context }) => {
+          Queues.Publishing.add(`Publish Product #${context.productId}`, {
+            type: BullMQ.JobType.Publish_Product,
+            productId: context.productId,
+            defaultChannel: 'production', //default unless overriden by WorkflowDefinition.Properties or ProductDefinition.Properties
+            defaultTargets: 
+            context.productType === ProductType.Android_S3
+              ? 's3-bucket'
+              : context.productType === ProductType.Web
+                ? 'rclone'
+                : //ProductType.Android_GooglePlay
+                //ProductType.AssetPackage
+                //default
+                'google-play',
+            environment: context.environment
+          },
+          BullMQ.Retry5e5);
         }
       ],
       on: {
@@ -681,14 +718,14 @@ export const StartupWorkflow = setup({
             },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
-              !context.environment.googlePlayExisting,
+              !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING],
             target: WorkflowState.Make_It_Live
           },
           {
             meta: { type: ActionType.Auto },
             guard: ({ context }) =>
               context.productType !== ProductType.Android_GooglePlay ||
-              !!context.environment.googlePlayExisting,
+              context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] === '1',
             target: WorkflowState.Published
           }
         ],

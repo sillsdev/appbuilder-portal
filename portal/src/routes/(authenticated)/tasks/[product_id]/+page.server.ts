@@ -57,7 +57,6 @@ export const load = (async ({ params, url, locals }) => {
           Reviewers: snap?.context.includeReviewers
             ? {
               select: {
-                Id: true,
                 Name: true,
                 Email: true
               }
@@ -122,11 +121,9 @@ export const load = (async ({ params, url, locals }) => {
               : undefined //include all
       },
       select: {
-        ProductBuildId: true,
         ArtifactType: true,
         FileSize: true,
-        Url: true,
-        Id: true
+        Url: true
       }
     })
     : [];
@@ -196,8 +193,12 @@ export const actions = {
       });
     }
 
-    redirect(302, '/tasks'); // keep the redirect for now. It takes a bit to update the db.
-    //TODO: maybe switch to just a page reload to show the new instructions once we use sockets? As it is right now, the `waiting` instructions will never be shown because of this redirect.
+    const product = await prisma.products.findUnique({
+      where: { Id: params.product_id },
+      select: { ProjectId: true }
+    });
+
+    redirect(302, `/projects/${product?.ProjectId}`);
   }
 } satisfies Actions;
 

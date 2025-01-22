@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+import type { Channels } from '../build-engine-api/types.js';
 import { RoleId } from '../public/prisma.js';
 
 interface RetryOptions {
@@ -17,16 +18,95 @@ export const Retry5e5: RetryOptions = {
   }
 };
 
+interface RepeatOptions {
+  readonly repeat: {
+    readonly pattern: string;
+  };
+}
+/** Repeat a job every minute */
+export const RepeatEveryMinute: RepeatOptions = {
+  repeat: {
+    pattern: '*/1 * * * *' // every minute
+  }
+};
+
 export enum QueueName {
+  Builds = 'Builds',
   DefaultRecurring = 'Default Recurring',
+  Miscellaneous = 'Miscellaneous',
+  Publishing = 'Publishing',
+  RemotePolling = 'Remote Polling',
   UserTasks = 'User Tasks'
 }
 
 export enum JobType {
+  // Build Tasks
+  Build_Product = 'Build Product',
+  Build_Check = 'Check Product Build',
+  // Product Tasks
+  Product_Create = 'Create Product',
+  Product_Delete = 'Delete Product',
+  Product_GetVersionCode = 'Get VersionCode for Uploaded Product',
+  // Publishing Tasks
+  Publish_Product = 'Publish Product',
+  Publish_Check = 'Check Product Publish',
   // System Tasks
   System_CheckStatuses = 'Check System Statuses',
   // UserTasks
   UserTasks_Modify = 'Modify UserTasks'
+}
+
+export namespace Build {
+  export interface Product {
+    type: JobType.Build_Product;
+    productId: string;
+    defaultTargets: string;
+    environment: { [key: string]: string };
+  }
+  export interface Check {
+    type: JobType.Build_Check;
+    organizationId: number;
+    productId: string;
+    jobId: number;
+    buildId: number;
+    productBuildId: number;
+  }
+}
+
+export namespace Product {
+  export interface Create {
+    type: JobType.Product_Create;
+    productId: string;
+  }
+  export interface Delete {
+    type: JobType.Product_Delete;
+    organizationId: number;
+    workflowJobId: number;
+  }
+  export interface GetVersionCode {
+    type: JobType.Product_GetVersionCode;
+    productId: string;
+  }
+}
+
+export namespace Publish {
+  export interface Product {
+    type: JobType.Publish_Product;
+    productId: string;
+    defaultChannel: Channels;
+    defaultTargets: string;
+    environment: { [key: string]: string };
+  }
+
+  export interface Check {
+    type: JobType.Publish_Check;
+    organizationId: number;
+    productId: string;
+    jobId: number;
+    buildId: number;
+    releaseId: number;
+    publicationId: number;
+  }
 }
 
 export namespace System {
@@ -75,6 +155,13 @@ export namespace UserTasks {
 export type Job = JobTypeMap[keyof JobTypeMap];
 
 export type JobTypeMap = {
+  [JobType.Build_Product]: Build.Product;
+  [JobType.Build_Check]: Build.Check;
+  [JobType.Product_Create]: Product.Create;
+  [JobType.Product_Delete]: Product.Delete;
+  [JobType.Product_GetVersionCode]: Product.GetVersionCode;
+  [JobType.Publish_Product]: Publish.Product;
+  [JobType.Publish_Check]: Publish.Check;
   [JobType.System_CheckStatuses]: System.CheckStatuses;
   [JobType.UserTasks_Modify]: UserTasks.Modify;
   // Add more mappings here as needed
