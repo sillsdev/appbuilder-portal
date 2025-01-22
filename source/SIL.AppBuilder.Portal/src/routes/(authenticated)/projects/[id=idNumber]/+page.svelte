@@ -36,6 +36,11 @@
       }
     }
   );
+  const {
+    form: addProductForm,
+    enhance: addProductEnhance,
+    submit: addProductSubmit
+  } = superForm(data.addProductForm);
   function openModal(id: string) {
     (window[('modal' + id) as any] as any).showModal();
   }
@@ -61,6 +66,13 @@
       ownerSettingsForm.requestSubmit();
     }, 2000);
   }
+
+  let addProductModal: HTMLDialogElement | undefined;
+  let selectingStore: boolean = false;
+  let selectedProduct: number = 0;
+  $: availableStores = data.stores.filter(
+    (s) => s.StoreTypeId === data.productsToAdd[selectedProduct]?.Workflow.StoreTypeId
+  );
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
@@ -115,9 +127,107 @@
             <span class="italic">{m.products_definition()}</span>
           </div>
         </div>
-        <button class="btn btn-outline" on:click={() => alert('TODO api proxy')}>
+        <button
+          class="btn btn-outline"
+          on:click={() => addProductModal?.showModal()}
+          disabled={!data.productsToAdd.length}
+        >
           {m.project_products_add()}
         </button>
+        <dialog bind:this={addProductModal} class="modal">
+          <form class="modal-box" action="?/addProduct" method="POST" use:addProductEnhance>
+            <div class="items-center text-center" class:hidden={selectingStore}>
+              <div class="flex flex-row">
+                <h2 class="text-lg font-bold grow">{m.project_products_popup_addTitle()}</h2>
+                <button
+                  class="btn btn-ghost"
+                  type="button"
+                  on:click={() => {
+                    addProductModal?.close();
+                  }}
+                >
+                  <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+                </button>
+              </div>
+              <hr />
+              <div class="flex flex-col pt-1 space-y-1">
+                {#each data.productsToAdd as productDef, i}
+                  <!-- svelte-ignore a11y-click-events-have-key-events -->
+                  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                  <label
+                    class="flex flex-col border border-secondary rounded text-left form-control cursor-pointer"
+                    on:click={() => {
+                      selectingStore = true;
+                      selectedProduct = i;
+                    }}
+                  >
+                    <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
+                      <IconContainer icon={getIcon(productDef.Name ?? '')} width="24" />
+                      {productDef.Name}
+                    </div>
+                    <p class="p-2 text-sm text-neutral-400">{productDef.Description}</p>
+                    <input
+                      type="radio"
+                      name="productDefinitionId"
+                      value={productDef.Id}
+                      class="hidden"
+                    />
+                  </label>
+                {/each}
+              </div>
+            </div>
+            <div class="items-center text-center" class:hidden={!selectingStore}>
+              <div class="flex flex-row">
+                <h2 class="text-lg font-bold">
+                  {m.products_storeSelect({
+                    name: data.productsToAdd[selectedProduct]?.Name || ''
+                  })}
+                </h2>
+                <button
+                  class="btn btn-ghost"
+                  type="button"
+                  on:click={() => {
+                    selectingStore = false;
+                  }}
+                >
+                  <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+                </button>
+              </div>
+              <hr />
+              <div class="flex flex-col pt-1 space-y-1">
+                {#if availableStores.length}
+                  {#each availableStores as store}
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                    <label
+                      class="flex flex-col border border-secondary rounded text-left form-control cursor-pointer"
+                    >
+                      <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
+                        {store.Name}
+                      </div>
+                      <p class="p-2 text-sm text-neutral-400">{store.Description}</p>
+                      <input
+                        type="submit"
+                        name="storeId"
+                        value={store.Id}
+                        class="hidden"
+                        on:click={() => {
+                          addProductModal?.close();
+                          selectingStore = false;
+                        }}
+                      />
+                    </label>
+                  {/each}
+                {:else}
+                  {m.products_noStoresAvailable()}
+                {/if}
+              </div>
+            </div>
+          </form>
+          <form method="dialog" class="modal-backdrop">
+            <button on:click={() => (selectingStore = false)}>close</button>
+          </form>
+        </dialog>
       </div>
       <div>
         {#if !data.project?.Products.length}
@@ -160,10 +270,10 @@
                             {m.project_productFiles()}
                           </a>
                         </li>
-                        {#if data.session?.user.roles.find((role) => role[0] === data.project?.OrganizationId && role[1] === RoleId.OrgAdmin)}
+                        {#if data.session?.user.roles.find((role) => role[0] === data.project?.Organization.Id && role[1] === RoleId.OrgAdmin)}
                           <li class="w-full rounded-none">
                             <span class="text-nowrap">
-                              <!-- TODO: what is this -->
+                              <!-- TODO: figure out Publishing Properties -->
                               {m.project_products_popup_properties()}
                             </span>
                           </li>
@@ -202,6 +312,7 @@
                 {m.tasks_forNames({
                   allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
                   activityName: product.ActiveTransition?.InitialState ?? ''
+                  // activityName appears to show up blank primarily at the very startup of a new product?
                 })}
                 {#if product.UserTasks.slice(-1)[0]?.UserId === $page.data.session?.user.userId}
                   <a class="link mx-2" href="/tasks/{product.Id}">
@@ -209,7 +320,7 @@
                   </a>
                 {/if}
               </div>
-              <ProductDetails product={product} />
+              <ProductDetails {product} />
             </div>
           {/each}
         {/if}
@@ -283,7 +394,7 @@
                 {m.project_side_organization()}
               </span>
               <span class="text-right">
-                {data.organizations.find((o) => data.project?.OrganizationId === o.Id)?.Name}
+                {data.organizations.find((o) => data.project?.Organization.Id === o.Id)?.Name}
               </span>
             </div>
             <div class="divider my-2" />
@@ -310,7 +421,7 @@
                     <input
                       type="hidden"
                       name="owner"
-                      value={data.project.OwnerId}
+                      value={data.project.Owner.Id}
                       bind:this={ownerField}
                     />
                     <ul class="menu menu-compact overflow-hidden rounded-md">
@@ -318,7 +429,7 @@
                         <li class="w-full rounded-none">
                           <button
                             class="text-nowrap"
-                            class:font-bold={owner.Id === data.project.OwnerId}
+                            class:font-bold={owner.Id === data.project.Owner.Id}
                             on:click={() => {
                               ownerField.value = owner.Id + '';
                               submitOwnerSettingsForm();
@@ -357,7 +468,7 @@
                     <input
                       type="hidden"
                       name="group"
-                      value={data.project.GroupId}
+                      value={data.project.Group.Id}
                       bind:this={groupField}
                     />
                     <ul class="menu menu-compact overflow-hidden rounded-md">
@@ -365,7 +476,7 @@
                         <li class="w-full rounded-none">
                           <button
                             class="text-nowrap"
-                            class:font-bold={group.Id === data.project.GroupId}
+                            class:font-bold={group.Id === data.project.Group.Id}
                             on:click={() => {
                               groupField.value = group.Id + '';
                               submitOwnerSettingsForm();
@@ -543,5 +654,9 @@
     grid-template-columns: 2fr 1fr;
     /* grid-template-rows: min-content min-content min-content; */
     column-gap: 0.75rem;
+  }
+  /* source: https://github.com/saadeghi/daisyui/issues/3040#issuecomment-2250530354 */
+  :root:has(:is(.modal-open, .modal:target, .modal-toggle:checked + .modal, .modal[open])) {
+    scrollbar-gutter: unset;
   }
 </style>

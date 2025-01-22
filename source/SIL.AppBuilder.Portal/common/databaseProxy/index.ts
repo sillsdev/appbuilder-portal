@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 
-import { WRITE_METHODS } from '../ReadonlyPrisma.js';
 import prisma from '../prisma.js';
+import { WRITE_METHODS } from '../ReadonlyPrisma.js';
 import * as groupMemberships from './GroupMemberships.js';
 import * as groups from './Groups.js';
 import * as organizationMemberships from './OrganizationMemberships.js';
@@ -11,6 +11,7 @@ import * as products from './Products.js';
 import * as projects from './Projects.js';
 import * as userRoles from './UserRoles.js';
 import * as utility from './utility.js';
+import * as workflowInstances from './WorkflowInstances.js';
 
 type RecurseRemove<T, V> = {
   [K in keyof T]: T[K] extends V | null | undefined ? never : RecurseRemove<T[K], V>;
@@ -41,7 +42,8 @@ const handlers = {
   organizationProductDefinitions,
   organizationMemberships,
   userRoles,
-  utility
+  utility,
+  workflowInstances
 };
 // @ts-expect-error this is in fact immediately populated
 const obj: DataType = {};

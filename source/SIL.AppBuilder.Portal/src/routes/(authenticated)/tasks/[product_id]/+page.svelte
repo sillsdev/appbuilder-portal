@@ -1,10 +1,11 @@
 <script lang="ts">
-  import type { PageData } from './$types';
-  import { instructions } from './instructions';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
-  import { superForm } from 'sveltekit-superforms';
   import * as m from '$lib/paraglide/messages';
   import { bytesToHumanSize } from '$lib/utils';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
+  import { instructions } from './instructions';
 
   export let data: PageData;
   const { form, enhance, submit } = superForm(data.taskForm, {
@@ -14,6 +15,7 @@
       }
     }
   });
+  let urlCopied = false;
 </script>
 
 <div class="p-5">
@@ -30,7 +32,7 @@
     {#if data.actions?.length}
       <div class="flex flex-row gap-x-3">
         {#each data.actions as action}
-          <label class="btn">
+          <label class="btn btn-primary">
             {action}<!-- TODO: i18n (after MVP) -->
             <input
               type="radio"
@@ -139,12 +141,27 @@
         <div class="label">
           <span class="label-text">{m.tasks_appProjectURL()}</span>
         </div>
-        <input
-          type="text"
-          class="input input-bordered w-full"
-          readonly
-          value={data.fields.projectURL}
-        />
+        <span class="input input-bordered w-full flex flex-row gap-2 items-center">
+          <input type="text" class="grow" readonly value={data.fields.projectURL} />
+          <button
+            class="cursor-copy"
+            on:click={() => {
+              if (data.fields.projectURL) {
+                navigator.clipboard.writeText(data.fields.projectURL);
+                urlCopied = true;
+                setTimeout(() => {
+                  urlCopied = false;
+                }, 5000);
+              }
+            }}
+          >
+            {#if urlCopied}
+              <IconContainer icon="mdi:check" width={24} class="text-success" />
+            {:else}
+              <IconContainer icon="mdi:content-copy" width={24} />
+            {/if}
+          </button>
+        </span>
       </label>
     {/if}
     {#if data.fields.displayProductDescription && data.fields.appType && data.fields.projectLanguageCode}
@@ -196,11 +213,6 @@
         data={data.files}
         columns={[
           {
-            id: 'buildId',
-            header: m.tasks_files_buildId(),
-            data: (f) => f.ProductBuildId
-          },
-          {
             id: 'artifactType',
             header: m.project_type(),
             data: (f) => f.ArtifactType,
@@ -217,15 +229,12 @@
             id: 'url',
             header: m.tasks_files_link(),
             data: (f) => f.Url,
-            render: (u) => `<a class="link" href="${u}">${u}</a>`
-          },
-          {
-            id: 'fileId',
-            header: m.tasks_files_fileId(),
-            data: (f) => f.Id,
-            sortable: true
+            render: (u) => `<a class="link" href="${u}" target="_blank">${u}</a>`
           }
         ]}
+        onRowClick={(data) => {
+          window.open(data.Url, '_blank')?.focus();
+        }}
       />
     </div>
   {/if}
@@ -236,12 +245,6 @@
         className="max-h-96"
         data={data.reviewers}
         columns={[
-          {
-            id: 'id',
-            header: m.common_id(),
-            data: (r) => r.Id,
-            sortable: true
-          },
           {
             id: 'name',
             header: m.common_name(),

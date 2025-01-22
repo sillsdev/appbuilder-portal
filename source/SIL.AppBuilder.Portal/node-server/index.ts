@@ -75,7 +75,11 @@ app.get('/healthcheck', (req, res) => {
 // Running on svelte process right now. Consider putting on new thread
 // Fine like this if majority of job time is waiting for network requests
 // If there is much processing it should be moved to another thread
+new Workers.Builds();
 new Workers.DefaultRecurring();
+new Workers.Miscellaneous();
+new Workers.Publishing();
+new Workers.RemotePolling();
 new Workers.UserTasks();
 
 const serverAdapter = new ExpressAdapter();
