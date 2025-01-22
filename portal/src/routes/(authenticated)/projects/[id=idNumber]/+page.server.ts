@@ -1,8 +1,8 @@
 import { verifyCanViewAndEdit } from '$lib/projects/common.server';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
-import { BullMQ, DatabaseWrites, prisma, Queues, Workflow } from 'sil.appbuilder.portal.common';
-import { RoleId, WorkflowType } from 'sil.appbuilder.portal.common/prisma';
+import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -28,44 +28,115 @@ const updateOwnerGroupSchema = v.object({
 });
 const addProductSchema = v.object({
   productDefinitionId: idSchema,
-  storeId: idSchema,
-  storeLanguageId: idSchema,
-  workflowJobId: idSchema,
-  workflowBuildId: idSchema,
-  workflowPublishId: idSchema
+  storeId: idSchema
 });
 
 // Are we sending too much data?
+// Maybe? I pared it down a bit with `select` instead of `include` - Aidan
 export const load = (async ({ locals, params }) => {
   if (!verifyCanViewAndEdit((await locals.auth())!, parseInt(params.id))) return error(403);
   const project = await prisma.projects.findUnique({
     where: {
       Id: parseInt(params.id)
     },
-    include: {
-      ApplicationType: true,
+    select: {
+      Id: true,
+      Name: true,
+      Description: true,
+      WorkflowProjectUrl: true,
+      IsPublic: true,
+      AllowDownloads: true,
+      DateCreated: true,
+      Language: true,
+      ApplicationType: {
+        select: {
+          Description: true
+        }
+      },
+      Organization: {
+        select: {
+          Id: true
+        }
+      },
       Products: {
-        include: {
+        select: {
+          Id: true,
+          DateUpdated: true,
+          DatePublished: true,
           ProductDefinition: {
-            include: {
-              Workflow: true
+            select: {
+              Id: true,
+              Name: true
             }
           },
-          UserTasks: true,
-          Store: true
+          // Probably don't need to optimize this. Unless it's a really large org, there probably won't be very many of these records for an individual product. In most cases, there will only be zero or one. The only times there will be more is if it's an admin task or an author task.
+          UserTasks: {
+            select: {
+              DateCreated: true,
+              UserId: true
+            }
+          },
+          Store: {
+            select: {
+              Description: true
+            }
+          }
         }
       },
-      Owner: true,
-      Group: true,
+      Owner: {
+        select: {
+          Id: true,
+          Name: true
+        }
+      },
+      Group: {
+        select: {
+          Id: true,
+          Name: true
+        }
+      },
       Authors: {
-        include: {
-          Users: true
+        select: {
+          Id: true,
+          Users: {
+            select: {
+              Id: true,
+              Name: true
+            }
+          }
         }
       },
-      Reviewers: true
+      Reviewers: {
+        select: {
+          Id: true,
+          Name: true,
+          Email: true
+        }
+      }
     }
   });
   if (!project) return error(400);
+
+  const organization = await prisma.organizations.findUnique({
+    where: {
+      Id: project.Organization.Id
+    },
+    select: {
+      OrganizationStores: {
+        select: {
+          Store: {
+            select: {
+              Id: true,
+              Name: true,
+              Description: true,
+              StoreTypeId: true
+            }
+          }
+        }
+      }
+    }
+  })
+
   const transitions = await prisma.productTransitions.findMany({
     where: {
       ProductId: {
@@ -92,17 +163,43 @@ export const load = (async ({ locals, params }) => {
     where: {
       GroupMemberships: {
         some: {
-          GroupId: project?.GroupId
+          GroupId: project?.Group.Id
         }
       },
       UserRoles: {
         some: {
-          OrganizationId: project?.OrganizationId,
+          OrganizationId: project?.Organization.Id,
           RoleId: RoleId.Author
         }
       }
     }
   });
+
+  const productDefinitions = (await prisma.organizationProductDefinitions.findMany({
+    where: {
+      OrganizationId: project.Organization.Id,
+      ProductDefinition: {
+        ApplicationTypes: project.ApplicationType
+      }
+    },
+    select: {
+      ProductDefinition: {
+        select: {
+          Id: true,
+          Name: true,
+          Description: true,
+          Workflow: {
+            select: {
+              StoreTypeId: true
+            }
+          }
+        }
+      }
+    }
+  })).map((pd) => pd.ProductDefinition);
+
+  const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
+
   const authorForm = await superValidate(valibot(addAuthorSchema));
   const reviewerForm = await superValidate({ language: 'en-us' }, valibot(addReviewerSchema));
   return {
@@ -112,10 +209,10 @@ export const load = (async ({ locals, params }) => {
         ...product,
         Transitions: transitions.filter((t) => t.ProductId === product.Id),
         PreviousTransition: strippedTransitions.find(
-          (t) => (t[0] ?? t[1]).ProductId === product.Id
+          (t) => (t[0] ?? t[1])?.ProductId === product.Id
         )?.[0],
         ActiveTransition: strippedTransitions.find(
-          (t) => (t[0] ?? t[1]).ProductId === product.Id
+          (t) => (t[0] ?? t[1])?.ProductId === product.Id
         )?.[1]
       }))
     },
@@ -123,7 +220,7 @@ export const load = (async ({ locals, params }) => {
       where: {
         OrganizationMemberships: {
           some: {
-            OrganizationId: project.OrganizationId
+            OrganizationId: project.Organization.Id
           }
         },
         GroupMemberships: {
@@ -135,14 +232,17 @@ export const load = (async ({ locals, params }) => {
     }),
     possibleGroups: await prisma.groups.findMany({
       where: {
-        OwnerId: project.OrganizationId
+        OwnerId: project.Organization.Id
       }
     }),
     authorsToAdd,
     authorForm,
     reviewerForm,
     deleteAuthorForm: await superValidate(valibot(deleteAuthorSchema)),
-    deleteReviewerForm: await superValidate(valibot(deleteReviewerSchema))
+    deleteReviewerForm: await superValidate(valibot(deleteReviewerSchema)),
+    productsToAdd: productDefinitions.filter((pd) => !projectProductDefinitionIds.includes(pd.Id)),
+    addProductForm: await superValidate(valibot(addProductSchema)),
+    stores: organization?.OrganizationStores.map((os) => os.Store) ?? []
   };
 }) satisfies PageServerLoad;
 
@@ -188,48 +288,18 @@ export const actions = {
   async addProduct(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
       return fail(403);
-    // TODO: api and bulltask
     const form = await superValidate(event.request, valibot(addProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    // Appears that CanUpdate is not used TODO
     const productId = await DatabaseWrites.products.create({
       ProjectId: parseInt(event.params.id),
       ProductDefinitionId: form.data.productDefinitionId,
       StoreId: form.data.storeId,
-      StoreLanguageId: form.data.storeLanguageId,
-      WorkflowJobId: form.data.workflowJobId,
-      WorkflowBuildId: form.data.workflowBuildId,
-      WorkflowPublishId: form.data.workflowPublishId
+      WorkflowJobId: 0,
+      WorkflowBuildId: 0,
+      WorkflowPublishId: 0
     });
 
-    if (typeof productId === 'string') {
-      const flow = (
-        await prisma.productDefinitions.findUnique({
-          where: {
-            Id: form.data.productDefinitionId
-          },
-          select: {
-            Workflow: {
-              select: {
-                Id: true,
-                Type: true,
-                ProductType: true,
-                WorkflowOptions: true
-              }
-            }
-          }
-        })
-      )?.Workflow;
-
-      if (flow?.Type === WorkflowType.Startup) {
-        Workflow.create(productId, {
-          productType: flow.ProductType,
-          options: new Set(flow.WorkflowOptions)
-        });
-      }
-    }
-
-    return { form, ok: true };
+    return { form, ok: !!productId };
   },
   async addAuthor(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))

@@ -99,8 +99,8 @@ DO UPDATE SET
 	"Type" = excluded."Type",
   "ProductType" = excluded."ProductType";
 
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "ProductType") VALUES
-(9, 'pwa_cloud', '1', 'SIL Default Workflow for Publishing PWA to Cloud', 'SIL_Default_AppBuilders_Pwa_Cloud', 'SIL_AppBuilders_Web_Flow', 3, 1, 3)
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "Properties", "ProductType") VALUES
+(9, 'pwa_cloud', '1', 'SIL Default Workflow for Publishing PWA to Cloud', 'SIL_Default_AppBuilders_Pwa_Cloud', 'SIL_AppBuilders_Web_Flow', 3, 1, '{ "build:targets" : "pwa" }', 3)
 ON CONFLICT ("Id")
 DO UPDATE SET
 	"Name" = excluded."Name",
@@ -112,8 +112,8 @@ DO UPDATE SET
 	"Type" = excluded."Type",
   "ProductType" = excluded."ProductType";
 
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "ProductType") VALUES
-(10,	'pwa_cloud_rebuild',	'1',	'SIL Default Workflow for Rebuilding PWA to Cloud',	'SIL_Default_AppBuilders_Pwa_Cloud_Rebuild',	'SIL_AppBuilders_Web_Flow',	3,	2,  3)
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "Properties", "ProductType") VALUES
+(10,	'pwa_cloud_rebuild',	'1',	'SIL Default Workflow for Rebuilding PWA to Cloud',	'SIL_Default_AppBuilders_Pwa_Cloud_Rebuild',	'SIL_AppBuilders_Web_Flow',	3,	2, '{ "build:targets" : "pwa" }', 3)
 ON CONFLICT ("Id")
 DO UPDATE SET
 	"Name" = excluded."Name",
@@ -151,8 +151,8 @@ DO UPDATE SET
 	"Type" = excluded."Type",
   "ProductType" = excluded."ProductType";
 
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "Properties", "ProductType") VALUES
-(13,	'asset_package',	'1',	'SIL Default Workflow for Publishing Asset Packages',	'SIL_NoAdmin_AppBuilders_Android_S3',	'SIL_AppBuilders_AssetPackage_Flow',	2,	1, '{ "build:targets" : "asset-package" }', 2)
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "ProductType") VALUES
+(13,	'asset_package',	'1',	'SIL Default Workflow for Publishing Asset Packages',	'SIL_NoAdmin_AppBuilders_Android_S3',	'SIL_AppBuilders_AssetPackage_Flow',	2,	1, 2)
 ON CONFLICT ("Id")
 DO UPDATE SET
 	"Name" = excluded."Name",
@@ -165,8 +165,8 @@ DO UPDATE SET
 	"Properties" = excluded."Properties",
   "ProductType" = excluded."ProductType";
 		
-INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "Properties", "ProductType") VALUES
-(14,	'asset_package_rebuild',	'1',	'SIL Default Workflow for Rebuilding Asset Packages',	'SIL_Default_AppBuilders_Android_S3_Rebuild',	'SIL_AppBuilders_AssetPackage_Flow',	2,	2, '{ "build:targets" : "asset-package" }', 3)
+INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "ProductType") VALUES
+(14,	'asset_package_rebuild',	'1',	'SIL Default Workflow for Rebuilding Asset Packages',	'SIL_Default_AppBuilders_Android_S3_Rebuild',	'SIL_AppBuilders_AssetPackage_Flow',	2,	2, 3)
 ON CONFLICT ("Id")
 DO UPDATE SET
 	"Name" = excluded."Name",

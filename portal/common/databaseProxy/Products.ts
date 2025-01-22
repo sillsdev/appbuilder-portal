@@ -1,5 +1,9 @@
 import type { Prisma } from '@prisma/client';
+import { Workflow } from 'sil.appbuilder.portal.common';
+import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
+import { WorkflowType } from '../public/prisma.js';
+import { delete as deleteInstance } from './WorkflowInstances.js';
 import type { RequirePrimitive } from './utility.js';
 
 export async function create(
@@ -9,8 +13,8 @@ export async function create(
     !(await validateProductBase(
       productData.ProjectId,
       productData.ProductDefinitionId,
-      productData.StoreId,
-      productData.StoreLanguageId
+      productData.StoreId ?? undefined,
+      productData.StoreLanguageId ?? undefined
     ))
   )
     return false;
@@ -21,6 +25,34 @@ export async function create(
     const res = await prisma.products.create({
       data: productData
     });
+
+    if (res) {
+      const flowDefinition = (
+        await prisma.productDefinitions.findUnique({
+          where: {
+            Id: productData.ProductDefinitionId
+          },
+          select: {
+            Workflow: {
+              select: {
+                Id: true,
+                Type: true,
+                ProductType: true,
+                WorkflowOptions: true
+              }
+            }
+          }
+        })
+      )?.Workflow;
+
+      if (flowDefinition?.Type === WorkflowType.Startup) {
+        await Workflow.create(res.Id, {
+          productType: flowDefinition.ProductType,
+          options: new Set(flowDefinition.WorkflowOptions)
+        });
+      }
+    }
+
     return res.Id;
   } catch (e) {
     return false;
@@ -62,14 +94,33 @@ export async function update(
   return true;
 }
 
-function deleteProduct(productId: string) {
+async function deleteProduct(productId: string) {
   // Delete all userTasks for this product, and delete the product
+  const product = await prisma.products.findUnique({
+    where: {
+      Id: productId
+    },
+    select: {
+      Project: {
+        select: {
+          Id: true,
+          OrganizationId: true
+        }
+      },
+      WorkflowJobId: true
+    }
+  });
+  await Queues.Miscellaneous.add(
+    `Delete Product #${productId} from BuildEngine`,
+    {
+      type: BullMQ.JobType.Product_Delete,
+      organizationId: product!.Project.OrganizationId,
+      workflowJobId: product!.WorkflowJobId
+    },
+    BullMQ.Retry5e5
+  );
   return prisma.$transaction([
-    prisma.workflowInstances.deleteMany({
-      where: {
-        ProductId: productId
-      }
-    }),
+    deleteInstance(productId),
     prisma.userTasks.deleteMany({
       where: {
         ProductId: productId
@@ -81,7 +132,6 @@ function deleteProduct(productId: string) {
       }
     })
   ]);
-  // TODO: delete from BuildEngine
 }
 export { deleteProduct as delete };
 
@@ -140,7 +190,7 @@ async function validateProductBase(
                       Id: true,
                       // StoreLanguage must be allowed by Store, if the StoreLanguage is defined
                       StoreLanguages:
-                        storeLanguageId === undefined || storeLanguageId === null
+                        storeLanguageId === undefined
                           ? undefined
                           : {
                             where: {
@@ -166,7 +216,6 @@ async function validateProductBase(
       }
     }
   });
-
   // 3. The store is allowed by the organization
   return (
     (project?.Organization.OrganizationStores.length ?? 0) > 0 &&
@@ -175,10 +224,11 @@ async function validateProductBase(
       project?.Organization.OrganizationStores[0].Store.StoreType.Id &&
     // 2. The project has a WorkflowProjectUrl
     // handled by query
-    // 4. The language is allowed by the store
-    (storeLanguageId ??
+    // 4. The language, if specified, is allowed by the store
+    ((storeLanguageId &&
       (project?.Organization.OrganizationStores[0].Store.StoreType.StoreLanguages.length ?? 0) >
-        0) &&
+        0) ||
+      storeLanguageId === undefined) &&
     // 5. The product type is allowed by the organization
     (project?.Organization.OrganizationProductDefinitions.length ?? 0) > 0
   );

@@ -18,3 +18,5 @@ export enum WorkflowType {
   Rebuild,
   Republish
 }
+
+export const WorkflowTypeString = ['', 'Startup', 'Rebuild', 'Republish'];
