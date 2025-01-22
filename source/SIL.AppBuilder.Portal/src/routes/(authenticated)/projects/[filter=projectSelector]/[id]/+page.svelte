@@ -15,7 +15,7 @@
 
   export let data: PageData;
 
-  let selectedProjects: { Id: number; OwnerId: number; DateArchived: Date | null }[] = [];
+  let selectedProjects: { Id: number; OwnerId: number; Archived: boolean }[] = [];
 
   const projects = writable(data.projects);
   const count = writable(data.count);
@@ -52,14 +52,14 @@
   $: canArchive = selectedProjects.reduce(
     (p, c) =>
       p &&
-      c.DateArchived === null &&
+      !c.Archived &&
       canModifyProject($page.data.session!, c.OwnerId, parseInt($page.params.id)),
     true
   );
   $: canReactivate = selectedProjects.reduce(
     (p, c) =>
       p &&
-      c.DateArchived !== null &&
+      c.Archived &&
       canModifyProject($page.data.session!, c.OwnerId, parseInt($page.params.id)),
     true
   );
@@ -70,7 +70,7 @@
     submit: actionSubmit
   } = superForm(data.actionForm, {
     dataType: 'json',
-    invalidateAll: false,
+    invalidateAll: true,
     onChange: (event) => {
       if (
         event.paths.includes('operation') &&
@@ -78,34 +78,6 @@
         $actionForm.operation
       ) {
         actionSubmit();
-      }
-    },
-    onUpdated: (event) => {
-      if (event.form.valid) {
-        if (
-          (event.form.data.operation === 'archive' && $page.params.filter !== 'all') ||
-          (event.form.data.operation === 'reactivate' && $page.params.filter === 'archived')
-        ) {
-          projects.update((ps) =>
-            ps.filter((p) => !event.form.data.projects.find((a) => a.Id === p.Id))
-          );
-          count.update((c) => c - event.form.data.projects.length);
-        }
-        if (
-          $page.params.filter === 'all' &&
-          (event.form.data.operation === 'archive' || event.form.data.operation === 'reactivate')
-        ) {
-          projects.update((ps) =>
-            ps.map((old) => {
-              const newP = event.form.data.projects.find((p) => p.Id === old.Id);
-              if (newP) {
-                return { ...old, DateArchived: newP.DateArchived };
-              }
-              return old;
-            })
-          );
-        }
-        selectedProjects = [];
       }
     }
   });
@@ -152,7 +124,7 @@
     <form
       class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4"
       method="POST"
-      action="?/bulkAction"
+      action="?/archive"
       use:actionEnhance
     >
       {#if data.allowArchive && (!selectedProjects.length || canArchive)}
@@ -188,10 +160,16 @@
       </button>
     </form>
     <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
-      <a class="action btn btn-outline" href="/projects/import/{$pageForm.organizationId}">
+      <a
+        class="action btn btn-outline"
+        href="/projects/import/{$pageForm.organizationId}"
+      >
         {m.project_importProjects()}
       </a>
-      <a class="action btn btn-outline" href="/projects/new/{$pageForm.organizationId}">
+      <a
+        class="action btn btn-outline"
+        href="/projects/new/{$pageForm.organizationId}"
+      >
         {m.sidebar_addProject()}
       </a>
     </div>
@@ -205,11 +183,7 @@
               type="checkbox"
               class="mr-2 checkbox checkbox-info"
               bind:group={selectedProjects}
-              value={{
-                Id: project.Id,
-                OwnerId: project.OwnerId,
-                DateArchived: project.DateArchived
-              }}
+              value={{ Id: project.Id, OwnerId: project.OwnerId, Archived: !!project.DateArchived }}
             />
           </span>
         </ProjectCard>
