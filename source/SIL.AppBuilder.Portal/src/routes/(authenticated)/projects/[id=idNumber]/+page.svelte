@@ -70,6 +70,9 @@
   let addProductModal: HTMLDialogElement | undefined;
   let selectingStore: boolean = false;
   let selectedProduct: number = 0;
+  $: availableStores = data.stores.filter(
+    (s) => s.StoreTypeId === data.productsToAdd[selectedProduct]?.Workflow.StoreTypeId
+  );
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
@@ -192,28 +195,32 @@
               </div>
               <hr />
               <div class="flex flex-col pt-1 space-y-1">
-                {#each data.stores.filter((s) => s.StoreTypeId === data.productsToAdd[selectedProduct]?.Workflow.StoreTypeId) as store}
-                  <!-- svelte-ignore a11y-click-events-have-key-events -->
-                  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-                  <label
-                    class="flex flex-col border border-secondary rounded text-left form-control cursor-pointer"
-                  >
-                    <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
-                      {store.Name}
-                    </div>
-                    <p class="p-2 text-sm text-neutral-400">{store.Description}</p>
-                    <input
-                      type="submit"
-                      name="storeId"
-                      value={store.Id}
-                      class="hidden"
-                      on:click={() => {
-                        addProductModal?.close();
-                        selectingStore = false;
-                      }}
-                    />
-                  </label>
-                {/each}
+                {#if availableStores.length}
+                  {#each availableStores as store}
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                    <label
+                      class="flex flex-col border border-secondary rounded text-left form-control cursor-pointer"
+                    >
+                      <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
+                        {store.Name}
+                      </div>
+                      <p class="p-2 text-sm text-neutral-400">{store.Description}</p>
+                      <input
+                        type="submit"
+                        name="storeId"
+                        value={store.Id}
+                        class="hidden"
+                        on:click={() => {
+                          addProductModal?.close();
+                          selectingStore = false;
+                        }}
+                      />
+                    </label>
+                  {/each}
+                {:else}
+                  {m.products_noStoresAvailable()}
+                {/if}
               </div>
             </div>
           </form>
