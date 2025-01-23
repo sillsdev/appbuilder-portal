@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
@@ -7,8 +9,12 @@
   import RolesSelector from '../RolesSelector.svelte';
   import type { PageData } from './$types';
 
-  export let data: PageData;
-  let inputEle: HTMLInputElement;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
+  let inputEle: HTMLInputElement = $state();
   const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',
     onUpdated(event) {
@@ -22,25 +28,27 @@
       }
     }
   });
-  let selectedOrg = data.organizations[0].Id;
-  let rolesField = [
+  let selectedOrg = $state(data.organizations[0].Id);
+  let rolesField = $state([
     {
       name: '',
       roles: $form.roles
     }
-  ];
-  let groupsField = [
+  ]);
+  let groupsField = $state([
     {
       name: '',
       groups: $form.groups,
       id: selectedOrg
     }
-  ];
-  $: groupsField[0].id = selectedOrg;
-  $: $form.organizationId = selectedOrg;
-  $: selectedOrg, (groupsField[0].groups = []);
-  $: $form.roles = rolesField[0].roles;
-  $: $form.groups = groupsField[0].groups;
+  ]);
+  let groupsField[0].id = $derived(selectedOrg);
+  let $form.organizationId = $derived(selectedOrg);
+  run(() => {
+    selectedOrg, (groupsField[0].groups = []);
+  });
+  let $form.roles = $derived(rolesField[0].roles);
+  let $form.groups = $derived(groupsField[0].groups);
 </script>
 
 <div class="w-full max-w-6xl mx-auto">

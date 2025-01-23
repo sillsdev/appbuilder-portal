@@ -4,7 +4,11 @@
   import RolesSelector from '../../../RolesSelector.svelte';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
   const { form, enhance } = superForm(data.form, {
     dataType: 'json',
     resetForm: false

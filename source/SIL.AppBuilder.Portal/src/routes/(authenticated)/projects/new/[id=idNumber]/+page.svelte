@@ -5,7 +5,11 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
   const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',
     onSubmit(event) {
@@ -35,7 +39,7 @@
         </label>
       </div>
       <div class="row">
-        <!-- svelte-ignore a11y-label-has-associated-control -->
+        <!-- svelte-ignore a11y_label_has_associated_control -->
         <label class="form-control">
           <span class="label-text">{m.project_languageCode()}:</span>
           <!-- <input type="text" id="language" class="input input-bordered" bind:value={$form.language} /> -->
@@ -62,7 +66,7 @@
             id="description"
             class="textarea textarea-bordered w-full"
             bind:value={$form.Description}
-          />
+></textarea>
         </label>
         <div class="form-control">
           <label for="public" class="label">

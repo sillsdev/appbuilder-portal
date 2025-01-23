@@ -10,7 +10,11 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 
   const instances = writable(data.instances);
   const count = writable(data.count);
@@ -36,12 +40,12 @@
 </script>
 
 <div class="w-full">
-  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
   <form
     method="POST"
     action="?/page"
     use:enhance
-    on:keydown={(event) => {
+    onkeydown={(event) => {
       if (event.key === 'Enter') submit();
     }}
   >
@@ -125,12 +129,12 @@
       <p class="m-8">{m.workflowInstances_empty()}</p>
     {/if}
   </div>
-  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
   <form
     method="POST"
     action="?/page"
     use:enhance
-    on:keydown={(event) => {
+    onkeydown={(event) => {
       if (event.key === 'Enter') submit();
     }}
   >

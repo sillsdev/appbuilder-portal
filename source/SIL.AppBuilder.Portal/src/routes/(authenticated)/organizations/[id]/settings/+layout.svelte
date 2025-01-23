@@ -12,7 +12,12 @@
   } from '$lib/paraglide/messages';
   import type { LayoutData } from './$types';
 
-  export let data: LayoutData;
+  interface Props {
+    data: LayoutData;
+    children?: import('svelte').Snippet;
+  }
+
+  let { data, children }: Props = $props();
 </script>
 
 <TabbedMenu
@@ -42,11 +47,12 @@
     }
   ]}
 >
+  <!-- @migration-task: migrate this slot by hand, `title` would shadow a prop on the parent component -->
   <div slot="title" class="w-full">
     <h1 class="p-4 pl-3 pb-0 [text-wrap:nowrap]">
       {org_settingsTitle()}
     </h1>
     <h2>{data.organization.Name}</h2>
   </div>
-  <slot />
+  {@render children?.()}
 </TabbedMenu>

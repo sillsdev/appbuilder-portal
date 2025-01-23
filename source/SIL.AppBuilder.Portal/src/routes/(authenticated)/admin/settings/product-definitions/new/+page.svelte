@@ -5,7 +5,11 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { goto } from '$app/navigation';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 
   const { form, enhance, allErrors } = superForm(data.form, {
     onUpdated(event) {

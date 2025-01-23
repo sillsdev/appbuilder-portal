@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
@@ -7,8 +9,12 @@
   import { superForm } from 'sveltekit-superforms';
   import type { ActionData, PageData } from './$types';
 
-  export let data: PageData;
-  export let form: ActionData;
+  interface Props {
+    data: PageData;
+    form: ActionData;
+  }
+
+  let { data, form }: Props = $props();
   const {
     form: superFormData,
     enhance,
@@ -17,9 +23,11 @@
     dataType: 'json'
   });
 
-  $: if (form?.ok) goto('/admin/settings/organizations');
-  $: getStoreInfo = (store: (typeof $superFormData)['stores'][0]) =>
-    data.options.stores.find((s) => s.Id === store.storeId);
+  run(() => {
+    if (form?.ok) goto('/admin/settings/organizations');
+  });
+  let getStoreInfo = $derived((store: (typeof $superFormData)['stores'][0]) =>
+    data.options.stores.find((s) => s.Id === store.storeId));
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->

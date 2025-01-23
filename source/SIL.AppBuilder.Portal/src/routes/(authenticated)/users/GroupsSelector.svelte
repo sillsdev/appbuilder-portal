@@ -1,6 +1,10 @@
 <script lang="ts">
-  export let organizations: { id: number; name: string; groups: number[] }[];
-  export let groups: { id: number; name: string; orgId: number }[];
+  interface Props {
+    organizations: { id: number; name: string; groups: number[] }[];
+    groups: { id: number; name: string; orgId: number }[];
+  }
+
+  let { organizations, groups }: Props = $props();
 </script>
 
 {#each organizations as org}
@@ -19,6 +23,6 @@
         </div>
       {/each}
     </div>
-    <div class="grow" />
+    <div class="grow"></div>
   </div>
 {/each}

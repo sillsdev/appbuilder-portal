@@ -6,9 +6,13 @@
   import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
   import { languageTag } from '$lib/paraglide/runtime';
   import { createEventDispatcher } from 'svelte';
-  export let data: Record<string, any>[];
-  /** Definition of the columns for the table */
-  export let columns: {
+  
+  
+  
+  interface Props {
+    data: Record<string, any>[];
+    /** Definition of the columns for the table */
+    columns: {
     /** Internal id, used for determining which column is being sorted */
     id: string;
     /** User-facing string for column headers */
@@ -20,22 +24,31 @@
     /** Will not sort a field if this is false or undefined */
     sortable?: boolean;
   }[];
-  export let className: string = '';
-  /** If this is true, will defer sorting to the server instead */
-  export let serverSide: boolean = false;
-  /** If this is defined, will handle a click on a row */
-  export let onRowClick:
+    className?: string;
+    /** If this is true, will defer sorting to the server instead */
+    serverSide?: boolean;
+    /** If this is defined, will handle a click on a row */
+    onRowClick?: 
     | undefined
     | ((
         rowData: (typeof data)[0],
         event: MouseEvent & {
           currentTarget: EventTarget & HTMLTableRowElement;
         }
-      ) => void) = undefined;
+      ) => void);
+  }
+
+  let {
+    data = $bindable(),
+    columns,
+    className = '',
+    serverSide = false,
+    onRowClick = undefined
+  }: Props = $props();
 
   /** Current field being sorted. Defaults to first field where `sortable === true` */
-  let current = columns.find((c) => c.sortable)!;
-  let descending = false;
+  let current = $state(columns.find((c) => c.sortable)!);
+  let descending = $state(false);
 
   function sortColByDirection(key: (typeof columns)[0]) {
     if (current.id !== key.id) {
@@ -97,13 +110,13 @@
       <tr>
         {#each columns as c}
           <th
-            on:click={() => {
+            onclick={() => {
               if (c.sortable) {
                 sortColByDirection(c);
               }
             }}
           >
-            <!-- svelte-ignore a11y-label-has-associated-control -->
+            <!-- svelte-ignore a11y_label_has_associated_control -->
             <label class="form-control flex-row">
               <span class="label-text">{c.header}</span>
               <span class="direction-arrow">
@@ -125,7 +138,7 @@
     <tbody>
       {#each data as d}
         <tr
-          on:click={(e) => {
+          onclick={(e) => {
             if (onRowClick) onRowClick(d, e);
           }}
         >

@@ -6,8 +6,13 @@
 <script lang="ts">
   import type { ValidI13nKey } from '$lib/i18n';
   import * as m from '$lib/paraglide/messages';
-  export let name: ValidI13nKey;
-  export let className: string = '';
+  interface Props {
+    name: ValidI13nKey;
+    className?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let { name, className = '', children }: Props = $props();
 </script>
 
 <div class={className}>
@@ -17,6 +22,6 @@
         {m[name]()}
       </span>
     </div>
-    <slot />
+    {@render children?.()}
   </label>
 </div>

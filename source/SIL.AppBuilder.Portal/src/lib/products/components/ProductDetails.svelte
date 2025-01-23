@@ -4,7 +4,8 @@
   import { getTimeDateString } from '$lib/timeUtils';
   import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
 
-  export let product: {
+  interface Props {
+    product: {
     Id: string;
     Store: { Description: string | null } | null;
     Transitions: {
@@ -17,6 +18,9 @@
       DateTransition: Date | null;
     }[];
   };
+  }
+
+  let { product }: Props = $props();
 
   function stateString(workflowTypeNum: number, transitionType: number) {
     const workflowType = (
@@ -41,7 +45,7 @@
     return '';
   }
 
-  let detailsModal: HTMLDialogElement;
+  let detailsModal: HTMLDialogElement = $state();
 </script>
 
 <dialog bind:this={detailsModal} id="modal{product.Id}" class="modal">
@@ -51,7 +55,7 @@
       <button
         class="btn btn-ghost"
         type="button"
-        on:click={() => {
+        onclick={() => {
           detailsModal?.close();
         }}
       >

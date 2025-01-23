@@ -9,9 +9,14 @@
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
   import type { LayoutData } from './$types';
 
-  export let data: LayoutData;
+  interface Props {
+    data: LayoutData;
+    children?: import('svelte').Snippet;
+  }
 
-  let drawerToggle: HTMLInputElement;
+  let { data, children }: Props = $props();
+
+  let drawerToggle: HTMLInputElement = $state();
   function closeDrawer() {
     drawerToggle.click();
   }
@@ -75,7 +80,7 @@
             </a>
           </li>
           <li>
-            <button on:click={() => signOut({ callbackUrl: '/' })}>{m.header_signOut()}</button>
+            <button onclick={() => signOut({ callbackUrl: '/' })}>{m.header_signOut()}</button>
           </li>
         </ul>
       </div>
@@ -92,7 +97,7 @@
     />
 
     <div class="h-full drawer-side shrink-0 z-10">
-      <label for="primary-content-drawer" class="drawer-overlay" />
+      <label for="primary-content-drawer" class="drawer-overlay"></label>
       <div
         class="h-full mt-16 lg:mt-0 overflow-hidden w-full lg:w-72 lg:border-r min-[480px]:w-1/2 min-[720px]:w-1/3"
       >
@@ -102,7 +107,7 @@
               class="rounded-none"
               class:active-menu-item={isActive($page.route.id, '/tasks')}
               href="{base}/tasks"
-              on:click={closeDrawer}
+              onclick={closeDrawer}
             >
               {data.numberOfTasks
                 ? m.sidebar_myTasks_other({ count: data.numberOfTasks })
@@ -114,7 +119,7 @@
               class="rounded-none"
               class:active-menu-item={isUrlActive($page.url.pathname, '/projects/own')}
               href="{base}/projects/own"
-              on:click={closeDrawer}
+              onclick={closeDrawer}
             >
               {m.sidebar_myProjects()}
             </a>
@@ -124,7 +129,7 @@
               class="rounded-none"
               class:active-menu-item={isUrlActive($page.url.pathname, '/projects/organization')}
               href="{base}/projects/organization"
-              on:click={closeDrawer}
+              onclick={closeDrawer}
             >
               {m.sidebar_organizationProjects()}
             </a>
@@ -135,7 +140,7 @@
                 class="rounded-none"
                 class:active-menu-item={isUrlActive($page.url.pathname, '/projects/active')}
                 href="{base}/projects/active"
-                on:click={closeDrawer}
+                onclick={closeDrawer}
               >
                 {m.sidebar_activeProjects()}
               </a>
@@ -145,7 +150,7 @@
                 class="rounded-none"
                 class:active-menu-item={isActive($page.route.id, '/users')}
                 href="{base}/users"
-                on:click={closeDrawer}
+                onclick={closeDrawer}
               >
                 {m.sidebar_users()}
               </a>
@@ -155,7 +160,7 @@
                 class="rounded-none"
                 class:active-menu-item={isActive($page.route.id, '/organizations')}
                 href="{base}/organizations/"
-                on:click={closeDrawer}
+                onclick={closeDrawer}
               >
                 {m.sidebar_organizationSettings()}
               </a>
@@ -167,7 +172,7 @@
                 class="rounded-none"
                 class:active-menu-item={isActive($page.route.id, '/admin/settings')}
                 href="{base}/admin/settings/organizations"
-                on:click={closeDrawer}
+                onclick={closeDrawer}
               >
                 {m.sidebar_adminSettings()}
               </a>
@@ -176,7 +181,7 @@
               <a
                 class="rounded-none"
                 href={dev ? 'http://localhost:3000' : '/admin/jobs'}
-                on:click={closeDrawer}
+                onclick={closeDrawer}
                 target="_blank"
               >
                 {m.sidebar_jobAdministration()}
@@ -186,7 +191,7 @@
               <a
                 class:active-menu-item={isActive($page.route.id, '/workflow-instances')}
                 href="{base}/workflow-instances"
-                on:click={closeDrawer}
+                onclick={closeDrawer}
               >
                 {m.workflowInstances_title()}
               </a>
@@ -197,7 +202,7 @@
               class="rounded-none"
               class:active-menu-item={isActive($page.route.id, '/directory')}
               href="{base}/directory"
-              on:click={closeDrawer}
+              onclick={closeDrawer}
             >
               {m.sidebar_projectDirectory()}
             </a>
@@ -207,7 +212,7 @@
               class="rounded-none mt-10"
               class:active-menu-item={isActive($page.route.id, '/open-source')}
               href="{base}/open-source"
-              on:click={closeDrawer}
+              onclick={closeDrawer}
             >
               {m.opensource()}
             </a>
@@ -216,7 +221,7 @@
       </div>
     </div>
     <div class="drawer-content grow items-start justify-start">
-      <slot />
+      {@render children?.()}
     </div>
   </div>
 </div>

@@ -1,7 +1,11 @@
 <script lang="ts">
   import * as m from '$lib/paraglide/messages';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-  export let organizations: { name: string; roles: RoleId[] }[];
+  interface Props {
+    organizations: { name: string; roles: RoleId[] }[];
+  }
+
+  let { organizations }: Props = $props();
 </script>
 
 {#each organizations as org}
@@ -36,6 +40,6 @@
         <span>{m.users_roles_orgAdmin()}</span>
       </div>
     </div>
-    <div class="grow" />
+    <div class="grow"></div>
   </div>
 {/each}

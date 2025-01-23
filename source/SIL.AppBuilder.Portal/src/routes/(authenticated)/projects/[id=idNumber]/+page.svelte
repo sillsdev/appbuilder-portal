@@ -18,7 +18,11 @@
 
   const langtagmap = new Map(langtags.map((tag) => [tag.tag, /* tag.localname ?? */ tag.name]));
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data = $bindable() }: Props = $props();
 
   const { form: authorForm, enhance: authorEnhance } = superForm(data.authorForm);
   const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm, {
@@ -39,25 +43,25 @@
     (window[('modal' + id) as any] as any).showModal();
   }
   let simpleSettingsFormTimeout: NodeJS.Timeout;
-  let simpleSettingsForm: HTMLFormElement;
+  let simpleSettingsForm: HTMLFormElement | undefined = $state();
   function submitSimpleSettingsForm() {
     if (simpleSettingsFormTimeout) {
       clearTimeout(simpleSettingsFormTimeout);
     }
     simpleSettingsFormTimeout = setTimeout(() => {
-      simpleSettingsForm.requestSubmit();
+      simpleSettingsForm?.requestSubmit();
     }, 2000);
   }
   let ownerSettingsFormTimeout: NodeJS.Timeout;
-  let ownerSettingsForm: HTMLFormElement;
-  let ownerField: HTMLInputElement;
-  let groupField: HTMLInputElement;
+  let ownerSettingsForm: HTMLFormElement | undefined = $state();
+  let ownerField: HTMLInputElement | undefined = $state();
+  let groupField: HTMLInputElement | undefined = $state();
   function submitOwnerSettingsForm() {
     if (ownerSettingsFormTimeout) {
       clearTimeout(ownerSettingsFormTimeout);
     }
     ownerSettingsFormTimeout = setTimeout(() => {
-      ownerSettingsForm.requestSubmit();
+      ownerSettingsForm?.requestSubmit();
     }, 2000);
   }
 
@@ -79,12 +83,13 @@
       console.error('Error performing product action:', error);
     }
   }
-
-  let addProductModal: HTMLDialogElement | undefined;
-  let selectingStore: boolean = false;
-  let selectedProduct: number = 0;
-  $: availableStores = data.stores.filter(
-    (s) => s.StoreTypeId === data.productsToAdd[selectedProduct]?.Workflow.StoreTypeId
+  let addProductModal: HTMLDialogElement | undefined = $state();
+  let selectingStore: boolean = $state(false);
+  let selectedProduct: number = $state(0);
+  let availableStores = $derived(
+    data.stores.filter(
+      (s) => s.StoreTypeId === data.productsToAdd[selectedProduct]?.Workflow.StoreTypeId
+    )
   );
 </script>
 
@@ -161,7 +166,7 @@
         </div>
         <button
           class="btn btn-outline"
-          on:click={() => addProductModal?.showModal()}
+          onclick={() => addProductModal?.showModal()}
           disabled={!(data.productsToAdd.length && data.project.WorkflowProjectUrl)}
         >
           {m.project_products_add()}
@@ -174,7 +179,7 @@
                 <button
                   class="btn btn-ghost"
                   type="button"
-                  on:click={() => {
+                  onclick={() => {
                     addProductModal?.close();
                   }}
                 >
@@ -184,11 +189,11 @@
               <hr />
               <div class="flex flex-col pt-1 space-y-1">
                 {#each data.productsToAdd as productDef, i}
-                  <!-- svelte-ignore a11y-click-events-have-key-events -->
-                  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                  <!-- svelte-ignore a11y_click_events_have_key_events -->
+                  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                   <label
                     class="flex flex-col border border-secondary rounded text-left form-control cursor-pointer"
-                    on:click={() => {
+                    onclick={() => {
                       selectingStore = true;
                       selectedProduct = i;
                     }}
@@ -218,7 +223,7 @@
                 <button
                   class="btn btn-ghost"
                   type="button"
-                  on:click={() => {
+                  onclick={() => {
                     selectingStore = false;
                   }}
                 >
@@ -229,8 +234,8 @@
               <div class="flex flex-col pt-1 space-y-1">
                 {#if availableStores.length}
                   {#each availableStores as store}
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                     <label
                       class="flex flex-col border border-secondary rounded text-left form-control cursor-pointer"
                     >
@@ -243,7 +248,7 @@
                         name="storeId"
                         value={store.Id}
                         class="hidden"
-                        on:click={() => {
+                        onclick={() => {
                           addProductModal?.close();
                           selectingStore = false;
                         }}
@@ -257,7 +262,7 @@
             </div>
           </form>
           <form method="dialog" class="modal-backdrop">
-            <button on:click={() => (selectingStore = false)}>close</button>
+            <button onclick={() => (selectingStore = false)}>close</button>
           </form>
         </dialog>
       </div>
@@ -319,7 +324,7 @@
                           <li class="w-full rounded-none">
                             <button
                               class="text-nowrap"
-                              on:click={(event) => {
+                              onclick={(event) => {
                                 handleProductAction(product.Id, action);
                                 event.currentTarget.blur();
                               }}
@@ -329,7 +334,7 @@
                           </li>
                         {/each}
                         <li class="w-full rounded-none">
-                          <button class="text-nowrap" on:click={() => openModal(product.Id)}>
+                          <button class="text-nowrap" onclick={() => openModal(product.Id)}>
                             {m.project_products_popup_details()}
                           </button>
                         </li>
@@ -398,7 +403,7 @@
             </div>
           {/each}
         {/if}
-        <div class="divider" />
+        <div class="divider"></div>
       </div>
     </div>
     <div class="settingsarea my-4">
@@ -427,7 +432,7 @@
               name="isPublic"
               class="toggle toggle-accent ml-4"
               bind:checked={data.project.IsPublic}
-              on:click={submitSimpleSettingsForm}
+              onclick={submitSimpleSettingsForm}
             />
           </label>
           <label for="allowDownload" class="flex place-content-between">
@@ -445,7 +450,7 @@
               name="allowDownload"
               class="toggle toggle-accent ml-4"
               bind:checked={data.project.AllowDownloads}
-              on:click={submitSimpleSettingsForm}
+              onclick={submitSimpleSettingsForm}
             />
           </label>
         </div>
@@ -471,7 +476,7 @@
                 {data.organizations.find((o) => data.project?.Organization.Id === o.Id)?.Name}
               </span>
             </div>
-            <div class="divider my-2" />
+            <div class="divider my-2"></div>
             <div class="flex flex-col place-content-between px-4 pr-2">
               <span>
                 <IconContainer icon="mdi:user" width="20" />
@@ -504,9 +509,11 @@
                           <button
                             class="text-nowrap"
                             class:font-bold={owner.Id === data.project.Owner.Id}
-                            on:click={() => {
-                              ownerField.value = owner.Id + '';
-                              submitOwnerSettingsForm();
+                            onclick={() => {
+                              if (ownerField) {
+                                ownerField.value = owner.Id + '';
+                                submitOwnerSettingsForm();
+                              }
                             }}
                           >
                             {owner.Name}
@@ -518,7 +525,7 @@
                 </div>
               </span>
             </div>
-            <div class="divider my-2" />
+            <div class="divider my-2"></div>
             <div class="flex flex-col place-content-between px-4 pr-2">
               <span class="grow text-nowrap">
                 <IconContainer icon="mdi:account-group" width={20} />
@@ -551,9 +558,11 @@
                           <button
                             class="text-nowrap"
                             class:font-bold={group.Id === data.project.Group.Id}
-                            on:click={() => {
-                              groupField.value = group.Id + '';
-                              submitOwnerSettingsForm();
+                            onclick={() => {
+                              if (groupField) {
+                                groupField.value = group.Id + '';
+                                submitOwnerSettingsForm();
+                              }
                             }}
                           >
                             {group.Name}

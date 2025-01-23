@@ -11,7 +11,11 @@
   import { superForm } from 'sveltekit-superforms';
   import type { FormResult } from 'sveltekit-superforms';
   import { writable } from 'svelte/store';
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 
   const projects = writable(data.projects);
   const count = writable(data.count);
@@ -37,12 +41,12 @@
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2 pt-4">
-  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
   <form
     method="POST"
     action="?/page"
     use:enhance
-    on:keydown={(event) => {
+    onkeydown={(event) => {
       if (event.key === 'Enter') submit();
     }}
   >
@@ -97,12 +101,12 @@
   {:else}
     <p class="m-8">{m.projectTable_empty()}</p>
   {/if}
-  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
   <form
     method="POST"
     action="?/page"
     use:enhance
-    on:keydown={(event) => {
+    onkeydown={(event) => {
       if (event.key === 'Enter') submit();
     }}
   >

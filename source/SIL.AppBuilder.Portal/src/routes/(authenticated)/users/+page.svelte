@@ -10,7 +10,11 @@
   import type { PageData } from './$types';
   import type { MinifiedUser } from './common';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 
   const users = writable(data.users);
   const count = writable(data.userCount);
@@ -142,7 +146,7 @@
                   type="checkbox"
                   name="active"
                   bind:checked={user.A}
-                  on:change={(e) => {
+                  onchange={(e) => {
                     if (data.session?.user.userId !== user.I) {
                       //@ts-ignore
                       e.currentTarget.parentElement?.requestSubmit();

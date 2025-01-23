@@ -1,14 +1,23 @@
 <script lang="ts">
   import * as m from '$lib/paraglide/messages';
-  export let size: number;
-  export let total: number;
-  export let page: number = 0;
-  export let extraSizeOptions: number[] = [];
+  interface Props {
+    size: number;
+    total: number;
+    page?: number;
+    extraSizeOptions?: number[];
+  }
 
-  $: pageCount = Math.ceil(total / size);
-  $: collapse = pageCount > 6;
-  $: hasPreviousPage = page > 0;
-  $: hasNextPage = page < pageCount - 1;
+  let {
+    size = $bindable(),
+    total,
+    page = $bindable(0),
+    extraSizeOptions = []
+  }: Props = $props();
+
+  let pageCount = $derived(Math.ceil(total / size));
+  let collapse = $derived(pageCount > 6);
+  let hasPreviousPage = $derived(page > 0);
+  let hasNextPage = $derived(page < pageCount - 1);
 
   function index(i: number, page: number): number {
     if (page <= 3) return i + 2;

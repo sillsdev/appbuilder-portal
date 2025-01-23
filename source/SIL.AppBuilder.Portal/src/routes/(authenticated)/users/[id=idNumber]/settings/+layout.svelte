@@ -11,7 +11,12 @@
     { text: m.users_userGroups(), route: 'groups' }
   ];
 
-  export let data: LayoutData;
+  interface Props {
+    data: LayoutData;
+    children?: import('svelte').Snippet;
+  }
+
+  let { data, children }: Props = $props();
   // route permissions are handled for individual subroutes
 </script>
 
@@ -23,9 +28,9 @@
     title={m.users_settingsTitle() + ': ' + data.username}
     menuItems={userSettingsLinks}
   >
-    <slot />
+    {@render children?.()}
   </TabbedMenu>
 {:else}
   <h1>{m.profile_title()}: {data.username}</h1>
-  <slot />
+  {@render children?.()}
 {/if}
