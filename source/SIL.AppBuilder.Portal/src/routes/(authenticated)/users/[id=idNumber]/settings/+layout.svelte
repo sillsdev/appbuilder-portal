@@ -25,7 +25,7 @@
   <TabbedMenu
     routeId="/(authenticated)/users/[id=idNumber]/settings"
     base="{base}/users/{$page.params.id}/settings"
-    title={m.users_settingsTitle() + ': ' + data.username}
+    titleString={m.users_settingsTitle() + ': ' + data.username}
     menuItems={userSettingsLinks}
   >
     {@render children?.()}

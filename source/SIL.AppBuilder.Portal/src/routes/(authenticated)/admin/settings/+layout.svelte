@@ -26,7 +26,7 @@
 <TabbedMenu
   routeId="/(authenticated)/admin/settings"
   base="{base}/admin/settings"
-  title={m.admin_settings_title()}
+  titleString={m.admin_settings_title()}
   menuItems={adminLinks}
 >
   {@render children?.()}
