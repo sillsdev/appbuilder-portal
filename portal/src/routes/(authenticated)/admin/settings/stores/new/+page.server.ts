@@ -20,24 +20,18 @@ export const load = (async ({ url }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  async new({ cookies, request }) {
+  async new({ request }) {
     const form = await superValidate(request, valibot(createSchema));
     if (!form.valid) {
       return fail(400, { form, ok: false, errors: form.errors });
     }
-    try {
-      const { name, description, storeType } = form.data;
-      await DatabaseWrites.stores.create({
-        data: {
-          Name: name,
-          Description: description,
-          StoreTypeId: storeType
-        }
-      });
-      return { ok: true, form };
-    } catch (e) {
-      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
-      throw e;
-    }
+    await DatabaseWrites.stores.create({
+      data: {
+        Name: form.data.name,
+        Description: form.data.description,
+        StoreTypeId: form.data.storeType
+      }
+    });
+    return { ok: true, form };
   }
 } satisfies Actions;
