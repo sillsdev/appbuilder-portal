@@ -37,22 +37,16 @@ export const actions = {
   async default(event) {
     const form = await superValidate(event.request, valibot(infrastructureSchema));
     if (!form.valid) return fail(400, { form, ok: false, errors: form.errors });
-    try {
-      const { id, buildEngineApiAccessToken, buildEngineUrl, useDefaultBuildEngine } = form.data;
-      await DatabaseWrites.organizations.update({
-        where: {
-          Id: id
-        },
-        data: {
-          BuildEngineApiAccessToken: buildEngineApiAccessToken,
-          BuildEngineUrl: buildEngineUrl,
-          UseDefaultBuildEngine: useDefaultBuildEngine
-        }
-      });
-      return { form, ok: true };
-    } catch (e) {
-      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
-      throw e;
-    }
+    await DatabaseWrites.organizations.update({
+      where: {
+        Id: form.data.id
+      },
+      data: {
+        BuildEngineApiAccessToken: form.data.buildEngineApiAccessToken,
+        BuildEngineUrl: form.data.buildEngineUrl,
+        UseDefaultBuildEngine: form.data.useDefaultBuildEngine
+      }
+    });
+    return { form, ok: true };
   }
 } satisfies Actions;

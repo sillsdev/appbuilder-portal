@@ -30,31 +30,17 @@ export const actions = {
     if (!form.valid) {
       return fail(400, { form, ok: false, errors: form.errors });
     }
-    try {
-      const {
-        name,
-        applicationType,
-        workflow,
-        rebuildWorkflow,
-        republishWorkflow,
-        description,
-        properties
-      } = form.data;
-      await DatabaseWrites.productDefinitions.create({
-        data: {
-          Name: name,
-          TypeId: applicationType,
-          WorkflowId: workflow,
-          RebuildWorkflowId: rebuildWorkflow,
-          RepublishWorkflowId: republishWorkflow,
-          Description: description,
-          Properties: properties
-        }
-      });
-      return { ok: true, form };
-    } catch (e) {
-      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
-      throw e;
-    }
+    await DatabaseWrites.productDefinitions.create({
+      data: {
+        Name: form.data.name,
+        TypeId: form.data.applicationType,
+        WorkflowId: form.data.workflow,
+        RebuildWorkflowId: form.data.rebuildWorkflow,
+        RepublishWorkflowId: form.data.republishWorkflow,
+        Description: form.data.description,
+        Properties: form.data.properties
+      }
+    });
+    return { ok: true, form };
   }
 } satisfies Actions;

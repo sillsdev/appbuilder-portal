@@ -53,24 +53,18 @@ export const actions = {
   async default(event) {
     const form = await superValidate(event.request, valibot(editProductsSchema));
     if (!form.valid) return fail(400, { form, ok: false, errors: form.errors });
-    try {
-      const { id, publicByDefault, products } = form.data;
-      await DatabaseWrites.organizationProductDefinitions.updateOrganizationProductDefinitions(
-        id,
-        products.filter((p) => p.enabled).map((p) => p.productId)
-      );
-      await DatabaseWrites.organizations.update({
-        where: {
-          Id: id
-        },
-        data: {
-          PublicByDefault: publicByDefault // TODO: what are we doing with this? Should projects be
-        }
-      });
-      return { ok: true, form };
-    } catch (e) {
-      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
-      throw e;
-    }
+    await DatabaseWrites.organizationProductDefinitions.updateOrganizationProductDefinitions(
+      form.data.id,
+      form.data.products.filter((p) => p.enabled).map((p) => p.productId)
+    );
+    await DatabaseWrites.organizations.update({
+      where: {
+        Id: form.data.id
+      },
+      data: {
+        PublicByDefault: form.data.publicByDefault // TODO: what are we doing with this?
+      }
+    });
+    return { ok: true, form };
   }
 } satisfies Actions;

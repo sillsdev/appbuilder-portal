@@ -92,123 +92,116 @@ export const actions: Actions = {
     });
 
     if (!organization) return error(404);
-    try {
-      const errors: {
-        path: string;
-        messages: string[];
-      }[] = [];
+    const errors: {
+      path: string;
+      messages: string[];
+    }[] = [];
 
-      await Promise.all(
-        form.data.json.Products.map(async (p, i) => {
-          const pdi = (
-            await prisma.productDefinitions.findFirst({
-              where: {
-                Name: p.Name,
-                OrganizationProductDefinitions: {
-                  some: {
-                    OrganizationId: organizationId
-                  }
+    await Promise.all(
+      form.data.json.Products.map(async (p, i) => {
+        const pdi = (
+          await prisma.productDefinitions.findFirst({
+            where: {
+              Name: p.Name,
+              OrganizationProductDefinitions: {
+                some: {
+                  OrganizationId: organizationId
                 }
-              },
-              select: {
-                Id: true
               }
-            })
-          )?.Id;
+            },
+            select: {
+              Id: true
+            }
+          })
+        )?.Id;
 
-          if (pdi === undefined) {
-            // TODO: better errors
-            errors.push({
-              path: `json.Products[${i}].Name`,
-              messages: [
-                `Could not find ProductDefinition: "${p.Name}" for Organization: ${organization.Name}`
-              ]
-            });
-          }
+        if (pdi === undefined) {
+          // TODO: better errors
+          errors.push({
+            path: `json.Products[${i}].Name`,
+            messages: [
+              `Could not find ProductDefinition: "${p.Name}" for Organization: ${organization.Name}`
+            ]
+          });
+        }
 
-          const si = (
-            await prisma.stores.findFirst({
-              where: {
-                Name: p.Store,
-                OrganizationStores: {
-                  some: {
-                    OrganizationId: organizationId
-                  }
+        const si = (
+          await prisma.stores.findFirst({
+            where: {
+              Name: p.Store,
+              OrganizationStores: {
+                some: {
+                  OrganizationId: organizationId
                 }
-              },
-              select: {
-                Id: true
               }
-            })
-          )?.Id;
+            },
+            select: {
+              Id: true
+            }
+          })
+        )?.Id;
 
-          if (si === undefined) {
-            // TODO: better errors
-            errors.push({
-              path: `json.Products[${i}].Store`,
-              messages: [
-                `Could not find Store: "${p.Store}" for Organization: ${organization.Name}`
-              ]
-            });
-          }
+        if (si === undefined) {
+          // TODO: better errors
+          errors.push({
+            path: `json.Products[${i}].Store`,
+            messages: [`Could not find Store: "${p.Store}" for Organization: ${organization.Name}`]
+          });
+        }
+        return {
+          ProductDefinitionId: pdi,
+          StoreId: si
+        };
+      })
+    );
+
+    if (!errors.length) {
+      const imp = await DatabaseWrites.projectImports.create({
+        data: {
+          ImportData: JSON.stringify(form.data.json),
+          TypeId: form.data.type,
+          OwnerId: session.user.userId,
+          GroupId: form.data.group,
+          OrganizationId: organizationId
+        },
+        select: {
+          Id: true
+        }
+      });
+      const projects = await DatabaseWrites.projects.createMany(
+        form.data.json.Projects.map((pj) => {
           return {
-            ProductDefinitionId: pdi,
-            StoreId: si
+            OrganizationId: organizationId,
+            Name: pj.Name,
+            GroupId: form.data.group,
+            OwnerId: session.user.userId,
+            Language: pj.Language,
+            TypeId: form.data.type,
+            Description: pj.Description ?? '',
+            IsPublic: pj.IsPublic,
+            ImportId: imp.Id
           };
         })
       );
 
-      if (!errors.length) {
-        const imp = await DatabaseWrites.projectImports.create({
-          data: {
-            ImportData: JSON.stringify(form.data.json),
-            TypeId: form.data.type,
-            OwnerId: session.user.userId,
-            GroupId: form.data.group,
-            OrganizationId: organizationId
-          },
-          select: {
-            Id: true
-          }
-        });
-        const projects = await DatabaseWrites.projects.createMany(
-          form.data.json.Projects.map((pj) => {
-            return {
-              OrganizationId: organizationId,
-              Name: pj.Name,
-              GroupId: form.data.group,
-              OwnerId: session.user.userId,
-              Language: pj.Language,
-              TypeId: form.data.type,
-              Description: pj.Description ?? '',
-              IsPublic: pj.IsPublic,
-              ImportId: imp.Id
-            };
-          })
+      if (projects) {
+        // Create products
+        await Queues.Miscellaneous.addBulk(
+          projects.map((p) => ({
+            name: `Create Project #${p}`,
+            data: {
+              type: BullMQ.JobType.Project_Create,
+              projectId: p
+            }
+          }))
         );
-
-        if (projects) {
-          // Create products
-          await Queues.Miscellaneous.addBulk(
-            projects.map((p) => ({
-              name: `Create Project #${p}`,
-              data: {
-                type: BullMQ.JobType.Project_Create,
-                projectId: p
-              }
-            }))
-          );
-        }
       }
-
-      if (errors.length) {
-        return fail(400, { form, ok: false, errors });
-      }
-
-      return redirect(302, `/projects/own/${organizationId}`);
-    } catch (e) {
-      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
-      throw e;
     }
+
+    if (errors.length) {
+      return fail(400, { form, ok: false, errors });
+    }
+
+    return redirect(302, `/projects/own/${organizationId}`);
   }
 };
