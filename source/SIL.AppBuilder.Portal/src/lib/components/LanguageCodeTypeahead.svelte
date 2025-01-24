@@ -71,10 +71,14 @@
     return ret.innerHTML;
   }
   let langtagList = langtags;
-  let typeaheadInput: HTMLInputElement;
-  export let langCode: string;
-  export let dropdownClasses: string = '';
-  export let inputClasses: string = '';
+  let typeaheadInput: HTMLInputElement | undefined = $state(undefined);
+  interface Props {
+    langCode: string;
+    dropdownClasses?: string;
+    inputClasses?: string;
+  }
+
+  let { langCode = $bindable(), dropdownClasses = '', inputClasses = '' }: Props = $props();
 
   const dispatch = createEventDispatcher<{
     langCodeSelected: string;
@@ -82,7 +86,7 @@
 </script>
 
 <TypeaheadInput
-  props={{ placeholder: m.project_languageCode() }}
+  inputElProps={{ placeholder: m.project_languageCode() }}
   getList={(search) => fuzzySearch.search(search).slice(0, 5)}
   classes="pr-20 {inputClasses}"
   bind:search={langCode}
@@ -94,43 +98,44 @@
   bind:inputElement={typeaheadInput}
 >
   <!-- This is a convenience option and unnecessary for a11y -->
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <span
-    class="absolute right-4 italic [line-height:3rem]"
-    slot="custom"
-    on:click={() => typeaheadInput.focus()}
-  >
-    {langtagList.find((l) => l.tag === langCode)?.name ?? ''}
-  </span>
-  <div
-    slot="listElement"
-    class="w-96 p-2 border border-b-0 border-neutral listElement cursor-pointer flex flex-row place-content-between bg-base-100"
-    let:item
-  >
-    <!-- Debug -->
-    <!-- <span class="absolute [right:-10rem] bg-black">{item.score}</span> -->
-    <span class="mr-4">
-      {#if item.item.localname}
-        <b>
-          {@html colorValueForKeyMatch(item.item, 'localname', item.matches)}
-        </b>
-        <br />
-        <span class="text-sm">
-          {@html colorValueForKeyMatch(item.item, 'name', item.matches)}
-        </span>
-      {:else}
-        <b>
-          {@html colorValueForKeyMatch(item.item, 'name', item.matches)}
-        </b>
-      {/if}
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  {#snippet custom()}
+    <span
+      class="absolute right-4 italic [line-height:3rem]"
+      onclick={() => typeaheadInput?.focus()}
+    >
+      {langtagList.find((l) => l.tag === langCode)?.name ?? ''}
     </span>
-    <span class="w-16">
-      <span>
-        {@html colorValueForKeyMatch(item.item, 'tag', item.matches)}
+  {/snippet}
+  {#snippet listElement({ item })}
+    <div
+      class="w-96 p-2 border border-b-0 border-neutral listElement cursor-pointer flex flex-row place-content-between bg-base-100"
+    >
+      <!-- Debug -->
+      <!-- <span class="absolute [right:-10rem] bg-black">{item.score}</span> -->
+      <span class="mr-4">
+        {#if item.item.localname}
+          <b>
+            {@html colorValueForKeyMatch(item.item, 'localname', item.matches)}
+          </b>
+          <br />
+          <span class="text-sm">
+            {@html colorValueForKeyMatch(item.item, 'name', item.matches)}
+          </span>
+        {:else}
+          <b>
+            {@html colorValueForKeyMatch(item.item, 'name', item.matches)}
+          </b>
+        {/if}
       </span>
-      <br />
-      <span class="text-base-content text-opacity-75 text-sm">{m.localePicker_code()}</span>
-    </span>
-  </div>
+      <span class="w-16">
+        <span>
+          {@html colorValueForKeyMatch(item.item, 'tag', item.matches)}
+        </span>
+        <br />
+        <span class="text-base-content text-opacity-75 text-sm">{m.localePicker_code()}</span>
+      </span>
+    </div>
+  {/snippet}
 </TypeaheadInput>

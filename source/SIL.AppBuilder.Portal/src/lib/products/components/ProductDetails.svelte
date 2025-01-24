@@ -45,7 +45,7 @@
     return '';
   }
 
-  let detailsModal: HTMLDialogElement = $state();
+  let detailsModal: HTMLDialogElement;
 </script>
 
 <dialog bind:this={detailsModal} id="modal{product.Id}" class="modal">

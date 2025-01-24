@@ -35,7 +35,7 @@
     }
   });
 
-  let reader: FileReader = $state();
+  let reader: FileReader;
 
   // set to null *only* if the file has been parsed *and* there are no errors
   let parseErrors: ReturnType<typeof flatten<typeof importJSONSchema>> | null = $state({});
@@ -143,7 +143,7 @@
           {#each Object.entries(parseErrors.nested) as error}
             <li class="text-red-500">
               <b>{error[0]}:</b>
-              {error[1].join('. ')}
+              {error[1]?.join('. ')}
             </li>
           {/each}
         {/if}

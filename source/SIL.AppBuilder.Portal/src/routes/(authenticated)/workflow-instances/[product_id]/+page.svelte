@@ -7,9 +7,10 @@
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import { Anchor, Node, Svelvet } from 'svelvet';
+  import type { PageData } from './$types';
 
   interface Props {
-    data: any;
+    data: PageData;
   }
 
   let { data }: Props = $props();
