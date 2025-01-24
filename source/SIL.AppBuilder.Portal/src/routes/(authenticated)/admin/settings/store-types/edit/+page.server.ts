@@ -35,26 +35,20 @@ export const load = (async ({ url }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  async edit({ cookies, request }) {
+  async edit({ request }) {
     const form = await superValidate(request, valibot(editSchema));
     if (!form.valid) {
       return fail(400, { form, ok: false, errors: form.errors });
     }
-    try {
-      const { id, name, description } = form.data;
-      await DatabaseWrites.storeTypes.update({
-        where: {
-          Id: id
-        },
-        data: {
-          Name: name,
-          Description: description
-        }
-      });
-      return { ok: true, form };
-    } catch (e) {
-      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
-      throw e;
-    }
+    await DatabaseWrites.storeTypes.update({
+      where: {
+        Id: form.data.id
+      },
+      data: {
+        Name: form.data.name,
+        Description: form.data.description
+      }
+    });
+    return { ok: true, form };
   }
 } satisfies Actions;

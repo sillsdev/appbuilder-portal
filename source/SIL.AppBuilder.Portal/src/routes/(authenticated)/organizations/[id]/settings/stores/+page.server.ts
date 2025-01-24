@@ -49,16 +49,10 @@ export const actions = {
   async default(event) {
     const form = await superValidate(event.request, valibot(editStoresSchema));
     if (!form.valid) return fail(400, { form, ok: false, errors: form.errors });
-    try {
-      const { id, stores } = form.data;
-      await DatabaseWrites.organizationStores.updateOrganizationStores(
-        id,
-        stores.filter((s) => s.enabled).map((s) => s.storeId)
-      );
-      return { ok: true, form };
-    } catch (e) {
-      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
-      throw e;
-    }
+    await DatabaseWrites.organizationStores.updateOrganizationStores(
+      form.data.id,
+      form.data.stores.filter((s) => s.enabled).map((s) => s.storeId)
+    );
+    return { ok: true, form };
   }
 } satisfies Actions;

@@ -35,24 +35,12 @@ export const actions = {
   async addGroup(event) {
     const form = await superValidate(event.request, valibot(addGroupSchema));
     if (!form.valid) return fail(400, { form, ok: false, errors: form.errors });
-    try {
-      const { id, name, abbreviation } = form.data;
-      await DatabaseWrites.groups.createGroup(name, abbreviation, id);
-      return { form, ok: true };
-    } catch (e) {
-      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
-      throw e;
-    }
+    await DatabaseWrites.groups.createGroup(form.data.name, form.data.abbreviation, form.data.id);
+    return { form, ok: true };
   },
   async deleteGroup(event) {
     const form = await superValidate(event.request, valibot(deleteGroupSchema));
     if (!form.valid) return fail(400, { form, ok: false, errors: form.errors });
-    try {
-      const { id } = form.data;
-      return { form, ok: await DatabaseWrites.groups.deleteGroup(id) };
-    } catch (e) {
-      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
-      throw e;
-    }
+    return { form, ok: await DatabaseWrites.groups.deleteGroup(form.data.id) };
   }
 } satisfies Actions;
