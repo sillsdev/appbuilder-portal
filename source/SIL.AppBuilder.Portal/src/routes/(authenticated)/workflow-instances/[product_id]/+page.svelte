@@ -25,7 +25,7 @@
     resetForm: false
   });
 
-  let positions: { [key: string]: Springy.Physics.Vector } = $state(
+  let positions: Record<string, Springy.Physics.Vector> = $state(
     data.machine
       .map((s) => {
         return { key: s.label, value: new Springy.Physics.Vector(0.0, 0.0) };
@@ -35,7 +35,7 @@
           p[c.key] = c.value;
           return p;
         },
-        {} as { [key: string]: Springy.Physics.Vector }
+        {} as Record<string, Springy.Physics.Vector>
       )
   );
 
