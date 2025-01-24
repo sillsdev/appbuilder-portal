@@ -12,6 +12,6 @@
   <!-- <h1 class="pl-7">{m.projects_switcher_dropdown_orgProjects()}</h1> -->
   <OrganizationSelector
     organizations={$page.data.organizations}
-    on:select={(id) => goto($page.url.pathname + '/' + id.detail.id)}
+    onSelect={(id) => goto($page.url.pathname + '/' + id)}
   />
 </div>

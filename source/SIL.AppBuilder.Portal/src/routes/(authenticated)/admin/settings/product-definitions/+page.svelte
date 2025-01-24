@@ -22,7 +22,7 @@
   {#each data.productDefinitions.sort((a, b) => sortByName(a, b, languageTag())) as pD}
     <DataDisplayBox
       editable
-      on:edit={() => goto(base + '/admin/settings/product-definitions/edit?id=' + pD.Id)}
+      onEdit={() => goto(base + '/admin/settings/product-definitions/edit?id=' + pD.Id)}
       title={pD.Name}
       fields={[
         {

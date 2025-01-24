@@ -2,26 +2,32 @@
 @component
 A simple dropdown menu from DaisyUI.
 -->
+<!-- TODO: this component isn't used anywhere... -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  export let cols = 6;
-  const dispatch = createEventDispatcher();
+  interface Props {
+    cols?: number;
+    label?: import('svelte').Snippet;
+    content?: import('svelte').Snippet;
+    onNavEnd?: () => void;
+  }
+
+  let { cols = 6, label, content, onNavEnd }: Props = $props();
 </script>
 
 <div class="dropdown">
   <!-- When .dropdown is focused, .dropdown-content is revealed making this actually interactive -->
-  <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <label tabindex="0" class="btn btn-ghost p-0.5 no-animation flex-nowrap">
-    <slot name="label" />
+    {@render label?.()}
     <div
       role="button"
       tabindex="0"
       class="dropdown-content menu drop-shadow-lg mt-2.5 bg-base-100 z-10"
       class:min-w-[21rem]={cols == 6}
       class:min-w-[17.25rem]={cols == 5}
-      on:blur={() => dispatch('nav-end')}
+      onblur={() => onNavEnd?.()}
     >
-      <slot name="content" />
+      {@render content?.()}
     </div>
   </label>
 </div>

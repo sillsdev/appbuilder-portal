@@ -123,7 +123,8 @@
         ]}
         serverSide={true}
         className="max-h-full"
-        on:sort={(e) => form.update((data) => ({ ...data, sort: e.detail }))}
+        onSort={(field, direction) =>
+          form.update((data) => ({ ...data, sort: { field, direction } }))}
       />
     {:else}
       <p class="m-8">{m.workflowInstances_empty()}</p>

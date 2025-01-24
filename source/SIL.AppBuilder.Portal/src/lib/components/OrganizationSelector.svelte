@@ -1,25 +1,22 @@
 <script lang="ts">
   import type { Prisma } from '@prisma/client';
-  import { createEventDispatcher } from 'svelte';
   interface Props {
     organizations: Prisma.OrganizationsGetPayload<{
-    include: {
-      Owner: true;
-    };
-  }>[];
+      include: {
+        Owner: true;
+      };
+    }>[];
+    onSelect?: (id: number) => void;
   }
 
-  let { organizations }: Props = $props();
-  const dispatch = createEventDispatcher<{
-    select: { id: number };
-  }>();
+  let { organizations, onSelect }: Props = $props();
 </script>
 
 <div class="w-full px-4">
   <table class="w-full">
     <thead>
       <tr class="text-left">
-        <!-- i18n -->
+        <!-- TODO: i18n -->
         <th>Organization</th>
         <th>Owner</th>
         <!-- <th>Projects</th> -->
@@ -29,7 +26,7 @@
       {#each organizations as org}
         <tr
           class="h-16 border-y hover:bg-base-200 cursor-pointer"
-          onclick={() => dispatch('select', { id: org.Id })}
+          onclick={() => onSelect?.(org.Id)}
         >
           <td>
             {#if org.LogoUrl}

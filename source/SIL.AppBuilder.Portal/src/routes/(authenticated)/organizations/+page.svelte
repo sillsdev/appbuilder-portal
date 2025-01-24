@@ -16,6 +16,6 @@
   <h1 class="pl-7">{m.org_settingsTitle()}</h1>
   <OrganizationSelector
     organizations={data.organizations}
-    on:select={({ detail }) => goto($page.url.pathname + '/' + detail.id + '/settings/info')}
+    onSelect={(id) => goto($page.url.pathname + '/' + id + '/settings/info')}
   />
 </div>
