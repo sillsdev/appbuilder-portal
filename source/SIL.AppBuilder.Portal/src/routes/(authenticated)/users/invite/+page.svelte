@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+  import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import GroupsSelector from '../GroupsSelector.svelte';
   import RolesSelector from '../RolesSelector.svelte';
@@ -14,7 +13,7 @@
   }
 
   let { data }: Props = $props();
-  let inputEle: HTMLInputElement = $state();
+  let inputEle: HTMLInputElement;
   const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',
     onUpdated(event) {
@@ -28,7 +27,6 @@
       }
     }
   });
-  let selectedOrg = $state(data.organizations[0].Id);
   let rolesField = $state([
     {
       name: '',
@@ -39,16 +37,22 @@
     {
       name: '',
       groups: $form.groups,
-      id: selectedOrg
+      id: data.organizations[0].Id
     }
   ]);
-  let groupsField[0].id = $derived(selectedOrg);
-  let $form.organizationId = $derived(selectedOrg);
-  run(() => {
-    selectedOrg, (groupsField[0].groups = []);
+  $effect(() => {
+    $form.roles = rolesField[0].roles;
   });
-  let $form.roles = $derived(rolesField[0].roles);
-  let $form.groups = $derived(groupsField[0].groups);
+  $effect(() => {
+    $form.groups = groupsField[0].groups;
+  });
+  $effect(() => {
+    groupsField[0].id = $form.organizationId;
+    groupsField[0].groups = [];
+  });
+  onMount(() => {
+    $form.organizationId = data.organizations[0].Id;
+  });
 </script>
 
 <div class="w-full max-w-6xl mx-auto">
@@ -71,7 +75,7 @@
           <select
             class="select select-bordered w-full"
             name="organizationId"
-            bind:value={selectedOrg}
+            bind:value={$form.organizationId}
           >
             {#each data.organizations.filter( (org) => data.session?.user.roles.find((r) => r[0] === RoleId.SuperAdmin || (r[0] === RoleId.OrgAdmin && r[1] === org.Id)) ) as org}
               <option value={org.Id}>{org.Name}</option>
@@ -80,6 +84,7 @@
         </LabeledFormInput>
       </div>
       <div class="flex flex-col h-full min-w-96">
+        <!-- TODO: i18n -->
         <span class="label-text my-2">Assigned Roles and Groups</span>
         <div class="grow border border-opacity-15 border-gray-50 rounded-lg p-4">
           <div class="flex flex-row space-x-2">

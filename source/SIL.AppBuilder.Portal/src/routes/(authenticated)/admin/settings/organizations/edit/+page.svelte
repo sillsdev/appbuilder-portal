@@ -1,31 +1,30 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import * as m from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
-  import type { ActionData, PageData } from './$types';
+  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
-    form: ActionData;
   }
 
-  let { data, form }: Props = $props();
+  let { data }: Props = $props();
   const {
     form: superFormData,
     enhance,
     allErrors
   } = superForm(data.form, {
-    dataType: 'json'
+    dataType: 'json',
+    onUpdated(event) {
+      if (event.form.valid) {
+        goto('/admin/settings/organizations');
+      }
+    }
   });
 
-  run(() => {
-    if (form?.ok) goto('/admin/settings/organizations');
-  });
   let getStoreInfo = $derived((store: (typeof $superFormData)['stores'][0]) =>
     data.options.stores.find((s) => s.Id === store.storeId));
 </script>

@@ -5,7 +5,7 @@
     organizations: { name: string; roles: RoleId[] }[];
   }
 
-  let { organizations }: Props = $props();
+  let { organizations = $bindable() }: Props = $props();
 </script>
 
 {#each organizations as org}

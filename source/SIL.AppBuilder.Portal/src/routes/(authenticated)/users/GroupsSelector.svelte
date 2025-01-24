@@ -4,7 +4,7 @@
     groups: { id: number; name: string; orgId: number }[];
   }
 
-  let { organizations, groups }: Props = $props();
+  let { organizations = $bindable(), groups }: Props = $props();
 </script>
 
 {#each organizations as org}
