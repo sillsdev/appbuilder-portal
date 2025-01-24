@@ -67,49 +67,31 @@ export const load = (async ({ url }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  async edit({ cookies, request }) {
+  async edit({ request }) {
     const form = await superValidate(request, valibot(editSchema));
     if (!form.valid) {
       return fail(400, { form, ok: false, errors: form.errors });
     }
-    // return { ok: true, form };
-    try {
-      const {
-        id,
-        name,
-        buildEngineAccessToken,
-        buildEngineURL,
-        logoURL,
-        useDefaultBuildEngine,
-        owner,
-        publicByDefault,
-        websiteURL,
-        stores
-      } = form.data;
-      await DatabaseWrites.organizations.update({
-        where: {
-          Id: id
-        },
-        data: {
-          Name: name,
-          BuildEngineApiAccessToken: buildEngineAccessToken,
-          BuildEngineUrl: buildEngineURL,
-          LogoUrl: logoURL,
-          UseDefaultBuildEngine: useDefaultBuildEngine,
-          OwnerId: owner,
-          PublicByDefault: publicByDefault,
-          WebsiteUrl: websiteURL
-        }
-      });
-      await DatabaseWrites.organizationStores.updateOrganizationStores(
-        id,
-        stores.filter((s) => s.enabled).map((s) => s.storeId)
-      );
+    await DatabaseWrites.organizations.update({
+      where: {
+        Id: form.data.id
+      },
+      data: {
+        Name: form.data.name,
+        BuildEngineApiAccessToken: form.data.buildEngineAccessToken,
+        BuildEngineUrl: form.data.buildEngineURL,
+        LogoUrl: form.data.logoURL,
+        OwnerId: form.data.owner,
+        PublicByDefault: form.data.publicByDefault,
+        UseDefaultBuildEngine: form.data.useDefaultBuildEngine,
+        WebsiteUrl: form.data.websiteURL
+      }
+    });
+    await DatabaseWrites.organizationStores.updateOrganizationStores(
+      form.data.id,
+      form.data.stores.filter((s) => s.enabled).map((s) => s.storeId)
+    );
 
-      return { ok: true, form };
-    } catch (e) {
-      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
-      throw e;
-    }
+    return { ok: true, form };
   }
 } satisfies Actions;
