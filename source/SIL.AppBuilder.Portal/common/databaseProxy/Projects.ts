@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client';
 import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
+import { RoleId } from '../public/prisma.js';
 import type { RequirePrimitive } from './utility.js';
 
 /**
@@ -114,11 +115,11 @@ async function validateProjectBase(orgId: number, groupId: number, ownerId: numb
   // and the data was valid already, or PostgreSQL will catch it
   return !!(
     orgId === (await prisma.groups.findUnique({ where: { Id: groupId } }))?.OwnerId &&
-    (await prisma.groupMemberships.findFirst({
+    ((await prisma.groupMemberships.count({
       where: { UserId: ownerId, GroupId: groupId }
     })) &&
-    (await prisma.organizationMemberships.findFirst({
+    (await prisma.organizationMemberships.count({
       where: { UserId: ownerId, OrganizationId: orgId }
-    }))
+    })) || (await prisma.userRoles.count({ where: { RoleId: RoleId.SuperAdmin }})))
   );
 }
