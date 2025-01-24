@@ -10,8 +10,7 @@
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { getRelativeTime } from '$lib/timeUtils';
-  import { sortByName } from '$lib/utils';
-  import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+  import { isAdminForOrg, isSuperAdmin, sortByName } from '$lib/utils';
   import { ProductType } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -343,7 +342,7 @@
                             {m.project_productFiles()}
                           </a>
                         </li>
-                        {#if data.session?.user.roles.find((role) => role[0] === data.project?.Organization.Id && role[1] === RoleId.OrgAdmin)}
+                        {#if isAdminForOrg(data.project?.Organization.Id, data.session?.user.roles)}
                           <li class="w-full rounded-none">
                             <span class="text-nowrap">
                               <!-- TODO: figure out Publishing Properties -->
@@ -351,7 +350,7 @@
                             </span>
                           </li>
                         {/if}
-                        {#if data.session?.user.roles.find((role) => role[1] === RoleId.SuperAdmin) && !!product.WorkflowInstance}
+                        {#if isSuperAdmin(data.session?.user.roles) && !!product.WorkflowInstance}
                           <li class="w-full-rounded-none">
                             <a href="/workflow-instances/{product.Id}">
                               {m.common_workflow()}
