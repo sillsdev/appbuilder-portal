@@ -26,7 +26,7 @@ export function pruneProjects(
       Language,
       Owner: { Name: OwnerName, Id: OwnerId },
       Organization: { Name: OrganizationName },
-      Group: { Name: GroupName },
+      Group: { Name: GroupName, Id: GroupId },
       DateActive,
       DateUpdated,
       DateArchived,
@@ -39,6 +39,7 @@ export function pruneProjects(
       OwnerName,
       OrganizationName,
       GroupName,
+      GroupId,
       DateUpdated,
       DateActive,
       DateArchived,
@@ -106,7 +107,10 @@ export const langtagRegex = new RegExp(
 const projectSchemaBase = v.object({
   Name: v.pipe(v.string(), v.minLength(1)),
   Description: v.optional(v.string()),
-  Language: v.pipe(v.string(), v.regex(langtagRegex, (issue) => `Invalid BCP 47 Language Tag: ${issue.input}`)),
+  Language: v.pipe(
+    v.string(),
+    v.regex(langtagRegex, (issue) => `Invalid BCP 47 Language Tag: ${issue.input}`)
+  ),
   IsPublic: v.boolean()
 });
 
@@ -138,13 +142,32 @@ export const importJSONSchema = v.object({
   )
 });
 
-export function canModifyProject(user: Session, projectOwnerId: number, organizationId: number) {
-  if (projectOwnerId === user.user.userId) return true;
+export function canModifyProject(
+  session: Session | null | undefined,
+  projectOwnerId: number,
+  organizationId: number
+) {
+  if (projectOwnerId === session?.user.userId) return true;
   if (
-    user.user.roles.find(
+    session?.user.roles.find(
       (r) => r[1] === RoleId.SuperAdmin || (r[1] === RoleId.OrgAdmin && r[0] === organizationId)
     )
   )
     return true;
   return false;
+}
+
+export function canClaimProject(
+  session: Session | null | undefined,
+  projectOwnerId: number,
+  organizationId: number,
+  projectGroupId: number,
+  userGroupIds: number[]
+) {
+  if (session?.user.userId === projectOwnerId) return false;
+  if (session?.user.roles.find((r) => r[1] === RoleId.SuperAdmin)) return true;
+  return (
+    canModifyProject(session, projectOwnerId, organizationId) &&
+    userGroupIds.includes(projectGroupId)
+  );
 }

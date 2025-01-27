@@ -115,3 +115,19 @@ export async function verifyCanCreateProject(user: Session, orgId: number) {
     roles.includes(RoleId.SuperAdmin)
   );
 }
+
+export async function userGroupsForOrg(userId: number, orgId: number) {
+  return prisma.groupMemberships.findMany({
+    where: {
+      UserId: userId,
+      Group: {
+        is: {
+          OwnerId: orgId
+        }
+      }
+    },
+    select: {
+      GroupId: true
+    }
+  });
+}

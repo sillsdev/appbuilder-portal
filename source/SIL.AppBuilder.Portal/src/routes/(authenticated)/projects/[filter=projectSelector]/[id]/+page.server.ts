@@ -1,5 +1,10 @@
-import { canModifyProject, projectSearchSchema, pruneProjects } from '$lib/projects/common';
-import { projectFilter } from '$lib/projects/common.server';
+import {
+  canClaimProject,
+  canModifyProject,
+  projectSearchSchema,
+  pruneProjects
+} from '$lib/projects/common';
+import { projectFilter, userGroupsForOrg } from '$lib/projects/common.server';
 import { idSchema } from '$lib/valibot';
 import type { Prisma } from '@prisma/client';
 import { error, redirect, type Actions } from '@sveltejs/kit';
@@ -10,8 +15,17 @@ import * as v from 'valibot';
 import type { PageServerLoad } from './$types';
 
 const bulkProjectOperationSchema = v.object({
-  operation: v.nullable(v.picklist(['archive', 'reactivate'])),
-  projects: v.array(v.object({ Id: idSchema, OwnerId: idSchema, Archived: v.boolean() }))
+  operation: v.nullable(v.picklist(['archive', 'reactivate', 'claim', 'rebuild'])),
+  projects: v.array(
+    v.object({
+      Id: idSchema,
+      OwnerId: idSchema,
+      GroupId: idSchema,
+      DateArchived: v.nullable(v.date())
+    })
+  ),
+  // used to distinguish between single and bulk. will be null if bulk
+  singleId: v.nullable(idSchema)
 });
 
 function whereStatements(
@@ -91,7 +105,8 @@ export const load = (async ({ params, url, locals }) => {
     productDefinitions: await prisma.productDefinitions.findMany(),
     actionForm: await superValidate(valibot(bulkProjectOperationSchema)),
     allowArchive: params.filter !== 'archived',
-    allowReactivate: params.filter === 'all' || params.filter === 'archived'
+    allowReactivate: params.filter === 'all' || params.filter === 'archived',
+    userGroups: (await userGroupsForOrg(userId!, orgId)).map((g) => g.GroupId)
   };
 }) satisfies PageServerLoad;
 
@@ -128,20 +143,23 @@ export const actions: Actions = {
 
     return { form, ok: true, query: { data: pruneProjects(projects), count } };
   },
-  archive: async (event) => {
+  projectAction: async (event) => {
     const session = await event.locals.auth();
     if (!session) return fail(403);
     const orgId = parseInt(event.params.id!);
     if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
 
     const form = await superValidate(event.request, valibot(bulkProjectOperationSchema));
+    console.log(JSON.stringify(form, null, 4));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
-    if (
-      !form.data.projects.reduce((p, c) => p && canModifyProject(session, c.OwnerId, orgId), true)
-    ) {
+    if (!form.data.projects.every((p) => canModifyProject(session, p.OwnerId, orgId))) {
       return fail(403);
     }
 
+    const groups =
+      form.data.operation === 'claim'
+        ? (await userGroupsForOrg(session.user.userId, orgId)).map((g) => g.GroupId)
+        : [];
     await Promise.all(
       form.data.projects.map(async ({ Id }) => {
         const project = await prisma.projects.findUnique({
@@ -150,33 +168,32 @@ export const actions: Actions = {
           },
           select: {
             Id: true,
-            DateArchived: true
+            DateArchived: true,
+            OwnerId: true,
+            GroupId: true
           }
         });
-        if (form.data.operation === 'archive' && !project?.DateArchived) {
-          await DatabaseWrites.projects.update(Id, {
-            DateArchived: new Date()
-          });
-          /*await Queues.UserTasks.add(`Delete UserTasks for Archived Project #${Id}`, {
-            type: BullMQ.JobType.UserTasks_Modify,
-            scope: 'Project',
-            projectId: Id,
-            operation: {
-              type: BullMQ.UserTasks.OpType.Delete
-            }
-          });*/
-        } else if (form.data.operation === 'reactivate' && !!project?.DateArchived) {
-          await DatabaseWrites.projects.update(Id, {
-            DateArchived: null
-          });
-          /*await Queues.UserTasks.add(`Create UserTasks for Reactivated Project #${Id}`, {
-            type: BullMQ.JobType.UserTasks_Modify,
-            scope: 'Project',
-            projectId: Id,
-            operation: {
-              type: BullMQ.UserTasks.OpType.Create
-            }
-          });*/
+        if (project) {
+          if (form.data.operation === 'archive' && !project?.DateArchived) {
+            await DatabaseWrites.projects.update(Id, {
+              DateArchived: new Date()
+            });
+            // TODO: Delete UserTasks for Archived Project?
+          } else if (form.data.operation === 'reactivate' && !!project?.DateArchived) {
+            await DatabaseWrites.projects.update(Id, {
+              DateArchived: null
+            });
+            // TODO: Create UserTasks for Reactivated Project?
+          } else if (
+            form.data.operation === 'claim' &&
+            canClaimProject(session, project?.OwnerId, orgId, project?.GroupId, groups)
+          ) {
+            await DatabaseWrites.projects.update(Id, {
+              OwnerId: session.user.userId
+            });
+          } else if (form.data.operation === 'rebuild') {
+            console.log('Rebuild not implemented');
+          }
         }
       })
     );
