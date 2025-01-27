@@ -7,17 +7,18 @@ import { canModifyProject } from './common';
 export async function verifyCanViewAndEdit(user: Session, projectId: number) {
   // Editing is allowed if the user owns the project, or if the user is an organization
   // admin for the project's organization, or if the user is a super admin
-  const org = await prisma.projects.findUnique({
+  const project = await prisma.projects.findUnique({
     where: {
       Id: projectId
     },
     select: {
       Id: true,
-      OwnerId: true
+      OwnerId: true,
+      OrganizationId: true
     }
   });
-  if (!org) return false;
-  return canModifyProject(user, org.OwnerId, org.Id);
+  if (!project) return false;
+  return canModifyProject(user, project.OwnerId, project.OrganizationId);
 }
 
 export function projectFilter(args: {
