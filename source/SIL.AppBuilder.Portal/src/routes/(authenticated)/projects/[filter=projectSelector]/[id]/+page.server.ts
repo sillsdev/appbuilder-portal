@@ -150,7 +150,6 @@ export const actions: Actions = {
     if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
 
     const form = await superValidate(event.request, valibot(bulkProjectOperationSchema));
-    console.log(JSON.stringify(form, null, 4));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
     if (!form.data.projects.every((p) => canModifyProject(session, p.OwnerId, orgId))) {
       return fail(403);

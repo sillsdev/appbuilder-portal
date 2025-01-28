@@ -89,7 +89,6 @@
     dataType: 'json',
     invalidateAll: true,
     onChange: (event) => {
-      console.log(event);
       if (event.paths.includes('operation') && $actionForm.operation) {
         actionSubmit();
       }
@@ -98,16 +97,15 @@
       }
     },
     onSubmit: ({ jsonData, cancel }) => {
-      console.log(JSON.stringify($actionForm, null, 4));
+      let formData = null;
       if ($actionForm.singleId !== null) {
-        const formData = {
+        formData = {
           ...$actionForm,
           projects: [data.projects.find((p) => p.Id === $actionForm.singleId)]
         };
-        console.log(JSON.stringify(formData, null, 4));
         jsonData(formData);
       }
-      if ($actionForm.projects.length <= 0) {
+      if (!formData && $actionForm.projects.length <= 0) {
         cancel();
       }
     }
@@ -224,17 +222,15 @@
             />
           </span>
           <span slot="actions">
-            <div
-              role="button"
-              class="dropdown dropdown-bottom dropdown-end"
-              tabindex="0"
-              on:click={() => {
-                $actionForm.singleId = project.Id;
-              }}
-            >
-              <div class="btn btn-ghost max-h-fit min-h-fit p-1 inline">
+            <details class="dropdown dropdown-bottom dropdown-end">
+              <summary
+                class="btn btn-ghost max-h-fit min-h-fit p-1 inline"
+                on:click={() => {
+                  $actionForm.singleId = project.Id;
+                }}
+              >
                 <IconContainer icon="charm:menu-kebab" width={20} />
-              </div>
+              </summary>
               <div
                 class="dropdown-content p-1 bg-base-200 z-10 rounded-md min-w-36 w-auto shadow-lg"
               >
@@ -283,7 +279,7 @@
                   </ul>
                 </form>
               </div>
-            </div>
+            </details>
           </span>
         </ProjectCard>
       {/each}
