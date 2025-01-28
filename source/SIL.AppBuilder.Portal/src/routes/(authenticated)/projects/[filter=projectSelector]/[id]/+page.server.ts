@@ -1,32 +1,16 @@
 import {
-  canClaimProject,
+  bulkProjectOperationSchema,
   canModifyProject,
   projectSearchSchema,
   pruneProjects
 } from '$lib/projects/common';
-import { projectFilter, userGroupsForOrg } from '$lib/projects/common.server';
-import { idSchema } from '$lib/valibot';
+import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/common.server';
 import type { Prisma } from '@prisma/client';
 import { error, redirect, type Actions } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import * as v from 'valibot';
 import type { PageServerLoad } from './$types';
-
-const bulkProjectOperationSchema = v.object({
-  operation: v.nullable(v.picklist(['archive', 'reactivate', 'claim', 'rebuild'])),
-  projects: v.array(
-    v.object({
-      Id: idSchema,
-      OwnerId: idSchema,
-      GroupId: idSchema,
-      DateArchived: v.nullable(v.date())
-    })
-  ),
-  // used to distinguish between single and bulk. will be null if bulk
-  singleId: v.nullable(idSchema)
-});
 
 function whereStatements(
   filter: string,
@@ -104,7 +88,8 @@ export const load = (async ({ params, url, locals }) => {
     count: await prisma.projects.count({ where: whereStatements(params.filter, orgId, userId) }),
     productDefinitions: await prisma.productDefinitions.findMany(),
     actionForm: await superValidate(valibot(bulkProjectOperationSchema)),
-    allowArchive: params.filter !== 'archived',
+    /** allow actions other than reactivation */
+    allowActions: params.filter !== 'archived',
     allowReactivate: params.filter === 'all' || params.filter === 'archived',
     userGroups: (await userGroupsForOrg(userId!, orgId)).map((g) => g.GroupId)
   };
@@ -150,8 +135,26 @@ export const actions: Actions = {
     if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
 
     const form = await superValidate(event.request, valibot(bulkProjectOperationSchema));
-    if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
-    if (!form.data.projects.every((p) => canModifyProject(session, p.OwnerId, orgId))) {
+    if (
+      !form.valid ||
+      !form.data.operation ||
+      (!form.data.projects?.length && form.data.projectId === null)
+    )
+      return fail(400, { form, ok: false });
+    // prefer single project over array
+    const projects =
+      form.data.projectId !== null
+        ? [
+            (await prisma.projects.findUnique({
+              where: { Id: form.data.projectId! },
+              select: {
+                Id: true,
+                OwnerId: true
+              }
+            }))!
+        ]
+        : form.data.projects!;
+    if (!projects.every((p) => canModifyProject(session, p.OwnerId, orgId))) {
       return fail(403);
     }
 
@@ -160,7 +163,7 @@ export const actions: Actions = {
         ? (await userGroupsForOrg(session.user.userId, orgId)).map((g) => g.GroupId)
         : [];
     await Promise.all(
-      form.data.projects.map(async ({ Id }) => {
+      projects.map(async ({ Id }) => {
         const project = await prisma.projects.findUnique({
           where: {
             Id: Id
@@ -173,26 +176,7 @@ export const actions: Actions = {
           }
         });
         if (project) {
-          if (form.data.operation === 'archive' && !project?.DateArchived) {
-            await DatabaseWrites.projects.update(Id, {
-              DateArchived: new Date()
-            });
-            // TODO: Delete UserTasks for Archived Project?
-          } else if (form.data.operation === 'reactivate' && !!project?.DateArchived) {
-            await DatabaseWrites.projects.update(Id, {
-              DateArchived: null
-            });
-            // TODO: Create UserTasks for Reactivated Project?
-          } else if (
-            form.data.operation === 'claim' &&
-            canClaimProject(session, project?.OwnerId, orgId, project?.GroupId, groups)
-          ) {
-            await DatabaseWrites.projects.update(Id, {
-              OwnerId: session.user.userId
-            });
-          } else if (form.data.operation === 'rebuild') {
-            console.log('Rebuild not implemented');
-          }
+          await doProjectAction(form.data.operation, project, session, orgId, groups);
         }
       })
     );

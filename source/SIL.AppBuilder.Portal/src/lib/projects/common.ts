@@ -142,6 +142,36 @@ export const importJSONSchema = v.object({
   )
 });
 
+export const projectActionSchema = v.object({
+  operation: v.nullable(v.picklist(['archive', 'reactivate', 'claim', 'rebuild'])),
+  // used to distinguish between single and bulk. will be null if bulk
+  projectId: v.nullable(idSchema)
+});
+
+export const bulkProjectOperationSchema = v.object({
+  ...projectActionSchema.entries,
+  // optional so projectActionSchema is still a valid submission
+  projects: v.optional(
+    v.array(
+      v.object({
+        Id: idSchema,
+        OwnerId: idSchema,
+        GroupId: idSchema,
+        DateArchived: v.nullable(v.date())
+      })
+    )
+  )
+});
+
+export type ProjectActionSchema = typeof projectActionSchema;
+
+export type ProjectForAction = {
+  Id: number;
+  OwnerId: number;
+  GroupId: number;
+  DateArchived: Date | null;
+};
+
 export function canModifyProject(
   session: Session | null | undefined,
   projectOwnerId: number,
@@ -170,4 +200,20 @@ export function canClaimProject(
     canModifyProject(session, projectOwnerId, organizationId) &&
     userGroupIds.includes(projectGroupId)
   );
+}
+
+export function canArchive(
+  project: ProjectForAction,
+  session: Session | null | undefined,
+  orgId: number
+): boolean {
+  return !project.DateArchived && canModifyProject(session, project.OwnerId, orgId);
+}
+
+export function canReactivate(
+  project: ProjectForAction,
+  session: Session | null | undefined,
+  orgId: number
+): boolean {
+  return !!project.DateArchived && canModifyProject(session, project.OwnerId, orgId);
 }

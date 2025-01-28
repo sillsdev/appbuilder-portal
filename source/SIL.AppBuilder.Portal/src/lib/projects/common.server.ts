@@ -1,8 +1,8 @@
 import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import { canModifyProject } from './common';
+import { canClaimProject, canModifyProject, type ProjectForAction } from './common';
 
 export async function verifyCanViewAndEdit(user: Session, projectId: number) {
   // Editing is allowed if the user owns the project, or if the user is an organization
@@ -130,4 +130,33 @@ export async function userGroupsForOrg(userId: number, orgId: number) {
       GroupId: true
     }
   });
+}
+
+export async function doProjectAction(
+  operation: string | null,
+  project: ProjectForAction,
+  session: Session,
+  orgId: number,
+  groups: number[]
+) {
+  if (operation === 'archive' && !project?.DateArchived) {
+    await DatabaseWrites.projects.update(project.Id, {
+      DateArchived: new Date()
+    });
+    // TODO: Delete UserTasks for Archived Project?
+  } else if (operation === 'reactivate' && !!project?.DateArchived) {
+    await DatabaseWrites.projects.update(project.Id, {
+      DateArchived: null
+    });
+    // TODO: Create UserTasks for Reactivated Project?
+  } else if (
+    operation === 'claim' &&
+    canClaimProject(session, project?.OwnerId, orgId, project?.GroupId, groups)
+  ) {
+    await DatabaseWrites.projects.update(project.Id, {
+      OwnerId: session.user.userId
+    });
+  } else if (operation === 'rebuild') {
+    console.log('Rebuild not implemented');
+  }
 }

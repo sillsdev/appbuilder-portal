@@ -1,12 +1,12 @@
 <script lang="ts">
   import { afterNavigate, goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
-  import type { PrunedProject } from '$lib/projects/common';
-  import { canClaimProject, canModifyProject } from '$lib/projects/common';
+  import type { ProjectForAction, PrunedProject } from '$lib/projects/common';
+  import { canArchive, canReactivate } from '$lib/projects/common';
+  import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
   import type { FormResult } from 'sveltekit-superforms';
@@ -15,12 +15,7 @@
 
   export let data: PageData;
 
-  let selectedProjects: {
-    Id: number;
-    OwnerId: number;
-    GroupId: number;
-    DateArchived: Date | null;
-  }[] = [];
+  let selectedProjects: ProjectForAction[] = [];
 
   const {
     form: pageForm,
@@ -51,35 +46,12 @@
     selectedProjects = [];
   });
 
-  function canArchive(project: (typeof selectedProjects)[0]): boolean {
-    return (
-      !project.DateArchived &&
-      canModifyProject($page.data.session, project.OwnerId, parseInt($page.params.id))
-    );
-  }
-
-  function canReactivate(project: (typeof selectedProjects)[0]): boolean {
-    return (
-      !!project.DateArchived &&
-      canModifyProject($page.data.session, project.OwnerId, parseInt($page.params.id))
-    );
-  }
-
-  function canClaimOwnership(project: (typeof selectedProjects)[0]): boolean {
-    return (
-      project.OwnerId !== $page.data.session?.user.userId &&
-      canClaimProject(
-        $page.data.session,
-        project.OwnerId,
-        parseInt($page.params.id),
-        project.GroupId,
-        data.userGroups
-      )
-    );
-  }
-
-  $: canArchiveSelected = selectedProjects.every(canArchive);
-  $: canReactivateSelected = selectedProjects.every(canReactivate);
+  $: canArchiveSelected = selectedProjects.every((p) =>
+    canArchive(p, $page.data.session, parseInt($page.params.id))
+  );
+  $: canReactivateSelected = selectedProjects.every((p) =>
+    canReactivate(p, $page.data.session, parseInt($page.params.id))
+  );
 
   const {
     form: actionForm,
@@ -89,24 +61,11 @@
     dataType: 'json',
     invalidateAll: true,
     onChange: (event) => {
-      if (event.paths.includes('operation') && $actionForm.operation) {
+      if (event.paths.includes('operation') && $actionForm.operation && $actionForm.projects?.length) {
         actionSubmit();
       }
       if (event.paths.includes('projects')) {
-        $actionForm.singleId = null;
-      }
-    },
-    onSubmit: ({ jsonData, cancel }) => {
-      let formData = null;
-      if ($actionForm.singleId !== null) {
-        formData = {
-          ...$actionForm,
-          projects: [data.projects.find((p) => p.Id === $actionForm.singleId)]
-        };
-        jsonData(formData);
-      }
-      if (!formData && $actionForm.projects.length <= 0) {
-        cancel();
+        $actionForm.projectId = null;
       }
     }
   });
@@ -156,8 +115,8 @@
       action="?/projectAction"
       use:actionEnhance
     >
-      <input type="hidden" name="singleId" value={null} />
-      {#if data.allowArchive && (canArchiveSelected || !selectedProjects.length)}
+      <input type="hidden" name="projectId" value={null} />
+      {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
         <label
           class="action btn btn-outline"
           class:btn-disabled={!(canArchiveSelected && selectedProjects.length)}
@@ -187,6 +146,7 @@
           />
         </label>
       {/if}
+      <!-- TODO: can archived projects be rebuilt? -->
       <button
         class="action btn btn-outline"
         disabled={!selectedProjects.length}
@@ -222,64 +182,13 @@
             />
           </span>
           <span slot="actions">
-            <details class="dropdown dropdown-bottom dropdown-end">
-              <summary
-                class="btn btn-ghost max-h-fit min-h-fit p-1 inline"
-                on:click={() => {
-                  $actionForm.singleId = project.Id;
-                }}
-              >
-                <IconContainer icon="charm:menu-kebab" width={20} />
-              </summary>
-              <div
-                class="dropdown-content p-1 bg-base-200 z-10 rounded-md min-w-36 w-auto shadow-lg"
-              >
-                <form method="POST" action="?/projectAction" use:actionEnhance>
-                  <input type="hidden" name="singleId" value={project.Id} />
-                  <ul class="menu menu-compact overflow-hidden rounded-md">
-                    {#if data.allowArchive && canArchive(project)}
-                      <li class="w-full rounded-none">
-                        <label class="text-nowrap">
-                          {m.common_archive()}
-                          <input
-                            class="hidden"
-                            type="radio"
-                            bind:group={$actionForm.operation}
-                            value="archive"
-                          />
-                        </label>
-                      </li>
-                    {/if}
-                    {#if data.allowReactivate && canReactivate(project)}
-                      <li class="w-full rounded-none">
-                        <label class="text-nowrap">
-                          {m.common_reactivate()}
-                          <input
-                            class="hidden"
-                            type="radio"
-                            bind:group={$actionForm.operation}
-                            value="reactivate"
-                          />
-                        </label>
-                      </li>
-                    {/if}
-                    {#if canClaimOwnership(project)}
-                      <li class="w-full rounded-none">
-                        <label class="text-nowrap">
-                          {m.project_claimOwnership()}
-                          <input
-                            class="hidden"
-                            type="radio"
-                            bind:group={$actionForm.operation}
-                            value="claim"
-                          />
-                        </label>
-                      </li>
-                    {/if}
-                  </ul>
-                </form>
-              </div>
-            </details>
+            <ProjectActionMenu
+              data={data.actionForm}
+              {project}
+              allowActions={data.allowActions}
+              allowReactivate={data.allowReactivate}
+              userGroups={data.userGroups}
+            />
           </span>
         </ProjectCard>
       {/each}

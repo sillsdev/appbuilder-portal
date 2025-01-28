@@ -7,6 +7,7 @@
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import langtags from '$lib/langtags.json';
   import * as m from '$lib/paraglide/messages';
+  import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { getRelativeTime } from '$lib/timeUtils';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
   import { superForm } from 'sveltekit-superforms';
@@ -76,18 +77,35 @@
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
-  <a href="/projects/{data.project?.Id}/edit" class="btn btn-primary absolute right-4 top-20">
-    {m.project_editProject()}
-  </a>
-  <h1 class="pl-6">{data.project?.Name}</h1>
-  <span class="ml-4 font-bold">
-    {data.project?.IsPublic ? m.project_public() : m.project_private()}
-  </span>
-  <span>-</span>
-  <span>
-    {m.project_createdOn()}
-    {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
-  </span>
+  <div class="flex p-6">
+    <div class="shrink">
+      <h1 class="p-0">
+        {data.project?.Name}
+      </h1>
+      <span class="font-bold">
+        {data.project?.IsPublic ? m.project_public() : m.project_private()}
+      </span>
+      <span>-</span>
+      <span>
+        {m.project_createdOn()}
+        {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
+      </span>
+    </div>
+    <div class="grow">
+      <div class="tooltip tooltip-bottom" data-tip={m.project_editProject()}>
+        <a href="/projects/{data.project?.Id}/edit" title={m.project_editProject()}>
+          <IconContainer width="24" icon="mdi:pencil" />
+        </a>
+      </div>
+    </div>
+    <div class="shrink">
+      <ProjectActionMenu
+        data={data.actionForm}
+        project={data.project}
+        userGroups={data.userGroups}
+      />
+    </div>
+  </div>
   <div class="grid maingrid w-full p-4 pb-0">
     <div class="mainarea min-w-0">
       <h2 class="pl-0">{m.project_details_title()}</h2>
