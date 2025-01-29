@@ -151,13 +151,19 @@
         </label>
       {/if}
       {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
-        <button
+        <label
           class="action btn btn-outline"
-          disabled={!(canArchiveSelected && selectedProjects.length)}
-          on:click={() => alert('TODO api proxy')}
+          class:btn-disabled={!(canArchiveSelected && selectedProjects.length)}
         >
           {m.common_rebuild()}
-        </button>
+          <input
+            class="hidden"
+            type="radio"
+            bind:group={$actionForm.operation}
+            value="rebuild"
+            disabled={!(canArchiveSelected && selectedProjects.length)}
+          />
+        </label>
       {/if}
     </form>
     {#if $page.params.filter === 'own'}
