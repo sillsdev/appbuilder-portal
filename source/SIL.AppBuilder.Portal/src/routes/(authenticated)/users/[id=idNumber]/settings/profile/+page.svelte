@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
   import * as m from '$lib/paraglide/messages';
@@ -153,7 +153,7 @@
         type="checkbox"
         id="active"
         class="toggle toggle-accent ml-4"
-        disabled={$page.data.session?.user.userId === data.form.data.id}
+        disabled={page.data.session?.user.userId === data.form.data.id}
         bind:checked={$form.active}
       />
     </div>

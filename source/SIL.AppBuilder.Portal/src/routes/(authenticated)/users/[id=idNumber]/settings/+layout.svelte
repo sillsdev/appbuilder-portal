@@ -1,6 +1,6 @@
 <script lang="ts">
   import { base } from '$app/paths';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
   import * as m from '$lib/paraglide/messages';
   import type { LayoutData } from './$types';
@@ -24,7 +24,7 @@
 {#if data.canEdit}
   <TabbedMenu
     routeId="/(authenticated)/users/[id=idNumber]/settings"
-    base="{base}/users/{$page.params.id}/settings"
+    base="{base}/users/{page.params.id}/settings"
     titleString={m.users_settingsTitle() + ': ' + data.username}
     menuItems={userSettingsLinks}
   >

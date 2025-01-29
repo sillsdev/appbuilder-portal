@@ -1,7 +1,7 @@
 <script lang="ts">
   import { dev } from '$app/environment';
   import { base } from '$app/paths';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import LanguageSelector from '$lib/components/LanguageSelector.svelte';
   import { HamburgerIcon } from '$lib/icons';
   import * as m from '$lib/paraglide/messages';
@@ -22,7 +22,7 @@
   }
 
   let orgMenuOpen = false;
-  // $: console.log($page.data);
+  // $: console.log(page.data);
 
   function isActive(currentRoute: string | null, menuRoute: string) {
     return currentRoute?.startsWith(`${base}/(authenticated)${menuRoute}`);
@@ -56,7 +56,7 @@
     <div class="dropdown dropdown-end">
       <div role="button" class="btn btn-ghost m-2 p-2 rounded-xl" tabindex="0">
         <img
-          src={$page.data.session?.user?.image}
+          src={page.data.session?.user?.image}
           alt="User profile"
           referrerpolicy="no-referrer"
           class="h-full rounded-xl"
@@ -65,7 +65,7 @@
       <div class="dropdown-content w-36 z-10 bg-base-200 rounded-md overflow-y-auto">
         <ul class="menu menu-compact gap-1 p-2">
           <li>
-            <a href="/users/{$page.data.session?.user?.userId ?? ''}/settings/profile">
+            <a href="/users/{page.data.session?.user?.userId ?? ''}/settings/profile">
               {m.header_myProfile()}
             </a>
           </li>
@@ -105,7 +105,7 @@
           <li>
             <a
               class="rounded-none"
-              class:active-menu-item={isActive($page.route.id, '/tasks')}
+              class:active-menu-item={isActive(page.route.id, '/tasks')}
               href="{base}/tasks"
               onclick={closeDrawer}
             >
@@ -117,7 +117,7 @@
           <li>
             <a
               class="rounded-none"
-              class:active-menu-item={isUrlActive($page.url.pathname, '/projects/own')}
+              class:active-menu-item={isUrlActive(page.url.pathname, '/projects/own')}
               href="{base}/projects/own"
               onclick={closeDrawer}
             >
@@ -127,18 +127,18 @@
           <li>
             <a
               class="rounded-none"
-              class:active-menu-item={isUrlActive($page.url.pathname, '/projects/organization')}
+              class:active-menu-item={isUrlActive(page.url.pathname, '/projects/organization')}
               href="{base}/projects/organization"
               onclick={closeDrawer}
             >
               {m.sidebar_organizationProjects()}
             </a>
           </li>
-          {#if isAdmin($page.data.session?.user.roles)}
+          {#if isAdmin(page.data.session?.user.roles)}
             <li>
               <a
                 class="rounded-none"
-                class:active-menu-item={isUrlActive($page.url.pathname, '/projects/active')}
+                class:active-menu-item={isUrlActive(page.url.pathname, '/projects/active')}
                 href="{base}/projects/active"
                 onclick={closeDrawer}
               >
@@ -148,7 +148,7 @@
             <li>
               <a
                 class="rounded-none"
-                class:active-menu-item={isActive($page.route.id, '/users')}
+                class:active-menu-item={isActive(page.route.id, '/users')}
                 href="{base}/users"
                 onclick={closeDrawer}
               >
@@ -158,7 +158,7 @@
             <li>
               <a
                 class="rounded-none"
-                class:active-menu-item={isActive($page.route.id, '/organizations')}
+                class:active-menu-item={isActive(page.route.id, '/organizations')}
                 href="{base}/organizations/"
                 onclick={closeDrawer}
               >
@@ -166,11 +166,11 @@
               </a>
             </li>
           {/if}
-          {#if isSuperAdmin($page.data.session?.user.roles)}
+          {#if isSuperAdmin(page.data.session?.user.roles)}
             <li>
               <a
                 class="rounded-none"
-                class:active-menu-item={isActive($page.route.id, '/admin/settings')}
+                class:active-menu-item={isActive(page.route.id, '/admin/settings')}
                 href="{base}/admin/settings/organizations"
                 onclick={closeDrawer}
               >
@@ -189,7 +189,7 @@
             </li>
             <li>
               <a
-                class:active-menu-item={isActive($page.route.id, '/workflow-instances')}
+                class:active-menu-item={isActive(page.route.id, '/workflow-instances')}
                 href="{base}/workflow-instances"
                 onclick={closeDrawer}
               >
@@ -200,7 +200,7 @@
           <li class="menu-item-divider-top menu-item-divider-bottom">
             <a
               class="rounded-none"
-              class:active-menu-item={isActive($page.route.id, '/directory')}
+              class:active-menu-item={isActive(page.route.id, '/directory')}
               href="{base}/directory"
               onclick={closeDrawer}
             >
@@ -210,7 +210,7 @@
           <li>
             <a
               class="rounded-none mt-10"
-              class:active-menu-item={isActive($page.route.id, '/open-source')}
+              class:active-menu-item={isActive(page.route.id, '/open-source')}
               href="{base}/open-source"
               onclick={closeDrawer}
             >

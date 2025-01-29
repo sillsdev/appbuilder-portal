@@ -1,6 +1,6 @@
 <script lang="ts">
   import { base } from '$app/paths';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
   import {
     org_basicTitle,
@@ -21,7 +21,7 @@
 </script>
 
 <TabbedMenu
-  base="{base}/organizations/{$page.params.id}/settings"
+  base="{base}/organizations/{page.params.id}/settings"
   routeId="/(authenticated)/organizations/[id]/settings"
   menuItems={[
     {
