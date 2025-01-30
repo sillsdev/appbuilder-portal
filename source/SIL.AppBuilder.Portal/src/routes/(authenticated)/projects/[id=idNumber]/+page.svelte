@@ -373,7 +373,7 @@
               type="checkbox"
               id="public"
               name="isPublic"
-              class="toggle toggle-info ml-4"
+              class="toggle toggle-accent ml-4"
               bind:checked={data.project.IsPublic}
               on:click={submitSimpleSettingsForm}
             />
@@ -391,7 +391,7 @@
               type="checkbox"
               id="allowDownload"
               name="allowDownload"
-              class="toggle toggle-info ml-4"
+              class="toggle toggle-accent ml-4"
               bind:checked={data.project.AllowDownloads}
               on:click={submitSimpleSettingsForm}
             />

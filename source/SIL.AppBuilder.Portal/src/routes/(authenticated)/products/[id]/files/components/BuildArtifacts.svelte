@@ -49,7 +49,7 @@
 
 <div class="rounded-md border border-slate-400 w-full my-2">
   <div class="bg-neutral p-2 flex flex-row rounded-t-md place-content-between">
-    <span class="font-bold text-lg text-info grow">
+    <span class="font-bold text-lg text-accent grow">
       {versionString(build)}
     </span>
     <span>

@@ -111,7 +111,7 @@
       <input
         type="checkbox"
         id="notifications"
-        class="toggle toggle-info ml-4"
+        class="toggle toggle-accent ml-4"
         bind:checked={$form.notifications}
       />
     </div>
@@ -129,7 +129,7 @@
       <input
         type="checkbox"
         id="public"
-        class="toggle toggle-info ml-4"
+        class="toggle toggle-accent ml-4"
         bind:checked={$form.visible}
       />
     </div>
@@ -144,7 +144,7 @@
       <input
         type="checkbox"
         id="active"
-        class="toggle toggle-info ml-4"
+        class="toggle toggle-accent ml-4"
         disabled={$page.data.session?.user.userId === data.form.data.id}
         bind:checked={$form.active}
       />
