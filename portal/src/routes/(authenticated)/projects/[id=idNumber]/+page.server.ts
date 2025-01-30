@@ -1,4 +1,9 @@
-import { verifyCanViewAndEdit } from '$lib/projects/common.server';
+import { canModifyProject, projectActionSchema } from '$lib/projects/common';
+import {
+  doProjectAction,
+  userGroupsForOrg,
+  verifyCanViewAndEdit
+} from '$lib/projects/common.server';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
@@ -34,7 +39,8 @@ const addProductSchema = v.object({
 // Are we sending too much data?
 // Maybe? I pared it down a bit with `select` instead of `include` - Aidan
 export const load = (async ({ locals, params }) => {
-  if (!verifyCanViewAndEdit((await locals.auth())!, parseInt(params.id))) return error(403);
+  const session = (await locals.auth())!;
+  if (!verifyCanViewAndEdit(session, parseInt(params.id))) return error(403);
   const project = await prisma.projects.findUnique({
     where: {
       Id: parseInt(params.id)
@@ -47,6 +53,7 @@ export const load = (async ({ locals, params }) => {
       IsPublic: true,
       AllowDownloads: true,
       DateCreated: true,
+      DateArchived: true,
       Language: true,
       ApplicationType: {
         select: {
@@ -135,7 +142,7 @@ export const load = (async ({ locals, params }) => {
         }
       }
     }
-  })
+  });
 
   const transitions = await prisma.productTransitions.findMany({
     where: {
@@ -175,28 +182,30 @@ export const load = (async ({ locals, params }) => {
     }
   });
 
-  const productDefinitions = (await prisma.organizationProductDefinitions.findMany({
-    where: {
-      OrganizationId: project.Organization.Id,
-      ProductDefinition: {
-        ApplicationTypes: project.ApplicationType
-      }
-    },
-    select: {
-      ProductDefinition: {
-        select: {
-          Id: true,
-          Name: true,
-          Description: true,
-          Workflow: {
-            select: {
-              StoreTypeId: true
+  const productDefinitions = (
+    await prisma.organizationProductDefinitions.findMany({
+      where: {
+        OrganizationId: project.Organization.Id,
+        ProductDefinition: {
+          ApplicationTypes: project.ApplicationType
+        }
+      },
+      select: {
+        ProductDefinition: {
+          select: {
+            Id: true,
+            Name: true,
+            Description: true,
+            Workflow: {
+              select: {
+                StoreTypeId: true
+              }
             }
           }
         }
       }
-    }
-  })).map((pd) => pd.ProductDefinition);
+    })
+  ).map((pd) => pd.ProductDefinition);
 
   const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
 
@@ -205,6 +214,8 @@ export const load = (async ({ locals, params }) => {
   return {
     project: {
       ...project,
+      OwnerId: project.Owner.Id,
+      GroupId: project.Group.Id,
       Products: project.Products.map((product) => ({
         ...product,
         Transitions: transitions.filter((t) => t.ProductId === product.Id),
@@ -225,7 +236,7 @@ export const load = (async ({ locals, params }) => {
         },
         GroupMemberships: {
           some: {
-            GroupId: project.GroupId
+            GroupId: project.Group.Id
           }
         }
       }
@@ -242,7 +253,11 @@ export const load = (async ({ locals, params }) => {
     deleteReviewerForm: await superValidate(valibot(deleteReviewerSchema)),
     productsToAdd: productDefinitions.filter((pd) => !projectProductDefinitionIds.includes(pd.Id)),
     addProductForm: await superValidate(valibot(addProductSchema)),
-    stores: organization?.OrganizationStores.map((os) => os.Store) ?? []
+    stores: organization?.OrganizationStores.map((os) => os.Store) ?? [],
+    actionForm: await superValidate(valibot(projectActionSchema)),
+    userGroups: (await userGroupsForOrg(session.user.userId, project.Organization.Id)).map(
+      (g) => g.GroupId
+    )
   };
 }) satisfies PageServerLoad;
 
@@ -290,6 +305,17 @@ export const actions = {
       return fail(403);
     const form = await superValidate(event.request, valibot(addProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    const checkRepository = await prisma.projects.findUnique({
+      where: {
+        Id: parseInt(event.params.id)
+      },
+      select: {
+        WorkflowProjectUrl: true
+      }
+    });
+    if (!checkRepository?.WorkflowProjectUrl) {
+      return error(400, 'Project Repository not Yet Initialized');
+    }
     const productId = await DatabaseWrites.products.create({
       ProjectId: parseInt(event.params.id),
       ProductDefinitionId: form.data.productDefinitionId,
@@ -369,5 +395,41 @@ export const actions = {
       OwnerId: form.data.owner
     });
     return { form, ok: success };
+  },
+  async projectAction(event) {
+    const session = await event.locals.auth();
+    if (!session) return fail(403);
+    const orgId = parseInt(event.params.id!);
+    if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
+
+    const form = await superValidate(event.request, valibot(projectActionSchema));
+    if (!form.valid || !form.data.operation || form.data.projectId === null)
+      return fail(400, { form, ok: false });
+    // prefer single project over array
+    const project = await prisma.projects.findUnique({
+      where: { Id: form.data.projectId! },
+      select: {
+        Id: true,
+        DateArchived: true,
+        OwnerId: true,
+        GroupId: true
+      }
+    });
+    if (!project) return fail(404);
+    if (!canModifyProject(session, project.OwnerId, orgId)) {
+      return fail(403);
+    }
+
+    await doProjectAction(
+      form.data.operation,
+      project,
+      session,
+      orgId,
+      form.data.operation === 'claim'
+        ? (await userGroupsForOrg(session.user.userId, orgId)).map((g) => g.GroupId)
+        : []
+    );
+
+    return { form, ok: true };
   }
 } satisfies Actions;
