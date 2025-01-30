@@ -4,6 +4,7 @@
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
+  import { sortByName } from '$lib/utils';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -14,7 +15,7 @@
 </a>
 
 <div class="flex flex-col w-full">
-  {#each data.productDefinitions.sort((a, b) => a.Name?.localeCompare(b.Name ?? '', languageTag()) ?? 0) as pD}
+  {#each data.productDefinitions.sort((a, b) => sortByName(a, b, languageTag())) as pD}
     <DataDisplayBox
       editable
       on:edit={() => goto(base + '/admin/settings/product-definitions/edit?id=' + pD.Id)}
