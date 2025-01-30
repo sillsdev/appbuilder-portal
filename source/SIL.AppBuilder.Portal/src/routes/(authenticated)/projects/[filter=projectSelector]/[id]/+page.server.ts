@@ -142,18 +142,17 @@ export const actions: Actions = {
     )
       return fail(400, { form, ok: false });
     // prefer single project over array
-    const projects =
-      form.data.projectId !== null
-        ? [
-            (await prisma.projects.findUnique({
-              where: { Id: form.data.projectId! },
-              select: {
-                Id: true,
-                OwnerId: true
-              }
-            }))!
-        ]
-        : form.data.projects!;
+    const projects = await prisma.projects.findMany({
+      where: {
+        Id: { in: form.data.projectId !== null ? [form.data.projectId] : form.data.projects }
+      },
+      select: {
+        Id: true,
+        DateArchived: true,
+        OwnerId: true,
+        GroupId: true
+      }
+    });
     if (!projects.every((p) => canModifyProject(session, p.OwnerId, orgId))) {
       return fail(403);
     }
@@ -163,21 +162,8 @@ export const actions: Actions = {
         ? (await userGroupsForOrg(session.user.userId, orgId)).map((g) => g.GroupId)
         : [];
     await Promise.all(
-      projects.map(async ({ Id }) => {
-        const project = await prisma.projects.findUnique({
-          where: {
-            Id: Id
-          },
-          select: {
-            Id: true,
-            DateArchived: true,
-            OwnerId: true,
-            GroupId: true
-          }
-        });
-        if (project) {
-          await doProjectAction(form.data.operation, project, session, orgId, groups);
-        }
+      projects.map(async (project) => {
+        await doProjectAction(form.data.operation, project, session, orgId, groups);
       })
     );
 

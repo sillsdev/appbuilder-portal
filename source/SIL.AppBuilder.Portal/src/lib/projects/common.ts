@@ -151,16 +151,7 @@ export const projectActionSchema = v.object({
 export const bulkProjectOperationSchema = v.object({
   ...projectActionSchema.entries,
   // optional so projectActionSchema is still a valid submission
-  projects: v.optional(
-    v.array(
-      v.object({
-        Id: idSchema,
-        OwnerId: idSchema,
-        GroupId: idSchema,
-        DateArchived: v.nullable(v.date())
-      })
-    )
-  )
+  projects: v.optional(v.array(idSchema))
 });
 
 export type ProjectActionSchema = typeof projectActionSchema;

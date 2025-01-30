@@ -15,8 +15,6 @@
 
   export let data: PageData;
 
-  let selectedProjects: ProjectForAction[] = [];
-
   const {
     form: pageForm,
     enhance: pageEnhance,
@@ -41,18 +39,6 @@
     }
   });
 
-  afterNavigate((navigation) => {
-    $pageForm.organizationId = data.pageForm.data.organizationId;
-    selectedProjects = [];
-  });
-
-  $: canArchiveSelected = selectedProjects.every((p) =>
-    canArchive(p, $page.data.session, parseInt($page.params.id))
-  );
-  $: canReactivateSelected = selectedProjects.every((p) =>
-    canReactivate(p, $page.data.session, parseInt($page.params.id))
-  );
-
   const {
     form: actionForm,
     enhance: actionEnhance,
@@ -74,7 +60,21 @@
     }
   });
 
-  $: $actionForm.projects = selectedProjects;
+  let selectedProjects: ProjectForAction[] = [];
+
+  $: selectedProjects = data.projects.filter((p) => $actionForm.projects?.includes(p.Id));
+
+  afterNavigate((navigation) => {
+    $pageForm.organizationId = data.pageForm.data.organizationId;
+    selectedProjects = [];
+  });
+
+  $: canArchiveSelected = selectedProjects.every((p) =>
+    canArchive(p, $page.data.session, parseInt($page.params.id))
+  );
+  $: canReactivateSelected = selectedProjects.every((p) =>
+    canReactivate(p, $page.data.session, parseInt($page.params.id))
+  );
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
@@ -177,13 +177,8 @@
             <input
               type="checkbox"
               class="mr-2 checkbox checkbox-info"
-              bind:group={selectedProjects}
-              value={{
-                Id: project.Id,
-                OwnerId: project.OwnerId,
-                GroupId: project.GroupId,
-                DateArchived: project.DateArchived
-              }}
+              bind:group={$actionForm.projects}
+              value={project.Id}
             />
           </span>
           <span slot="actions">
