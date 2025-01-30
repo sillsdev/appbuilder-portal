@@ -319,16 +319,18 @@
                   </div>
                 </span>
               </div>
-              <div class="p-2 flex place-content-between">
-                {m.tasks_waiting({
-                  // waiting since EITHER (the last task exists) -> that task's creation time
-                  // OR (there are no tasks for this product) -> the last completed transition's completion time
-                  waitTime: getRelativeTime(
-                    product.UserTasks.slice(-1)[0]?.DateCreated ??
-                      product.PreviousTransition?.DateTransition ??
-                      null
-                  )
-                })}
+              <div class="p-2 flex gap-1">
+                <span class="text-red-500">
+                  {m.tasks_waiting({
+                    // waiting since EITHER (the last task exists) -> that task's creation time
+                    // OR (there are no tasks for this product) -> the last completed transition's completion time
+                    waitTime: getRelativeTime(
+                      product.UserTasks.slice(-1)[0]?.DateCreated ??
+                        product.PreviousTransition?.DateTransition ??
+                        null
+                    )
+                  })}
+                </span>
                 {m.tasks_forNames({
                   allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
                   activityName: product.ActiveTransition?.InitialState ?? ''
