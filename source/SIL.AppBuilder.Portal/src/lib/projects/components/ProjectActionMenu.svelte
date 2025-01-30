@@ -5,7 +5,7 @@
   import type { Infer, SuperValidated } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { ProjectActionSchema, ProjectForAction } from '../common';
-  import { canArchive, canClaimProject, canModifyProject, canReactivate } from '../common';
+  import { canArchive, canClaimProject, canReactivate } from '../common';
 
   export let data: SuperValidated<Infer<ProjectActionSchema>>;
   export let project: ProjectForAction;
@@ -85,8 +85,7 @@
             </label>
           </li>
         {/if}
-        <!-- TODO: can archived projects be rebuilt? -->
-        {#if allowActions && canModifyProject($page.data.session, parseInt($page.params.id), project.OwnerId)}
+        {#if allowActions && canArchive(project, $page.data.session, parseInt($page.params.id))}
           <li class="w-full rounded-none">
             <label class="text-nowrap">
               {m.common_rebuild()}

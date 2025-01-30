@@ -61,7 +61,11 @@
     dataType: 'json',
     invalidateAll: true,
     onChange: (event) => {
-      if (event.paths.includes('operation') && $actionForm.operation && $actionForm.projects?.length) {
+      if (
+        event.paths.includes('operation') &&
+        $actionForm.operation &&
+        $actionForm.projects?.length
+      ) {
         actionSubmit();
       }
       if (event.paths.includes('projects')) {
@@ -146,14 +150,15 @@
           />
         </label>
       {/if}
-      <!-- TODO: can archived projects be rebuilt? -->
-      <button
-        class="action btn btn-outline"
-        disabled={!selectedProjects.length}
-        on:click={() => alert('TODO api proxy')}
-      >
-        {m.common_rebuild()}
-      </button>
+      {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
+        <button
+          class="action btn btn-outline"
+          disabled={!(canArchiveSelected && selectedProjects.length)}
+          on:click={() => alert('TODO api proxy')}
+        >
+          {m.common_rebuild()}
+        </button>
+      {/if}
     </form>
     <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
       <a class="action btn btn-outline" href="/projects/import/{$pageForm.organizationId}">
