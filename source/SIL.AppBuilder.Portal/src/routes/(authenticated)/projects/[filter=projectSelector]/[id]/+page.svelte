@@ -160,14 +160,16 @@
         </button>
       {/if}
     </form>
-    <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
-      <a class="action btn btn-outline" href="/projects/import/{$pageForm.organizationId}">
-        {m.project_importProjects()}
-      </a>
-      <a class="action btn btn-outline" href="/projects/new/{$pageForm.organizationId}">
-        {m.sidebar_addProject()}
-      </a>
-    </div>
+    {#if $page.params.filter === 'own'}
+      <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
+        <a class="action btn btn-outline" href="/projects/import/{$pageForm.organizationId}">
+          {m.project_importProjects()}
+        </a>
+        <a class="action btn btn-outline" href="/projects/new/{$pageForm.organizationId}">
+          {m.sidebar_addProject()}
+        </a>
+      </div>
+    {/if}
   </div>
   {#if data.projects.length > 0}
     <div class="w-full relative p-4">
