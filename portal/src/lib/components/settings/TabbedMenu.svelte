@@ -72,7 +72,7 @@
   </div>
 </div>
 
-<style>
+<style lang="postcss">
   .slidedown {
     position: relative;
   }
@@ -85,5 +85,8 @@
     transition: transform 0.5s;
     position: absolute;
     overflow: hidden;
+  }
+  .active {
+    @apply bg-accent text-accent-content;
   }
 </style>

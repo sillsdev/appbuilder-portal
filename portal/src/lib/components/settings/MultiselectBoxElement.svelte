@@ -7,7 +7,7 @@
 <div class="my-2">
   <label>
     <span class="flex items-center">
-      <input type="checkbox" bind:checked class="checkbox checkbox-info mr-2 mt-2" />
+      <input type="checkbox" bind:checked class="checkbox checkbox-accent mr-2 mt-2" />
       <b>
         {title}
       </b>

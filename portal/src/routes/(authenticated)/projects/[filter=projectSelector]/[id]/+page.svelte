@@ -178,7 +178,7 @@
           <span slot="select">
             <input
               type="checkbox"
-              class="mr-2 checkbox checkbox-info"
+              class="mr-2 checkbox checkbox-accent"
               bind:group={$actionForm.projects}
               value={project.Id}
             />
