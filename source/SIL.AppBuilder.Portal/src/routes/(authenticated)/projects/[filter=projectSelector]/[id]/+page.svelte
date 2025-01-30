@@ -50,7 +50,7 @@
       if (
         event.paths.includes('operation') &&
         $actionForm.operation &&
-        $actionForm.projects?.length
+        $actionForm.projects.length
       ) {
         actionSubmit();
       }
@@ -62,7 +62,7 @@
 
   let selectedProjects: ProjectForAction[] = [];
 
-  $: selectedProjects = data.projects.filter((p) => $actionForm.projects?.includes(p.Id));
+  $: selectedProjects = data.projects.filter((p) => $actionForm.projects.includes(p.Id));
 
   afterNavigate((navigation) => {
     $pageForm.organizationId = data.pageForm.data.organizationId;
