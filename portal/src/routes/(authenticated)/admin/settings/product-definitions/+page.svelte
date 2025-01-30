@@ -22,7 +22,7 @@
       fields={[
         {
           key: 'admin_settings_productDefinitions_type',
-          value: pD.ApplicationTypes.Name
+          value: pD.ApplicationTypes.Name // TODO: this doesn't actually mean anything for the product definition, so we may want to remove this entirely from the UI.
         },
         {
           key: 'admin_settings_productDefinitions_workflow',

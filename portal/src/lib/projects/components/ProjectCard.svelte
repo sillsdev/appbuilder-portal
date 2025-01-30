@@ -1,9 +1,9 @@
 <script lang="ts">
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
   import { getTimeDateString } from '$lib/timeUtils';
   import type { PrunedProject } from '../common';
-  import IconContainer from '$lib/components/IconContainer.svelte';
 
   export let project: PrunedProject;
 </script>
@@ -11,7 +11,7 @@
 <div class="rounded-md bg-base-300 border border-slate-400 my-4 overflow-hidden w-full">
   <div class="p-4 pb-2 w-full">
     <span class="flex flex-row">
-      <slot name="checkbox" />
+      <slot name="select" />
       <a href="/projects/{project.Id}">
         <b class="[color:#55f]">
           {project.Name}
@@ -28,9 +28,7 @@
           {project.Language}
         </span>
       </span>
-
-      <!-- Removed on request from Chris -->
-      <!-- <IconContainer icon="charm:menu-kebab" width={20} class="inline float-right" /> -->
+      <slot name="actions" />
     </span>
     <div class="flex flex-wrap justify-between">
       <div class="mr-2">

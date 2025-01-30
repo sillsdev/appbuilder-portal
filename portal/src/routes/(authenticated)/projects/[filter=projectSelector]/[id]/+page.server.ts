@@ -1,11 +1,16 @@
+import {
+  bulkProjectOperationSchema,
+  canModifyProject,
+  projectSearchSchema,
+  pruneProjects
+} from '$lib/projects/common';
+import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/common.server';
 import type { Prisma } from '@prisma/client';
-import { redirect, error, type Actions } from '@sveltejs/kit';
+import { error, redirect, type Actions } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
-import { projectSearchSchema, pruneProjects } from '$lib/projects/common';
-import { projectFilter } from '$lib/projects/common.server';
-import type { PageServerLoad } from './$types';
-import { superValidate, fail } from 'sveltekit-superforms';
+import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
+import type { PageServerLoad } from './$types';
 
 function whereStatements(
   filter: string,
@@ -14,36 +19,36 @@ function whereStatements(
 ): Prisma.ProjectsWhereInput {
   const selector = filter as 'organization' | 'active' | 'archived' | 'all' | 'own';
   switch (selector) {
-    case 'organization':
-      return {
-        OrganizationId: orgId,
-        DateArchived: null
-      };
-    case 'active':
-      return {
-        OrganizationId: orgId,
-        DateActive: {
-          not: null
-        },
-        DateArchived: null
-      };
-    case 'archived':
-      return {
-        OrganizationId: orgId,
-        DateArchived: {
-          not: null
-        }
-      };
-    case 'all':
-      return {
-        OrganizationId: orgId
-      };
-    case 'own':
-      return {
-        OrganizationId: orgId,
-        OwnerId: userId,
-        DateArchived: null
-      };
+  case 'organization':
+    return {
+      OrganizationId: orgId,
+      DateArchived: null
+    };
+  case 'active':
+    return {
+      OrganizationId: orgId,
+      DateActive: {
+        not: null
+      },
+      DateArchived: null
+    };
+  case 'archived':
+    return {
+      OrganizationId: orgId,
+      DateArchived: {
+        not: null
+      }
+    };
+  case 'all':
+    return {
+      OrganizationId: orgId
+    };
+  case 'own':
+    return {
+      OrganizationId: orgId,
+      OwnerId: userId,
+      DateArchived: null
+    };
   }
 }
 
@@ -70,7 +75,7 @@ export const load = (async ({ params, url, locals }) => {
   });
   return {
     projects: pruneProjects(projects),
-    form: await superValidate(
+    pageForm: await superValidate(
       {
         page: {
           page: 0,
@@ -81,7 +86,12 @@ export const load = (async ({ params, url, locals }) => {
       valibot(projectSearchSchema)
     ),
     count: await prisma.projects.count({ where: whereStatements(params.filter, orgId, userId) }),
-    productDefinitions: await prisma.productDefinitions.findMany()
+    productDefinitions: await prisma.productDefinitions.findMany(),
+    actionForm: await superValidate(valibot(bulkProjectOperationSchema)),
+    /** allow actions other than reactivation */
+    allowActions: params.filter !== 'archived',
+    allowReactivate: params.filter === 'all' || params.filter === 'archived',
+    userGroups: (await userGroupsForOrg(userId!, orgId)).map((g) => g.GroupId)
   };
 }) satisfies PageServerLoad;
 
@@ -117,5 +127,46 @@ export const actions: Actions = {
     const count = await prisma.projects.count({ where: where });
 
     return { form, ok: true, query: { data: pruneProjects(projects), count } };
+  },
+  projectAction: async (event) => {
+    const session = await event.locals.auth();
+    if (!session) return fail(403);
+    const orgId = parseInt(event.params.id!);
+    if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
+
+    const form = await superValidate(event.request, valibot(bulkProjectOperationSchema));
+    if (
+      !form.valid ||
+      !form.data.operation ||
+      (!form.data.projects?.length && form.data.projectId === null)
+    )
+      return fail(400, { form, ok: false });
+    // prefer single project over array
+    const projects = await prisma.projects.findMany({
+      where: {
+        Id: { in: form.data.projectId !== null ? [form.data.projectId] : form.data.projects }
+      },
+      select: {
+        Id: true,
+        DateArchived: true,
+        OwnerId: true,
+        GroupId: true
+      }
+    });
+    if (!projects.every((p) => canModifyProject(session, p.OwnerId, orgId))) {
+      return fail(403);
+    }
+
+    const groups =
+      form.data.operation === 'claim'
+        ? (await userGroupsForOrg(session.user.userId, orgId)).map((g) => g.GroupId)
+        : [];
+    await Promise.all(
+      projects.map(async (project) => {
+        await doProjectAction(form.data.operation, project, session, orgId, groups);
+      })
+    );
+
+    return { form, ok: true };
   }
 };

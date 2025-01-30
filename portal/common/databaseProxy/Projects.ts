@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client';
 import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
+import { RoleId } from '../public/prisma.js';
 import type { RequirePrimitive } from './utility.js';
 
 /**
@@ -30,13 +31,13 @@ export async function create(
   // No additional verification steps
 
   try {
-    await prisma.projects.create({
+    const res = await prisma.projects.create({
       data: projectData
     });
+    return res.Id;
   } catch (e) {
     return false;
   }
-  return true;
 }
 
 export async function update(
@@ -73,9 +74,7 @@ export async function update(
         projectId: id,
         operation: {
           type: BullMQ.UserTasks.OpType.Reassign,
-          userMapping: [
-            { from: existing!.OwnerId, to: ownerId }
-          ]
+          userMapping: [{ from: existing!.OwnerId, to: ownerId }]
         }
       });
     }
@@ -83,6 +82,26 @@ export async function update(
     return false;
   }
   return true;
+}
+
+export async function createMany(projectData: RequirePrimitive<Prisma.ProjectsCreateManyInput>[]) {
+  const valid = (
+    await Promise.all(
+      projectData.map((pd) => validateProjectBase(pd.OrganizationId, pd.GroupId, pd.OwnerId))
+    )
+  ).reduce((p, c) => p && c, true);
+
+  try {
+    if (valid) {
+      return (
+        await prisma.projects.createManyAndReturn({ data: projectData, select: { Id: true } })
+      ).map((p) => p.Id);
+    }
+  } catch (e) {
+    return false;
+  }
+
+  return false;
 }
 
 // async function deleteProject(id: number): Promise<never> {
@@ -94,13 +113,20 @@ async function validateProjectBase(orgId: number, groupId: number, ownerId: numb
   // Each of the criteria for a valid project just needs to checked if
   // the relevant data is supplied. If it isn't, then this is an update
   // and the data was valid already, or PostgreSQL will catch it
-  return (
-    orgId === (await prisma.groups.findUnique({ where: { Id: groupId } }))?.OwnerId &&
-    (await prisma.groupMemberships.findMany({ where: { UserId: ownerId, GroupId: groupId } })) &&
+  return !!(
+    // project group must be owned by project org
     (
-      await prisma.organizationMemberships.findMany({
-        where: { UserId: ownerId, OrganizationId: orgId }
-      })
-    ).length > 0
+      orgId === (await prisma.groups.findUnique({ where: { Id: groupId } }))?.OwnerId &&
+      // owner must be a member of project group
+      (((await prisma.groupMemberships.count({
+        where: { UserId: ownerId, GroupId: groupId }
+      })) &&
+        // owner must be a member of project org
+        (await prisma.organizationMemberships.count({
+          where: { UserId: ownerId, OrganizationId: orgId }
+        }))) ||
+        // disregard owner restrictions if owner is Super Admin
+        (await prisma.userRoles.count({ where: { RoleId: RoleId.SuperAdmin } })))
+    )
   );
 }

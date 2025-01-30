@@ -9,6 +9,31 @@ export async function request(
 ) {
   try {
     const { url, token } = auth.type === 'query' ? await getURLandToken(auth.organizationId) : auth;
+    const check = await prisma.systemStatuses.findFirst({
+      where: {
+        BuildEngineUrl: url,
+        BuildEngineApiAccessToken: token
+      },
+      select: {
+        SystemAvailable: true
+      }
+    });
+    if (!check?.SystemAvailable) {
+      return new Response(
+        JSON.stringify({
+          responseType: 'error',
+          name: '',
+          status: 500,
+          code: 500,
+          message: `System ${url} unavailable`,
+          type: ''
+        } as Types.ErrorResponse),
+        {
+          status: 500,
+          statusText: 'Internal Server Error'
+        }
+      );
+    }
     return await fetch(`${url}/${resource}`, {
       method: method,
       headers: {

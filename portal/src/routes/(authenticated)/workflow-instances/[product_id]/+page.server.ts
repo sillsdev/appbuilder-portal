@@ -108,6 +108,7 @@ export const actions = {
 
     if (!flow) return fail(404, { form, ok: false });
 
+    // TODO: What if the parent project is archived? This will create user tasks, which we probably don't want.
     flow.send({
       type: WorkflowAction.Jump,
       target: form.data.state as WorkflowState,
