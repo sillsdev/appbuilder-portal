@@ -22,8 +22,8 @@ export default {
           'accent-focus': '#387ed0',
           'accent-content': '#ffffff',
 
-          neutral: '#e3e3e3',
-          'neutral-focus': '#d1d1d1',
+          neutral: '#f3f3f3',
+          'neutral-focus': '#e1e1e1',
           'neutral-content': '#1e2734',
 
           'base-100': '#ffffff',
