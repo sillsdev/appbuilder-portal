@@ -13,3 +13,11 @@ export function bytesToHumanSize(bytes: bigint | null) {
     return bytes + ' bytes';
   }
 }
+
+interface NamedEntity {
+  Name: string | null;
+}
+
+export function sortByName(a: NamedEntity, b: NamedEntity, languageTag: string): number {
+  return a.Name?.localeCompare(b.Name ?? '', languageTag) ?? 0;
+}
