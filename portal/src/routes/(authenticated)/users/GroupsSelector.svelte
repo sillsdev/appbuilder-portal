@@ -11,7 +11,7 @@
         <div class="flex space-x-2">
           <input
             type="checkbox"
-            class="toggle toggle-info"
+            class="toggle toggle-accent"
             value={group.id}
             bind:group={org.groups}
           />

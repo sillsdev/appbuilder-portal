@@ -8,7 +8,7 @@
   export let project: PrunedProject;
 </script>
 
-<div class="rounded-md bg-base-300 border border-slate-400 my-4 overflow-hidden w-full">
+<div class="rounded-md bg-neutral border border-slate-400 my-4 overflow-hidden w-full">
   <div class="p-4 pb-2 w-full">
     <span class="flex flex-row">
       <slot name="select" />

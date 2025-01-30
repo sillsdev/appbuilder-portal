@@ -2,10 +2,10 @@
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { superForm } from 'sveltekit-superforms';
-  import type { ActionData, PageData } from './$types';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
+  import { superForm } from 'sveltekit-superforms';
   import { businessFlows } from '../common';
+  import type { ActionData, PageData } from './$types';
 
   export let data: PageData;
   export let form: ActionData;
@@ -149,7 +149,7 @@
         </div>
         <input
           name="enabled"
-          class="toggle toggle-info"
+          class="toggle toggle-accent"
           type="checkbox"
           bind:checked={$superFormData.enabled}
         />

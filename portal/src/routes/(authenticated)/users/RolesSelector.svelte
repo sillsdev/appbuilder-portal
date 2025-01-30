@@ -11,7 +11,7 @@
       <div class="flex space-x-2">
         <input
           type="checkbox"
-          class="toggle toggle-info"
+          class="toggle toggle-accent"
           value={RoleId.AppBuilder}
           bind:group={org.roles}
         />
@@ -20,7 +20,7 @@
       <div class="flex space-x-2">
         <input
           type="checkbox"
-          class="toggle toggle-info"
+          class="toggle toggle-accent"
           value={RoleId.Author}
           bind:group={org.roles}
         />
@@ -29,7 +29,7 @@
       <div class="flex space-x-2">
         <input
           type="checkbox"
-          class="toggle toggle-info"
+          class="toggle toggle-accent"
           value={RoleId.OrgAdmin}
           bind:group={org.roles}
         />
