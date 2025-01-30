@@ -275,7 +275,7 @@
     @apply pl-10 list-decimal;
   }
   #instructions :global(h3) {
-    @apply text-info;
+    @apply text-accent;
   }
   #instructions :global(a) {
     @apply link;

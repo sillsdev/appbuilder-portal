@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { Node, Svelvet, Anchor } from 'svelvet';
+  import IconContainer from '$lib/components/IconContainer.svelte';
+  import ProductDetails from '$lib/components/ProductDetails.svelte';
+  import * as m from '$lib/paraglide/messages';
   import { Springy } from '$lib/springyGraph.js';
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
-  import * as m from '$lib/paraglide/messages';
-  import IconContainer from '$lib/components/IconContainer.svelte';
-  import ProductDetails from '$lib/components/ProductDetails.svelte';
+  import { Anchor, Node, Svelvet } from 'svelvet';
 
   export let data;
 
