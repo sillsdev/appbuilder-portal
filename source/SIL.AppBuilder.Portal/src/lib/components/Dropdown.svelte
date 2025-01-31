@@ -1,34 +1,41 @@
 <!--
 @component
 A simple dropdown menu from DaisyUI.
+
 -->
-<!-- TODO: this component isn't used anywhere... -->
 <script lang="ts">
   import type { Snippet } from 'svelte';
   interface Props {
-    cols?: number;
-    label?: Snippet;
-    content?: Snippet;
-    onNavEnd?: () => void;
+    /** class="dropdown ..." */
+    dropdownClasses?: string;
+    /** class="btn btn-ghost ..." */
+    labelClasses?: string;
+    /** class="dropdown-content z-10 drop-shadow-lg rounded-md bg-base-200 ..." */
+    contentClasses?: string;
+    label: Snippet;
+    content: Snippet;
+    onclick?: () => void;
+    open?: boolean;
   }
 
-  let { cols = 6, label, content, onNavEnd }: Props = $props();
+  let {
+    dropdownClasses = '',
+    labelClasses = '',
+    contentClasses = '',
+    label,
+    content,
+    onclick,
+    open = $bindable(false)
+  }: Props = $props();
 </script>
 
-<div class="dropdown">
-  <!-- When .dropdown is focused, .dropdown-content is revealed making this actually interactive -->
-  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-  <label tabindex="0" class="btn btn-ghost p-0.5 no-animation flex-nowrap">
-    {@render label?.()}
-    <div
-      role="button"
-      tabindex="0"
-      class="dropdown-content menu drop-shadow-lg mt-2.5 bg-base-100 z-10"
-      class:min-w-[21rem]={cols == 6}
-      class:min-w-[17.25rem]={cols == 5}
-      onblur={() => onNavEnd?.()}
-    >
-      {@render content?.()}
-    </div>
-  </label>
-</div>
+<svelte:window onclick={() => (open = false)} />
+
+<details class="dropdown {dropdownClasses}" bind:open>
+  <summary class="btn btn-ghost {labelClasses}" onclick={() => onclick?.()}>
+    {@render label()}
+  </summary>
+  <div class="dropdown-content z-10 drop-shadow-lg rounded-md bg-base-200 {contentClasses}">
+    {@render content()}
+  </div>
+</details>

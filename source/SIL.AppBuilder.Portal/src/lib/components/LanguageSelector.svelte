@@ -2,34 +2,35 @@
   import { LanguageIcon } from '$lib/icons';
   import { getLocale, locales, setLocale } from '$lib/paraglide/runtime';
   import Icon from '@iconify/svelte';
+  import Dropdown from './Dropdown.svelte';
 </script>
 
 {#key getLocale()}
-  <div class="dropdown dropdown-end">
-    <div
-      role="button"
-      class="btn btn-ghost m-2 p-2 rounded-xl items-middle justify-center flex-nowrap"
-      tabindex="0"
-    >
+  <Dropdown
+    dropdownClasses="dropdown-end"
+    labelClasses="m-2 p-2 rounded-xl items-middle justify-center flex-nowrap"
+    contentClasses="overflow-y-auto"
+  >
+    {#snippet label()}
       <LanguageIcon color="white" />
-    </div>
-    <div class="dropdown-content z-10 bg-base-200 w-48 rounded-md overflow-y-auto">
-      <ul class="menu menu-compact gap-1 p-2" tabindex="-1">
-        {#each locales as lang}
+    {/snippet}
+    {#snippet content()}
+      <ul class="menu menu-compact gap-1 p-2">
+        {#each locales as locale}
           <li>
             <div
-              class="btn flex {lang === getLocale() ? 'active' : 'inactive'}"
-              onclick={() => setLocale(lang)}
-              onkeypress={() => setLocale(lang)}
+              class="btn flex flex-nowrap {locale === getLocale() ? 'active' : 'inactive'}"
+              onclick={() => setLocale(locale)}
+              onkeypress={() => setLocale(locale)}
               role="button"
               tabindex="0"
             >
-              <Icon icon="circle-flags:{lang.split('-')[0]}" color="white" width="24" />
-              {lang.split('-')[0]}
+              <Icon icon="circle-flags:{locale.split('-')[0]}" color="white" width="24" />
+              {locale.split('-')[0]}
             </div>
           </li>
         {/each}
       </ul>
-    </div>
-  </div>
+    {/snippet}
+  </Dropdown>
 {/key}

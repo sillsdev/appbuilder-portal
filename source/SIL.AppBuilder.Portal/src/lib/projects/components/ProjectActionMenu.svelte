@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import type { ProjectActionSchema, ProjectForAction } from '$lib/projects';
@@ -45,27 +46,21 @@
       canClaimProject(page.data.session, project.OwnerId, orgId, project.GroupId, userGroups)
     );
   }
-
-  let dropdownOpen: boolean = $state(false);
-
-  function close() {
-    dropdownOpen = false;
-  }
 </script>
 
-<svelte:window onclick={() => close()} />
-
-<details class="dropdown dropdown-bottom dropdown-end" bind:open={dropdownOpen}>
-  <summary
-    class="btn btn-ghost max-h-fit min-h-fit p-1 inline"
-    onclick={() => {
-      $form.projectId = project.Id;
-      $form.orgId = orgId;
-    }}
-  >
+<Dropdown
+  dropdownClasses="dropdown-bottom dropdown-end"
+  labelClasses="max-h-fit min-h-fit p-1 inline"
+  contentClasses="p-1 min-w-36 w-auto"
+  onclick={() => {
+    $form.projectId = project.Id;
+    $form.orgId = orgId;
+  }}
+>
+  {#snippet label()}
     <IconContainer icon="charm:menu-kebab" width={20} />
-  </summary>
-  <div class="dropdown-content p-1 bg-base-200 z-10 rounded-md min-w-36 w-auto shadow-lg">
+  {/snippet}
+  {#snippet content()}
     <form method="POST" action="?/{endpoint}" use:enhance>
       <input type="hidden" name="projectId" value={project.Id} />
       <input type="hidden" name="orgId" value={orgId} />
@@ -96,5 +91,5 @@
         {/if}
       </ul>
     </form>
-  </div>
-</details>
+  {/snippet}
+</Dropdown>
