@@ -11,6 +11,7 @@
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import Tooltip from '$lib/components/Tooltip.svelte';
 
   interface Props {
     data: PageData;
@@ -86,6 +87,7 @@
   </form>
   <div class="m-4 relative mt-1 w-full overflow-x-auto">
     {#if instances.length > 0}
+      {@const langTag = languageTag()}
       <SortTable
         data={instances}
         columns={[
@@ -93,45 +95,58 @@
             // This will not sort by locale... need a good solution...
             id: 'organization',
             header: m.project_side_organization(),
-            data: (i) => i.Product.Project.Organization,
-            render: (o) => `<a class="link" href="/projects/organization/${o.Id}">${o.Name}</a>`,
-            sortable: true
+            compare: () => 0
           },
           {
             id: 'project',
             header: m.project_title(),
-            data: (i) => i.Product.Project,
-            render: (c) => `<a class="link" href="/projects/${c.Id}">${c.Name}</a>`,
-            sortable: true
+            compare: () => 0
           },
           {
-            id: 'product',
+            id: 'definition',
             header: m.tasks_product(),
-            data: (i) => i.Product,
-            render: (c) =>
-              `<a class="link" href="/workflow-instances/${c.Id}">${c.ProductDefinition.Name}</a>`,
-            sortable: true
+            compare: () => 0
           },
           {
             id: 'state',
             header: m.project_products_transitions_state(),
-            data: (i) => i.State,
-            sortable: true
+            compare: () => 0
           },
           {
             id: 'date',
             header: m.common_updated(),
-            data: (i) => i.DateUpdated,
-            // TODO: tooltip will need to wait until Svelte 5
-            render: (c) => `${getRelativeTime(c)}`,
-            sortable: true
+            compare: () => 0
           }
         ]}
         serverSide={true}
-        className="max-h-full"
+        class="max-h-full"
         onSort={(field, direction) =>
           form.update((data) => ({ ...data, sort: { field, direction } }))}
-      />
+      >
+        {#snippet row(r: (typeof instances)[0])}
+          <tr class="cursor-pointer hover:bg-neutral">
+            <td class="border">
+              <a class="link" href="/projects/organization/{r.Product.Project.Organization.Id}">
+                {r.Product.Project.Organization.Name}
+              </a>
+            </td>
+            <td class="border">
+              <a class="link" href="/projects/{r.Product.Project.Id}">{r.Product.Project.Name}</a>
+            </td>
+            <td class="border">
+              <a class="link" href="/workflow-instances/{r.Product.Id}">
+                {r.Product.ProductDefinition.Name}
+              </a>
+            </td>
+            <td class="border">{r.State}</td>
+            <td class="border">
+              <Tooltip className="text-left" tip={r.DateUpdated?.toLocaleString(langTag)}>
+                {getRelativeTime(r.DateUpdated)}
+              </Tooltip>
+            </td>
+          </tr>
+        {/snippet}
+      </SortTable>
     {:else}
       <p class="m-8">{m.workflowInstances_empty()}</p>
     {/if}

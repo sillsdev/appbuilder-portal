@@ -2,7 +2,8 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { bytesToHumanSize } from '$lib/utils';
+  import { languageTag } from '$lib/paraglide/runtime';
+  import { byName, byNumber, byString, bytesToHumanSize } from '$lib/utils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { instructions } from './instructions';
@@ -217,59 +218,83 @@
     </div>
   {/if}
   {#if data?.files?.length}
+    {@const langTag = languageTag()}
     <h3>{m.products_files_title()}</h3>
     <div class="w-full overflow-x-auto">
       <SortTable
-        className="max-h-96"
+        class="max-h-96"
         data={data.files}
         columns={[
           {
             id: 'artifactType',
             header: m.project_type(),
-            data: (f) => f.ArtifactType,
-            sortable: true
+            compare: (a, b) => byString(a.ArtifactType, b.ArtifactType, langTag)
           },
           {
             id: 'fileSize',
             header: m.project_products_size(),
-            data: (f) => f.FileSize,
-            render: (s) => bytesToHumanSize(s),
-            sortable: true
+            compare: (a, b) => byNumber(a.FileSize, b.FileSize)
           },
           {
             id: 'url',
-            header: m.tasks_files_link(),
-            data: (f) => f.Url,
-            render: (u) => `<a class="link" href="${u}" target="_blank">${u}</a>`
+            header: m.tasks_files_link()
           }
         ]}
-        onRowClick={(data) => {
-          window.open(data.Url, '_blank')?.focus();
-        }}
-      />
+      >
+        {#snippet row(r: (typeof data.files)[0])}
+          <tr
+            class="cursor-pointer hover:bg-neutral"
+            onclick={() => {
+              if (r.Url) {
+                window.open(r.Url, '_blank')?.focus();
+              }
+            }}
+          >
+            <td class="border">
+              {r.ArtifactType}
+            </td>
+            <td class="border">
+              {bytesToHumanSize(r.FileSize)}
+            </td>
+            <td class="border">
+              <a class="link" href={r.Url} target="_blank">{r.Url}</a>
+            </td>
+          </tr>
+        {/snippet}
+      </SortTable>
     </div>
   {/if}
   {#if data?.reviewers?.length}
+    {@const langTag = languageTag()}
     <h3>{m.project_side_reviewers_title()}</h3>
     <div class="w-full overflow-x-auto">
       <SortTable
-        className="max-h-96"
+        class="max-h-96"
         data={data.reviewers}
         columns={[
           {
             id: 'name',
             header: m.common_name(),
-            data: (r) => r.Name,
-            sortable: true
+            compare: (a, b) => byName(a, b, langTag)
           },
           {
             id: 'email',
             header: m.profile_email(),
-            data: (r) => r.Email,
-            sortable: true
+            compare: (a, b) => byString(a.Email, b.Email, langTag)
           }
         ]}
-      />
+      >
+        {#snippet row(r: (typeof data.reviewers)[0])}
+          <tr class="cursor-pointer hover:bg-neutral">
+            <td class="border">
+              {r.Name}
+            </td>
+            <td class="border">
+              {r.Email}
+            </td>
+          </tr>
+        {/snippet}
+      </SortTable>
     </div>
   {/if}
 </div>
