@@ -9,14 +9,17 @@
     data: T[];
     /** Definition of the columns for the table */
     columns: {
-      /** Internal id, used for determining which column is being sorted */
+      /** Internal id, used for determining which column is being sorted. Also dispatched to `onSort` */
       id: string;
       /** User-facing string for column headers */
       header: string;
-      /** Accessor method to get the desired data, will not sort a field if this is undefined */
+      /** comparison function. Will not sort a field if this is undefined, even if `serverSide` is `true`.
+       * 
+       * If `serverSide` is `true`, just use a dummy function like `() => 0`
+       */
       compare?: (a: T, b: T) => number;
     }[];
-    class: string;
+    class?: string;
     /** If this is true, will defer sorting to the server instead */
     serverSide?: boolean;
     onSort?: (field: string, direction: 'asc' | 'desc') => void;
