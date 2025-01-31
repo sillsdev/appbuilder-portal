@@ -52,7 +52,17 @@ export function isAdmin(roles?: [number, number][]): boolean {
 export function isSuperAdmin(roles?: [number, number][]): boolean {
   return !!roles?.find((r) => r[0] === RoleId.SuperAdmin);
 }
+/** returns true if user has specified role in specified org
+ * 
+ * IS NOT SHORT-CIRCUITED by SuperAdmin
+ * @param roles [RoleId, OrganizationId][]
+ */
+export function hasRoleForOrg(role: RoleId, orgId: number, roles?: [number, number][]): boolean {
+  return !!roles?.find((r) => r[0] === role && r[1] === orgId);
+}
 /** returns a list of organizations where the user has the specified role 
+ * 
+ * IS NOT SHORT-CIRCUITED by SuperAdmin
  * @param roles [RoleId, OrganizationId][]
 */
 export function orgsForRole(role: RoleId, roles?: [number, number][]): number[] {

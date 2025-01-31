@@ -1,4 +1,4 @@
-import { isAdminForOrg } from '$lib/utils';
+import { hasRoleForOrg, isAdminForOrg } from '$lib/utils';
 import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
@@ -109,7 +109,7 @@ export async function verifyCanCreateProject(user: Session, orgId: number) {
   // Creating a project is allowed if the user is an OrgAdmin or AppBuilder for the organization or a SuperAdmin
   return (
     isAdminForOrg(orgId, user.user.roles) ||
-    !!user.user.roles.find(([org, role]) => org === orgId && role === RoleId.AppBuilder)
+    hasRoleForOrg(RoleId.AppBuilder, orgId, user.user.roles)
   );
 }
 
