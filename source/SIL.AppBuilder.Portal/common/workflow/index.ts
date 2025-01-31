@@ -281,7 +281,7 @@ export class Workflow {
           where: { Id: this.productId },
           select: { ProjectId: true }
         });
-        await DatabaseWrites.workflowInstances.delete(this.productId, product.ProjectId);
+        await DatabaseWrites.workflowInstances.delete(this.productId, product!.ProjectId);
       } else {
         await this.createSnapshot(xSnap.context);
         // This will also create the dummy entries in the ProductTransitions table
@@ -327,10 +327,10 @@ export class Workflow {
         Context: JSON.stringify(context),
         WorkflowDefinitionId:
           context.workflowType === WorkflowType.Rebuild
-            ? prodDefinition.RebuildWorkflowId
+            ? prodDefinition.RebuildWorkflowId!
             : context.workflowType === WorkflowType.Republish
-              ? prodDefinition.RepublishWorkflowId
-              : prodDefinition.WorkflowId
+              ? prodDefinition.RepublishWorkflowId!
+              : prodDefinition.WorkflowId!
       },
       update: {
         State: Workflow.stateName(this.currentState!),
