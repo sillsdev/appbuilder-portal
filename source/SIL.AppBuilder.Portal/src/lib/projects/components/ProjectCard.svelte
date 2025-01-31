@@ -5,7 +5,7 @@
   import { languageTag } from '$lib/paraglide/runtime';
   import { byString } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
-  import type { PrunedProject } from '../common';
+  import type { PrunedProject } from '..';
 
   interface Props {
     project: PrunedProject;

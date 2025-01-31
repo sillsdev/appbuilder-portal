@@ -5,8 +5,8 @@ import {
   canModifyProject,
   projectSearchSchema,
   pruneProjects
-} from '$lib/projects/common';
-import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/common.server';
+} from '$lib/projects';
+import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/server';
 import type { Prisma } from '@prisma/client';
 import { error, redirect, type Actions } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';

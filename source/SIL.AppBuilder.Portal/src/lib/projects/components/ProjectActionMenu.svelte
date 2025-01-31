@@ -4,8 +4,8 @@
   import * as m from '$lib/paraglide/messages';
   import type { Infer, SuperValidated } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
-  import type { ProjectActionSchema, ProjectForAction } from '../common';
-  import { canArchive, canClaimProject, canReactivate } from '../common';
+  import type { ProjectActionSchema, ProjectForAction } from '..';
+  import { canArchive, canClaimProject, canReactivate } from '..';
 
   interface Props {
     data: SuperValidated<Infer<ProjectActionSchema>>;

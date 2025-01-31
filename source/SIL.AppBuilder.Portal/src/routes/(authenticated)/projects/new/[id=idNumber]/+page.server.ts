@@ -1,5 +1,5 @@
-import { projectCreateSchema } from '$lib/projects/common';
-import { verifyCanCreateProject } from '$lib/projects/common.server';
+import { projectCreateSchema } from '$lib/projects';
+import { verifyCanCreateProject } from '$lib/projects/server';
 import { error, redirect } from '@sveltejs/kit';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';

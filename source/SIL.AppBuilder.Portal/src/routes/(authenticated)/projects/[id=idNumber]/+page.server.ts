@@ -1,11 +1,11 @@
 import { getProductActions, ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
-import { canModifyProject, projectActionSchema } from '$lib/projects/common';
+import { canModifyProject, projectActionSchema } from '$lib/projects';
 import {
   doProjectAction,
   userGroupsForOrg,
   verifyCanViewAndEdit
-} from '$lib/projects/common.server';
+} from '$lib/projects/server';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';

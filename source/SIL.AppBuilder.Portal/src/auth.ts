@@ -5,7 +5,7 @@ import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@a
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
-import { verifyCanViewAndEdit } from './lib/projects/common.server';
+import { verifyCanViewAndEdit } from './lib/projects/server';
 
 declare module '@auth/sveltekit' {
   interface Session {
