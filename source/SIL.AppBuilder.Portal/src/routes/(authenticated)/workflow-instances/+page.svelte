@@ -5,7 +5,6 @@
   import SortTable from '$lib/components/SortTable.svelte';
   import * as m from '$lib/paraglide/messages';
   import { getRelativeTime } from '$lib/timeUtils';
-  import { writable } from 'svelte/store';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -16,8 +15,8 @@
 
   let { data }: Props = $props();
 
-  const instances = writable(data.instances);
-  const count = writable(data.count);
+  let instances = $state(data.instances);
+  let count = $state(data.count);
 
   const { form, enhance, submit } = superForm(data.form, {
     dataType: 'json',
@@ -32,8 +31,8 @@
         query: { data: any[]; count: number };
       }>;
       if (event.form.valid && data.query) {
-        instances.set(data.query.data);
-        count.set(data.query.count);
+        instances = data.query.data;
+        count = data.query.count;
       }
     }
   });
@@ -81,9 +80,9 @@
     </div>
   </form>
   <div class="m-4 relative mt-1 w-full overflow-x-auto">
-    {#if $instances.length > 0}
+    {#if instances.length > 0}
       <SortTable
-        data={$instances}
+        data={instances}
         columns={[
           {
             id: 'organization',
@@ -139,7 +138,7 @@
     }}
   >
     <div class="w-full flex flex-row place-content-start p-4 space-between-4 flex-wrap gap-1">
-      <Pagination bind:size={$form.page.size} total={$count} bind:page={$form.page.page} />
+      <Pagination bind:size={$form.page.size} total={count} bind:page={$form.page.page} />
     </div>
   </form>
 </div>

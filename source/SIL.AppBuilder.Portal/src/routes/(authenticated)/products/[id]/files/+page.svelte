@@ -3,7 +3,6 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
-  import { writable } from 'svelte/store';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import BuildArtifacts from './components/BuildArtifacts.svelte';
@@ -14,7 +13,7 @@
 
   let { data }: Props = $props();
 
-  const builds = writable(data.builds);
+  let builds = $state(data.builds);
 
   const { form, enhance, submit } = superForm(data.form, {
     resetForm: false,
@@ -26,7 +25,7 @@
         query: { data: any[] };
       }>;
       if (event.form.valid && data.query) {
-        builds.set(data.query.data);
+        builds = data.query.data;
       }
     }
   });
@@ -52,7 +51,7 @@
     <h1 class="pl-4">{m.products_files_title()}</h1>
   </div>
   <div id="files" class="overflow-y-auto grow">
-    {#each $builds as build}
+    {#each builds as build}
       <BuildArtifacts
         {build}
         latestBuildId={data.product?.WorkflowBuildId}

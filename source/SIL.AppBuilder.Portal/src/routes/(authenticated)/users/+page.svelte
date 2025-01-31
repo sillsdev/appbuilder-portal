@@ -5,7 +5,6 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-  import { writable } from 'svelte/store';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import type { MinifiedUser } from './common';
@@ -16,8 +15,8 @@
 
   let { data }: Props = $props();
 
-  const users = writable(data.users);
-  const count = writable(data.userCount);
+  let users = $state(data.users);
+  let count = $state(data.userCount);
 
   const { form, enhance, submit } = superForm(data.form, {
     dataType: 'json',
@@ -32,8 +31,8 @@
         query: { data: MinifiedUser[]; count: number };
       }>;
       if (event.form.valid && data.query) {
-        users.set(data.query.data);
-        count.set(data.query.count);
+        users = data.query.data;
+        count = data.query.count;
       }
     }
   });
@@ -81,7 +80,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each $users as user}
+        {#each users as user}
           <tr class="align-top">
             <td class="p-2">
               <p>
@@ -167,7 +166,7 @@
     use:enhance
     class="m-4 pb-4 flex flex-row flex-wrap gap-2 place-content-center"
   >
-    <Pagination bind:size={$form.page.size} total={$count} bind:page={$form.page.page} />
+    <Pagination bind:size={$form.page.size} total={count} bind:page={$form.page.page} />
   </form>
 </div>
 
