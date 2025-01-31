@@ -36,7 +36,7 @@ const addProductSchema = v.object({
   storeId: idSchema
 });
 const productActionSchema = v.object({
-  id: v.string()
+  id: v.pipe(v.string(), v.uuid())
 });
 
 // Are we sending too much data?
@@ -234,7 +234,9 @@ export const load = (async ({ locals, params }) => {
         )?.[0],
         ActiveTransition: strippedTransitions.find(
           (t) => (t[0] ?? t[1])?.ProductId === product.Id
-        )?.[1]
+        )?.[1],
+        CanRebuild: !product.WorkflowInstance && product.ProductDefinition.RebuildWorkflowId !== null,
+        CanRepublish: !product.WorkflowInstance && product.ProductDefinition.RepublishWorkflowId !== null
       }))
     },
     possibleProjectOwners: await prisma.users.findMany({
@@ -501,6 +503,7 @@ export const actions = {
       where: { Id: form.data.projectId! },
       select: {
         Id: true,
+        Name: true,
         DateArchived: true,
         OwnerId: true,
         GroupId: true

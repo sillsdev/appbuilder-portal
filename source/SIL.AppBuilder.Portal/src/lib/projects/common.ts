@@ -11,6 +11,7 @@ export function pruneProjects(
       Products: {
         include: {
           ProductDefinition: true;
+          WorkflowInstance: true;
         };
       };
       Owner: true;
@@ -44,10 +45,18 @@ export function pruneProjects(
       DateActive,
       DateArchived,
       Products: Products.map(
-        ({ ProductDefinition: { Name: ProductDefinitionName }, VersionBuilt, DateBuilt }) => ({
-          ProductDefinitionName,
+        ({ Id, ProductDefinition, VersionBuilt, DateBuilt, WorkflowInstance, DatePublished }) => ({
+          Id: Id,
+          ProductDefinitionId: ProductDefinition.Id,
+          ProductDefinitionName: ProductDefinition.Name,
           VersionBuilt,
-          DateBuilt
+          DateBuilt,
+          CanRebuild: !!(!WorkflowInstance && DatePublished && ProductDefinition.RebuildWorkflowId),
+          CanRepublish: !!(
+            !WorkflowInstance &&
+            DatePublished &&
+            ProductDefinition.RepublishWorkflowId
+          )
         })
       )
     })
@@ -143,12 +152,12 @@ export const importJSONSchema = v.object({
 });
 
 export const projectActionSchema = v.object({
-  operation: v.nullable(v.picklist(['archive', 'reactivate', 'claim', 'rebuild'])),
+  operation: v.nullable(v.picklist(['archive', 'reactivate', 'claim'])),
   // used to distinguish between single and bulk. will be null if bulk
   projectId: v.nullable(idSchema)
 });
 
-export const bulkProjectOperationSchema = v.object({
+export const bulkProjectActionSchema = v.object({
   ...projectActionSchema.entries,
   projects: v.array(idSchema)
 });
@@ -157,6 +166,7 @@ export type ProjectActionSchema = typeof projectActionSchema;
 
 export type ProjectForAction = {
   Id: number;
+  Name: string | null;
   OwnerId: number;
   GroupId: number;
   DateArchived: Date | null;
@@ -193,7 +203,7 @@ export function canClaimProject(
 }
 
 export function canArchive(
-  project: ProjectForAction,
+  project: Pick<ProjectForAction, 'OwnerId' | 'DateArchived'>,
   session: Session | null | undefined,
   orgId: number
 ): boolean {
@@ -201,7 +211,7 @@ export function canArchive(
 }
 
 export function canReactivate(
-  project: ProjectForAction,
+  project: Pick<ProjectForAction, 'OwnerId' | 'DateArchived'>,
   session: Session | null | undefined,
   orgId: number
 ): boolean {

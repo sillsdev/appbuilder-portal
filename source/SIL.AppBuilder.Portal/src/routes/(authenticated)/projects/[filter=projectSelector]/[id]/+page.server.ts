@@ -1,5 +1,5 @@
 import {
-  bulkProjectOperationSchema,
+  bulkProjectActionSchema,
   canModifyProject,
   projectSearchSchema,
   pruneProjects
@@ -10,7 +10,13 @@ import { error, redirect, type Actions } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
+import * as v from 'valibot';
 import type { PageServerLoad } from './$types';
+
+const bulkProductActionSchema = v.object({
+  products: v.array(v.pipe(v.string(), v.uuid())),
+  operation: v.nullable(v.picklist(['rebuild', 'republish']))
+});
 
 function whereStatements(
   filter: string,
@@ -64,7 +70,8 @@ export const load = (async ({ params, url, locals }) => {
     include: {
       Products: {
         include: {
-          ProductDefinition: true
+          ProductDefinition: true,
+          WorkflowInstance: true
         }
       },
       Owner: true,
@@ -86,8 +93,9 @@ export const load = (async ({ params, url, locals }) => {
       valibot(projectSearchSchema)
     ),
     count: await prisma.projects.count({ where: whereStatements(params.filter, orgId, userId) }),
+    actionForm: await superValidate(valibot(bulkProjectActionSchema)),
+    productForm: await superValidate(valibot(bulkProductActionSchema)),
     productDefinitions: await prisma.productDefinitions.findMany(),
-    actionForm: await superValidate(valibot(bulkProjectOperationSchema)),
     /** allow actions other than reactivation */
     allowActions: params.filter !== 'archived',
     allowReactivate: params.filter === 'all' || params.filter === 'archived',
@@ -113,7 +121,8 @@ export const actions: Actions = {
       include: {
         Products: {
           include: {
-            ProductDefinition: true
+            ProductDefinition: true,
+            WorkflowInstance: true
           }
         },
         Owner: true,
@@ -134,7 +143,7 @@ export const actions: Actions = {
     const orgId = parseInt(event.params.id!);
     if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
 
-    const form = await superValidate(event.request, valibot(bulkProjectOperationSchema));
+    const form = await superValidate(event.request, valibot(bulkProjectActionSchema));
     if (
       !form.valid ||
       !form.data.operation ||
@@ -166,6 +175,18 @@ export const actions: Actions = {
         await doProjectAction(form.data.operation, project, session, orgId, groups);
       })
     );
+
+    return { form, ok: true };
+  },
+  productAction: async (event) => {
+    const session = await event.locals.auth();
+    if (!session) return fail(403);
+    const orgId = parseInt(event.params.id!);
+    if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
+
+    const form = await superValidate(event.request, valibot(bulkProductActionSchema));
+    console.log(JSON.stringify(form, null, 4));
+    if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
 
     return { form, ok: true };
   }

@@ -1,8 +1,10 @@
 <script lang="ts">
   import { afterNavigate, goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
+  import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
   import type { ProjectForAction, PrunedProject } from '$lib/projects/common';
   import { canArchive, canReactivate } from '$lib/projects/common';
@@ -60,7 +62,17 @@
     }
   });
 
-  let selectedProjects: ProjectForAction[] = [];
+  type ProductForAction = {
+    Id: string;
+    ProductDefinitionId: number;
+    ProductDefinitionName: string | null;
+    CanRebuild: boolean;
+    CanRepublish: boolean;
+  };
+  let selectedProjects: (ProjectForAction & { Products: ProductForAction[] })[] = [];
+  /** For selecting products for bulk rebuild/republish */
+  let productSelectModal: HTMLDialogElement | undefined;
+  let selectedProducts: ProductForAction[] = [];
 
   $: selectedProjects = data.projects.filter((p) => $actionForm.projects.includes(p.Id));
 
@@ -75,6 +87,23 @@
   $: canReactivateSelected = selectedProjects.every((p) =>
     canReactivate(p, $page.data.session, parseInt($page.params.id))
   );
+
+  const {
+    form: productForm,
+    enhance: productEnhance,
+    submit: productSubmit
+  } = superForm(data.productForm, {
+    dataType: 'json',
+    resetForm: false,
+    invalidateAll: false,
+    onChange(event) {
+      if (event.paths.includes('operation')) {
+        productSubmit();
+        productSelectModal?.close();
+      }
+    }
+  });
+  $: $productForm.products = selectedProducts.map((p) => p.Id);
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
@@ -151,21 +180,117 @@
         </label>
       {/if}
       {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
-        <label
+        <button
           class="action btn btn-outline"
-          class:btn-disabled={!(canArchiveSelected && selectedProjects.length)}
+          type="button"
+          disabled={!(canArchiveSelected && selectedProjects.length)}
+          on:click={() => productSelectModal?.showModal()}
         >
           {m.common_rebuild()}
-          <input
-            class="hidden"
-            type="radio"
-            bind:group={$actionForm.operation}
-            value="rebuild"
-            disabled={!(canArchiveSelected && selectedProjects.length)}
-          />
-        </label>
+        </button>
       {/if}
     </form>
+    <dialog bind:this={productSelectModal} class="modal">
+      <form class="modal-box" action="?/productAction" method="POST" use:productEnhance>
+        <div class="items-center text-center">
+          <div class="flex flex-row">
+            <h2 class="text-lg font-bold grow">{m.projects_bulk_buildModal_title()}</h2>
+            <button
+              class="btn btn-ghost"
+              type="button"
+              on:click={() => {
+                productSelectModal?.close();
+              }}
+            >
+              <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+            </button>
+          </div>
+          <hr />
+          <div class="flex flex-col pt-1 space-y-1">
+            {#each selectedProjects as project}
+              {@const products = project.Products?.filter((p) => p.CanRebuild || p.CanRepublish)}
+              <div class="p-2">
+                <h3>{project.Name}</h3>
+                {#if products?.length}
+                  {#each products as product}
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                    <label
+                      class="flex flex-col border border-secondary rounded text-left form-control cursor-pointer"
+                    >
+                      <div class="flex flex-row flex-wrap bg-neutral-300 p-2 w-full text-black">
+                        <input
+                          type="checkbox"
+                          class="checkbox checkbox-info"
+                          bind:group={selectedProducts}
+                          value={product}
+                        />
+                        <IconContainer
+                          icon={getIcon(product.ProductDefinitionName ?? '')}
+                          width="24"
+                        />
+                        {product.ProductDefinitionName}
+                        <div class="basis-full h-0"></div>
+                        {#if product.CanRebuild}
+                          <div class="badge badge-info">{m.products_actions_rebuild()}</div>
+                        {/if}
+                        {#if product.CanRepublish}
+                          <div class="badge badge-info">{m.products_actions_republish()}</div>
+                        {/if}
+                      </div>
+                      <p class="p-2 text-sm text-neutral-400">
+                        {data.productDefinitions.find((pd) => pd.Id === product.ProductDefinitionId)
+                          ?.Description}
+                      </p>
+                    </label>
+                  {/each}
+                {:else}
+                  {m.errors_invalidProjectSelection()}
+                {/if}
+              </div>
+            {/each}
+          </div>
+        </div>
+        <div class="flex flex-row justify-end gap-2">
+          <button class="btn btn-primary" type="reset" on:click={() => productSelectModal?.close()}>
+            {m.common_cancel()}
+          </button>
+          <label
+            class="btn btn-info"
+            class:btn-disabled={!(
+              selectedProducts.length && selectedProducts.every((p) => p.CanRebuild)
+            )}
+          >
+            {m.products_actions_rebuild()}
+            <input
+              type="radio"
+              class="hidden"
+              bind:group={$productForm.operation}
+              value="rebuild"
+              disabled={!(selectedProducts.length && selectedProducts.every((p) => p.CanRebuild))}
+            />
+          </label>
+          <label
+            class="btn btn-info"
+            class:btn-disabled={!(
+              selectedProducts.length && selectedProducts.every((p) => p.CanRepublish)
+            )}
+          >
+            {m.products_actions_republish()}
+            <input
+              type="radio"
+              class="hidden"
+              bind:group={$productForm.operation}
+              value="republish"
+              disabled={!(selectedProducts.length && selectedProducts.every((p) => p.CanRepublish))}
+            />
+          </label>
+        </div>
+      </form>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
     {#if $page.params.filter === 'own'}
       <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
         <a class="action btn btn-outline" href="/projects/import/{$pageForm.organizationId}">

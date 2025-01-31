@@ -269,7 +269,7 @@
                       class="dropdown-content bottom-12 right-0 p-1 bg-base-200 z-10 rounded-md min-w-36 w-auto shadow-lg"
                     >
                       <ul class="menu menu-compact overflow-hidden rounded-md">
-                        {#if !product.WorkflowInstance && product.ProductDefinition.RebuildWorkflowId !== null}
+                        {#if product.CanRebuild}
                           <li class="w-full rounded-none">
                             <form action="?/rebuildProduct" method="post" use:enhance>
                               <input type="hidden" name="id" value={product.Id} />
@@ -279,7 +279,7 @@
                             </form>
                           </li>
                         {/if}
-                        {#if !product.WorkflowInstance && product.ProductDefinition.RepublishWorkflowId !== null}
+                        {#if product.CanRepublish}
                           <li class="w-full rounded-none">
                             <form action="?/republishProduct" method="post" use:enhance>
                               <input type="hidden" name="id" value={product.Id} />
