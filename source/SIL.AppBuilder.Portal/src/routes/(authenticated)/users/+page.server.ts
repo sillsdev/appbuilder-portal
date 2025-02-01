@@ -16,7 +16,7 @@ const lockSchema = v.object({
   active: v.boolean()
 });
 
-const userSchema = v.object({
+const searchFilterSchema = v.object({
   page: paginateSchema,
   search: v.string(),
   organizationId: v.nullable(idSchema)
@@ -57,28 +57,28 @@ function select(orgIds?: number[]) {
 function adminOrDefaultWhere(isSuper: boolean, orgIds: number[]) {
   return isSuper
     ? {
-      // Get all users that are locked or are a member of at least one organization
-      // (Users that are not in an organization and are not locked are not interesting
-      // because they can't login and behave essentially as locked users or as users
-      // who have never logged in before)
-      OR: [
-        {
-          OrganizationMemberships: {
-            some: {}
+        // Get all users that are locked or are a member of at least one organization
+        // (Users that are not in an organization and are not locked are not interesting
+        // because they can't login and behave essentially as locked users or as users
+        // who have never logged in before)
+        OR: [
+          {
+            OrganizationMemberships: {
+              some: {}
+            }
+          },
+          {
+            IsLocked: true
           }
-        },
-        {
-          IsLocked: true
-        }
-      ]
-    }
-    : {
-      OrganizationMemberships: {
-        some: {
-          OrganizationId: { in: orgIds }
-        }
+        ]
       }
-    };
+    : {
+        OrganizationMemberships: {
+          some: {
+            OrganizationId: { in: orgIds }
+          }
+        }
+      };
 }
 
 export const load = (async (event) => {
@@ -92,13 +92,13 @@ export const load = (async (event) => {
     where: isSuper
       ? undefined
       : {
-        UserRoles: {
-          some: {
-            RoleId: RoleId.OrgAdmin,
-            UserId: userId
+          UserRoles: {
+            some: {
+              RoleId: RoleId.OrgAdmin,
+              UserId: userId
+            }
           }
-        }
-      },
+        },
     select: {
       Id: true,
       Name: true,
@@ -153,7 +153,7 @@ export const load = (async (event) => {
           size: 50
         }
       },
-      valibot(userSchema)
+      valibot(searchFilterSchema)
     )
   };
 }) satisfies PageServerLoad;
@@ -178,7 +178,7 @@ export const actions: Actions = {
   async page(event) {
     const session = await event.locals.auth();
     if (!session) return error(403);
-    const form = await superValidate(event, valibot(userSchema));
+    const form = await superValidate(event, valibot(searchFilterSchema));
     if (!form.valid) return { form, ok: false };
 
     const isSuper = isSuperAdmin(session.user.roles);
@@ -190,13 +190,13 @@ export const actions: Actions = {
           : isSuper
             ? undefined
             : {
-              UserRoles: {
-                some: {
-                  RoleId: RoleId.OrgAdmin,
-                  UserId: session.user.userId
+                UserRoles: {
+                  some: {
+                    RoleId: RoleId.OrgAdmin,
+                    UserId: session.user.userId
+                  }
                 }
-              }
-            },
+              },
       select: {
         Id: true,
         Name: true,
@@ -212,19 +212,19 @@ export const actions: Actions = {
         {
           OR: form.data.search
             ? [
-              {
-                Name: {
-                  contains: form.data.search,
-                  mode: 'insensitive'
+                {
+                  Name: {
+                    contains: form.data.search,
+                    mode: 'insensitive'
+                  }
+                },
+                {
+                  Email: {
+                    contains: form.data.search,
+                    mode: 'insensitive'
+                  }
                 }
-              },
-              {
-                Email: {
-                  contains: form.data.search,
-                  mode: 'insensitive'
-                }
-              }
-            ]
+              ]
             : undefined
         }
       ]
@@ -241,7 +241,6 @@ export const actions: Actions = {
       skip: form.data.page.page * form.data.page.size,
       take: form.data.page.size
     });
-
     return {
       form,
       ok: true,
