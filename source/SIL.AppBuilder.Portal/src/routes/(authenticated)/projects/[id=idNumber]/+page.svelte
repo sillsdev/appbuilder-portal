@@ -43,25 +43,25 @@
     (window[('modal' + id) as any] as any).showModal();
   }
   let simpleSettingsFormTimeout: NodeJS.Timeout;
-  let simpleSettingsForm: HTMLFormElement | undefined = $state();
+  let simpleSettingsForm: HTMLFormElement;
   function submitSimpleSettingsForm() {
     if (simpleSettingsFormTimeout) {
       clearTimeout(simpleSettingsFormTimeout);
     }
     simpleSettingsFormTimeout = setTimeout(() => {
-      simpleSettingsForm?.requestSubmit();
+      simpleSettingsForm.requestSubmit();
     }, 2000);
   }
   let ownerSettingsFormTimeout: NodeJS.Timeout;
-  let ownerSettingsForm: HTMLFormElement | undefined = $state();
-  let ownerField: HTMLInputElement | undefined = $state();
-  let groupField: HTMLInputElement | undefined = $state();
+  let ownerSettingsForm: HTMLFormElement;
+  let ownerField: HTMLInputElement;
+  let groupField: HTMLInputElement;
   function submitOwnerSettingsForm() {
     if (ownerSettingsFormTimeout) {
       clearTimeout(ownerSettingsFormTimeout);
     }
     ownerSettingsFormTimeout = setTimeout(() => {
-      ownerSettingsForm?.requestSubmit();
+      ownerSettingsForm.requestSubmit();
     }, 2000);
   }
 
@@ -83,7 +83,7 @@
       console.error('Error performing product action:', error);
     }
   }
-  let addProductModal: HTMLDialogElement | undefined = $state();
+  let addProductModal: HTMLDialogElement;
   let selectingStore: boolean = $state(false);
   let selectedProduct: number = $state(0);
   let availableStores = $derived(
@@ -166,7 +166,7 @@
         </div>
         <button
           class="btn btn-outline"
-          onclick={() => addProductModal?.showModal()}
+          onclick={() => addProductModal.showModal()}
           disabled={!(data.productsToAdd.length && data.project.WorkflowProjectUrl)}
         >
           {m.project_products_add()}
@@ -180,7 +180,7 @@
                   class="btn btn-ghost"
                   type="button"
                   onclick={() => {
-                    addProductModal?.close();
+                    addProductModal.close();
                   }}
                 >
                   <IconContainer icon="mdi:close" width={36} class="opacity-80" />
@@ -249,7 +249,7 @@
                         value={store.Id}
                         class="hidden"
                         onclick={() => {
-                          addProductModal?.close();
+                          addProductModal.close();
                           selectingStore = false;
                         }}
                       />
@@ -510,10 +510,8 @@
                             class="text-nowrap"
                             class:font-bold={owner.Id === data.project.Owner.Id}
                             onclick={() => {
-                              if (ownerField) {
-                                ownerField.value = owner.Id + '';
-                                submitOwnerSettingsForm();
-                              }
+                              ownerField.value = owner.Id + '';
+                              submitOwnerSettingsForm();
                             }}
                           >
                             {owner.Name}
@@ -559,10 +557,8 @@
                             class="text-nowrap"
                             class:font-bold={group.Id === data.project.Group.Id}
                             onclick={() => {
-                              if (groupField) {
-                                groupField.value = group.Id + '';
-                                submitOwnerSettingsForm();
-                              }
+                              groupField.value = group.Id + '';
+                              submitOwnerSettingsForm();
                             }}
                           >
                             {group.Name}

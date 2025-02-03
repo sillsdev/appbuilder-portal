@@ -16,7 +16,7 @@
 
   let { data, children }: Props = $props();
 
-  let drawerToggle: HTMLInputElement = $state();
+  let drawerToggle: HTMLInputElement;
   function closeDrawer() {
     drawerToggle.click();
   }
