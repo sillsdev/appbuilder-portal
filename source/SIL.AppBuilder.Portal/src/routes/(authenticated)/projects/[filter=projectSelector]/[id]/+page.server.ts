@@ -7,7 +7,7 @@ import {
 import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/common.server';
 import type { Prisma } from '@prisma/client';
 import { error, redirect, type Actions } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { prisma, Workflow } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -185,8 +185,47 @@ export const actions: Actions = {
     if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
 
     const form = await superValidate(event.request, valibot(bulkProductActionSchema));
-    console.log(JSON.stringify(form, null, 4));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
+
+    const products = await prisma.products.findMany({
+      where: {
+        Id: { in: form.data.products },
+        WorkflowInstance: null
+      },
+      select: {
+        Id: true,
+        ProductDefinition: {
+          select: {
+            RebuildWorkflow: {
+              select: {
+                Type: true,
+                ProductType: true,
+                WorkflowOptions: true
+              }
+            },
+            RepublishWorkflow: {
+              select: {
+                Type: true,
+                ProductType: true,
+                WorkflowOptions: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const flowType = form.data.operation === 'rebuild' ? 'RebuildWorkflow' : 'RepublishWorkflow';
+    
+    await Promise.all(products.map(async (p) => {
+      if (p.ProductDefinition[flowType]) {
+        await Workflow.create(p.Id, {
+          productType: p.ProductDefinition[flowType].ProductType,
+          options: new Set(p.ProductDefinition[flowType].WorkflowOptions),
+          workflowType: p.ProductDefinition[flowType].Type
+        });
+      }
+    }));
 
     return { form, ok: true };
   }
