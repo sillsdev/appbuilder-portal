@@ -143,7 +143,7 @@ export const load = (async (event) => {
         })
       ).map((g) => [g.Id, g.Name])
     ),
-    organizations: Object.fromEntries(organizations?.map((org) => [org.Id, org.Name])),
+    organizations: organizations?.map(({ Id, Name }) => ({ Id, Name })),
     organizationCount: organizations.length,
     form: await superValidate(
       {
@@ -208,7 +208,9 @@ export const actions: Actions = {
 
     const where: Prisma.UsersWhereInput = {
       AND: [
-        adminOrDefaultWhere(isSuper, orgIds),
+        form.data.organizationId !== null
+          ? { OrganizationMemberships: { some: { OrganizationId: form.data.organizationId } } }
+          : adminOrDefaultWhere(isSuper, orgIds),
         {
           OR: form.data.search
             ? [

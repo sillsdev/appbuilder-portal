@@ -16,12 +16,15 @@
 
   let { data }: Props = $props();
 
+  const orgMap = new Map(data.organizations.map(({ Id, Name }) => [Id, Name]));
+
   let users = $state(data.users);
   let count = $state(data.userCount);
 
   const { form, enhance, submit } = superForm(data.form, {
     dataType: 'json',
     resetForm: false,
+    invalidateAll: false,
     onChange(event) {
       if (!event.paths.includes('search')) {
         submit();
@@ -65,8 +68,8 @@
           <!-- TODO: convert after fix/user-page-org-select -->
           <select class="select select-bordered grow" bind:value={$form.organizationId}>
             <option value={null}>{m.org_allOrganizations()}</option>
-            {#each Object.entries(data.organizations) as [Id, Name]}
-              <option value={parseInt(Id)}>{Name}</option>
+            {#each data.organizations as org}
+              <option value={org.Id}>{org.Name}</option>
             {/each}
           </select>
         </label>
@@ -87,7 +90,7 @@
       <tbody>
         {#each users as user}
           {@const langTag = languageTag()}
-          {@const userOrgs = user.O.map((o) => ({ ...o, Name: data.organizations[o.I] })).sort(
+          {@const userOrgs = user.O.map((o) => ({ ...o, Name: orgMap.get(o.I) })).sort(
             (a, b) => byName(a, b, langTag)
           )}
           <tr class="align-top">
@@ -106,7 +109,7 @@
                 <div class="p-1">
                   <span>
                     <b>
-                      {org.Name ?? ''}
+                      {orgMap.get(org.I)}
                     </b>
                   </span>
                   <br />
@@ -130,7 +133,7 @@
                 <div class="p-1">
                   <span>
                     <b>
-                      {org.Name ?? ''}
+                      {orgMap.get(org.I)}
                     </b>
                   </span>
                   <br />
