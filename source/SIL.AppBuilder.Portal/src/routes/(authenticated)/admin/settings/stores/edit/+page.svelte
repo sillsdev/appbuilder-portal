@@ -11,11 +11,7 @@
   }
 
   let { data }: Props = $props();
-  const {
-    form: superFormData,
-    enhance,
-    allErrors
-  } = superForm(data.form, {
+  const { form, enhance, allErrors } = superForm(data.form, {
     onUpdated(event) {
       if (event.form.valid) {
         goto('/admin/settings/stores');
@@ -26,24 +22,19 @@
 
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
-  <input type="hidden" name="id" value={$superFormData.id} />
+  <input type="hidden" name="id" value={$form.id} />
   <LabeledFormInput name="stores_attributes_name">
-    <input
-      class="input w-full input-bordered"
-      type="text"
-      name="name"
-      bind:value={$superFormData.name}
-    />
+    <input class="input w-full input-bordered" type="text" name="name" bind:value={$form.name} />
   </LabeledFormInput>
   <LabeledFormInput name="stores_attributes_description">
     <textarea
       name="description"
       class="textarea textarea-bordered w-full"
-      bind:value={$superFormData.description}
+      bind:value={$form.description}
     ></textarea>
   </LabeledFormInput>
   <LabeledFormInput name="storeTypes_name">
-    <select class="select select-bordered" name="storeType" bind:value={$superFormData.storeType}>
+    <select class="select select-bordered" name="storeType" bind:value={$form.storeType}>
       {#each data.options.toSorted((a, b) => byName(a, b, languageTag())) as option}
         <option value={option.Id}>{option.Name}</option>
       {/each}
