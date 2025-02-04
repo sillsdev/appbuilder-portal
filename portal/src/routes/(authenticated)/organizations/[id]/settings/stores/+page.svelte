@@ -10,11 +10,7 @@
 
   let { data }: Props = $props();
 
-  const {
-    form: superFormData,
-    enhance,
-    allErrors
-  } = superForm(data.form, {
+  const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',
     resetForm: false
   });
@@ -27,7 +23,7 @@
   <!-- TODO: sort this. I think this will need a refactor of MultiselectBox -->
   <MultiselectBox header={m.org_storeSelectTitle()}>
     <div>
-      {#each $superFormData.stores as store}
+      {#each $form.stores as store}
         {@const storeLook = allStores.get(store.storeId)}
         <MultiselectBoxElement
           title={storeLook?.Name ?? ''}

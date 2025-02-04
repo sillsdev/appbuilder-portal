@@ -14,11 +14,7 @@
   }
 
   let { data }: Props = $props();
-  const {
-    form: superFormData,
-    enhance,
-    allErrors
-  } = superForm(data.form, {
+  const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',
     onUpdated(event) {
       if (event.form.valid) {
@@ -27,23 +23,19 @@
     }
   });
 
-  let getStoreInfo = $derived((store: (typeof $superFormData)['stores'][0]) =>
-    data.options.stores.find((s) => s.Id === store.storeId));
+  let getStoreInfo = $derived((store: (typeof $form)['stores'][0]) =>
+    data.options.stores.find((s) => s.Id === store.storeId)
+  );
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
-  <input type="hidden" name="id" value={$superFormData.id} />
+  <input type="hidden" name="id" value={$form.id} />
   <LabeledFormInput name="admin_settings_organizations_name">
-    <input
-      class="input w-full input-bordered"
-      type="text"
-      name="name"
-      bind:value={$superFormData.name}
-    />
+    <input class="input w-full input-bordered" type="text" name="name" bind:value={$form.name} />
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_organizations_owner">
-    <select class="select select-bordered" name="owner" bind:value={$superFormData.owner}>
+    <select class="select select-bordered" name="owner" bind:value={$form.owner}>
       {#each data.options.users.toSorted((a, b) => byName(a, b, languageTag())) as option}
         <option value={option.Id}>{option.Name}</option>
       {/each}
@@ -54,7 +46,7 @@
       name="websiteURL"
       class="input input-bordered w-full"
       type="text"
-      bind:value={$superFormData.websiteURL}
+      bind:value={$form.websiteURL}
     />
   </LabeledFormInput>
   <div>
@@ -69,18 +61,18 @@
           name="useDefaultBuildEngine"
           class="toggle toggle-accent"
           type="checkbox"
-          bind:checked={$superFormData.useDefaultBuildEngine}
+          bind:checked={$form.useDefaultBuildEngine}
         />
       </div>
     </label>
   </div>
-  {#if !$superFormData.useDefaultBuildEngine}
+  {#if !$form.useDefaultBuildEngine}
     <LabeledFormInput name="admin_settings_organizations_buildEngineURL">
       <input
         type="text"
         name="buildEngineURL"
         class="input input-bordered w-full"
-        bind:value={$superFormData.buildEngineURL}
+        bind:value={$form.buildEngineURL}
       />
     </LabeledFormInput>
     <LabeledFormInput name="admin_settings_organizations_accessToken">
@@ -88,7 +80,7 @@
         type="text"
         name="buildEngineAccessToken"
         class="input input-bordered w-full"
-        bind:value={$superFormData.buildEngineAccessToken}
+        bind:value={$form.buildEngineAccessToken}
       />
     </LabeledFormInput>
   {/if}
@@ -97,7 +89,7 @@
       name="logoURL"
       class="input input-bordered w-full"
       type="text"
-      bind:value={$superFormData.logoURL}
+      bind:value={$form.logoURL}
     />
   </LabeledFormInput>
   <div>
@@ -115,14 +107,14 @@
           name="publicByDefault"
           class="toggle toggle-accent"
           type="checkbox"
-          bind:checked={$superFormData.publicByDefault}
+          bind:checked={$form.publicByDefault}
         />
       </div>
     </label>
   </div>
   <!-- TODO: sort this. I think this will need a refactor of MultiselectBox -->
   <MultiselectBox header={m.org_storeSelectTitle()}>
-    {#each $superFormData.stores as store}
+    {#each $form.stores as store}
       <MultiselectBoxElement
         bind:checked={store.enabled}
         title={getStoreInfo(store)?.Name ?? ''}

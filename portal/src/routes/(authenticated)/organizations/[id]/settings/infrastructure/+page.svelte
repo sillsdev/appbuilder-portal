@@ -9,11 +9,11 @@
   }
 
   let { data }: Props = $props();
-  const { form: superFormData, enhance, allErrors } = superForm(data.form, { resetForm: false });
+  const { form, enhance, allErrors } = superForm(data.form, { resetForm: false });
 </script>
 
 <form action="" class="m-4" method="post" use:enhance>
-  <input type="hidden" name="id" value={$superFormData.id} />
+  <input type="hidden" name="id" value={$form.id} />
   <div class="flex flex-row">
     <div class="w-full">
       <div>
@@ -28,18 +28,18 @@
               name="useDefaultBuildEngine"
               class="toggle toggle-accent"
               type="checkbox"
-              bind:checked={$superFormData.useDefaultBuildEngine}
+              bind:checked={$form.useDefaultBuildEngine}
             />
           </div>
         </label>
       </div>
-      {#if !$superFormData.useDefaultBuildEngine}
+      {#if !$form.useDefaultBuildEngine}
         <LabeledFormInput name="org_buildEngineUrl">
           <input
             type="text"
             name="buildEngineUrl"
             class="input w-full input-bordered"
-            bind:value={$superFormData.buildEngineUrl}
+            bind:value={$form.buildEngineUrl}
           />
         </LabeledFormInput>
         <LabeledFormInput name="org_buildEngineApiAccessToken">
@@ -47,7 +47,7 @@
             type="text"
             name="buildEngineApiAccessToken"
             class="input w-full input-bordered"
-            bind:value={$superFormData.buildEngineApiAccessToken}
+            bind:value={$form.buildEngineApiAccessToken}
           />
         </LabeledFormInput>
       {/if}
