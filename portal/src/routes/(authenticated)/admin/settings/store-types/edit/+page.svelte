@@ -9,11 +9,7 @@
   }
 
   let { data }: Props = $props();
-  const {
-    form: superFormData,
-    enhance,
-    allErrors
-  } = superForm(data.form, {
+  const { form, enhance, allErrors } = superForm(data.form, {
     onUpdated(event) {
       if (event.form.valid) {
         goto('/admin/settings/store-types');
@@ -24,20 +20,15 @@
 
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
-  <input type="hidden" name="id" value={$superFormData.id} />
+  <input type="hidden" name="id" value={$form.id} />
   <LabeledFormInput name="admin_settings_storeTypes_name">
-    <input
-      class="input w-full input-bordered"
-      type="text"
-      name="name"
-      bind:value={$superFormData.name}
-    />
+    <input class="input w-full input-bordered" type="text" name="name" bind:value={$form.name} />
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_storeTypes_description">
     <textarea
       name="description"
       class="textarea textarea-bordered w-full"
-      bind:value={$superFormData.description}
+      bind:value={$form.description}
     ></textarea>
   </LabeledFormInput>
   {#if $allErrors.length}

@@ -12,11 +12,7 @@
   }
 
   let { data }: Props = $props();
-  const {
-    form: superFormData,
-    enhance,
-    allErrors
-  } = superForm(data.form, {
+  const { form, enhance, allErrors } = superForm(data.form, {
     onUpdated(event) {
       if (event.form.valid) {
         goto('/admin/settings/product-definitions');
@@ -39,20 +35,15 @@
 
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
-  <input type="hidden" name="id" value={$superFormData.id} />
+  <input type="hidden" name="id" value={$form.id} />
   <LabeledFormInput name="admin_settings_productDefinitions_name">
-    <input
-      class="input w-full input-bordered"
-      type="text"
-      name="name"
-      bind:value={$superFormData.name}
-    />
+    <input class="input w-full input-bordered" type="text" name="name" bind:value={$form.name} />
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_type">
     <select
       class="select select-bordered"
       name="applicationType"
-      bind:value={$superFormData.applicationType}
+      bind:value={$form.applicationType}
     >
       {#each data.options.applicationTypes.toSorted((a, b) => byName(a, b, langTag)) as type}
         <option value={type.Id}>{type.Name}</option>
@@ -60,7 +51,7 @@
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_workflow">
-    <select class="select select-bordered" name="workflow" bind:value={$superFormData.workflow}>
+    <select class="select select-bordered" name="workflow" bind:value={$form.workflow}>
       {#each workflows as workflow}
         <option value={workflow.Id}>{workflow.Name}</option>
       {/each}
@@ -70,7 +61,7 @@
     <select
       class="select select-bordered"
       name="rebuildWorkflow"
-      bind:value={$superFormData.rebuildWorkflow}
+      bind:value={$form.rebuildWorkflow}
     >
       <option value={null}>{m.admin_settings_productDefinitions_noWorkflow()}</option>
       {#each rebuildWorkflows as workflow}
@@ -82,7 +73,7 @@
     <select
       class="select select-bordered"
       name="republishWorkflow"
-      bind:value={$superFormData.republishWorkflow}
+      bind:value={$form.republishWorkflow}
     >
       <option value={null}>{m.admin_settings_productDefinitions_noWorkflow()}</option>
       {#each republishWorkflows as workflow}
@@ -94,14 +85,14 @@
     <textarea
       name="description"
       class="textarea textarea-bordered w-full"
-      bind:value={$superFormData.description}
+      bind:value={$form.description}
     ></textarea>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_properties">
     <textarea
       name="properties"
       class="textarea textarea-bordered w-full"
-      bind:value={$superFormData.properties}
+      bind:value={$form.properties}
     ></textarea>
   </LabeledFormInput>
   {#if $allErrors.length}
