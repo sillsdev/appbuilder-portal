@@ -9,12 +9,11 @@
   }
 
   let { data }: Props = $props();
-  // export let form: ActionData;
-  const { form: superFormData, enhance, allErrors } = superForm(data.form, { resetForm: false });
+  const { form, enhance, allErrors } = superForm(data.form, { resetForm: false });
 </script>
 
 <form action="" class="m-4" method="post" use:enhance>
-  <input type="hidden" name="id" value={$superFormData.id} />
+  <input type="hidden" name="id" value={$form.id} />
   <div class="flex flex-row">
     <div>
       <LabeledFormInput name="org_orgName">
@@ -22,7 +21,7 @@
           type="text"
           name="name"
           class="input w-full input-bordered"
-          bind:value={$superFormData.name}
+          bind:value={$form.name}
         />
       </LabeledFormInput>
       <LabeledFormInput name="org_logoUrl">
@@ -30,13 +29,13 @@
           type="text"
           name="logoUrl"
           class="input w-full input-bordered"
-          bind:value={$superFormData.logoUrl}
+          bind:value={$form.logoUrl}
         />
         <span>{org_noteLogUrl()}</span>
       </LabeledFormInput>
     </div>
     <div class="w-1/3 ml-4">
-      <img src={$superFormData.logoUrl} alt="Logo" class="object-contain" />
+      <img src={$form.logoUrl} alt="Logo" class="object-contain" />
     </div>
   </div>
   <div class="my-4">

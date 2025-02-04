@@ -10,11 +10,7 @@
 
   let { data }: Props = $props();
 
-  const {
-    form: superFormData,
-    enhance,
-    allErrors
-  } = superForm(data.form, {
+  const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',
     resetForm: false
   });
@@ -39,14 +35,14 @@
           name="publicByDefault"
           class="toggle toggle-accent"
           type="checkbox"
-          bind:checked={$superFormData.publicByDefault}
+          bind:checked={$form.publicByDefault}
         />
       </div>
     </label>
   </div>
   <!-- TODO: sort this. I think this will need a refactor of MultiselectBox -->
   <MultiselectBox header={m.org_productSelectTitle()}>
-    {#each $superFormData.products as productDef}
+    {#each $form.products as productDef}
       {@const pdLook = allProductDefs.get(productDef.productId)}
       <MultiselectBoxElement
         title={pdLook?.Name ?? ''}

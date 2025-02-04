@@ -14,11 +14,7 @@
   }
 
   let { data }: Props = $props();
-  const {
-    form: superFormData,
-    enhance,
-    allErrors
-  } = superForm(data.form, {
+  const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',
     onUpdated(event) {
       if (event.form.valid) {
@@ -45,28 +41,19 @@
 
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
-  <input type="hidden" name="id" value={$superFormData.id} />
+  <input type="hidden" name="id" value={$form.id} />
   <LabeledFormInput name="admin_settings_workflowDefinitions_name">
-    <input
-      class="input w-full input-bordered"
-      type="text"
-      name="name"
-      bind:value={$superFormData.name}
-    />
+    <input class="input w-full input-bordered" type="text" name="name" bind:value={$form.name} />
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_storeType">
-    <select class="select select-bordered" name="storeType" bind:value={$superFormData.storeType}>
+    <select class="select select-bordered" name="storeType" bind:value={$form.storeType}>
       {#each data.storeTypes.toSorted((a, b) => byName(a, b, languageTag())) as storeType}
         <option value={storeType.Id}>{storeType.Name}</option>
       {/each}
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_productType">
-    <select
-      class="select select-bordered"
-      name="productType"
-      bind:value={$superFormData.productType}
-    >
+    <select class="select select-bordered" name="productType" bind:value={$form.productType}>
       <option value={ProductType.Android_GooglePlay}>Android GooglePlay</option>
       <option value={ProductType.Android_S3}>Android S3</option>
       <option value={ProductType.AssetPackage}>
@@ -78,11 +65,7 @@
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowType">
-    <select
-      class="select select-bordered"
-      name="workflowType"
-      bind:value={$superFormData.workflowType}
-    >
+    <select class="select select-bordered" name="workflowType" bind:value={$form.workflowType}>
       <option value={1}>{m.admin_settings_workflowDefinitions_workflowTypes_1()}</option>
       <option value={2}>{m.admin_settings_workflowDefinitions_workflowTypes_2()}</option>
       <option value={3}>{m.admin_settings_workflowDefinitions_workflowTypes_3()}</option>
@@ -92,14 +75,14 @@
     <textarea
       name="description"
       class="textarea textarea-bordered w-full"
-      bind:value={$superFormData.description}
+      bind:value={$form.description}
     ></textarea>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowScheme">
     <select
       class="select select-bordered"
       name="workflowScheme"
-      bind:value={$superFormData.workflowScheme}
+      bind:value={$form.workflowScheme}
     >
       {#each data.schemes.toSorted((a, b) => byString(a.Code, b.Code, languageTag())) as scheme}
         <option value={scheme.Code}>{scheme.Code}</option>
@@ -110,7 +93,7 @@
     <select
       class="select select-bordered"
       name="workflowBusinessFlow"
-      bind:value={$superFormData.workflowBusinessFlow}
+      bind:value={$form.workflowBusinessFlow}
     >
       {#each businessFlows as flow}
         <option value={flow}>{flow}</option>
@@ -121,7 +104,7 @@
     <textarea
       name="properties"
       class="textarea textarea-bordered w-full"
-      bind:value={$superFormData.properties}
+      bind:value={$form.properties}
     ></textarea>
   </LabeledFormInput>
   <LabeledFormInput
@@ -138,7 +121,7 @@
         <input
           class="toggle toggle-warning border-warning"
           type="checkbox"
-          bind:group={$superFormData.options}
+          bind:group={$form.options}
           value={opt.value}
         />
       </div>
@@ -159,7 +142,7 @@
           name="enabled"
           class="toggle toggle-accent"
           type="checkbox"
-          bind:checked={$superFormData.enabled}
+          bind:checked={$form.enabled}
         />
       </div>
     </label>
