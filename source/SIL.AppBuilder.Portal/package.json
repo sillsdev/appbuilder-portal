@@ -67,5 +67,10 @@
     "@bull-board/express": "^6.7.1",
     "express": "^4.21.2",
     "sil.appbuilder.portal.common": "file:common"
+  },
+  "overrides": {
+    "svelte-flatpickr": {
+      "svelte" : "^5.0.0"
+    }
   }
 }
