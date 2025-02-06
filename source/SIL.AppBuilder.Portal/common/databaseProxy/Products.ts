@@ -145,7 +145,9 @@ export { deleteProduct as delete };
 async function validateProductBase(
   projectId: number,
   productDefinitionId: number,
+  /** If this would be `null`, it is set to `undefined` by caller */
   storeId?: number,
+  /** If this would be `null`, it is set to `undefined` by caller */
   storeLanguageId?: number
 ) {
   if (storeId === undefined) {
@@ -168,7 +170,7 @@ async function validateProductBase(
   const project = await prisma.projects.findUnique({
     where: {
       Id: projectId,
-      // Project must have a WorkflowProjectUrl
+      // Project must have a WorkflowProjectUrl (handled by query)
       WorkflowProjectUrl: {
         not: null
       }
@@ -216,20 +218,27 @@ async function validateProductBase(
       }
     }
   });
-  // 3. The store is allowed by the organization
-  return (
-    (project?.Organization.OrganizationStores.length ?? 0) > 0 &&
-    // 1. The store's type matches the Workflow's store type
-    productDefinition?.Workflow.StoreTypeId ===
-      project?.Organization.OrganizationStores[0].Store.StoreType.Id &&
-    // 2. The project has a WorkflowProjectUrl
-    // handled by query
-    // 4. The language, if specified, is allowed by the store
-    ((storeLanguageId &&
-      (project?.Organization.OrganizationStores[0].Store.StoreType.StoreLanguages.length ?? 0) >
-        0) ||
-      storeLanguageId === undefined) &&
-    // 5. The product type is allowed by the organization
-    (project?.Organization.OrganizationProductDefinitions.length ?? 0) > 0
-  );
+
+  /** 3. The store is allowed by the organization */
+  const storeInOrg = (project?.Organization.OrganizationStores.length ?? 0) > 0;
+
+  const prodDefStore = productDefinition?.Workflow.StoreTypeId;
+  const orgStore = project?.Organization.OrganizationStores[0]?.Store.StoreType.Id;
+  /** 1. The store's type matches the Workflow's store type
+   *
+   * Note: if both are undefined, this would be `true`; however, under those circumstances,
+   * condition #3 would evaluate to `false`, rendering the whole check `false`.
+   */
+  const storeMatchFlowStore = prodDefStore === orgStore;
+
+  const numOrgStoreLangs =
+    project?.Organization.OrganizationStores[0]?.Store.StoreType.StoreLanguages.length;
+  /** 4. The language, if specified, is allowed by the store */
+  const optionalLanguageAllowed = storeLanguageId === undefined || (numOrgStoreLangs ?? 0) > 0;
+
+  const numOrgProdDefs = project?.Organization.OrganizationProductDefinitions.length;
+  /** 5. The product type is allowed by the organization */
+  const productInOrg = (numOrgProdDefs ?? 0) > 0;
+
+  return storeInOrg && storeMatchFlowStore && optionalLanguageAllowed && productInOrg;
 }
