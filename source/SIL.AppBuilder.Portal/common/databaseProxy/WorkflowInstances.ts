@@ -40,6 +40,18 @@ export async function upsert(
   return res;
 }
 
+export async function update(
+  productId: string,
+  data: Omit<RequirePrimitive<Prisma.WorkflowInstancesUncheckedUpdateInput>, 'ProductId'>
+) {
+  return await prisma.workflowInstances.update({
+    where: {
+      ProductId: productId
+    },
+    data
+  });
+}
+
 function deleteInstance(productId: string, projectId: number) {
   updateProjectDateActive(productId, projectId);
   return prisma.workflowInstances.deleteMany({ where: { ProductId: productId } });

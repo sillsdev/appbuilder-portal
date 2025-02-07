@@ -142,26 +142,20 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
         ProductId: job.data.productId
       },
       select: {
-        Id: true,
         Context: true
       }
     });
     const ctx: WorkflowInstanceContext = JSON.parse(instance.Context);
     job.updateProgress(90);
-    await DatabaseWrites.workflowInstances.update({
-      where: {
-        Id: instance.Id
-      },
-      data: {
-        Context: JSON.stringify({
-          ...ctx,
-          environment: {
-            ...ctx.environment,
-            [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID]: '' + product.WorkflowBuildId,
-            [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE]: '' + versionCode
-          }
-        } as WorkflowInstanceContext)
-      }
+    await DatabaseWrites.workflowInstances.update(job.data.productId, {
+      Context: JSON.stringify({
+        ...ctx,
+        environment: {
+          ...ctx.environment,
+          [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID]: '' + product.WorkflowBuildId,
+          [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE]: '' + versionCode
+        }
+      } as WorkflowInstanceContext)
     });
   }
   job.updateProgress(100);
