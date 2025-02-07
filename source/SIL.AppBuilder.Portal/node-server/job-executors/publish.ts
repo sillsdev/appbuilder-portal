@@ -45,7 +45,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
   if (!productData.WorkflowBuildId || !productBuild) {
     const flow = await Workflow.restore(job.data.productId);
     // TODO: Send notification of failure
-    flow.send({
+    flow?.send({
       type: WorkflowAction.Publish_Failed,
       userId: null,
       comment: 'Product does not have a ProductBuild available.'
@@ -77,7 +77,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
   if (response.responseType === 'error') {
     const flow = await Workflow.restore(job.data.productId);
     // TODO: Send notification of failure
-    flow.send({ type: WorkflowAction.Publish_Failed, userId: null, comment: response.message });
+    flow?.send({ type: WorkflowAction.Publish_Failed, userId: null, comment: response.message });
   } else {
     await DatabaseWrites.products.update(job.data.productId, {
       WorkflowPublishId: response.id
@@ -108,7 +108,6 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
       },
       BullMQ.RepeatEveryMinute
     );
-    
   }
   job.updateProgress(100);
   return {
@@ -136,46 +135,48 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
       }
       let packageName: string | undefined = undefined;
       const flow = await Workflow.restore(job.data.productId);
-      if (response.result === 'SUCCESS') {
-        const publishUrlFile = response.artifacts['publishUrl'];
-        await DatabaseWrites.products.update(job.data.productId, {
-          DatePublished: new Date(),
-          PublishLink: publishUrlFile
-            ? (await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined
-            : undefined
-        });
-        flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
-        const packageFile = await prisma.productPublications.findUnique({
-          where: {
-            Id: job.data.publicationId
-          },
-          select: {
-            ProductBuild: {
-              select: {
-                ProductArtifacts: {
-                  where: {
-                    ArtifactType: 'package_name'
-                  },
-                  select: {
-                    Url: true
-                  },
-                  take: 1
+      if (flow) {
+        if (response.result === 'SUCCESS') {
+          const publishUrlFile = response.artifacts['publishUrl'];
+          await DatabaseWrites.products.update(job.data.productId, {
+            DatePublished: new Date(),
+            PublishLink: publishUrlFile
+              ? (await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined
+              : undefined
+          });
+          flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
+          const packageFile = await prisma.productPublications.findUnique({
+            where: {
+              Id: job.data.publicationId
+            },
+            select: {
+              ProductBuild: {
+                select: {
+                  ProductArtifacts: {
+                    where: {
+                      ArtifactType: 'package_name'
+                    },
+                    select: {
+                      Url: true
+                    },
+                    take: 1
+                  }
                 }
               }
             }
+          });
+          if (packageFile?.ProductBuild.ProductArtifacts[0]) {
+            packageName = await fetch(packageFile.ProductBuild.ProductArtifacts[0].Url).then((r) =>
+              r.text()
+            );
           }
-        });
-        if (packageFile?.ProductBuild.ProductArtifacts[0]) {
-          packageName = await fetch(packageFile.ProductBuild.ProductArtifacts[0].Url).then((r) =>
-            r.text()
-          );
+        } else {
+          flow.send({
+            type: WorkflowAction.Publish_Failed,
+            userId: null,
+            comment: `system.publish-failed,${response.artifacts['consoleText'] ?? ''}`
+          });
         }
-      } else {
-        flow.send({
-          type: WorkflowAction.Publish_Failed,
-          userId: null,
-          comment: `system.publish-failed,${response.artifacts['consoleText'] ?? ''}`
-        });
       }
       job.updateProgress(80);
       await DatabaseWrites.productPublications.update({

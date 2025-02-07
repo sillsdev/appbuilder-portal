@@ -58,7 +58,7 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
     job.updateProgress(75);
     const flow = await Workflow.restore(job.data.productId);
 
-    flow.send({ type: WorkflowAction.Product_Created, userId: null });
+    flow?.send({ type: WorkflowAction.Product_Created, userId: null });
 
     job.updateProgress(100);
     return response;

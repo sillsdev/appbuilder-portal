@@ -57,7 +57,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
   if (response.responseType === 'error') {
     const flow = await Workflow.restore(job.data.productId);
     // TODO: Send Notification of Failure
-    flow.send({ type: WorkflowAction.Build_Failed, userId: null, comment: response.message });
+    flow?.send({ type: WorkflowAction.Build_Failed, userId: null, comment: response.message });
   } else {
     await DatabaseWrites.products.update(job.data.productId, {
       WorkflowBuildId: response.id
@@ -192,14 +192,16 @@ export async function check(job: Job<BullMQ.Build.Check>): Promise<unknown> {
       });
       job.updateProgress(90);
       const flow = await Workflow.restore(job.data.productId);
-      if (response.result === 'SUCCESS') {
-        flow.send({ type: WorkflowAction.Build_Successful, userId: null });
-      } else {
-        flow.send({
-          type: WorkflowAction.Build_Failed,
-          userId: null,
-          comment: `system.build-failed,${response.artifacts['consoleText'] ?? ''}`
-        });
+      if (flow) {
+        if (response.result === 'SUCCESS') {
+          flow.send({ type: WorkflowAction.Build_Successful, userId: null });
+        } else {
+          flow.send({
+            type: WorkflowAction.Build_Failed,
+            userId: null,
+            comment: `system.build-failed,${response.artifacts['consoleText'] ?? ''}`
+          });
+        }
       }
     }
     job.updateProgress(100);
