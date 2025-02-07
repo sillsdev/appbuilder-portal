@@ -1,6 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import Flatpickr from 'svelte-flatpickr';
+  import sv_flatpickr from 'svelte-flatpickr-plus';
   // This component is here because the range mode of the Flatpickr svelte package
   // is a bit broken. Essentially, the 'value' property is updated when the second
   // date is clicked but not reassigned, only when the first is and it is set to a new value.
@@ -10,13 +10,14 @@
 
   // Note: At the moment, the site always follows prefered color scheme
   // If at some point in the future a manual toggle is added, this will need to be changed
-  let isDarkMode: boolean = $state(browser
-    ? window.matchMedia('(prefers-color-scheme: dark)').matches
-    : false);
-  browser &&
+  let isDarkMode: boolean = $state(
+    browser ? window.matchMedia('(prefers-color-scheme: dark)').matches : false
+  );
+  if (browser) {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
       isDarkMode = event.matches;
     });
+  }
 
   interface Props {
     chosenDates?: [Date, Date | null] | null;
@@ -37,21 +38,22 @@
   {/if}
 </svelte:head>
 <div class="dateRangePicker">
-  <Flatpickr
-    options={{
+  <input
+    name="dateRange"
+    use:sv_flatpickr={{
       mode: 'range',
       altInput: true,
       altFormat: 'M j, Y',
-      static: true
+      static: true,
+      onChange: (v) =>
+        (chosenDates = [
+          v[0],
+          // Add one day to include the final day
+          v[1] ? new Date(v[1].getTime() + 1000 * 60 * 60 * 24) : null
+        ])
     }}
     class="input input-bordered w-full min-w-40"
     {placeholder}
-    on:change={(v) =>
-      (chosenDates = [
-        v.detail[0][0],
-        // Add one day to include the final day
-        v.detail[0][1] ? new Date(v.detail[0][1].getTime() + 1000 * 60 * 60 * 24) : null
-      ])}
   />
 </div>
 
