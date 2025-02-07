@@ -1,3 +1,5 @@
+import { getProductActions, ProductActionType } from '$lib/products';
+import { doProductAction } from '$lib/products/server';
 import { canModifyProject, projectActionSchema } from '$lib/projects/common';
 import {
   doProjectAction,
@@ -6,7 +8,7 @@ import {
 } from '$lib/projects/common.server';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
-import { BullMQ, DatabaseWrites, prisma, Queues, Workflow } from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -35,8 +37,10 @@ const addProductSchema = v.object({
   productDefinitionId: idSchema,
   storeId: idSchema
 });
+
 const productActionSchema = v.object({
-  id: v.pipe(v.string(), v.uuid())
+  id: v.pipe(v.string(), v.uuid()),
+  productAction: v.enum(ProductActionType)
 });
 
 // Are we sending too much data?
@@ -95,7 +99,12 @@ export const load = (async ({ locals, params }) => {
           },
           WorkflowInstance: {
             select: {
-              Id: true
+              Id: true,
+              WorkflowDefinition: {
+                select: {
+                  Type: true
+                }
+              }
             }
           }
         }
@@ -235,8 +244,7 @@ export const load = (async ({ locals, params }) => {
         ActiveTransition: strippedTransitions.find(
           (t) => (t[0] ?? t[1])?.ProductId === product.Id
         )?.[1],
-        CanRebuild: !product.WorkflowInstance && product.ProductDefinition.RebuildWorkflowId !== null,
-        CanRepublish: !product.WorkflowInstance && product.ProductDefinition.RepublishWorkflowId !== null
+        actions: getProductActions(product, project.Owner.Id, session.user.userId)
       }))
     },
     possibleProjectOwners: await prisma.users.findMany({
@@ -338,7 +346,7 @@ export const actions = {
 
     return { form, ok: !!productId };
   },
-  async rebuildProduct(event) {
+  async productAction(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
       return fail(403);
     const form = await superValidate(event.request, valibot(productActionSchema));
@@ -348,77 +356,13 @@ export const actions = {
         Id: form.data.id
       },
       select: {
-        ProjectId: true,
-        ProductDefinition: {
-          select: {
-            RebuildWorkflow: {
-              select: {
-                Id: true,
-                Type: true,
-                ProductType: true,
-                WorkflowOptions: true
-              }
-            }
-          }
-        },
-        WorkflowInstance: {
-          select: {
-            Id: true
-          }
-        }
+        ProjectId: true
       }
     });
     if (!product || product.ProjectId !== parseInt(event.params.id)) return fail(404);
-    if (!product.WorkflowInstance && product.ProductDefinition.RebuildWorkflow) {
-      await Workflow.create(form.data.id, {
-        productType: product.ProductDefinition.RebuildWorkflow.ProductType,
-        options: new Set(product.ProductDefinition.RebuildWorkflow.WorkflowOptions),
-        workflowType: product.ProductDefinition.RebuildWorkflow.Type
-      });
-    } else {
-      return fail(400, { form, ok: false });
-    }
-  },
-  async republishProduct(event) {
-    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
-      return fail(403);
-    const form = await superValidate(event.request, valibot(productActionSchema));
-    if (!form.valid) return fail(400, { form, ok: false });
-    const product = await prisma.products.findUnique({
-      where: {
-        Id: form.id
-      },
-      select: {
-        ProjectId: true,
-        ProductDefinition: {
-          select: {
-            RepublishWorkflow: {
-              select: {
-                Id: true,
-                Type: true,
-                ProductType: true,
-                WorkflowOptions: true
-              }
-            }
-          }
-        },
-        WorkflowInstance: {
-          select: {
-            Id: true
-          }
-        }
-      }
-    });
-    if (!product || product.ProjectId !== parseInt(event.params.id)) return fail(404);
-    if (!product.WorkflowInstance && product.ProductDefinition.RepublishWorkflow) {
-      await Workflow.create(form.data.id, {
-        productType: product.ProductDefinition.RepublishWorkflow.ProductType,
-        options: new Set(product.ProductDefinition.RepublishWorkflow.WorkflowOptions),
-        workflowType: product.ProductDefinition.RepublishWorkflow.Type
-      });
-    } else {
-      return fail(400, { form, ok: false });
-    }
+    await doProductAction(form.data.id, form.data.productAction);
+
+    return { form, ok: true };
   },
   async addAuthor(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))

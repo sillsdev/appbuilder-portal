@@ -1,3 +1,5 @@
+import { ProductActionType } from '$lib/products';
+import { doProductAction } from '$lib/products/server';
 import {
   bulkProjectActionSchema,
   canModifyProject,
@@ -7,7 +9,7 @@ import {
 import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/common.server';
 import type { Prisma } from '@prisma/client';
 import { error, redirect, type Actions } from '@sveltejs/kit';
-import { prisma, Workflow } from 'sil.appbuilder.portal.common';
+import { prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -15,7 +17,7 @@ import type { PageServerLoad } from './$types';
 
 const bulkProductActionSchema = v.object({
   products: v.array(v.pipe(v.string(), v.uuid())),
-  operation: v.nullable(v.picklist(['rebuild', 'republish']))
+  operation: v.nullable(v.pipe(v.enum(ProductActionType), v.excludes(ProductActionType.Cancel)))
 });
 
 function whereStatements(
@@ -187,45 +189,7 @@ export const actions: Actions = {
     const form = await superValidate(event.request, valibot(bulkProductActionSchema));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
 
-    const products = await prisma.products.findMany({
-      where: {
-        Id: { in: form.data.products },
-        WorkflowInstance: null
-      },
-      select: {
-        Id: true,
-        ProductDefinition: {
-          select: {
-            RebuildWorkflow: {
-              select: {
-                Type: true,
-                ProductType: true,
-                WorkflowOptions: true
-              }
-            },
-            RepublishWorkflow: {
-              select: {
-                Type: true,
-                ProductType: true,
-                WorkflowOptions: true
-              }
-            }
-          }
-        }
-      }
-    });
-
-    const flowType = form.data.operation === 'rebuild' ? 'RebuildWorkflow' : 'RepublishWorkflow';
-    
-    await Promise.all(products.map(async (p) => {
-      if (p.ProductDefinition[flowType]) {
-        await Workflow.create(p.Id, {
-          productType: p.ProductDefinition[flowType].ProductType,
-          options: new Set(p.ProductDefinition[flowType].WorkflowOptions),
-          workflowType: p.ProductDefinition[flowType].Type
-        });
-      }
-    }));
+    await Promise.all(form.data.products.map((p) => doProductAction(p, form.data.operation!)));
 
     return { form, ok: true };
   }

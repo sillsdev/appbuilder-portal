@@ -269,26 +269,21 @@
                       class="dropdown-content bottom-12 right-0 p-1 bg-base-200 z-10 rounded-md min-w-36 w-auto shadow-lg"
                     >
                       <ul class="menu menu-compact overflow-hidden rounded-md">
-                        {#if product.CanRebuild}
+                        {#each product.actions as action}
+                          {@const message = 
+                            //@ts-expect-error this is in fact correct
+                            m['products_actions_'+action]()
+                          }
                           <li class="w-full rounded-none">
-                            <form action="?/rebuildProduct" method="post" use:enhance>
+                            <form action="?/productAction" method="post" use:enhance>
                               <input type="hidden" name="id" value={product.Id} />
+                              <input type="hidden" name="productAction" value={action} />
                               <button type="submit" class="text-nowrap">
-                                {m.products_actions_rebuild()}
+                                {message}
                               </button>
                             </form>
                           </li>
-                        {/if}
-                        {#if product.CanRepublish}
-                          <li class="w-full rounded-none">
-                            <form action="?/republishProduct" method="post" use:enhance>
-                              <input type="hidden" name="id" value={product.Id} />
-                              <button type="submit" class="text-nowrap">
-                                {m.products_actions_republish()}
-                              </button>
-                            </form>
-                          </li>
-                        {/if}
+                        {/each}
                         <li class="w-full rounded-none">
                           <button class="text-nowrap" on:click={() => openModal(product.Id)}>
                             {m.project_products_popup_details()}
