@@ -9,7 +9,9 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     where: {
       Id: job.data.scope === 'Product' ? job.data.productId : undefined,
       ProjectId: job.data.scope === 'Project' ? job.data.projectId : undefined,
-      WorkflowInstance: { isNot: null }
+      WorkflowInstance:
+        // WorkflowInstance can be null if deleting user tasks
+        job.data.operation.type !== BullMQ.UserTasks.OpType.Delete ? { isNot: null } : undefined
     },
     select: {
       Id: true,
