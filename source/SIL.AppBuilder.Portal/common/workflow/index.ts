@@ -282,6 +282,14 @@ export class Workflow {
           select: { ProjectId: true }
         });
         await DatabaseWrites.workflowInstances.delete(this.productId, product!.ProjectId);
+        await DatabaseWrites.productTransitions.create({ data: {
+          ProductId: this.productId,
+          // This is how S1 does it. May want to change later
+          AllowedUserNames: '',
+          DateTransition: new Date(),
+          TransitionType: ProductTransitionType.EndWorkflow,
+          WorkflowType: this.config.workflowType
+        }})
       } else {
         await this.createSnapshot(xSnap.context);
         // This will also create the dummy entries in the ProductTransitions table
