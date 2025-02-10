@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@auth/core": "^0.37.4",
+    "@handsontable/pikaday": "^1.0.0",
     "@iconify/svelte": "^4.2.0",
     "@inlang/paraglide-js": "1.11.8",
     "@inlang/paraglide-sveltekit": "^0.15.5",
@@ -46,7 +47,6 @@
     "prettier-plugin-svelte": "^3.3.3",
     "svelte": "^5.19.2",
     "svelte-check": "^4.1.4",
-    "svelte-flatpickr": "^3.3.5",
     "sveltekit-superforms": "^2.23.1",
     "svelvet": "^10.0.2",
     "tailwindcss": "^3.4.17",
@@ -67,10 +67,5 @@
     "@bull-board/express": "^6.7.1",
     "express": "^4.21.2",
     "sil.appbuilder.portal.common": "file:common"
-  },
-  "overrides": {
-    "svelte-flatpickr": {
-      "svelte" : "^5.0.0"
-    }
   }
 }
