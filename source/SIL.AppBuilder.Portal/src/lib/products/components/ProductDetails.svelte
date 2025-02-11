@@ -1,8 +1,8 @@
 <script lang="ts">
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import * as m from '$lib/paraglide/messages';
   import { getTimeDateString } from '$lib/timeUtils';
   import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
-  import IconContainer from './IconContainer.svelte';
 
   export let product: {
     Id: string;

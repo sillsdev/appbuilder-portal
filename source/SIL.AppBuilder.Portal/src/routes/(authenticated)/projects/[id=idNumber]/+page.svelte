@@ -2,11 +2,11 @@
   import { enhance } from '$app/forms';
   import { page } from '$app/stores';
   import IconContainer from '$lib/components/IconContainer.svelte';
-  import ProductDetails from '$lib/components/ProductDetails.svelte';
   import { i18n } from '$lib/i18n';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import langtags from '$lib/langtags.json';
   import * as m from '$lib/paraglide/messages';
+  import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { getRelativeTime } from '$lib/timeUtils';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';

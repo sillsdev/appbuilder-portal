@@ -1,7 +1,7 @@
 <script lang="ts">
   import IconContainer from '$lib/components/IconContainer.svelte';
-  import ProductDetails from '$lib/components/ProductDetails.svelte';
   import * as m from '$lib/paraglide/messages';
+  import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import { Springy } from '$lib/springyGraph.js';
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
