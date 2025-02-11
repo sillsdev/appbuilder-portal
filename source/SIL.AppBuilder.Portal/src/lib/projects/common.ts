@@ -51,11 +51,15 @@ export function pruneProjects(
           ProductDefinitionName: ProductDefinition.Name,
           VersionBuilt,
           DateBuilt,
-          CanRebuild: !!(!WorkflowInstance && DatePublished && ProductDefinition.RebuildWorkflowId),
+          CanRebuild: !!(
+            !WorkflowInstance &&
+            DatePublished &&
+            ProductDefinition.RebuildWorkflowId !== null
+          ),
           CanRepublish: !!(
             !WorkflowInstance &&
             DatePublished &&
-            ProductDefinition.RepublishWorkflowId
+            ProductDefinition.RepublishWorkflowId !== null
           )
         })
       )
