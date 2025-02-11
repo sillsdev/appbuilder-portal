@@ -147,6 +147,7 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
     });
     const ctx: WorkflowInstanceContext = JSON.parse(instance.Context);
     job.updateProgress(90);
+    // Use update here so this job doesn't inadvertently create a workflowInstance
     await DatabaseWrites.workflowInstances.update(job.data.productId, {
       Context: JSON.stringify({
         ...ctx,

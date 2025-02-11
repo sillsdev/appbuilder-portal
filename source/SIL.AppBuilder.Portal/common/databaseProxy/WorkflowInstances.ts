@@ -17,10 +17,12 @@ export async function upsert(
     },
     create: {
       ...instanceData.create,
+      // don't overwrite ProductId
       ProductId: productId
     },
     update: {
       ...instanceData.update,
+      // don't overwrite ProductId
       ProductId: productId
     }
   });
@@ -48,7 +50,8 @@ export async function update(
     where: {
       ProductId: productId
     },
-    data
+    // don't overwrite ProductId
+    data: { ...data, ProductId: productId }
   });
 }
 
