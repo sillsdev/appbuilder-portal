@@ -77,6 +77,8 @@ export async function checkStatuses(job: Job<BullMQ.System.CheckStatuses>): Prom
       });
       return {
         url: s.BuildEngineUrl,
+        // return first 4 characters of token for differentiation purposes
+        partialToken: s.BuildEngineApiAccessToken.substring(0, 4),
         status: res.status,
         error: res.responseType === 'error' ? res : undefined
       };
