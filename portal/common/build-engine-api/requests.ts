@@ -18,7 +18,7 @@ export async function request(
         SystemAvailable: true
       }
     });
-    if (!check?.SystemAvailable) {
+    if (!check?.SystemAvailable && resource !== 'system/check') {
       return new Response(
         JSON.stringify({
           responseType: 'error',
@@ -90,7 +90,7 @@ export async function getURLandToken(organizationId: number) {
 export async function systemCheck(auth: Types.Auth) {
   const res = await request('system/check', auth);
   return res.ok
-    ? ({ status: res.status} as Types.StatusResponse)
+    ? ({ status: res.status } as Types.StatusResponse)
     : ((await res.json()) as Types.ErrorResponse);
 }
 
