@@ -58,7 +58,7 @@
     } else {
       if (descending) {
         // reset to sort default field
-        if (current !== columns.find((c) => c.sortable)!) {
+        if (current.id !== columns.find((c) => c.sortable)!.id) {
           sortColByDirection(columns.find((c) => c.sortable)!);
           return; //don't sort twice
         } else {
