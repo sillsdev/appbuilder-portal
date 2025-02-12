@@ -105,7 +105,9 @@
       <span>-</span>
       <span>
         {m.project_createdOn()}
-        {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
+        <span class="tooltip tooltip-secondary" data-tip={data.project?.DateCreated?.toLocaleString(languageTag())}>
+          {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
+        </span>
       </span>
     </div>
     <div class="grow">
@@ -301,12 +303,16 @@
                 <span class="w-32 inline-block">
                   {m.project_products_updated()}
                   <br />
-                  {getRelativeTime(product.DateUpdated)}
+                  <span class="tooltip tooltip-secondary" data-tip={product.DateUpdated?.toLocaleString(langTag)}>
+                    {getRelativeTime(product.DateUpdated)}
+                  </span>
                 </span>
                 <span class="w-32 inline-block">
                   {m.project_products_published()}
                   <br />
-                  {getRelativeTime(product.DatePublished)}
+                  <span class="tooltip tooltip-secondary" data-tip={product.DatePublished?.toLocaleString(langTag)}>
+                    {getRelativeTime(product.DatePublished)}
+                  </span>
                 </span>
                 <span>
                   <div role="button" class="dropdown" tabindex="0">

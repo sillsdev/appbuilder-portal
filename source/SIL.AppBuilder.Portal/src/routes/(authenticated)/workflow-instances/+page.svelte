@@ -116,7 +116,8 @@
             id: 'date',
             header: m.common_updated(),
             data: (i) => i.DateUpdated,
-            render: (c) => getRelativeTime(c),
+            // TODO: tooltip will need to wait until Svelte 5
+            render: (c) => `${getRelativeTime(c)}`,
             sortable: true
           }
         ]}

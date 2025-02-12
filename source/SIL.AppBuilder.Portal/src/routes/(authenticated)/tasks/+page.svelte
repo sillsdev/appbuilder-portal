@@ -3,6 +3,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/timeUtils';
   import type { PageData } from './$types';
 
@@ -17,6 +18,7 @@
   <h1>{m.tasks_title()}</h1>
   <div class="m-4 relative mt-0">
     {#if data.tasks.length > 0}
+      {@const langTag = languageTag()}
       <table class="w-full">
         <thead>
           <tr class="border-b-2 text-left">
@@ -50,7 +52,10 @@
                 </a>
               </td>
               <td>
-                <span>
+                <span
+                  class="tooltip tooltip-secondary"
+                  data-tip={task.DateUpdated?.toLocaleString(langTag)}
+                >
                   {task.DateUpdated ? getRelativeTime(task.DateUpdated) : 'null'}
                 </span>
               </td>
