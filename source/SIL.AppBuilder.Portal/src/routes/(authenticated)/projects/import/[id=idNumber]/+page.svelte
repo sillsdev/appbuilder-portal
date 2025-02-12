@@ -76,7 +76,7 @@
       {m.project_importProjectsHelp()}
     </a>
     <div class="flex flex-row gap-4 flex-wrap place-content-center sm:place-content-start p-4">
-      <label class="form-control w-full max-w-xs">
+      <label class="flex flex-col w-full max-w-xs">
         <span class="label-text">{m.project_projectGroup()}:</span>
         <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
           {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
@@ -84,7 +84,7 @@
           {/each}
         </select>
       </label>
-      <label class="form-control w-full max-w-xs">
+      <label class="flex flex-col w-full max-w-xs">
         <span class="label-text">{m.project_type()}:</span>
         <select name="type" id="type" class="select select-bordered" bind:value={$form.type}>
           {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
@@ -92,7 +92,7 @@
           {/each}
         </select>
       </label>
-      <label class="form-control w-full max-w-xs">
+      <label class="flex flex-col w-full max-w-xs">
         <span class="label-text">{m.projectImport_importFile()}:</span>
         <input
           type="file"

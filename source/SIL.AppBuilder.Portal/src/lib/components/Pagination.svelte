@@ -22,7 +22,7 @@
 </script>
 
 {#snippet button(index: number)}
-  <label class="join-item btn btn-square form-control" class:bg-neutral={page === index}>
+  <label class="join-item btn btn-square" class:bg-neutral={page === index}>
     <span>{index + 1}</span>
     <input class="hidden" type="radio" bind:group={page} name="page" value={index} />
   </label>
@@ -31,7 +31,7 @@
 <div class="flex flex-row flex-wrap gap-1 w-full">
   {#if pageCount > 1}
     <div class="join max-w-xs overflow-x-auto md:max-w-none">
-      <label class="join-item btn btn-square form-control" class:btn-disabled={!hasPreviousPage}>
+      <label class="join-item btn btn-square" class:btn-disabled={!hasPreviousPage}>
         <span>«</span>
         <input class="hidden" type="radio" bind:group={page} name="page" value={page - 1} />
       </label>
@@ -56,7 +56,7 @@
         {/each}
       {/if}
       {@render button(pageCount - 1)}
-      <label class="join-item btn btn-square form-control" class:btn-disabled={!hasNextPage}>
+      <label class="join-item btn btn-square" class:btn-disabled={!hasNextPage}>
         <span>»</span>
         <input class="hidden" type="radio" bind:group={page} name="page" value={page + 1} />
       </label>

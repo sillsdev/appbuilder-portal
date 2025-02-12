@@ -86,7 +86,7 @@
             }}
           >
             <!-- svelte-ignore a11y_label_has_associated_control -->
-            <label class="form-control flex-row">
+            <label class="flex flex-row">
               <span class="label-text">{c.header}</span>
               <span class="direction-arrow">
                 {#if current.id === c.id && c.compare}

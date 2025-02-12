@@ -149,7 +149,6 @@
               <form
                 method="POST"
                 action="?/lock"
-                class="form-control"
                 use:svk_enhance={() => {
                   return async ({ update }) => {
                     await update({ reset: false, invalidateAll: false });

@@ -229,7 +229,7 @@
                     <!-- svelte-ignore a11y_click_events_have_key_events -->
                     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                     <label
-                      class="flex flex-col border border-secondary rounded text-left form-control cursor-pointer"
+                      class="flex flex-col border border-secondary rounded text-left cursor-pointer"
                     >
                       <div class="flex flex-row flex-wrap bg-neutral-300 p-2 w-full text-black">
                         <input

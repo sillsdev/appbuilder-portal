@@ -51,7 +51,7 @@
         {/each}
       </div>
     {/if}
-    <label class="form-control">
+    <label class="flex flex-col">
       <div class="label">
         <span class="label-text">{m.project_products_transitions_comment()}</span>
       </div>
@@ -70,7 +70,7 @@
   <div>
     {#if data.fields.ownerName && data.fields.ownerEmail}
       <div class="flex flex-col gap-x-3 w-full md:flex-row">
-        <label class="form-control w-full md:w-2/4">
+        <label class="flex flex-col w-full md:w-2/4">
           <div class="label">
             <span class="label-text">{m.projectTable_columns_owner()}</span>
           </div>
@@ -81,7 +81,7 @@
             value={data.fields.ownerName}
           />
         </label>
-        <label class="form-control w-full md:w-2/4">
+        <label class="flex flex-col w-full md:w-2/4">
           <div class="label">
             <span class="label-text">{m.profile_email()}</span>
           </div>
@@ -95,7 +95,7 @@
       </div>
     {/if}
     <div class="flex flex-col gap-x-3 w-full md:flex-row">
-      <label class="form-control w-full md:w-2/4">
+      <label class="flex flex-col w-full md:w-2/4">
         <div class="label">
           <span class="label-text">{m.project_projectName()}</span>
         </div>
@@ -106,7 +106,7 @@
           value={data.fields.projectName}
         />
       </label>
-      <label class="form-control w-full md:w-2/4">
+      <label class="flex flex-col w-full md:w-2/4">
         <div class="label">
           <span class="label-text">{m.project_projectDescription()}</span>
         </div>
@@ -120,7 +120,7 @@
     </div>
     {#if data.fields.storeDescription}
       <div class="flex flex-col gap-x-3 md:flex-row">
-        <label class="form-control w-full md:w-2/4">
+        <label class="flex flex-col w-full md:w-2/4">
           <div class="label">
             <span class="label-text">{m.stores_name()}</span>
           </div>
@@ -132,7 +132,7 @@
           />
         </label>
         {#if data.fields.listingLanguageCode}
-          <label class="form-control w-full md:w-2/4">
+          <label class="flex flex-col w-full md:w-2/4">
             <div class="label">
               <span class="label-text">{m.tasks_storeLanguage()}</span>
             </div>
@@ -147,7 +147,7 @@
       </div>
     {/if}
     {#if data.fields.projectURL}
-      <label class="form-control w-full">
+      <label class="flex flex-col w-full">
         <div class="label">
           <span class="label-text">{m.tasks_appProjectURL()}</span>
         </div>
@@ -175,7 +175,7 @@
       </label>
     {/if}
     {#if data.fields.displayProductDescription && data.fields.appType && data.fields.projectLanguageCode}
-      <label class="form-control w-full">
+      <label class="flex flex-col w-full">
         <div class="label">
           <span class="label-text">{m.tasks_product()}</span>
         </div>
@@ -186,7 +186,7 @@
           value={data.productDescription}
         />
       </label>
-      <label class="form-control w-full">
+      <label class="flex flex-col w-full">
         <div class="label">
           <span class="label-text">{m.admin_settings_productDefinitions_type()}</span>
         </div>
@@ -197,7 +197,7 @@
           value={data.fields.appType}
         />
       </label>
-      <label class="form-control w-full">
+      <label class="flex flex-col w-full">
         <div class="label">
           <span class="label-text">{m.project_languageCode()}</span>
         </div>
