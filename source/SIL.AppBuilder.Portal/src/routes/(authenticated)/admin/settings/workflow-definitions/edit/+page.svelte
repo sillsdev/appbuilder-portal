@@ -163,9 +163,10 @@
   </div>
 </form>
 
-<style lang="postcss">
+<style>
   input[type='text'],
   select {
-    @apply w-full max-w-xs;
+    width: 100%;
+    max-width: var(--container-xs);
   }
 </style>

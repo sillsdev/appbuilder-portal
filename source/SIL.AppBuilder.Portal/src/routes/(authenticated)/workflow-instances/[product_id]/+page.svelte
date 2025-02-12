@@ -215,40 +215,45 @@
   </div>
 </div>
 
-<style lang="postcss">
+<style>
   :global(.svelvet-node) {
     box-shadow: none !important;
   }
   .rect {
-    @apply fill-base-300 h-full w-full;
-    stroke-width: 7px;
+    fill: var(--color-base-300);
+    height: 100%;
+    width: 100%;
+    stroke-width: 3px;
   }
   .rect text {
-    @apply items-center fill-base-content;
+    align-items: center;
+    fill: var(--color-base-content);
   }
   .active {
-    @apply fill-warning;
+    fill: var(--color-warning);
   }
   .start {
-    @apply fill-success;
+    fill: var(--color-success);
   }
   .final {
-    @apply fill-info;
+    fill: var(--color-info);
   }
   :is(:global(.active, .final, .start)) text {
-    @apply fill-primary-content;
+    fill: var(--color-primary-content);
   }
   .selected {
-    @apply stroke-warning;
+    stroke: var(--color-warning);
   }
   .active > .selected {
-    @apply stroke-neutral-content;
+    stroke: var(--color-neutral-content);
   }
   .action {
-    @apply fill-neutral opacity-75;
+    fill: var(--color-neutral);
+    opacity: 75%;
   }
   .action text {
-    @apply fill-neutral-content stroke-none;
+    fill: var(--color-neutral-content);
+    stroke: none;
   }
   .navbar {
     height: 10%;

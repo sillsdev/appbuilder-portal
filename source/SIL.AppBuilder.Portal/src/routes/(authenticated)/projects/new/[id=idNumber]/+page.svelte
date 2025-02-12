@@ -27,11 +27,11 @@
     <h1 class="pl-2">{m.project_newProject()}</h1>
     <div class="flex flex-col gap-2 items-center">
       <div class="row">
-        <label class="form-control grow">
+        <label class="w-full md:max-w-xs grow">
           <span class="label-text">{m.project_projectName()}:</span>
           <input type="text" id="name" class="input input-bordered" bind:value={$form.Name} />
         </label>
-        <label class="form-control">
+        <label class="w-full md:max-w-xs">
           <span class="label-text">{m.project_projectGroup()}:</span>
           <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
             {#each data.organization.Groups.toSorted( (a, b) => byName(a, b, getLocale()) ) as group}
@@ -42,7 +42,7 @@
       </div>
       <div class="row">
         <!-- svelte-ignore a11y_label_has_associated_control -->
-        <label class="form-control">
+        <label class="w-full md:max-w-xs">
           <span class="label-text">{m.project_languageCode()}:</span>
           <!-- <input type="text" id="language" class="input input-bordered" bind:value={$form.language} /> -->
           <LanguageCodeTypeahead
@@ -51,7 +51,7 @@
             dropdownClasses="left-0"
           />
         </label>
-        <label class="form-control">
+        <label class="w-full md:max-w-xs">
           <span class="label-text">{m.project_type()}:</span>
           <select name="type" id="type" class="select select-bordered" bind:value={$form.type}>
             {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
@@ -61,7 +61,7 @@
         </label>
       </div>
       <div class="row">
-        <label class="form-control">
+        <label class="w-full md:max-w-xs">
           <span class="label-text">{m.project_projectDescription()}:</span>
           <textarea
             name="description"
@@ -70,7 +70,7 @@
             bind:value={$form.Description}
           ></textarea>
         </label>
-        <div class="form-control">
+        <div class="w-full md:max-w-xs">
           <label for="public" class="label">
             {m.project_public()}:
             <input
@@ -108,19 +108,17 @@
   </form>
 </div>
 
-<style lang="postcss">
+<style>
   .label[for='public'] {
     padding-left: 0px;
   }
   .row {
-    @apply flex flex-row flex-wrap gap-2 gap-x-4 w-full justify-center;
-  }
-  .form-control {
-    @apply w-full;
-  }
-  @media screen(md) {
-    .form-control {
-      @apply max-w-xs;
-    }
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 2);
+    column-gap: calc(var(--spacing) * 4);
+    width: 100%;
+    justify-content: center;
   }
 </style>

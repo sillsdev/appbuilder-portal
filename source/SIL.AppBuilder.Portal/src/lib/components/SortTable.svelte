@@ -112,16 +112,17 @@
   </table>
 </div>
 
-<style lang="postcss">
+<style>
   tr {
-    @apply cursor-pointer select-none;
+    cursor: pointer;
+    user-select: none;
   }
   thead {
     /* this helps prevent the vertical jankiness */
     line-height: inherit;
     position: sticky;
     top: 0;
-    @apply bg-neutral;
+    background-color: var(--color-neutral);
   }
   .direction-arrow {
     display: inline-block;
@@ -130,9 +131,11 @@
     min-height: 26px;
   }
   label {
-    @apply select-none cursor-pointer;
+    cursor: pointer;
+    user-select: none;
   }
   th {
-    @apply border;
+    border-style: var(--tw-border-style);
+    border-width: 1px;
   }
 </style>

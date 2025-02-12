@@ -67,7 +67,7 @@
         <!-- Desktop side menu -->
         {#key page.route.id}
           {#each menuItems as item}
-            <li class="w-60 border-t border-slate-600 w-full [top:-1px]">
+            <li class="border-t border-slate-600 w-full [top:-1px]">
               <a
                 class="rounded-none bg-base-200 p-3"
                 class:active={isActive(item.route)}
@@ -88,7 +88,7 @@
   </div>
 </div>
 
-<style lang="postcss">
+<style>
   .slidedown {
     position: relative;
   }
@@ -103,6 +103,7 @@
     overflow: hidden;
   }
   .active {
-    @apply bg-accent text-accent-content;
+    background-color: var(--color-accent);
+    color: var(--color-accent-content);
   }
 </style>

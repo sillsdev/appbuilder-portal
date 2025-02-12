@@ -300,21 +300,24 @@
   {/if}
 </div>
 
-<style lang="postcss">
+<style>
   .label-text {
     font-weight: bold;
   }
   /*this VVV technique allows css rules to break svelte scoping downwards*/
   #instructions :global(ul) {
-    @apply pl-10 list-disc;
+    padding-left: calc(var(--spacing) * 10);
+    list-style-type: disc;
   }
   #instructions :global(ol) {
-    @apply pl-10 list-decimal;
+    padding-left: calc(var(--spacing) * 10);
+    list-style-type: decimal;
   }
   #instructions :global(h3) {
-    @apply text-accent;
+    color: var(--color-accent);
   }
   #instructions :global(a) {
-    @apply link;
+    cursor: pointer;
+    text-decoration-line: underline;
   }
 </style>

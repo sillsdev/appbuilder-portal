@@ -13,8 +13,8 @@
   {@render children?.()}
 </span>
 
-<style lang="postcss">
+<style>
   .tooltip::before {
-    @apply shadow-md;
+    box-shadow: var(--shadow-md);
   }
 </style>

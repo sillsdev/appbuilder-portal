@@ -112,7 +112,6 @@
     enhance: productEnhance,
     submit: productSubmit
   } = superForm(data.productForm, {
-    dataType: 'json',
     resetForm: false,
     invalidateAll: false,
     onChange(event) {
@@ -132,7 +131,6 @@
 <div class="w-full max-w-6xl mx-auto relative px-2">
   <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
   <form
-    method="POST"
     action="?/page"
     use:pageEnhance
     onkeydown={(event) => {
@@ -166,7 +164,7 @@
       <input type="hidden" name="projectId" value={null} />
       {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
         <label
-          class="action btn btn-outline"
+          class="btn btn-outline {mobileSizing}"
           class:btn-disabled={!(canArchiveSelected && selectedProjects.length)}
         >
           {m.common_archive()}
@@ -181,7 +179,7 @@
       {/if}
       {#if data.allowReactivate && (canReactivateSelected || !selectedProjects.length)}
         <label
-          class="action btn btn-outline"
+          class="btn btn-outline {mobileSizing}"
           class:btn-disabled={!(canReactivateSelected && selectedProjects.length)}
         >
           {m.common_reactivate()}
@@ -196,8 +194,8 @@
       {/if}
       {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
         <button
-          class="action btn btn-outline"
           type="button"
+          class="btn btn-outline {mobileSizing}"
           disabled={!(canArchiveSelected && selectedProjects.length)}
           onclick={() => productSelectModal?.showModal()}
         >
@@ -307,11 +305,14 @@
       </form>
     </dialog>
     {#if page.params.filter === 'own'}
-      <div class="flex flex-row flex-wrap {mobileSizing} gap-1 mx-4">
-        <a class="action btn btn-outline" href="/projects/import/{$pageForm.organizationId}">
+      <div class="flex flex-row flex-wrap gap-1 mx-4 {mobileSizing}">
+        <a
+          class="btn btn-outline {mobileSizing}"
+          href="/projects/import/{$pageForm.organizationId}"
+        >
           {m.project_importProjects()}
         </a>
-        <a class="action btn btn-outline" href="/projects/new/{$pageForm.organizationId}">
+        <a class="btn btn-outline {mobileSizing}" href="/projects/new/{$pageForm.organizationId}">
           {m.sidebar_addProject()}
         </a>
       </div>
@@ -360,15 +361,3 @@
     </div>
   </form>
 </div>
-
-<style lang="postcss">
-  .action {
-    @apply form-control w-full max-w-xs;
-  }
-  /* This is perfectly valid. I don't have a way to make the error disappear */
-  @media screen(sm) {
-    .action {
-      @apply w-auto max-w-none;
-    }
-  }
-</style>
