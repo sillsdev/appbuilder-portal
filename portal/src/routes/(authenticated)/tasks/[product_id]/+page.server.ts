@@ -159,7 +159,7 @@ export const load = (async ({ params, url, locals }) => {
       listingLanguageCode: product?.StoreLanguage?.Name,
       projectURL: product?.Project.WorkflowAppProjectUrl,
       displayProductDescription: snap?.context.includeFields.includes('productDescription'),
-      appType: product?.ProductDefinition.ApplicationTypes.Description,
+      appType: product?.ProductDefinition.ApplicationTypes?.Description,
       projectLanguageCode: product?.Project.Language
     } as Fields,
     files: artifacts,
