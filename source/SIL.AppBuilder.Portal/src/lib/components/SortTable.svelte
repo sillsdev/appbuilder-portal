@@ -35,12 +35,10 @@
     row
   }: Props = $props();
 
-  function firstSortable() {
-    return columns.find((c) => c.compare !== undefined)!;
-  }
+  let firstSortable = $derived(columns.find((c) => c.compare !== undefined)!)
 
-  /** Current field being sorted. Defaults to first field where `sortable === true` */
-  let current = $state(firstSortable());
+  /** Current field being sorted. Defaults to first field that can be sorted */
+  let current = $state(columns.find((c) => c.compare !== undefined)!);
   let descending = $state(false);
 
   function sortColByDirection(key: (typeof columns)[0]) {
@@ -51,8 +49,8 @@
     } else {
       if (descending) {
         // reset to sort default field
-        if (current.id !== firstSortable().id) {
-          sortColByDirection(firstSortable());
+        if (current.id !== firstSortable.id) {
+          sortColByDirection(firstSortable);
           return; //don't sort twice
         } else {
           descending = false;
@@ -66,7 +64,7 @@
     } else {
       // sort based on current field
       // if blank, sort first field
-      const compare = current.compare || firstSortable().compare;
+      const compare = current.compare || firstSortable.compare;
       data = data.sort((a, b) => {
         return descending ? (compare?.(b, a) ?? 0) : (compare?.(a, b) ?? 0);
       });
