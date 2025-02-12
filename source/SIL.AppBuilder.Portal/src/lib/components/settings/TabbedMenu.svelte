@@ -38,7 +38,7 @@
       {:else}
         <h1 class="p-4" class:text-nowrap={!allowTitleWrap}>{titleString}</h1>
       {/if}
-      <div class="rounded border-slate-600 bg-base-200 mx-auto sm:hidden">
+      <div class="rounded-sm border-slate-600 bg-base-200 mx-auto sm:hidden">
         <!-- Mobile dropdown menu -->
         <div class="slidedown p-3" role="button" tabindex="0">
           <div class="flex place-content-between">
@@ -63,7 +63,7 @@
           </div>
         </div>
       </div>
-      <ul class="menu p-0 rounded border border-slate-600 sm:flex hidden">
+      <ul class="menu p-0 rounded-sm border border-slate-600 sm:flex hidden">
         <!-- Desktop side menu -->
         {#key page.route.id}
           {#each menuItems as item}
