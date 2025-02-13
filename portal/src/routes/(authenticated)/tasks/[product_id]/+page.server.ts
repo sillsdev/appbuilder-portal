@@ -100,6 +100,19 @@ export const load = (async ({ params, locals }) => {
     }
   }))!;
 
+  const latestRelease = (await prisma.productPublications.findMany({
+    where: {
+      ProductId: params.product_id,
+      Success: true
+    },
+    orderBy: {
+      DateUpdated: 'desc'
+    },
+    take: 1
+  })).at(0);
+
+  console.log(JSON.stringify(latestRelease, null, 4));
+
   const artifacts = snap.context.includeArtifacts
     ? await prisma.productArtifacts.findMany({
         where: {
@@ -122,6 +135,15 @@ export const load = (async ({ params, locals }) => {
         }
       })
     : [];
+
+  artifacts.forEach(async (a) => {
+    if (a.Url) {
+      const res = await fetch(a.Url, { method: 'HEAD', headers: {
+        'Want-Content-Digest': 'md5=1, sha-512=2, sha-256=3'
+      } });
+      console.log(res.headers);
+    }
+  });
 
   return {
     actions: Workflow.availableTransitionsFromName(snap.state, snap.config)

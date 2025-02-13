@@ -138,6 +138,13 @@ export const WorkflowStateMachine = setup({
           }
         }),
         jump({ target: WorkflowState.Verify_and_Publish }),
+        jump({
+          target: WorkflowState.Update_Google_Play,
+          filter: {
+            productType: { is: ProductType.Android_GooglePlay },
+            options: { has: WorkflowOptions.AdminStoreAccess }
+          }
+        }),
         jump({ target: WorkflowState.Product_Publish }),
         jump({
           target: WorkflowState.Make_It_Live,
@@ -504,8 +511,8 @@ export const WorkflowStateMachine = setup({
                       : context.productType === ProductType.Web
                         ? 'html'
                         : //ProductType.Android_GooglePlay
-                      //default
-                        'apk play-listing',
+                          //default
+                          'apk play-listing',
               // extra env handled in getWorkflowParameters
               environment: context.environment
             },
@@ -695,24 +702,24 @@ export const WorkflowStateMachine = setup({
       entry: assign({
         instructions: ({ context }) => {
           switch (context.productType) {
-          case ProductType.Android_GooglePlay:
-            return 'googleplay_verify_and_publish';
-          case ProductType.Android_S3:
-            return 'verify_and_publish';
-          case ProductType.AssetPackage:
-            return 'asset_package_verify_and_publish';
-          case ProductType.Web:
-            return 'web_verify';
+            case ProductType.Android_GooglePlay:
+              return 'googleplay_verify_and_publish';
+            case ProductType.Android_S3:
+              return 'verify_and_publish';
+            case ProductType.AssetPackage:
+              return 'asset_package_verify_and_publish';
+            case ProductType.Web:
+              return 'web_verify';
           }
         },
         includeFields: ({ context }) => {
           switch (context.productType) {
-          case ProductType.Android_GooglePlay:
-          case ProductType.Android_S3:
-            return ['storeDescription', 'listingLanguageCode'];
-          case ProductType.AssetPackage:
-          case ProductType.Web:
-            return ['storeDescription'];
+            case ProductType.Android_GooglePlay:
+            case ProductType.Android_S3:
+              return ['storeDescription', 'listingLanguageCode'];
+            case ProductType.AssetPackage:
+            case ProductType.Web:
+              return ['storeDescription'];
           }
         },
         includeReviewers: true,
@@ -754,7 +761,48 @@ export const WorkflowStateMachine = setup({
             // ISSUE: #1100 connect to backend to email reviewers
             console.log('Emailing Reviewers');
           }
+        },
+        [WorkflowAction.Transfer_to_Admin]: {
+          meta: {
+            type: ActionType.User,
+            user: RoleId.AppBuilder,
+            includeWhen: {
+              productType: { is: ProductType.Android_GooglePlay },
+              options: { has: WorkflowOptions.AdminStoreAccess }
+            }
+          },
+          target: WorkflowState.Update_Google_Play
         }
+      }
+    },
+    [WorkflowState.Update_Google_Play]: {
+      meta: {
+        includeWhen: {
+          productType: { is: ProductType.Android_GooglePlay },
+          options: { has: WorkflowOptions.AdminStoreAccess }
+        }
+      },
+      entry: assign({
+        instructions: 'update_google_play'
+        // TODO: includeFields
+        // TODO: includeArtifacts
+      }),
+      on: {
+        [WorkflowAction.Continue]: {
+          meta: {
+            type: ActionType.User,
+            user: RoleId.OrgAdmin
+          },
+          target: WorkflowState.Verify_and_Publish
+        },
+        [WorkflowAction.Reject]: {
+          meta: {
+            type: ActionType.User,
+            user: RoleId.OrgAdmin
+          },
+          target: WorkflowState.Synchronize_Data
+        }
+        // TODO: any other actions?
       }
     },
     [WorkflowState.Product_Publish]: {
@@ -773,9 +821,9 @@ export const WorkflowStateMachine = setup({
                   : context.productType === ProductType.Web
                     ? 'rclone'
                     : //ProductType.Android_S3
-                    //ProductType.AssetPackage
-                    //default
-                    's3-bucket',
+                      //ProductType.AssetPackage
+                      //default
+                      's3-bucket',
               environment: context.environment
             },
             BullMQ.Retry5e5

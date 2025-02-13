@@ -44,6 +44,7 @@ export enum WorkflowState {
   App_Store_Preview = 'App Store Preview',
   Create_App_Store_Entry = 'Create App Store Entry',
   Verify_and_Publish = 'Verify and Publish',
+  Update_Google_Play = 'Update Google Play',
   Product_Publish = 'Product Publish',
   Make_It_Live = 'Make It Live',
   Published = 'Published'
@@ -62,6 +63,7 @@ export enum WorkflowAction {
   New_App = 'New App',
   Existing_App = 'Existing App',
   Transfer_to_Authors = 'Transfer to Authors',
+  Transfer_to_Admin = 'Transfer to Admin',
   Take_Back = 'Take Back',
   Build_Successful = 'Build Successful',
   Build_Failed = 'Build Failed',
@@ -80,10 +82,10 @@ export type WorkflowInstanceContext = {
     | 'googleplay_verify_and_publish'
     | 'make_it_live'
     | 'approval_pending'
-    | 'readiness_check'
     | 'synchronize_data'
     | 'authors_upload'
     | 'verify_and_publish'
+    | 'update_google_play'
     | 'waiting'
     | 'web_verify'
     | null;
