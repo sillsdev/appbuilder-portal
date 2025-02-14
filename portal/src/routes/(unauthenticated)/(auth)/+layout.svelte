@@ -7,8 +7,7 @@
   
   let { children }: Props = $props();
 </script>
-
-<div class="grid w-full h-full place-items-center place-content-center">
+<div class="grid w-full h-full place-items-center place-content-center [background-color:#0068a6]">
   <div>
     {@render children?.()}
   </div>
