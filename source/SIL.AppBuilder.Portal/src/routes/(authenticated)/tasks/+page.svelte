@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
@@ -52,12 +53,9 @@
                 </a>
               </td>
               <td>
-                <span
-                  class="tooltip tooltip-secondary"
-                  data-tip={task.DateUpdated?.toLocaleString(langTag)}
-                >
+                <Tooltip tip={task.DateUpdated?.toLocaleString(langTag)}>
                   {task.DateUpdated ? getRelativeTime(task.DateUpdated) : 'null'}
-                </span>
+                </Tooltip>
               </td>
             </tr>
             {#if task.Comment}

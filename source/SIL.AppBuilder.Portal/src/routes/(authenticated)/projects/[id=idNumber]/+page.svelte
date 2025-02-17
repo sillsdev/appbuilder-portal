@@ -2,6 +2,7 @@
   import { enhance } from '$app/forms';
   import { page } from '$app/stores';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import Tooltip from '$lib/components/Tooltip.svelte';
   import { i18n } from '$lib/i18n';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import langtags from '$lib/langtags.json';
@@ -105,17 +106,17 @@
       <span>-</span>
       <span>
         {m.project_createdOn()}
-        <span class="tooltip tooltip-secondary" data-tip={data.project?.DateCreated?.toLocaleString(languageTag())}>
+        <Tooltip tip={data.project?.DateCreated?.toLocaleString(languageTag())}>
           {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
-        </span>
+        </Tooltip>
       </span>
     </div>
     <div class="grow">
-      <div class="tooltip tooltip-bottom" data-tip={m.project_editProject()}>
+      <Tooltip className="tooltip-bottom" tip={m.project_editProject()}>
         <a href="/projects/{data.project?.Id}/edit" title={m.project_editProject()}>
           <IconContainer width="24" icon="mdi:pencil" />
         </a>
-      </div>
+      </Tooltip>
     </div>
     <div class="shrink">
       <ProjectActionMenu
@@ -303,16 +304,16 @@
                 <span class="w-32 inline-block">
                   {m.project_products_updated()}
                   <br />
-                  <span class="tooltip tooltip-secondary" data-tip={product.DateUpdated?.toLocaleString(langTag)}>
+                  <Tooltip tip={product.DateUpdated?.toLocaleString(langTag)}>
                     {getRelativeTime(product.DateUpdated)}
-                  </span>
+                  </Tooltip>
                 </span>
                 <span class="w-32 inline-block">
                   {m.project_products_published()}
                   <br />
-                  <span class="tooltip tooltip-secondary" data-tip={product.DatePublished?.toLocaleString(langTag)}>
+                  <Tooltip tip={product.DatePublished?.toLocaleString(langTag)}>
                     {getRelativeTime(product.DatePublished)}
-                  </span>
+                  </Tooltip>
                 </span>
                 <span>
                   <div role="button" class="dropdown" tabindex="0">

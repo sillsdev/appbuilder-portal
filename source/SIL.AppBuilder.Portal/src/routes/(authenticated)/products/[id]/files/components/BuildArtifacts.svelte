@@ -1,5 +1,6 @@
 <script lang="ts">
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import Tooltip from '$lib/components/Tooltip.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/timeUtils';
@@ -85,12 +86,11 @@
             <tr>
               <td><IconContainer icon="mdi:file" width="20" /> {artifact.ArtifactType}</td>
               <td>
-                <span
-                  class="tooltip tooltip-secondary"
-                  data-tip={artifact.DateUpdated?.toLocaleString(langTag)}
+                <Tooltip
+                  tip={artifact.DateUpdated?.toLocaleString(langTag)}
                 >
                   {getRelativeTime(artifact.DateUpdated)}
-                </span>
+                </Tooltip>
               </td>
               <td class="text-right">{bytesToHumanSize(artifact.FileSize)}</td>
               <td class="text-right">
