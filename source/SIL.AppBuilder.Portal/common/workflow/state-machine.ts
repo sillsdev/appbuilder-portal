@@ -1,5 +1,5 @@
 import { assign, setup } from 'xstate';
-import { BullMQ, Queues } from '../index.js';
+import { BullMQ, Queues, Workflow } from '../index.js';
 import { RoleId, WorkflowType } from '../public/prisma.js';
 import type {
   WorkflowContext,
@@ -283,10 +283,7 @@ export const WorkflowStateMachine = setup({
           workflowType: { is: WorkflowType.Startup }
         }
       },
-      entry: assign({
-        instructions: null,
-        includeFields: []
-      }),
+      entry: ({ context }) => Workflow.delete(context.productId),
       type: 'final'
     },
     [WorkflowState.Product_Creation]: {
@@ -868,10 +865,7 @@ export const WorkflowStateMachine = setup({
       }
     },
     [WorkflowState.Published]: {
-      entry: assign({
-        instructions: null,
-        includeFields: ['storeDescription', 'listingLanguageCode']
-      }),
+      entry: ({ context }) => Workflow.delete(context.productId),
       type: 'final'
     }
   },

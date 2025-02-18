@@ -95,15 +95,15 @@ export class Workflow {
     flow.flow = createActor(WorkflowStateMachine, {
       snapshot: snap
         ? WorkflowStateMachine.resolveState({
-          value: snap.state,
-          context: {
-            ...snap.context,
-            ...snap.config,
-            productId: productId,
-            hasAuthors: check._count.Authors > 0,
-            hasReviewers: check._count.Authors > 0
-          }
-        })
+            value: snap.state,
+            context: {
+              ...snap.context,
+              ...snap.config,
+              productId: productId,
+              hasAuthors: check._count.Authors > 0,
+              hasReviewers: check._count.Authors > 0
+            }
+          })
         : undefined,
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
@@ -119,6 +119,29 @@ export class Workflow {
     flow.flow.start();
 
     return flow;
+  }
+
+  public static async delete(productId: string) {
+    const product = await prisma.products.findUnique({
+      where: { Id: productId },
+      select: {
+        ProjectId: true,
+        WorkflowInstance: { select: { WorkflowDefinition: { select: { Type: true } } } }
+      }
+    });
+    if (product?.WorkflowInstance) {
+      await DatabaseWrites.workflowInstances.delete(productId, product.ProjectId);
+      await DatabaseWrites.productTransitions.create({
+        data: {
+          ProductId: productId,
+          // This is how S1 does it. May want to change later
+          AllowedUserNames: '',
+          DateTransition: new Date(),
+          TransitionType: ProductTransitionType.EndWorkflow,
+          WorkflowType: product.WorkflowInstance.WorkflowDefinition.Type
+        }
+      });
+    }
   }
 
   /** Send a transition event to the workflow. */
@@ -276,20 +299,10 @@ export class Workflow {
           ProductId: this.productId
         }
       });
-      if (xSnap.value in TerminalStates) {
-        const product = await prisma.products.findUnique({
-          where: { Id: this.productId },
-          select: { ProjectId: true }
-        });
-        await DatabaseWrites.workflowInstances.delete(this.productId, product!.ProjectId);
-        await DatabaseWrites.productTransitions.create({ data: {
-          ProductId: this.productId,
-          // This is how S1 does it. May want to change later
-          AllowedUserNames: '',
-          DateTransition: new Date(),
-          TransitionType: ProductTransitionType.EndWorkflow,
-          WorkflowType: this.config.workflowType
-        }})
+      if (TerminalStates.includes(xSnap.value)) {
+        // This code will probably never be reachable?
+        // It looks like the inspect hook is not invoked when a final state is reached...
+        await Workflow.delete(this.productId);
       } else {
         await this.createSnapshot(xSnap.context);
         // This will also create the dummy entries in the ProductTransitions table
@@ -337,8 +350,8 @@ export class Workflow {
           context.workflowType === WorkflowType.Rebuild
             ? prodDefinition.RebuildWorkflowId!
             : context.workflowType === WorkflowType.Republish
-              ? prodDefinition.RepublishWorkflowId!
-              : prodDefinition.WorkflowId!
+            ? prodDefinition.RepublishWorkflowId!
+            : prodDefinition.WorkflowId!
       },
       update: {
         State: Workflow.stateName(this.currentState!),
@@ -371,12 +384,12 @@ export class Workflow {
       AllowedUserNames:
         t.meta.type === ActionType.User
           ? Array.from(
-            new Set(
-              Object.entries(users)
-                .filter(([user, roles]) => roles.has(t.meta.user))
-                .map(([user, roles]) => user)
-            )
-          ).join()
+              new Set(
+                Object.entries(users)
+                  .filter(([user, roles]) => roles.has(t.meta.user))
+                  .map(([user, roles]) => user)
+              )
+            ).join()
           : null,
       TransitionType: ProductTransitionType.Activity,
       InitialState: Workflow.stateName(state),
@@ -460,14 +473,14 @@ export class Workflow {
 
     const user = userId
       ? await prisma.users.findUnique({
-        where: {
-          Id: userId
-        },
-        select: {
-          Name: true,
-          WorkflowUserId: true
-        }
-      })
+          where: {
+            Id: userId
+          },
+          select: {
+            Name: true,
+            WorkflowUserId: true
+          }
+        })
       : null;
 
     if (transition) {
