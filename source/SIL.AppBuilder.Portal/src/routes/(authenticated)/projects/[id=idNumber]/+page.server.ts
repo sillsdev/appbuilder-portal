@@ -83,7 +83,12 @@ export const load = (async ({ locals, params }) => {
               Id: true,
               Name: true,
               RebuildWorkflowId: true,
-              RepublishWorkflowId: true
+              RepublishWorkflowId: true,
+              Workflow: {
+                select: {
+                  ProductType: true
+                }
+              }
             }
           },
           // Probably don't need to optimize this. Unless it's a really large org, there probably won't be very many of these records for an individual product. In most cases, there will only be zero or one. The only times there will be more is if it's an admin task or an author task.

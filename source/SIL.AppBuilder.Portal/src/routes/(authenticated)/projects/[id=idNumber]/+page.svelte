@@ -12,6 +12,7 @@
   import { getRelativeTime } from '$lib/timeUtils';
   import { sortByName } from '$lib/utils';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+  import { ProductType } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -253,6 +254,27 @@
                   <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
                   {product.ProductDefinition.Name}
                 </span>
+                {#if product.PublishLink}
+                  {@const pType = product.ProductDefinition.Workflow.ProductType}
+                  <span class="flex flex-col px-2">
+                    <a class="link" href={product.PublishLink} target="_blank">
+                      <IconContainer icon="ic:twotone-store" width={24} />
+                    </a>
+                    {#if pType !== ProductType.Web}
+                      <!-- TODO: Create this API endpoint -->
+                      <a
+                        class="link"
+                        href="/api/products/{product.Id}/files/published/{pType ===
+                        ProductType.AssetPackage
+                          ? 'asset-package'
+                          : 'apk'}"
+                        target="_blank"
+                      >
+                        <IconContainer icon="mdi:launch" width={24} />
+                      </a>
+                    {/if}
+                  </span>
+                {/if}
                 <span class="w-32 inline-block">
                   {m.project_products_updated()}
                   <br />
