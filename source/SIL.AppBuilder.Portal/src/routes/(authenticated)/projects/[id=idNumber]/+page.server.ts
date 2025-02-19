@@ -77,6 +77,7 @@ export const load = (async ({ locals, params }) => {
           Id: true,
           DateUpdated: true,
           DatePublished: true,
+          PublishLink: true,
           ProductDefinition: {
             select: {
               Id: true,

@@ -6,9 +6,11 @@
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import langtags from '$lib/langtags.json';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { getRelativeTime } from '$lib/timeUtils';
+  import { sortByName } from '$lib/utils';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -243,7 +245,8 @@
         {#if !data.project?.Products.length}
           {m.projectTable_noProducts()}
         {:else}
-          {#each data.project.Products as product}
+          {@const langTag = languageTag()}
+          {#each data.project.Products.sort( (a, b) => sortByName(a.ProductDefinition, b.ProductDefinition, langTag) ) as product}
             <div class="rounded-md border border-slate-400 w-full my-2">
               <div class="bg-neutral p-2 flex flex-row rounded-t-md">
                 <span class="grow min-w-0">
@@ -270,10 +273,9 @@
                     >
                       <ul class="menu menu-compact overflow-hidden rounded-md">
                         {#each product.actions as action}
-                          {@const message = 
+                          {@const message =
                             //@ts-expect-error this is in fact correct
-                            m['products_actions_'+action]()
-                          }
+                            m['products_actions_' + action]()}
                           <li class="w-full rounded-none">
                             <form action="?/productAction" method="post" use:enhance>
                               <input type="hidden" name="id" value={product.Id} />
