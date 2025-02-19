@@ -84,3 +84,42 @@ export async function doProductAction(productId: string, action: ProductActionTy
     }
   }
 }
+
+/**
+ * Get the most recent published file of specified type associated with this product
+ * @param id Product ID
+ * @param type ProductArtifact type to be returned
+ */
+export async function getPublishedFile(productId: string, type: string) {
+  const publications = await prisma.productPublications.findMany({
+    where: {
+      ProductId: productId,
+      Success: true
+    },
+    include: {
+      ProductBuild: {
+        include: {
+          ProductArtifacts: true
+        }
+      }
+    },
+    orderBy: {
+      Id: 'desc'
+    }
+  });
+  for (const publication of publications) {
+    if (!publication.ProductBuild.ProductArtifacts.length) {
+      continue;
+    }
+    const artifact = publication.ProductBuild.ProductArtifacts.find(
+      (pa) => pa.ArtifactType === type
+    );
+
+    if (artifact) {
+      return artifact;
+    }
+  }
+
+  // Return null if product has not been successfully published
+  return null;
+}

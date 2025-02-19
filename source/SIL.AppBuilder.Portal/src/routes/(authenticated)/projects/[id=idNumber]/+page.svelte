@@ -261,7 +261,6 @@
                       <IconContainer icon="ic:twotone-store" width={24} />
                     </a>
                     {#if pType !== ProductType.Web}
-                      <!-- TODO: Create this API endpoint -->
                       <a
                         class="link"
                         href="/api/products/{product.Id}/files/published/{pType ===

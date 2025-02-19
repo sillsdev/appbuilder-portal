@@ -38,3 +38,12 @@ export function getProductActions(
 
   return ret;
 }
+
+export async function getFileInfo(url: string) {
+  const res = await fetch(url, { method: 'HEAD' });
+  return {
+    contentType: res.headers.get('Content-Type'),
+    lastModified: new Date(res.headers.get('Last-Modified') ?? 0).toISOString(),
+    fileSize: res.headers.get('Content-Type') !== 'text/html'? res.headers.get('Content-Length') : null
+  }
+}
