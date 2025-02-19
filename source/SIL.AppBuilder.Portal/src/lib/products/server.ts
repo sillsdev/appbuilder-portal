@@ -57,7 +57,6 @@ export async function doProductAction(productId: string, action: ProductActionTy
         product.WorkflowInstance?.WorkflowDefinition &&
           product.WorkflowInstance.WorkflowDefinition.Type !== WorkflowType.Startup
       ) {
-        // TODO: this won't cancel a build that is in progress
         await Queues.UserTasks.add(
           `Delete UserTasks for canceled workflow (product #${productId})`,
           {

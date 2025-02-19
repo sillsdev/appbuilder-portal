@@ -118,6 +118,27 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
 }
 
 export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
+  const product = await prisma.products.findFirst({
+    where: {
+      WorkflowJobId: job.data.jobId,
+      WorkflowBuildId: job.data.buildId,
+      WorkflowPublishId: job.data.releaseId
+    },
+    select: {
+      WorkflowInstance: {
+        select: {
+          Id: true
+        }
+      }
+    }
+  });
+  if (!product?.WorkflowInstance) {
+    await Queues.RemotePolling.removeRepeatableByKey(job.repeatJobKey);
+    job.log('No WorkflowInstance found. Workflow cancelled?');
+    job.updateProgress(100);
+    return { product };
+  }
+  job.updateProgress(25);
   const response = await BuildEngine.Requests.getRelease(
     { type: 'query', organizationId: job.data.organizationId },
     job.data.jobId,
