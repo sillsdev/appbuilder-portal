@@ -499,15 +499,18 @@ export const WorkflowStateMachine = setup({
               type: BullMQ.JobType.Build_Product,
               productId: context.productId,
               defaultTargets:
-                context.productType === ProductType.Android_S3
-                  ? 'apk'
-                  : context.productType === ProductType.AssetPackage
-                    ? 'asset-package'
-                    : context.productType === ProductType.Web
-                      ? 'html'
-                      : //ProductType.Android_GooglePlay
-                    //default
-                      'apk play-listing',
+                context.workflowType === WorkflowType.Republish
+                  ? 'play-listing'
+                  : context.productType === ProductType.Android_S3
+                    ? 'apk'
+                    : context.productType === ProductType.AssetPackage
+                      ? 'asset-package'
+                      : context.productType === ProductType.Web
+                        ? 'html'
+                        : //ProductType.Android_GooglePlay
+                      //default
+                        'apk play-listing',
+              // extra env handled in getWorkflowParameters
               environment: context.environment
             },
             BullMQ.Retry5e5
