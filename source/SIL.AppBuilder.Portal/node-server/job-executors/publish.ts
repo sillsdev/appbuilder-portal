@@ -206,7 +206,7 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
         },
         data: {
           Success: response.result === 'SUCCESS',
-          LogUrl: response.console_text,
+          LogUrl: response.consoleText,
           Package: packageName?.trim()
         }
       });
