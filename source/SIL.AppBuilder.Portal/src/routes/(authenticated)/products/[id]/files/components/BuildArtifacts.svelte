@@ -1,6 +1,7 @@
 <script lang="ts">
   import IconContainer from '$lib/components/IconContainer.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/timeUtils';
   import { bytesToHumanSize } from '$lib/utils';
 
@@ -12,6 +13,12 @@
       ArtifactType: string | null;
       FileSize: bigint | null;
       Url: string | null;
+      DateUpdated: Date | null;
+    }[];
+    ProductPublications: {
+      Channel: string | null;
+      Success: boolean | null;
+      LogUrl: string | null;
       DateUpdated: Date | null;
     }[];
   };
@@ -39,8 +46,7 @@
     const message = m.project_products_numArtifacts({ amount });
     if (amount === 0) {
       return message.match(/=0 *\{(.*?)\}/)![1];
-    }
-    else {
+    } else {
       const matches = message.match(/other *\{(.*?)\{ amount \}(.*?)\}/);
       return `${matches![1]}${amount}${matches![2]}`;
     }
@@ -82,6 +88,34 @@
               </td>
             </tr>
           {/each}
+        </tbody>
+      </table>
+    {/if}
+    {#if build.ProductPublications.at(0)?.LogUrl}
+      {@const pub = build.ProductPublications[0]}
+      <table class="table table-auto bg-base-100">
+        <thead>
+          <tr>
+            <th>{m.project_products_publications_channel()}</th>
+            <th>{m.project_products_publications_status()}</th>
+            <th>{m.project_products_publications_date()}</th>
+            <!-- Are we sure this is the i18n we want??? -->
+            <th>{m.project_products_publications_url()}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{pub.Channel}</td>
+            <td>
+              {pub.Success
+                ? m.project_products_publications_succeeded()
+                : m.project_products_publications_failed()}
+            </td>
+            <td>{pub.DateUpdated?.toLocaleDateString(languageTag())}</td>
+            <td>
+              <a href={pub.LogUrl} class="link">{m.project_products_publications_console()}</a>
+            </td>
+          </tr>
         </tbody>
       </table>
     {/if}
