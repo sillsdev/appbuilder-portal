@@ -48,7 +48,10 @@ export async function addProductPropertiesToEnvironment(productId: string) {
   } as Environment;
 }
 
-export async function getWorkflowParameters(workflowInstanceId: number, scope: 'build' | 'publish') {
+export async function getWorkflowParameters(
+  workflowInstanceId: number,
+  scope: 'build' | 'publish'
+) {
   const instance = await prisma.workflowInstances.findUnique({
     where: {
       Id: workflowInstanceId
@@ -79,8 +82,9 @@ export async function getWorkflowParameters(workflowInstanceId: number, scope: '
   };
 
   if (
-    instance.WorkflowDefinition.ProductType in
-    [ProductType.Android_GooglePlay, ProductType.Android_S3]
+    [ProductType.Android_GooglePlay, ProductType.Android_S3].includes(
+      instance.WorkflowDefinition.ProductType
+    )
   ) {
     environment['BUILD_MANAGE_VERSION_CODE'] = '1';
     environment['BUILD_MANAGE_VERSION_NAME'] = '1';
