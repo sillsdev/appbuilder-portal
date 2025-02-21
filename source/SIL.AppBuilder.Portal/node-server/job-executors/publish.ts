@@ -155,65 +155,15 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
   } else {
     if (response.status === 'completed') {
       await Queues.RemotePolling.removeRepeatableByKey(job.repeatJobKey);
-      if (response.error) {
-        job.log(response.error);
-      }
-      let packageName: string | undefined = undefined;
-      const flow = await Workflow.restore(job.data.productId);
-      if (flow) {
-        if (response.result === 'SUCCESS') {
-          const publishUrlFile = response.artifacts['publishUrl'];
-          await DatabaseWrites.products.update(job.data.productId, {
-            DatePublished: new Date(),
-            PublishLink: publishUrlFile
-              ? (await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined
-              : undefined
-          });
-          flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
-          const packageFile = await prisma.productPublications.findUnique({
-            where: {
-              Id: job.data.publicationId
-            },
-            select: {
-              ProductBuild: {
-                select: {
-                  ProductArtifacts: {
-                    where: {
-                      ArtifactType: 'package_name'
-                    },
-                    select: {
-                      Url: true
-                    },
-                    take: 1
-                  }
-                }
-              }
-            }
-          });
-          if (packageFile?.ProductBuild.ProductArtifacts[0]) {
-            packageName = await fetch(packageFile.ProductBuild.ProductArtifacts[0].Url).then((r) =>
-              r.text()
-            );
-          }
-        } else {
-          flow.send({
-            type: WorkflowAction.Publish_Failed,
-            userId: null,
-            comment: `system.publish-failed,${response.artifacts['consoleText'] ?? ''}`
-          });
+      await Queues.Publishing.add(
+        `PostProcess Release #${job.data.releaseId} for Product #${job.data.productId}`,
+        {
+          type: BullMQ.JobType.Publish_PostProcess,
+          productId: job.data.productId,
+          publicationId: job.data.publicationId,
+          release: response
         }
-      }
-      job.updateProgress(80);
-      await DatabaseWrites.productPublications.update({
-        where: {
-          Id: job.data.publicationId
-        },
-        data: {
-          Success: response.result === 'SUCCESS',
-          LogUrl: response.consoleText,
-          Package: packageName?.trim()
-        }
-      });
+      );
     }
     job.updateProgress(100);
     return {
@@ -221,4 +171,69 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
       environment: JSON.parse(response['environment'] ?? '{}')
     };
   }
+}
+
+export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise<unknown> {
+  if (job.data.release.error) {
+    job.log(job.data.release.error);
+  }
+  let packageName: string | undefined = undefined;
+  const flow = await Workflow.restore(job.data.productId);
+  job.updateProgress(25);
+  if (flow) {
+    if (job.data.release.result === 'SUCCESS') {
+      const publishUrlFile = job.data.release.artifacts['publishUrl'];
+      await DatabaseWrites.products.update(job.data.productId, {
+        DatePublished: new Date(),
+        PublishLink: publishUrlFile
+          ? (await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined
+          : undefined
+      });
+      flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
+      const packageFile = await prisma.productPublications.findUnique({
+        where: {
+          Id: job.data.publicationId
+        },
+        select: {
+          ProductBuild: {
+            select: {
+              ProductArtifacts: {
+                where: {
+                  ArtifactType: 'package_name'
+                },
+                select: {
+                  Url: true
+                },
+                take: 1
+              }
+            }
+          }
+        }
+      });
+      if (packageFile?.ProductBuild.ProductArtifacts[0]) {
+        packageName = await fetch(packageFile.ProductBuild.ProductArtifacts[0].Url).then((r) =>
+          r.text()
+        );
+      }
+    } else {
+      flow.send({
+        type: WorkflowAction.Publish_Failed,
+        userId: null,
+        comment: `system.publish-failed,${job.data.release.artifacts['consoleText'] ?? ''}`
+      });
+    }
+  }
+  job.updateProgress(75);
+  const publication = await DatabaseWrites.productPublications.update({
+    where: {
+      Id: job.data.publicationId
+    },
+    data: {
+      Success: job.data.release.result === 'SUCCESS',
+      LogUrl: job.data.release.consoleText,
+      Package: packageName?.trim()
+    }
+  });
+  job.updateProgress(100);
+  return { publication };
 }

@@ -130,103 +130,15 @@ export async function check(job: Job<BullMQ.Build.Check>): Promise<unknown> {
   } else {
     if (response.status === 'completed') {
       await Queues.RemotePolling.removeRepeatableByKey(job.repeatJobKey);
-      if (response.error) {
-        job.log(response.error);
-      }
-      let latestArtifactDate = new Date(0);
-      job.log('ARTIFACTS:');
-      await DatabaseWrites.productArtifacts.createMany({
-        data: await Promise.all(
-          Object.entries(response.artifacts).map(async ([type, url]) => {
-            job.log(`${type}: ${url}`);
-            const res = await fetch(url, { method: 'HEAD' });
-            const lastModified = new Date(res.headers.get('Last-Modified'));
-            if (lastModified > latestArtifactDate) {
-              latestArtifactDate = lastModified;
-            }
-
-            // On version.json, update the ProductBuild.Version
-            if (type === 'version' && res.headers.get('Content-Type') === 'application/json') {
-              const version = JSON.parse(await fetch(url).then((r) => r.text()));
-              if (version['version']) {
-                await DatabaseWrites.productBuilds.update({
-                  where: {
-                    Id: job.data.productBuildId
-                  },
-                  data: {
-                    Version: version['version']
-                  }
-                });
-                if (response.result === 'SUCCESS') {
-                  await DatabaseWrites.products.update(job.data.productId, {
-                    VersionBuilt: version['version']
-                  });
-                }
-              }
-            }
-
-            // On play-listing-manifest.json, update the Project.DefaultLanguage
-            if (
-              type == 'play-listing-manifest' &&
-              res.headers.get('Content-Type') === 'application/json'
-            ) {
-              const manifest = JSON.parse(await fetch(url).then((r) => r.text()));
-              if (manifest['default-language']) {
-                const lang = await prisma.storeLanguages.findFirst({
-                  where: {
-                    Name: manifest['default-language']
-                  },
-                  select: {
-                    Id: true
-                  }
-                });
-                if (lang !== null) {
-                  await DatabaseWrites.products.update(job.data.productId, {
-                    StoreLanguageId: lang.Id
-                  });
-                }
-              }
-            }
-
-            return {
-              ProductId: job.data.productId,
-              ProductBuildId: job.data.productBuildId,
-              ArtifactType: type,
-              Url: url,
-              ContentType: res.headers.get('Content-Type'),
-              FileSize:
-                res.headers.get('Content-Type') !== 'text/html'
-                  ? parseInt(res.headers.get('Content-Length'))
-                  : undefined
-            };
-          })
-        )
-      });
-      await DatabaseWrites.products.update(job.data.productId, {
-        DateBuilt: latestArtifactDate
-      });
-      job.updateProgress(80);
-      await DatabaseWrites.productBuilds.update({
-        where: {
-          Id: job.data.productBuildId
-        },
-        data: {
-          Success: response.result === 'SUCCESS'
+      await Queues.Builds.add(
+        `PostProcess Build #${job.data.buildId} for Product #${job.data.productId}`,
+        {
+          type: BullMQ.JobType.Build_PostProcess,
+          productId: job.data.productId,
+          productBuildId: job.data.productBuildId,
+          build: response
         }
-      });
-      job.updateProgress(90);
-      const flow = await Workflow.restore(job.data.productId);
-      if (flow) {
-        if (response.result === 'SUCCESS') {
-          flow.send({ type: WorkflowAction.Build_Successful, userId: null });
-        } else {
-          flow.send({
-            type: WorkflowAction.Build_Failed,
-            userId: null,
-            comment: `system.build-failed,${response.artifacts['consoleText'] ?? ''}`
-          });
-        }
-      }
+      );
     }
     job.updateProgress(100);
     return {
@@ -234,4 +146,109 @@ export async function check(job: Job<BullMQ.Build.Check>): Promise<unknown> {
       environment: JSON.parse(response['environment'] ?? '{}')
     };
   }
+}
+
+export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<unknown> {
+  if (job.data.build.error) {
+    job.log(job.data.build.error);
+  }
+  let latestArtifactDate = new Date(0);
+  job.log('ARTIFACTS:');
+  const artifacts = await DatabaseWrites.productArtifacts.createManyAndReturn({
+    data: await Promise.all(
+      Object.entries(job.data.build.artifacts).map(async ([type, url]) => {
+        job.log(`${type}: ${url}`);
+        const res = await fetch(url, { method: 'HEAD' });
+        const lastModified = new Date(res.headers.get('Last-Modified'));
+        if (lastModified > latestArtifactDate) {
+          latestArtifactDate = lastModified;
+        }
+
+        // On version.json, update the ProductBuild.Version
+        if (type === 'version' && res.headers.get('Content-Type') === 'application/json') {
+          const version = JSON.parse(await fetch(url).then((r) => r.text()));
+          if (version['version']) {
+            await DatabaseWrites.productBuilds.update({
+              where: {
+                Id: job.data.productBuildId
+              },
+              data: {
+                Version: version['version']
+              }
+            });
+            if (job.data.build.result === 'SUCCESS') {
+              await DatabaseWrites.products.update(job.data.productId, {
+                VersionBuilt: version['version']
+              });
+            }
+          }
+        }
+
+        // On play-listing-manifest.json, update the Project.DefaultLanguage
+        if (
+          type == 'play-listing-manifest' &&
+          res.headers.get('Content-Type') === 'application/json'
+        ) {
+          const manifest = JSON.parse(await fetch(url).then((r) => r.text()));
+          if (manifest['default-language']) {
+            const lang = await prisma.storeLanguages.findFirst({
+              where: {
+                Name: manifest['default-language']
+              },
+              select: {
+                Id: true
+              }
+            });
+            if (lang !== null) {
+              await DatabaseWrites.products.update(job.data.productId, {
+                StoreLanguageId: lang.Id
+              });
+            }
+          }
+        }
+
+        return {
+          ProductId: job.data.productId,
+          ProductBuildId: job.data.productBuildId,
+          ArtifactType: type,
+          Url: url,
+          ContentType: res.headers.get('Content-Type'),
+          FileSize:
+            res.headers.get('Content-Type') !== 'text/html'
+              ? parseInt(res.headers.get('Content-Length'))
+              : undefined
+        };
+      })
+    )
+  });
+  await DatabaseWrites.products.update(job.data.productId, {
+    DateBuilt: latestArtifactDate
+  });
+  job.updateProgress(75);
+  await DatabaseWrites.productBuilds.update({
+    where: {
+      Id: job.data.productBuildId
+    },
+    data: {
+      Success: job.data.build.result === 'SUCCESS'
+    }
+  });
+  job.updateProgress(90);
+  const flow = await Workflow.restore(job.data.productId);
+  if (flow) {
+    if (job.data.build.result === 'SUCCESS') {
+      flow.send({ type: WorkflowAction.Build_Successful, userId: null });
+    } else {
+      flow.send({
+        type: WorkflowAction.Build_Failed,
+        userId: null,
+        comment: `system.build-failed,${job.data.build.artifacts['consoleText'] ?? ''}`
+      });
+    }
+  }
+  job.updateProgress(100);
+  return {
+    created: artifacts.length,
+    artifacts: artifacts.map((a) => ({ ...a, FileSize: a.FileSize?.valueOf() }))
+  };
 }

@@ -22,6 +22,8 @@ export class Builds extends BullWorker<BullMQ.Job> {
     switch (job.data.type) {
     case BullMQ.JobType.Build_Product:
       return Executor.Build.product(job as Job<BullMQ.Build.Product>);
+    case BullMQ.JobType.Build_PostProcess:
+      return Executor.Build.postProcess(job as Job<BullMQ.Build.PostProcess>);
     }
   }
 }
@@ -78,6 +80,8 @@ export class Publishing extends BullWorker<BullMQ.Job> {
     switch (job.data.type) {
     case BullMQ.JobType.Publish_Product:
       return Executor.Publish.product(job as Job<BullMQ.Publish.Product>);
+    case BullMQ.JobType.Publish_PostProcess:
+      return Executor.Publish.postProcess(job as Job<BullMQ.Publish.PostProcess>);
     }
   }
 }
