@@ -99,7 +99,12 @@ export async function getPublishedFile(productId: string, type: string) {
     include: {
       ProductBuild: {
         include: {
-          ProductArtifacts: true
+          ProductArtifacts: {
+            select: {
+              ArtifactType: true,
+              Url: true
+            }
+          }
         }
       }
     },
