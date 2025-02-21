@@ -111,7 +111,11 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
   }
   job.updateProgress(100);
   return {
-    response,
+    response: {
+      ...response,
+      environment:
+        response.responseType !== 'error' ? JSON.parse(response['environment'] ?? '{}') : undefined
+    },
     params,
     env
   };
@@ -212,6 +216,9 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
       });
     }
     job.updateProgress(100);
-    return response;
+    return {
+      ...response,
+      environment: JSON.parse(response['environment'] ?? '{}')
+    };
   }
 }
