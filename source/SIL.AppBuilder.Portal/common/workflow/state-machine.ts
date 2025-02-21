@@ -765,14 +765,14 @@ export const WorkflowStateMachine = setup({
               productId: context.productId,
               defaultChannel: 'production', //default unless overriden by WorkflowDefinition.Properties or ProductDefinition.Properties
               defaultTargets:
-                context.productType === ProductType.Android_S3
-                  ? 's3-bucket'
+                context.productType === ProductType.Android_GooglePlay
+                  ? 'google-play'
                   : context.productType === ProductType.Web
                     ? 'rclone'
-                    : //ProductType.Android_GooglePlay
+                    : //ProductType.Android_S3
                     //ProductType.AssetPackage
                     //default
-                    'google-play',
+                    's3-bucket',
               environment: context.environment
             },
             BullMQ.Retry5e5
