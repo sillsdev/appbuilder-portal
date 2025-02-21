@@ -81,11 +81,7 @@ export async function getWorkflowParameters(
     WORKFLOW_PRODUCT_NAME: instance.Product.ProductDefinition.Name
   };
 
-  if (
-    [ProductType.Android_GooglePlay, ProductType.Android_S3].includes(
-      instance.WorkflowDefinition.ProductType
-    )
-  ) {
+  if (instance.WorkflowDefinition.ProductType !== ProductType.Web) {
     environment['BUILD_MANAGE_VERSION_CODE'] = '1';
     environment['BUILD_MANAGE_VERSION_NAME'] = '1';
     if (
