@@ -530,7 +530,7 @@ export const WorkflowStateMachine = setup({
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
               !context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID] &&
-              context.workflowType !== WorkflowType.Startup,
+              context.workflowType === WorkflowType.Startup,
             target: WorkflowState.App_Store_Preview
           },
           {
@@ -792,7 +792,7 @@ export const WorkflowStateMachine = setup({
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
               !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] &&
-              context.workflowType !== WorkflowType.Startup,
+              context.workflowType === WorkflowType.Startup,
             target: WorkflowState.Make_It_Live
           },
           {
