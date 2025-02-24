@@ -39,7 +39,7 @@ const addProductSchema = v.object({
 });
 
 const productActionSchema = v.object({
-  id: v.pipe(v.string(), v.uuid()),
+  productId: v.pipe(v.string(), v.uuid()),
   productAction: v.enum(ProductActionType)
 });
 
@@ -293,7 +293,7 @@ export const actions = {
       return fail(403);
     const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    await DatabaseWrites.products.delete(form.data.id);
+    await DatabaseWrites.products.delete(form.data.productId);
   },
   async deleteAuthor(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
@@ -359,14 +359,14 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false });
     const product = await prisma.products.findUnique({
       where: {
-        Id: form.data.id
+        Id: form.data.productId
       },
       select: {
         ProjectId: true
       }
     });
     if (!product || product.ProjectId !== parseInt(event.params.id)) return fail(404);
-    await doProductAction(form.data.id, form.data.productAction);
+    await doProductAction(form.data.productId, form.data.productAction);
 
     return { form, ok: true };
   },

@@ -298,13 +298,14 @@
                             //@ts-expect-error this is in fact correct
                             m['products_actions_' + action]()}
                           <li class="w-full rounded-none">
-                            <form action="?/productAction" method="post" use:enhance>
-                              <input type="hidden" name="id" value={product.Id} />
-                              <input type="hidden" name="productAction" value={action} />
-                              <button type="submit" class="text-nowrap">
-                                {message}
-                              </button>
-                            </form>
+                            <label class="text-nowrap">
+                              {message}
+                              <form action="?/productAction" method="post" use:enhance>
+                                <input type="hidden" name="productId" value={product.Id} />
+                                <input type="hidden" name="productAction" value={action} />
+                                <input type="submit" class="hidden" />
+                              </form>
+                            </label>
                           </li>
                         {/each}
                         <li class="w-full rounded-none">
@@ -333,13 +334,15 @@
                           </li>
                         {/if}
                         <li class=" w-full rounded-none">
-                          <!-- Might want a confirmation modal -->
-                          <form action="?/deleteProduct" method="post" use:enhance>
-                            <input type="hidden" name="id" value={product.Id} />
-                            <button type="submit" class="text-nowrap text-error">
-                              {m.project_products_remove()}
-                            </button>
-                          </form>
+                          <!-- TODO: Might want a confirmation modal -->
+                          <label class="text-nowrap text-error">
+                            {m.project_products_remove()}
+
+                            <form action="?/deleteProduct" method="post" use:enhance>
+                              <input type="hidden" name="productId" value={product.Id} />
+                              <input type="submit" class="hidden" />
+                            </form>
+                          </label>
                         </li>
                       </ul>
                     </div>
