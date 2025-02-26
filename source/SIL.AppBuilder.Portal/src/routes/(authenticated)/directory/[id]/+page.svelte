@@ -2,9 +2,11 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
   import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
   import { canModifyProject } from '$lib/projects/common';
   import { getRelativeTime } from '$lib/timeUtils';
+  import { sortByName } from '$lib/utils';
   import type { PageData } from './$types';
 
   interface Props {
@@ -66,7 +68,8 @@
       {#if !data.project?.Products.length}
         {m.projectTable_noProducts()}
       {:else}
-        {#each data.project.Products as product}
+        {@const langTag = languageTag()}
+        {#each data.project.Products.sort( (a, b) => sortByName(a.ProductDefinition, b.ProductDefinition, langTag) ) as product}
           {@const release = product.ProductPublications.at(0)}
           {@const build = release?.ProductBuild}
           <div>
