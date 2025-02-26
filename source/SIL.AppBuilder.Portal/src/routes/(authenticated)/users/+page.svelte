@@ -5,7 +5,7 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { isAdmin, sortByNullableString } from '$lib/utils';
+  import { isAdmin, sortByName, sortByNullableString } from '$lib/utils';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import type { MinifiedUser } from './common';
@@ -32,9 +32,7 @@
         query: { data: MinifiedUser[]; count: number };
       }>;
       if (event.form.valid && data.query) {
-        const langTag = languageTag();
-        // may need to sort orgs/groups later...
-        users = data.query.data.sort((a, b) => sortByNullableString(a.N, b.N, langTag));
+        users = data.query.data;
         count = data.query.count;
       }
     }
@@ -84,7 +82,11 @@
         </tr>
       </thead>
       <tbody>
-        {#each users as user}
+        {#each users.sort((a, b) => sortByNullableString(a.N, b.N, languageTag())) as user}
+          {@const langTag = languageTag()}
+          {@const userOrgs = user.O.map((o) => ({ ...o, Name: data.organizations[o.I] })).sort(
+            (a, b) => sortByName(a, b, langTag)
+          )}
           <tr class="align-top">
             <td class="p-2">
               <p>
@@ -97,11 +99,11 @@
               </p>
             </td>
             <td class="py-2">
-              {#each user.O as org}
+              {#each userOrgs as org}
                 <div class="p-1">
                   <span>
                     <b>
-                      {data.organizations[org.I]}
+                      {org.Name ?? ''}
                     </b>
                   </span>
                   <br />
@@ -114,20 +116,24 @@
                         m.users_roles_appBuilder(),
                         m.users_roles_author()
                       ][r]
-                  ).join(', ') || m.users_noRoles()}
+                  )
+                    .sort((a, b) => sortByNullableString(a, b, langTag))
+                    .join(', ') || m.users_noRoles()}
                 </div>
               {/each}
             </td>
             <td class="py-2">
-              {#each user.O as org}
+              {#each userOrgs as org}
                 <div class="p-1">
                   <span>
                     <b>
-                      {data.organizations[org.I]}
+                      {org.Name ?? ''}
                     </b>
                   </span>
                   <br />
-                  {org.G.map((g) => data.groups[g]).join(', ') || m.common_none()}
+                  {org.G.map((g) => data.groups[g])
+                    .sort((a, b) => sortByNullableString(a, b, langTag))
+                    .join(', ') || m.common_none()}
                 </div>
               {/each}
             </td>
