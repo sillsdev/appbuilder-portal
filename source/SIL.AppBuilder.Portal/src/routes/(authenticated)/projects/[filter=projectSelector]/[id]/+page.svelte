@@ -6,11 +6,13 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
   import type { ProjectForAction, PrunedProject } from '$lib/projects/common';
   import { canArchive, canReactivate } from '$lib/projects/common';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
+  import { sortByName } from '$lib/utils';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -135,7 +137,7 @@
           bind:value={$pageForm.organizationId}
           onchange={() => goto($pageForm.organizationId + '')}
         >
-          {#each data.organizations as organization}
+          {#each data.organizations.sort((a, b) => sortByName(a, b, languageTag())) as organization}
             <option value={organization.Id} selected={$pageForm.organizationId === organization.Id}>
               {organization.Name}
             </option>
@@ -309,9 +311,10 @@
       </div>
     {/if}
   </div>
-  {#if projects.length > 0}
+  {#if data.projects.length > 0}
+    {@const langTag = languageTag()}
     <div class="w-full relative p-4">
-      {#each projects as project}
+      {#each data.projects.sort((a, b) => sortByName(a, b, langTag)) as project}
         <ProjectCard {project}>
           {#snippet select()}
             <input

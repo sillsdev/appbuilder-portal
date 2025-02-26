@@ -4,7 +4,7 @@
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/timeUtils';
-  import { bytesToHumanSize } from '$lib/utils';
+  import { bytesToHumanSize, sortByNullableString } from '$lib/utils';
 
 
   interface Props {
@@ -82,7 +82,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each build.ProductArtifacts as artifact}
+          {#each build.ProductArtifacts.sort( (a, b) => sortByNullableString(a.ArtifactType, b.ArtifactType, langTag) ) as artifact}
             <tr>
               <td><IconContainer icon="mdi:file" width="20" /> {artifact.ArtifactType}</td>
               <td>

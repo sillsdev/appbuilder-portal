@@ -4,7 +4,8 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { isAdmin } from '$lib/utils';
+  import { languageTag } from '$lib/paraglide/runtime';
+  import { isAdmin, sortByNullableString } from '$lib/utils';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import type { MinifiedUser } from './common';
@@ -31,7 +32,9 @@
         query: { data: MinifiedUser[]; count: number };
       }>;
       if (event.form.valid && data.query) {
-        users = data.query.data;
+        const langTag = languageTag();
+        // may need to sort orgs/groups later...
+        users = data.query.data.sort((a, b) => sortByNullableString(a.N, b.N, langTag));
         count = data.query.count;
       }
     }
@@ -56,11 +59,12 @@
       class="flex flex-row flex-wrap place-content-end items-center p-2 gap-1"
     >
       {#if data.organizationCount > 1}
+        {@const langTag = languageTag()}
         <label class="flex flex-wrap items-center gap-x-2 w-full max-w-xs md:w-auto md:max-w-none">
           <span class="label-text">{m.users_organization_filter()}:</span>
           <select class="select select-bordered grow" name="org" bind:value={$form.organizationId}>
             <option value={null}>{m.org_allOrganizations()}</option>
-            {#each Object.entries(data.organizations) as [Id, Name]}
+            {#each Object.entries(data.organizations).sort( (a, b) => sortByNullableString(a[1], b[1], langTag) ) as [Id, Name]}
               <option value={Id}>{Name}</option>
             {/each}
           </select>
