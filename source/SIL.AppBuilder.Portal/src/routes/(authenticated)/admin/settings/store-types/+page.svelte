@@ -3,7 +3,7 @@
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { sortByName } from '$lib/utils';
+  import { byName } from '$lib/utils';
   import type { PageData } from './$types';
 
   interface Props {
@@ -18,7 +18,7 @@
 </a>
 
 <div class="flex flex-col w-full">
-  {#each data.storeTypes.sort((a, b) => sortByName(a, b, languageTag())) as storeType}
+  {#each data.storeTypes.sort((a, b) => byName(a, b, languageTag())) as storeType}
     <DataDisplayBox
       editable
       onEdit={() => goto('/admin/settings/store-types/edit?id=' + storeType.Id)}

@@ -4,7 +4,7 @@
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
   import { getTimeDateString } from '$lib/timeUtils';
-  import { sortByNullableString } from '$lib/utils';
+  import { byString } from '$lib/utils';
   import type { PrunedProject } from '../common';
 
   interface Props {
@@ -88,7 +88,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each project.Products.sort((a, b) => sortByNullableString(a.ProductDefinitionName, b.ProductDefinitionName, langTag)) as product}
+          {#each project.Products.sort((a, b) => byString(a.ProductDefinitionName, b.ProductDefinitionName, langTag)) as product}
             <tr>
               <td class="p-2">
                 <div class="flex items-center">

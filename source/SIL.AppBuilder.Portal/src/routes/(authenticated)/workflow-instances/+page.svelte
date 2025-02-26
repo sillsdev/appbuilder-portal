@@ -6,7 +6,7 @@
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/timeUtils';
-  import { sortByName } from '$lib/utils';
+  import { byName } from '$lib/utils';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -61,7 +61,7 @@
       >
         <select class="select select-bordered mobile-sizing" bind:value={$form.organizationId}>
           <option value={null} selected>{m.org_allOrganizations()}</option>
-          {#each data.organizations.sort((a, b) => sortByName(a, b, languageTag())) as organization}
+          {#each data.organizations.sort((a, b) => byName(a, b, languageTag())) as organization}
             <option value={organization.Id}>{organization.Name}</option>
           {/each}
         </select>
@@ -71,7 +71,7 @@
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 mobile-sizing">
       <select class="select select-bordered mobile-sizing" bind:value={$form.productDefinitionId}>
         <option value={null} selected>{m.productDefinitions_filterAllProjects()}</option>
-        {#each data.productDefinitions.sort((a, b) => sortByName(a, b, languageTag())) as pD}
+        {#each data.productDefinitions.sort((a, b) => byName(a, b, languageTag())) as pD}
           <option value={pD.Id}>{pD.Name}</option>
         {/each}
       </select>

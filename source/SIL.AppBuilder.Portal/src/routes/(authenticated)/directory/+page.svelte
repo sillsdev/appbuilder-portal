@@ -7,7 +7,7 @@
   import { languageTag } from '$lib/paraglide/runtime';
   import type { PrunedProject } from '$lib/projects/common';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
-  import { sortByName } from '$lib/utils';
+  import { byName } from '$lib/utils';
   import 'flatpickr/dist/flatpickr.css';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
@@ -97,7 +97,7 @@
   {#if projects.length > 0}
     {@const langTag = languageTag()}
     <div class="w-full relative p-4">
-      {#each projects.sort((a, b) => sortByName(a, b, langTag)) as project}
+      {#each projects.sort((a, b) => byName(a, b, langTag)) as project}
         <ProjectCard {project} route='directory' />
       {/each}
     </div>

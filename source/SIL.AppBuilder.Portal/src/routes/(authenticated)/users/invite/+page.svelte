@@ -2,7 +2,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { sortByName } from '$lib/utils';
+  import { byName } from '$lib/utils';
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import GroupsSelector from '../GroupsSelector.svelte';
@@ -60,7 +60,7 @@
             name="organizationId"
             bind:value={$form.organizationId}
           >
-            {#each data.groupsByOrg.sort((a, b) => sortByName(a, b, languageTag())) as org}
+            {#each data.groupsByOrg.sort((a, b) => byName(a, b, languageTag())) as org}
               <option value={org.Id}>{org.Name}</option>
             {/each}
           </select>

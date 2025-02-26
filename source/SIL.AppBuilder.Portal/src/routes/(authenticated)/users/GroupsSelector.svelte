@@ -1,6 +1,6 @@
 <script lang="ts">
   import { languageTag } from "$lib/paraglide/runtime";
-  import { sortByName } from "$lib/utils";
+  import { byName } from "$lib/utils";
 
   interface Props {
     groups: { Id: number; Name: string | null }[];
@@ -12,7 +12,7 @@
 
 <div class="flex w-full">
   <div class="shrink space-y-2">
-    {#each groups.sort((a, b) => sortByName(a, b, languageTag())) as group}
+    {#each groups.sort((a, b) => byName(a, b, languageTag())) as group}
       <div class="flex space-x-2">
         <input
           type="checkbox"

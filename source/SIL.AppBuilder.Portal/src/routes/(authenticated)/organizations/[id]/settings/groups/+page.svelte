@@ -2,7 +2,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { org_addGroupButton } from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { sortByName } from '$lib/utils';
+  import { byName } from '$lib/utils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -16,7 +16,7 @@
   const { form: deleteForm, enhance: deleteEnhance } = superForm(data.deleteForm);
 </script>
 
-{#each data.organization.Groups.sort((a, b) => sortByName(a, b, languageTag())) as group}
+{#each data.organization.Groups.sort((a, b) => byName(a, b, languageTag())) as group}
   <form action="?/deleteGroup" class="m-2" method="post" use:deleteEnhance>
     <input type="hidden" name="id" value={group.Id} />
     <div class="border w-full flex flex-row p-2 rounded-md items-center place-content-between">

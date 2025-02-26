@@ -5,7 +5,7 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { isAdmin, sortByName, sortByNullableString } from '$lib/utils';
+  import { byName, byString, isAdmin } from '$lib/utils';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import type { MinifiedUser } from './common';
@@ -62,7 +62,7 @@
           <span class="label-text">{m.users_organization_filter()}:</span>
           <select class="select select-bordered grow" name="org" bind:value={$form.organizationId}>
             <option value={null}>{m.org_allOrganizations()}</option>
-            {#each Object.entries(data.organizations).sort( (a, b) => sortByNullableString(a[1], b[1], langTag) ) as [Id, Name]}
+            {#each Object.entries(data.organizations).sort( (a, b) => byString(a[1], b[1], langTag) ) as [Id, Name]}
               <option value={Id}>{Name}</option>
             {/each}
           </select>
@@ -82,10 +82,10 @@
         </tr>
       </thead>
       <tbody>
-        {#each users.sort((a, b) => sortByNullableString(a.N, b.N, languageTag())) as user}
+        {#each users.sort((a, b) => byString(a.N, b.N, languageTag())) as user}
           {@const langTag = languageTag()}
           {@const userOrgs = user.O.map((o) => ({ ...o, Name: data.organizations[o.I] })).sort(
-            (a, b) => sortByName(a, b, langTag)
+            (a, b) => byName(a, b, langTag)
           )}
           <tr class="align-top">
             <td class="p-2">
@@ -117,7 +117,7 @@
                         m.users_roles_author()
                       ][r]
                   )
-                    .sort((a, b) => sortByNullableString(a, b, langTag))
+                    .sort((a, b) => byString(a, b, langTag))
                     .join(', ') || m.users_noRoles()}
                 </div>
               {/each}
@@ -132,7 +132,7 @@
                   </span>
                   <br />
                   {org.G.map((g) => data.groups[g])
-                    .sort((a, b) => sortByNullableString(a, b, langTag))
+                    .sort((a, b) => byString(a, b, langTag))
                     .join(', ') || m.common_none()}
                 </div>
               {/each}

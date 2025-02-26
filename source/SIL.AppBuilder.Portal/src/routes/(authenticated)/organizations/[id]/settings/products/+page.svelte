@@ -3,7 +3,7 @@
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { sortByNullableString } from '$lib/utils';
+  import { byName } from '$lib/utils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   interface Props {
@@ -47,7 +47,7 @@
     </label>
   </div>
   <MultiselectBox header={m.org_productSelectTitle()}>
-    {#each $superFormData.products.sort( (a, b) => sortByNullableString(allProductDefs.get(a.productId)?.Name, allProductDefs.get(b.productId)?.Name, languageTag()) ) as productDef}
+    {#each $superFormData.products.sort( (a, b) => byName(allProductDefs.get(a.productId), allProductDefs.get(b.productId), languageTag()) ) as productDef}
       {@const pdLook = allProductDefs.get(productDef.productId)}
       <MultiselectBoxElement
         title={pdLook?.Name ?? ''}

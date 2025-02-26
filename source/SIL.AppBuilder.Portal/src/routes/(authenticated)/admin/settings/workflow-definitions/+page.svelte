@@ -3,7 +3,7 @@
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { sortByName } from '$lib/utils';
+  import { byName } from '$lib/utils';
   import type { PageData } from './$types';
 
   interface Props {
@@ -18,7 +18,7 @@
 </a>
 
 <div class="flex flex-col w-full">
-  {#each data.workflowDefinitions.sort((a, b) => sortByName(a, b, languageTag())) as wd}
+  {#each data.workflowDefinitions.sort((a, b) => byName(a, b, languageTag())) as wd}
     <DataDisplayBox
       editable
       onEdit={() => goto('/admin/settings/workflow-definitions/edit?id=' + wd.Id)}
