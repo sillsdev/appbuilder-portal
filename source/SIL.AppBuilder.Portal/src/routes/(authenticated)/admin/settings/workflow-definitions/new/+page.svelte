@@ -3,7 +3,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { byName, byString } from '$lib/utils';
+  import { byName, byString } from '$lib/utils/sorting';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import { businessFlows } from '../common';

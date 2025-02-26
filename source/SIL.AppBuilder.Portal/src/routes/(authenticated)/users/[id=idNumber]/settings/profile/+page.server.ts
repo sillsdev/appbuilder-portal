@@ -1,4 +1,4 @@
-import { isAdminForOrgs } from '$lib/utils';
+import { isAdminForOrgs } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 import type { Session } from '@auth/sveltekit';
 import { error } from '@sveltejs/kit';

@@ -3,7 +3,7 @@
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { byName } from '$lib/utils';
+  import { byName } from '$lib/utils/sorting';
   import type { PageData } from './$types';
 
   interface Props {

@@ -1,4 +1,4 @@
-import { isSuperAdmin } from '$lib/utils';
+import { isSuperAdmin } from '$lib/utils/roles';
 import { error } from '@sveltejs/kit';
 import { prisma, Workflow } from 'sil.appbuilder.portal.common';
 import { WorkflowAction, type WorkflowState } from 'sil.appbuilder.portal.common/workflow';
