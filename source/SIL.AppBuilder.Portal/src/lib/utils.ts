@@ -21,7 +21,19 @@ interface NamedEntity {
 }
 
 export function sortByName(a: NamedEntity, b: NamedEntity, languageTag: string): number {
-  return a.Name?.localeCompare(b.Name ?? '', languageTag) ?? 0;
+  return sortByNullableString(a.Name, b.Name, languageTag);
+}
+
+export function sortByNullableString(
+  a: string | null,
+  b: string | null,
+  languageTag: string
+): number {
+  return a?.localeCompare(b ?? '', languageTag) ?? 0;
+}
+
+export function sortByNullableNumber(a: number | bigint | null, b: number | bigint | null): number {
+  return a === b ? 0 : (a ?? 0) > (b ?? 0) ? 1 : -1;
 }
 
 /** returns true if user is a SuperAdmin, or is an OrgAdmin for the specified organization
