@@ -25,8 +25,8 @@ export function sortByName(a: NamedEntity, b: NamedEntity, languageTag: string):
 }
 
 export function sortByNullableString(
-  a: string | null,
-  b: string | null,
+  a: string | null | undefined,
+  b: string | null | undefined,
   languageTag: string
 ): number {
   return a?.localeCompare(b ?? '', languageTag) ?? 0;

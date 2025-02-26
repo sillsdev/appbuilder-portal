@@ -30,7 +30,9 @@ export const load = (async (event) => {
       OrganizationId: id
     }
   });
-  const allProductDefs = await prisma.productDefinitions.findMany();
+  const allProductDefs = (await prisma.productDefinitions.findMany()).map(
+    (pd) => [pd.Id, pd] as [number, typeof pd]
+  );
   if (!data) return redirect(302, base + '/organizations');
   const setOrgProductDefs = new Set(orgProductDefs.map((p) => p.ProductDefinitionId));
   const form = await superValidate(
@@ -38,8 +40,8 @@ export const load = (async (event) => {
       id: data.Id,
       publicByDefault: data.PublicByDefault ?? false,
       products: allProductDefs.map((pD) => ({
-        productId: pD.Id,
-        enabled: setOrgProductDefs.has(pD.Id)
+        productId: pD[0],
+        enabled: setOrgProductDefs.has(pD[0])
       }))
     },
     valibot(editProductsSchema)
@@ -62,7 +64,7 @@ export const actions = {
           Id: id
         },
         data: {
-          PublicByDefault: publicByDefault
+          PublicByDefault: publicByDefault // TODO: what are we doing with this? Should projects be
         }
       });
       return { ok: true, form };
