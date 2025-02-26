@@ -38,46 +38,41 @@ export const load = (async ({ params }) => {
       Products: {
         select: {
           Id: true,
-          DateUpdated: true,
-          DatePublished: true,
           ProductDefinition: {
             select: {
               Name: true
             }
           },
-          ProductBuilds: {
-            orderBy: [
-              {
-                DateUpdated: 'desc'
-              }
-            ],
+          ProductPublications: {
+            where: {
+              Success: true
+            },
+            orderBy: {
+              DateUpdated: 'desc'
+            },
+            take: 1,
             select: {
-              Id: true,
-              Version: true,
-              BuildId: true,
+              Channel: true,
               Success: true,
-              ProductArtifacts: {
+              DateUpdated: true,
+              LogUrl: true,
+              ProductBuild: {
                 select: {
-                  ArtifactType: true,
-                  FileSize: true,
-                  Url: true,
-                  DateUpdated: true
+                  Id: true,
+                  Version: true,
+                  BuildId: true,
+                  Success: true,
+                  ProductArtifacts: {
+                    select: {
+                      ArtifactType: true,
+                      FileSize: true,
+                      Url: true,
+                      DateUpdated: true
+                    }
+                  }
                 }
               },
-              ProductPublications: {
-                select: {
-                  Channel: true,
-                  Success: true,
-                  DateUpdated: true,
-                  LogUrl: true
-                },
-                orderBy: {
-                  DateUpdated: 'desc'
-                },
-                take: 1
-              }
-            },
-            take: 1
+            }
           }
         }
       },

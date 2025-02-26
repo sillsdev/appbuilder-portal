@@ -67,12 +67,23 @@
         {m.projectTable_noProducts()}
       {:else}
         {#each data.project.Products as product}
-          {@const build = product.ProductBuilds[0]}
+          {@const release = product.ProductPublications.at(0)}
+          {@const build = release?.ProductBuild}
           <div>
             <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
             {product.ProductDefinition.Name}
           </div>
-          <BuildArtifacts {build} latestBuildId={build.BuildId} />
+          {#if build}
+            <BuildArtifacts
+              build={{ ...build, ProductPublications: [release] }}
+              latestBuildId={build.BuildId}
+            />
+          {:else}
+            <div class="p-4">
+              <!-- Is this the correct i18n key? -->
+              {m.project_products_unpublished()}
+            </div>
+          {/if}
         {/each}
       {/if}
     </div>
