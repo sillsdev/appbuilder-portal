@@ -3,9 +3,9 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
+  import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-  import BuildArtifacts from './components/BuildArtifacts.svelte';
 
   interface Props {
     data: PageData;
