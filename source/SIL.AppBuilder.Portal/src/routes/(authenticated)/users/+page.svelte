@@ -82,7 +82,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each users.sort((a, b) => byString(a.N, b.N, languageTag())) as user}
+        {#each users as user}
           {@const langTag = languageTag()}
           {@const userOrgs = user.O.map((o) => ({ ...o, Name: data.organizations[o.I] })).sort(
             (a, b) => byName(a, b, langTag)
