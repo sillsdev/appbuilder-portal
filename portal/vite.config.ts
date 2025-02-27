@@ -40,11 +40,7 @@ export default defineConfig({
             localname: string;
             code: string;
             regions: string[];
-          }[] = await (
-            await fetch(
-              'https://raw.githubusercontent.com/silnrsi/langtags/master/pub/langtags.json'
-            )
-          ).json();
+          }[] = await (await fetch('https://ldml.api.sil.org/langtags.json')).json();
           const parsed = langtags
             .filter((tag) => !tag.tag.startsWith('_'))
             .map(({ tag, full, name, localname, code, regions }) => ({
