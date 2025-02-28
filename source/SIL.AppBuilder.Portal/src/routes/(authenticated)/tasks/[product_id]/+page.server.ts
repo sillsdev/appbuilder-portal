@@ -3,7 +3,11 @@ import type { Session } from '@auth/sveltekit';
 import { error, redirect } from '@sveltejs/kit';
 import { prisma, Workflow } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import { WorkflowAction, WorkflowState } from 'sil.appbuilder.portal.common/workflow';
+import {
+  artifactLists,
+  WorkflowAction,
+  WorkflowState
+} from 'sil.appbuilder.portal.common/workflow';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -110,23 +114,25 @@ export const load = (async ({ params, url, locals }) => {
 
   const artifacts = snap?.context.includeArtifacts
     ? await prisma.productArtifacts.findMany({
-        where: {
-          ProductId: params.product_id,
-          ProductBuild: {
-            BuildId: product?.WorkflowBuildId
-          },
-          //filter by artifact type
-          ArtifactType:
-            typeof snap.context.includeArtifacts === 'string'
-              ? snap.context.includeArtifacts
-              : undefined //include all
+      where: {
+        ProductId: params.product_id,
+        ProductBuild: {
+          BuildId: product?.WorkflowBuildId
         },
-        select: {
-          ArtifactType: true,
-          FileSize: true,
-          Url: true
-        }
-      })
+        //filter by artifact type
+        ArtifactType:
+            snap.context.includeArtifacts === 'all'
+              ? undefined
+              : {
+                in: artifactLists(snap.context.includeArtifacts)
+              }
+      },
+      select: {
+        ArtifactType: true,
+        FileSize: true,
+        Url: true
+      }
+    })
     : [];
 
   return {
