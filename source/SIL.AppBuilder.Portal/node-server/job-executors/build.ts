@@ -36,66 +36,75 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
     throw new Error(`Product #${job.data.productId} does not exist!`);
   }
   job.updateProgress(10);
-  // reset previous build
-  await DatabaseWrites.products.update(job.data.productId, {
-    WorkflowBuildId: 0
-  });
-  job.updateProgress(20);
-  const params = await getWorkflowParameters(productData.WorkflowInstance.Id, 'build');
-  job.updateProgress(30);
-  const env = await addProductPropertiesToEnvironment(job.data.productId);
-  job.updateProgress(40);
-  const response = await BuildEngine.Requests.createBuild(
-    { type: 'query', organizationId: productData.Project.OrganizationId },
-    productData.WorkflowJobId,
-    {
-      targets: params['targets'] ?? job.data.defaultTargets,
-      environment: { ...env, ...params.environment, ...job.data.environment }
-    }
-  );
-  job.updateProgress(50);
-  if (response.responseType === 'error') {
-    const flow = await Workflow.restore(job.data.productId);
-    // TODO: Send Notification of Failure
-    flow?.send({ type: WorkflowAction.Build_Failed, userId: null, comment: response.message });
-  } else {
+  if (productData.WorkflowInstance) {
+    // reset previous build
     await DatabaseWrites.products.update(job.data.productId, {
-      WorkflowBuildId: response.id
+      WorkflowBuildId: 0
     });
-    job.updateProgress(65);
-
-    const productBuild = await DatabaseWrites.productBuilds.create({
-      data: {
-        ProductId: job.data.productId,
-        BuildId: response.id
-      }
-    });
-
-    job.updateProgress(85);
-
-    await Queues.RemotePolling.add(
-      `Check status of Build #${response.id}`,
+    job.updateProgress(20);
+    const params = await getWorkflowParameters(productData.WorkflowInstance.Id, 'build');
+    job.updateProgress(30);
+    const env = await addProductPropertiesToEnvironment(job.data.productId);
+    job.updateProgress(40);
+    const response = await BuildEngine.Requests.createBuild(
+      { type: 'query', organizationId: productData.Project.OrganizationId },
+      productData.WorkflowJobId,
       {
-        type: BullMQ.JobType.Build_Check,
-        productId: job.data.productId,
-        organizationId: productData.Project.OrganizationId,
-        jobId: productData.WorkflowJobId,
-        buildId: response.id,
-        productBuildId: productBuild.Id
-      },
-      BullMQ.RepeatEveryMinute
+        targets: params['targets'] ?? job.data.defaultTargets,
+        environment: { ...env, ...params.environment, ...job.data.environment }
+      }
     );
+    job.updateProgress(50);
+    if (response.responseType === 'error') {
+      const flow = await Workflow.restore(job.data.productId);
+      // TODO: Send Notification of Failure
+      flow?.send({ type: WorkflowAction.Build_Failed, userId: null, comment: response.message });
+    } else {
+      await DatabaseWrites.products.update(job.data.productId, {
+        WorkflowBuildId: response.id
+      });
+      job.updateProgress(65);
+
+      const productBuild = await DatabaseWrites.productBuilds.create({
+        data: {
+          ProductId: job.data.productId,
+          BuildId: response.id
+        }
+      });
+
+      job.updateProgress(85);
+
+      await Queues.RemotePolling.add(
+        `Check status of Build #${response.id}`,
+        {
+          type: BullMQ.JobType.Build_Check,
+          productId: job.data.productId,
+          organizationId: productData.Project.OrganizationId,
+          jobId: productData.WorkflowJobId,
+          buildId: response.id,
+          productBuildId: productBuild.Id
+        },
+        BullMQ.RepeatEveryMinute
+      );
+    }
+    job.updateProgress(100);
+    return {
+      response: {
+        ...response,
+        environment:
+          response.responseType !== 'error'
+            ? JSON.parse(response['environment'] ?? '{}')
+            : undefined
+      },
+      params,
+      env
+    };
   }
-  job.updateProgress(100);
-  return {
-    response: {
-      ...response,
-      environment:
-        response.responseType !== 'error' ? JSON.parse(response['environment'] ?? '{}') : undefined
-    },
-    params,
-    env
-  };
+  else {
+    job.log('No WorkflowInstance found. Workflow cancelled?');
+    job.updateProgress(100);
+    return { productData };
+  }
 }
 
 export async function check(job: Job<BullMQ.Build.Check>): Promise<unknown> {
