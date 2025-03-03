@@ -183,7 +183,14 @@ export const load = (async ({ locals, params }) => {
       {
         Id: 'asc'
       }
-    ]
+    ],
+    include: {
+      User: {
+        select: {
+          Name: true
+        }
+      }
+    }
   });
   const strippedTransitions = project.Products.map((p) => [
     transitions.findLast((tr) => tr.ProductId === p.Id && tr.DateTransition !== null)!,
