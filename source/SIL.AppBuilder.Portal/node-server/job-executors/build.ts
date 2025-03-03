@@ -249,6 +249,6 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
   job.updateProgress(100);
   return {
     created: artifacts.length,
-    artifacts: artifacts.map((a) => ({ ...a, FileSize: a.FileSize?.valueOf() }))
+    artifacts: artifacts.map((a) => ({ ...a, FileSize: a.FileSize?.toString() }))
   };
 }
