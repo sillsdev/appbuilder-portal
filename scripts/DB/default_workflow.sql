@@ -166,7 +166,7 @@ DO UPDATE SET
   "ProductType" = excluded."ProductType";
 		
 INSERT INTO "WorkflowDefinitions" ("Id", "Name", "Enabled", "Description", "WorkflowScheme", "WorkflowBusinessFlow", "StoreTypeId", "Type", "ProductType") VALUES
-(14,	'asset_package_rebuild',	'1',	'SIL Default Workflow for Rebuilding Asset Packages',	'SIL_Default_AppBuilders_Android_S3_Rebuild',	'SIL_AppBuilders_AssetPackage_Flow',	2,	2, 3)
+(14,	'asset_package_rebuild',	'1',	'SIL Default Workflow for Rebuilding Asset Packages',	'SIL_Default_AppBuilders_Android_S3_Rebuild',	'SIL_AppBuilders_AssetPackage_Flow',	2,	2, 2)
 ON CONFLICT ("Id")
 DO UPDATE SET
 	"Name" = excluded."Name",

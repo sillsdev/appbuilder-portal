@@ -26,13 +26,13 @@ import {
   TerminalStates,
   WorkflowState
 } from '../public/workflow.js';
-import { StartupWorkflow } from './startup-workflow.js';
+import { WorkflowStateMachine } from './state-machine.js';
 
 /**
  * Wraps a workflow instance and provides methods to interact.
  */
 export class Workflow {
-  private flow: Actor<typeof StartupWorkflow> | null;
+  private flow: Actor<typeof WorkflowStateMachine> | null;
   private productId: string;
   private currentState: XStateNode<WorkflowContext, WorkflowEvent> | null;
   private config: WorkflowConfig;
@@ -51,7 +51,7 @@ export class Workflow {
 
     const check = await flow.checkAuthorsAndReviewers();
 
-    flow.flow = createActor(StartupWorkflow, {
+    flow.flow = createActor(WorkflowStateMachine, {
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
@@ -70,7 +70,7 @@ export class Workflow {
         ProductId: productId,
         DateTransition: new Date(),
         TransitionType: ProductTransitionType.StartWorkflow,
-        WorkflowType: WorkflowType.Startup
+        WorkflowType: config.workflowType
       }
     });
     await Queues.UserTasks.add(`Create UserTasks for Product #${productId}`, {
@@ -87,21 +87,23 @@ export class Workflow {
   /** Restore from a snapshot in the database. */
   public static async restore(productId: string): Promise<Workflow | null> {
     const snap = await Workflow.getSnapshot(productId);
-    if (!snap) { return null; }
+    if (!snap) {
+      return null;
+    }
     const flow = new Workflow(productId, snap.config);
     const check = await flow.checkAuthorsAndReviewers();
-    flow.flow = createActor(StartupWorkflow, {
+    flow.flow = createActor(WorkflowStateMachine, {
       snapshot: snap
-        ? StartupWorkflow.resolveState({
-          value: snap.state,
-          context: {
-            ...snap.context,
-            ...snap.config,
-            productId: productId,
-            hasAuthors: check._count.Authors > 0,
-            hasReviewers: check._count.Authors > 0
-          }
-        })
+        ? WorkflowStateMachine.resolveState({
+            value: snap.state,
+            context: {
+              ...snap.context,
+              ...snap.config,
+              productId: productId,
+              hasAuthors: check._count.Authors > 0,
+              hasReviewers: check._count.Authors > 0
+            }
+          })
         : undefined,
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
@@ -117,6 +119,29 @@ export class Workflow {
     flow.flow.start();
 
     return flow;
+  }
+
+  public static async delete(productId: string) {
+    const product = await prisma.products.findUnique({
+      where: { Id: productId },
+      select: {
+        ProjectId: true,
+        WorkflowInstance: { select: { WorkflowDefinition: { select: { Type: true } } } }
+      }
+    });
+    if (product?.WorkflowInstance) {
+      await DatabaseWrites.workflowInstances.delete(productId, product.ProjectId);
+      await DatabaseWrites.productTransitions.create({
+        data: {
+          ProductId: productId,
+          // This is how S1 does it. May want to change later
+          AllowedUserNames: '',
+          DateTransition: new Date(),
+          TransitionType: ProductTransitionType.EndWorkflow,
+          WorkflowType: product.WorkflowInstance.WorkflowDefinition.Type
+        }
+      });
+    }
   }
 
   /** Send a transition event to the workflow. */
@@ -147,7 +172,8 @@ export class Workflow {
           select: {
             Id: true,
             ProductType: true,
-            WorkflowOptions: true
+            WorkflowOptions: true,
+            Type: true
           }
         }
       }
@@ -161,6 +187,7 @@ export class Workflow {
       state: instance.State,
       context: JSON.parse(instance.Context) as WorkflowInstanceContext,
       config: {
+        workflowType: instance.WorkflowDefinition.Type,
         productType: instance.WorkflowDefinition.ProductType,
         options: new Set(instance.WorkflowDefinition.WorkflowOptions)
       }
@@ -175,7 +202,7 @@ export class Workflow {
   /** Returns a list of valid transitions from the provided state. */
   public static availableTransitionsFromName(stateName: string, config: WorkflowConfig) {
     return Workflow.availableTransitionsFromNode(
-      StartupWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
+      WorkflowStateMachine.getStateNodeById(Workflow.stateIdFromName(stateName)),
       config
     );
   }
@@ -189,8 +216,7 @@ export class Workflow {
 
   /** Transform state machine definition into something more easily usable by the visualization algorithm */
   public serializeForVisualization(): StateNode[] {
-    const machine = StartupWorkflow;
-    const states = Object.entries(machine.states).filter(([k, v]) =>
+    const states = Object.entries(WorkflowStateMachine.states).filter(([k, v]) =>
       includeStateOrTransition(this.config, v.meta?.includeWhen)
     );
     const lookup = states.map((s) => s[0]);
@@ -248,7 +274,9 @@ export class Workflow {
   private async inspect(event: InspectedSnapshotEvent): Promise<void> {
     const old = this.currentState;
     const xSnap = this.flow!.getSnapshot();
-    this.currentState = StartupWorkflow.getStateNodeById(`#${StartupWorkflow.id}.${xSnap.value}`);
+    this.currentState = WorkflowStateMachine.getStateNodeById(
+      `#${WorkflowStateMachine.id}.${xSnap.value}`
+    );
 
     if (old && Workflow.stateName(old) !== xSnap.value) {
       await this.updateProductTransitions(
@@ -271,8 +299,10 @@ export class Workflow {
           ProductId: this.productId
         }
       });
-      if (xSnap.value in TerminalStates) {
-        await DatabaseWrites.workflowInstances.delete(this.productId);
+      if (TerminalStates.includes(xSnap.value)) {
+        // This code will probably never be reachable?
+        // It looks like the inspect hook is not invoked when a final state is reached...
+        await Workflow.delete(this.productId);
       } else {
         await this.createSnapshot(xSnap.context);
         // This will also create the dummy entries in the ProductTransitions table
@@ -298,28 +328,30 @@ export class Workflow {
       productType: undefined,
       options: undefined
     } as WorkflowInstanceContext;
-    return DatabaseWrites.workflowInstances.upsert({
+    const prodDefinition = (await prisma.products.findUnique({
       where: {
-        ProductId: this.productId
+        Id: this.productId
       },
+      select: {
+        ProductDefinition: {
+          select: {
+            WorkflowId: true,
+            RebuildWorkflowId: true,
+            RepublishWorkflowId: true
+          }
+        }
+      }
+    }))!.ProductDefinition;
+    return DatabaseWrites.workflowInstances.upsert(this.productId, {
       create: {
-        ProductId: this.productId,
         State: Workflow.stateName(this.currentState!),
         Context: JSON.stringify(context),
-        WorkflowDefinitionId: (
-          await prisma.products.findUnique({
-            where: {
-              Id: this.productId
-            },
-            select: {
-              ProductDefinition: {
-                select: {
-                  WorkflowId: true
-                }
-              }
-            }
-          })
-        )!.ProductDefinition.WorkflowId
+        WorkflowDefinitionId:
+          context.workflowType === WorkflowType.Rebuild
+            ? prodDefinition.RebuildWorkflowId!
+            : context.workflowType === WorkflowType.Republish
+            ? prodDefinition.RepublishWorkflowId!
+            : prodDefinition.WorkflowId!
       },
       update: {
         State: Workflow.stateName(this.currentState!),
@@ -352,18 +384,18 @@ export class Workflow {
       AllowedUserNames:
         t.meta.type === ActionType.User
           ? Array.from(
-            new Set(
-              Object.entries(users)
-                .filter(([user, roles]) => roles.has(t.meta.user))
-                .map(([user, roles]) => user)
-            )
-          ).join()
+              new Set(
+                Object.entries(users)
+                  .filter(([user, roles]) => roles.has(t.meta.user))
+                  .map(([user, roles]) => user)
+              )
+            ).join()
           : null,
       TransitionType: ProductTransitionType.Activity,
       InitialState: Workflow.stateName(state),
       DestinationState: Workflow.targetStringFromEvent(t),
       Command: t.meta.type !== ActionType.Auto ? t.eventType : null,
-      WorkflowType: WorkflowType.Startup // TODO: Change this once we support more workflow types
+      WorkflowType: config.workflowType
     };
   }
 
@@ -372,16 +404,14 @@ export class Workflow {
     productId: string,
     config: WorkflowConfig
   ): Promise<Prisma.ProductTransitionsCreateManyInput[]> {
-    const projectId = (
-      await prisma.products.findUnique({
-        where: {
-          Id: productId
-        },
-        select: {
-          ProjectId: true
-        }
-      })
-    )!.ProjectId;
+    const projectId = (await prisma.products.findUnique({
+      where: {
+        Id: productId
+      },
+      select: {
+        ProjectId: true
+      }
+    }))!.ProjectId;
     const allUsers = await allUsersByRole(projectId);
     const users = Object.fromEntries(
       (
@@ -400,7 +430,7 @@ export class Workflow {
       Workflow.transitionFromState(
         stateName === WorkflowState.Start
           ? Workflow.availableTransitionsFromName(WorkflowState.Start, config)[0][0]!.target![0]
-          : StartupWorkflow.getStateNodeById(Workflow.stateIdFromName(stateName)),
+          : WorkflowStateMachine.getStateNodeById(Workflow.stateIdFromName(stateName)),
         productId,
         config,
         users
@@ -443,14 +473,14 @@ export class Workflow {
 
     const user = userId
       ? await prisma.users.findUnique({
-        where: {
-          Id: userId
-        },
-        select: {
-          Name: true,
-          WorkflowUserId: true
-        }
-      })
+          where: {
+            Id: userId
+          },
+          select: {
+            Name: true,
+            WorkflowUserId: true
+          }
+        })
       : null;
 
     if (transition) {
@@ -477,22 +507,22 @@ export class Workflow {
           Command: command ?? null,
           DateTransition: new Date(),
           Comment: comment ?? null,
-          WorkflowType: WorkflowType.Startup // TODO: Change this once we support more workflow types
+          WorkflowType: this.config.workflowType
         }
       });
     }
   }
 
   private static stateName(s: XStateNode<WorkflowContext, WorkflowEvent>): string {
-    return s.id.replace(StartupWorkflow.id + '.', '');
+    return s.id.replace(WorkflowStateMachine.id + '.', '');
   }
 
   private static stateIdFromName(s: string): string {
-    return StartupWorkflow.id + '.' + s;
+    return WorkflowStateMachine.id + '.' + s;
   }
 
   private static nodeFromName(s: string): XStateNode<WorkflowContext, WorkflowEvent> {
-    return StartupWorkflow.getStateNodeById(Workflow.stateIdFromName(s));
+    return WorkflowStateMachine.getStateNodeById(Workflow.stateIdFromName(s));
   }
 
   private static targetStringFromEvent(
@@ -502,7 +532,7 @@ export class Workflow {
       e
         .toJSON()
         .target?.at(0)
-        ?.replace('#' + StartupWorkflow.id + '.', '') || ''
+        ?.replace('#' + WorkflowStateMachine.id + '.', '') || ''
     );
   }
 

@@ -1,3 +1,5 @@
+import { getProductActions, ProductActionType } from '$lib/products';
+import { doProductAction } from '$lib/products/server';
 import { canModifyProject, projectActionSchema } from '$lib/projects/common';
 import {
   doProjectAction,
@@ -36,6 +38,11 @@ const addProductSchema = v.object({
   storeId: idSchema
 });
 
+const productActionSchema = v.object({
+  productId: v.pipe(v.string(), v.uuid()),
+  productAction: v.enum(ProductActionType)
+});
+
 // Are we sending too much data?
 // Maybe? I pared it down a bit with `select` instead of `include` - Aidan
 export const load = (async ({ locals, params }) => {
@@ -70,10 +77,18 @@ export const load = (async ({ locals, params }) => {
           Id: true,
           DateUpdated: true,
           DatePublished: true,
+          PublishLink: true,
           ProductDefinition: {
             select: {
               Id: true,
-              Name: true
+              Name: true,
+              RebuildWorkflowId: true,
+              RepublishWorkflowId: true,
+              Workflow: {
+                select: {
+                  ProductType: true
+                }
+              }
             }
           },
           // Probably don't need to optimize this. Unless it's a really large org, there probably won't be very many of these records for an individual product. In most cases, there will only be zero or one. The only times there will be more is if it's an admin task or an author task.
@@ -86,6 +101,16 @@ export const load = (async ({ locals, params }) => {
           Store: {
             select: {
               Description: true
+            }
+          },
+          WorkflowInstance: {
+            select: {
+              Id: true,
+              WorkflowDefinition: {
+                select: {
+                  Type: true
+                }
+              }
             }
           }
         }
@@ -224,7 +249,8 @@ export const load = (async ({ locals, params }) => {
         )?.[0],
         ActiveTransition: strippedTransitions.find(
           (t) => (t[0] ?? t[1])?.ProductId === product.Id
-        )?.[1]
+        )?.[1],
+        actions: getProductActions(product, project.Owner.Id, session.user.userId)
       }))
     },
     possibleProjectOwners: await prisma.users.findMany({
@@ -265,10 +291,9 @@ export const actions = {
   async deleteProduct(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
       return fail(403);
-    const form = await superValidate(event.request, valibot(v.object({ id: v.string() })));
+    const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    // delete all tasks for this product id, then delete the product
-    await DatabaseWrites.products.delete(form.data.id);
+    await DatabaseWrites.products.delete(form.data.productId);
   },
   async deleteAuthor(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
@@ -326,6 +351,24 @@ export const actions = {
     });
 
     return { form, ok: !!productId };
+  },
+  async productAction(event) {
+    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
+      return fail(403);
+    const form = await superValidate(event.request, valibot(productActionSchema));
+    if (!form.valid) return fail(400, { form, ok: false });
+    const product = await prisma.products.findUnique({
+      where: {
+        Id: form.data.productId
+      },
+      select: {
+        ProjectId: true
+      }
+    });
+    if (!product || product.ProjectId !== parseInt(event.params.id)) return fail(404);
+    await doProductAction(form.data.productId, form.data.productAction);
+
+    return { form, ok: true };
   },
   async addAuthor(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
@@ -410,6 +453,7 @@ export const actions = {
       where: { Id: form.data.projectId! },
       select: {
         Id: true,
+        Name: true,
         DateArchived: true,
         OwnerId: true,
         GroupId: true
