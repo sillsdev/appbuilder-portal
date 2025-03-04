@@ -1,10 +1,12 @@
-/** @type {import('tailwindcss').Config} */
+import * as daisyui from 'daisyui';
+import * as themes from 'daisyui/src/theming/themes';
+
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
     extend: {}
   },
-  plugins: [require('daisyui')],
+  plugins: [daisyui],
   daisyui: {
     // *-focus are entirely ignored... 🤷
     themes: [
@@ -49,8 +51,7 @@ export default {
         },
 
         scriptoriadark: {
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          ...require('daisyui/src/theming/themes').dark,
+          ...themes.dark,
           primary: '#1c3258',
           'primary-focus': '#002842',
           'primary-content': '#ffffff',
