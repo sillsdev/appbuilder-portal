@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import ProductDetails from '$lib/components/ProductDetails.svelte';
   import * as m from '$lib/paraglide/messages';
@@ -90,6 +91,16 @@
   function openModal(id: string) {
     (window[('modal' + id) as any] as any).showModal();
   }
+
+  // Note: At the moment, the site always follows prefered color scheme
+  // If at some point in the future a manual toggle is added, this will need to be changed
+  let isDarkMode: boolean = browser
+    ? window.matchMedia('(prefers-color-scheme: dark)').matches
+    : false;
+  browser &&
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+      isDarkMode = event.matches;
+    });
 </script>
 
 <div class="h-full">
@@ -153,7 +164,7 @@
         controls
         fitView
         edgeStyle="straight"
-        theme="dark"
+        theme={isDarkMode ? 'dark' : 'light'}
         translation={{ x: 0, y: 0 }}
         endStyles={[null, 'arrow']}
       >
@@ -211,11 +222,11 @@
     box-shadow: none !important;
   }
   .rect {
-    @apply fill-neutral h-full w-full;
-    stroke-width: 3px;
+    @apply fill-base-300 h-full w-full;
+    stroke-width: 7px;
   }
   .rect text {
-    @apply items-center fill-neutral-content;
+    @apply items-center fill-base-content;
   }
   .active {
     @apply fill-warning;
@@ -226,14 +237,20 @@
   .final {
     @apply fill-info;
   }
+  :is(.active,.final,.start) text {
+    @apply fill-primary-content;
+  }
   .selected {
-    @apply stroke-white;
+    @apply stroke-warning;
+  }
+  .active > .selected {
+    @apply stroke-neutral-content;
   }
   .action {
-    @apply fill-base-100 stroke-black opacity-75;
+    @apply fill-neutral opacity-75;
   }
   .action text {
-    @apply fill-base-content stroke-none;
+    @apply fill-neutral-content stroke-none;
   }
   .navbar {
     height: 10%;
