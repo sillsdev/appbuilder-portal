@@ -26,7 +26,7 @@
     }
   });
 
-  function canClaimOwnership(project: ProjectForAction): boolean {
+  function canClaimOwnership(project: Omit<ProjectForAction, 'Id' | 'Name'>): boolean {
     return (
       project.OwnerId !== $page.data.session?.user.userId &&
       canClaimProject(
@@ -82,14 +82,6 @@
             <label class="text-nowrap">
               {m.project_claimOwnership()}
               <input class="hidden" type="radio" bind:group={$form.operation} value="claim" />
-            </label>
-          </li>
-        {/if}
-        {#if allowActions && canArchive(project, $page.data.session, parseInt($page.params.id))}
-          <li class="w-full rounded-none">
-            <label class="text-nowrap">
-              {m.common_rebuild()}
-              <input class="hidden" type="radio" bind:group={$form.operation} value="rebuild" />
             </label>
           </li>
         {/if}

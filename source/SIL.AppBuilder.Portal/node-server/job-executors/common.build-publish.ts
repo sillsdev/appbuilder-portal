@@ -1,6 +1,6 @@
 import { prisma } from 'sil.appbuilder.portal.common';
-import { WorkflowTypeString } from 'sil.appbuilder.portal.common/prisma';
-import { Environment, ENVKeys } from 'sil.appbuilder.portal.common/workflow';
+import { WorkflowType, WorkflowTypeString } from 'sil.appbuilder.portal.common/prisma';
+import { Environment, ENVKeys, ProductType } from 'sil.appbuilder.portal.common/workflow';
 
 export async function addProductPropertiesToEnvironment(productId: string) {
   const product = await prisma.products.findUnique({
@@ -48,7 +48,10 @@ export async function addProductPropertiesToEnvironment(productId: string) {
   } as Environment;
 }
 
-export async function getWorkflowParameters(workflowInstanceId: number, scope: 'build' | 'publish') {
+export async function getWorkflowParameters(
+  workflowInstanceId: number,
+  scope: 'build' | 'publish'
+) {
   const instance = await prisma.workflowInstances.findUnique({
     where: {
       Id: workflowInstanceId
@@ -67,7 +70,8 @@ export async function getWorkflowParameters(workflowInstanceId: number, scope: '
       WorkflowDefinition: {
         select: {
           Properties: true,
-          Type: true
+          Type: true,
+          ProductType: true
         }
       }
     }
@@ -76,7 +80,19 @@ export async function getWorkflowParameters(workflowInstanceId: number, scope: '
     WORKFLOW_TYPE: WorkflowTypeString[instance.WorkflowDefinition.Type],
     WORKFLOW_PRODUCT_NAME: instance.Product.ProductDefinition.Name
   };
-  
+
+  if (instance.WorkflowDefinition.ProductType !== ProductType.Web) {
+    environment['BUILD_MANAGE_VERSION_CODE'] = '1';
+    environment['BUILD_MANAGE_VERSION_NAME'] = '1';
+    if (
+      instance.WorkflowDefinition.Type === WorkflowType.Rebuild ||
+      (instance.WorkflowDefinition.ProductType === ProductType.Android_GooglePlay &&
+        instance.WorkflowDefinition.Type !== WorkflowType.Republish)
+    ) {
+      environment['BUILD_SHARE_APP_LINK'] = '1';
+    }
+  }
+
   const result: { [key: string]: string } = {};
   const scoped: { [key: string]: string } = {};
   Object.entries(JSON.parse(instance.WorkflowDefinition.Properties ?? '{}')).forEach(([k, v]) => {
@@ -101,36 +117,37 @@ export async function getWorkflowParameters(workflowInstanceId: number, scope: '
       result[strKey] = strValue;
     }
   });
-  Object.entries(JSON.parse(instance.Product.ProductDefinition.Properties ?? '{}')).forEach(([k, v]) => {
-    const strValue = JSON.stringify(v);
-    let strKey = k;
-    if (strKey === 'environment') {
-      // merge environment
-      environment = {
-        ...environment,
-        ...JSON.parse(strValue)
-      };
-    }
-    // Allow for scoped names so "build:targets" will become "targets"
-    // Scoped values should be assigned after non-scoped
-    else if (strKey.includes(':')) {
-      // Use scoped values for this scope and ignore others
-      if (scope && strKey.startsWith(scope + ':')) {
-        strKey = strKey.split(':')[1];
-        scoped[strKey] = strValue;
+  Object.entries(JSON.parse(instance.Product.ProductDefinition.Properties ?? '{}')).forEach(
+    ([k, v]) => {
+      const strValue = JSON.stringify(v);
+      let strKey = k;
+      if (strKey === 'environment') {
+        // merge environment
+        environment = {
+          ...environment,
+          ...JSON.parse(strValue)
+        };
       }
-    } else {
-      result[strKey] = strValue;
+      // Allow for scoped names so "build:targets" will become "targets"
+      // Scoped values should be assigned after non-scoped
+      else if (strKey.includes(':')) {
+        // Use scoped values for this scope and ignore others
+        if (scope && strKey.startsWith(scope + ':')) {
+          strKey = strKey.split(':')[1];
+          scoped[strKey] = strValue;
+        }
+      } else {
+        result[strKey] = strValue;
+      }
     }
-  });
+  );
   Object.entries(scoped).forEach(([k, v]) => {
     if (k === 'environment') {
       environment = {
         ...environment,
         ...JSON.parse(v)
-      }
-    }
-    else {
+      };
+    } else {
       result[k] = v;
     }
   });

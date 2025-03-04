@@ -134,7 +134,7 @@ export async function userGroupsForOrg(userId: number, orgId: number) {
 
 export async function doProjectAction(
   operation: string | null,
-  project: ProjectForAction,
+  project: Omit<ProjectForAction, 'Name'>,
   session: Session,
   orgId: number,
   groups: number[]
@@ -156,7 +156,5 @@ export async function doProjectAction(
     await DatabaseWrites.projects.update(project.Id, {
       OwnerId: session.user.userId
     });
-  } else if (operation === 'rebuild') {
-    console.log('Rebuild not implemented');
   }
 }

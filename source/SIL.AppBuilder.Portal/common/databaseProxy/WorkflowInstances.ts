@@ -1,40 +1,70 @@
-import type { Prisma, PrismaPromise } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import prisma from '../prisma.js';
 import { update as projectUpdate } from './Projects.js';
 import type { RequirePrimitive } from './utility.js';
 
-export async function upsert(instanceData: {
-  where: Prisma.WorkflowInstancesWhereUniqueInput;
-  create: RequirePrimitive<Prisma.WorkflowInstancesUncheckedCreateInput>;
-  update: RequirePrimitive<Prisma.WorkflowInstancesUncheckedUpdateInput>;
-}) {
+export async function upsert(
+  productId: string,
+  instanceData: {
+    create: Omit<RequirePrimitive<Prisma.WorkflowInstancesUncheckedCreateInput>, 'ProductId'>;
+    update: Omit<RequirePrimitive<Prisma.WorkflowInstancesUncheckedUpdateInput>, 'ProductId'>;
+  }
+) {
   const timestamp = new Date();
-  const res = await prisma.workflowInstances.upsert(instanceData);
+  const res = await prisma.workflowInstances.upsert({
+    where: {
+      ProductId: productId
+    },
+    create: {
+      ...instanceData.create,
+      // don't overwrite ProductId
+      ProductId: productId
+    },
+    update: {
+      ...instanceData.update,
+      // don't overwrite ProductId
+      ProductId: productId
+    }
+  });
 
   if (res.DateCreated && res.DateCreated > timestamp) {
     const product = await prisma.products.findUniqueOrThrow({
       where: {
-        Id: instanceData.create.ProductId
+        Id: productId
       },
       select: {
         ProjectId: true
       }
     });
-  
+
     await projectUpdate(product.ProjectId, { DateActive: new Date() });
   }
   return res;
 }
 
-//@ts-expect-error this was complaining about it not returning a global Promise. PrismaPromise extends global Promise and is require by prisma.$transaction, which for some reason didn't like a function that otherwise returned a called function that does indeed return a PrismaPromise.
-async function deleteInstance(productId: string): PrismaPromise<unknown> {
-  const product = await prisma.products.findUniqueOrThrow({
-    where: { Id: productId },
-    select: { ProjectId: true }
+export async function update(
+  productId: string,
+  data: Omit<RequirePrimitive<Prisma.WorkflowInstancesUncheckedUpdateInput>, 'ProductId'>
+) {
+  return await prisma.workflowInstances.update({
+    where: {
+      ProductId: productId
+    },
+    // don't overwrite ProductId
+    data: { ...data, ProductId: productId }
   });
+}
+
+function deleteInstance(productId: string, projectId: number) {
+  updateProjectDateActive(productId, projectId);
+  return prisma.workflowInstances.deleteMany({ where: { ProductId: productId } });
+}
+export { deleteInstance as delete };
+
+async function updateProjectDateActive(productId: string, projectId: number) {
   const project = await prisma.projects.findUniqueOrThrow({
     where: {
-      Id: product.ProjectId
+      Id: projectId
     },
     select: {
       Products: {
@@ -72,9 +102,6 @@ async function deleteInstance(productId: string): PrismaPromise<unknown> {
   }
 
   if (project.DateActive != projectDateActive) {
-    await projectUpdate(product.ProjectId, { DateActive: project.DateActive });
+    await projectUpdate(projectId, { DateActive: project.DateActive });
   }
-  return prisma.workflowInstances.delete({ where: { ProductId: productId } });
 }
-export { deleteInstance as delete };
-

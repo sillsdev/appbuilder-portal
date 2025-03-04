@@ -2,14 +2,17 @@
   import { enhance } from '$app/forms';
   import { page } from '$app/stores';
   import IconContainer from '$lib/components/IconContainer.svelte';
-  import ProductDetails from '$lib/components/ProductDetails.svelte';
   import { i18n } from '$lib/i18n';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import langtags from '$lib/langtags.json';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
+  import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { getRelativeTime } from '$lib/timeUtils';
+  import { sortByName } from '$lib/utils';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+  import { ProductType } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -21,27 +24,17 @@
   const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm, {
     resetForm: true
   });
-  const { form: authorDeleteForm, enhance: authorDeleteEnhance } = superForm(
-    data.deleteAuthorForm,
-    {
-      warnings: {
-        duplicateId: false
-      }
+  const { enhance: authorDeleteEnhance } = superForm(data.deleteAuthorForm, {
+    warnings: {
+      duplicateId: false
     }
-  );
-  const { form: reviewerDeleteForm, enhance: reviewerDeleteEnhance } = superForm(
-    data.deleteReviewerForm,
-    {
-      warnings: {
-        duplicateId: false
-      }
+  });
+  const { enhance: reviewerDeleteEnhance } = superForm(data.deleteReviewerForm, {
+    warnings: {
+      duplicateId: false
     }
-  );
-  const {
-    form: addProductForm,
-    enhance: addProductEnhance,
-    submit: addProductSubmit
-  } = superForm(data.addProductForm);
+  });
+  const { enhance: addProductEnhance } = superForm(data.addProductForm);
   function openModal(id: string) {
     (window[('modal' + id) as any] as any).showModal();
   }
@@ -66,6 +59,25 @@
     ownerSettingsFormTimeout = setTimeout(() => {
       ownerSettingsForm.requestSubmit();
     }, 2000);
+  }
+
+  async function handleProductAction(productId: string, action: string) {
+    try {
+      const formData = new FormData();
+      formData.append('productId', productId);
+      formData.append('productAction', action);
+
+      const response = await fetch(`${$page.url.pathname}?/productAction`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+    } catch (error) {
+      console.error('Error performing product action:', error);
+    }
   }
 
   let addProductModal: HTMLDialogElement | undefined;
@@ -253,13 +265,34 @@
         {#if !data.project?.Products.length}
           {m.projectTable_noProducts()}
         {:else}
-          {#each data.project.Products as product}
+          {@const langTag = languageTag()}
+          {#each data.project.Products.sort( (a, b) => sortByName(a.ProductDefinition, b.ProductDefinition, langTag) ) as product}
             <div class="rounded-md border border-slate-400 w-full my-2">
               <div class="bg-neutral p-2 flex flex-row rounded-t-md">
                 <span class="grow min-w-0">
                   <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
                   {product.ProductDefinition.Name}
                 </span>
+                {#if product.PublishLink}
+                  {@const pType = product.ProductDefinition.Workflow.ProductType}
+                  <span class="flex flex-col px-2">
+                    <a class="link" href={product.PublishLink} target="_blank">
+                      <IconContainer icon="ic:twotone-store" width={24} />
+                    </a>
+                    {#if pType !== ProductType.Web}
+                      <a
+                        class="link"
+                        href="/api/products/{product.Id}/files/published/{pType ===
+                        ProductType.AssetPackage
+                          ? 'asset-package'
+                          : 'apk'}"
+                        target="_blank"
+                      >
+                        <IconContainer icon="mdi:launch" width={24} />
+                      </a>
+                    {/if}
+                  </span>
+                {/if}
                 <span class="w-32 inline-block">
                   {m.project_products_updated()}
                   <br />
@@ -271,7 +304,6 @@
                   {getRelativeTime(product.DatePublished)}
                 </span>
                 <span>
-                  <!-- TODO: also need any actions given by api? -->
                   <div role="button" class="dropdown" tabindex="0">
                     <div class="btn btn-ghost px-1">
                       <IconContainer icon="charm:menu-kebab" width="20" />
@@ -280,6 +312,22 @@
                       class="dropdown-content bottom-12 right-0 p-1 bg-base-200 z-10 rounded-md min-w-36 w-auto shadow-lg"
                     >
                       <ul class="menu menu-compact overflow-hidden rounded-md">
+                        {#each product.actions as action}
+                          {@const message =
+                            //@ts-expect-error this is in fact correct
+                            m['products_actions_' + action]()}
+                          <li class="w-full rounded-none">
+                            <button
+                              class="text-nowrap"
+                              on:click={(event) => {
+                                handleProductAction(product.Id, action);
+                                event.currentTarget.blur();
+                              }}
+                            >
+                              {message}
+                            </button>
+                          </li>
+                        {/each}
                         <li class="w-full rounded-none">
                           <button class="text-nowrap" on:click={() => openModal(product.Id)}>
                             {m.project_products_popup_details()}
@@ -298,7 +346,7 @@
                             </span>
                           </li>
                         {/if}
-                        {#if data.session?.user.roles.find((role) => role[1] === RoleId.SuperAdmin)}
+                        {#if data.session?.user.roles.find((role) => role[1] === RoleId.SuperAdmin) && !!product.WorkflowInstance}
                           <li class="w-full-rounded-none">
                             <a href="/workflow-instances/{product.Id}">
                               {m.common_workflow()}
@@ -306,42 +354,46 @@
                           </li>
                         {/if}
                         <li class=" w-full rounded-none">
-                          <!-- Might want a confirmation modal -->
-                          <form action="?/deleteProduct" method="post" use:enhance>
-                            <input type="hidden" name="id" value={product.Id} />
-                            <button type="submit" class="text-nowrap text-error">
-                              {m.project_products_remove()}
-                            </button>
-                          </form>
+                          <!-- TODO: Might want a confirmation modal -->
+                          <label class="text-nowrap text-error">
+                            {m.project_products_remove()}
+
+                            <form action="?/deleteProduct" method="post" use:enhance>
+                              <input type="hidden" name="productId" value={product.Id} />
+                              <input type="submit" class="hidden" />
+                            </form>
+                          </label>
                         </li>
                       </ul>
                     </div>
                   </div>
                 </span>
               </div>
-              <div class="p-2 flex gap-1">
-                <span class="text-red-500">
-                  {m.tasks_waiting({
-                    // waiting since EITHER (the last task exists) -> that task's creation time
-                    // OR (there are no tasks for this product) -> the last completed transition's completion time
-                    waitTime: getRelativeTime(
-                      product.UserTasks.slice(-1)[0]?.DateCreated ??
-                        product.PreviousTransition?.DateTransition ??
-                        null
-                    )
+              {#if product.WorkflowInstance}
+                <div class="p-2 flex gap-1">
+                  <span class="text-red-500">
+                    {m.tasks_waiting({
+                      // waiting since EITHER (the last task exists) -> that task's creation time
+                      // OR (there are no tasks for this product) -> the last completed transition's completion time
+                      waitTime: getRelativeTime(
+                        product.UserTasks.slice(-1)[0]?.DateCreated ??
+                          product.PreviousTransition?.DateTransition ??
+                          null
+                      )
+                    })}
+                  </span>
+                  {m.tasks_forNames({
+                    allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
+                    activityName: product.ActiveTransition?.InitialState ?? ''
+                    // activityName appears to show up blank primarily at the very startup of a new product?
                   })}
-                </span>
-                {m.tasks_forNames({
-                  allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
-                  activityName: product.ActiveTransition?.InitialState ?? ''
-                  // activityName appears to show up blank primarily at the very startup of a new product?
-                })}
-                {#if product.UserTasks.slice(-1)[0]?.UserId === $page.data.session?.user.userId}
-                  <a class="link mx-2" href="/tasks/{product.Id}">
-                    {m.common_continue()}
-                  </a>
-                {/if}
-              </div>
+                  {#if product.UserTasks.slice(-1)[0]?.UserId === $page.data.session?.user.userId}
+                    <a class="link mx-2" href="/tasks/{product.Id}">
+                      {m.common_continue()}
+                    </a>
+                  {/if}
+                </div>
+              {/if}
               <ProductDetails {product} />
             </div>
           {/each}
