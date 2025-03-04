@@ -61,6 +61,25 @@
     }, 2000);
   }
 
+  async function handleProductAction(productId: string, action: string) {
+    try {
+      const formData = new FormData();
+      formData.append('productId', productId);
+      formData.append('productAction', action);
+
+      const response = await fetch(`${$page.url.pathname}?/productAction`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+    } catch (error) {
+      console.error('Error performing product action:', error);
+    }
+  }
+
   let addProductModal: HTMLDialogElement | undefined;
   let selectingStore: boolean = false;
   let selectedProduct: number = 0;
@@ -298,14 +317,15 @@
                             //@ts-expect-error this is in fact correct
                             m['products_actions_' + action]()}
                           <li class="w-full rounded-none">
-                            <label class="text-nowrap">
+                            <button
+                              class="text-nowrap"
+                              on:click={(event) => {
+                                handleProductAction(product.Id, action);
+                                event.currentTarget.blur();
+                              }}
+                            >
                               {message}
-                              <form action="?/productAction" method="post" use:enhance>
-                                <input type="hidden" name="productId" value={product.Id} />
-                                <input type="hidden" name="productAction" value={action} />
-                                <input type="submit" class="hidden" />
-                              </form>
-                            </label>
+                            </button>
                           </li>
                         {/each}
                         <li class="w-full rounded-none">
