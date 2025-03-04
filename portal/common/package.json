@@ -5,7 +5,8 @@
   "exports": {
     ".": "./index.js",
     "./prisma": "./public/prisma.js",
-    "./workflow": "./public/workflow.js"
+    "./workflow": "./public/workflow.js",
+    "./utils": "./public/utils.js"
   },
   "author": "",
   "type": "module",

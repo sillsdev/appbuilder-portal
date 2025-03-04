@@ -58,7 +58,7 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
     job.updateProgress(75);
     const flow = await Workflow.restore(job.data.productId);
 
-    flow.send({ type: WorkflowAction.Product_Created, userId: null });
+    flow?.send({ type: WorkflowAction.Product_Created, userId: null });
 
     job.updateProgress(100);
     return response;
@@ -142,26 +142,21 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
         ProductId: job.data.productId
       },
       select: {
-        Id: true,
         Context: true
       }
     });
     const ctx: WorkflowInstanceContext = JSON.parse(instance.Context);
     job.updateProgress(90);
-    await DatabaseWrites.workflowInstances.update({
-      where: {
-        Id: instance.Id
-      },
-      data: {
-        Context: JSON.stringify({
-          ...ctx,
-          environment: {
-            ...ctx.environment,
-            [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID]: '' + product.WorkflowBuildId,
-            [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE]: '' + versionCode
-          }
-        } as WorkflowInstanceContext)
-      }
+    // Use update here so this job doesn't inadvertently create a workflowInstance
+    await DatabaseWrites.workflowInstances.update(job.data.productId, {
+      Context: JSON.stringify({
+        ...ctx,
+        environment: {
+          ...ctx.environment,
+          [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID]: '' + product.WorkflowBuildId,
+          [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE]: '' + versionCode
+        }
+      } as WorkflowInstanceContext)
     });
   }
   job.updateProgress(100);

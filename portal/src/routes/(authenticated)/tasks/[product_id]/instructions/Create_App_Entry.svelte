@@ -1,7 +1,7 @@
 <h3>Instructions</h3>
 <ul>
   <li>Download the AAB file by clicking on the entry with type <em>aab</em> in the <em>Product Files</em> grid view.</li>
-  <li>Go to <a href="https://play.google.com/apps/publish/">Google Play Developer Console</a> and sign in.</li>
+  <li>Go to <a href="https://play.google.com/apps/publish/" target="_blank">Google Play Developer Console</a> and sign in.</li>
   <li>
     Click <strong>Create app</strong> button and complete the following items:
     <ul>
@@ -12,7 +12,7 @@
       <li>
         Check <strong>Confirm app meets the Developer Program Policies</strong> checkbox.
         <ul>
-          <li>Please review the <a href="https://play.google.com/about/developer-content-policy/">policies</a>.</li>
+          <li>Please review the <a href="https://play.google.com/about/developer-content-policy/" target="_blank">policies</a>.</li>
         </ul>
       </li>
       <li>Check <strong>Accept US export laws</strong> checkbox.</li>
@@ -28,7 +28,7 @@
           <li>
             Fill in the URL for your app&#39;s privacy policy.
           </li>
-          <li>For an example, see the <a href="https://www.wycliffe.org/scripture-app-privacy">Wycliffe Scripture App Privacy Policy</a></li>
+          <li>For an example, see the <a href="https://www.wycliffe.org/scripture-app-privacy" target="_blank">Wycliffe Scripture App Privacy Policy</a></li>
           <li>Click the <strong>Save</strong> button at the bottom of the page.</li>
           <li>Click the <strong>App content</strong> link at the top of the page to go back.</li>
         </ul>

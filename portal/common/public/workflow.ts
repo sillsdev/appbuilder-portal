@@ -1,5 +1,7 @@
 import { and, type TransitionConfig } from 'xstate';
-import type { RoleId } from './prisma.js';
+import type { RoleId, WorkflowType } from './prisma.js';
+import type { SetFilter, ValueFilter } from './utils.js';
+import { filterSet, filterValue } from './utils.js';
 
 export enum ActionType {
   /** Automated Action */
@@ -107,8 +109,8 @@ export enum ENVKeys {
   // Set by Workflow
   PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID = 'PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID',
   PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE = 'PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE',
-  GOOGLE_PLAY_EXISTING = 'GOOGLE_PLAY_EXISTING',
-  GOOGLE_PLAY_DRAFT = 'GOOGLE_PLAY_DRAFT',
+  GOOGLE_PLAY_EXISTING = 'google_play_existing',
+  GOOGLE_PLAY_DRAFT = 'PUBLISH_GOOGLE_PLAY_DRAFT',
   // Before Build
   UI_URL = 'UI_URL',
   PRODUCT_ID = 'PRODUCT_ID',
@@ -127,6 +129,7 @@ export type WorkflowContext = WorkflowInstanceContext & WorkflowInput;
 export type WorkflowConfig = {
   options: Set<WorkflowOptions>;
   productType: ProductType;
+  workflowType: WorkflowType;
 };
 
 export type WorkflowInput = WorkflowConfig & {
@@ -137,16 +140,9 @@ export type WorkflowInput = WorkflowConfig & {
 
 /** Used for filtering based on specified WorkflowOptions and/or ProductType */
 export type MetaFilter = {
-  options?:
-    | { has: WorkflowOptions } // options contains the provided
-    | { any: Set<WorkflowOptions> } // options contains any of the provided
-    | { all: Set<WorkflowOptions> } // options contains all of the provided
-    | { none: Set<WorkflowOptions> }; // options contains none of the provided
-  productType?:
-    | { is: ProductType } // productType is the provided
-    | { any: Set<ProductType> } // productType is any of the provided
-    | { not: ProductType } // productType is not the provided
-    | { none: Set<ProductType> }; // productType is none of the provided
+  options?: SetFilter<WorkflowOptions>;
+  productType?: ValueFilter<ProductType>;
+  workflowType?: ValueFilter<WorkflowType>;
 };
 
 export type WorkflowStateMeta = { includeWhen?: MetaFilter };
@@ -168,34 +164,13 @@ export function includeStateOrTransition(config: WorkflowConfig, filter?: MetaFi
     return true; // no conditions are specified
   }
   if (include && filter.options) {
-    if ('has' in filter.options) {
-      // options contains the provided
-      include &&= config.options.has(filter.options.has);
-    } else if ('any' in filter.options) {
-      // options contains any of the provided
-      include &&= !config.options.isDisjointFrom(filter.options.any);
-    } else if ('all' in filter.options) {
-      // options contains all of the provided
-      include &&= config.options.isSupersetOf(filter.options.all);
-    } else {
-      // options contains none of the provided
-      include &&= config.options.isDisjointFrom(filter.options.none);
-    }
+    include &&= filterSet(config.options, filter.options);
   }
   if (include && filter.productType) {
-    if ('is' in filter.productType) {
-      // productType is the provided
-      include &&= config.productType === filter.productType.is;
-    } else if ('any' in filter.productType) {
-      // productType is any of the provided
-      include &&= filter.productType.any.has(config.productType);
-    } else if ('not' in filter.productType) {
-      // productType is not the provided
-      include &&= config.productType !== filter.productType.not;
-    } else {
-      // productType is none of the provided
-      include &&= !filter.productType.none.has(config.productType);
-    }
+    include &&= filterValue(config.productType, filter.productType);
+  }
+  if (include && filter.workflowType) {
+    include &&= filterValue(config.workflowType, filter.workflowType);
   }
   return include;
 }
@@ -231,18 +206,20 @@ export function hasReviewers(args: { context: WorkflowContext }): boolean {
 export function jump(
   params: JumpParams,
   optionalGuards?: (typeof hasAuthors | typeof hasReviewers)[]
-): TransitionConfig<
-  WorkflowContext,
-  WorkflowEvent,
-  WorkflowEvent,
-  never,
-  never,
-  never,
-  never,
-  WorkflowEvent,
-  WorkflowStateMeta | WorkflowTransitionMeta
-> | string {
-  const j = (args: { context: WorkflowContext}) => canJump(args, params);
+):
+  | TransitionConfig<
+      WorkflowContext,
+      WorkflowEvent,
+      WorkflowEvent,
+      never,
+      never,
+      never,
+      never,
+      WorkflowEvent,
+      WorkflowStateMeta | WorkflowTransitionMeta
+    >
+  | string {
+  const j = (args: { context: WorkflowContext }) => canJump(args, params);
   return {
     guard: optionalGuards ? and(optionalGuards.concat([j])) : j,
     target: params.target

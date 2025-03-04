@@ -131,6 +131,6 @@ export type ReleaseResponse = SuccessResponse &
     status: CommonStatus | BuildOrReleaseStatus;
     result: CommonResult | 'EXCEPTION';
     error: string | null;
-    console_text: string;
+    consoleText: string;
     artifacts: { [key: string]: string };
   };

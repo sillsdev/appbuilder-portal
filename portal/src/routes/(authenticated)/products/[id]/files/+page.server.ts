@@ -27,6 +27,18 @@ export const load = (async ({ params }) => {
           FileSize: true,
           DateUpdated: true
         }
+      },
+      ProductPublications: {
+        select: {
+          Channel: true,
+          Success: true,
+          DateUpdated: true,
+          LogUrl: true
+        },
+        orderBy: {
+          DateUpdated: 'desc'
+        },
+        take: 1
       }
     },
     take: 3
@@ -86,6 +98,18 @@ export const actions = {
             FileSize: true,
             DateUpdated: true
           }
+        },
+        ProductPublications: {
+          select: {
+            Channel: true,
+            Success: true,
+            DateUpdated: true,
+            LogUrl: true
+          },
+          orderBy: {
+            DateUpdated: 'desc'
+          },
+          take: 1
         }
       },
       skip: form.data.page * form.data.size,

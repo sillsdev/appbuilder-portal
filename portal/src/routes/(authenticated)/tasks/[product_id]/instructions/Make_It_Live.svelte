@@ -4,7 +4,7 @@
   the app.
 </p>
 <ul>
-  <li>Go to <a href="https://play.google.com/apps/publish/">Google Play Developer Console</a> and sign in.</li>
+  <li>Go to <a href="https://play.google.com/apps/publish/" target="_blank">Google Play Developer Console</a> and sign in.</li>
   <li>Select <strong>Store presence</strong> under the <strong>Grow</strong> section in the menu on the left. This will expand the items below it.</li>
   <li>Select <strong>Store settings</strong> in the menu on the left and do the following:</li>
   <li>

@@ -29,6 +29,15 @@
           value: wd.StoreType?.Name
         },
         {
+          key: 'admin_settings_workflowDefinitions_productType',
+          value: [
+            'Android GooglePlay',
+            'Android S3',
+            m.admin_settings_workflowDefinitions_productType_assetPackage(),
+            m.admin_settings_workflowDefinitions_productType_web()
+          ][wd.ProductType]
+        },
+        {
           key: 'admin_settings_workflowDefinitions_workflowType',
           value: [
             ,
@@ -37,14 +46,7 @@
             m.admin_settings_workflowDefinitions_workflowTypes_3()
           ][wd.Type]
         },
-        {
-          key: 'admin_settings_workflowDefinitions_workflowScheme',
-          value: wd.WorkflowScheme?.replaceAll('_', '_\u200b')
-        },
-        {
-          key: 'admin_settings_workflowDefinitions_workflowBusinessFlow',
-          value: wd.WorkflowBusinessFlow?.replaceAll('_', '_\u200b')
-        }
+        // Do we want to show options here?
       ]}
     />
   {/each}

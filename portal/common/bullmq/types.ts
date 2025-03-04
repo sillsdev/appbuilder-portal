@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import type { Channels } from '../build-engine-api/types.js';
+import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-api/types.js';
 import { RoleId } from '../public/prisma.js';
 
 interface RetryOptions {
@@ -43,6 +43,7 @@ export enum JobType {
   // Build Tasks
   Build_Product = 'Build Product',
   Build_Check = 'Check Product Build',
+  Build_PostProcess = 'Postprocess Build',
   // Product Tasks
   Product_Create = 'Create Product',
   Product_Delete = 'Delete Product',
@@ -54,6 +55,7 @@ export enum JobType {
   // Publishing Tasks
   Publish_Product = 'Publish Product',
   Publish_Check = 'Check Product Publish',
+  Publish_PostProcess = 'Postprocess Publish',
   // System Tasks
   System_CheckStatuses = 'Check System Statuses',
   // UserTasks
@@ -74,6 +76,12 @@ export namespace Build {
     jobId: number;
     buildId: number;
     productBuildId: number;
+  }
+  export interface PostProcess {
+    type: JobType.Build_PostProcess;
+    productId: string;
+    productBuildId: number;
+    build: BuildResponse;
   }
 }
 
@@ -131,6 +139,13 @@ export namespace Publish {
     releaseId: number;
     publicationId: number;
   }
+
+  export interface PostProcess {
+    type: JobType.Publish_PostProcess;
+    productId: string;
+    publicationId: number;
+    release: ReleaseResponse;
+  }
 }
 
 export namespace System {
@@ -181,6 +196,7 @@ export type Job = JobTypeMap[keyof JobTypeMap];
 export type JobTypeMap = {
   [JobType.Build_Product]: Build.Product;
   [JobType.Build_Check]: Build.Check;
+  [JobType.Build_PostProcess]: Build.PostProcess;
   [JobType.Product_Create]: Product.Create;
   [JobType.Product_Delete]: Product.Delete;
   [JobType.Product_GetVersionCode]: Product.GetVersionCode;
@@ -189,6 +205,7 @@ export type JobTypeMap = {
   [JobType.Project_ImportProducts]: Project.ImportProducts;
   [JobType.Publish_Product]: Publish.Product;
   [JobType.Publish_Check]: Publish.Check;
+  [JobType.Publish_PostProcess]: Publish.PostProcess;
   [JobType.System_CheckStatuses]: System.CheckStatuses;
   [JobType.UserTasks_Modify]: UserTasks.Modify;
   // Add more mappings here as needed

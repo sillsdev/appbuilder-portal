@@ -18,7 +18,7 @@
       <li>Fill out any needed publishing properties.</li>
       <li>For new apps, set <strong>BUILD_ANDROID_AAB</strong> to the value 1.</li>
       <li>For new apps, set <strong>BUILD_KEYSTORE</strong> to the name of a keystore not used to publish APKs.</li>
-      <li>See the <a href="https://scriptoria.io/docs/Publishing+Properties.pdf">Publishing Properties Documentation</a> for more details.</li>
+      <li>See the <a href="https://scriptoria.io/docs/Publishing+Properties.pdf" target="_blank">Publishing Properties Documentation</a> for more details.</li>
     </ul>
   </li>
   <li>

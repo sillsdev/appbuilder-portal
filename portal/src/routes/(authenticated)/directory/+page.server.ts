@@ -1,11 +1,11 @@
-import { error, type Actions } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
-import type { Prisma } from '@prisma/client';
 import { projectSearchSchema, pruneProjects } from '$lib/projects/common';
 import { projectFilter } from '$lib/projects/common.server';
-import type { PageServerLoad } from './$types';
-import { superValidate, fail } from 'sveltekit-superforms';
+import type { Prisma } from '@prisma/client';
+import { error, type Actions } from '@sveltejs/kit';
+import { prisma } from 'sil.appbuilder.portal.common';
+import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
+import type { PageServerLoad } from './$types';
 
 export const load = (async ({ locals }) => {
   const userId = (await locals.auth())?.user.userId;
@@ -17,7 +17,8 @@ export const load = (async ({ locals }) => {
     include: {
       Products: {
         include: {
-          ProductDefinition: true
+          ProductDefinition: true,
+          WorkflowInstance: true
         }
       },
       Owner: true,
@@ -71,7 +72,8 @@ export const actions: Actions = {
       include: {
         Products: {
           include: {
-            ProductDefinition: true
+            ProductDefinition: true,
+            WorkflowInstance: true
           }
         },
         Owner: true,

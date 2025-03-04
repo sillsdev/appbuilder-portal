@@ -8,7 +8,10 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
   const products = await prisma.products.findMany({
     where: {
       Id: job.data.scope === 'Product' ? job.data.productId : undefined,
-      ProjectId: job.data.scope === 'Project' ? job.data.projectId : undefined
+      ProjectId: job.data.scope === 'Project' ? job.data.projectId : undefined,
+      WorkflowInstance:
+        // WorkflowInstance can be null if deleting user tasks
+        job.data.operation.type !== BullMQ.UserTasks.OpType.Delete ? { isNot: null } : undefined
     },
     select: {
       Id: true,
