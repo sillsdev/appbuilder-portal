@@ -56,8 +56,8 @@ export enum JobType {
   Publish_Product = 'Publish Product',
   Publish_Check = 'Check Product Publish',
   Publish_PostProcess = 'Postprocess Publish',
-  // System Tasks
-  System_CheckStatuses = 'Check System Statuses',
+  // Recurring Tasks
+  Recurring_CheckSystemStatuses = 'Check System Statuses',
   // UserTasks
   UserTasks_Modify = 'Modify UserTasks'
 }
@@ -148,9 +148,9 @@ export namespace Publish {
   }
 }
 
-export namespace System {
-  export interface CheckStatuses {
-    type: JobType.System_CheckStatuses;
+export namespace Recurring {
+  export interface CheckSystemStatuses {
+    type: JobType.Recurring_CheckSystemStatuses;
   }
 }
 
@@ -206,7 +206,7 @@ export type JobTypeMap = {
   [JobType.Publish_Product]: Publish.Product;
   [JobType.Publish_Check]: Publish.Check;
   [JobType.Publish_PostProcess]: Publish.PostProcess;
-  [JobType.System_CheckStatuses]: System.CheckStatuses;
+  [JobType.Recurring_CheckSystemStatuses]: Recurring.CheckSystemStatuses;
   [JobType.UserTasks_Modify]: UserTasks.Modify;
   // Add more mappings here as needed
 };

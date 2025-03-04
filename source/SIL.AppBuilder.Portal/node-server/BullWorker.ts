@@ -34,7 +34,7 @@ export class DefaultRecurring extends BullWorker<BullMQ.Job> {
     Queues.DefaultRecurring.add(
       'Check System Statuses (Recurring)',
       {
-        type: BullMQ.JobType.System_CheckStatuses
+        type: BullMQ.JobType.Recurring_CheckSystemStatuses
       },
       {
         repeat: {
@@ -49,8 +49,10 @@ export class DefaultRecurring extends BullWorker<BullMQ.Job> {
   }
   async run(job: Job<BullMQ.Job>) {
     switch (job.data.type) {
-    case BullMQ.JobType.System_CheckStatuses:
-      return Executor.System.checkStatuses(job as Job<BullMQ.System.CheckStatuses>);
+    case BullMQ.JobType.Recurring_CheckSystemStatuses:
+      return Executor.Recurring.checkSystemStatuses(
+          job as Job<BullMQ.Recurring.CheckSystemStatuses>
+      );
     }
   }
 }

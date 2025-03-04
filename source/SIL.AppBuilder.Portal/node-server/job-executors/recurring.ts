@@ -1,7 +1,9 @@
 import { Job } from 'bullmq';
 import { BuildEngine, BullMQ, DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 
-export async function checkStatuses(job: Job<BullMQ.System.CheckStatuses>): Promise<unknown> {
+export async function checkSystemStatuses(
+  job: Job<BullMQ.Recurring.CheckSystemStatuses>
+): Promise<unknown> {
   const organizations = await prisma.organizations.findMany({
     where: {
       OR: [
