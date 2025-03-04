@@ -1,7 +1,7 @@
 <h3>Instructions</h3>
 <ul>
   <li>Download the APK or AAB file by clicking on the entry with type <em>apk</em> or <em>aab</em> in the <em>Product Files</em> grid view.</li>
-  <li>Test the app<sup>1</sup>. See <a href="https://scriptoria.io/docs/Installing+Android+Apps+For+Testing.pdf">Installing Android Apps For Testing</a> for help.</li>
+  <li>Test the app<sup>1</sup>. See <a href="https://scriptoria.io/docs/Installing+Android+Apps+For+Testing.pdf" target="_blank">Installing Android Apps For Testing</a> for help.</li>
   <li>Open the preview of the store listing by clicking on the entry with type <em>play-listing</em> in the <em>Product Files</em> grid view.</li>
   <li>Click <strong>Approve</strong> when you are satisfied that everything is ready to go and the app will be published.<sup>2</sup></li>
 </ul>
