@@ -1,15 +1,15 @@
 <script lang="ts">
-  import * as m from '$lib/paraglide/messages';
-  import 'flatpickr/dist/flatpickr.css';
-  import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
-  import SearchBar from '$lib/components/SearchBar.svelte';
-  import type { PageData } from './$types';
-  import type { PrunedProject } from '$lib/projects/common';
   import DateRangePicker from '$lib/components/DateRangePicker.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
-  import { superForm } from 'sveltekit-superforms';
+  import SearchBar from '$lib/components/SearchBar.svelte';
+  import * as m from '$lib/paraglide/messages';
+  import type { PrunedProject } from '$lib/projects/common';
+  import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
+  import 'flatpickr/dist/flatpickr.css';
   import type { FormResult } from 'sveltekit-superforms';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -117,9 +117,6 @@
 </div>
 
 <style lang="postcss">
-  :global(.highlight) {
-    background-color: oklch(var(--a));
-  }
   :global(li:first-child .listElement) {
     border-radius: 0.375rem 0.375rem 0 0;
   }
