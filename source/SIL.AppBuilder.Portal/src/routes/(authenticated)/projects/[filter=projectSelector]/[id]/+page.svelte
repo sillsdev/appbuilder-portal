@@ -19,7 +19,9 @@
     data: PageData;
   }
 
-  let { data = $bindable() }: Props = $props();
+  let { data }: Props = $props();
+  let projects = $state(data.projects);
+  let count = $state(data.count);
 
   const {
     form: pageForm,
@@ -39,8 +41,8 @@
         query: { data: PrunedProject[]; count: number };
       }>;
       if (event.form.valid && returnedData.query) {
-        data.projects = returnedData.query.data;
-        data.count = returnedData.query.count;
+        projects = returnedData.query.data;
+        count = returnedData.query.count;
       }
     }
   });
@@ -74,7 +76,7 @@
     CanRepublish: boolean;
   };
   let selectedProjects: (ProjectForAction & { Products: ProductForAction[] })[] = $derived(
-    data.projects.filter((p) => $actionForm.projects.includes(p.Id))
+    projects.filter((p) => $actionForm.projects.includes(p.Id))
   );
   /** For selecting products for bulk rebuild/republish */
   let productSelectModal: HTMLDialogElement | undefined;
@@ -307,9 +309,9 @@
       </div>
     {/if}
   </div>
-  {#if data.projects.length > 0}
+  {#if projects.length > 0}
     <div class="w-full relative p-4">
-      {#each data.projects as project}
+      {#each projects as project}
         <ProjectCard {project}>
           {#snippet select()}
             <input
@@ -346,7 +348,7 @@
     <div class="w-full flex flex-row place-content-start p-4 space-between-4 flex-wrap gap-1">
       <Pagination
         bind:size={$pageForm.page.size}
-        total={data.count}
+        total={count}
         bind:page={$pageForm.page.page}
       />
     </div>

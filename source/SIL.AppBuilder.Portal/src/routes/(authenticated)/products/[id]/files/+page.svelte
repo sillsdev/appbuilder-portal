@@ -14,6 +14,7 @@
   let { data }: Props = $props();
 
   let builds = $state(data.builds);
+  let count = $state(data.count)
 
   const { form, enhance, submit } = superForm(data.form, {
     resetForm: false,
@@ -22,10 +23,11 @@
     },
     onUpdate(event) {
       const data = event.result.data as FormResult<{
-        query: { data: any[] };
+        query: { data: any[], count: number };
       }>;
       if (event.form.valid && data.query) {
         builds = data.query.data;
+        count = data.query.count;
       }
     }
   });
@@ -62,7 +64,7 @@
     <Pagination
       bind:page={$form.page}
       bind:size={$form.size}
-      total={data.count}
+      total={count}
       extraSizeOptions={[3]}
     />
   </form>
