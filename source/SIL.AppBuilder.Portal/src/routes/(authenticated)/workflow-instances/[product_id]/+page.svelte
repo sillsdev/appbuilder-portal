@@ -220,14 +220,15 @@
     box-shadow: none !important;
   }
   .rect {
-    fill: var(--color-base-300);
+    fill: var(--color-neutral);
     height: 100%;
     width: 100%;
-    stroke-width: 3px;
+    stroke-width: 7px;
   }
   .rect text {
     align-items: center;
-    fill: var(--color-base-content);
+    font-weight: bold;
+    fill: var(--color-neutral-content);
   }
   .active {
     fill: var(--color-warning);
@@ -249,7 +250,7 @@
   }
   .action {
     fill: var(--color-neutral);
-    opacity: 75%;
+    opacity: 50%;
   }
   .action text {
     fill: var(--color-neutral-content);
