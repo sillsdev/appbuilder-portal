@@ -5,7 +5,6 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
-  import langtags from '$lib/langtags.json';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, locales, localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
@@ -18,13 +17,13 @@
   import type { PageData } from './$types';
   import DeleteProductModal from './DeleteProductModal.svelte';
 
-  const langtagmap = new Map(langtags.map((tag) => [tag.tag, /* tag.localname ?? */ tag.name]));
-
   interface Props {
     data: PageData;
   }
 
   let { data = $bindable() }: Props = $props();
+
+  const langtagmap = new Map(data.langtags.map((tag) => [tag.tag, /* tag.localname ?? */ tag.name]));
 
   const { form: authorForm, enhance: authorEnhance } = superForm(data.authorForm);
   const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm, {

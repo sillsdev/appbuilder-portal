@@ -1,16 +1,16 @@
 <script lang="ts">
   import Fuse from 'fuse.js';
 
-  import langtags from '$lib/langtags.json';
-
+  import { page } from '$app/state';
   import { m } from '$lib/paraglide/messages';
+  import type { Langtags } from '$lib/valibot';
   import type { FuseResultMatch } from 'fuse.js';
   import TypeaheadInput from './TypeaheadInput.svelte';
 
   // https://www.fusejs.io/api/options.html
   // Search the tag, name and localname. Give tag a double weighting
   // This seems very fast to me, but if it is found to be slow investigate providing an index at compile time
-  const fuzzySearch = new Fuse(langtags, {
+  const fuzzySearch = new Fuse(page.data.langtags as Langtags, {
     keys: [
       {
         name: 'tag',
@@ -52,7 +52,7 @@
     }
     return ret;
   }
-  let langtagList = langtags;
+  let langtagList = page.data.langtags as Langtags;
   let typeaheadInput: HTMLInputElement | undefined = $state(undefined);
   interface Props {
     langCode: string;

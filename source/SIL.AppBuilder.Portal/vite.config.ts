@@ -28,7 +28,7 @@ export default defineConfig({
         let needToRefresh = true;
         try {
           needToRefresh =
-            Date.now() - (await stat('src/lib/langtags.json')).mtimeMs >
+            Date.now() - (await stat('static/langtags.json')).mtimeMs >
             /* One day */ 1000 * 60 * 60 * 24;
         } catch {
           /* empty */
@@ -53,7 +53,7 @@ export default defineConfig({
               regions
             }));
           const output = JSON.stringify(parsed);
-          return await writeFile('src/lib/langtags.json', output);
+          return await writeFile('static/langtags.json', output);
         }
       }
     },

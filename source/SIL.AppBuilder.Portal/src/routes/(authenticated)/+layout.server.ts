@@ -1,5 +1,7 @@
 import { isSuperAdmin } from '$lib/utils/roles';
+import { langtagsSchema } from '$lib/valibot';
 import { prisma } from 'sil.appbuilder.portal.common';
+import { safeParse } from 'valibot';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (event) => {
@@ -36,5 +38,21 @@ export const load: LayoutServerLoad = async (event) => {
       }
     }
   });
-  return { organizations, numberOfTasks };
+
+  return {
+    organizations,
+    numberOfTasks,
+    // streaming promise
+    langtags: await event
+      .fetch('/langtags.json')
+      .then((r) => r.text())
+      .then((j) => {
+        const langtags = safeParse(langtagsSchema, JSON.parse(j));
+        if (langtags.success) {
+          return langtags.output;
+        } else {
+          return [];
+        }
+      })
+  };
 };
