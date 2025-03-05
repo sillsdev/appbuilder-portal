@@ -34,7 +34,7 @@
     "@typescript-eslint/parser": "^8.21.0",
     "@vvo/tzdb": "^6.159.0",
     "commander": "^13.1.0",
-    "daisyui": "^5.0.0-beta.7",
+    "daisyui": "^5.0.0",
     "eslint": "^9.19.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-svelte": "^2.46.1",
