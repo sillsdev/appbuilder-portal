@@ -1,8 +1,7 @@
 <script lang="ts">
+  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
-  import { byName } from '$lib/utils';
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import GroupsSelector from '../GroupsSelector.svelte';
@@ -55,15 +54,12 @@
         </LabeledFormInput>
         <!-- TODO: Should technically not be this i18n key -->
         <LabeledFormInput name="project_side_organization">
-          <select
-            class="select select-bordered w-full"
+          <OrganizationDropdown
+            className="w-full"
             name="organizationId"
             bind:value={$form.organizationId}
-          >
-            {#each data.groupsByOrg.sort((a, b) => byName(a, b, languageTag())) as org}
-              <option value={org.Id}>{org.Name}</option>
-            {/each}
-          </select>
+            organizations={data.groupsByOrg}
+          />
         </LabeledFormInput>
       </div>
       <div class="flex flex-col h-full min-w-96">

@@ -37,6 +37,8 @@
       }
     }
   });
+
+  const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 </script>
 
 <div class="w-full">
@@ -58,8 +60,9 @@
     >
       {#if data.organizationCount > 1}
         {@const langTag = languageTag()}
-        <label class="flex flex-wrap items-center gap-x-2 w-full max-w-xs md:w-auto md:max-w-none">
+        <label class="flex flex-wrap items-center gap-x-2 {mobileSizing}">
           <span class="label-text">{m.users_organization_filter()}:</span>
+          <!-- TODO: convert after fix/user-page-org-select -->
           <select class="select select-bordered grow" name="org" bind:value={$form.organizationId}>
             <option value={null}>{m.org_allOrganizations()}</option>
             {#each Object.entries(data.organizations).sort( (a, b) => byString(a[1], b[1], langTag) ) as [Id, Name]}
@@ -68,7 +71,7 @@
           </select>
         </label>
       {/if}
-      <SearchBar bind:value={$form.search} className="w-full max-w-xs md:w-auto md:max-w-none" />
+      <SearchBar bind:value={$form.search} className={mobileSizing} />
     </form>
   </div>
   <div class="m-4 relative mt-0">

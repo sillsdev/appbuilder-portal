@@ -112,7 +112,9 @@
   });
   $effect(() => {
     $productForm.products = selectedProducts.map((p) => p.Id);
-  })
+  });
+
+  const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
@@ -130,10 +132,11 @@
         <ProjectFilterSelector />
       </div>
       <div
-        class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 mobile-sizing gap-1"
+        class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 gap-1 {mobileSizing}"
       >
+        <!-- TODO: convert this to OrganizationDropdown after upgrade/svelte-5 -->
         <select
-          class="select select-bordered mobile-sizing"
+          class="select select-bordered {mobileSizing}"
           bind:value={$pageForm.organizationId}
           onchange={() => goto($pageForm.organizationId + '')}
         >
@@ -143,16 +146,13 @@
             </option>
           {/each}
         </select>
-        <SearchBar
-          bind:value={$pageForm.search}
-          className="w-full max-w-xs md:w-auto md:max-w-none"
-        />
+        <SearchBar bind:value={$pageForm.search} className={mobileSizing} />
       </div>
     </div>
   </form>
   <div class="w-full flex flex-row flex-wrap place-content-between gap-1 mt-4">
     <form
-      class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4"
+      class="flex flex-row flex-wrap {mobileSizing} gap-1 mx-4"
       method="POST"
       action="?/projectAction"
       use:actionEnhance
@@ -301,7 +301,7 @@
       </form>
     </dialog>
     {#if page.params.filter === 'own'}
-      <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
+      <div class="flex flex-row flex-wrap {mobileSizing} gap-1 mx-4">
         <a class="action btn btn-outline" href="/projects/import/{$pageForm.organizationId}">
           {m.project_importProjects()}
         </a>
@@ -350,24 +350,12 @@
     }}
   >
     <div class="w-full flex flex-row place-content-start p-4 space-between-4 flex-wrap gap-1">
-      <Pagination
-        bind:size={$pageForm.page.size}
-        total={count}
-        bind:page={$pageForm.page.page}
-      />
+      <Pagination bind:size={$pageForm.page.size} total={count} bind:page={$pageForm.page.page} />
     </div>
   </form>
 </div>
 
 <style lang="postcss">
-  .mobile-sizing {
-    @apply w-full max-w-xs;
-  }
-  @media screen(md) {
-    .mobile-sizing {
-      @apply w-auto max-w-none;
-    }
-  }
   .action {
     @apply form-control w-full max-w-xs;
   }
