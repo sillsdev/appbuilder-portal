@@ -5,18 +5,7 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 const config = {
   // Consult https://kit.svelte.dev/docs/integrations#preprocessors
   // for more information about preprocessors
-  preprocess: [
-    {
-      style: async ({attributes}) => {
-        if (!attributes.lang?.endsWith('postcss')) return;
-        return new Promise(resolve => {
-          resolve({code: '', map: ''});
-        });
-      },
-
-    },
-    vitePreprocess()
-  ],
+  preprocess: vitePreprocess(),
 
   kit: {
     // See https://kit.svelte.dev/docs/adapters for more information about adapters.
