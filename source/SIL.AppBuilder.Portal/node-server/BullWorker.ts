@@ -44,8 +44,20 @@ export class DefaultRecurring extends BullWorker<BullMQ.Job> {
       }
     );
     Queues.DefaultRecurring.add('Check System Statuses (Startup)', {
-      type: BullMQ.JobType.System_CheckStatuses
+      type: BullMQ.JobType.Recurring_CheckSystemStatuses
     });
+    Queues.DefaultRecurring.add(
+      'Refresh LangTags (Recurring)',
+      {
+        type: BullMQ.JobType.Recurring_RefreshLangTags
+      },
+      {
+        repeat: {
+          pattern: '@daily', // Runs at midnight UTC each day
+          key: 'defaultRefreshLangTags'
+        }
+      }
+    );
   }
   async run(job: Job<BullMQ.Job>) {
     switch (job.data.type) {
@@ -53,6 +65,8 @@ export class DefaultRecurring extends BullWorker<BullMQ.Job> {
       return Executor.Recurring.checkSystemStatuses(
           job as Job<BullMQ.Recurring.CheckSystemStatuses>
       );
+    case BullMQ.JobType.Recurring_RefreshLangTags:
+      return Executor.Recurring.refreshLangTags(job as Job<BullMQ.Recurring.RefreshLangTags>);
     }
   }
 }

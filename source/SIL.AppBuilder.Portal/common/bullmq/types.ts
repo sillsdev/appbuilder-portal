@@ -58,6 +58,7 @@ export enum JobType {
   Publish_PostProcess = 'Postprocess Publish',
   // Recurring Tasks
   Recurring_CheckSystemStatuses = 'Check System Statuses',
+  Recurring_RefreshLangTags = 'Refresh langtags.json',
   // UserTasks
   UserTasks_Modify = 'Modify UserTasks'
 }
@@ -152,6 +153,9 @@ export namespace Recurring {
   export interface CheckSystemStatuses {
     type: JobType.Recurring_CheckSystemStatuses;
   }
+  export interface RefreshLangTags {
+    type: JobType.Recurring_RefreshLangTags;
+  }
 }
 
 export namespace UserTasks {
@@ -207,6 +211,7 @@ export type JobTypeMap = {
   [JobType.Publish_Check]: Publish.Check;
   [JobType.Publish_PostProcess]: Publish.PostProcess;
   [JobType.Recurring_CheckSystemStatuses]: Recurring.CheckSystemStatuses;
+  [JobType.Recurring_RefreshLangTags]: Recurring.RefreshLangTags;
   [JobType.UserTasks_Modify]: UserTasks.Modify;
   // Add more mappings here as needed
 };

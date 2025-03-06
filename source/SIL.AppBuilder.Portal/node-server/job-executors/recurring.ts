@@ -1,4 +1,6 @@
 import { Job } from 'bullmq';
+import { stat, writeFile } from 'fs/promises';
+import { join } from 'path';
 import { BuildEngine, BullMQ, DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 
 export async function checkSystemStatuses(
@@ -103,4 +105,69 @@ export async function checkSystemStatuses(
     total: statuses.length,
     statuses
   };
+}
+
+export async function refreshLangTags(
+  job: Job<BullMQ.Recurring.RefreshLangTags>
+): Promise<unknown> {
+  const path =
+    process.env.NODE_ENV === 'development'
+      ? join(import.meta.dirname, '../../static/langtags.json')
+      : '/app/build/client/langtags.json';
+  const ret = {};
+  try {
+    const mtime = (await stat(path)).mtimeMs;
+    const lastModified = new Date(
+      (await fetch('https://ldml.api.sil.org/langtags.json', { method: 'HEAD' })).headers.get(
+        'Last-Modified'
+      )
+    );
+
+    if (mtime >= lastModified?.valueOf()) {
+      job.updateProgress(100);
+      return {
+        mtime: new Date(mtime),
+        lastModified
+      };
+    } else {
+      ret['mtime'] = new Date(mtime);
+      ret['lastModified'] = lastModified;
+    }
+  } catch (err) {
+    // an error either happened when reading the file stats (i.e. it probably doesn't exist)
+    // or when fetching the headers
+    job.log(err);
+  }
+
+  job.updateProgress(25);
+
+  try {
+    const langtags: {
+      tag: string;
+      full: string;
+      name: string;
+      localname: string;
+      code: string;
+      regions: string[];
+    }[] = await fetch('https://ldml.api.sil.org/langtags.json').then((f) => f.json());
+    job.updateProgress(50);
+    const parsed = langtags
+      .filter((tag) => !tag.tag.startsWith('_'))
+      .map(({ tag, full, name, localname, code, regions }) => ({
+        tag,
+        full,
+        name,
+        localname,
+        code,
+        regions
+      }));
+    job.updateProgress(75);
+    await writeFile(path, JSON.stringify(parsed));
+    ret['langtags'] = parsed.length;
+    job.updateProgress(100);
+  } catch (err) {
+    job.log(err);
+  }
+
+  return ret;
 }
