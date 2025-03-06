@@ -43,7 +43,7 @@
     <div class="flex flex-row items-center">
       <h1>{m.users_title()}</h1>
       {#if data.session?.user.roles.find((r) => r[1] === RoleId.SuperAdmin || r[1] === RoleId.OrgAdmin)}
-        <a href="/users/invite" class="btn btn-secondary">
+        <a href="/users/invite" class="btn btn-outline">
           <IconContainer icon="mdi:user-add" width="20" />
           <span>{m.organizationMembership_invite_create_inviteUserButtonTitle()}</span>
         </a>
