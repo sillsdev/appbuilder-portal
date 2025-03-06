@@ -17,7 +17,12 @@
 
 <form action="" method="post" use:enhance>
   <div class="flex flex-col px-4">
-    <RolesSelector bind:organizations={$form.organizations} />
+    {#each $form.organizations as org}
+      <h3>{org.name}</h3>
+      <!-- https://github.com/sveltejs/svelte/issues/12721#issuecomment-2269544690 -->
+      <!-- svelte-ignore binding_property_non_reactive -->
+      <RolesSelector bind:roles={org.roles} />
+    {/each}
     <div class="flex my-2">
       <button type="submit" class="btn btn-primary">{m.common_save()}</button>
     </div>

@@ -1,7 +1,8 @@
 <script lang="ts">
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+  import { languageTag } from '$lib/paraglide/runtime';
+  import { sortByName } from '$lib/utils';
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import GroupsSelector from '../GroupsSelector.svelte';
@@ -27,31 +28,13 @@
       }
     }
   });
-  let rolesField = $state([
-    {
-      name: '',
-      roles: $form.roles
-    }
-  ]);
-  let groupsField = $state([
-    {
-      name: '',
-      groups: $form.groups,
-      id: data.organizations[0].Id
-    }
-  ]);
-  $effect(() => {
-    $form.roles = rolesField[0].roles;
-  });
-  $effect(() => {
-    $form.groups = groupsField[0].groups;
-  });
-  $effect(() => {
-    groupsField[0].id = $form.organizationId;
-    groupsField[0].groups = [];
-  });
+
+  let currentGroups = $derived(
+    data.groupsByOrg.find((o) => o.Id === $form.organizationId)?.Groups ?? []
+  );
+
   onMount(() => {
-    $form.organizationId = data.organizations[0].Id;
+    $form.organizationId = data.groupsByOrg[0].Id;
   });
 </script>
 
@@ -77,7 +60,7 @@
             name="organizationId"
             bind:value={$form.organizationId}
           >
-            {#each data.organizations.filter( (org) => data.session?.user.roles.find((r) => r[0] === RoleId.SuperAdmin || (r[0] === RoleId.OrgAdmin && r[1] === org.Id)) ) as org}
+            {#each data.groupsByOrg.sort((a, b) => sortByName(a, b, languageTag())) as org}
               <option value={org.Id}>{org.Name}</option>
             {/each}
           </select>
@@ -90,18 +73,11 @@
           <div class="flex flex-row space-x-2">
             <div>
               {m.users_userRoles()}
-              <RolesSelector bind:organizations={rolesField} />
+              <RolesSelector bind:roles={$form.roles} />
             </div>
             <div>
               {m.users_userGroups()}
-              <GroupsSelector
-                bind:organizations={groupsField}
-                groups={data.groups.map((g) => ({
-                  id: g.Id,
-                  name: g.Name ?? '',
-                  orgId: g.OwnerId
-                }))}
-              />
+              <GroupsSelector groups={currentGroups} bind:selected={$form.groups} />
             </div>
           </div>
         </div>
