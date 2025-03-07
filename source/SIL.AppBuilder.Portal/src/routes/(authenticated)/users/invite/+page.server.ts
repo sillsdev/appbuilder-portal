@@ -1,3 +1,4 @@
+import { isAdminForOrg, isSuperAdmin } from '$lib/utils';
 import { idSchema } from '$lib/valibot';
 import { fail } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
@@ -20,10 +21,10 @@ export const load = (async ({ locals }) => {
   const user = await locals.auth();
   const groupsByOrg = await prisma.organizations.findMany({
     where: {
-        // Only send a list of groups for orgs that the subject user is in and the current user has access to
-        UserRoles: user?.user.roles?.find((r) => r[1] === RoleId.SuperAdmin)
-          ? undefined
-          : {
+      // Only send a list of groups for orgs that the subject user is in and the current user has access to
+      UserRoles: isSuperAdmin(user?.user.roles)
+        ? undefined
+        : {
             some: {
               UserId: user?.user.userId,
               RoleId: RoleId.OrgAdmin
@@ -46,15 +47,7 @@ export const actions = {
       return fail(400, { form, ok: false, errors: form.errors });
     }
     const user = await locals.auth();
-    if (
-      !user ||
-      !user.user.roles.find(
-        (r) =>
-          r[1] === RoleId.SuperAdmin ||
-          (r[0] === form.data.organizationId && r[1] === RoleId.OrgAdmin)
-      )
-    )
-      return fail(401);
+    if (!user || !isAdminForOrg(form.data.organizationId, user.user.roles)) return fail(401);
     try {
       const { email, organizationId, roles, groups } = form.data;
       const inviteToken = await DatabaseWrites.organizationMemberships.createOrganizationInvite(

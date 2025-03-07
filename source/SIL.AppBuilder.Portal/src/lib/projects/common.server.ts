@@ -1,3 +1,4 @@
+import { hasRoleForOrg, isAdminForOrg } from '$lib/utils';
 import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
@@ -32,73 +33,73 @@ export function projectFilter(args: {
     OrganizationId: args.organizationId !== null ? args.organizationId : undefined,
     Language: args.langCode
       ? {
-        contains: args.langCode,
-        mode: 'insensitive'
-      }
+          contains: args.langCode,
+          mode: 'insensitive'
+        }
       : undefined,
     Products:
       args.productDefinitionId !== null
         ? {
-          some: {
-            ProductDefinitionId: args.productDefinitionId
+            some: {
+              ProductDefinitionId: args.productDefinitionId
+            }
           }
-        }
         : undefined,
     AND: [
       {
         OR:
           args.dateUpdatedRange && args.dateUpdatedRange[1]
             ? [
-              { DateUpdated: null },
-              {
-                DateUpdated: {
-                  gt: args.dateUpdatedRange[0],
-                  lt: args.dateUpdatedRange[1]
+                { DateUpdated: null },
+                {
+                  DateUpdated: {
+                    gt: args.dateUpdatedRange[0],
+                    lt: args.dateUpdatedRange[1]
+                  }
                 }
-              }
-            ]
+              ]
             : undefined
       },
       {
         OR: args.search
           ? [
-            {
-              Name: {
-                contains: args.search,
-                mode: 'insensitive'
-              }
-            },
-            {
-              Language: {
-                contains: args.search,
-                mode: 'insensitive'
-              }
-            },
-            {
-              Owner: {
+              {
                 Name: {
                   contains: args.search,
                   mode: 'insensitive'
                 }
-              }
-            },
-            {
-              Organization: {
-                Name: {
+              },
+              {
+                Language: {
                   contains: args.search,
                   mode: 'insensitive'
                 }
-              }
-            },
-            {
-              Group: {
-                Name: {
-                  contains: args.search,
-                  mode: 'insensitive'
+              },
+              {
+                Owner: {
+                  Name: {
+                    contains: args.search,
+                    mode: 'insensitive'
+                  }
+                }
+              },
+              {
+                Organization: {
+                  Name: {
+                    contains: args.search,
+                    mode: 'insensitive'
+                  }
+                }
+              },
+              {
+                Group: {
+                  Name: {
+                    contains: args.search,
+                    mode: 'insensitive'
+                  }
                 }
               }
-            }
-          ]
+            ]
           : undefined
       }
     ]
@@ -106,13 +107,9 @@ export function projectFilter(args: {
 }
 export async function verifyCanCreateProject(user: Session, orgId: number) {
   // Creating a project is allowed if the user is an OrgAdmin or AppBuilder for the organization or a SuperAdmin
-  const roles = user.user.roles
-    .filter(([org, role]) => org === orgId || role === RoleId.SuperAdmin)
-    .map(([org, role]) => role);
   return (
-    roles.includes(RoleId.AppBuilder) ||
-    roles.includes(RoleId.OrgAdmin) ||
-    roles.includes(RoleId.SuperAdmin)
+    isAdminForOrg(orgId, user.user.roles) ||
+    hasRoleForOrg(RoleId.AppBuilder, orgId, user.user.roles)
   );
 }
 

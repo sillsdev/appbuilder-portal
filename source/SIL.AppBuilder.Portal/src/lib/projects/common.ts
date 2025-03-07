@@ -1,8 +1,8 @@
 import { paginateSchema } from '$lib/table';
+import { isAdminForOrg, isSuperAdmin } from '$lib/utils';
 import { idSchema } from '$lib/valibot';
 import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import * as v from 'valibot';
 
 export function pruneProjects(
@@ -177,18 +177,11 @@ export type ProjectForAction = {
 };
 
 export function canModifyProject(
-  session: Session | null | undefined,
+  user: Session | null | undefined,
   projectOwnerId: number,
   organizationId: number
 ) {
-  if (projectOwnerId === session?.user.userId) return true;
-  if (
-    session?.user.roles.find(
-      (r) => r[1] === RoleId.SuperAdmin || (r[1] === RoleId.OrgAdmin && r[0] === organizationId)
-    )
-  )
-    return true;
-  return false;
+  return projectOwnerId === user?.user.userId || isAdminForOrg(organizationId, user?.user.roles);
 }
 
 export function canClaimProject(
@@ -199,7 +192,7 @@ export function canClaimProject(
   userGroupIds: number[]
 ) {
   if (session?.user.userId === projectOwnerId) return false;
-  if (session?.user.roles.find((r) => r[1] === RoleId.SuperAdmin)) return true;
+  if (isSuperAdmin(session?.user.roles)) return true;
   return (
     canModifyProject(session, projectOwnerId, organizationId) &&
     userGroupIds.includes(projectGroupId)

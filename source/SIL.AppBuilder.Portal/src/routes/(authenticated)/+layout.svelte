@@ -5,8 +5,8 @@
   import LanguageSelector from '$lib/components/LanguageSelector.svelte';
   import { HamburgerIcon } from '$lib/icons';
   import * as m from '$lib/paraglide/messages';
+  import { isAdmin, isSuperAdmin } from '$lib/utils';
   import { signOut } from '@auth/sveltekit/client';
-  import { RoleId } from 'sil.appbuilder.portal.common/prisma';
   import type { LayoutData } from './$types';
 
   interface Props {
@@ -134,7 +134,7 @@
               {m.sidebar_organizationProjects()}
             </a>
           </li>
-          {#if !!$page.data.session?.user.roles.find((r) => r[1] === RoleId.SuperAdmin || r[1] === RoleId.OrgAdmin)}
+          {#if isAdmin($page.data.session?.user.roles)}
             <li>
               <a
                 class="rounded-none"
@@ -166,7 +166,7 @@
               </a>
             </li>
           {/if}
-          {#if !!$page.data.session?.user.roles.find((r) => r[1] === RoleId.SuperAdmin)}
+          {#if isSuperAdmin($page.data.session?.user.roles)}
             <li>
               <a
                 class="rounded-none"

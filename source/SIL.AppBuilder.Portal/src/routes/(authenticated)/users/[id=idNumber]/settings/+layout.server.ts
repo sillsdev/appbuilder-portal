@@ -1,9 +1,9 @@
+import { isAdminForOrgs } from '$lib/utils';
 import { prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import type { LayoutServerLoad } from './$types';
 
 export const load = (async ({ params, locals }) => {
-  const user = await prisma.users.findUnique({
+  const subject = await prisma.users.findUnique({
     where: {
       Id: parseInt(params.id ?? '')
     },
@@ -11,13 +11,11 @@ export const load = (async ({ params, locals }) => {
       OrganizationMemberships: true
     }
   });
-  const username = user?.Name;
+  const username = subject?.Name;
   const roles = (await locals.auth())?.user.roles;
-  const canEdit = !!roles?.find(
-    (r) =>
-      r[1] === RoleId.SuperAdmin ||
-      (r[1] === RoleId.OrgAdmin &&
-        user?.OrganizationMemberships.find((mem) => mem.OrganizationId === r[0]))
+  const canEdit = isAdminForOrgs(
+    subject?.OrganizationMemberships.map((mem) => mem.OrganizationId) ?? [],
+    roles
   );
   return { username, canEdit };
 }) satisfies LayoutServerLoad;
