@@ -1,13 +1,13 @@
-import { prisma } from 'sil.appbuilder.portal.common';
-import type { PageServerLoad, Actions } from './$types';
 import { paginateSchema } from '$lib/table';
-import { superValidate, fail } from 'sveltekit-superforms';
-import { valibot } from 'sveltekit-superforms/adapters';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import { error } from '@sveltejs/kit';
-import * as v from 'valibot';
-import type { Prisma } from '@prisma/client';
+import { isSuperAdmin } from '$lib/utils';
 import { idSchema } from '$lib/valibot';
+import type { Prisma } from '@prisma/client';
+import { error } from '@sveltejs/kit';
+import { prisma } from 'sil.appbuilder.portal.common';
+import { fail, superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+import * as v from 'valibot';
+import type { Actions, PageServerLoad } from './$types';
 
 const tableSchema = v.object({
   page: paginateSchema,
@@ -78,8 +78,7 @@ export const load: PageServerLoad = async (event) => {
 export const actions: Actions = {
   page: async function ({ request, locals }) {
     const session = await locals.auth();
-    if ((session?.user.roles.filter(([org, role]) => role === RoleId.SuperAdmin) ?? []).length < 1)
-      return error(403);
+    if (!isSuperAdmin(session?.user.roles)) return error(403);
     const form = await superValidate(request, valibot(tableSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
@@ -145,16 +144,16 @@ export const actions: Actions = {
         form.data.sort?.field === 'product'
           ? { ProductId: form.data.sort.direction }
           : form.data.sort?.field === 'organization'
-          ? { Product: { Project: { Organization: { Name: form.data.sort.direction } } } }
-          : form.data.sort?.field === 'project'
-          ? { Product: { Project: { Name: form.data.sort.direction } } }
-          : form.data.sort?.field === 'definition'
-          ? { Product: { ProductDefinition: { Name: form.data.sort.direction } } }
-          : form.data.sort?.field === 'state'
-          ? { State: form.data.sort.direction }
-          : form.data.sort?.field === 'date'
-          ? { DateUpdated: form.data.sort.direction }
-          : undefined,
+            ? { Product: { Project: { Organization: { Name: form.data.sort.direction } } } }
+            : form.data.sort?.field === 'project'
+              ? { Product: { Project: { Name: form.data.sort.direction } } }
+              : form.data.sort?.field === 'definition'
+                ? { Product: { ProductDefinition: { Name: form.data.sort.direction } } }
+                : form.data.sort?.field === 'state'
+                  ? { State: form.data.sort.direction }
+                  : form.data.sort?.field === 'date'
+                    ? { DateUpdated: form.data.sort.direction }
+                    : undefined,
       where: where,
       select: {
         State: true,

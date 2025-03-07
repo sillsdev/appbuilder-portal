@@ -1,6 +1,6 @@
+import { isSuperAdmin } from '$lib/utils';
 import { error } from '@sveltejs/kit';
 import { prisma, Workflow } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { WorkflowAction, type WorkflowState } from 'sil.appbuilder.portal.common/workflow';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -97,7 +97,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 export const actions = {
   default: async ({ request, params, locals }) => {
-    if (!(await locals.auth())?.user.roles.find((r) => r[1] === RoleId.SuperAdmin)) {
+    if (!isSuperAdmin((await locals.auth())?.user.roles)) {
       return error(403);
     }
 

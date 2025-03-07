@@ -1,34 +1,30 @@
+import { isSuperAdmin } from '$lib/utils';
 import { prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (event) => {
-  const userId = (await event.locals.auth())!.user.userId;
-  const numberOfTasks = (await prisma.userTasks.findMany({
-    where: {
-      UserId: userId
-    },
-    select: {
-      Id: true
-    },
-    distinct: 'ProductId'
-  })).length;
-  const user = await prisma.users.findUnique({
-    where: {
-      Id: userId
-    },
-    include: { UserRoles: true, Organizations: true }
-  });
+  const user = (await event.locals.auth())!.user;
+  const numberOfTasks = (
+    await prisma.userTasks.findMany({
+      where: {
+        UserId: user.userId
+      },
+      select: {
+        Id: true
+      },
+      distinct: 'ProductId'
+    })
+  ).length;
   const organizations = await prisma.organizations.findMany({
-    where: user?.UserRoles.find((roleDef) => roleDef.RoleId === RoleId.SuperAdmin)
+    where: isSuperAdmin(user.roles)
       ? undefined
       : {
-        OrganizationMemberships: {
-          some: {
-            UserId: userId
+          OrganizationMemberships: {
+            some: {
+              UserId: user.userId
+            }
           }
-        }
-      },
+        },
     select: {
       Id: true,
       Name: true,

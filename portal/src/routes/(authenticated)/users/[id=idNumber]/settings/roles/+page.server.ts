@@ -1,3 +1,4 @@
+import { isAdminForOrg, isSuperAdmin, orgsForRole } from '$lib/utils';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
@@ -20,9 +21,9 @@ const rolesSchema = v.object({
 
 export const load = (async ({ locals, params }) => {
   const auth = (await locals.auth())?.user.roles;
-  const isSuperAdmin = auth?.find((r) => r[1] === RoleId.SuperAdmin);
-  const orgAdmins = auth?.filter((r) => r[1] === RoleId.OrgAdmin).map((r) => r[0]);
-  if (!(isSuperAdmin || orgAdmins?.length)) return error(403);
+  const isSuper = isSuperAdmin(auth);
+  const orgs = orgsForRole(RoleId.OrgAdmin, auth);
+  if (!(isSuper || orgs?.length)) return error(403);
   const subjectId = parseInt(params.id);
 
   const rolesByOrg = await prisma.organizations.findMany({
@@ -32,7 +33,7 @@ export const load = (async ({ locals, params }) => {
           UserId: subjectId
         }
       },
-      Id: isSuperAdmin ? undefined : { in: orgAdmins }
+      Id: isSuper ? undefined : { in: orgs }
     },
     select: {
       Id: true,
@@ -66,20 +67,11 @@ export const actions = {
     const form = await superValidate(event, valibot(rolesSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const userId = (await event.locals.auth())!.user.userId;
-    const adminRoles = await prisma.userRoles.findMany({
-      where: {
-        UserId: userId,
-        RoleId: {
-          in: [RoleId.OrgAdmin, RoleId.SuperAdmin]
-        }
-      }
-    });
-    const superAdmin = adminRoles.find((r) => r.RoleId === RoleId.SuperAdmin);
+    const user = (await event.locals.auth())!.user;
 
     // Filter for legal orgs to modify, then map to relevant table entries
-    const newRelationEntries = form.data.organizations.filter(
-      (org) => superAdmin || adminRoles.find((r) => r.OrganizationId === org.id)
+    const newRelationEntries = form.data.organizations.filter((org) =>
+      isAdminForOrg(org.id, user.roles)
     );
     const subjectUserId = parseInt(event.params.id);
     for (const org of newRelationEntries) {
