@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import * as m from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
@@ -15,7 +15,7 @@
     dataType: 'json',
     onUpdated(event) {
       if (event.form.valid) {
-        goto('/projects/' + $page.params.id);
+        goto('/projects/' + page.params.id);
       }
     }
   });
@@ -63,7 +63,7 @@
       </label>
     </div>
     <div class="flex place-content-end space-x-2">
-      <a href="/projects/{$page.params.id}" class="btn">{m.common_cancel()}</a>
+      <a href="/projects/{page.params.id}" class="btn">{m.common_cancel()}</a>
       <button class="btn btn-primary" type="submit">{m.common_save()}</button>
     </div>
   </form>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { afterNavigate, goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
@@ -87,10 +87,10 @@
   });
 
   let canArchiveSelected = $derived(
-    selectedProjects.every((p) => canArchive(p, $page.data.session, parseInt($page.params.id)))
+    selectedProjects.every((p) => canArchive(p, page.data.session, parseInt(page.params.id)))
   );
   let canReactivateSelected = $derived(
-    selectedProjects.every((p) => canReactivate(p, $page.data.session, parseInt($page.params.id)))
+    selectedProjects.every((p) => canReactivate(p, page.data.session, parseInt(page.params.id)))
   );
 
   const {
@@ -298,7 +298,7 @@
         <button>close</button>
       </form>
     </dialog>
-    {#if $page.params.filter === 'own'}
+    {#if page.params.filter === 'own'}
       <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
         <a class="action btn btn-outline" href="/projects/import/{$pageForm.organizationId}">
           {m.project_importProjects()}

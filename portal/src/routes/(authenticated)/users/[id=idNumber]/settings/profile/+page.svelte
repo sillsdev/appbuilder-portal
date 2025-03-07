@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
   import * as m from '$lib/paraglide/messages';
@@ -87,10 +87,12 @@
       <TypeaheadInput
         inputElProps={{ placeholder: m.profile_timezonePlaceholder() }}
         getList={(search) => fuzzySearch.search(search).slice(0, 7)}
-        on:itemClicked={(item) => {
+        onItemClicked={(item) => {
           // Not strictly necessary because it will be set onSubmit but here anyways
-          $form.timezone = item.detail.item.key;
-          tzValue = item.detail.item.value;
+          // @ts-expect-error the property key should always exist in our use case
+          $form.timezone = item.key;
+          // @ts-expect-error the property value should always exist in our use case
+          tzValue = item.value;
         }}
         bind:search={tzValue}
         classes="w-full {!tzValue || timeZoneMap.has(tzValue) ? '' : 'select-error'}"
@@ -151,7 +153,7 @@
         type="checkbox"
         id="active"
         class="toggle toggle-accent ml-4"
-        disabled={$page.data.session?.user.userId === data.form.data.id}
+        disabled={page.data.session?.user.userId === data.form.data.id}
         bind:checked={$form.active}
       />
     </div>

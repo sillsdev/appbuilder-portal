@@ -21,7 +21,7 @@
   {#each data.workflowDefinitions.sort((a, b) => sortByName(a, b, languageTag())) as wd}
     <DataDisplayBox
       editable
-      on:edit={() => goto('/admin/settings/workflow-definitions/edit?id=' + wd.Id)}
+      onEdit={() => goto('/admin/settings/workflow-definitions/edit?id=' + wd.Id)}
       title={wd.Name}
       fields={[
         {
