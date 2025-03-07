@@ -4,10 +4,11 @@ A simple dropdown menu from DaisyUI.
 -->
 <!-- TODO: this component isn't used anywhere... -->
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   interface Props {
     cols?: number;
-    label?: import('svelte').Snippet;
-    content?: import('svelte').Snippet;
+    label?: Snippet;
+    content?: Snippet;
     onNavEnd?: () => void;
   }
 
