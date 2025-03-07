@@ -5,12 +5,14 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
   import type { PrunedProject } from '$lib/projects/common';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
+  import { byName } from '$lib/utils';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-  
+
   interface Props {
     data: PageData;
   }
@@ -84,7 +86,7 @@
       </div>
       <select class="select select-bordered max-w-full" bind:value={$form.productDefinitionId}>
         <option value={null} selected>{m.productDefinitions_filterAllProjects()}</option>
-        {#each data.productDefinitions as pD}
+        {#each data.productDefinitions.toSorted((a, b) => byName(a, b, languageTag())) as pD}
           <option value={pD.Id}>{pD.Name}</option>
         {/each}
       </select>

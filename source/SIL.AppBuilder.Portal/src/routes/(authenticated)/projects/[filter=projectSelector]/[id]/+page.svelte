@@ -12,7 +12,7 @@
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
-  import { byName } from '$lib/utils';
+  import { byName, byString } from '$lib/utils';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -216,12 +216,12 @@
           </div>
           <hr />
           <div class="flex flex-col pt-1 space-y-1">
-            {#each selectedProjects as project}
+            {#each selectedProjects.toSorted((a, b) => byName(a, b, languageTag())) as project}
               {@const products = project.Products?.filter((p) => p.CanRebuild || p.CanRepublish)}
               <div class="p-2">
                 <h3>{project.Name}</h3>
                 {#if products?.length}
-                  {#each products as product}
+                  {#each products.toSorted((a, b) => byString(a.ProductDefinitionName, b.ProductDefinitionName, languageTag())) as product}
                     <!-- svelte-ignore a11y_click_events_have_key_events -->
                     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                     <label
