@@ -5,10 +5,8 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
   import type { PrunedProject } from '$lib/projects/common';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
-  import { byName } from '$lib/utils';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -97,10 +95,9 @@
     </div>
   </form>
   {#if projects.length > 0}
-    {@const langTag = languageTag()}
     <div class="w-full relative p-4">
-      {#each projects.sort((a, b) => byName(a, b, langTag)) as project}
-        <ProjectCard {project} route='directory' />
+      {#each projects as project}
+        <ProjectCard project={$state.snapshot(project)} route='directory' />
       {/each}
     </div>
   {:else}
