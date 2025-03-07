@@ -55,7 +55,7 @@
   <div id="files" class="overflow-y-auto grow">
     {#each builds as build}
       <BuildArtifacts
-        {build}
+        build={$state.snapshot(build)}
         latestBuildId={data.product?.WorkflowBuildId}
       />
     {/each}
