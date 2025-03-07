@@ -7,7 +7,11 @@
   import { businessFlows } from '../common';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 
   const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',

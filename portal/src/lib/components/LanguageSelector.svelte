@@ -28,8 +28,8 @@
           <li>
             <div
               class="btn flex {lang === languageTag() ? 'active' : 'inactive'}"
-              on:click={() => switchToLanguage(lang)}
-              on:keypress={() => switchToLanguage(lang)}
+              onclick={() => switchToLanguage(lang)}
+              onkeypress={() => switchToLanguage(lang)}
               role="button"
               tabindex="0"
             >

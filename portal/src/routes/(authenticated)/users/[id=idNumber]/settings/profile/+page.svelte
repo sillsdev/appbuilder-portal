@@ -8,7 +8,11 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
   const { form, enhance } = superForm(data.form, {
     dataType: 'json',
     onSubmit(input) {
@@ -18,7 +22,7 @@
     }
   });
 
-  let tzValue: string;
+  let tzValue: string = $state('');
 
   const timeZones = getTimeZones().flatMap((tz) =>
     tz.group
@@ -81,7 +85,7 @@
     </LabeledFormInput>
     <LabeledFormInput name="profile_timezone">
       <TypeaheadInput
-        props={{ placeholder: m.profile_timezonePlaceholder() }}
+        inputElProps={{ placeholder: m.profile_timezonePlaceholder() }}
         getList={(search) => fuzzySearch.search(search).slice(0, 7)}
         on:itemClicked={(item) => {
           // Not strictly necessary because it will be set onSubmit but here anyways
@@ -92,9 +96,11 @@
         classes="w-full {!tzValue || timeZoneMap.has(tzValue) ? '' : 'select-error'}"
         dropdownClasses="w-full"
       >
-        <div slot="listElement" let:item class="w-full right-0">
-          <span>{item.item.value}</span>
-        </div>
+        {#snippet listElement({ item })}
+          <div class="w-full right-0">
+            <span>{item.item.value}</span>
+          </div>
+        {/snippet}
       </TypeaheadInput>
     </LabeledFormInput>
     <div class="flex place-content-between items-center mt-4">

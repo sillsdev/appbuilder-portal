@@ -1,14 +1,18 @@
 <script lang="ts">
   import * as m from '$lib/paraglide/messages';
-  export let size: number;
-  export let total: number;
-  export let page: number = 0;
-  export let extraSizeOptions: number[] = [];
+  interface Props {
+    size: number;
+    total: number;
+    page?: number;
+    extraSizeOptions?: number[];
+  }
 
-  $: pageCount = Math.ceil(total / size);
-  $: collapse = pageCount > 6;
-  $: hasPreviousPage = page > 0;
-  $: hasNextPage = page < pageCount - 1;
+  let { size = $bindable(), total, page = $bindable(0), extraSizeOptions = [] }: Props = $props();
+
+  let pageCount = $derived(Math.ceil(total / size));
+  let collapse = $derived(pageCount > 6);
+  let hasPreviousPage = $derived(page > 0);
+  let hasNextPage = $derived(page < pageCount - 1);
 
   function index(i: number, page: number): number {
     if (page <= 3) return i + 2;
@@ -17,75 +21,42 @@
   }
 </script>
 
+{#snippet button(index: number)}
+  <label class="join-item btn btn-square form-control" class:bg-neutral={page === index}>
+    <span>{index + 1}</span>
+    <input class="hidden" type="radio" bind:group={page} name="page" value={index} />
+  </label>
+{/snippet}
+
 <div class="flex flex-row flex-wrap gap-1 w-full">
   {#if pageCount > 1}
     <div class="join max-w-xs overflow-x-auto md:max-w-none">
-      <label class="join-item btn btn-square form-control {hasPreviousPage ? '' : 'btn-disabled'}">
+      <label class="join-item btn btn-square form-control" class:btn-disabled={!hasPreviousPage}>
         <span>«</span>
         <input class="hidden" type="radio" bind:group={page} name="page" value={page - 1} />
       </label>
-      <label class="join-item btn btn-square form-control {page === 0 ? 'bg-neutral' : ''}">
-        <span>{1}</span>
-        <input class="hidden" type="radio" bind:group={page} name="page" value={0} />
-      </label>
+      {@render button(0)}
       {#if collapse}
         {#if page > 3}
           <button class="join-item btn btn-disabled">...</button>
         {:else}
-          <label class="join-item btn btn-square form-control {page === 1 ? 'bg-neutral' : ''}">
-            <span>{2}</span>
-            <input class="hidden" type="radio" bind:group={page} name="page" value={1} />
-          </label>
+          {@render button(1)}
         {/if}
         {#each Array.from({ length: 3 }) as _, i}
-          <label
-            class="join-item btn btn-square form-control {page === index(i, page)
-              ? 'bg-neutral'
-              : ''}"
-          >
-            <span>{index(i, page) + 1}</span>
-            <input
-              class="hidden"
-              type="radio"
-              bind:group={page}
-              name="page"
-              value={index(i, page)}
-            />
-          </label>
+          {@render button(index(i, page))}
         {/each}
         {#if page < pageCount - 4}
           <button class="join-item btn btn-disabled">...</button>
         {:else}
-          <label
-            class="join-item btn btn-square form-control {page === pageCount - 2
-              ? 'bg-neutral'
-              : ''}"
-          >
-            <span>{pageCount - 1}</span>
-            <input
-              class="hidden"
-              type="radio"
-              bind:group={page}
-              name="page"
-              value={pageCount - 2}
-            />
-          </label>
+          {@render button(pageCount - 2)}
         {/if}
       {:else}
         {#each Array.from({ length: pageCount - 2 }) as _, i}
-          <label class="join-item btn btn-square form-control {page === i + 1 ? 'bg-neutral' : ''}">
-            <span>{i + 2}</span>
-            <input class="hidden" type="radio" bind:group={page} name="page" value={i + 1} />
-          </label>
+          {@render button(i + 1)}
         {/each}
       {/if}
-      <label
-        class="join-item btn btn-square form-control {page === pageCount - 1 ? 'bg-neutral' : ''}"
-      >
-        <span>{pageCount}</span>
-        <input class="hidden" type="radio" bind:group={page} name="page" value={pageCount - 1} />
-      </label>
-      <label class="join-item btn btn-square form-control {hasNextPage ? '' : 'btn-disabled'}">
+      {@render button(pageCount - 1)}
+      <label class="join-item btn btn-square form-control" class:btn-disabled={!hasNextPage}>
         <span>»</span>
         <input class="hidden" type="radio" bind:group={page} name="page" value={page + 1} />
       </label>

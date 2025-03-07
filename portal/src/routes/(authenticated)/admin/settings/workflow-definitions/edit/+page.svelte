@@ -5,16 +5,24 @@
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import { businessFlows } from '../common';
-  import type { ActionData, PageData } from './$types';
+  import type { PageData } from './$types';
 
-  export let data: PageData;
-  export let form: ActionData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
   const {
     form: superFormData,
     enhance,
     allErrors
   } = superForm(data.form, {
-    dataType: 'json'
+    dataType: 'json',
+    onUpdated(event) {
+      if (event.form.valid) {
+        goto('/admin/settings/workflow-definitions');
+      }
+    }
   });
 
   const workflowOptions = [
@@ -31,8 +39,6 @@
       value: WorkflowOptions.AllowTransferToAuthors
     }
   ];
-
-  $: if (form?.ok) goto('/admin/settings/workflow-definitions');
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->
@@ -85,7 +91,7 @@
       name="description"
       class="textarea textarea-bordered w-full"
       bind:value={$superFormData.description}
-    />
+    ></textarea>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowScheme">
     <select
@@ -114,7 +120,7 @@
       name="properties"
       class="textarea textarea-bordered w-full"
       bind:value={$superFormData.properties}
-    />
+    ></textarea>
   </LabeledFormInput>
   <LabeledFormInput
     name="admin_settings_workflowDefinitions_options"

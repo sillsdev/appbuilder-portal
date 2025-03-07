@@ -1,6 +1,10 @@
 <script lang="ts">
-  export let size = '24';
-  export let color = 'black';
+  interface Props {
+    size?: string;
+    color?: string;
+  }
+
+  let { size = '24', color = 'black' }: Props = $props();
 </script>
 
 <svg
@@ -19,7 +23,7 @@
     bordercolor="#000000"
     borderopacity="0.25"
     showgrid="false"
-  />
+></sodipodi:namedview>
   <defs id="defs2" />
   <g id="layer1" transform="translate(14.202624,-29.114538)">
     <path

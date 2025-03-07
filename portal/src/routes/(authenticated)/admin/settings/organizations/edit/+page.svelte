@@ -5,21 +5,28 @@
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import * as m from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
-  import type { ActionData, PageData } from './$types';
+  import type { PageData } from './$types';
 
-  export let data: PageData;
-  export let form: ActionData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
   const {
     form: superFormData,
     enhance,
     allErrors
   } = superForm(data.form, {
-    dataType: 'json'
+    dataType: 'json',
+    onUpdated(event) {
+      if (event.form.valid) {
+        goto('/admin/settings/organizations');
+      }
+    }
   });
 
-  $: if (form?.ok) goto('/admin/settings/organizations');
-  $: getStoreInfo = (store: (typeof $superFormData)['stores'][0]) =>
-    data.options.stores.find((s) => s.Id === store.storeId);
+  let getStoreInfo = $derived((store: (typeof $superFormData)['stores'][0]) =>
+    data.options.stores.find((s) => s.Id === store.storeId));
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->

@@ -1,13 +1,19 @@
 <script lang="ts">
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+  import { languageTag } from '$lib/paraglide/runtime';
+  import { sortByName } from '$lib/utils';
+  import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import GroupsSelector from '../GroupsSelector.svelte';
   import RolesSelector from '../RolesSelector.svelte';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
   let inputEle: HTMLInputElement;
   const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',
@@ -22,25 +28,14 @@
       }
     }
   });
-  let selectedOrg = data.organizations[0].Id;
-  let rolesField = [
-    {
-      name: '',
-      roles: $form.roles
-    }
-  ];
-  let groupsField = [
-    {
-      name: '',
-      groups: $form.groups,
-      id: selectedOrg
-    }
-  ];
-  $: groupsField[0].id = selectedOrg;
-  $: $form.organizationId = selectedOrg;
-  $: selectedOrg, (groupsField[0].groups = []);
-  $: $form.roles = rolesField[0].roles;
-  $: $form.groups = groupsField[0].groups;
+
+  let currentGroups = $derived(
+    data.groupsByOrg.find((o) => o.Id === $form.organizationId)?.Groups ?? []
+  );
+
+  onMount(() => {
+    $form.organizationId = data.groupsByOrg[0].Id;
+  });
 </script>
 
 <div class="w-full max-w-6xl mx-auto">
@@ -63,32 +58,26 @@
           <select
             class="select select-bordered w-full"
             name="organizationId"
-            bind:value={selectedOrg}
+            bind:value={$form.organizationId}
           >
-            {#each data.organizations.filter( (org) => data.session?.user.roles.find((r) => r[0] === RoleId.SuperAdmin || (r[0] === RoleId.OrgAdmin && r[1] === org.Id)) ) as org}
+            {#each data.groupsByOrg.sort((a, b) => sortByName(a, b, languageTag())) as org}
               <option value={org.Id}>{org.Name}</option>
             {/each}
           </select>
         </LabeledFormInput>
       </div>
       <div class="flex flex-col h-full min-w-96">
+        <!-- TODO: i18n -->
         <span class="label-text my-2">Assigned Roles and Groups</span>
         <div class="grow border border-opacity-15 border-gray-50 rounded-lg p-4">
           <div class="flex flex-row space-x-2">
             <div>
               {m.users_userRoles()}
-              <RolesSelector bind:organizations={rolesField} />
+              <RolesSelector bind:roles={$form.roles} />
             </div>
             <div>
               {m.users_userGroups()}
-              <GroupsSelector
-                bind:organizations={groupsField}
-                groups={data.groups.map((g) => ({
-                  id: g.Id,
-                  name: g.Name ?? '',
-                  orgId: g.OwnerId
-                }))}
-              />
+              <GroupsSelector groups={currentGroups} bind:selected={$form.groups} />
             </div>
           </div>
         </div>

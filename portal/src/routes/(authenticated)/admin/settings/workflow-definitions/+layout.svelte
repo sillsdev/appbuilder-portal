@@ -1,6 +1,10 @@
-<script>
+<script lang="ts">
   import * as m from '$lib/paraglide/messages';
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+  let { children }: Props = $props();
 </script>
 
 <h2>{m.admin_settings_workflowDefinitions_title()}</h2>
-<slot />
+{@render children?.()}

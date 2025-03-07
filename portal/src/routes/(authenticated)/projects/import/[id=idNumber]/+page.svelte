@@ -8,12 +8,16 @@
   import { flatten, safeParse } from 'valibot';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 
   let returnedErrors: {
     path: string;
     messages: string[];
-  }[] = [];
+  }[] = $state([]);
   const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',
     resetForm: false,
@@ -34,9 +38,9 @@
   let reader: FileReader;
 
   // set to null *only* if the file has been parsed *and* there are no errors
-  let parseErrors: ReturnType<typeof flatten<typeof importJSONSchema>> | null = {};
+  let parseErrors: ReturnType<typeof flatten<typeof importJSONSchema>> | null = $state({});
 
-  $: canSubmit = !$allErrors.length && !parseErrors && !returnedErrors.length;
+  let canSubmit = $derived(!$allErrors.length && !parseErrors && !returnedErrors.length);
 
   onMount(() => {
     reader = new FileReader();
@@ -93,13 +97,13 @@
           type="file"
           class="file-input file-input-bordered"
           accept="application/json"
-          on:change={(e) => {
+          onchange={(e) => {
             if (e.currentTarget?.files?.length) {
               parseErrors = {};
               reader.readAsText(e.currentTarget.files[0]);
             }
           }}
-          on:cancel={(e) => {
+          oncancel={(e) => {
             if (e.currentTarget?.files?.length) {
               parseErrors = {};
               reader.readAsText(e.currentTarget.files[0]);
@@ -139,7 +143,7 @@
           {#each Object.entries(parseErrors.nested) as error}
             <li class="text-red-500">
               <b>{error[0]}:</b>
-              {error[1].join('. ')}
+              {error[1]?.join('. ')}
             </li>
           {/each}
         {/if}

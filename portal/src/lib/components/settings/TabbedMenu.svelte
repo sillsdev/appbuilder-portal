@@ -2,14 +2,28 @@
   import { page } from '$app/stores';
   import IconContainer from '../IconContainer.svelte';
 
-  export let menuItems: {
-    route: string;
-    text: string;
-  }[] = [];
-  export let base: string;
-  export let routeId: string;
-  export let title: string = '';
-  export let allowTitleWrap = false;
+  interface Props {
+    menuItems: {
+      route: string;
+      text: string;
+    }[];
+    base: string;
+    routeId: string;
+    titleString?: string;
+    allowTitleWrap?: boolean;
+    children?: import('svelte').Snippet;
+    title?: import('svelte').Snippet;
+  }
+
+  let {
+    menuItems = [],
+    base,
+    routeId,
+    titleString,
+    allowTitleWrap = false,
+    children,
+    title
+  }: Props = $props();
 
   function isActive(menuRoute: string) {
     return $page.route.id?.replace(routeId, '').startsWith('/' + menuRoute);
@@ -19,9 +33,11 @@
 <div class="w-full max-w-6xl mx-auto">
   <div class="flex sm:flex-row flex-col">
     <div class="p-4 sm:pr-0 sm:sticky top-0 sm:self-start">
-      <slot name="title">
-        <h1 class="p-4" class:text-nowrap={!allowTitleWrap}>{title}</h1>
-      </slot>
+      {#if title}
+        {@render title()}
+      {:else}
+        <h1 class="p-4" class:text-nowrap={!allowTitleWrap}>{titleString}</h1>
+      {/if}
       <div class="rounded border-slate-600 bg-base-200 mx-auto sm:hidden">
         <!-- Mobile dropdown menu -->
         <div class="slidedown p-3" role="button" tabindex="0">
@@ -66,7 +82,7 @@
     </div>
     <div class="flex grow sm:mt-16">
       <div class="flex grow flex-col">
-        <slot />
+        {@render children?.()}
       </div>
     </div>
   </div>

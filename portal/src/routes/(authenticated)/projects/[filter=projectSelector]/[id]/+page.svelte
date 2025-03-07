@@ -15,7 +15,13 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
+  let projects = $state(data.projects);
+  let count = $state(data.count);
 
   const {
     form: pageForm,
@@ -35,8 +41,8 @@
         query: { data: PrunedProject[]; count: number };
       }>;
       if (event.form.valid && returnedData.query) {
-        data.projects = returnedData.query.data;
-        data.count = returnedData.query.count;
+        projects = returnedData.query.data;
+        count = returnedData.query.count;
       }
     }
   });
@@ -69,23 +75,22 @@
     CanRebuild: boolean;
     CanRepublish: boolean;
   };
-  let selectedProjects: (ProjectForAction & { Products: ProductForAction[] })[] = [];
+  let selectedProjects: (ProjectForAction & { Products: ProductForAction[] })[] = $derived(
+    projects.filter((p) => $actionForm.projects.includes(p.Id))
+  );
   /** For selecting products for bulk rebuild/republish */
   let productSelectModal: HTMLDialogElement | undefined;
-  let selectedProducts: ProductForAction[] = [];
-
-  $: selectedProjects = data.projects.filter((p) => $actionForm.projects.includes(p.Id));
+  let selectedProducts: ProductForAction[] = $state([]);
 
   afterNavigate((navigation) => {
     $pageForm.organizationId = data.pageForm.data.organizationId;
-    selectedProjects = [];
   });
 
-  $: canArchiveSelected = selectedProjects.every((p) =>
-    canArchive(p, $page.data.session, parseInt($page.params.id))
+  let canArchiveSelected = $derived(
+    selectedProjects.every((p) => canArchive(p, $page.data.session, parseInt($page.params.id)))
   );
-  $: canReactivateSelected = selectedProjects.every((p) =>
-    canReactivate(p, $page.data.session, parseInt($page.params.id))
+  let canReactivateSelected = $derived(
+    selectedProjects.every((p) => canReactivate(p, $page.data.session, parseInt($page.params.id)))
   );
 
   const {
@@ -103,16 +108,18 @@
       }
     }
   });
-  $: $productForm.products = selectedProducts.map((p) => p.Id);
+  $effect(() => {
+    $productForm.products = selectedProducts.map((p) => p.Id);
+  })
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
-  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
   <form
     method="POST"
     action="?/page"
     use:pageEnhance
-    on:keydown={(event) => {
+    onkeydown={(event) => {
       if (event.key === 'Enter') pageSubmit();
     }}
   >
@@ -126,7 +133,7 @@
         <select
           class="select select-bordered mobile-sizing"
           bind:value={$pageForm.organizationId}
-          on:change={() => goto($pageForm.organizationId + '')}
+          onchange={() => goto($pageForm.organizationId + '')}
         >
           {#each data.organizations as organization}
             <option value={organization.Id} selected={$pageForm.organizationId === organization.Id}>
@@ -184,7 +191,7 @@
           class="action btn btn-outline"
           type="button"
           disabled={!(canArchiveSelected && selectedProjects.length)}
-          on:click={() => productSelectModal?.showModal()}
+          onclick={() => productSelectModal?.showModal()}
         >
           {m.common_rebuild()}
         </button>
@@ -198,7 +205,7 @@
             <button
               class="btn btn-ghost"
               type="button"
-              on:click={() => {
+              onclick={() => {
                 productSelectModal?.close();
               }}
             >
@@ -213,8 +220,8 @@
                 <h3>{project.Name}</h3>
                 {#if products?.length}
                   {#each products as product}
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                     <label
                       class="flex flex-col border border-secondary rounded text-left form-control cursor-pointer"
                     >
@@ -252,7 +259,7 @@
           </div>
         </div>
         <div class="flex flex-row justify-end gap-2">
-          <button class="btn btn-primary" type="reset" on:click={() => productSelectModal?.close()}>
+          <button class="btn btn-primary" type="reset" onclick={() => productSelectModal?.close()}>
             {m.common_cancel()}
           </button>
           <label
@@ -302,19 +309,19 @@
       </div>
     {/if}
   </div>
-  {#if data.projects.length > 0}
+  {#if projects.length > 0}
     <div class="w-full relative p-4">
-      {#each data.projects as project}
+      {#each projects as project}
         <ProjectCard {project}>
-          <span slot="select">
+          {#snippet select()}
             <input
               type="checkbox"
               class="mr-2 checkbox checkbox-accent"
               bind:group={$actionForm.projects}
               value={project.Id}
             />
-          </span>
-          <span slot="actions">
+          {/snippet}
+          {#snippet actions()}
             <ProjectActionMenu
               data={data.actionForm}
               {project}
@@ -322,26 +329,26 @@
               allowReactivate={data.allowReactivate}
               userGroups={data.userGroups}
             />
-          </span>
+          {/snippet}
         </ProjectCard>
       {/each}
     </div>
   {:else}
     <p class="m-8">{m.projectTable_empty()}</p>
   {/if}
-  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
   <form
     method="POST"
     action="?/page"
     use:pageEnhance
-    on:keydown={(event) => {
+    onkeydown={(event) => {
       if (event.key === 'Enter') pageSubmit();
     }}
   >
     <div class="w-full flex flex-row place-content-start p-4 space-between-4 flex-wrap gap-1">
       <Pagination
         bind:size={$pageForm.page.size}
-        total={data.count}
+        total={count}
         bind:page={$pageForm.page.page}
       />
     </div>
