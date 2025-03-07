@@ -47,7 +47,7 @@
     </label>
   </div>
   <MultiselectBox header={m.org_productSelectTitle()}>
-    {#each $superFormData.products.sort( (a, b) => byName(allProductDefs.get(a.productId), allProductDefs.get(b.productId), languageTag()) ) as productDef}
+    {#each $superFormData.products.toSorted( (a, b) => byName(allProductDefs.get(a.productId), allProductDefs.get(b.productId), languageTag()) ) as productDef}
       {@const pdLook = allProductDefs.get(productDef.productId)}
       <MultiselectBoxElement
         title={pdLook?.Name ?? ''}

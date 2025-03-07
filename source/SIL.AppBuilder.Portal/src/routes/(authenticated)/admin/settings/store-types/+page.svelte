@@ -18,7 +18,7 @@
 </a>
 
 <div class="flex flex-col w-full">
-  {#each data.storeTypes.sort((a, b) => byName(a, b, languageTag())) as storeType}
+  {#each data.storeTypes.toSorted((a, b) => byName(a, b, languageTag())) as storeType}
     <DataDisplayBox
       editable
       onEdit={() => goto('/admin/settings/store-types/edit?id=' + storeType.Id)}

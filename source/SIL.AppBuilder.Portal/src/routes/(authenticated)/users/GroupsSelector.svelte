@@ -12,7 +12,7 @@
 
 <div class="flex w-full">
   <div class="shrink space-y-2">
-    {#each groups.sort((a, b) => byName(a, b, languageTag())) as group}
+    {#each groups.toSorted((a, b) => byName(a, b, languageTag())) as group}
       <div class="flex space-x-2">
         <input
           type="checkbox"

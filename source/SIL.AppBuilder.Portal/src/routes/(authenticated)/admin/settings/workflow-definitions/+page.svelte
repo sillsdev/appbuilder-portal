@@ -18,7 +18,7 @@
 </a>
 
 <div class="flex flex-col w-full">
-  {#each data.workflowDefinitions.sort((a, b) => byName(a, b, languageTag())) as wd}
+  {#each data.workflowDefinitions.toSorted((a, b) => byName(a, b, languageTag())) as wd}
     <DataDisplayBox
       editable
       onEdit={() => goto('/admin/settings/workflow-definitions/edit?id=' + wd.Id)}

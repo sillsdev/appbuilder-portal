@@ -22,7 +22,7 @@
 {/snippet}
 
 <div class="flex flex-col w-full">
-  {#each data.buildEngines.sort( (a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, languageTag()) ) as buildEngine}
+  {#each data.buildEngines.toSorted( (a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, languageTag()) ) as buildEngine}
     <DataDisplayBox
       title={buildEngine.BuildEngineUrl}
       data={buildEngine}

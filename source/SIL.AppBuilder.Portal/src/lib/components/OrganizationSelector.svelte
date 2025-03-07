@@ -25,7 +25,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each organizations.sort((a, b) => byName(a, b, languageTag())) as org}
+      {#each organizations.toSorted((a, b) => byName(a, b, languageTag())) as org}
         <tr
           class="h-16 border-y hover:bg-base-200 cursor-pointer"
           onclick={() => onSelect(org.Id)}

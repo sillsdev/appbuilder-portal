@@ -19,7 +19,7 @@
 </a>
 
 <div class="flex flex-col w-full">
-  {#each data.productDefinitions.sort((a, b) => byName(a, b, languageTag())) as pD}
+  {#each data.productDefinitions.toSorted((a, b) => byName(a, b, languageTag())) as pD}
     <DataDisplayBox
       editable
       onEdit={() => goto(base + '/admin/settings/product-definitions/edit?id=' + pD.Id)}

@@ -74,7 +74,7 @@
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}">
       <select class="select select-bordered {mobileSizing}" bind:value={$form.productDefinitionId}>
         <option value={null} selected>{m.productDefinitions_filterAllProjects()}</option>
-        {#each data.productDefinitions.sort((a, b) => byName(a, b, languageTag())) as pD}
+        {#each data.productDefinitions.toSorted((a, b) => byName(a, b, languageTag())) as pD}
           <option value={pD.Id}>{pD.Name}</option>
         {/each}
       </select>

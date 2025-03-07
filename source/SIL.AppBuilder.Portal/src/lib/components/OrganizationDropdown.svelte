@@ -12,7 +12,7 @@
   {#if allowNull}
     <option value={null} selected>{org_allOrganizations()}</option>
   {/if}
-  {#each organizations.sort((a, b) => byName(a, b, languageTag())) as organization}
+  {#each organizations.toSorted((a, b) => byName(a, b, languageTag())) as organization}
     <option value={organization.Id}>{organization.Name}</option>
   {/each}
 </select>

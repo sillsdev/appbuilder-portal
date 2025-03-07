@@ -140,7 +140,7 @@
           bind:value={$pageForm.organizationId}
           onchange={() => goto($pageForm.organizationId + '')}
         >
-          {#each data.organizations.sort((a, b) => byName(a, b, languageTag())) as organization}
+          {#each data.organizations.toSorted((a, b) => byName(a, b, languageTag())) as organization}
             <option value={organization.Id} selected={$pageForm.organizationId === organization.Id}>
               {organization.Name}
             </option>
@@ -314,7 +314,7 @@
   {#if data.projects.length > 0}
     {@const langTag = languageTag()}
     <div class="w-full relative p-4">
-      {#each data.projects.sort((a, b) => byName(a, b, langTag)) as project}
+      {#each data.projects.toSorted((a, b) => byName(a, b, langTag)) as project}
         <ProjectCard {project}>
           {#snippet select()}
             <input
