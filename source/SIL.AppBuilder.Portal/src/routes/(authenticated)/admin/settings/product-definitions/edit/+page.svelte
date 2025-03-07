@@ -2,6 +2,8 @@
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
+  import { byName } from '$lib/utils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -21,9 +23,18 @@
       }
     }
   });
-  const workflows = data.options.workflows.filter((w) => w.Type === 1);
-  const rebuildWorkflows = data.options.workflows.filter((w) => w.Type === 2);
-  const republishWorkflows = data.options.workflows.filter((w) => w.Type === 3);
+
+  const langTag = languageTag();
+
+  const workflows = data.options.workflows
+    .filter((w) => w.Type === 1)
+    .sort((a, b) => byName(a, b, langTag));
+  const rebuildWorkflows = data.options.workflows
+    .filter((w) => w.Type === 2)
+    .sort((a, b) => byName(a, b, langTag));
+  const republishWorkflows = data.options.workflows
+    .filter((w) => w.Type === 3)
+    .sort((a, b) => byName(a, b, langTag));
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->
