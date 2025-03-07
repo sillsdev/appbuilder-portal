@@ -21,7 +21,7 @@
   {#each data.organizations.sort((a, b) => sortByName(a, b, languageTag())) as organization}
     <DataDisplayBox
       editable
-      on:edit={() => goto('/admin/settings/organizations/edit?id=' + organization.Id)}
+      onEdit={() => goto('/admin/settings/organizations/edit?id=' + organization.Id)}
       title={organization.Name}
       fields={[
         { key: 'admin_settings_organizations_owner', value: organization.Owner.Name },

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import IconContainer from '../IconContainer.svelte';
 
   interface Props {
@@ -26,7 +26,7 @@
   }: Props = $props();
 
   function isActive(menuRoute: string) {
-    return $page.route.id?.replace(routeId, '').startsWith('/' + menuRoute);
+    return page.route.id?.replace(routeId, '').startsWith('/' + menuRoute);
   }
 </script>
 
@@ -44,7 +44,7 @@
           <div class="flex place-content-between">
             <span>
               {menuItems.find((item) =>
-                $page.route.id?.split(routeId + '/')[1]?.startsWith(item.route)
+                page.route.id?.split(routeId + '/')[1]?.startsWith(item.route)
               )?.text}
             </span>
             <IconContainer icon="gridicons:dropdown" width="24" />
@@ -65,7 +65,7 @@
       </div>
       <ul class="menu p-0 rounded border border-slate-600 sm:flex hidden">
         <!-- Desktop side menu -->
-        {#key $page.route.id}
+        {#key page.route.id}
           {#each menuItems as item}
             <li class="w-60 border-t border-slate-600 w-full [top:-1px]">
               <a

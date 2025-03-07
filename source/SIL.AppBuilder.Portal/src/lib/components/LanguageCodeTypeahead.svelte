@@ -5,7 +5,6 @@
 
   import * as m from '$lib/paraglide/messages';
   import type { FuseResultMatch } from 'fuse.js';
-  import { createEventDispatcher } from 'svelte';
   import TypeaheadInput from './TypeaheadInput.svelte';
 
   // https://www.fusejs.io/api/options.html
@@ -59,13 +58,15 @@
     langCode: string;
     dropdownClasses?: string;
     inputClasses?: string;
+    onLangCodeSelected?: (langCode: string) => void;
   }
 
-  let { langCode = $bindable(), dropdownClasses = '', inputClasses = '' }: Props = $props();
-
-  const dispatch = createEventDispatcher<{
-    langCodeSelected: string;
-  }>();
+  let {
+    langCode = $bindable(),
+    dropdownClasses = '',
+    inputClasses = '',
+    onLangCodeSelected
+  }: Props = $props();
 </script>
 
 {#snippet colorValueForKeyMatch(
@@ -104,9 +105,9 @@
   getList={(search) => fuzzySearch.search(search).slice(0, 5)}
   classes="pr-20 {inputClasses}"
   bind:search={langCode}
-  on:itemClicked={(item) => {
-    langCode = item.detail.item.tag;
-    dispatch('langCodeSelected', langCode);
+  onItemClicked={(item) => {
+    langCode = item.item.tag;
+    onLangCodeSelected?.(langCode);
   }}
   {dropdownClasses}
   bind:inputElement={typeaheadInput}
@@ -115,10 +116,7 @@
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   {#snippet custom()}
-    <span
-      class="absolute right-4 italic [line-height:3rem]"
-      onclick={() => typeaheadInput?.focus()}
-    >
+    <span class="absolute right-4 italic [line-height:3rem]" onclick={() => typeaheadInput?.focus()}>
       {langtagList.find((l) => l.tag === langCode)?.name ?? ''}
     </span>
   {/snippet}
