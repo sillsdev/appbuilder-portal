@@ -1,3 +1,4 @@
+import { isSuperAdmin } from '$lib/utils';
 import type { Session } from '@auth/sveltekit';
 import { error, redirect } from '@sveltejs/kit';
 import { prisma, Workflow } from 'sil.appbuilder.portal.common';
@@ -56,11 +57,11 @@ export const load = (async ({ params, url, locals }) => {
           //conditionally include reviewers
           Reviewers: snap?.context.includeReviewers
             ? {
-              select: {
-                Name: true,
-                Email: true
+                select: {
+                  Name: true,
+                  Email: true
+                }
               }
-            }
             : undefined,
           Authors: {
             select: {
@@ -80,27 +81,27 @@ export const load = (async ({ params, url, locals }) => {
       },
       Store: snap?.context.includeFields.includes('storeDescription')
         ? {
-          select: {
-            Description: true
+            select: {
+              Description: true
+            }
           }
-        }
         : undefined,
       StoreLanguage: snap?.context.includeFields.includes('listingLanguageCode')
         ? {
-          select: {
-            Name: true
+            select: {
+              Name: true
+            }
           }
-        }
         : undefined,
       ProductDefinition: {
         select: {
           Name: true,
           ApplicationTypes: snap?.context.includeFields.includes('appType')
             ? {
-              select: {
-                Description: true
+                select: {
+                  Description: true
+                }
               }
-            }
             : undefined
         }
       }
@@ -109,23 +110,23 @@ export const load = (async ({ params, url, locals }) => {
 
   const artifacts = snap?.context.includeArtifacts
     ? await prisma.productArtifacts.findMany({
-      where: {
-        ProductId: params.product_id,
-        ProductBuild: {
-          BuildId: product?.WorkflowBuildId
-        },
-        //filter by artifact type
-        ArtifactType:
+        where: {
+          ProductId: params.product_id,
+          ProductBuild: {
+            BuildId: product?.WorkflowBuildId
+          },
+          //filter by artifact type
+          ArtifactType:
             typeof snap.context.includeArtifacts === 'string'
               ? snap.context.includeArtifacts
               : undefined //include all
-      },
-      select: {
-        ArtifactType: true,
-        FileSize: true,
-        Url: true
-      }
-    })
+        },
+        select: {
+          ArtifactType: true,
+          FileSize: true,
+          Url: true
+        }
+      })
     : [];
 
   return {
@@ -133,16 +134,16 @@ export const load = (async ({ params, url, locals }) => {
       .filter((a) => {
         if (session?.user.userId === undefined) return false;
         switch (a[0].meta?.user) {
-        case RoleId.AppBuilder:
-          return session.user.userId === product?.Project.Owner.Id;
-        case RoleId.Author:
-          return product?.Project.Authors.map((a) => a.UserId).includes(session.user.userId);
-        case RoleId.OrgAdmin:
-          return product?.Project.Organization.UserRoles.map((u) => u.UserId).includes(
-            session.user.userId
-          );
-        default:
-          return false;
+          case RoleId.AppBuilder:
+            return session.user.userId === product?.Project.Owner.Id;
+          case RoleId.Author:
+            return product?.Project.Authors.map((a) => a.UserId).includes(session.user.userId);
+          case RoleId.OrgAdmin:
+            return product?.Project.Organization.UserRoles.map((u) => u.UserId).includes(
+              session.user.userId
+            );
+          default:
+            return false;
         }
       })
       .map((a) => a[0].eventType as WorkflowAction),
@@ -152,7 +153,7 @@ export const load = (async ({ params, url, locals }) => {
     productDescription: product?.ProductDefinition.Name,
     fields: {
       projectName: product?.Project.Name,
-      projectDescription: product?.Project.Description,
+      projectDescription: product?.Project?.Description,
       ownerName: product?.Project.Owner.Name,
       ownerEmail: product?.Project.Owner.Email,
       storeDescription: product?.Store?.Description,
@@ -205,15 +206,17 @@ export const actions = {
 // allowed if SuperAdmin, or the user has a UserTask for the Product
 async function verifyCanViewTask(session: Session | null, productId: string): Promise<boolean> {
   if (!session) return false;
-  if (session.user.roles.find(([org, role]) => role === RoleId.SuperAdmin)) return true;
 
-  return !!(await prisma.userTasks.findFirst({
-    where: {
-      ProductId: productId,
-      UserId: session.user.userId
-    },
-    select: {
-      Id: true
-    }
-  }));
+  return (
+    isSuperAdmin(session.user.roles) ||
+    !!(await prisma.userTasks.findFirst({
+      where: {
+        ProductId: productId,
+        UserId: session.user.userId
+      },
+      select: {
+        Id: true
+      }
+    }))
+  );
 }

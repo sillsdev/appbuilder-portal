@@ -1,8 +1,9 @@
+import { isAdmin } from '$lib/utils.js';
+import { error, json } from '@sveltejs/kit';
 import { jwtVerify } from 'jose';
 import { createPublicKey } from 'node:crypto';
-import { prisma, BuildEngine, DatabaseWrites } from 'sil.appbuilder.portal.common';
-import { RoleId, ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
-import { error, json } from '@sveltejs/kit';
+import { BuildEngine, DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
 
 const TOKEN_USE_HEADER = 'Use';
 const TOKEN_USE_UPLOAD = 'Upload';
@@ -96,15 +97,9 @@ export async function POST({ params, request, fetch }) {
 
   // Check roles
   if (readOnly === null) {
-    user[0].UserRoles.every(({ OrganizationId: org, RoleId: role }) => {
-      if (
-        role === RoleId.SuperAdmin ||
-        (org === project.OrganizationId && role === RoleId.OrgAdmin)
-      ) {
-        readOnly = true;
-        return false; // This works like a `break;`
-      }
-    });
+    if (isAdmin(user[0].UserRoles.map((ur) => [ur.RoleId, ur.OrganizationId]))) {
+      readOnly = true;
+    }
   }
 
   // Check authors

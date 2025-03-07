@@ -1,8 +1,8 @@
+import { isAdminForOrgs } from '$lib/utils';
 import { idSchema } from '$lib/valibot';
 import type { Session } from '@auth/sveltekit';
 import { error } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -29,45 +29,42 @@ function verifyAllowed(
 ) {
   // If we are not editing ourselves and we are not an admin who can edit this user, block
   return (
-    currentUser.userId === subjectUserId ||
-    !!currentUser.roles.find(
-      (role) =>
-        role[1] === RoleId.SuperAdmin ||
-        (subjectOrganizations.includes(role[0]) && role[1] === RoleId.OrgAdmin)
-    )
+    currentUser.userId === subjectUserId || isAdminForOrgs(subjectOrganizations, currentUser.roles)
   );
 }
 
 export const load = (async ({ params, locals, parent }) => {
-  const auth = (await locals.auth())?.user;
-  const { organizations } = await parent();
+  const user = (await locals.auth())?.user;
+  const subject = await prisma.users.findUnique({
+    where: {
+      Id: parseInt(params.id)
+    },
+    include: {
+      OrganizationMemberships: true
+    }
+  });
+  if (!subject) return error(404);
   if (
     !verifyAllowed(
-      auth!,
+      user!,
       parseInt(params.id),
-      organizations.map((org) => org.Id)
+      subject.OrganizationMemberships.map((mem) => mem.OrganizationId)
     )
   ) {
     return error(403);
   }
-  const user = await prisma.users.findUnique({
-    where: {
-      Id: parseInt(params.id)
-    }
-  });
-  if (!user) return error(404);
   const form = await superValidate(
     {
-      id: user.Id,
-      firstName: user.GivenName ?? '',
-      lastName: user.FamilyName ?? '',
-      displayName: user.Name ?? '',
-      email: user.Email ?? '',
-      phone: user.Phone ?? '',
-      timezone: user.Timezone ?? '',
-      notifications: user.EmailNotification ?? false,
-      visible: !!user.ProfileVisibility,
-      active: !user.IsLocked
+      id: subject.Id,
+      firstName: subject.GivenName ?? '',
+      lastName: subject.FamilyName ?? '',
+      displayName: subject.Name ?? '',
+      email: subject.Email ?? '',
+      phone: subject.Phone ?? '',
+      timezone: subject.Timezone ?? '',
+      notifications: subject.EmailNotification ?? false,
+      visible: !!subject.ProfileVisibility,
+      active: !subject.IsLocked
     },
     valibot(profileSchema)
   );
@@ -78,24 +75,22 @@ export const actions = {
   async default(event) {
     const form = await superValidate(event, valibot(profileSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    const auth = await event.locals.auth();
+    const user = (await event.locals.auth())!.user;
     if (form.data.id !== parseInt(event.params.id)) return fail(400);
+    const subject = await prisma.users.findUnique({
+      where: {
+        Id: form.data.id
+      },
+      include: {
+        OrganizationMemberships: true
+      }
+    });
+    if (!subject) return error(404);
     if (
       !verifyAllowed(
-        auth!.user,
+        user,
         form.data.id,
-        (
-          await prisma.organizationMemberships.findMany({
-            where: {
-              OrganizationId: {
-                in: auth!.user.roles
-                  .filter((role) => role[1] === RoleId.OrgAdmin)
-                  .map((role) => role[0])
-              },
-              UserId: form.data.id
-            }
-          })
-        ).map((mem) => mem.OrganizationId)
+        subject.OrganizationMemberships.map((mem) => mem.OrganizationId)
       )
     ) {
       return fail(403);
@@ -115,7 +110,7 @@ export const actions = {
         EmailNotification: form.data.notifications,
         ProfileVisibility: form.data.visible ? 1 : 0,
         // You cannot change lock state of yourself, and if you are editing someone else, you are either org admin or superadmin
-        IsLocked: form.data.id === auth!.user.userId ? undefined : !form.data.active
+        IsLocked: form.data.id === user.userId ? undefined : !form.data.active
       }
     });
     return { form, ok: true };

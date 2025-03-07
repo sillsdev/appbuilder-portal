@@ -1,10 +1,10 @@
 import { checkInviteErrors } from '$lib/organizationInvites';
+import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils';
 import type { Session } from '@auth/express';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { verifyCanViewAndEdit } from './lib/projects/common.server';
 
 declare module '@auth/sveltekit' {
@@ -180,21 +180,16 @@ async function validateRouteForAuthenticatedUser(
   // Only guarding authenticated routes
   if (path[0] === '(authenticated)') {
     if (path[1] === 'admin' || path[1] === 'workflow-instances')
-      return !!session.user.roles.find((r) => r[1] === RoleId.SuperAdmin);
+      return isSuperAdmin(session?.user?.roles);
     else if (path[1] === 'directory' || path[1] === 'open-source')
       // Always allowed. Open pages
       return true;
     else if (path[1] === 'organizations') {
       // Must be org admin or super admin for some organization
-      if (!session.user.roles.find((r) => r[1] === RoleId.SuperAdmin || r[1] === RoleId.OrgAdmin))
-        return false;
+      if (!isAdmin(session?.user?.roles)) return false;
       // Must be org admin or super admin for this organization
       if (params.id)
-        return !!session.user.roles.find(
-          (r) =>
-            r[1] === RoleId.SuperAdmin ||
-            (r[0] === parseInt(params.id!) && r[1] === RoleId.OrgAdmin)
-        );
+        return isAdminForOrg(parseInt(params.id!), session?.user?.roles);
       return true;
     } else if (path[1] === 'products') {
       // TODO not sure, probably based on ownership of the project

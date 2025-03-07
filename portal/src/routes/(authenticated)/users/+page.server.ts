@@ -1,4 +1,5 @@
 import { paginateSchema } from '$lib/table';
+import { isSuperAdmin } from '$lib/utils';
 import { idSchema } from '$lib/valibot';
 import type { Prisma } from '@prisma/client';
 import { error, redirect } from '@sveltejs/kit';
@@ -85,7 +86,7 @@ export const load = (async (event) => {
   const userId = userInfo?.userId;
   if (!userId) return redirect(302, '/');
 
-  const isSuper = !!userInfo.roles.find((r) => r[1] === RoleId.SuperAdmin);
+  const isSuper = isSuperAdmin(userInfo.roles);
 
   const organizations = await prisma.organizations.findMany({
     where: isSuper
@@ -180,7 +181,7 @@ export const actions: Actions = {
     const form = await superValidate(event, valibot(userSchema));
     if (!form.valid) return { form, ok: false };
 
-    const isSuper = !!session.user.roles.find((r) => r[1] === RoleId.SuperAdmin);
+    const isSuper = isSuperAdmin(session.user.roles);
 
     const organizations = await prisma.organizations.findMany({
       where:

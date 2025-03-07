@@ -4,7 +4,7 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+  import { isAdmin } from '$lib/utils';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import type { MinifiedUser } from './common';
@@ -42,7 +42,7 @@
   <div class="flex flex-row place-content-between w-full flex-wrap items-center">
     <div class="flex flex-row items-center">
       <h1>{m.users_title()}</h1>
-      {#if data.session?.user.roles.find((r) => r[1] === RoleId.SuperAdmin || r[1] === RoleId.OrgAdmin)}
+      {#if isAdmin(data.session?.user.roles)}
         <a href="/users/invite" class="btn btn-outline">
           <IconContainer icon="mdi:user-add" width="20" />
           <span>{m.organizationMembership_invite_create_inviteUserButtonTitle()}</span>
