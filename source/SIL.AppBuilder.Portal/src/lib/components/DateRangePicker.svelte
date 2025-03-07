@@ -1,6 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import sv_flatpickr from 'svelte-flatpickr-plus';
+  import sv_flatpickr, { themeChanger, themeNames } from 'svelte-flatpickr-plus';
   // This component is here because the range mode of the Flatpickr svelte package
   // is a bit broken. Essentially, the 'value' property is updated when the second
   // date is clicked but not reassigned, only when the first is and it is set to a new value.
@@ -18,6 +18,9 @@
       isDarkMode = event.matches;
     });
   }
+  $effect(() => {
+    themeChanger(isDarkMode ? themeNames.dark : themeNames.light);
+  });
 
   interface Props {
     chosenDates?: [Date, Date | null] | null;
@@ -27,16 +30,6 @@
   let { chosenDates = $bindable(null), placeholder = '' }: Props = $props();
 </script>
 
-<svelte:head>
-  <!-- NOTE: this is an external cdn... probably ok -->
-  {#if isDarkMode}
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://npmcdn.com/flatpickr/dist/themes/dark.css"
-    />
-  {/if}
-</svelte:head>
 <div class="dateRangePicker">
   <input
     name="dateRange"
