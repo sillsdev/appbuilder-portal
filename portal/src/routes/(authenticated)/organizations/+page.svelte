@@ -5,7 +5,11 @@
   import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 <div class="w-full max-w-6xl mx-auto">

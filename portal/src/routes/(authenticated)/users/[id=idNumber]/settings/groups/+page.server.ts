@@ -10,7 +10,7 @@ import type { Actions, PageServerLoad } from './$types';
 const groupsSchema = v.object({
   organizations: v.array(
     v.object({
-      name: v.string(),
+      name: v.nullable(v.string()),
       id: idSchema,
       groups: v.array(idSchema)
       // enabled: v.boolean()
@@ -24,13 +24,12 @@ export const load = (async ({ params, locals }) => {
   const isSuperAdmin = !!userData?.roles.find((r) => r[1] === RoleId.SuperAdmin);
   const subjectUserId = parseInt(params.id);
 
-  const accessibleGroups = await prisma.groups.findMany({
+  const groupsByOrg = await prisma.organizations.findMany({
     where: {
-      Owner: {
-        // Only send a list of groups for orgs that the subject user is in and the current user has access to
-        AND: isSuperAdmin
-          ? undefined
-          : {
+      // Only send a list of groups for orgs that the subject user is in and the current user has access to
+      AND: isSuperAdmin
+        ? undefined
+        : {
             UserRoles: {
               some: {
                 UserId: userId,
@@ -38,48 +37,44 @@ export const load = (async ({ params, locals }) => {
               }
             }
           },
-        OrganizationMemberships: {
-          some: {
-            UserId: subjectUserId
-          }
+      OrganizationMemberships: {
+        some: {
+          UserId: subjectUserId
         }
       }
     },
-    include: {
-      Owner: true
+    select: {
+      Id: true,
+      Name: true,
+      Groups: true
     }
   });
-  const groupMemberships = await prisma.groupMemberships.findMany({
-    where: {
-      UserId: subjectUserId
-    },
-    include: {
-      Group: true
-    }
-  });
+
+  const groupMemberships = (
+    await prisma.groupMemberships.findMany({
+      where: {
+        UserId: subjectUserId
+      },
+      select: {
+        GroupId: true
+      }
+    })
+  ).map((g) => g.GroupId);
   // If there are no groups the current user has admin access to return Forbidden
-  if (accessibleGroups.length === 0) return error(403);
-  const organizationToGroupMapping = new Map<number, [string, number[]]>();
-  for (const org of [...new Map(accessibleGroups.map((g) => [g.OwnerId, g.Owner.Name!]))]) {
-    organizationToGroupMapping.set(org[0], [org[1], []]);
-  }
-  for (const group of groupMemberships) {
-    if (organizationToGroupMapping.has(group.Group.OwnerId))
-      organizationToGroupMapping.get(group.Group.OwnerId)![1].push(group.GroupId);
-  }
+  if (groupsByOrg.length === 0) return error(403);
   const form = await superValidate(
     {
-      organizations: [...organizationToGroupMapping.entries()].map(([key, value]) => ({
-        name: value[0],
-        id: key,
-        groups: value[1]
+      organizations: groupsByOrg.map((o) => ({
+        id: o.Id,
+        name: o.Name,
+        groups: o.Groups.filter((g) => groupMemberships.includes(g.Id)).map((g) => g.Id)
       }))
     },
     valibot(groupsSchema)
   );
   return {
     form,
-    groups: accessibleGroups.map((uG) => ({ id: uG.Id, name: uG.Name!, orgId: uG.OwnerId }))
+    groupsByOrg
   };
 }) satisfies PageServerLoad;
 

@@ -1,15 +1,25 @@
 <script lang="ts">
-  import SuperDebug, { superForm } from 'sveltekit-superforms';
-  import * as m from '$lib/paraglide/messages';
-  import type { ActionData, PageData } from './$types';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
 
-  export let data: PageData;
-  export let form: ActionData;
-  const { form: superFormData, enhance, allErrors } = superForm(data.form);
+  interface Props {
+    data: PageData;
+  }
 
-  $: if (form?.ok) goto('/admin/settings/store-types');
+  let { data }: Props = $props();
+  const {
+    form: superFormData,
+    enhance,
+    allErrors
+  } = superForm(data.form, {
+    onUpdated(event) {
+      if (event.form.valid) {
+        goto('/admin/settings/store-types');
+      }
+    }
+  });
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->
@@ -28,7 +38,7 @@
       name="description"
       class="textarea textarea-bordered w-full"
       bind:value={$superFormData.description}
-    />
+    ></textarea>
   </LabeledFormInput>
   {#if $allErrors.length}
     <ul>

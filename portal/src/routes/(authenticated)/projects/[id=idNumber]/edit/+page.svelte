@@ -6,7 +6,11 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
   const { form, enhance } = superForm(data.form, {
     dataType: 'json',
     onUpdated(event) {
@@ -55,7 +59,7 @@
           id="description"
           class="textarea textarea-bordered w-full"
           bind:value={$form.description}
-        />
+></textarea>
       </label>
     </div>
     <div class="flex place-content-end space-x-2">

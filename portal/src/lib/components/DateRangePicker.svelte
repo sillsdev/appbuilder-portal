@@ -10,16 +10,20 @@
 
   // Note: At the moment, the site always follows prefered color scheme
   // If at some point in the future a manual toggle is added, this will need to be changed
-  let isDarkMode: boolean = browser
+  let isDarkMode: boolean = $state(browser
     ? window.matchMedia('(prefers-color-scheme: dark)').matches
-    : false;
+    : false);
   browser &&
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
       isDarkMode = event.matches;
     });
 
-  export let chosenDates: [Date, Date | null] | null = null;
-  export let placeholder: string = '';
+  interface Props {
+    chosenDates?: [Date, Date | null] | null;
+    placeholder?: string;
+  }
+
+  let { chosenDates = $bindable(null), placeholder = '' }: Props = $props();
 </script>
 
 <svelte:head>

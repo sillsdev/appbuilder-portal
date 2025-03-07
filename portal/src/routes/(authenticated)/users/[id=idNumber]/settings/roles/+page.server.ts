@@ -10,7 +10,7 @@ import type { Actions, PageServerLoad } from './$types';
 const rolesSchema = v.object({
   organizations: v.array(
     v.object({
-      name: v.string(),
+      name: v.nullable(v.string()),
       id: idSchema,
       roles: v.array(idSchema)
       // enabled: v.boolean()
@@ -22,46 +22,38 @@ export const load = (async ({ locals, params }) => {
   const auth = (await locals.auth())?.user.roles;
   const isSuperAdmin = auth?.find((r) => r[1] === RoleId.SuperAdmin);
   const orgAdmins = auth?.filter((r) => r[1] === RoleId.OrgAdmin).map((r) => r[0]);
-  const userInfo = await prisma.users.findUnique({
+  if (!(isSuperAdmin || orgAdmins?.length)) return error(403);
+  const subjectId = parseInt(params.id);
+
+  const rolesByOrg = await prisma.organizations.findMany({
     where: {
-      Id: parseInt(params.id)
-    },
-    include: {
-      UserRoles: {
-        include: {
-          Organization: true
+      OrganizationMemberships: {
+        some: {
+          UserId: subjectId
         }
       },
-      OrganizationMemberships: {
-        include: {
-          Organization: true
+      Id: isSuperAdmin ? undefined : { in: orgAdmins }
+    },
+    select: {
+      Id: true,
+      Name: true,
+      UserRoles: {
+        where: {
+          UserId: subjectId
         }
       }
     }
   });
-  const userRoles = userInfo?.UserRoles;
-  if (!userRoles) return error(404);
-  const mapping = new Map<number, [string, number[]]>();
-  userInfo.OrganizationMemberships.forEach((org) => {
-    mapping.set(org.OrganizationId, [org.Organization.Name!, []]);
-  });
-  for (const role of userRoles) {
-    if (!mapping.has(role.OrganizationId)) {
-      if (isSuperAdmin || orgAdmins?.includes(role.OrganizationId))
-        mapping.set(role.OrganizationId, [role.Organization.Name!, [role.RoleId]]);
-    } else {
-      mapping.get(role.OrganizationId)![1].push(role.RoleId);
-    }
-  }
-  if (mapping.size === 0) {
-    return error(403);
-  }
+
+  // return 404 if user doesn't have any memberships/doesn't exist
+  if (!rolesByOrg.length) return error(404);
+
   const form = await superValidate(
     {
-      organizations: [...mapping.entries()].map(([key, value]) => ({
-        name: value[0],
-        id: key,
-        roles: value[1]
+      organizations: rolesByOrg.map((o) => ({
+        id: o.Id,
+        name: o.Name,
+        roles: o.UserRoles.map((ur) => ur.RoleId)
       }))
     },
     valibot(rolesSchema)

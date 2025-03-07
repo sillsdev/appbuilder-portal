@@ -1,5 +1,5 @@
 import { createBullBoard } from '@bull-board/api';
-import { BullAdapter } from '@bull-board/api/bullAdapter.js';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { ExpressAdapter } from '@bull-board/express';
 import express from 'express';
 import * as Workers from './BullWorker.js';
@@ -12,7 +12,7 @@ import { Queues } from 'sil.appbuilder.portal.common';
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/');
 createBullBoard({
-  queues: Object.values(Queues).map((q) => new BullAdapter(q)),
+  queues: Object.values(Queues).map((q) => new BullMQAdapter(q)),
   serverAdapter
 });
 app.use(serverAdapter.getRouter());

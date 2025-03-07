@@ -18,9 +18,8 @@ export const load = (async ({ locals }) => {
   const form = await superValidate(valibot(createSchema));
 
   const user = await locals.auth();
-  const accessibleGroups = await prisma.groups.findMany({
+  const groupsByOrg = await prisma.organizations.findMany({
     where: {
-      Owner: {
         // Only send a list of groups for orgs that the subject user is in and the current user has access to
         UserRoles: user?.user.roles?.find((r) => r[1] === RoleId.SuperAdmin)
           ? undefined
@@ -30,10 +29,14 @@ export const load = (async ({ locals }) => {
               RoleId: RoleId.OrgAdmin
             }
           }
-      }
+    },
+    select: {
+      Id: true,
+      Name: true,
+      Groups: true
     }
   });
-  return { form, groups: accessibleGroups };
+  return { form, groupsByOrg };
 }) satisfies PageServerLoad;
 
 export const actions = {

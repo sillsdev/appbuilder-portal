@@ -1,24 +1,28 @@
 <script lang="ts">
-  export let organizations: { id: number; name: string; groups: number[] }[];
-  export let groups: { id: number; name: string; orgId: number }[];
+  import { languageTag } from "$lib/paraglide/runtime";
+  import { sortByName } from "$lib/utils";
+
+  interface Props {
+    groups: { Id: number; Name: string | null }[];
+    selected: number[];
+  }
+
+  let { groups, selected = $bindable() }: Props = $props();
 </script>
 
-{#each organizations as org}
-  <h3>{org.name}</h3>
-  <div class="flex w-full">
-    <div class="shrink space-y-2">
-      {#each groups.filter((g) => g.orgId === org.id) as group}
-        <div class="flex space-x-2">
-          <input
-            type="checkbox"
-            class="toggle toggle-accent"
-            value={group.id}
-            bind:group={org.groups}
-          />
-          <span>{group.name}</span>
-        </div>
-      {/each}
-    </div>
-    <div class="grow" />
+<div class="flex w-full">
+  <div class="shrink space-y-2">
+    {#each groups.sort((a, b) => sortByName(a, b, languageTag())) as group}
+      <div class="flex space-x-2">
+        <input
+          type="checkbox"
+          class="toggle toggle-accent"
+          value={group.Id}
+          bind:group={selected}
+        />
+        <span>{group.Name}</span>
+      </div>
+    {/each}
   </div>
-{/each}
+  <div class="grow"></div>
+</div>

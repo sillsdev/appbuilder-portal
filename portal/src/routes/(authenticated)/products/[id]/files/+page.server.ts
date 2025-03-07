@@ -116,6 +116,14 @@ export const actions = {
       take: form.data.size
     });
 
-    return { form, ok: true, query: { data: builds }}
+    return {
+      form,
+      ok: true,
+      query: {
+        data: builds,
+        // update count, just in case more builds were added
+        count: await prisma.productBuilds.count({ where: { ProductId: params.id } })
+      }
+    };
   }
 } satisfies Actions;

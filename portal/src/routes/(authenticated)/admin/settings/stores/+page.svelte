@@ -6,7 +6,11 @@
   import { sortByName } from '$lib/utils';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 <a href="stores/new" class="btn btn-outline m-4 mt-0">

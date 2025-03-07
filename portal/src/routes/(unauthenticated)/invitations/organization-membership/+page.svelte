@@ -2,7 +2,11 @@
   import * as m from '$lib/paraglide/messages';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 <div class="grid w-full h-full place-items-center place-content-center">
@@ -25,7 +29,7 @@
           />
         {:else}
           <div class="inline-block p-2 h-16 w-16 align-middle">
-            <div class="bg-white w-full h-full" />
+            <div class="bg-white w-full h-full"></div>
           </div>
         {/if}
         <div>

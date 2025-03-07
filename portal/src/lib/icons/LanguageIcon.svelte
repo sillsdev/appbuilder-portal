@@ -4,8 +4,12 @@
   // Weight = 400
   // Grade = 0
   // Optical size = 24px
-  export let size = '24';
-  export let color = 'white';
+  interface Props {
+    size?: string;
+    color?: string;
+  }
+
+  let { size = '24', color = 'white' }: Props = $props();
 </script>
 
 <svg

@@ -12,13 +12,17 @@
   } from '$lib/paraglide/messages';
   import type { LayoutData } from './$types';
 
-  export let data: LayoutData;
+  interface Props {
+    data: LayoutData;
+    children?: import('svelte').Snippet;
+  }
+
+  let { data, children }: Props = $props();
 </script>
 
 <TabbedMenu
   base="{base}/organizations/{$page.params.id}/settings"
   routeId="/(authenticated)/organizations/[id]/settings"
-  title="{data.organization.Name} {org_settingsTitle()}"
   menuItems={[
     {
       text: org_basicTitle(),
@@ -42,11 +46,13 @@
     }
   ]}
 >
-  <div slot="title" class="w-full">
-    <h1 class="p-4 pl-3 pb-0 [text-wrap:nowrap]">
-      {org_settingsTitle()}
-    </h1>
-    <h2>{data.organization.Name}</h2>
-  </div>
-  <slot />
+  {#snippet title()}
+    <div class="w-full">
+      <h1 class="p-4 pl-3 pb-0 [text-wrap:nowrap]">
+        {org_settingsTitle()}
+      </h1>
+      <h2>{data.organization.Name}</h2>
+    </div>
+  {/snippet}
+  {@render children?.()}
 </TabbedMenu>

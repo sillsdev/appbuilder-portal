@@ -5,15 +5,30 @@
   const dispatch = createEventDispatcher<{
     itemClicked: T;
   }>();
-  export let props: HTMLInputAttributes = {};
-  export let classes: string = '';
-  export let dropdownClasses: string = '';
-  export let getList: (searchTerm: string) => T[];
-  export let search: string = '';
-  $: list = getList(search);
-  let selectedIndex = -1;
-  let inputFocused = false;
-  export let inputElement: HTMLInputElement = undefined!;
+
+  let selectedIndex = $state(-1);
+  let inputFocused = $state(false);
+  interface Props {
+    inputElProps?: HTMLInputAttributes;
+    classes?: string;
+    dropdownClasses?: string;
+    getList: (searchTerm: string) => T[];
+    search?: string;
+    inputElement?: HTMLInputElement;
+    custom?: import('svelte').Snippet;
+    listElement?: import('svelte').Snippet<[any]>;
+  }
+
+  let {
+    inputElProps = {},
+    classes = '',
+    dropdownClasses = '',
+    getList,
+    search = $bindable(''),
+    inputElement = $bindable(undefined!),
+    custom,
+    listElement
+  }: Props = $props();
 
   function keypress(event: KeyboardEvent) {
     inputFocused = true;
@@ -43,6 +58,7 @@
     selectedIndex = -1;
     inputFocused = true;
   }
+  let list = $derived(getList(search));
 </script>
 
 <div class="relative">
@@ -50,13 +66,13 @@
     type="text"
     class="input input-bordered {classes}"
     bind:value={search}
-    on:keydown={keypress}
-    on:focus={onFocus}
-    on:blur={() => (inputFocused = false)}
+    onkeydown={keypress}
+    onfocus={onFocus}
+    onblur={() => (inputFocused = false)}
     bind:this={inputElement}
-    {...props}
+    {...inputElProps}
   />
-  <slot name="custom" />
+  {@render custom?.()}
   {#if list.length}
     <ul
       class="bg-base-200 absolute z-10 rounded-lg p-2 shadow-xl {dropdownClasses}"
@@ -68,11 +84,11 @@
           class:selected={i === selectedIndex}
           role="option"
           aria-selected={selectedIndex === i}
-          on:mousedown={() => selectItem(item)}
-          on:mouseover={() => (selectedIndex = i)}
-          on:focus={() => (selectedIndex = i)}
+          onmousedown={() => selectItem(item)}
+          onmouseover={() => (selectedIndex = i)}
+          onfocus={() => (selectedIndex = i)}
         >
-          <slot name="listElement" {item} />
+          {@render listElement?.({ item, })}
         </li>
       {/each}
     </ul>

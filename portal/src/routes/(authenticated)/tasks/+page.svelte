@@ -6,7 +6,11 @@
   import { getRelativeTime } from '$lib/timeUtils';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 <div class="w-full">
@@ -23,9 +27,9 @@
         </thead>
         <tbody>
           {#each data.tasks as task}
-            <tr class="cursor-pointer" on:click={() => goto(`/tasks/${task.ProductId}`)}>
+            <tr class="cursor-pointer" onclick={() => goto(`/tasks/${task.ProductId}`)}>
               <td>
-                <div class="flex items-center">
+                <span class="flex items-center">
                   <IconContainer
                     icon={getIcon(task.Product.ProductDefinition.Name ?? '')}
                     width={38}
@@ -33,7 +37,7 @@
                   <span>
                     {task.Product.ProductDefinition.Name}
                   </span>
-                </div>
+                </span>
                 <span
                   class="rounded-xl h-auto badge badge-secondary uppercase font-bold ml-10 [top:-5px] relative mt-2 text-center"
                 >
@@ -41,7 +45,7 @@
                 </span>
               </td>
               <td>
-                <a class="link" on:click|stopPropagation href="/projects/{task.Product.ProjectId}">
+                <a class="link" href="/projects/{task.Product.ProjectId}">
                   {task.Product.Project.Name}
                 </a>
               </td>
@@ -53,7 +57,7 @@
             </tr>
             {#if task.Comment}
               <tr>
-                <div class="pl-7">
+                <td class="pl-7">
                   {#if task.Comment.startsWith('system.')}
                     {#if task.Comment.startsWith('system.build-failed')}
                       <span>
@@ -75,7 +79,7 @@
                   {:else}
                     {task.Comment}
                   {/if}
-                </div>
+                </td>
               </tr>
             {/if}
           {/each}

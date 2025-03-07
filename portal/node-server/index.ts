@@ -1,7 +1,7 @@
 import { getSession, type ExpressAuthConfig } from '@auth/express';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { createBullBoard } from '@bull-board/api';
-import { BullAdapter } from '@bull-board/api/bullAdapter.js';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { ExpressAdapter } from '@bull-board/express';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import path from 'path';
@@ -85,7 +85,7 @@ new Workers.UserTasks();
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/jobs');
 createBullBoard({
-  queues: Object.values(Queues).map((q) => new BullAdapter(q)),
+  queues: Object.values(Queues).map((q) => new BullMQAdapter(q)),
   serverAdapter
 });
 

@@ -5,7 +5,9 @@
   import { getRelativeTime } from '$lib/timeUtils';
   import { bytesToHumanSize } from '$lib/utils';
 
-  export let build: {
+
+  interface Props {
+    build: {
     Version: string | null;
     Success: boolean | null;
     BuildId: number;
@@ -22,8 +24,10 @@
       DateUpdated: Date | null;
     }[];
   };
+    latestBuildId: number | undefined;
+  }
 
-  export let latestBuildId: number | undefined;
+  let { build, latestBuildId }: Props = $props();
 
   function versionString(b: typeof build): string {
     let version = b.Version;
@@ -72,7 +76,7 @@
             <th>{m.project_products_filename()}</th>
             <th>{m.project_products_updated()}</th>
             <th class="text-right">{m.project_products_size()}</th>
-            <th />
+            <th></th>
           </tr>
         </thead>
         <tbody>

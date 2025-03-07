@@ -7,6 +7,11 @@
   import { base } from '$app/paths';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
   import * as m from '$lib/paraglide/messages';
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
 
   let adminLinks = [
     { text: m.admin_settings_navigation_organizations(), route: 'organizations' },
@@ -21,8 +26,8 @@
 <TabbedMenu
   routeId="/(authenticated)/admin/settings"
   base="{base}/admin/settings"
-  title={m.admin_settings_title()}
+  titleString={m.admin_settings_title()}
   menuItems={adminLinks}
 >
-  <slot />
+  {@render children?.()}
 </TabbedMenu>

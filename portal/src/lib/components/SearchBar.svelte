@@ -2,9 +2,13 @@
   import * as m from '../paraglide/messages';
   import IconContainer from './IconContainer.svelte';
 
-  export let className: string = '';
-  export let value: string;
-  export let tooltip: string = '';
+  interface Props {
+    className?: string;
+    value: string;
+    tooltip?: string;
+  }
+
+  let { className = '', value = $bindable(), tooltip = '' }: Props = $props();
 </script>
 
 <div

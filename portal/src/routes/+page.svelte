@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { SignIn } from '@auth/sveltekit/components';
   import * as m from '$lib/paraglide/messages';
+  import { SignIn } from '@auth/sveltekit/components';
 </script>
 
 <div class="w-full h-full flex flex-rc text-white">
@@ -21,9 +21,11 @@
       <h3>{m.auth_login()}</h3>
       <!-- <input type="hidden" name="providerId" value="auth0" /> -->
       <SignIn className="w-full" provider="auth0" signInPage="login">
-        <div slot="submitButton" class="btn btn-primary w-full my-2">
-          {m.auth_login()} / {m.auth_signup()}
-        </div>
+        {#snippet submitButton()}
+          <div class="btn btn-primary w-full my-2">
+            {m.auth_login()} / {m.auth_signup()}
+          </div>
+        {/snippet}
       </SignIn>
       <!-- </form> -->
     </div>
@@ -33,9 +35,12 @@
       signInPage="login"
       authorizationParams={{ prompt: 'login', screen_hint: 'signup' }}
     >
-      <div slot="submitButton" class="btn w-full my-2">
-        {m.auth_login()} / {m.auth_signup()} with new session
-      </div>
+      {#snippet submitButton()}
+        <div class="btn w-full my-2">
+          <!-- TODO: i18n? -->
+          {m.auth_login()} / {m.auth_signup()} with new session
+        </div>
+      {/snippet}
     </SignIn>
   </div>
 </div>

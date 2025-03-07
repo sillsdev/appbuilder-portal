@@ -7,13 +7,25 @@
   import type { ProjectActionSchema, ProjectForAction } from '../common';
   import { canArchive, canClaimProject, canReactivate } from '../common';
 
-  export let data: SuperValidated<Infer<ProjectActionSchema>>;
-  export let project: ProjectForAction;
-  /** allow actions other than reactivation */
-  export let allowActions: boolean = true;
-  export let allowReactivate: boolean = true;
-  export let userGroups: number[];
-  export let endpoint: string = 'projectAction';
+  
+  interface Props {
+    data: SuperValidated<Infer<ProjectActionSchema>>;
+    project: ProjectForAction;
+    /** allow actions other than reactivation */
+    allowActions?: boolean;
+    allowReactivate?: boolean;
+    userGroups: number[];
+    endpoint?: string;
+  }
+
+  let {
+    data,
+    project,
+    allowActions = true,
+    allowReactivate = true,
+    userGroups,
+    endpoint = 'projectAction'
+  }: Props = $props();
 
   const { form, enhance, submit } = superForm(data, {
     dataType: 'json',
@@ -39,19 +51,19 @@
     );
   }
 
-  let dropdownOpen: boolean = false;
+  let dropdownOpen: boolean = $state(false);
 
   function close() {
     dropdownOpen = false;
   }
 </script>
 
-<svelte:window on:click={() => close()} />
+<svelte:window onclick={() => close()} />
 
 <details class="dropdown dropdown-bottom dropdown-end" bind:open={dropdownOpen}>
   <summary
     class="btn btn-ghost max-h-fit min-h-fit p-1 inline"
-    on:click={() => {
+    onclick={() => {
       $form.projectId = project.Id;
     }}
   >
