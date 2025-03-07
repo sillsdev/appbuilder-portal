@@ -6,7 +6,7 @@
         Owner: true;
       };
     }>[];
-    onSelect?: (id: number) => void;
+    onSelect: (id: number) => void;
   }
 
   let { organizations, onSelect }: Props = $props();
@@ -26,7 +26,7 @@
       {#each organizations as org}
         <tr
           class="h-16 border-y hover:bg-base-200 cursor-pointer"
-          onclick={() => onSelect?.(org.Id)}
+          onclick={() => onSelect(org.Id)}
         >
           <td>
             {#if org.LogoUrl}
