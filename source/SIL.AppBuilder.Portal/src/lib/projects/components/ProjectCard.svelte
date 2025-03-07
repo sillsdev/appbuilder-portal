@@ -88,7 +88,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each project.Products.sort((a, b) => byString(a.ProductDefinitionName, b.ProductDefinitionName, langTag)) as product}
+          {#each project.Products.toSorted( (a, b) => byString(a.ProductDefinitionName, b.ProductDefinitionName, langTag) ) as product}
             <tr>
               <td class="p-2">
                 <div class="flex items-center">

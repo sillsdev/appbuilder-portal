@@ -97,7 +97,7 @@
   {#if projects.length > 0}
     <div class="w-full relative p-4">
       {#each projects as project}
-        <ProjectCard project={$state.snapshot(project)} route='directory' />
+        <ProjectCard project={project} route='directory' />
       {/each}
     </div>
   {:else}
