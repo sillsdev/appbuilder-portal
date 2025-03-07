@@ -1,5 +1,6 @@
 <script lang="ts">
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import Tooltip from '$lib/components/Tooltip.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/timeUtils';
@@ -70,6 +71,7 @@
     {#if !build.ProductArtifacts.length}
       {m.project_products_noArtifacts()}
     {:else}
+      {@const langTag = languageTag()}
       <table class="table table-auto bg-base-100">
         <thead>
           <tr>
@@ -83,7 +85,13 @@
           {#each build.ProductArtifacts as artifact}
             <tr>
               <td><IconContainer icon="mdi:file" width="20" /> {artifact.ArtifactType}</td>
-              <td>{getRelativeTime(artifact.DateUpdated)}</td>
+              <td>
+                <Tooltip
+                  tip={artifact.DateUpdated?.toLocaleString(langTag)}
+                >
+                  {getRelativeTime(artifact.DateUpdated)}
+                </Tooltip>
+              </td>
               <td class="text-right">{bytesToHumanSize(artifact.FileSize)}</td>
               <td class="text-right">
                 <a href={artifact.Url} download>

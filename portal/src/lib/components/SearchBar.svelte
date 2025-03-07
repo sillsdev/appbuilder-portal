@@ -5,6 +5,7 @@
   interface Props {
     className?: string;
     value: string;
+    /** TODO: replace with component. will need to wait until Svelte 5/DaisyUI 5*/
     tooltip?: string;
   }
 
@@ -12,7 +13,7 @@
 </script>
 
 <div
-  class="{className} {tooltip ? 'tooltip tooltip-bottom' : ''}"
+  class="{tooltip ? 'tooltip tooltip-bottom' : ''} {className}"
   data-html="true"
   data-tip={tooltip}
 >
