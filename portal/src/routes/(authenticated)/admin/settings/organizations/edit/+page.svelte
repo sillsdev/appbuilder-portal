@@ -22,10 +22,6 @@
       }
     }
   });
-
-  let getStoreInfo = $derived((store: (typeof $form)['stores'][0]) =>
-    data.options.stores.find((s) => s.Id === store.storeId)
-  );
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->
@@ -115,10 +111,11 @@
   <!-- TODO: sort this. I think this will need a refactor of MultiselectBox -->
   <MultiselectBox header={m.org_storeSelectTitle()}>
     {#each $form.stores as store}
+      {@const storeInfo = data.options.stores.find((s) => s.Id === store.storeId)}
       <MultiselectBoxElement
         bind:checked={store.enabled}
-        title={getStoreInfo(store)?.Name ?? ''}
-        description={getStoreInfo(store)?.Description ?? ''}
+        title={storeInfo?.Name ?? ''}
+        description={storeInfo?.Description ?? ''}
       />
     {/each}
   </MultiselectBox>
