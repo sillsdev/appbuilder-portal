@@ -6,25 +6,24 @@
   import { getRelativeTime } from '$lib/timeUtils';
   import { byString, bytesToHumanSize } from '$lib/utils';
 
-
   interface Props {
     build: {
-    Version: string | null;
-    Success: boolean | null;
-    BuildId: number;
-    ProductArtifacts: {
-      ArtifactType: string | null;
-      FileSize: bigint | null;
-      Url: string | null;
-      DateUpdated: Date | null;
-    }[];
-    ProductPublications: {
-      Channel: string | null;
+      Version: string | null;
       Success: boolean | null;
-      LogUrl: string | null;
-      DateUpdated: Date | null;
-    }[];
-  };
+      BuildId: number;
+      ProductArtifacts: {
+        ArtifactType: string | null;
+        FileSize: bigint | null;
+        Url: string | null;
+        DateUpdated: Date | null;
+      }[];
+      ProductPublications: {
+        Channel: string | null;
+        Success: boolean | null;
+        LogUrl: string | null;
+        DateUpdated: Date | null;
+      }[];
+    };
     latestBuildId: number | undefined;
   }
 
@@ -82,13 +81,11 @@
           </tr>
         </thead>
         <tbody>
-          {#each build.ProductArtifacts.sort( (a, b) => byString(a.ArtifactType, b.ArtifactType, langTag) ) as artifact}
+          {#each build.ProductArtifacts.toSorted( (a, b) => byString(a.ArtifactType, b.ArtifactType, langTag) ) as artifact}
             <tr>
               <td><IconContainer icon="mdi:file" width="20" /> {artifact.ArtifactType}</td>
               <td>
-                <Tooltip
-                  tip={artifact.DateUpdated?.toLocaleString(langTag)}
-                >
+                <Tooltip tip={artifact.DateUpdated?.toLocaleString(langTag)}>
                   {getRelativeTime(artifact.DateUpdated)}
                 </Tooltip>
               </td>
