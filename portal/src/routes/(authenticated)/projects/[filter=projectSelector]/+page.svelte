@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import OrganizationSelector from '$lib/components/OrganizationSelector.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
 </script>
@@ -11,7 +11,7 @@
   </div>
   <!-- <h1 class="pl-7">{m.projects_switcher_dropdown_orgProjects()}</h1> -->
   <OrganizationSelector
-    organizations={$page.data.organizations}
-    on:select={(id) => goto($page.url.pathname + '/' + id.detail.id)}
+    organizations={page.data.organizations}
+    onSelect={(id) => goto(page.url.pathname + '/' + id)}
   />
 </div>

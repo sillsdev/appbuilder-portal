@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import * as m from '$lib/paraglide/messages';
   import type { Infer, SuperValidated } from 'sveltekit-superforms';
@@ -40,11 +40,11 @@
 
   function canClaimOwnership(project: Omit<ProjectForAction, 'Id' | 'Name'>): boolean {
     return (
-      project.OwnerId !== $page.data.session?.user.userId &&
+      project.OwnerId !== page.data.session?.user.userId &&
       canClaimProject(
-        $page.data.session,
+        page.data.session,
         project.OwnerId,
-        parseInt($page.params.id),
+        parseInt(page.params.id),
         project.GroupId,
         userGroups
       )
@@ -73,7 +73,7 @@
     <form method="POST" action="?/{endpoint}" use:enhance>
       <input type="hidden" name="singleId" value={project.Id} />
       <ul class="menu menu-compact overflow-hidden rounded-md">
-        {#if allowActions && canArchive(project, $page.data.session, parseInt($page.params.id))}
+        {#if allowActions && canArchive(project, page.data.session, parseInt(page.params.id))}
           <li class="w-full rounded-none">
             <label class="text-nowrap">
               {m.common_archive()}
@@ -81,7 +81,7 @@
             </label>
           </li>
         {/if}
-        {#if allowReactivate && canReactivate(project, $page.data.session, parseInt($page.params.id))}
+        {#if allowReactivate && canReactivate(project, page.data.session, parseInt(page.params.id))}
           <li class="w-full rounded-none">
             <label class="text-nowrap">
               {m.common_reactivate()}

@@ -5,37 +5,33 @@
 <script lang="ts">
   import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { createEventDispatcher } from 'svelte';
-  
-  
-  
+
   interface Props {
     data: Record<string, any>[];
     /** Definition of the columns for the table */
     columns: {
-    /** Internal id, used for determining which column is being sorted */
-    id: string;
-    /** User-facing string for column headers */
-    header: string;
-    /** Accessor method to get the desired data */
-    data: (i: any) => any;
-    /** Renders the data to an HTML string */
-    render?: (d: any) => string;
-    /** Will not sort a field if this is false or undefined */
-    sortable?: boolean;
-  }[];
-    className?: string;
+      /** Internal id, used for determining which column is being sorted */
+      id: string;
+      /** User-facing string for column headers */
+      header: string;
+      /** Accessor method to get the desired data */
+      data: (i: any) => any;
+      /** Renders the data to an HTML string */
+      render?: (d: any) => string;
+      /** Will not sort a field if this is false or undefined */
+      sortable?: boolean;
+    }[];
+    className: string;
     /** If this is true, will defer sorting to the server instead */
     serverSide?: boolean;
     /** If this is defined, will handle a click on a row */
-    onRowClick?: 
-    | undefined
-    | ((
-        rowData: (typeof data)[0],
-        event: MouseEvent & {
-          currentTarget: EventTarget & HTMLTableRowElement;
-        }
-      ) => void);
+    onRowClick?: (
+      rowData: (typeof data)[0],
+      event: MouseEvent & {
+        currentTarget: EventTarget & HTMLTableRowElement;
+      }
+    ) => void;
+    onSort?: (field: string, direction: 'asc' | 'desc') => void;
   }
 
   let {
@@ -43,7 +39,8 @@
     columns,
     className = '',
     serverSide = false,
-    onRowClick = undefined
+    onRowClick,
+    onSort
   }: Props = $props();
 
   /** Current field being sorted. Defaults to first field where `sortable === true` */
@@ -69,7 +66,7 @@
       }
     }
     if (serverSide) {
-      sendSortEvent('sort', { field: current.id, direction: descending ? 'desc' : 'asc' });
+      onSort?.(current.id, descending ? 'desc' : 'asc');
     } else {
       // sort based on current field
       // if blank, sort first field
@@ -95,13 +92,6 @@
             });
     }
   }
-
-  const sendSortEvent = createEventDispatcher<{
-    sort: {
-      field: string;
-      direction: 'asc' | 'desc';
-    };
-  }>();
 </script>
 
 <div class="overflow-y {className}">
@@ -139,7 +129,7 @@
       {#each data as d}
         <tr
           onclick={(e) => {
-            if (onRowClick) onRowClick(d, e);
+            onRowClick?.(d, e);
           }}
         >
           {#each columns as c}

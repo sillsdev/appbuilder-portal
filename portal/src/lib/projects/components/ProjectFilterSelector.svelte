@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import * as m from '$lib/paraglide/messages';
   import Icon from '@iconify/svelte';
 
@@ -17,7 +17,7 @@
   <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <h1 tabindex="0" class="p-4 pl-6 cursor-pointer">
     <div class="flex flex-row items-center">
-      {textsForPaths.get($page.params.filter)}
+      {textsForPaths.get(page.params.filter)}
       <div class="dropdown-icon">
         <Icon width="24" class="dropdown-icon" icon="gridicons:dropdown" />
       </div>
@@ -27,8 +27,8 @@
     <div class="p-2 border m-2 rounded-md bg-base-200 px-4">
       {#each textsForPaths as route}
         <a
-          href="/projects/{route[0]}{$page.params.id ? '/' + $page.params.id : ''}"
-          class:font-extrabold={$page.params.filter === route[0]}
+          href="/projects/{route[0]}{page.params.id ? '/' + page.params.id : ''}"
+          class:font-extrabold={page.params.filter === route[0]}
           class="p-1 text-nowrap block"
         >
           {route[1]}

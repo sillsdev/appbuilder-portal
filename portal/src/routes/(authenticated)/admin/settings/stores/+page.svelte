@@ -21,7 +21,7 @@
   {#each data.stores.sort((a, b) => sortByName(a, b, languageTag())) as store}
     <DataDisplayBox
       editable
-      on:edit={() => goto('/admin/settings/stores/edit?id=' + store.Id)}
+      onEdit={() => goto('/admin/settings/stores/edit?id=' + store.Id)}
       title={store.Name}
       fields={[
         { key: 'stores_attributes_description', value: store.Description },

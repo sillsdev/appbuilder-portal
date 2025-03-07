@@ -1,6 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { i18n } from '$lib/i18n';
@@ -71,7 +71,7 @@
       formData.append('productId', productId);
       formData.append('productAction', action);
 
-      const response = await fetch(`${$page.url.pathname}?/productAction`, {
+      const response = await fetch(`${page.url.pathname}?/productAction`, {
         method: 'POST',
         body: formData
       });
@@ -398,7 +398,7 @@
                     activityName: product.ActiveTransition?.InitialState ?? ''
                     // activityName appears to show up blank primarily at the very startup of a new product?
                   })}
-                  {#if product.UserTasks.slice(-1)[0]?.UserId === $page.data.session?.user.userId}
+                  {#if product.UserTasks.slice(-1)[0]?.UserId === page.data.session?.user.userId}
                     <a class="link mx-2" href="/tasks/{product.Id}">
                       {m.common_continue()}
                     </a>

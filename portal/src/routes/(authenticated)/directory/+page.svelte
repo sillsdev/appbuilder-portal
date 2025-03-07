@@ -9,7 +9,7 @@
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-
+  
   interface Props {
     data: PageData;
   }
@@ -75,7 +75,7 @@
       <div class="mobile-sizing">
         <LanguageCodeTypeahead
           bind:langCode={$form.langCode}
-          on:langCodeSelected={() => submit()}
+          onLangCodeSelected={() => submit()}
           inputClasses="w-full max-w-xs"
         />
       </div>

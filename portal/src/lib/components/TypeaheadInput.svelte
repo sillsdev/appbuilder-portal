@@ -1,10 +1,5 @@
 <script lang="ts" generics="T">
-  import { createEventDispatcher } from 'svelte';
   import type { HTMLInputAttributes } from 'svelte/elements';
-
-  const dispatch = createEventDispatcher<{
-    itemClicked: T;
-  }>();
 
   let selectedIndex = $state(-1);
   let inputFocused = $state(false);
@@ -17,6 +12,7 @@
     inputElement?: HTMLInputElement;
     custom?: import('svelte').Snippet;
     listElement?: import('svelte').Snippet<[any]>;
+    onItemClicked?: (item: T) => void;
   }
 
   let {
@@ -27,7 +23,8 @@
     search = $bindable(''),
     inputElement = $bindable(undefined!),
     custom,
-    listElement
+    listElement,
+    onItemClicked
   }: Props = $props();
 
   function keypress(event: KeyboardEvent) {
@@ -52,7 +49,7 @@
     // input should stay selected and further keypresses should reopen the menu
     inputElement.focus();
     inputFocused = false;
-    dispatch('itemClicked', item);
+    onItemClicked?.(item);
   }
   function onFocus() {
     selectedIndex = -1;
@@ -88,7 +85,7 @@
           onmouseover={() => (selectedIndex = i)}
           onfocus={() => (selectedIndex = i)}
         >
-          {@render listElement?.({ item, })}
+          {@render listElement?.({ item })}
         </li>
       {/each}
     </ul>
