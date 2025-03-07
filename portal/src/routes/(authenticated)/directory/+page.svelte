@@ -6,7 +6,6 @@
   import * as m from '$lib/paraglide/messages';
   import type { PrunedProject } from '$lib/projects/common';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
-  import 'flatpickr/dist/flatpickr.css';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
