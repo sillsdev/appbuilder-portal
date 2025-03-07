@@ -1,5 +1,6 @@
 <script lang="ts">
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
@@ -32,7 +33,9 @@
       {/if}
       <span>
         {m.project_createdOn()}
-        {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
+        <Tooltip tip={data.project?.DateCreated?.toLocaleString(languageTag())}>
+          {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
+        </Tooltip>
       </span>
     </div>
     {#if /*This should always be true. This is only so @const can be used.*/ data.project.Organization}
