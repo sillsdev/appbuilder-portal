@@ -5,15 +5,18 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-  import { writable } from 'svelte/store';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import type { MinifiedUser } from './common';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
 
-  const users = writable(data.users);
-  const count = writable(data.userCount);
+  let { data }: Props = $props();
+
+  let users = $state(data.users);
+  let count = $state(data.userCount);
 
   const { form, enhance, submit } = superForm(data.form, {
     dataType: 'json',
@@ -28,8 +31,8 @@
         query: { data: MinifiedUser[]; count: number };
       }>;
       if (event.form.valid && data.query) {
-        users.set(data.query.data);
-        count.set(data.query.count);
+        users = data.query.data;
+        count = data.query.count;
       }
     }
   });
@@ -40,7 +43,7 @@
     <div class="flex flex-row items-center">
       <h1>{m.users_title()}</h1>
       {#if data.session?.user.roles.find((r) => r[1] === RoleId.SuperAdmin || r[1] === RoleId.OrgAdmin)}
-        <a href="/users/invite" class="btn btn-secondary">
+        <a href="/users/invite" class="btn btn-outline">
           <IconContainer icon="mdi:user-add" width="20" />
           <span>{m.organizationMembership_invite_create_inviteUserButtonTitle()}</span>
         </a>
@@ -77,7 +80,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each $users as user}
+        {#each users as user}
           <tr class="align-top">
             <td class="p-2">
               <p>
@@ -142,7 +145,7 @@
                   type="checkbox"
                   name="active"
                   bind:checked={user.A}
-                  on:change={(e) => {
+                  onchange={(e) => {
                     if (data.session?.user.userId !== user.I) {
                       //@ts-ignore
                       e.currentTarget.parentElement?.requestSubmit();
@@ -163,7 +166,7 @@
     use:enhance
     class="m-4 pb-4 flex flex-row flex-wrap gap-2 place-content-center"
   >
-    <Pagination bind:size={$form.page.size} total={$count} bind:page={$form.page.page} />
+    <Pagination bind:size={$form.page.size} total={count} bind:page={$form.page.page} />
   </form>
 </div>
 

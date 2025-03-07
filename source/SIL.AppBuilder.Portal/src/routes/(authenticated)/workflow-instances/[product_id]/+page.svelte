@@ -7,10 +7,15 @@
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import { Anchor, Node, Svelvet } from 'svelvet';
+  import type { PageData } from './$types';
 
-  export let data;
+  interface Props {
+    data: PageData;
+  }
 
-  let active = data.form.data.state;
+  let { data }: Props = $props();
+
+  let active = $state(data.form.data.state);
 
   const { form, enhance } = superForm(data.form, {
     onUpdate: () => {
@@ -20,16 +25,21 @@
     resetForm: false
   });
 
-  let positions: { [key: string]: Springy.Physics.Vector } = data.machine
-    .map((s) => {
-      return { key: s.label, value: new Springy.Physics.Vector(0.0, 0.0) };
-    })
-    .reduce((p, c) => {
-      p[c.key] = c.value;
-      return p;
-    }, {} as { [key: string]: Springy.Physics.Vector });
+  let positions: { [key: string]: Springy.Physics.Vector } = $state(
+    data.machine
+      .map((s) => {
+        return { key: s.label, value: new Springy.Physics.Vector(0.0, 0.0) };
+      })
+      .reduce(
+        (p, c) => {
+          p[c.key] = c.value;
+          return p;
+        },
+        {} as { [key: string]: Springy.Physics.Vector }
+      )
+  );
 
-  let ready = false;
+  let ready = $state(false);
 
   onMount(() => {
     const graph = new Springy.Graph();
@@ -94,9 +104,9 @@
 
   // Note: At the moment, the site always follows prefered color scheme
   // If at some point in the future a manual toggle is added, this will need to be changed
-  let isDarkMode: boolean = browser
-    ? window.matchMedia('(prefers-color-scheme: dark)').matches
-    : false;
+  let isDarkMode: boolean = $state(
+    browser ? window.matchMedia('(prefers-color-scheme: dark)').matches : false
+  );
   browser &&
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
       isDarkMode = event.matches;
@@ -137,7 +147,7 @@
         >
           <ul class="menu menu-compact overflow-hidden rounded-md">
             <li class="w-full rounded-none">
-              <button class="text-nowrap" on:click={() => openModal(data.product.Id)}>
+              <button class="text-nowrap" onclick={() => openModal(data.product.Id)}>
                 {m.project_products_popup_details()}
               </button>
             </li>
@@ -179,15 +189,15 @@
             dynamic={true}
             editable={false}
           >
-            <!-- svelte-ignore a11y-no-static-element-interactions -->
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
             <svg
               class="rect"
               class:active={active === state.label}
               class:start={state.start}
               class:final={state.final}
               class:action={state.action}
-              on:click={() => {
+              onclick={() => {
                 $form.state = state.label;
               }}
             >
@@ -212,7 +222,7 @@
         {/each}
       </Svelvet>
     {:else}
-      <span class="loading loading-spinner loading-lg" />
+      <span class="loading loading-spinner loading-lg"></span>
     {/if}
   </div>
 </div>
@@ -237,7 +247,7 @@
   .final {
     @apply fill-info;
   }
-  :is(.active,.final,.start) text {
+  :is(:global(.active, .final, .start)) text {
     @apply fill-primary-content;
   }
   .selected {

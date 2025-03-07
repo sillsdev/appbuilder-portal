@@ -1,12 +1,21 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
 
-  export let icon: string;
-  export let width: number | string;
-  export let tooltip: string = '';
-  let classes: string = '';
+  interface Props {
+    icon: string;
+    width: number | string;
+    tooltip?: string;
+    class?: string;
+  }
 
-  export { classes as class };
+  let {
+    icon,
+    width,
+    tooltip = '',
+    class: classes = ''
+  }: Props = $props();
+
+  
 </script>
 
 <div

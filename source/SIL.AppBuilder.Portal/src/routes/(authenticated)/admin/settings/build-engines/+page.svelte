@@ -4,7 +4,11 @@
   import { getRelativeTime } from '$lib/timeUtils';
   import type { PageData } from './$types';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 <div class="flex flex-col w-full">

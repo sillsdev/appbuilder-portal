@@ -3,14 +3,18 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
-  import { writable } from 'svelte/store';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import BuildArtifacts from './components/BuildArtifacts.svelte';
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
 
-  const builds = writable(data.builds);
+  let { data }: Props = $props();
+
+  let builds = $state(data.builds);
+  let count = $state(data.count)
 
   const { form, enhance, submit } = superForm(data.form, {
     resetForm: false,
@@ -19,10 +23,11 @@
     },
     onUpdate(event) {
       const data = event.result.data as FormResult<{
-        query: { data: any[] };
+        query: { data: any[], count: number };
       }>;
       if (event.form.valid && data.query) {
-        builds.set(data.query.data);
+        builds = data.query.data;
+        count = data.query.count;
       }
     }
   });
@@ -48,7 +53,7 @@
     <h1 class="pl-4">{m.products_files_title()}</h1>
   </div>
   <div id="files" class="overflow-y-auto grow">
-    {#each $builds as build}
+    {#each builds as build}
       <BuildArtifacts
         {build}
         latestBuildId={data.product?.WorkflowBuildId}
@@ -59,7 +64,7 @@
     <Pagination
       bind:page={$form.page}
       bind:size={$form.size}
-      total={data.count}
+      total={count}
       extraSizeOptions={[3]}
     />
   </form>

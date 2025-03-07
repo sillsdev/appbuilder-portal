@@ -9,9 +9,19 @@
   import Icon from '@iconify/svelte';
   import { createEventDispatcher } from 'svelte';
 
-  export let title;
-  export let fields: { key: ValidI13nKey; value?: string | null }[];
-  export let editable = false;
+  interface Props {
+    title: any;
+    fields: { key: ValidI13nKey; value?: string | null }[];
+    editable?: boolean;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    title,
+    fields,
+    editable = false,
+    children
+  }: Props = $props();
   const dispatch = createEventDispatcher<{
     edit: null;
   }>();
@@ -21,7 +31,7 @@
   <div class="relative w-full">
     <h3>{title}</h3>
     {#if editable}
-      <button title="Edit" class="absolute right-2 top-2" on:click={() => dispatch('edit')}>
+      <button title="Edit" class="absolute right-2 top-2" onclick={() => dispatch('edit')}>
         <Icon width="24" icon="mdi:pencil" />
       </button>
     {/if}
@@ -31,6 +41,6 @@
         {field.value ?? ''}
       </p>
     {/each}
-    <slot />
+    {@render children?.()}
   </div>
 </div>

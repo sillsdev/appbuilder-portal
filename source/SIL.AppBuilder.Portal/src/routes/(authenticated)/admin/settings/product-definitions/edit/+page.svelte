@@ -1,18 +1,29 @@
 <script lang="ts">
-  import SuperDebug, { superForm } from 'sveltekit-superforms';
-  import * as m from '$lib/paraglide/messages';
-  import type { ActionData, PageData } from './$types';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import * as m from '$lib/paraglide/messages';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
 
-  export let data: PageData;
-  export let form: ActionData;
-  const { form: superFormData, enhance, allErrors } = superForm(data.form);
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
+  const {
+    form: superFormData,
+    enhance,
+    allErrors
+  } = superForm(data.form, {
+    onUpdated(event) {
+      if (event.form.valid) {
+        goto('/admin/settings/product-definitions');
+      }
+    }
+  });
   const workflows = data.options.workflows.filter((w) => w.Type === 1);
   const rebuildWorkflows = data.options.workflows.filter((w) => w.Type === 2);
   const republishWorkflows = data.options.workflows.filter((w) => w.Type === 3);
-
-  $: if (form?.ok) goto('/admin/settings/product-definitions');
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->
@@ -73,14 +84,14 @@
       name="description"
       class="textarea textarea-bordered w-full"
       bind:value={$superFormData.description}
-    />
+    ></textarea>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_properties">
     <textarea
       name="properties"
       class="textarea textarea-bordered w-full"
       bind:value={$superFormData.properties}
-    />
+    ></textarea>
   </LabeledFormInput>
   {#if $allErrors.length}
     <ul>

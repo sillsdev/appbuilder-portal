@@ -14,7 +14,7 @@
 
 <div class="dropdown dropdown-start">
   <!-- When .dropdown is focused, .dropdown-content is revealed making this actually interactive -->
-  <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <h1 tabindex="0" class="p-4 pl-6 cursor-pointer">
     <div class="flex flex-row items-center">
       {textsForPaths.get($page.params.filter)}

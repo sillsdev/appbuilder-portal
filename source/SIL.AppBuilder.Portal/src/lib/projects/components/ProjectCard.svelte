@@ -5,19 +5,25 @@
   import { getTimeDateString } from '$lib/timeUtils';
   import type { PrunedProject } from '../common';
 
-  export let project: PrunedProject;
+  interface Props {
+    project: PrunedProject;
+    select?: import('svelte').Snippet;
+    actions?: import('svelte').Snippet;
+  }
+
+  let { project, select, actions }: Props = $props();
 </script>
 
 <div class="rounded-md bg-neutral border border-slate-400 my-4 overflow-hidden w-full">
   <div class="p-4 pb-2 w-full">
     <span class="flex flex-row">
-      <slot name="select" />
+      {@render select?.()}
       <a href="/projects/{project.Id}">
         <b class="[color:#55f]">
           {project.Name}
         </b>
       </a>
-      <div class="grow" />
+      <div class="grow"></div>
       <span
         class="ml-8 badge badge-primary mb-2 mr-4 [height:1.35rem]"
         title={m.projectTable_columns_language()}
@@ -28,7 +34,7 @@
           {project.Language}
         </span>
       </span>
-      <slot name="actions" />
+      {@render actions?.()}
     </span>
     <div class="flex flex-wrap justify-between">
       <div class="mr-2">
