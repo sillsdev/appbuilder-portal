@@ -101,8 +101,7 @@ export const load = (async (event) => {
         },
     select: {
       Id: true,
-      Name: true,
-      UserRoles: true
+      Name: true
     }
   });
 
@@ -128,23 +127,18 @@ export const load = (async (event) => {
 
     users: users.map(minifyUser),
     userCount: users.length,
+    organizations,
     // Could be improved by putting group names into a referenced palette
     // (minimal returns if most users are in different organizations and groups)
     // I went ahead and did this too. My assumption is that there will generally be multiple users in each organization and group, so I think this should be a justifiable change. - Aidan
-    groups: Object.fromEntries(
-      (
-        await prisma.groups.findMany({
-          where: {
-            OwnerId: { in: orgIds },
-            GroupMemberships: {
-              some: {}
-            }
-          }
-        })
-      ).map((g) => [g.Id, g.Name])
-    ),
-    organizations: organizations?.map(({ Id, Name }) => ({ Id, Name })),
-    organizationCount: organizations.length,
+    groups: await prisma.groups.findMany({
+      where: {
+        OwnerId: { in: orgIds },
+        GroupMemberships: {
+          some: {}
+        }
+      }
+    }),
     form: await superValidate(
       {
         organizationId: organizations.length !== 1 ? null : organizations[0].Id,
@@ -198,9 +192,7 @@ export const actions: Actions = {
                 }
               },
       select: {
-        Id: true,
-        Name: true,
-        UserRoles: true
+        Id: true
       }
     });
 
