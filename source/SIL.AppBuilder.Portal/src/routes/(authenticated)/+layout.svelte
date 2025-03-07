@@ -22,7 +22,6 @@
   }
 
   let orgMenuOpen = false;
-  // $: console.log(page.data);
 
   function isActive(currentRoute: string | null, menuRoute: string) {
     return currentRoute?.startsWith(`${base}/(authenticated)${menuRoute}`);
