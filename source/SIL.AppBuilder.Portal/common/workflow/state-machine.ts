@@ -50,8 +50,8 @@ export const WorkflowStateMachine = setup({
     includeFields: [],
     /** Reset to false on exit */
     includeReviewers: false,
-    /** Reset to false on exit */
-    includeArtifacts: false,
+    /** Reset to null on exit */
+    includeArtifacts: null,
     environment: {},
     workflowType: input.workflowType,
     productType: input.productType,
@@ -406,11 +406,7 @@ export const WorkflowStateMachine = setup({
     [WorkflowState.Synchronize_Data]: {
       entry: assign({
         instructions: 'synchronize_data',
-        includeFields: ['storeDescription', 'listingLanguageCode'],
-        includeArtifacts: true
-      }),
-      exit: assign({
-        includeArtifacts: false
+        includeFields: ['storeDescription', 'listingLanguageCode']
       }),
       on: {
         [WorkflowAction.Continue]: {
@@ -566,9 +562,9 @@ export const WorkflowStateMachine = setup({
           'appType',
           'projectLanguageCode'
         ],
-        includeArtifacts: true
+        includeArtifacts: 'all'
       }),
-      exit: assign({ includeArtifacts: false }),
+      exit: assign({ includeArtifacts: null }),
       on: {
         [WorkflowAction.Approve]: [
           {
@@ -628,13 +624,13 @@ export const WorkflowStateMachine = setup({
       entry: assign({
         instructions: 'create_app_entry',
         includeFields: ['storeDescription', 'listingLanguageCode'],
-        includeArtifacts: true,
+        includeArtifacts: 'latestAAB',
         environment: ({ context }) => ({
           ...context.environment,
           [ENVKeys.GOOGLE_PLAY_DRAFT]: '1'
         })
       }),
-      exit: assign({ includeArtifacts: false }),
+      exit: assign({ includeArtifacts: null }),
       on: {
         [WorkflowAction.Continue]: [
           {
@@ -720,11 +716,18 @@ export const WorkflowStateMachine = setup({
           }
         },
         includeReviewers: true,
-        includeArtifacts: true
+        includeArtifacts: ({ context }) => {
+          switch (context.productType) {
+          case ProductType.AssetPackage:
+            return 'latestAssetPackage';
+          default:
+            return 'all';
+          }
+        }
       }),
       exit: assign({
         includeReviewers: false,
-        includeArtifacts: false
+        includeArtifacts: null
       }),
       on: {
         [WorkflowAction.Approve]: {
