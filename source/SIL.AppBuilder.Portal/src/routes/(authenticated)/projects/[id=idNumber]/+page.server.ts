@@ -442,8 +442,6 @@ export const actions = {
   async projectAction(event) {
     const session = await event.locals.auth();
     if (!session) return fail(403);
-    const orgId = parseInt(event.params.id!);
-    if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
 
     const form = await superValidate(event.request, valibot(projectActionSchema));
     if (!form.valid || !form.data.operation || form.data.projectId === null)
@@ -460,7 +458,7 @@ export const actions = {
       }
     });
     if (!project) return fail(404);
-    if (!canModifyProject(session, project.OwnerId, orgId)) {
+    if (!canModifyProject(session, project.OwnerId, form.data.orgId)) {
       return fail(403);
     }
 
@@ -468,9 +466,9 @@ export const actions = {
       form.data.operation,
       project,
       session,
-      orgId,
+      form.data.orgId,
       form.data.operation === 'claim'
-        ? (await userGroupsForOrg(session.user.userId, orgId)).map((g) => g.GroupId)
+        ? (await userGroupsForOrg(session.user.userId, form.data.orgId)).map((g) => g.GroupId)
         : []
     );
 
