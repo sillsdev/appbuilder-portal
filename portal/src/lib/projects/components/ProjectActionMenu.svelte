@@ -7,7 +7,6 @@
   import type { ProjectActionSchema, ProjectForAction } from '../common';
   import { canArchive, canClaimProject, canReactivate } from '../common';
 
-  
   interface Props {
     data: SuperValidated<Infer<ProjectActionSchema>>;
     project: ProjectForAction;
@@ -16,6 +15,7 @@
     allowReactivate?: boolean;
     userGroups: number[];
     endpoint?: string;
+    orgId: number;
   }
 
   let {
@@ -24,7 +24,8 @@
     allowActions = true,
     allowReactivate = true,
     userGroups,
-    endpoint = 'projectAction'
+    endpoint = 'projectAction',
+    orgId
   }: Props = $props();
 
   const { form, enhance, submit } = superForm(data, {
@@ -41,13 +42,7 @@
   function canClaimOwnership(project: Omit<ProjectForAction, 'Id' | 'Name'>): boolean {
     return (
       project.OwnerId !== page.data.session?.user.userId &&
-      canClaimProject(
-        page.data.session,
-        project.OwnerId,
-        parseInt(page.params.id),
-        project.GroupId,
-        userGroups
-      )
+      canClaimProject(page.data.session, project.OwnerId, orgId, project.GroupId, userGroups)
     );
   }
 
@@ -72,6 +67,7 @@
   <div class="dropdown-content p-1 bg-base-200 z-10 rounded-md min-w-36 w-auto shadow-lg">
     <form method="POST" action="?/{endpoint}" use:enhance>
       <input type="hidden" name="singleId" value={project.Id} />
+      <input type="hidden" name="orgId" value={orgId} />
       <ul class="menu menu-compact overflow-hidden rounded-md">
         {#if allowActions && canArchive(project, page.data.session, parseInt(page.params.id))}
           <li class="w-full rounded-none">

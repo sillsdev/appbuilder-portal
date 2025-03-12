@@ -122,6 +122,7 @@
         data={data.actionForm}
         project={data.project}
         userGroups={data.userGroups}
+        orgId={data.project.Organization.Id}
       />
     </div>
   </div>

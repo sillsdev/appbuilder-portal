@@ -158,7 +158,8 @@ export const importJSONSchema = v.object({
 export const projectActionSchema = v.object({
   operation: v.nullable(v.picklist(['archive', 'reactivate', 'claim'])),
   // used to distinguish between single and bulk. will be null if bulk
-  projectId: v.nullable(idSchema)
+  projectId: v.nullable(idSchema),
+  orgId: idSchema
 });
 
 export const bulkProjectActionSchema = v.object({

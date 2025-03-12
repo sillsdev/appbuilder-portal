@@ -1,15 +1,14 @@
 import { projectSearchSchema, pruneProjects } from '$lib/projects/common';
 import { projectFilter } from '$lib/projects/common.server';
 import type { Prisma } from '@prisma/client';
-import { error, type Actions } from '@sveltejs/kit';
+import { type Actions } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad } from './$types';
 
-export const load = (async ({ locals }) => {
-  const userId = (await locals.auth())?.user.userId;
-  if (!userId) return error(400);
+export const load = (async () => {
+  // auth handled by hooks
   const projects = await prisma.projects.findMany({
     where: {
       IsPublic: true
@@ -55,10 +54,8 @@ export const load = (async ({ locals }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  page: async function ({ request, locals }) {
-    const userId = (await locals.auth())?.user.userId;
-    if (!userId) return error(400);
-
+  page: async function ({ request }) {
+    // auth handled by hooks
     const form = await superValidate(request, valibot(projectSearchSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 

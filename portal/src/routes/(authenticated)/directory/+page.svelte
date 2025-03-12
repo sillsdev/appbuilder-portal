@@ -94,7 +94,7 @@
   {#if projects.length > 0}
     <div class="w-full relative p-4">
       {#each projects as project}
-        <ProjectCard {project} />
+        <ProjectCard {project} route='directory' />
       {/each}
     </div>
   {:else}

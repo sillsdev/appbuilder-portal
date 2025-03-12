@@ -7,18 +7,19 @@
 
   interface Props {
     project: PrunedProject;
+    route?: string;
     select?: import('svelte').Snippet;
     actions?: import('svelte').Snippet;
   }
 
-  let { project, select, actions }: Props = $props();
+  let { project, route = 'projects', select, actions }: Props = $props();
 </script>
 
 <div class="rounded-md bg-neutral border border-slate-400 my-4 overflow-hidden w-full">
   <div class="p-4 pb-2 w-full">
     <span class="flex flex-row">
       {@render select?.()}
-      <a href="/projects/{project.Id}">
+      <a href="/{route}/{project.Id}">
         <b class="[color:#55f]">
           {project.Name}
         </b>
@@ -43,17 +44,10 @@
           {project.OwnerName}
         </span>
         <span class="flex items-center" title={m.projectTable_columns_organization()}>
-          <IconContainer
-            icon="clarity:organization-solid"
-            width={20}
-            class="mr-1 shrink-0"
-          />
+          <IconContainer icon="clarity:organization-solid" width={20} class="mr-1 shrink-0" />
           {project.OrganizationName}
         </span>
-        <span
-          class="flex items-center [margin-right:0]"
-          title={m.projectTable_columns_group()}
-        >
+        <span class="flex items-center [margin-right:0]" title={m.projectTable_columns_group()}>
           <IconContainer icon="mdi:account-group" width={20} class="mr-1 shrink-0" />
           <span class=" text-nowrap">
             {project.GroupName}
@@ -95,10 +89,7 @@
             <tr>
               <td class="p-2">
                 <div class="flex items-center">
-                  <IconContainer
-                    icon={getIcon(product.ProductDefinitionName ?? '')}
-                    width={30}
-                  />
+                  <IconContainer icon={getIcon(product.ProductDefinitionName ?? '')} width={30} />
                   {product.ProductDefinitionName}
                 </div>
               </td>

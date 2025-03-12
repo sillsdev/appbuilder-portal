@@ -149,7 +149,8 @@ export const actions: Actions = {
     if (
       !form.valid ||
       !form.data.operation ||
-      (!form.data.projects?.length && form.data.projectId === null)
+      (!form.data.projects?.length && form.data.projectId === null) ||
+      orgId !== form.data.orgId
     )
       return fail(400, { form, ok: false });
     // prefer single project over array
