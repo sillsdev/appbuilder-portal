@@ -328,6 +328,7 @@
               allowActions={data.allowActions}
               allowReactivate={data.allowReactivate}
               userGroups={data.userGroups}
+              orgId={parseInt($page.params.id)}
             />
           {/snippet}
         </ProjectCard>

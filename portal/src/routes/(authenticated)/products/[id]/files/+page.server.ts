@@ -1,11 +1,12 @@
 import { paginateSchema } from '$lib/table';
-import { error, fail } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load = (async ({ params }) => {
+  // auth handled by hooks
   const builds = await prisma.productBuilds.findMany({
     orderBy: [
       {
@@ -71,9 +72,8 @@ export const load = (async ({ params }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  page: async ({ request, params, locals }) => {
-    const session = await locals.auth();
-    if (!session) return error(403);
+  page: async ({ request, params }) => {
+    // auth handled by hooks
     const form = await superValidate(request, valibot(paginateSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
