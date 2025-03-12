@@ -103,14 +103,12 @@ export type WorkflowInstanceContext = {
   environment: Environment;
 };
 
-export type ArtifactLists = 'latestAPK' | 'latestAAB' | 'latestAssetPackage' | 'all';
+export type ArtifactLists = 'latestAAB' | 'latestAssetPackage' | 'all';
 
 export function artifactLists(listName: ArtifactLists) {
   switch (listName) {
   case 'latestAAB':
     return ['aab', 'data-safety-csv'];
-  case 'latestAPK':
-    return ['apk', 'arm-apk', 'arm64-apk', 'x86-apk', 'x86_64-apk', 'aab'];
   case 'latestAssetPackage':
     return ['asset-package', 'asset-preview'];
   case 'all':
