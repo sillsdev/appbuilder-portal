@@ -2,6 +2,7 @@
   import { afterNavigate, goto } from '$app/navigation';
   import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
@@ -134,18 +135,12 @@
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 gap-1 {mobileSizing}"
       >
-        <!-- TODO: convert this to OrganizationDropdown after upgrade/svelte-5 -->
-        <select
-          class="select select-bordered {mobileSizing}"
+        <OrganizationDropdown
+          className={mobileSizing}
+          organizations={data.organizations}
           bind:value={$pageForm.organizationId}
           onchange={() => goto($pageForm.organizationId + '')}
-        >
-          {#each data.organizations.toSorted((a, b) => byName(a, b, languageTag())) as organization}
-            <option value={organization.Id} selected={$pageForm.organizationId === organization.Id}>
-              {organization.Name}
-            </option>
-          {/each}
-        </select>
+        />
         <SearchBar bind:value={$pageForm.search} className={mobileSizing} />
       </div>
     </div>
@@ -221,7 +216,7 @@
               <div class="p-2">
                 <h3>{project.Name}</h3>
                 {#if products?.length}
-                  {#each products.toSorted((a, b) => byString(a.ProductDefinitionName, b.ProductDefinitionName, languageTag())) as product}
+                  {#each products.toSorted( (a, b) => byString(a.ProductDefinitionName, b.ProductDefinitionName, languageTag()) ) as product}
                     <!-- svelte-ignore a11y_click_events_have_key_events -->
                     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                     <label
