@@ -1,6 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import type { ValidI13nKey } from '$lib/i18n';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName, byString } from '$lib/utils/sorting';
@@ -23,17 +25,17 @@
     }
   });
 
-  const workflowOptions = [
+  const workflowOptions: { message: ValidI13nKey; value: WorkflowOptions }[] = [
     {
-      message: m.admin_settings_workflowDefinitions_options_storeAccess(),
+      message: 'admin_settings_workflowDefinitions_options_storeAccess',
       value: WorkflowOptions.AdminStoreAccess
     },
     {
-      message: m.admin_settings_workflowDefinitions_options_approval(),
+      message: 'admin_settings_workflowDefinitions_options_approval',
       value: WorkflowOptions.ApprovalProcess
     },
     {
-      message: m.admin_settings_workflowDefinitions_options_transferToAuthors(),
+      message: 'admin_settings_workflowDefinitions_options_transferToAuthors',
       value: WorkflowOptions.AllowTransferToAuthors
     }
   ];
@@ -79,11 +81,7 @@
     ></textarea>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowScheme">
-    <select
-      class="select select-bordered"
-      name="workflowScheme"
-      bind:value={$form.workflowScheme}
-    >
+    <select class="select select-bordered" name="workflowScheme" bind:value={$form.workflowScheme}>
       {#each data.schemes.toSorted((a, b) => byString(a.Code, b.Code, getLocale())) as scheme}
         <option value={scheme.Code}>{scheme.Code}</option>
       {/each}
@@ -112,25 +110,20 @@
     className="border border-warning p-1 my-4 rounded-lg"
   >
     {#each workflowOptions as opt}
-      <div class="label flex flex-row">
-        <div class="label">
-          <span class="label-text">
-            {opt.message}
-          </span>
-        </div>
+      <InputWithMessage name={opt.message} className="my-1">
         <input
           class="toggle toggle-warning border-warning"
           type="checkbox"
           bind:group={$form.options}
           value={opt.value}
         />
-      </div>
+      </InputWithMessage>
     {/each}
   </LabeledFormInput>
   <div>
     <label>
       <div class="label flex flex-row">
-        <div class="flex flex-col">
+        <div class="flex flex-col grow">
           <span class="">
             {m.admin_settings_workflowDefinitions_enabled()}
           </span>

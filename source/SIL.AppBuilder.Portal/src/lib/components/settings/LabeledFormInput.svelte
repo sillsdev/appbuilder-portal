@@ -16,9 +16,9 @@
 </script>
 
 <div class={className}>
-  <label>
+  <label class="flex flex-col w-full">
     <div class="label">
-      <span class="label-text">
+      <span class="fieldset-label">
         {m[name]()}
       </span>
     </div>

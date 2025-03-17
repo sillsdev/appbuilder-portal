@@ -80,10 +80,8 @@
         {/key}
       </ul>
     </div>
-    <div class="flex grow sm:mt-16">
-      <div class="flex grow flex-col">
-        {@render children?.()}
-      </div>
+    <div class="flex flex-col grow sm:mt-16">
+      {@render children?.()}
     </div>
   </div>
 </div>
