@@ -131,6 +131,7 @@
 <div class="w-full max-w-6xl mx-auto relative px-2">
   <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
   <form
+    method="POST"
     action="?/page"
     use:pageEnhance
     onkeydown={(event) => {
