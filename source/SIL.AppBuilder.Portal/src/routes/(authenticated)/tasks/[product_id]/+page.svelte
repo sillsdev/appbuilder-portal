@@ -1,5 +1,6 @@
 <script lang="ts">
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
@@ -51,16 +52,13 @@
         {/each}
       </div>
     {/if}
-    <label class="flex flex-col">
-      <div class="label">
-        <span class="label-text">{m.project_products_transitions_comment()}</span>
-      </div>
+    <LabeledFormInput name="project_products_transitions_comment">
       <textarea
         class="textarea textarea-bordered h-24"
         name="comment"
         bind:value={$form.comment}
       ></textarea>
-    </label>
+    </LabeledFormInput>
     <input type="hidden" name="state" bind:value={$form.state} />
   </form>
   <hr class="border-t-4 my-2" />
@@ -70,87 +68,66 @@
   <div>
     {#if data.fields.ownerName && data.fields.ownerEmail}
       <div class="flex flex-col gap-x-3 w-full md:flex-row">
-        <label class="flex flex-col w-full md:w-2/4">
-          <div class="label">
-            <span class="label-text">{m.projectTable_columns_owner()}</span>
-          </div>
+        <LabeledFormInput name="projectTable_columns_owner" className="md:w-2/4">
           <input
             type="text"
             class="input input-bordered w-full"
             readonly
             value={data.fields.ownerName}
           />
-        </label>
-        <label class="flex flex-col w-full md:w-2/4">
-          <div class="label">
-            <span class="label-text">{m.profile_email()}</span>
-          </div>
+        </LabeledFormInput>
+        <LabeledFormInput name="profile_email" className="md:w-2/4">
           <input
             type="text"
             class="input input-bordered w-full"
             readonly
             value={data.fields.ownerEmail}
           />
-        </label>
+        </LabeledFormInput>
       </div>
     {/if}
     <div class="flex flex-col gap-x-3 w-full md:flex-row">
-      <label class="flex flex-col w-full md:w-2/4">
-        <div class="label">
-          <span class="label-text">{m.project_projectName()}</span>
-        </div>
+      <LabeledFormInput name="project_projectName" className="md:w-2/4">
         <input
           type="text"
           class="input input-bordered w-full"
           readonly
           value={data.fields.projectName}
         />
-      </label>
-      <label class="flex flex-col w-full md:w-2/4">
-        <div class="label">
-          <span class="label-text">{m.project_projectDescription()}</span>
-        </div>
+      </LabeledFormInput>
+      <LabeledFormInput name="project_projectDescription" className="md:w-2/4">
         <input
           type="text"
           class="input input-bordered w-full"
           readonly
           value={data.fields.projectDescription}
         />
-      </label>
+      </LabeledFormInput>
     </div>
     {#if data.fields.storeDescription}
       <div class="flex flex-col gap-x-3 md:flex-row">
-        <label class="flex flex-col w-full md:w-2/4">
-          <div class="label">
-            <span class="label-text">{m.stores_name()}</span>
-          </div>
+        <LabeledFormInput name="stores_name" className="md:w-2/4">
           <input
             type="text"
             class="input input-bordered w-full"
             readonly
             value={data.fields.storeDescription}
           />
-        </label>
+        </LabeledFormInput>
         {#if data.fields.listingLanguageCode}
-          <label class="flex flex-col w-full md:w-2/4">
-            <div class="label">
-              <span class="label-text">{m.tasks_storeLanguage()}</span>
-            </div>
+          <LabeledFormInput name="tasks_storeLanguage" className="md:w-2/4">
             <input
               type="text"
               class="input input-bordered w-full"
               readonly
               value={data.fields.listingLanguageCode}
             />
-          </label>
+          </LabeledFormInput>
         {/if}
       </div>
     {/if}
     {#if data.fields.projectURL}
-      <label class="flex flex-col w-full">
-        <div class="label">
-          <span class="label-text">{m.tasks_appProjectURL()}</span>
-        </div>
+      <LabeledFormInput name="tasks_appProjectURL">
         <span class="input input-bordered w-full flex flex-row gap-2 items-center">
           <input type="text" class="grow" readonly value={data.fields.projectURL} />
           <button
@@ -172,42 +149,33 @@
             {/if}
           </button>
         </span>
-      </label>
+      </LabeledFormInput>
     {/if}
     {#if data.fields.displayProductDescription && data.fields.appType && data.fields.projectLanguageCode}
-      <label class="flex flex-col w-full">
-        <div class="label">
-          <span class="label-text">{m.tasks_product()}</span>
-        </div>
+      <LabeledFormInput name="tasks_product">
         <input
           type="text"
           class="input input-bordered w-full"
           readonly
           value={data.productDescription}
         />
-      </label>
-      <label class="flex flex-col w-full">
-        <div class="label">
-          <span class="label-text">{m.admin_settings_productDefinitions_type()}</span>
-        </div>
+      </LabeledFormInput>
+      <LabeledFormInput name="admin_settings_productDefinitions_type">
         <input
           type="text"
           class="input input-bordered w-full"
           readonly
           value={data.fields.appType}
         />
-      </label>
-      <label class="flex flex-col w-full">
-        <div class="label">
-          <span class="label-text">{m.project_languageCode()}</span>
-        </div>
+      </LabeledFormInput>
+      <LabeledFormInput name="project_languageCode">
         <input
           type="text"
           class="input input-bordered w-full"
           readonly
           value={data.fields.projectLanguageCode}
         />
-      </label>
+      </LabeledFormInput>
     {/if}
   </div>
   {#if data.instructions}
@@ -301,9 +269,6 @@
 </div>
 
 <style>
-  .label-text {
-    font-weight: bold;
-  }
   /*this VVV technique allows css rules to break svelte scoping downwards*/
   #instructions :global(ul) {
     padding-left: calc(var(--spacing) * 10);

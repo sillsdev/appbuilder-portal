@@ -87,7 +87,7 @@
           >
             <!-- svelte-ignore a11y_label_has_associated_control -->
             <label class="flex flex-row">
-              <span class="label-text">{c.header}</span>
+              <span>{c.header}</span>
               <span class="direction-arrow">
                 {#if current.id === c.id && c.compare}
                   {#if descending}

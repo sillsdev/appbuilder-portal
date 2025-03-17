@@ -65,9 +65,8 @@
       class="flex flex-row flex-wrap place-content-end items-center p-2 gap-1"
     >
       {#if data.organizations.length > 1}
-        {@const locale = getLocale()}
-        <label class="flex flex-wrap items-center gap-x-2 {mobileSizing}">
-          <span class="label-text">{m.users_organization_filter()}:</span>
+        <label class="flex flex-row items-center gap-x-2 {mobileSizing}">
+          <span class="whitespace-nowrap">{m.users_organization_filter()}:</span>
           <OrganizationDropdown
             organizations={data.organizations}
             bind:value={$form.organizationId}

@@ -15,13 +15,11 @@
   let { name, className = '', children }: Props = $props();
 </script>
 
-<div class={className}>
-  <label class="flex flex-col w-full">
-    <div class="label">
-      <span class="fieldset-label">
-        {m[name]()}
-      </span>
-    </div>
-    {@render children?.()}
-  </label>
-</div>
+<label class="flex flex-col w-full {className}">
+  <div class="label">
+    <span class="fieldset-label">
+      {m[name]()}
+    </span>
+  </div>
+  {@render children?.()}
+</label>
