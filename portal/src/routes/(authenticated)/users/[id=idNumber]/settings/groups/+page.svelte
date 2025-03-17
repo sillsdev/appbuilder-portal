@@ -17,6 +17,7 @@
 
 <form action="" method="post" use:enhance>
   <div class="flex flex-col px-4">
+    <!-- I would sort this, but it doesn't work properly... -->
     {#each $form.organizations as org}
       {@const groups = data.groupsByOrg.find((o) => o.Id === org.id)?.Groups ?? []}
       <h3>{org.name}</h3>

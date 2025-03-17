@@ -2,15 +2,18 @@
   import { afterNavigate, goto } from '$app/navigation';
   import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
   import type { ProjectForAction, PrunedProject } from '$lib/projects/common';
   import { canArchive, canReactivate } from '$lib/projects/common';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
+  import { byName, byString } from '$lib/utils';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -32,7 +35,14 @@
     resetForm: false,
     invalidateAll: false,
     onChange(event) {
-      if (!(event.paths.includes('langCode') || event.paths.includes('search'))) {
+      if (
+        !(
+          event.paths.includes('langCode') ||
+          event.paths.includes('search') ||
+          // handle organization change solely through routing
+          event.paths.includes('organizationId')
+        )
+      ) {
         pageSubmit();
       }
     },
@@ -83,6 +93,10 @@
   let selectedProducts: ProductForAction[] = $state([]);
 
   afterNavigate((navigation) => {
+    // tried workaround with $effect: https://github.com/sveltejs/kit/issues/11116#issuecomment-2574727891
+    // this way worked much better for our use case
+    projects = data.projects;
+    count = data.count;
     $pageForm.organizationId = data.pageForm.data.organizationId;
   });
 
@@ -110,7 +124,9 @@
   });
   $effect(() => {
     $productForm.products = selectedProducts.map((p) => p.Id);
-  })
+  });
+
+  const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2">
@@ -128,29 +144,21 @@
         <ProjectFilterSelector />
       </div>
       <div
-        class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 mobile-sizing gap-1"
+        class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 gap-1 {mobileSizing}"
       >
-        <select
-          class="select select-bordered mobile-sizing"
+        <OrganizationDropdown
+          className={mobileSizing}
+          organizations={data.organizations}
           bind:value={$pageForm.organizationId}
           onchange={() => goto($pageForm.organizationId + '')}
-        >
-          {#each data.organizations as organization}
-            <option value={organization.Id} selected={$pageForm.organizationId === organization.Id}>
-              {organization.Name}
-            </option>
-          {/each}
-        </select>
-        <SearchBar
-          bind:value={$pageForm.search}
-          className="w-full max-w-xs md:w-auto md:max-w-none"
         />
+        <SearchBar bind:value={$pageForm.search} className={mobileSizing} />
       </div>
     </div>
   </form>
   <div class="w-full flex flex-row flex-wrap place-content-between gap-1 mt-4">
     <form
-      class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4"
+      class="flex flex-row flex-wrap {mobileSizing} gap-1 mx-4"
       method="POST"
       action="?/projectAction"
       use:actionEnhance
@@ -214,12 +222,12 @@
           </div>
           <hr />
           <div class="flex flex-col pt-1 space-y-1">
-            {#each selectedProjects as project}
+            {#each selectedProjects.toSorted((a, b) => byName(a, b, languageTag())) as project}
               {@const products = project.Products?.filter((p) => p.CanRebuild || p.CanRepublish)}
               <div class="p-2">
                 <h3>{project.Name}</h3>
                 {#if products?.length}
-                  {#each products as product}
+                  {#each products.toSorted( (a, b) => byString(a.ProductDefinitionName, b.ProductDefinitionName, languageTag()) ) as product}
                     <!-- svelte-ignore a11y_click_events_have_key_events -->
                     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                     <label
@@ -299,7 +307,7 @@
       </form>
     </dialog>
     {#if page.params.filter === 'own'}
-      <div class="flex flex-row flex-wrap mobile-sizing gap-1 mx-4">
+      <div class="flex flex-row flex-wrap {mobileSizing} gap-1 mx-4">
         <a class="action btn btn-outline" href="/projects/import/{$pageForm.organizationId}">
           {m.project_importProjects()}
         </a>
@@ -310,8 +318,9 @@
     {/if}
   </div>
   {#if projects.length > 0}
+    {@const langTag = languageTag()}
     <div class="w-full relative p-4">
-      {#each projects as project}
+      {#each projects.toSorted((a, b) => byName(a, b, langTag)) as project}
         <ProjectCard {project}>
           {#snippet select()}
             <input
@@ -328,7 +337,7 @@
               allowActions={data.allowActions}
               allowReactivate={data.allowReactivate}
               userGroups={data.userGroups}
-              orgId={parseInt($page.params.id)}
+              orgId={parseInt(page.params.id)}
             />
           {/snippet}
         </ProjectCard>
@@ -347,24 +356,12 @@
     }}
   >
     <div class="w-full flex flex-row place-content-start p-4 space-between-4 flex-wrap gap-1">
-      <Pagination
-        bind:size={$pageForm.page.size}
-        total={count}
-        bind:page={$pageForm.page.page}
-      />
+      <Pagination bind:size={$pageForm.page.size} total={count} bind:page={$pageForm.page.page} />
     </div>
   </form>
 </div>
 
 <style lang="postcss">
-  .mobile-sizing {
-    @apply w-full max-w-xs;
-  }
-  @media screen(md) {
-    .mobile-sizing {
-      @apply w-auto max-w-none;
-    }
-  }
   .action {
     @apply form-control w-full max-w-xs;
   }

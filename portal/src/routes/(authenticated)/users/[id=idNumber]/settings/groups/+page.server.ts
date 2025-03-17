@@ -27,22 +27,18 @@ export const load = (async ({ params, locals }) => {
 
   const groupsByOrg = await prisma.organizations.findMany({
     where: {
-      Owner: {
-        // Only send a list of groups for orgs that the subject user is in and the current user has access to
-        AND: isSuper
-          ? undefined
-          : {
-              UserRoles: {
-                some: {
-                  UserId: userId,
-                  RoleId: RoleId.OrgAdmin
-                }
-              }
-            },
-        OrganizationMemberships: {
-          some: {
-            UserId: subjectUserId
-          }
+      // Only send a list of groups for orgs that the subject user is in and the current user has access to
+      UserRoles: isSuper
+        ? undefined
+        : {
+            some: {
+              UserId: userId,
+              RoleId: RoleId.OrgAdmin
+            }
+          },
+      OrganizationMemberships: {
+        some: {
+          UserId: subjectUserId
         }
       }
     },

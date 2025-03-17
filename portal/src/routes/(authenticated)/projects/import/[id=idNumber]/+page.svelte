@@ -1,7 +1,9 @@
 <script lang="ts">
   import { page } from '$app/state';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
   import { importJSONSchema } from '$lib/projects/common';
+  import { byName, byString } from '$lib/utils';
   import { onMount } from 'svelte';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
@@ -55,8 +57,7 @@
         } else {
           parseErrors = flatten<typeof importJSONSchema>(res.issues);
         }
-      }
-      catch (e) {
+      } catch (e) {
         //@ts-expect-error I just want to add the error!
         parseErrors = { root: [e] };
       }
@@ -78,7 +79,7 @@
       <label class="form-control w-full max-w-xs">
         <span class="label-text">{m.project_projectGroup()}:</span>
         <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
-          {#each data.organization?.Groups ?? [] as group}
+          {#each data.organization.Groups.toSorted((a, b) => byName(a, b, languageTag())) as group}
             <option value={group.Id}>{group.Name}</option>
           {/each}
         </select>
@@ -86,7 +87,7 @@
       <label class="form-control w-full max-w-xs">
         <span class="label-text">{m.project_type()}:</span>
         <select name="type" id="type" class="select select-bordered" bind:value={$form.type}>
-          {#each data.types ?? [] as type}
+          {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, languageTag()) ) as type}
             <option value={type.Id}>{type.Description}</option>
           {/each}
         </select>

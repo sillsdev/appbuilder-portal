@@ -7,7 +7,7 @@
   import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
   import { canModifyProject } from '$lib/projects/common';
   import { getRelativeTime } from '$lib/timeUtils';
-  import { sortByName } from '$lib/utils';
+  import { byName } from '$lib/utils';
   import type { PageData } from './$types';
 
   interface Props {
@@ -72,7 +72,7 @@
         {m.projectTable_noProducts()}
       {:else}
         {@const langTag = languageTag()}
-        {#each data.project.Products.sort( (a, b) => sortByName(a.ProductDefinition, b.ProductDefinition, langTag) ) as product}
+        {#each data.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, langTag) ) as product}
           {@const release = product.ProductPublications.at(0)}
           {@const build = release?.ProductBuild}
           <div>

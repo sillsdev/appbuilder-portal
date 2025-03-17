@@ -4,7 +4,8 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { isAdmin } from '$lib/utils';
+  import { languageTag } from '$lib/paraglide/runtime';
+  import { byName, byString, isAdmin } from '$lib/utils';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import type { MinifiedUser } from './common';
@@ -36,6 +37,8 @@
       }
     }
   });
+
+  const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 </script>
 
 <div class="w-full">
@@ -56,17 +59,19 @@
       class="flex flex-row flex-wrap place-content-end items-center p-2 gap-1"
     >
       {#if data.organizationCount > 1}
-        <label class="flex flex-wrap items-center gap-x-2 w-full max-w-xs md:w-auto md:max-w-none">
+        {@const langTag = languageTag()}
+        <label class="flex flex-wrap items-center gap-x-2 {mobileSizing}">
           <span class="label-text">{m.users_organization_filter()}:</span>
+          <!-- TODO: convert after fix/user-page-org-select -->
           <select class="select select-bordered grow" name="org" bind:value={$form.organizationId}>
             <option value={null}>{m.org_allOrganizations()}</option>
-            {#each Object.entries(data.organizations) as [Id, Name]}
+            {#each Object.entries(data.organizations).sort( (a, b) => byString(a[1], b[1], langTag) ) as [Id, Name]}
               <option value={Id}>{Name}</option>
             {/each}
           </select>
         </label>
       {/if}
-      <SearchBar bind:value={$form.search} className="w-full max-w-xs md:w-auto md:max-w-none" />
+      <SearchBar bind:value={$form.search} className={mobileSizing} />
     </form>
   </div>
   <div class="m-4 relative mt-0">
@@ -81,6 +86,10 @@
       </thead>
       <tbody>
         {#each users as user}
+          {@const langTag = languageTag()}
+          {@const userOrgs = user.O.map((o) => ({ ...o, Name: data.organizations[o.I] })).sort(
+            (a, b) => byName(a, b, langTag)
+          )}
           <tr class="align-top">
             <td class="p-2">
               <p>
@@ -93,11 +102,11 @@
               </p>
             </td>
             <td class="py-2">
-              {#each user.O as org}
+              {#each userOrgs as org}
                 <div class="p-1">
                   <span>
                     <b>
-                      {data.organizations[org.I]}
+                      {org.Name ?? ''}
                     </b>
                   </span>
                   <br />
@@ -110,20 +119,24 @@
                         m.users_roles_appBuilder(),
                         m.users_roles_author()
                       ][r]
-                  ).join(', ') || m.users_noRoles()}
+                  )
+                    .sort((a, b) => byString(a, b, langTag))
+                    .join(', ') || m.users_noRoles()}
                 </div>
               {/each}
             </td>
             <td class="py-2">
-              {#each user.O as org}
+              {#each userOrgs as org}
                 <div class="p-1">
                   <span>
                     <b>
-                      {data.organizations[org.I]}
+                      {org.Name ?? ''}
                     </b>
                   </span>
                   <br />
-                  {org.G.map((g) => data.groups[g]).join(', ') || m.common_none()}
+                  {org.G.map((g) => data.groups[g])
+                    .sort((a, b) => byString(a, b, langTag))
+                    .join(', ') || m.common_none()}
                 </div>
               {/each}
             </td>

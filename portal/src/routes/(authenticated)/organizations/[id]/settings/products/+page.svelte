@@ -2,6 +2,8 @@
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
+  import { byName } from '$lib/utils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   interface Props {
@@ -18,6 +20,8 @@
     dataType: 'json',
     resetForm: false
   });
+
+  const allProductDefs = new Map(data.allProductDefs);
 </script>
 
 <h2>{m.org_productsTitle()}</h2>
@@ -43,11 +47,11 @@
     </label>
   </div>
   <MultiselectBox header={m.org_productSelectTitle()}>
-    {#each $superFormData.products as productDef}
+    {#each $superFormData.products.toSorted( (a, b) => byName(allProductDefs.get(a.productId), allProductDefs.get(b.productId), languageTag()) ) as productDef}
+      {@const pdLook = allProductDefs.get(productDef.productId)}
       <MultiselectBoxElement
-        title={data.allProductDefs.find((p) => p.Id === productDef.productId)?.Name ?? ''}
-        description={data.allProductDefs.find((p) => p.Id === productDef.productId)?.Description ??
-          ''}
+        title={pdLook?.Name ?? ''}
+        description={pdLook?.Description ?? ''}
         bind:checked={productDef.enabled}
       />
     {/each}

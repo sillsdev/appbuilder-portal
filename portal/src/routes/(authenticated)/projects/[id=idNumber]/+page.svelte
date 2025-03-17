@@ -11,7 +11,7 @@
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { getRelativeTime } from '$lib/timeUtils';
-  import { isAdminForOrg, isSuperAdmin, sortByName } from '$lib/utils';
+  import { byName, isAdminForOrg, isSuperAdmin } from '$lib/utils';
   import { ProductType } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -191,7 +191,7 @@
               </div>
               <hr />
               <div class="flex flex-col pt-1 space-y-1">
-                {#each data.productsToAdd as productDef, i}
+                {#each data.productsToAdd.toSorted( (a, b) => byName(a, b, languageTag()) ) as productDef, i}
                   <!-- svelte-ignore a11y_click_events_have_key_events -->
                   <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                   <label
@@ -236,7 +236,8 @@
               <hr />
               <div class="flex flex-col pt-1 space-y-1">
                 {#if availableStores.length}
-                  {#each availableStores as store}
+                  {@const langTag = languageTag()}
+                  {#each availableStores.toSorted((a, b) => byName(a, b, langTag)) as store}
                     <!-- svelte-ignore a11y_click_events_have_key_events -->
                     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                     <label
@@ -274,7 +275,7 @@
           {m.projectTable_noProducts()}
         {:else}
           {@const langTag = languageTag()}
-          {#each data.project.Products.sort( (a, b) => sortByName(a.ProductDefinition, b.ProductDefinition, langTag) ) as product}
+          {#each data.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, langTag) ) as product}
             <div class="rounded-md border border-slate-400 w-full my-2">
               <div class="bg-neutral p-2 flex flex-row rounded-t-md">
                 <span class="grow min-w-0">
@@ -511,7 +512,7 @@
                       bind:this={ownerField}
                     />
                     <ul class="menu menu-compact overflow-hidden rounded-md">
-                      {#each data.possibleProjectOwners.sort((a, b) => a.Name?.localeCompare(b.Name ?? '') ?? 0) as owner}
+                      {#each data.possibleProjectOwners.toSorted( (a, b) => byName(a, b, languageTag()) ) as owner}
                         <li class="w-full rounded-none">
                           <button
                             class="text-nowrap"
@@ -558,7 +559,7 @@
                       bind:this={groupField}
                     />
                     <ul class="menu menu-compact overflow-hidden rounded-md">
-                      {#each data.possibleGroups.sort((a, b) => a.Name?.localeCompare(b.Name ?? '') ?? 0) as group}
+                      {#each data.possibleGroups.toSorted( (a, b) => byName(a, b, languageTag()) ) as group}
                         <li class="w-full rounded-none">
                           <button
                             class="text-nowrap"
@@ -586,8 +587,9 @@
           <h2>{m.project_side_authors_title()}</h2>
         </div>
         <div class="p-2">
-          {#if data.project?.Authors.length ?? 0 > 0}
-            {#each data.project?.Authors ?? [] as author}
+          {#if data.project.Authors.length}
+            {@const langTag = languageTag()}
+            {#each data.project.Authors.toSorted((a, b) => byName(a.Users, b.Users, langTag)) as author}
               <div class="flex flex-row w-full place-content-between p-2">
                 <span>{author.Users.Name}</span>
                 <form action="?/deleteAuthor" method="post" use:authorDeleteEnhance>
@@ -610,7 +612,9 @@
                 name="author"
                 bind:value={$authorForm.author}
               >
-                {#each data.authorsToAdd.filter((author) => !data.project?.Authors.some((au) => au.Users.Id === author.Id)) as author}
+                {#each data.authorsToAdd
+                  .filter((author) => !data.project?.Authors.some((au) => au.Users.Id === author.Id))
+                  .sort((a, b) => byName(a, b, languageTag())) as author}
                   <option value={author.Id}>
                     {author.Name}
                   </option>
@@ -628,8 +632,9 @@
           <h2>{m.project_side_reviewers_title()}</h2>
         </div>
         <div class="p-2">
-          {#if data.project?.Reviewers.length ?? 0 > 0}
-            {#each data.project?.Reviewers ?? [] as reviewer}
+          {#if data.project.Reviewers.length}
+            {@const langTag = languageTag()}
+            {#each data.project.Reviewers.toSorted((a, b) => byName(a, b, langTag)) as reviewer}
               <div class="flex flex-row w-full place-content-between p-2">
                 <span>{reviewer.Name} ({reviewer.Email})</span>
                 <form action="?/deleteReviewer" method="post" use:reviewerDeleteEnhance>
@@ -742,7 +747,7 @@
     column-gap: 0.75rem;
   }
   /* source: https://github.com/saadeghi/daisyui/issues/3040#issuecomment-2250530354 */
-  :root:has(:is(.modal-open, .modal:target, .modal-toggle:checked + .modal, .modal[open])) {
+  :root:has(:global(:is(.modal-open, .modal:target, .modal-toggle:checked + .modal, .modal[open]))) {
     scrollbar-gutter: unset;
   }
 </style>

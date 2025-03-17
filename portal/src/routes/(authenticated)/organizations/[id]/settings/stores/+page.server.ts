@@ -29,15 +29,15 @@ export const load = (async (event) => {
       OrganizationId: id
     }
   });
-  const allStores = await prisma.stores.findMany();
+  const allStores = (await prisma.stores.findMany()).map((s) => [s.Id, s] as [number, typeof s]);
   if (!data) return redirect(302, base + '/organizations');
-  const setOrgProductDefs = new Set(orgStores.map((p) => p.StoreId));
+  const setOrgStores = new Set(orgStores.map((p) => p.StoreId));
   const form = await superValidate(
     {
       id: data.Id,
-      stores: allStores.map((pD) => ({
-        storeId: pD.Id,
-        enabled: setOrgProductDefs.has(pD.Id)
+      stores: allStores.map((s) => ({
+        storeId: s[0],
+        enabled: setOrgStores.has(s[0])
       }))
     },
     valibot(editStoresSchema)

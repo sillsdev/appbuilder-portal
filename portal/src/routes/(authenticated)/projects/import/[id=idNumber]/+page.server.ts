@@ -58,8 +58,8 @@ export const load = (async ({ locals, params }) => {
 
   const form = await superValidate(
     {
-      group: organization?.Groups[0]?.Id ?? undefined,
-      type: types?.[0].Id ?? undefined
+      group: organization.Groups.at(0)?.Id ?? undefined,
+      type: types?.at(0)?.Id ?? undefined
     },
     valibot(projectsImportSchema),
     { errors: false }

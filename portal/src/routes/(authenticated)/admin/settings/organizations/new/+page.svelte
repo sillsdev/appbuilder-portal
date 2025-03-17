@@ -2,6 +2,8 @@
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
+  import { byName } from '$lib/utils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -28,7 +30,7 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_organizations_owner">
     <select class="select select-bordered" name="owner" bind:value={$form.owner}>
-      {#each data.options.users as user}
+      {#each data.options.users.toSorted((a, b) => byName(a, b, languageTag())) as user}
         <option value={user.Id}>{user.Name}</option>
       {/each}
     </select>
