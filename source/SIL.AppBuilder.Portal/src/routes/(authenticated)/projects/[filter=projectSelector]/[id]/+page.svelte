@@ -35,7 +35,14 @@
     resetForm: false,
     invalidateAll: false,
     onChange(event) {
-      if (!(event.paths.includes('langCode') || event.paths.includes('search'))) {
+      if (
+        !(
+          event.paths.includes('langCode') ||
+          event.paths.includes('search') ||
+          // handle organization change solely through routing
+          event.paths.includes('organizationId')
+        )
+      ) {
         pageSubmit();
       }
     },
@@ -86,6 +93,10 @@
   let selectedProducts: ProductForAction[] = $state([]);
 
   afterNavigate((navigation) => {
+    // tried workaround with $effect: https://github.com/sveltejs/kit/issues/11116#issuecomment-2574727891
+    // this way worked much better for our use case
+    projects = data.projects;
+    count = data.count;
     $pageForm.organizationId = data.pageForm.data.organizationId;
   });
 
@@ -306,10 +317,10 @@
       </div>
     {/if}
   </div>
-  {#if data.projects.length > 0}
+  {#if projects.length > 0}
     {@const langTag = languageTag()}
     <div class="w-full relative p-4">
-      {#each data.projects.toSorted((a, b) => byName(a, b, langTag)) as project}
+      {#each projects.toSorted((a, b) => byName(a, b, langTag)) as project}
         <ProjectCard {project}>
           {#snippet select()}
             <input
