@@ -14,7 +14,7 @@
   let { data }: Props = $props();
 
   let builds = $state(data.builds);
-  let count = $state(data.count)
+  let count = $state(data.count);
 
   const { form, enhance, submit } = superForm(data.form, {
     resetForm: false,
@@ -23,7 +23,7 @@
     },
     onUpdate(event) {
       const data = event.result.data as FormResult<{
-        query: { data: any[], count: number };
+        query: { data: any[]; count: number };
       }>;
       if (event.form.valid && data.query) {
         builds = data.query.data;
@@ -54,10 +54,7 @@
   </div>
   <div id="files" class="overflow-y-auto grow">
     {#each builds as build}
-      <BuildArtifacts
-        {build}
-        latestBuildId={data.product?.WorkflowBuildId}
-      />
+      <BuildArtifacts {build} latestBuildId={data.product?.WorkflowBuildId} />
     {/each}
   </div>
   <form method="POST" action="?/page" use:enhance>

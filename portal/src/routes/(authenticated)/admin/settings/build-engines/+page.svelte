@@ -4,6 +4,7 @@
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/timeUtils';
+  import { byString } from '$lib/utils';
   import type { PageData } from './$types';
 
   interface Props {
@@ -21,7 +22,7 @@
 {/snippet}
 
 <div class="flex flex-col w-full">
-  {#each data.buildEngines as buildEngine}
+  {#each data.buildEngines.toSorted( (a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, languageTag()) ) as buildEngine}
     <DataDisplayBox
       title={buildEngine.BuildEngineUrl}
       data={buildEngine}

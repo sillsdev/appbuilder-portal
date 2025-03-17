@@ -24,7 +24,10 @@ export const load = (async () => {
       Group: true,
       Organization: true
     },
-    take: 10
+    take: 10,
+    orderBy: {
+      Name: 'asc'
+    }
   });
   const productDefinitions = await prisma.productDefinitions.findMany();
   return {
@@ -78,7 +81,10 @@ export const actions: Actions = {
         Organization: true
       },
       skip: form.data.page.size * form.data.page.page,
-      take: form.data.page.size
+      take: form.data.page.size,
+      orderBy: {
+        Name: 'asc'
+      }
     });
 
     const count = await prisma.projects.count({ where: where });

@@ -1,9 +1,11 @@
 <script lang="ts">
-  import * as m from '$lib/paraglide/messages';
-  import { superForm } from 'sveltekit-superforms';
-  import type { ActionData, PageData } from './$types';
-  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { goto } from '$app/navigation';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
+  import { byName } from '$lib/utils';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -18,6 +20,18 @@
       }
     }
   });
+
+  const langTag = languageTag();
+
+  const workflows = data.options.workflows
+    .filter((w) => w.Type === 1)
+    .sort((a, b) => byName(a, b, langTag));
+  const rebuildWorkflows = data.options.workflows
+    .filter((w) => w.Type === 2)
+    .sort((a, b) => byName(a, b, langTag));
+  const republishWorkflows = data.options.workflows
+    .filter((w) => w.Type === 3)
+    .sort((a, b) => byName(a, b, langTag));
 </script>
 
 <h3>{m.admin_settings_productDefinitions_add()}</h3>
@@ -39,7 +53,7 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_workflow">
     <select class="select select-bordered" name="workflow" bind:value={$form.workflow}>
-      {#each data.options.workflows.filter((w) => w.Type === 1) as wf}
+      {#each workflows as wf}
         <option value={wf.Id}>{wf.Name}</option>
       {/each}
     </select>
@@ -51,7 +65,7 @@
       bind:value={$form.rebuildWorkflow}
     >
       <option value={null}>{m.admin_settings_productDefinitions_noWorkflow()}</option>
-      {#each data.options.workflows.filter((w) => w.Type === 2) as wf}
+      {#each rebuildWorkflows as wf}
         <option value={wf.Id}>{wf.Name}</option>
       {/each}
     </select>
@@ -63,7 +77,7 @@
       bind:value={$form.republishWorkflow}
     >
       <option value={null}>{m.admin_settings_productDefinitions_noWorkflow()}</option>
-      {#each data.options.workflows.filter((w) => w.Type === 3) as wf}
+      {#each republishWorkflows as wf}
         <option value={wf.Id}>{wf.Name}</option>
       {/each}
     </select>

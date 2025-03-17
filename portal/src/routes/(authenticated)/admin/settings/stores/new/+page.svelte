@@ -1,9 +1,11 @@
 <script lang="ts">
-  import * as m from '$lib/paraglide/messages';
-  import { superForm } from 'sveltekit-superforms';
-  import type { ActionData, PageData } from './$types';
-  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { goto } from '$app/navigation';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
+  import { byName } from '$lib/utils';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -36,7 +38,7 @@
   </LabeledFormInput>
   <LabeledFormInput name="storeTypes_name">
     <select class="select select-bordered" name="storeType" bind:value={$form.storeType}>
-      {#each data.options.storeType as type}
+      {#each data.options.storeType.toSorted((a, b) => byName(a, b, languageTag())) as type}
         <option value={type.Id}>{type.Name}</option>
       {/each}
     </select>

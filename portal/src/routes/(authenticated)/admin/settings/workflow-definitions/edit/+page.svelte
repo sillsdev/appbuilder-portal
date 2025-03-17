@@ -2,6 +2,8 @@
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
+  import { byName, byString } from '$lib/utils';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import { businessFlows } from '../common';
@@ -54,7 +56,7 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_storeType">
     <select class="select select-bordered" name="storeType" bind:value={$superFormData.storeType}>
-      {#each data.storeTypes as storeType}
+      {#each data.storeTypes.toSorted((a, b) => byName(a, b, languageTag())) as storeType}
         <option value={storeType.Id}>{storeType.Name}</option>
       {/each}
     </select>
@@ -99,7 +101,7 @@
       name="workflowScheme"
       bind:value={$superFormData.workflowScheme}
     >
-      {#each data.schemes as scheme}
+      {#each data.schemes.toSorted((a, b) => byString(a.Code, b.Code, languageTag())) as scheme}
         <option value={scheme.Code}>{scheme.Code}</option>
       {/each}
     </select>

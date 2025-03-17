@@ -1,15 +1,18 @@
 <script lang="ts">
   import DateRangePicker from '$lib/components/DateRangePicker.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
+  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
   import type { PrunedProject } from '$lib/projects/common';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
+  import { byName } from '$lib/utils';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-  
+
   interface Props {
     data: PageData;
   }
@@ -37,6 +40,8 @@
       }
     }
   });
+
+  const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2 pt-4">
@@ -50,29 +55,29 @@
     }}
   >
     <div
-      class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center px-4 gap-1 mobile-sizing"
+      class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center px-4 gap-1 {mobileSizing}"
     >
-      <div class="inline-block grow mobile-sizing">
+      <div class="inline-block grow {mobileSizing}">
         <h1 class="py-4 px-2">{m.sidebar_projectDirectory()}</h1>
       </div>
       <div
-        class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 mobile-sizing"
+        class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 {mobileSizing}"
       >
-        <select class="select select-bordered mobile-sizing" bind:value={$form.organizationId}>
-          <option value={null} selected>{m.org_allOrganizations()}</option>
-          {#each data.organizations as organization}
-            <option value={organization.Id}>{organization.Name}</option>
-          {/each}
-        </select>
+        <OrganizationDropdown
+          className={mobileSizing}
+          organizations={data.organizations}
+          bind:value={$form.organizationId}
+          allowNull={true}
+        />
         <SearchBar
           bind:value={$form.search}
-          className="w-full max-w-xs md:w-auto md:max-w-none"
+          className={mobileSizing}
           tooltip={m.directory_searchHelp()}
         />
       </div>
     </div>
-    <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 mobile-sizing">
-      <div class="mobile-sizing">
+    <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}">
+      <div class={mobileSizing}>
         <LanguageCodeTypeahead
           bind:langCode={$form.langCode}
           onLangCodeSelected={() => submit()}
@@ -81,7 +86,7 @@
       </div>
       <select class="select select-bordered max-w-full" bind:value={$form.productDefinitionId}>
         <option value={null} selected>{m.productDefinitions_filterAllProjects()}</option>
-        {#each data.productDefinitions as pD}
+        {#each data.productDefinitions.toSorted((a, b) => byName(a, b, languageTag())) as pD}
           <option value={pD.Id}>{pD.Name}</option>
         {/each}
       </select>
@@ -94,7 +99,7 @@
   {#if projects.length > 0}
     <div class="w-full relative p-4">
       {#each projects as project}
-        <ProjectCard {project} route='directory' />
+        <ProjectCard project={project} route='directory' />
       {/each}
     </div>
   {:else}
@@ -125,13 +130,5 @@
   }
   :global(li[aria-selected='true'] .listElement) {
     background-color: oklch(var(--b2));
-  }
-  .mobile-sizing {
-    @apply w-full max-w-xs;
-  }
-  @media screen(md) {
-    .mobile-sizing {
-      @apply w-auto max-w-none;
-    }
   }
 </style>

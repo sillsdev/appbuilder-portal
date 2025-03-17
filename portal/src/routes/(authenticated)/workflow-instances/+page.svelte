@@ -1,10 +1,13 @@
 <script lang="ts">
   import DateRangePicker from '$lib/components/DateRangePicker.svelte';
+  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { languageTag } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/timeUtils';
+  import { byName } from '$lib/utils';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -36,6 +39,8 @@
       }
     }
   });
+
+  const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 </script>
 
 <div class="w-full">
@@ -49,27 +54,27 @@
     }}
   >
     <div
-      class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center px-4 gap-1 mobile-sizing"
+      class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center px-4 gap-1 {mobileSizing}"
     >
-      <div class="inline-block grow mobile-sizing">
+      <div class="inline-block grow {mobileSizing}">
         <h1 class="py-4 px-2">{m.workflowInstances_title()}</h1>
       </div>
       <div
-        class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 mobile-sizing"
+        class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 {mobileSizing}"
       >
-        <select class="select select-bordered mobile-sizing" bind:value={$form.organizationId}>
-          <option value={null} selected>{m.org_allOrganizations()}</option>
-          {#each data.organizations as organization}
-            <option value={organization.Id}>{organization.Name}</option>
-          {/each}
-        </select>
-        <SearchBar bind:value={$form.search} className="w-full max-w-xs md:w-auto md:max-w-none" />
+        <OrganizationDropdown 
+          className={mobileSizing}
+          organizations={data.organizations}
+          allowNull={true}
+          bind:value={$form.organizationId}
+        />
+        <SearchBar bind:value={$form.search} className={mobileSizing} />
       </div>
     </div>
-    <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 mobile-sizing">
-      <select class="select select-bordered mobile-sizing" bind:value={$form.productDefinitionId}>
+    <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}">
+      <select class="select select-bordered {mobileSizing}" bind:value={$form.productDefinitionId}>
         <option value={null} selected>{m.productDefinitions_filterAllProjects()}</option>
-        {#each data.productDefinitions as pD}
+        {#each data.productDefinitions.toSorted((a, b) => byName(a, b, languageTag())) as pD}
           <option value={pD.Id}>{pD.Name}</option>
         {/each}
       </select>
@@ -85,6 +90,7 @@
         data={instances}
         columns={[
           {
+            // This will not sort by locale... need a good solution...
             id: 'organization',
             header: m.project_side_organization(),
             data: (i) => i.Product.Project.Organization,
@@ -144,14 +150,3 @@
     </div>
   </form>
 </div>
-
-<style lang="postcss">
-  .mobile-sizing {
-    @apply w-full max-w-xs;
-  }
-  @media screen(md) {
-    .mobile-sizing {
-      @apply w-auto max-w-none;
-    }
-  }
-</style>
