@@ -19,7 +19,11 @@ export const load: PageServerLoad = async (event) => {
         }
       }
     },
-    distinct: 'ProductId'
+    distinct: 'ProductId',
+    orderBy: {
+      // most recent first
+      DateUpdated: 'desc'
+    }
   });
   return { tasks };
 };
