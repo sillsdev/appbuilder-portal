@@ -4,6 +4,7 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
+  import Tooltip from '$lib/components/Tooltip.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/timeUtils';
@@ -11,7 +12,6 @@
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-  import Tooltip from '$lib/components/Tooltip.svelte';
 
   interface Props {
     data: PageData;
@@ -63,7 +63,7 @@
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 {mobileSizing}"
       >
-        <OrganizationDropdown 
+        <OrganizationDropdown
           className={mobileSizing}
           organizations={data.organizations}
           allowNull={true}
@@ -123,25 +123,28 @@
         onSort={(field, direction) =>
           form.update((data) => ({ ...data, sort: { field, direction } }))}
       >
-        {#snippet row(r: (typeof instances)[0])}
+        {#snippet row(instance)}
+          {@const project = instance.Product.Project}
+          {@const org = project.Organization}
+          {@const prodDef = instance.Product.ProductDefinition}
           <tr class="cursor-pointer hover:bg-neutral">
             <td class="border">
-              <a class="link" href="/projects/organization/{r.Product.Project.Organization.Id}">
-                {r.Product.Project.Organization.Name}
+              <a class="link" href="/projects/organization/{org.Id}">
+                {org.Name}
               </a>
             </td>
             <td class="border">
-              <a class="link" href="/projects/{r.Product.Project.Id}">{r.Product.Project.Name}</a>
+              <a class="link" href="/projects/{project.Id}">{project.Name}</a>
             </td>
             <td class="border">
-              <a class="link" href="/workflow-instances/{r.Product.Id}">
-                {r.Product.ProductDefinition.Name}
+              <a class="link" href="/workflow-instances/{instance.Product.Id}">
+                {prodDef.Name}
               </a>
             </td>
-            <td class="border">{r.State}</td>
+            <td class="border">{instance.State}</td>
             <td class="border">
-              <Tooltip className="text-left" tip={r.DateUpdated?.toLocaleString(langTag)}>
-                {getRelativeTime(r.DateUpdated)}
+              <Tooltip className="text-left" tip={instance.DateUpdated?.toLocaleString(langTag)}>
+                {getRelativeTime(instance.DateUpdated)}
               </Tooltip>
             </td>
           </tr>

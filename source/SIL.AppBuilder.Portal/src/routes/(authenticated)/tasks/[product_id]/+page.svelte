@@ -241,23 +241,23 @@
           }
         ]}
       >
-        {#snippet row(r: (typeof data.files)[0])}
+        {#snippet row(file)}
           <tr
             class="cursor-pointer hover:bg-neutral"
             onclick={() => {
-              if (r.Url) {
-                window.open(r.Url, '_blank')?.focus();
+              if (file.Url) {
+                window.open(file.Url, '_blank')?.focus();
               }
             }}
           >
             <td class="border">
-              {r.ArtifactType}
+              {file.ArtifactType}
             </td>
             <td class="border">
-              {bytesToHumanSize(r.FileSize)}
+              {bytesToHumanSize(file.FileSize)}
             </td>
             <td class="border">
-              <a class="link" href={r.Url} target="_blank">{r.Url}</a>
+              <a class="link" href={file.Url} target="_blank">{file.Url}</a>
             </td>
           </tr>
         {/snippet}
@@ -284,13 +284,13 @@
           }
         ]}
       >
-        {#snippet row(r: (typeof data.reviewers)[0])}
+        {#snippet row(reviewer)}
           <tr class="cursor-pointer hover:bg-neutral">
             <td class="border">
-              {r.Name}
+              {reviewer.Name}
             </td>
             <td class="border">
-              {r.Email}
+              {reviewer.Email}
             </td>
           </tr>
         {/snippet}
