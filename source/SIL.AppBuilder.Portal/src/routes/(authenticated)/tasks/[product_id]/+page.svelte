@@ -54,7 +54,7 @@
     {/if}
     <LabeledFormInput name="project_products_transitions_comment">
       <textarea
-        class="textarea textarea-bordered h-24"
+        class="textarea textarea-bordered h-24 w-full"
         name="comment"
         bind:value={$form.comment}
       ></textarea>
