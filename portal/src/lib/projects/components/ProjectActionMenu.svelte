@@ -60,13 +60,14 @@
     class="btn btn-ghost max-h-fit min-h-fit p-1 inline"
     onclick={() => {
       $form.projectId = project.Id;
+      $form.orgId = orgId;
     }}
   >
     <IconContainer icon="charm:menu-kebab" width={20} />
   </summary>
   <div class="dropdown-content p-1 bg-base-200 z-10 rounded-md min-w-36 w-auto shadow-lg">
     <form method="POST" action="?/{endpoint}" use:enhance>
-      <input type="hidden" name="singleId" value={project.Id} />
+      <input type="hidden" name="projectId" value={project.Id} />
       <input type="hidden" name="orgId" value={orgId} />
       <ul class="menu menu-compact overflow-hidden rounded-md">
         {#if allowActions && canArchive(project, page.data.session, parseInt(page.params.id))}
