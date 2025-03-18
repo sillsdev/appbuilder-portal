@@ -89,7 +89,7 @@ export async function createMany(projectData: RequirePrimitive<Prisma.ProjectsCr
     await Promise.all(
       projectData.map((pd) => validateProjectBase(pd.OrganizationId, pd.GroupId, pd.OwnerId))
     )
-  ).reduce((p, c) => p && c, true);
+  ).every((p) => p);
 
   try {
     if (valid) {
