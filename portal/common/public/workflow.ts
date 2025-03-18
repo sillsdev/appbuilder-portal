@@ -116,7 +116,7 @@ export function artifactLists(listName: ArtifactLists) {
   }
 }
 
-export type Environment = { [key: ENVKeys | string]: string };
+export type Environment = Record<ENVKeys | string, string>;
 
 export enum ENVKeys {
   // Set by Workflow
