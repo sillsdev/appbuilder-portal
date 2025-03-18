@@ -33,22 +33,24 @@
           </div>
         </label>
       </div>
-      <LabeledFormInput name="org_buildEngineUrl">
-        <input
-          type="text"
-          name="buildEngineUrl"
-          class="input w-full input-bordered"
-          bind:value={$superFormData.buildEngineUrl}
-        />
-      </LabeledFormInput>
-      <LabeledFormInput name="org_buildEngineApiAccessToken">
-        <input
-          type="text"
-          name="buildEngineApiAccessToken"
-          class="input w-full input-bordered"
-          bind:value={$superFormData.buildEngineApiAccessToken}
-        />
-      </LabeledFormInput>
+      {#if !$superFormData.useDefaultBuildEngine}
+        <LabeledFormInput name="org_buildEngineUrl">
+          <input
+            type="text"
+            name="buildEngineUrl"
+            class="input w-full input-bordered"
+            bind:value={$superFormData.buildEngineUrl}
+          />
+        </LabeledFormInput>
+        <LabeledFormInput name="org_buildEngineApiAccessToken">
+          <input
+            type="text"
+            name="buildEngineApiAccessToken"
+            class="input w-full input-bordered"
+            bind:value={$superFormData.buildEngineApiAccessToken}
+          />
+        </LabeledFormInput>
+      {/if}
     </div>
   </div>
   <div class="my-4">
