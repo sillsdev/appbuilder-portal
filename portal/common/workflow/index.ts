@@ -253,15 +253,12 @@ export class Workflow {
             };
           }),
           inCount: states
-            .map(([k, v]) => {
+            .flatMap(([k, v]) => {
               return Workflow.filterTransitions(v.on, this.config).map((e) => {
                 // treat no target on transition as self target
                 return { from: k, to: Workflow.targetStringFromEvent(e[0]) || k };
               });
             })
-            .reduce((p, c) => {
-              return p.concat(c);
-            }, [])
             .filter((v) => k === v.to).length,
           start: k === WorkflowState.Start,
           final: v.type === 'final'
