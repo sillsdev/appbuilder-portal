@@ -68,14 +68,17 @@ export async function checkStatuses(job: Job<BullMQ.System.CheckStatuses>): Prom
         url: s.BuildEngineUrl,
         token: s.BuildEngineApiAccessToken
       });
-      await DatabaseWrites.systemStatuses.update({
-        where: {
-          Id: s.Id
-        },
-        data: {
-          SystemAvailable: res.status === 200
-        }
-      });
+      const available = res.status === 200;
+      if (s.SystemAvailable !== available) {
+        await DatabaseWrites.systemStatuses.update({
+          where: {
+            Id: s.Id
+          },
+          data: {
+            SystemAvailable: available
+          }
+        });
+      }
       return {
         url: s.BuildEngineUrl,
         // return first 4 characters of token for differentiation purposes
