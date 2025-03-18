@@ -26,17 +26,7 @@
   });
 
   let positions: Record<string, Springy.Physics.Vector> = $state(
-    data.machine
-      .map((s) => {
-        return { key: s.label, value: new Springy.Physics.Vector(0.0, 0.0) };
-      })
-      .reduce(
-        (p, c) => {
-          p[c.key] = c.value;
-          return p;
-        },
-        {} as Record<string, Springy.Physics.Vector>
-      )
+    Object.fromEntries(data.machine.map((s) => [s.label, new Springy.Physics.Vector(0.0, 0.0)]))
   );
 
   let ready = $state(false);
@@ -45,11 +35,9 @@
     const graph = new Springy.Graph();
     graph.loadJSON({
       nodes: data.machine.map((s) => s.label),
-      edges: data.machine
-        .map((s) => {
-          return s.connections.map((c) => [s.label, c.target]);
-        })
-        .reduce((p, c) => p.concat(c), [])
+      edges: data.machine.flatMap((s) => {
+        return s.connections.map((c) => [s.label, c.target]);
+      })
     });
     const bounds = Math.ceil(Math.sqrt(graph.nodes.length));
     graph.addNodeData('Start', {
