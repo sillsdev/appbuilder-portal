@@ -1,6 +1,7 @@
 <script lang="ts">
   import { enhance as svk_enhance } from '$app/forms';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
@@ -66,13 +67,12 @@
         {@const langTag = languageTag()}
         <label class="flex flex-wrap items-center gap-x-2 {mobileSizing}">
           <span class="label-text">{m.users_organization_filter()}:</span>
-          <!-- TODO: convert after fix/user-page-org-select -->
-          <select class="select select-bordered grow" bind:value={$form.organizationId}>
-            <option value={null}>{m.org_allOrganizations()}</option>
-            {#each data.organizations as org}
-              <option value={org.Id}>{org.Name}</option>
-            {/each}
-          </select>
+          <OrganizationDropdown
+            organizations={data.organizations}
+            bind:value={$form.organizationId}
+            className="grow"
+            allowNull={true}
+          />
         </label>
       {/if}
       <SearchBar bind:value={$form.search} className={mobileSizing} />
