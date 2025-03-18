@@ -92,9 +92,9 @@ export async function getWorkflowParameters(
       environment['BUILD_SHARE_APP_LINK'] = '1';
     }
   }
-
-  const result: { [key: string]: string } = {};
-  const scoped: { [key: string]: string } = {};
+  
+  const result: Record<string, string> = {};
+  const scoped: Record<string, string> = {};
   Object.entries(JSON.parse(instance.WorkflowDefinition.Properties ?? '{}')).forEach(([k, v]) => {
     const strValue = JSON.stringify(v);
     let strKey = k;

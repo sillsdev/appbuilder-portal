@@ -67,7 +67,7 @@ export namespace Build {
     type: JobType.Build_Product;
     productId: string;
     defaultTargets: string;
-    environment: { [key: string]: string };
+    environment: Record<string, string>;
   }
   export interface Check {
     type: JobType.Build_Check;
@@ -127,7 +127,7 @@ export namespace Publish {
     productId: string;
     defaultChannel: Channels;
     defaultTargets: string;
-    environment: { [key: string]: string };
+    environment: Record<string, string>;
   }
 
   export interface Check {
