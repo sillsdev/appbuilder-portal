@@ -12,7 +12,7 @@
     search?: string;
     inputElement?: HTMLInputElement;
     custom?: Snippet;
-    listElement?: Snippet<[any]>;
+    listElement?: Snippet<[T]>;
     onItemClicked?: (item: T) => void;
   }
 
@@ -86,7 +86,7 @@
           onmouseover={() => (selectedIndex = i)}
           onfocus={() => (selectedIndex = i)}
         >
-          {@render listElement?.({ item })}
+          {@render listElement?.(item)}
         </li>
       {/each}
     </ul>

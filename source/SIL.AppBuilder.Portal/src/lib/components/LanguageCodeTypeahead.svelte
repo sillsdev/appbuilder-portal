@@ -27,28 +27,38 @@
     ignoreFieldNorm: true
     // minMatchCharLength: 2
   });
+
+  function search(searchValue: string) {
+    return fuzzySearch.search(searchValue);
+  }
+  type SearchValue = ReturnType<typeof search>[0];
+
   // This could possibly be converted to an iterator/generator function?
-  function parseMatches(value: string, matchList: readonly FuseResultMatch[], hasMultiCharMatch: boolean) {
+  function parseMatches(
+    value: string,
+    matchList: readonly FuseResultMatch[],
+    hasMultiCharMatch: boolean
+  ) {
     let i = 0;
     const ret: {
       /**highlighted*/
-      h: boolean,
+      h: boolean;
       /**value*/
-      v: string
+      v: string;
     }[] = [];
     for (let match of matchList) {
       for (let index of match.indices) {
         // Only show short matches (1-2 chars) if there are no longer ones
         if (index[1] - index[0] + 1 < 3 && hasMultiCharMatch) {
-          ret.push({h: false, v: value.substring(i, index[1] + 1)});
+          ret.push({ h: false, v: value.substring(i, index[1] + 1) });
           i = index[1] + 1;
           continue;
         }
-        ret.push({ h: false, v: value.substring(i, index[0])});
-        ret.push({ h: true, v: value.substring(index[0], index[1] + 1)});
+        ret.push({ h: false, v: value.substring(i, index[0]) });
+        ret.push({ h: true, v: value.substring(index[0], index[1] + 1) });
         i = index[1] + 1;
       }
-      ret.push({ h: false, v: value.substring(i)});
+      ret.push({ h: false, v: value.substring(i) });
     }
     return ret;
   }
@@ -70,11 +80,11 @@
 </script>
 
 {#snippet colorValueForKeyMatch(
-  obj: Record<string, string>,
-  key: string,
+  searchItem: SearchValue['item'],
+  key: keyof SearchValue['item'],
   matches?: readonly FuseResultMatch[]
 )}
-  {@const value = obj[key]}
+  {@const value = searchItem[key]}
   {#if !matches}
     {value}
   {:else}
@@ -87,8 +97,9 @@
         // first three chars of a string) so we use +1 a lot to get the length of the match
         match.indices.some(([x, y]) => y - x + 1 > 2)
       )}
-      <div><!--ret-->
-        {#each parseMatches(value, matchList, hasMultiCharMatch) as match}
+      <div>
+        <!--ret-->
+        {#each parseMatches(value!, matchList, hasMultiCharMatch) as match}
           {#if match.h}
             <span class="bg-yellow-300 dark:bg-accent">{match.v}</span>
           {:else}
@@ -102,7 +113,7 @@
 
 <TypeaheadInput
   inputElProps={{ placeholder: m.project_languageCode() }}
-  getList={(search) => fuzzySearch.search(search).slice(0, 5)}
+  getList={(searchValue) => search(searchValue).slice(0, 5)}
   classes="pr-20 {inputClasses}"
   bind:search={langCode}
   onItemClicked={(item) => {
@@ -116,34 +127,37 @@
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   {#snippet custom()}
-    <span class="absolute right-4 italic [line-height:3rem]" onclick={() => typeaheadInput?.focus()}>
+    <span
+      class="absolute right-4 italic [line-height:3rem]"
+      onclick={() => typeaheadInput?.focus()}
+    >
       {langtagList.find((l) => l.tag === langCode)?.name ?? ''}
     </span>
   {/snippet}
-  {#snippet listElement({ item })}
+  {#snippet listElement(res)}
     <div
       class="w-96 p-2 border border-b-0 border-neutral listElement cursor-pointer flex flex-row place-content-between bg-base-100"
     >
       <!-- Debug -->
       <!-- <span class="absolute [right:-10rem] bg-black">{item.score}</span> -->
       <span class="mr-4">
-        {#if item.item.localname}
+        {#if res.item.localname}
           <b>
-            {@render colorValueForKeyMatch(item.item, 'localname', item.matches)}
+            {@render colorValueForKeyMatch(res.item, 'localname', res.matches)}
           </b>
           <br />
           <span class="text-sm">
-            {@render colorValueForKeyMatch(item.item, 'name', item.matches)}
+            {@render colorValueForKeyMatch(res.item, 'name', res.matches)}
           </span>
         {:else}
           <b>
-            {@render colorValueForKeyMatch(item.item, 'name', item.matches)}
+            {@render colorValueForKeyMatch(res.item, 'name', res.matches)}
           </b>
         {/if}
       </span>
       <span class="w-16">
         <span>
-          {@render colorValueForKeyMatch(item.item, 'tag', item.matches)}
+          {@render colorValueForKeyMatch(res.item, 'tag', res.matches)}
         </span>
         <br />
         <span class="text-base-content text-opacity-75 text-sm">{m.localePicker_code()}</span>
