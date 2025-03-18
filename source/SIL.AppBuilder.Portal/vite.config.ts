@@ -2,7 +2,8 @@ import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { spawn, type ChildProcessWithoutNullStreams } from 'child_process';
-import { stat, writeFile } from 'fs/promises';
+import { stat } from 'fs/promises';
+import { refreshLangTags } from 'sil.appbuilder.portal.common';
 import {
   createEmitAndSemanticDiagnosticsBuilderProgram,
   createWatchCompilerHost,
@@ -34,26 +35,7 @@ export default defineConfig({
           /* empty */
         }
         if (needToRefresh) {
-          const langtags: {
-            tag: string;
-            full: string;
-            name: string;
-            localname: string;
-            code: string;
-            regions: string[];
-          }[] = await (await fetch('https://ldml.api.sil.org/langtags.json')).json();
-          const parsed = langtags
-            .filter((tag) => !tag.tag.startsWith('_'))
-            .map(({ tag, full, name, localname, code, regions }) => ({
-              tag,
-              full,
-              name,
-              localname,
-              code,
-              regions
-            }));
-          const output = JSON.stringify(parsed);
-          return await writeFile('static/langtags.json', output);
+          return await refreshLangTags('static/languages');
         }
       }
     },

@@ -1,7 +1,7 @@
 import { Job } from 'bullmq';
-import { stat, writeFile } from 'fs/promises';
+import { stat } from 'fs/promises';
 import { join } from 'path';
-import { BuildEngine, BullMQ, DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { BuildEngine, BullMQ, DatabaseWrites, refreshLangTags as fetchAndProcessLangTags, prisma } from 'sil.appbuilder.portal.common';
 
 export async function checkSystemStatuses(
   job: Job<BullMQ.Recurring.CheckSystemStatuses>
@@ -110,10 +110,10 @@ export async function checkSystemStatuses(
 export async function refreshLangTags(
   job: Job<BullMQ.Recurring.RefreshLangTags>
 ): Promise<unknown> {
-  const path =
-    process.env.NODE_ENV === 'development'
-      ? join(import.meta.dirname, '../../static/langtags.json')
-      : '/app/build/client/langtags.json';
+  const localDir = process.env.NODE_ENV === 'development'
+  ? join(import.meta.dirname, '../../static/languages')
+  : '/app/build/client/languages';
+  const path = join(localDir, 'langtags.json');
   const ret = {};
   try {
     const mtime = (await stat(path)).mtimeMs;
@@ -142,28 +142,8 @@ export async function refreshLangTags(
   job.updateProgress(25);
 
   try {
-    const langtags: {
-      tag: string;
-      full: string;
-      name: string;
-      localname: string;
-      code: string;
-      regions: string[];
-    }[] = await fetch('https://ldml.api.sil.org/langtags.json').then((f) => f.json());
-    job.updateProgress(50);
-    const parsed = langtags
-      .filter((tag) => !tag.tag.startsWith('_'))
-      .map(({ tag, full, name, localname, code, regions }) => ({
-        tag,
-        full,
-        name,
-        localname,
-        code,
-        regions
-      }));
-    job.updateProgress(75);
-    await writeFile(path, JSON.stringify(parsed));
-    ret['langtags'] = parsed.length;
+    const langtags = await fetchAndProcessLangTags(localDir);
+    ret['langtags'] = langtags.length;
     job.updateProgress(100);
   } catch (err) {
     job.log(err);
