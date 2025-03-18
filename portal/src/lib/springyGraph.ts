@@ -58,10 +58,10 @@ export namespace Springy {
   };
 
   export class Graph {
-    nodeSet: { [key: string]: Node };
+    nodeSet: Record<string, Node>;
     nodes: Node[];
     edges: Edge[];
-    adjacency: { [key: string]: { [key: string]: Edge[] } };
+    adjacency: Record<string, Record<string, Edge[]>>;
 
     nextEdgeId: number;
     eventListeners: any[];
@@ -268,7 +268,7 @@ export namespace Springy {
 
     /** Merge a list of nodes and edges into the current graph. eg. */
     merge(data: { nodes: Node[]; edges: Edge[] }) {
-      const nodes: { [key: string]: Node } = {};
+      const nodes: Record<string, Node> = {};
       data.nodes.forEach((n) => {
         nodes[n.id] = this.addNode({ id: n.id, data: n.data });
       });
@@ -413,9 +413,9 @@ export namespace Springy {
     _started: boolean = false;
     _stop: boolean = false;
     /** keep track of points associated with nodes */
-    nodePoints: { [key: string]: Physics.Point };
+    nodePoints: Record<string, Physics.Point>;
     /** keep track of springs associated with edges */
-    edgeSprings: { [key: number]: Physics.Spring };
+    edgeSprings: Record<number, Physics.Spring>;
     /** spring stiffness constant */
     stiffness: number;
 

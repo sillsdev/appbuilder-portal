@@ -103,7 +103,7 @@ type BuildCommon = {
   targets: string;
 };
 export type BuildConfig = BuildCommon & {
-  environment: { [key: string]: string };
+  environment: Record<string, string>;
 };
 export type BuildResponse = SuccessResponse &
   BuildCommon & {
@@ -112,7 +112,7 @@ export type BuildResponse = SuccessResponse &
     status: CommonStatus | BuildOrReleaseStatus;
     result: CommonResult | 'ABORTED';
     error: string | null;
-    artifacts: { [key: string]: string };
+    artifacts: Record<string, string>;
   };
 
 export type Channels = 'production' | 'beta' | 'alpha';
@@ -122,7 +122,7 @@ type ReleaseCommon = {
   targets: string;
 };
 export type ReleaseConfig = ReleaseCommon & {
-  environment: { [key: string]: string };
+  environment: Record<string, string>;
 };
 export type ReleaseResponse = SuccessResponse &
   ReleaseCommon & {
@@ -132,5 +132,5 @@ export type ReleaseResponse = SuccessResponse &
     result: CommonResult | 'EXCEPTION';
     error: string | null;
     consoleText: string;
-    artifacts: { [key: string]: string };
+    artifacts: Record<string, string>;
   };
