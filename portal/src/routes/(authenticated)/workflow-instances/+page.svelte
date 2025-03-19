@@ -4,6 +4,7 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
+  import Tooltip from '$lib/components/Tooltip.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/timeUtils';
@@ -62,7 +63,7 @@
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 {mobileSizing}"
       >
-        <OrganizationDropdown 
+        <OrganizationDropdown
           className={mobileSizing}
           organizations={data.organizations}
           allowNull={true}
@@ -86,6 +87,7 @@
   </form>
   <div class="m-4 relative mt-1 w-full overflow-x-auto">
     {#if instances.length > 0}
+      {@const langTag = languageTag()}
       <SortTable
         data={instances}
         columns={[
@@ -93,45 +95,61 @@
             // This will not sort by locale... need a good solution...
             id: 'organization',
             header: m.project_side_organization(),
-            data: (i) => i.Product.Project.Organization,
-            render: (o) => `<a class="link" href="/projects/organization/${o.Id}">${o.Name}</a>`,
-            sortable: true
+            compare: () => 0
           },
           {
             id: 'project',
             header: m.project_title(),
-            data: (i) => i.Product.Project,
-            render: (c) => `<a class="link" href="/projects/${c.Id}">${c.Name}</a>`,
-            sortable: true
+            compare: () => 0
           },
           {
-            id: 'product',
+            id: 'definition',
             header: m.tasks_product(),
-            data: (i) => i.Product,
-            render: (c) =>
-              `<a class="link" href="/workflow-instances/${c.Id}">${c.ProductDefinition.Name}</a>`,
-            sortable: true
+            compare: () => 0
           },
           {
             id: 'state',
             header: m.project_products_transitions_state(),
-            data: (i) => i.State,
-            sortable: true
+            compare: () => 0
           },
           {
             id: 'date',
             header: m.common_updated(),
-            data: (i) => i.DateUpdated,
-            // TODO: tooltip will need to wait until Svelte 5
-            render: (c) => `${getRelativeTime(c)}`,
-            sortable: true
+            compare: () => 0
           }
         ]}
         serverSide={true}
         className="max-h-full"
         onSort={(field, direction) =>
           form.update((data) => ({ ...data, sort: { field, direction } }))}
-      />
+      >
+        {#snippet row(instance)}
+          {@const project = instance.Product.Project}
+          {@const org = project.Organization}
+          {@const prodDef = instance.Product.ProductDefinition}
+          <tr class="cursor-pointer hover:bg-neutral">
+            <td class="border">
+              <a class="link" href="/projects/organization/{org.Id}">
+                {org.Name}
+              </a>
+            </td>
+            <td class="border">
+              <a class="link" href="/projects/{project.Id}">{project.Name}</a>
+            </td>
+            <td class="border">
+              <a class="link" href="/workflow-instances/{instance.Product.Id}">
+                {prodDef.Name}
+              </a>
+            </td>
+            <td class="border">{instance.State}</td>
+            <td class="border">
+              <Tooltip className="text-left" tip={instance.DateUpdated?.toLocaleString(langTag)}>
+                {getRelativeTime(instance.DateUpdated)}
+              </Tooltip>
+            </td>
+          </tr>
+        {/snippet}
+      </SortTable>
     {:else}
       <p class="m-8">{m.workflowInstances_empty()}</p>
     {/if}
