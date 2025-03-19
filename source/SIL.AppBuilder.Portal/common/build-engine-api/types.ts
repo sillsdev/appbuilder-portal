@@ -9,6 +9,12 @@ export type Auth =
       token: string;
     };
 
+export type RequestOpts = {
+  method?: string;
+  body?: Record<string, unknown>;
+  checkStatusFirst?: boolean;
+};
+
 export type Response =
   | ErrorResponse
   | ProjectResponse

@@ -1,12 +1,8 @@
 import prisma from '../prisma.js';
 import * as Types from './types.js';
 
-export async function request(
-  resource: string,
-  auth: Types.Auth,
-  method: string = 'GET',
-  body?: unknown
-) {
+export async function request(resource: string, auth: Types.Auth, opts?: Types.RequestOpts) {
+  const { method = 'GET', body, checkStatusFirst = true } = opts ?? {};
   try {
     const { url, token } = auth.type === 'query' ? await getURLandToken(auth.organizationId) : auth;
     const check = await prisma.systemStatuses.findFirst({
@@ -18,7 +14,7 @@ export async function request(
         SystemAvailable: true
       }
     });
-    if (!check?.SystemAvailable && resource !== 'system/check') {
+    if (!check?.SystemAvailable && checkStatusFirst) {
       return {
         ok: false,
         status: 500,
@@ -88,7 +84,7 @@ export async function getURLandToken(organizationId: number) {
 }
 
 export async function systemCheck(auth: Types.Auth) {
-  const res = await request('system/check', auth);
+  const res = await request('system/check', auth, { checkStatusFirst: false });
   return res.ok
     ? ({ status: res.status } as Types.StatusResponse)
     : ((await res.json) as Types.ErrorResponse);
@@ -98,7 +94,7 @@ export async function createProject(
   auth: Types.Auth,
   project: Types.ProjectConfig
 ): Promise<Types.ProjectResponse | Types.ErrorResponse> {
-  const res = await request('project', auth, 'POST', project);
+  const res = await request('project', auth, { method: 'POST', body: project });
   return res.ok
     ? ((await res.json) as Types.ProjectResponse)
     : ((await res.json) as Types.ErrorResponse);
@@ -124,7 +120,7 @@ export async function deleteProject(
   auth: Types.Auth,
   projectId: number
 ): Promise<Types.DeleteResponse | Types.ErrorResponse> {
-  const res = await request(`project/${projectId}`, auth, 'DELETE');
+  const res = await request(`project/${projectId}`, auth, { method: 'DELETE' });
   return res.ok
     ? { responseType: 'delete', status: res.status }
     : ((await res.json) as Types.ErrorResponse);
@@ -135,7 +131,7 @@ export async function getProjectAccessToken(
   projectId: number,
   token: Types.TokenConfig
 ): Promise<Types.TokenResponse | Types.ErrorResponse> {
-  const res = await request(`project/${projectId}/token`, auth, 'POST', token);
+  const res = await request(`project/${projectId}/token`, auth, { method: 'POST', body: token });
   return res.ok
     ? ((await res.json) as Types.TokenResponse)
     : ((await res.json) as Types.ErrorResponse);
@@ -145,7 +141,7 @@ export async function createJob(
   auth: Types.Auth,
   job: Types.JobConfig
 ): Promise<Types.JobResponse | Types.ErrorResponse> {
-  const res = await request('job', auth, 'POST', job);
+  const res = await request('job', auth, { method: 'POST', body: job });
   return res.ok
     ? ((await res.json) as Types.JobResponse)
     : ((await res.json) as Types.ErrorResponse);
@@ -171,7 +167,7 @@ export async function deleteJob(
   auth: Types.Auth,
   jobId: number
 ): Promise<Types.DeleteResponse | Types.ErrorResponse> {
-  const res = await request(`job/${jobId}`, auth, 'DELETE');
+  const res = await request(`job/${jobId}`, auth, { method: 'DELETE' });
   return res.ok
     ? { responseType: 'delete', status: res.status }
     : ((await res.json) as Types.ErrorResponse);
@@ -182,7 +178,7 @@ export async function createBuild(
   jobId: number,
   build: Types.BuildConfig
 ): Promise<Types.BuildResponse | Types.ErrorResponse> {
-  const res = await request(`job/${jobId}/build`, auth, 'POST', build);
+  const res = await request(`job/${jobId}/build`, auth, { method: 'POST', body: build });
   return res.ok
     ? ((await res.json) as Types.BuildResponse)
     : ((await res.json) as Types.ErrorResponse);
@@ -211,7 +207,7 @@ export async function deleteBuild(
   jobId: number,
   buildId: number
 ): Promise<Types.DeleteResponse | Types.ErrorResponse> {
-  const res = await request(`job/${jobId}/build/${buildId}`, auth, 'DELETE');
+  const res = await request(`job/${jobId}/build/${buildId}`, auth, { method: 'DELETE' });
   return res.ok
     ? { responseType: 'delete', status: res.status }
     : ((await res.json) as Types.ErrorResponse);
@@ -223,7 +219,10 @@ export async function createRelease(
   buildId: number,
   release: Types.ReleaseConfig
 ): Promise<Types.ReleaseResponse | Types.ErrorResponse> {
-  const res = await request(`job/${jobId}/build/${buildId}`, auth, 'PUT', release);
+  const res = await request(`job/${jobId}/build/${buildId}`, auth, {
+    method: 'PUT',
+    body: release
+  });
   return res.ok
     ? ((await res.json) as Types.ReleaseResponse)
     : ((await res.json) as Types.ErrorResponse);
@@ -245,7 +244,9 @@ export async function deleteRelease(
   buildId: number,
   releaseId: number
 ): Promise<Types.DeleteResponse | Types.ErrorResponse> {
-  const res = await request(`job/${jobId}/build/${buildId}/release/${releaseId}`, auth, 'DELETE');
+  const res = await request(`job/${jobId}/build/${buildId}/release/${releaseId}`, auth, {
+    method: 'DELETE'
+  });
   return res.ok
     ? { responseType: 'delete', status: res.status }
     : ((await res.json) as Types.ErrorResponse);
