@@ -271,7 +271,6 @@ async function cleanupLDMLJSON(inputName: string, outputName: string, logger: Lo
   let data = JSON.parse(raw);
 
   let ldn = data.ldml.localeDisplayNames;
-  console.log(JSON.stringify(ldn.languages.language, null, 4));
   let output = {
     ...data.ldml,
     localeDisplayNames: {
