@@ -57,22 +57,41 @@
       bind:value={$superFormData.websiteURL}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_organizations_buildEngineURL">
-    <input
-      name="buildEngineURL"
-      class="input input-bordered w-full"
-      type="text"
-      bind:value={$superFormData.buildEngineURL}
-    />
-  </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_organizations_accessToken">
-    <input
-      name="buildEngineAccessToken"
-      class="input input-bordered w-full"
-      type="text"
-      bind:value={$superFormData.buildEngineAccessToken}
-    />
-  </LabeledFormInput>
+  <div>
+    <label>
+      <div class="label flex flex-row">
+        <div class="flex flex-col">
+          <span class="">
+            {m.org_useDefaultBuildEngineTitle()}
+          </span>
+        </div>
+        <input
+          name="useDefaultBuildEngine"
+          class="toggle toggle-accent"
+          type="checkbox"
+          bind:checked={$superFormData.useDefaultBuildEngine}
+        />
+      </div>
+    </label>
+  </div>
+  {#if !$superFormData.useDefaultBuildEngine}
+    <LabeledFormInput name="admin_settings_organizations_buildEngineURL">
+      <input
+        type="text"
+        name="buildEngineURL"
+        class="input input-bordered w-full"
+        bind:value={$superFormData.buildEngineURL}
+      />
+    </LabeledFormInput>
+    <LabeledFormInput name="admin_settings_organizations_accessToken">
+      <input
+        type="text"
+        name="buildEngineAccessToken"
+        class="input input-bordered w-full"
+        bind:value={$superFormData.buildEngineAccessToken}
+      />
+    </LabeledFormInput>
+  {/if}
   <LabeledFormInput name="admin_settings_organizations_logoURL">
     <input
       name="logoURL"

@@ -43,22 +43,41 @@
       bind:value={$form.websiteURL}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_organizations_buildEngineURL">
-    <input
-      type="text"
-      name="buildEngineURL"
-      class="input input-bordered w-full"
-      bind:value={$form.buildEngineURL}
-    />
-  </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_organizations_accessToken">
-    <input
-      type="text"
-      name="buildEngineAccessToken"
-      class="input input-bordered w-full"
-      bind:value={$form.buildEngineAccessToken}
-    />
-  </LabeledFormInput>
+  <div>
+    <label>
+      <div class="label flex flex-row">
+        <div class="flex flex-col">
+          <span class="">
+            {m.org_useDefaultBuildEngineTitle()}
+          </span>
+        </div>
+        <input
+          name="useDefaultBuildEngine"
+          class="toggle toggle-accent"
+          type="checkbox"
+          bind:checked={$form.useDefaultBuildEngine}
+        />
+      </div>
+    </label>
+  </div>
+  {#if !$form.useDefaultBuildEngine}
+    <LabeledFormInput name="admin_settings_organizations_buildEngineURL">
+      <input
+        type="text"
+        name="buildEngineURL"
+        class="input input-bordered w-full"
+        bind:value={$form.buildEngineURL}
+      />
+    </LabeledFormInput>
+    <LabeledFormInput name="admin_settings_organizations_accessToken">
+      <input
+        type="text"
+        name="buildEngineAccessToken"
+        class="input input-bordered w-full"
+        bind:value={$form.buildEngineAccessToken}
+      />
+    </LabeledFormInput>
+  {/if}
   <LabeledFormInput name="admin_settings_organizations_logoURL">
     <input
       type="text"
