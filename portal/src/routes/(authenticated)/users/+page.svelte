@@ -1,6 +1,7 @@
 <script lang="ts">
   import { enhance as svk_enhance } from '$app/forms';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
@@ -16,12 +17,16 @@
 
   let { data }: Props = $props();
 
+  const orgMap = new Map(data.organizations.map(({ Id, Name }) => [Id, Name]));
+  const groupMap = new Map(data.groups.map(({ Id, Name }) => [Id, Name]));
+
   let users = $state(data.users);
   let count = $state(data.userCount);
 
   const { form, enhance, submit } = superForm(data.form, {
     dataType: 'json',
     resetForm: false,
+    invalidateAll: false,
     onChange(event) {
       if (!event.paths.includes('search')) {
         submit();
@@ -58,17 +63,16 @@
       use:enhance
       class="flex flex-row flex-wrap place-content-end items-center p-2 gap-1"
     >
-      {#if data.organizationCount > 1}
+      {#if data.organizations.length > 1}
         {@const langTag = languageTag()}
         <label class="flex flex-wrap items-center gap-x-2 {mobileSizing}">
           <span class="label-text">{m.users_organization_filter()}:</span>
-          <!-- TODO: convert after fix/user-page-org-select -->
-          <select class="select select-bordered grow" name="org" bind:value={$form.organizationId}>
-            <option value={null}>{m.org_allOrganizations()}</option>
-            {#each Object.entries(data.organizations).sort( (a, b) => byString(a[1], b[1], langTag) ) as [Id, Name]}
-              <option value={Id}>{Name}</option>
-            {/each}
-          </select>
+          <OrganizationDropdown
+            organizations={data.organizations}
+            bind:value={$form.organizationId}
+            className="grow"
+            allowNull={true}
+          />
         </label>
       {/if}
       <SearchBar bind:value={$form.search} className={mobileSizing} />
@@ -87,8 +91,8 @@
       <tbody>
         {#each users as user}
           {@const langTag = languageTag()}
-          {@const userOrgs = user.O.map((o) => ({ ...o, Name: data.organizations[o.I] })).sort(
-            (a, b) => byName(a, b, langTag)
+          {@const userOrgs = user.O.map((o) => ({ ...o, Name: orgMap.get(o.I) })).sort((a, b) =>
+            byName(a, b, langTag)
           )}
           <tr class="align-top">
             <td class="p-2">
@@ -106,7 +110,7 @@
                 <div class="p-1">
                   <span>
                     <b>
-                      {org.Name ?? ''}
+                      {orgMap.get(org.I)}
                     </b>
                   </span>
                   <br />
@@ -130,11 +134,11 @@
                 <div class="p-1">
                   <span>
                     <b>
-                      {org.Name ?? ''}
+                      {orgMap.get(org.I)}
                     </b>
                   </span>
                   <br />
-                  {org.G.map((g) => data.groups[g])
+                  {org.G.map((g) => groupMap.get(g))
                     .sort((a, b) => byString(a, b, langTag))
                     .join(', ') || m.common_none()}
                 </div>

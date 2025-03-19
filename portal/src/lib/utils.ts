@@ -17,7 +17,7 @@ export function bytesToHumanSize(bytes: bigint | null) {
 }
 
 interface NamedEntity {
-  Name: string | null;
+  Name: string | null | undefined;
 }
 
 export function byName(

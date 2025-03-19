@@ -16,7 +16,7 @@ const lockSchema = v.object({
   active: v.boolean()
 });
 
-const userSchema = v.object({
+const searchFilterSchema = v.object({
   page: paginateSchema,
   search: v.string(),
   organizationId: v.nullable(idSchema)
@@ -57,28 +57,28 @@ function select(orgIds?: number[]) {
 function adminOrDefaultWhere(isSuper: boolean, orgIds: number[]) {
   return isSuper
     ? {
-      // Get all users that are locked or are a member of at least one organization
-      // (Users that are not in an organization and are not locked are not interesting
-      // because they can't login and behave essentially as locked users or as users
-      // who have never logged in before)
-      OR: [
-        {
-          OrganizationMemberships: {
-            some: {}
+        // Get all users that are locked or are a member of at least one organization
+        // (Users that are not in an organization and are not locked are not interesting
+        // because they can't login and behave essentially as locked users or as users
+        // who have never logged in before)
+        OR: [
+          {
+            OrganizationMemberships: {
+              some: {}
+            }
+          },
+          {
+            IsLocked: true
           }
-        },
-        {
-          IsLocked: true
-        }
-      ]
-    }
-    : {
-      OrganizationMemberships: {
-        some: {
-          OrganizationId: { in: orgIds }
-        }
+        ]
       }
-    };
+    : {
+        OrganizationMemberships: {
+          some: {
+            OrganizationId: { in: orgIds }
+          }
+        }
+      };
 }
 
 export const load = (async (event) => {
@@ -92,17 +92,16 @@ export const load = (async (event) => {
     where: isSuper
       ? undefined
       : {
-        UserRoles: {
-          some: {
-            RoleId: RoleId.OrgAdmin,
-            UserId: userId
+          UserRoles: {
+            some: {
+              RoleId: RoleId.OrgAdmin,
+              UserId: userId
+            }
           }
-        }
-      },
+        },
     select: {
       Id: true,
-      Name: true,
-      UserRoles: true
+      Name: true
     }
   });
 
@@ -128,23 +127,18 @@ export const load = (async (event) => {
 
     users: users.map(minifyUser),
     userCount: users.length,
+    organizations,
     // Could be improved by putting group names into a referenced palette
     // (minimal returns if most users are in different organizations and groups)
     // I went ahead and did this too. My assumption is that there will generally be multiple users in each organization and group, so I think this should be a justifiable change. - Aidan
-    groups: Object.fromEntries(
-      (
-        await prisma.groups.findMany({
-          where: {
-            OwnerId: { in: orgIds },
-            GroupMemberships: {
-              some: {}
-            }
-          }
-        })
-      ).map((g) => [g.Id, g.Name])
-    ),
-    organizations: Object.fromEntries(organizations?.map((org) => [org.Id, org.Name])),
-    organizationCount: organizations.length,
+    groups: await prisma.groups.findMany({
+      where: {
+        OwnerId: { in: orgIds },
+        GroupMemberships: {
+          some: {}
+        }
+      }
+    }),
     form: await superValidate(
       {
         organizationId: organizations.length !== 1 ? null : organizations[0].Id,
@@ -153,7 +147,7 @@ export const load = (async (event) => {
           size: 50
         }
       },
-      valibot(userSchema)
+      valibot(searchFilterSchema)
     )
   };
 }) satisfies PageServerLoad;
@@ -178,7 +172,7 @@ export const actions: Actions = {
   async page(event) {
     const session = await event.locals.auth();
     if (!session) return error(403);
-    const form = await superValidate(event, valibot(userSchema));
+    const form = await superValidate(event, valibot(searchFilterSchema));
     if (!form.valid) return { form, ok: false };
 
     const isSuper = isSuperAdmin(session.user.roles);
@@ -190,17 +184,15 @@ export const actions: Actions = {
           : isSuper
             ? undefined
             : {
-              UserRoles: {
-                some: {
-                  RoleId: RoleId.OrgAdmin,
-                  UserId: session.user.userId
+                UserRoles: {
+                  some: {
+                    RoleId: RoleId.OrgAdmin,
+                    UserId: session.user.userId
+                  }
                 }
-              }
-            },
+              },
       select: {
-        Id: true,
-        Name: true,
-        UserRoles: true
+        Id: true
       }
     });
 
@@ -208,23 +200,25 @@ export const actions: Actions = {
 
     const where: Prisma.UsersWhereInput = {
       AND: [
-        adminOrDefaultWhere(isSuper, orgIds),
+        form.data.organizationId !== null
+          ? { OrganizationMemberships: { some: { OrganizationId: form.data.organizationId } } }
+          : adminOrDefaultWhere(isSuper, orgIds),
         {
           OR: form.data.search
             ? [
-              {
-                Name: {
-                  contains: form.data.search,
-                  mode: 'insensitive'
+                {
+                  Name: {
+                    contains: form.data.search,
+                    mode: 'insensitive'
+                  }
+                },
+                {
+                  Email: {
+                    contains: form.data.search,
+                    mode: 'insensitive'
+                  }
                 }
-              },
-              {
-                Email: {
-                  contains: form.data.search,
-                  mode: 'insensitive'
-                }
-              }
-            ]
+              ]
             : undefined
         }
       ]
@@ -241,7 +235,6 @@ export const actions: Actions = {
       skip: form.data.page.page * form.data.page.size,
       take: form.data.page.size
     });
-
     return {
       form,
       ok: true,

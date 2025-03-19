@@ -125,11 +125,18 @@ export const actions: Actions = {
             }
           ]
         : undefined,
-      Product: form.data.productDefinitionId
-        ? {
-            ProductDefinitionId: form.data.productDefinitionId
-          }
-        : undefined,
+      Product:
+        form.data.productDefinitionId !== null || form.data.organizationId !== null
+          ? {
+              ProductDefinitionId: form.data.productDefinitionId ?? undefined,
+              Project:
+                form.data.organizationId !== null
+                  ? {
+                      OrganizationId: form.data.organizationId
+                    }
+                  : undefined
+            }
+          : undefined,
       DateUpdated:
         form.data.dateUpdatedRange && form.data.dateUpdatedRange[1]
           ? {
