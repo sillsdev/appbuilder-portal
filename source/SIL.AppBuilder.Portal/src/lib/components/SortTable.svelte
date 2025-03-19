@@ -4,7 +4,8 @@
 -->
 <script lang="ts" generics="T extends Record<string, unknown>">
   import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
-  
+  import type { Snippet } from 'svelte';
+
   interface Props {
     data: T[];
     /** Definition of the columns for the table */
@@ -14,7 +15,7 @@
       /** User-facing string for column headers */
       header: string;
       /** comparison function. Will not sort a field if this is undefined, even if `serverSide` is `true`.
-       * 
+       *
        * If `serverSide` is `true`, just use a dummy function like `() => 0`
        */
       compare?: (a: T, b: T) => number;
@@ -23,7 +24,7 @@
     /** If this is true, will defer sorting to the server instead */
     serverSide?: boolean;
     onSort?: (field: string, direction: 'asc' | 'desc') => void;
-    row: import('svelte').Snippet<[T]>;
+    row: Snippet<[T]>;
   }
 
   let {
@@ -35,7 +36,7 @@
     row
   }: Props = $props();
 
-  let firstSortable = $derived(columns.find((c) => c.compare !== undefined)!)
+  let firstSortable = $derived(columns.find((c) => c.compare !== undefined)!);
 
   /** Current field being sorted. Defaults to first field that can be sorted */
   let current = $state(columns.find((c) => c.compare !== undefined)!);
