@@ -21,22 +21,24 @@
   <div class="p-4 pb-2 w-full">
     <span class="flex flex-row">
       {@render select?.()}
-      <a href="/{route}/{project.Id}">
-        <b class="[color:#55f]">
-          {project.Name}
-        </b>
-      </a>
-      <div class="grow"></div>
-      <span
-        class="ml-8 badge badge-primary mb-2 mr-4 [height:1.35rem]"
-        title={m.projectTable_columns_language()}
-      >
-        <IconContainer icon="ph:globe" width={20} class="mr-1" />
-        <!-- <LanguageIconContainer color="lightgray" size="20" /> -->
-        <span class="w-6 overflow-hidden text-center">
-          {project.Language}
+      <div class="flex flex-row flex-wrap grow">
+        <a href="/{route}/{project.Id}">
+          <b class="[color:#55f]">
+            {project.Name}
+          </b>
+        </a>
+        <div class="grow"></div>
+        <span
+          class="badge badge-primary mb-2 mr-4 [height:1.35rem]"
+          title={m.projectTable_columns_language()}
+        >
+          <IconContainer icon="ph:globe" width={20} class="mr-1" />
+          <!-- <LanguageIconContainer color="lightgray" size="20" /> -->
+          <span class="overflow-auto text-center">
+            {project.Language}
+          </span>
         </span>
-      </span>
+      </div>
       {@render actions?.()}
     </span>
     <div class="flex flex-wrap justify-between">
