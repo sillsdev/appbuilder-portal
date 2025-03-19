@@ -261,14 +261,16 @@ async function cleanupLDMLJSON(inputName: string, outputName: string, logger: Lo
     ...data.ldml,
     localeDisplayNames: {
       ...data.ldml.localeDisplayNames,
-      languages: toAbbrTextMap(ldn.languages.language),
-      scripts: toAbbrTextMap(ldn.scripts.script),
-      territories: toAbbrTextMap(ldn.territories.territory),
-      variants: toAbbrTextMap(ldn.variants.variant),
-      keys: toAbbrTextMap(ldn.keys.key),
-      types: toAbbrTextMap(ldn.types.type),
-      measurementSystemNames: toAbbrTextMap(ldn.measurementSystemNames.measurementSystemName),
-      codePatterns: toAbbrTextMap(ldn.codePatterns.codePattern)
+      languages: { ...toAbbrTextMap(ldn.languages.language) },
+      scripts: { ...toAbbrTextMap(ldn.scripts.script) },
+      territories: { ...toAbbrTextMap(ldn.territories.territory) },
+      variants: { ...toAbbrTextMap(ldn.variants.variant) },
+      keys: { ...toAbbrTextMap(ldn.keys.key) },
+      types: { ...toAbbrTextMap(ldn.types.type) },
+      measurementSystemNames: {
+        ...toAbbrTextMap(ldn.measurementSystemNames.measurementSystemName)
+      },
+      codePatterns: { ...toAbbrTextMap(ldn.codePatterns.codePattern) }
     }
   };
 
