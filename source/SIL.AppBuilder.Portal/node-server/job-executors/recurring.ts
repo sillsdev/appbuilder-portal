@@ -123,7 +123,7 @@ export async function refreshLangTags(
   const ret = {};
   job.log('********************');
   if (existsSync(path)) {
-    job.log('langtags.json exists')
+    job.log('langtags.json exists');
     try {
       const mtime = (await stat(path)).mtimeMs;
       const lastModified = new Date(
@@ -142,14 +142,13 @@ export async function refreshLangTags(
         ret['mtime'] = new Date(mtime);
         ret['lastModified'] = lastModified;
       }
-      job.log('langtags.json is out of date')
+      job.log('langtags.json is out of date');
     } catch (err) {
       // an error either happened when reading the file stats (i.e. it probably doesn't exist)
       // or when fetching the headers
       job.log(err);
     }
-  }
-  else {
+  } else {
     job.log('langtags.json not found');
   }
 
@@ -218,7 +217,10 @@ async function downloadAndConvert(
 
   logger(`Fetching ${endpoint}\n \\=> ${res.status} ${res.statusText}`);
 
-  const parser = new XMLParser();
+  const parser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: '@_'
+  });
   const parsed = parser.parse(await res.text());
   await writeFile(tmpName, JSON.stringify(parsed));
 
@@ -269,6 +271,7 @@ async function cleanupLDMLJSON(inputName: string, outputName: string, logger: Lo
   let data = JSON.parse(raw);
 
   let ldn = data.ldml.localeDisplayNames;
+  console.log(JSON.stringify(ldn.languages.language, null, 4));
   let output = {
     ...data.ldml,
     localeDisplayNames: {
