@@ -23,6 +23,7 @@
 
   let { data = $bindable() }: Props = $props();
 
+  // this should be localized names
   const langtagmap = new Map(data.langtags.map((tag) => [tag.tag, /* tag.localname ?? */ tag.name]));
 
   const { form: authorForm, enhance: authorEnhance } = superForm(data.authorForm);

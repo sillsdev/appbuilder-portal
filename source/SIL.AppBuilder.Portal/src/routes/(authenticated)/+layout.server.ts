@@ -43,8 +43,8 @@ export const load: LayoutServerLoad = async (event) => {
 
   const path =
     process.env.NODE_ENV === 'development'
-      ? join(import.meta.dirname, '../../../static/langtags.json')
-      : '/app/build/client/langtags.json';
+      ? join(import.meta.dirname, '../../../static/languages/langtags.json')
+      : '/app/build/client/languages/langtags.json';
 
   return {
     organizations,

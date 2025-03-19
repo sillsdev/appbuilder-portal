@@ -2,8 +2,6 @@ import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { spawn, type ChildProcessWithoutNullStreams } from 'child_process';
-import { stat } from 'fs/promises';
-import { refreshLangTags } from 'sil.appbuilder.portal.common';
 import {
   createEmitAndSemanticDiagnosticsBuilderProgram,
   createWatchCompilerHost,
@@ -22,23 +20,6 @@ export default defineConfig({
     }
   },
   plugins: [
-    {
-      name: 'fetch-langtags',
-      async buildStart() {
-        // Only update langtags if they are a day old
-        let needToRefresh = true;
-        try {
-          needToRefresh =
-            Date.now() - (await stat('static/langtags.json')).mtimeMs >
-            /* One day */ 1000 * 60 * 60 * 24;
-        } catch {
-          /* empty */
-        }
-        if (needToRefresh) {
-          return await refreshLangTags('static/languages');
-        }
-      }
-    },
     tailwindcss(),
     sveltekit(),
     paraglideVitePlugin({
