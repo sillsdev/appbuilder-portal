@@ -121,29 +121,39 @@ export async function refreshLangTags(
   }
   const path = join(localDir, 'langtags.json');
   const ret = {};
-  try {
-    const mtime = (await stat(path)).mtimeMs;
-    const lastModified = new Date(
-      (await fetch('https://ldml.api.sil.org/langtags.json', { method: 'HEAD' })).headers.get(
-        'Last-Modified'
-      )
-    );
+  job.log('********************');
+  if (existsSync(path)) {
+    job.log('langtags.json exists')
+    try {
+      const mtime = (await stat(path)).mtimeMs;
+      const lastModified = new Date(
+        (await fetch('https://ldml.api.sil.org/langtags.json', { method: 'HEAD' })).headers.get(
+          'Last-Modified'
+        )
+      );
 
-    if (mtime >= lastModified?.valueOf()) {
-      job.updateProgress(100);
-      return {
-        mtime: new Date(mtime),
-        lastModified
-      };
-    } else {
-      ret['mtime'] = new Date(mtime);
-      ret['lastModified'] = lastModified;
+      if (mtime >= lastModified?.valueOf()) {
+        job.updateProgress(100);
+        return {
+          mtime: new Date(mtime),
+          lastModified
+        };
+      } else {
+        ret['mtime'] = new Date(mtime);
+        ret['lastModified'] = lastModified;
+      }
+      job.log('langtags.json is out of date')
+    } catch (err) {
+      // an error either happened when reading the file stats (i.e. it probably doesn't exist)
+      // or when fetching the headers
+      job.log(err);
     }
-  } catch (err) {
-    // an error either happened when reading the file stats (i.e. it probably doesn't exist)
-    // or when fetching the headers
-    job.log(err);
   }
+  else {
+    job.log('langtags.json not found');
+  }
+
+  job.log('********************');
 
   job.updateProgress(25);
 
@@ -152,7 +162,7 @@ export async function refreshLangTags(
     const langtagsPath = join(localDir, 'langtags.json');
     const specialTagsPath = join(localDir, 'specialtags.json');
 
-    job.log('downloading all supported languages...');
+    job.log('********************\nDownloading all supported languages...');
     await writeFile(
       tempPath,
       JSON.stringify(await fetch('https://ldml.api.sil.org/langtags.json').then((r) => r.json()))
@@ -161,7 +171,7 @@ export async function refreshLangTags(
     const log = (msg: string) => job.log(msg);
 
     const split = await splitLangtagsJson(tempPath, langtagsPath, specialTagsPath, log);
-    job.log('downloaded all supported languages');
+    job.log('Downloaded all supported languages\n********************');
 
     ret['langtags'] = split.langtags;
     ret['specialtags'] = split.specialtags;
@@ -200,25 +210,27 @@ async function downloadAndConvert(
   }
   const finalName = join(finalDir, 'ldml.json');
 
-  logger(`downloading ldml data for ${lang}...`);
+  logger(`********************\nDownloading ldml data for ${lang}...`);
 
   const endpoint = `https://ldml.api.sil.org/${lang}?inc[0]=localeDisplayNames`;
 
   const res = await fetch(endpoint);
 
-  logger(`${endpoint}: ${res.status} ${res.statusText}`);
+  logger(`Fetching ${endpoint}\n \\=> ${res.status} ${res.statusText}`);
 
   const parser = new XMLParser();
   const parsed = parser.parse(await res.text());
   await writeFile(tmpName, JSON.stringify(parsed));
 
-  logger(`writing file ${tmpName}`);
+  logger(`Writing temporary file ${tmpName}`);
 
   // TODO: use a custom node script to convert the language
   // list to something more easily consumeable by a javascript app.
   await cleanupLDMLJSON(tmpName, finalName, logger);
 
   await rm(tmpName);
+
+  logger(`Removed ${tmpName}\n********************`);
 }
 
 async function splitLangtagsJson(
@@ -227,7 +239,7 @@ async function splitLangtagsJson(
   specialName: string,
   logger: Logger
 ) {
-  logger(`splitting langtags @ ${inputName}`);
+  logger(`Splitting langtags @ ${inputName}`);
   const raw = (await readFile(inputName)).toString();
   const data = JSON.parse(raw) as { tag: string }[];
 
@@ -243,7 +255,7 @@ async function splitLangtagsJson(
 
   await writeFile(specialName, JSON.stringify(special));
 
-  logger(`JSON output at ${outputName} and ${specialName}`);
+  logger(`JSON output written to ${outputName} and ${specialName}`);
 
   return { langtags: output.length, specialtags: special.length };
 }
