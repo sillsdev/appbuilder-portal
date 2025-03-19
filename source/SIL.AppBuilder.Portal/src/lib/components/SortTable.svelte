@@ -20,7 +20,7 @@
        */
       compare?: (a: RowItem, b: RowItem) => number;
     }[];
-    class?: string;
+    className?: string;
     /** If this is true, will defer sorting to the server instead */
     serverSide?: boolean;
     onSort?: (field: string, direction: 'asc' | 'desc') => void;
@@ -30,7 +30,7 @@
   let {
     data = $bindable(),
     columns,
-    class: className = '',
+    className = '',
     serverSide = false,
     onSort,
     row

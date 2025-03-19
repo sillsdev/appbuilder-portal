@@ -119,7 +119,7 @@
           }
         ]}
         serverSide={true}
-        class="max-h-full"
+        className="max-h-full"
         onSort={(field, direction) =>
           form.update((data) => ({ ...data, sort: { field, direction } }))}
       >
