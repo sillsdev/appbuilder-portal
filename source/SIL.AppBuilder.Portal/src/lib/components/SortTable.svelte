@@ -2,12 +2,12 @@
   A table that can be sorted by column.
   @component
 -->
-<script lang="ts" generics="T extends Record<string, unknown>">
+<script lang="ts" generics="RowItem extends Record<string, unknown>">
   import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
   import type { Snippet } from 'svelte';
 
   interface Props {
-    data: T[];
+    data: RowItem[];
     /** Definition of the columns for the table */
     columns: {
       /** Internal id, used for determining which column is being sorted. Also dispatched to `onSort` */
@@ -18,13 +18,13 @@
        *
        * If `serverSide` is `true`, just use a dummy function like `() => 0`
        */
-      compare?: (a: T, b: T) => number;
+      compare?: (a: RowItem, b: RowItem) => number;
     }[];
     class?: string;
     /** If this is true, will defer sorting to the server instead */
     serverSide?: boolean;
     onSort?: (field: string, direction: 'asc' | 'desc') => void;
-    row: Snippet<[T]>;
+    row: Snippet<[RowItem]>;
   }
 
   let {
