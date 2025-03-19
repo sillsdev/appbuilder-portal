@@ -24,7 +24,9 @@
   let { data = $bindable() }: Props = $props();
 
   // this should be localized names
-  const langtagmap = new Map(data.langtags.map((tag) => [tag.tag, /* tag.localname ?? */ tag.name]));
+  const langtagmap = new Map(
+    data.localizedNames.map(([tag, localized]) => [tag, localized ? new Map(localized) : null])
+  );
 
   const { form: authorForm, enhance: authorEnhance } = superForm(data.authorForm);
   const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm, {
@@ -145,7 +147,11 @@
               <IconContainer icon="ph:globe" width={20} />
               {m.project_details_language()}:
             </span>
-            <span>{data.project?.Language} ({langtagmap.get(data.project.Language ?? '')})</span>
+            <span>
+              {data.project?.Language} ({langtagmap
+                .get(languageTag())
+                ?.get(data.project.Language ?? '')})
+            </span>
           </div>
           <div class="flex place-content-between">
             <span>{m.project_details_type()}:</span>
