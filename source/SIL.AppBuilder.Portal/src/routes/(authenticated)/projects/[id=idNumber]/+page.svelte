@@ -23,7 +23,6 @@
 
   let { data = $bindable() }: Props = $props();
 
-  // this should be localized names
   const langtagmap = new Map(
     data.localizedNames.map(([tag, localized]) => [tag, localized ? new Map(localized) : null])
   );

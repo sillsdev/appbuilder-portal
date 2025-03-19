@@ -3,30 +3,46 @@
 
   import { page } from '$app/state';
   import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   import type { Langtags } from '$lib/valibot';
   import type { FuseResultMatch } from 'fuse.js';
   import TypeaheadInput from './TypeaheadInput.svelte';
 
+  const langtagmap = new Map(
+    (page.data.localizedNames as [string, [string, string][] | null][]).map(([tag, localized]) => [
+      tag,
+      localized ? new Map(localized) : null
+    ])
+  );
+
+  const currentLangtagMap = langtagmap.get(getLocale());
+
   // https://www.fusejs.io/api/options.html
   // Search the tag, name and localname. Give tag a double weighting
   // This seems very fast to me, but if it is found to be slow investigate providing an index at compile time
-  const fuzzySearch = new Fuse(page.data.langtags as Langtags, {
-    keys: [
-      {
-        name: 'tag',
-        weight: 2
-      },
-      'name',
-      'localname'
-    ],
-    includeScore: true,
-    includeMatches: true,
-    isCaseSensitive: false,
-    threshold: 0.6,
-    ignoreLocation: true,
-    ignoreFieldNorm: true
-    // minMatchCharLength: 2
-  });
+  const fuzzySearch = new Fuse(
+    (page.data.langtags as Langtags).map((langtag) => ({
+      ...langtag,
+      name: currentLangtagMap?.get(langtag.tag) ?? langtag.name
+    })),
+    {
+      keys: [
+        {
+          name: 'tag',
+          weight: 2
+        },
+        'name',
+        'localname'
+      ],
+      includeScore: true,
+      includeMatches: true,
+      isCaseSensitive: false,
+      threshold: 0.6,
+      ignoreLocation: true,
+      ignoreFieldNorm: true
+      // minMatchCharLength: 2
+    }
+  );
 
   function search(searchValue: string) {
     return fuzzySearch.search(searchValue);
