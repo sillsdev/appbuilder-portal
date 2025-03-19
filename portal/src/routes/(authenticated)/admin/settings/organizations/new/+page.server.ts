@@ -12,7 +12,7 @@ const createSchema = v.object({
   buildEngineURL: v.nullable(v.string()),
   buildEngineAccessToken: v.nullable(v.string()),
   logoURL: v.nullable(v.string()),
-  useDefaultBuildEngine: v.boolean(),
+  useDefaultBuildEngine: v.optional(v.boolean(), true),
   publicByDefault: v.boolean(),
   owner: idSchema
 });

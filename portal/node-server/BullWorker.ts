@@ -43,6 +43,9 @@ export class DefaultRecurring extends BullWorker<BullMQ.Job> {
         }
       }
     );
+    Queues.DefaultRecurring.add('Check System Statuses (Startup)', {
+      type: BullMQ.JobType.System_CheckStatuses
+    });
   }
   async run(job: Job<BullMQ.Job>) {
     switch (job.data.type) {

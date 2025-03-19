@@ -16,6 +16,7 @@ const editSchema = v.object({
   buildEngineAccessToken: v.nullable(v.string()),
   logoURL: v.nullable(v.string()),
   publicByDefault: v.boolean(),
+  useDefaultBuildEngine: v.boolean(),
   stores: v.array(
     v.object({
       storeId: idSchema,
@@ -56,6 +57,7 @@ export const load = (async ({ url }) => {
       buildEngineURL: data.BuildEngineUrl,
       buildEngineAccessToken: data.BuildEngineApiAccessToken,
       logoURL: data.LogoUrl,
+      useDefaultBuildEngine: data.UseDefaultBuildEngine ?? true,
       publicByDefault: data.PublicByDefault ?? false,
       stores: enabledStores
     },
@@ -78,6 +80,7 @@ export const actions = {
         buildEngineAccessToken,
         buildEngineURL,
         logoURL,
+        useDefaultBuildEngine,
         owner,
         publicByDefault,
         websiteURL,
@@ -92,6 +95,7 @@ export const actions = {
           BuildEngineApiAccessToken: buildEngineAccessToken,
           BuildEngineUrl: buildEngineURL,
           LogoUrl: logoURL,
+          UseDefaultBuildEngine: useDefaultBuildEngine,
           OwnerId: owner,
           PublicByDefault: publicByDefault,
           WebsiteUrl: websiteURL

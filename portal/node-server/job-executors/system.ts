@@ -6,12 +6,11 @@ export async function checkStatuses(job: Job<BullMQ.System.CheckStatuses>): Prom
     where: {
       OR: [
         {
-          UseDefaultBuildEngine: null
-        },
-        {
           UseDefaultBuildEngine: false
         }
-      ]
+      ],
+      BuildEngineUrl: { not: null },
+      BuildEngineApiAccessToken: { not: null }
     },
     select: {
       BuildEngineUrl: true,
@@ -25,16 +24,26 @@ export async function checkStatuses(job: Job<BullMQ.System.CheckStatuses>): Prom
       BuildEngineApiAccessToken: process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
     });
   }
+  const uniquePairs = new Set(organizations.map((o) => JSON.stringify(o)))
+    .values()
+    .map((e) => JSON.parse(e))
+    .toArray() as typeof organizations;
   job.updateProgress(10);
   // remove statuses that do not correspond to organizations
   const removed = await DatabaseWrites.systemStatuses.deleteMany({
     where: {
-      BuildEngineUrl: {
-        notIn: organizations.map((o) => o.BuildEngineUrl)
-      },
-      BuildEngineApiAccessToken: {
-        notIn: organizations.map((o) => o.BuildEngineApiAccessToken)
-      }
+      OR: [
+        {
+          BuildEngineUrl: {
+            notIn: uniquePairs.map((o) => o.BuildEngineUrl)
+          }
+        },
+        {
+          BuildEngineApiAccessToken: {
+            notIn: uniquePairs.map((o) => o.BuildEngineApiAccessToken)
+          }
+        }
+      ]
     }
   });
   job.updateProgress(20);
@@ -45,7 +54,7 @@ export async function checkStatuses(job: Job<BullMQ.System.CheckStatuses>): Prom
     }
   });
   // Filter out url/token pairs that already exist in the status table
-  const filteredOrgs = organizations.filter(
+  const filteredOrgs = uniquePairs.filter(
     (o) =>
       !systems.find(
         (s) =>
@@ -59,22 +68,23 @@ export async function checkStatuses(job: Job<BullMQ.System.CheckStatuses>): Prom
   });
   job.updateProgress(50);
   const statuses = await Promise.all(
-    (
-      await prisma.systemStatuses.findMany()
-    ).map(async (s) => {
+    (await prisma.systemStatuses.findMany()).map(async (s) => {
       const res = await BuildEngine.Requests.systemCheck({
         type: 'provided',
         url: s.BuildEngineUrl,
         token: s.BuildEngineApiAccessToken
       });
-      await DatabaseWrites.systemStatuses.update({
-        where: {
-          Id: s.Id
-        },
-        data: {
-          SystemAvailable: res.status === 200
-        }
-      });
+      const available = res.status === 200;
+      if (s.SystemAvailable !== available) {
+        await DatabaseWrites.systemStatuses.update({
+          where: {
+            Id: s.Id
+          },
+          data: {
+            SystemAvailable: available
+          }
+        });
+      }
       return {
         url: s.BuildEngineUrl,
         // return first 4 characters of token for differentiation purposes
