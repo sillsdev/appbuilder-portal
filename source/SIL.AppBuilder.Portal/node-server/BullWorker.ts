@@ -58,6 +58,12 @@ export class DefaultRecurring extends BullWorker<BullMQ.Job> {
         }
       }
     );
+    Queues.DefaultRecurring.add(
+      'Refresh LangTags (Startup)',
+      {
+        type: BullMQ.JobType.Recurring_RefreshLangTags
+      },
+    );
   }
   async run(job: Job<BullMQ.Job>) {
     switch (job.data.type) {
