@@ -32,12 +32,18 @@ export async function checkStatuses(job: Job<BullMQ.System.CheckStatuses>): Prom
   // remove statuses that do not correspond to organizations
   const removed = await DatabaseWrites.systemStatuses.deleteMany({
     where: {
-      BuildEngineUrl: {
-        notIn: uniquePairs.map((o) => o.BuildEngineUrl)
-      },
-      BuildEngineApiAccessToken: {
-        notIn: uniquePairs.map((o) => o.BuildEngineApiAccessToken)
-      }
+      OR: [
+        {
+          BuildEngineUrl: {
+            notIn: uniquePairs.map((o) => o.BuildEngineUrl)
+          }
+        },
+        {
+          BuildEngineApiAccessToken: {
+            notIn: uniquePairs.map((o) => o.BuildEngineApiAccessToken)
+          }
+        }
+      ]
     }
   });
   job.updateProgress(20);
