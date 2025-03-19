@@ -181,7 +181,20 @@ async function validateProductBase(
           // Store must be allowed by Organization
           OrganizationStores: {
             where: {
-              StoreId: storeId
+              StoreId: storeId,
+              // The language, if specified, is allowed by the store
+              Store:
+                storeLanguageId !== undefined
+                  ? {
+                      StoreType: {
+                        StoreLanguages: {
+                          some: {
+                            Id: storeLanguageId
+                          }
+                        }
+                      }
+                    }
+                  : undefined
             },
             select: {
               Store: {
@@ -190,18 +203,14 @@ async function validateProductBase(
                     select: {
                       // Store type must match Workflow store type
                       Id: true,
-                      // StoreLanguage must be allowed by Store, if the StoreLanguage is defined
-                      StoreLanguages:
-                        storeLanguageId === undefined
-                          ? undefined
-                          : {
-                            where: {
-                              Id: storeLanguageId
-                            },
-                            select: {
-                              Id: true
-                            }
-                          }
+                      StoreLanguages: {
+                        where: {
+                          Id: storeLanguageId
+                        },
+                        select: {
+                          Id: true
+                        }
+                      }
                     }
                   }
                 }
@@ -231,10 +240,11 @@ async function validateProductBase(
    */
   const storeMatchFlowStore = prodDefStore === orgStore;
 
-  const numOrgStoreLangs =
-    project?.Organization.OrganizationStores[0]?.Store.StoreType.StoreLanguages.length;
+  const storeLang =
+    project?.Organization.OrganizationStores.at(0)?.Store.StoreType.StoreLanguages.at(0);
   /** 4. The language, if specified, is allowed by the store */
-  const optionalLanguageAllowed = storeLanguageId === undefined || (numOrgStoreLangs ?? 0) > 0;
+  const optionalLanguageAllowed =
+    storeLanguageId === undefined || storeLang?.Id === storeLanguageId;
 
   const numOrgProdDefs = project?.Organization.OrganizationProductDefinitions.length;
   /** 5. The product type is allowed by the organization */
