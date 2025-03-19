@@ -1,3 +1,4 @@
+import { i18n } from '$lib/i18n';
 import { getProductActions, ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { canModifyProject, projectActionSchema } from '$lib/projects';
@@ -242,7 +243,7 @@ export const load = (async ({ locals, params }) => {
   const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
 
   const authorForm = await superValidate(valibot(addAuthorSchema));
-  const reviewerForm = await superValidate({ language: 'en-us' }, valibot(addReviewerSchema));
+  const reviewerForm = await superValidate({ language: i18n.config.defaultLanguageTag }, valibot(addReviewerSchema));
   return {
     project: {
       ...project,
