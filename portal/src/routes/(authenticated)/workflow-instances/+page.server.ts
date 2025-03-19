@@ -148,19 +148,17 @@ export const actions: Actions = {
 
     const instances = await prisma.workflowInstances.findMany({
       orderBy:
-        form.data.sort?.field === 'product'
-          ? { ProductId: form.data.sort.direction }
-          : form.data.sort?.field === 'organization'
-            ? { Product: { Project: { Organization: { Name: form.data.sort.direction } } } }
-            : form.data.sort?.field === 'project'
-              ? { Product: { Project: { Name: form.data.sort.direction } } }
-              : form.data.sort?.field === 'definition'
-                ? { Product: { ProductDefinition: { Name: form.data.sort.direction } } }
-                : form.data.sort?.field === 'state'
-                  ? { State: form.data.sort.direction }
-                  : form.data.sort?.field === 'date'
-                    ? { DateUpdated: form.data.sort.direction }
-                    : undefined,
+        form.data.sort?.field === 'organization'
+          ? { Product: { Project: { Organization: { Name: form.data.sort.direction } } } }
+          : form.data.sort?.field === 'project'
+            ? { Product: { Project: { Name: form.data.sort.direction } } }
+            : form.data.sort?.field === 'definition'
+              ? { Product: { ProductDefinition: { Name: form.data.sort.direction } } }
+              : form.data.sort?.field === 'state'
+                ? { State: form.data.sort.direction }
+                : form.data.sort?.field === 'date'
+                  ? { DateUpdated: form.data.sort.direction }
+                  : undefined,
       where: where,
       select: {
         State: true,

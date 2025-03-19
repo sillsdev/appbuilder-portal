@@ -2,36 +2,29 @@
   A table that can be sorted by column.
   @component
 -->
-<script lang="ts">
+<script lang="ts" generics="RowItem extends Record<string, unknown>">
   import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import type { Snippet } from 'svelte';
 
   interface Props {
-    data: Record<string, any>[];
+    data: RowItem[];
     /** Definition of the columns for the table */
     columns: {
-      /** Internal id, used for determining which column is being sorted */
+      /** Internal id, used for determining which column is being sorted. Also dispatched to `onSort` */
       id: string;
       /** User-facing string for column headers */
       header: string;
-      /** Accessor method to get the desired data */
-      data: (i: any) => any;
-      /** Renders the data to an HTML string */
-      render?: (d: any) => string;
-      /** Will not sort a field if this is false or undefined */
-      sortable?: boolean;
+      /** comparison function. Will not sort a field if this is undefined, even if `serverSide` is `true`.
+       *
+       * If `serverSide` is `true`, just use a dummy function like `() => 0`
+       */
+      compare?: (a: RowItem, b: RowItem) => number;
     }[];
-    className: string;
+    className?: string;
     /** If this is true, will defer sorting to the server instead */
     serverSide?: boolean;
-    /** If this is defined, will handle a click on a row */
-    onRowClick?: (
-      rowData: (typeof data)[0],
-      event: MouseEvent & {
-        currentTarget: EventTarget & HTMLTableRowElement;
-      }
-    ) => void;
     onSort?: (field: string, direction: 'asc' | 'desc') => void;
+    row: Snippet<[RowItem]>;
   }
 
   let {
@@ -39,12 +32,14 @@
     columns,
     className = '',
     serverSide = false,
-    onRowClick,
-    onSort
+    onSort,
+    row
   }: Props = $props();
 
-  /** Current field being sorted. Defaults to first field where `sortable === true` */
-  let current = $state(columns.find((c) => c.sortable)!);
+  let firstSortable = $derived(columns.find((c) => c.compare !== undefined)!);
+
+  /** Current field being sorted. Defaults to first field that can be sorted */
+  let current = $state(columns.find((c) => c.compare !== undefined)!);
   let descending = $state(false);
 
   function sortColByDirection(key: (typeof columns)[0]) {
@@ -55,8 +50,8 @@
     } else {
       if (descending) {
         // reset to sort default field
-        if (current.id !== columns.find((c) => c.sortable)!.id) {
-          sortColByDirection(columns.find((c) => c.sortable)!);
+        if (current.id !== firstSortable.id) {
+          sortColByDirection(firstSortable);
           return; //don't sort twice
         } else {
           descending = false;
@@ -70,26 +65,10 @@
     } else {
       // sort based on current field
       // if blank, sort first field
-      const cell = current.data || columns.find((c) => c.sortable)!.data;
-      const langTag = languageTag();
-      data =
-        typeof cell(data[0]) === 'string'
-          ? // sort strings
-            data.sort((a, b) => {
-              return descending
-                ? cell(b).localeCompare(cell(a), langTag)
-                : cell(a).localeCompare(cell(b), langTag);
-            })
-          : // sort non-strings (i.e. numbers)
-            data.sort((a, b) => {
-              if (cell(a) === cell(b)) {
-                return 0;
-              } else if (cell(a) > cell(b)) {
-                return descending ? -1 : 1;
-              } else {
-                return descending ? 1 : -1;
-              }
-            });
+      const compare = current.compare || firstSortable.compare;
+      data = data.sort((a, b) => {
+        return descending ? (compare?.(b, a) ?? 0) : (compare?.(a, b) ?? 0);
+      });
     }
   }
 </script>
@@ -101,7 +80,7 @@
         {#each columns as c}
           <th
             onclick={() => {
-              if (c.sortable) {
+              if (c.compare) {
                 sortColByDirection(c);
               }
             }}
@@ -110,7 +89,7 @@
             <label class="form-control flex-row">
               <span class="label-text">{c.header}</span>
               <span class="direction-arrow">
-                {#if current.id === c.id && c.sortable}
+                {#if current.id === c.id && c.compare}
                   {#if descending}
                     <ArrowDownIcon />
                   {:else}
@@ -127,21 +106,7 @@
     </thead>
     <tbody>
       {#each data as d}
-        <tr
-          onclick={(e) => {
-            onRowClick?.(d, e);
-          }}
-        >
-          {#each columns as c}
-            <td>
-              {#if c.render}
-                {@html c.render(c.data(d))}
-              {:else}
-                {c.data(d)}
-              {/if}
-            </td>
-          {/each}
-        </tr>
+        {@render row(d)}
       {/each}
     </tbody>
   </table>
@@ -150,9 +115,6 @@
 <style lang="postcss">
   tr {
     @apply cursor-pointer select-none;
-  }
-  tbody > tr:hover {
-    @apply bg-neutral;
   }
   thead {
     /* this helps prevent the vertical jankiness */
@@ -170,8 +132,7 @@
   label {
     @apply select-none cursor-pointer;
   }
-  th,
-  td {
+  th {
     @apply border;
   }
 </style>
