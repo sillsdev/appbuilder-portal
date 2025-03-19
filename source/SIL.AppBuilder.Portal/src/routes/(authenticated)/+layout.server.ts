@@ -1,5 +1,7 @@
+import { i18n } from '$lib/i18n';
 import { isSuperAdmin } from '$lib/utils/roles';
 import { langtagsSchema } from '$lib/valibot';
+import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { prisma } from 'sil.appbuilder.portal.common';
@@ -41,16 +43,18 @@ export const load: LayoutServerLoad = async (event) => {
     }
   });
 
-  const path =
+  const localDir =
     process.env.NODE_ENV === 'development'
-      ? join(import.meta.dirname, '../../../static/languages/langtags.json')
-      : '/app/build/client/languages/langtags.json';
+      ? join(import.meta.dirname, '../../../static/languages')
+      : '/app/build/client/languages';
+
+  const availableLanguageTags = i18n.config.runtime.availableLanguageTags;
 
   return {
     organizations,
     numberOfTasks,
     // streaming promise
-    langtags: await readFile(path)
+    langtags: await readFile(join(localDir, 'langtags.json'))
       .then((j) => {
         const res = safeParse(langtagsSchema, JSON.parse(j.toString()));
         return res.success ? res.output : [];
@@ -58,6 +62,24 @@ export const load: LayoutServerLoad = async (event) => {
       .catch((r) => {
         console.log(r);
         return [];
+      }),
+    localizedNames: await Promise.all(
+      availableLanguageTags.map(async (tag) => {
+        const filePath = join(localDir, tag, 'ldml.json');
+
+        let ret = null;
+        if (existsSync(filePath)) {
+          const file = (await readFile(filePath)).toString();
+          const parsed = JSON.parse(file) as {
+            localeDisplayNames: {
+              languages: Record<string, string>;
+            };
+          };
+
+          ret = Object.entries(parsed.localeDisplayNames.languages);
+        }
+        return [tag, ret] as [typeof tag, typeof ret];
       })
+    )
   };
 };
