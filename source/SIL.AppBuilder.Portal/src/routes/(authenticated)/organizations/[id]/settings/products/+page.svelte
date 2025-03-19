@@ -2,8 +2,6 @@
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
-  import { byName } from '$lib/utils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   interface Props {
@@ -46,8 +44,9 @@
       </div>
     </label>
   </div>
+  <!-- TODO: sort this. I think this will need a refactor of MultiselectBox -->
   <MultiselectBox header={m.org_productSelectTitle()}>
-    {#each $superFormData.products.toSorted( (a, b) => byName(allProductDefs.get(a.productId), allProductDefs.get(b.productId), languageTag()) ) as productDef}
+    {#each $superFormData.products as productDef}
       {@const pdLook = allProductDefs.get(productDef.productId)}
       <MultiselectBoxElement
         title={pdLook?.Name ?? ''}
