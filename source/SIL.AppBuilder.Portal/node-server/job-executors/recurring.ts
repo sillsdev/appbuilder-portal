@@ -121,15 +121,14 @@ export async function refreshLangTags(
   if (!existsSync(localDir)) {
     await mkdir(localDir);
   }
-  const tempPath = join(localDir, 'langtags.tmp.json');
-  const langtagsPath = join(localDir, 'langtags.json');
-
   const ret = {};
 
   const log = (msg: string) => job.log(msg);
 
   try {
     job.log(sectionDelim);
+
+    const langtagsPath = join(localDir, 'langtags.json');
 
     const shouldUpdateLangtags = await shouldUpdate(
       langtagsPath,
@@ -144,15 +143,24 @@ export async function refreshLangTags(
     job.updateProgress(25);
 
     job.log(`${sectionDelim}\nDownloading all supported languages...`);
-    await writeFile(
-      tempPath,
-      JSON.stringify(await fetch('https://ldml.api.sil.org/langtags.json').then((r) => r.json()))
-    );
 
-    const split = await splitLangtagsJson(tempPath, langtagsPath, log);
+    const res = await fetchWithLog('https://ldml.api.sil.org/langtags.json', log);
 
-    ret['langtags']['length'] = split.langtags;
-    //ret['specialtags'] = split.specialtags;
+    const langtags = (
+      (await res.json()) as {
+        tag: string;
+        localname?: string;
+        name: string;
+      }[]
+    )
+      .filter((lang) => !lang.tag.startsWith('_'))
+      .map(({ tag, localname, name }) => ({ tag, localname, name }));
+
+    await writeFile(langtagsPath, JSON.stringify(langtags));
+
+    job.log(`langtags written to ${langtagsPath}`);
+
+    ret['langtags']['length'] = langtags.length;
 
     job.log(`Downloaded all supported languages\n${sectionDelim}`);
     job.updateProgress(55);
@@ -175,14 +183,19 @@ export async function refreshLangTags(
 
 type Logger = (msg: string) => void;
 
+async function fetchWithLog(url: string, logger: Logger, fetchInit?: RequestInit) {
+  const res = await fetch(url, fetchInit);
+  logger(`Fetching ${url}\n\\=> ${res.status} ${res.statusText}`);
+  return res;
+}
+
 async function shouldUpdate(localPath: string, remotePath: string, logger: Logger) {
   if (existsSync(localPath)) {
     logger(`Found ${localPath}`);
     try {
       const localLastModified = new Date((await stat(localPath)).mtimeMs);
       logger(`Local LastModified: ${localLastModified}`);
-      const res = await fetch(remotePath, { method: 'HEAD' });
-      logger(`Fetching HEAD of ${remotePath}\n\\=> ${res.status} ${res.statusText}`);
+      const res = await fetchWithLog(remotePath, logger, { method: 'HEAD' });
       const remoteLastModified = new Date(res.headers.get('Last-Modified'));
       logger(`Remote LastModified: ${remoteLastModified}`);
 
@@ -225,9 +238,7 @@ async function downloadAndConvert(
   if (update.shouldUpdate) {
     logger(`Downloading ldml data for ${lang}...`);
 
-    const res = await fetch(endpoint);
-
-    logger(`Fetching ${endpoint}\n \\=> ${res.status} ${res.statusText}`);
+    const res = await fetchWithLog(endpoint, logger);
 
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -250,32 +261,6 @@ async function downloadAndConvert(
   }
 
   return update;
-}
-
-async function splitLangtagsJson(inputName: string, outputName: string, logger: Logger) {
-  logger(`Splitting langtags @ ${inputName}`);
-  const raw = (await readFile(inputName)).toString();
-  const data = JSON.parse(raw) as { tag: string }[];
-
-  const output = data.filter((el: { tag: string }) => {
-    return !el.tag.startsWith('_');
-  });
-
-  /*const special = data.filter((el: { tag: string }) => {
-    return el.tag.startsWith('_');
-  });*/
-
-  await writeFile(outputName, JSON.stringify(output));
-
-  //await writeFile(specialName, JSON.stringify(special));
-
-  logger(`JSON output written to ${outputName}`); // and ${specialName}`);
-
-  await rm(inputName);
-
-  logger(`Removed ${inputName}`);
-
-  return { langtags: output.length }; //, specialtags: special.length };
 }
 
 function toAbbrTextMap(arr: Record<string, unknown>[]) {
