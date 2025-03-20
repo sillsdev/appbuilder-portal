@@ -1,11 +1,11 @@
 import { checkInviteErrors } from '$lib/organizationInvites';
+import { verifyCanViewAndEdit } from '$lib/projects/server';
 import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import type { Session } from '@auth/express';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
-import { verifyCanViewAndEdit } from './lib/projects/server';
 
 declare module '@auth/sveltekit' {
   interface Session {
