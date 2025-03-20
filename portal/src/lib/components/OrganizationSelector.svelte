@@ -1,6 +1,6 @@
 <script lang="ts">
   import { languageTag } from '$lib/paraglide/runtime';
-  import { byName } from '$lib/utils';
+  import { byName } from '$lib/utils/sorting';
   import type { Prisma } from '@prisma/client';
   interface Props {
     organizations: Prisma.OrganizationsGetPayload<{

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { languageTag } from "$lib/paraglide/runtime";
-  import { byName } from "$lib/utils";
+  import { languageTag } from '$lib/paraglide/runtime';
+  import { byName } from '$lib/utils/sorting';
 
   interface Props {
     groups: { Id: number; Name: string | null }[];

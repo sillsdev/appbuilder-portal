@@ -10,8 +10,9 @@
   import { languageTag } from '$lib/paraglide/runtime';
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
-  import { getRelativeTime } from '$lib/timeUtils';
-  import { byName, isAdminForOrg, isSuperAdmin } from '$lib/utils';
+  import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
+  import { byName } from '$lib/utils/sorting';
+  import { getRelativeTime } from '$lib/utils/time';
   import { ProductType } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';

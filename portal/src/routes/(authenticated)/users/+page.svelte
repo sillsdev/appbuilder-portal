@@ -6,7 +6,8 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { byName, byString, isAdmin } from '$lib/utils';
+  import { isAdmin } from '$lib/utils/roles';
+  import { byName, byString } from '$lib/utils/sorting';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import type { MinifiedUser } from './common';

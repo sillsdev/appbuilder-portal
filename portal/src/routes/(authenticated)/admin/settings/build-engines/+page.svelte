@@ -3,8 +3,8 @@
   import Tooltip from '$lib/components/Tooltip.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { getRelativeTime } from '$lib/timeUtils';
-  import { byString } from '$lib/utils';
+  import { byString } from '$lib/utils/sorting';
+  import { getRelativeTime } from '$lib/utils/time';
   import type { PageData } from './$types';
 
   interface Props {

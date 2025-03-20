@@ -2,7 +2,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { org_addGroupButton } from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { byName } from '$lib/utils';
+  import { byName } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 

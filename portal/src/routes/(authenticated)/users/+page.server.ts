@@ -1,5 +1,5 @@
 import { paginateSchema } from '$lib/table';
-import { isSuperAdmin } from '$lib/utils';
+import { isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 import type { Prisma } from '@prisma/client';
 import { error, redirect } from '@sveltejs/kit';

@@ -1,4 +1,4 @@
-import { isSuperAdmin } from '$lib/utils';
+import { isSuperAdmin } from '$lib/utils/roles';
 import { prisma } from 'sil.appbuilder.portal.common';
 import type { LayoutServerLoad } from './$types';
 

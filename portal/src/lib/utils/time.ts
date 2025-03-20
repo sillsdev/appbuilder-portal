@@ -1,4 +1,4 @@
-import { languageTag } from './paraglide/runtime';
+import { languageTag } from '../paraglide/runtime';
 
 let langtag = languageTag();
 let relativeTimeFormatter = new Intl.RelativeTimeFormat(langtag);

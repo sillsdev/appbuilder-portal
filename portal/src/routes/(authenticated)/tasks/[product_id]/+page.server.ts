@@ -1,4 +1,4 @@
-import { isSuperAdmin } from '$lib/utils';
+import { isSuperAdmin } from '$lib/utils/roles';
 import type { Session } from '@auth/sveltekit';
 import { error, redirect } from '@sveltejs/kit';
 import { prisma, Workflow } from 'sil.appbuilder.portal.common';

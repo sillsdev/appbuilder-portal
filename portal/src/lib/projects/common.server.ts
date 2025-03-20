@@ -1,4 +1,4 @@
-import { hasRoleForOrg, isAdminForOrg } from '$lib/utils';
+import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
 import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';

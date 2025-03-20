@@ -1,5 +1,5 @@
 import { checkInviteErrors } from '$lib/organizationInvites';
-import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils';
+import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import type { Session } from '@auth/express';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
