@@ -70,13 +70,7 @@ export const load: LayoutServerLoad = async (event) => {
         let ret = null;
         if (existsSync(filePath)) {
           const file = (await readFile(filePath)).toString();
-          const parsed = JSON.parse(file) as {
-            localeDisplayNames: {
-              languages: Record<string, string>;
-            };
-          };
-
-          ret = Object.entries(parsed.localeDisplayNames.languages);
+          ret = JSON.parse(file) as [string, string][];
         }
         return [tag, ret] as [typeof tag, typeof ret];
       })

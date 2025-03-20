@@ -1,7 +1,7 @@
 import { Job } from 'bullmq';
 import { XMLParser } from 'fast-xml-parser';
 import { existsSync } from 'fs';
-import { mkdir, readFile, rm, stat, writeFile } from 'fs/promises';
+import { mkdir, stat, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { BuildEngine, BullMQ, DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 
@@ -165,13 +165,13 @@ export async function refreshLangTags(
     job.log(`Downloaded all supported languages\n${sectionDelim}`);
     job.updateProgress(55);
 
-    ret['es-419'] = await downloadAndConvert(localDir, 'es-419', log);
+    ret['es-419'] = await processLocalizedNames(localDir, 'es-419', log);
     job.updateProgress(70);
     // TODO: should we rename our en-us translations to en?
     //       this would _only_ be because the ldml endpoint does not have an en-us entry
-    ret['en-US'] = await downloadAndConvert(localDir, 'en', log, 'en-US');
+    ret['en-US'] = await processLocalizedNames(localDir, 'en', log, 'en-US');
     job.updateProgress(85);
-    ret['fr-FR'] = await downloadAndConvert(localDir, 'fr-FR', log);
+    ret['fr-FR'] = await processLocalizedNames(localDir, 'fr-FR', log);
 
     job.updateProgress(100);
   } catch (err) {
@@ -215,7 +215,7 @@ async function shouldUpdate(localPath: string, remotePath: string, logger: Logge
   };
 }
 
-async function downloadAndConvert(
+async function processLocalizedNames(
   localDir: string,
   lang: string,
   logger: Logger,
@@ -223,7 +223,6 @@ async function downloadAndConvert(
 ) {
   fileName ??= lang;
 
-  const tmpName = join(localDir, `ldml.tmp.${fileName}.json`);
   const finalDir = join(localDir, fileName);
   if (!existsSync(finalDir)) {
     await mkdir(finalDir);
@@ -245,53 +244,20 @@ async function downloadAndConvert(
       attributeNamePrefix: '@_'
     });
     const parsed = parser.parse(await res.text());
-    await writeFile(tmpName, JSON.stringify(parsed));
 
-    logger(`Writing temporary file ${tmpName}`);
+    const output = parsed.ldml.localeDisplayNames.languages.language.map((item) => [
+      item['@_type'],
+      item['#text']
+    ]);
 
-    // TODO: use a custom node script to convert the language
-    // list to something more easily consumeable by a javascript app.
-    await cleanupLDMLJSON(tmpName, finalName, logger);
+    update['length'] = output.length;
 
-    await rm(tmpName);
+    await writeFile(finalName, JSON.stringify(output));
 
-    logger(`Removed ${tmpName}\n${sectionDelim}`);
+    logger(`Localized language names for ${lang} written to ${finalName}`);
   } else {
     logger(`Skipping ${lang}\n${sectionDelim}`);
   }
 
   return update;
-}
-
-function toAbbrTextMap(arr: Record<string, unknown>[]) {
-  return Object.fromEntries(arr.map((item) => [item['@_type'], item['#text']]));
-}
-
-async function cleanupLDMLJSON(inputName: string, outputName: string, logger: Logger) {
-  let raw = (await readFile(inputName)).toString();
-  let data = JSON.parse(raw);
-
-  let ldn = data.ldml.localeDisplayNames;
-  let output = {
-    ...data.ldml,
-    localeDisplayNames: {
-      ...data.ldml.localeDisplayNames,
-      languages: { ...toAbbrTextMap(ldn.languages.language) },
-      scripts: { ...toAbbrTextMap(ldn.scripts.script) },
-      territories: { ...toAbbrTextMap(ldn.territories.territory) },
-      variants: { ...toAbbrTextMap(ldn.variants.variant) },
-      keys: { ...toAbbrTextMap(ldn.keys.key) },
-      types: { ...toAbbrTextMap(ldn.types.type) },
-      measurementSystemNames: {
-        ...toAbbrTextMap(ldn.measurementSystemNames.measurementSystemName)
-      },
-      codePatterns: { ...toAbbrTextMap(ldn.codePatterns.codePattern) }
-    }
-  };
-
-  let outputString = JSON.stringify(output);
-
-  await writeFile(outputName, outputString);
-
-  logger(`JSON output has been cleaned at ${outputName}`);
 }
