@@ -1,5 +1,5 @@
-import { projectSearchSchema, pruneProjects } from '$lib/projects/common';
-import { projectFilter } from '$lib/projects/common.server';
+import { projectSearchSchema, pruneProjects } from '$lib/projects';
+import { projectFilter } from '$lib/projects/server';
 import type { Prisma } from '@prisma/client';
 import { type Actions } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';

@@ -1,9 +1,9 @@
+import { canClaimProject, canModifyProject, type ProjectForAction } from '$lib/projects';
 import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
 import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import { canClaimProject, canModifyProject, type ProjectForAction } from './common';
 
 export async function verifyCanViewAndEdit(user: Session, projectId: number) {
   // Editing is allowed if the user owns the project, or if the user is an organization
