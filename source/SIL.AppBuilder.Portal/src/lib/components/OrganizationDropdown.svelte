@@ -1,7 +1,7 @@
 <script lang="ts">
   import { org_allOrganizations } from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { byName } from '$lib/utils';
+  import { byName } from '$lib/utils/sorting';
   interface Props {
     organizations: { Id: number; Name: string | null }[];
     value: number | null;

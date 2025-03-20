@@ -5,7 +5,7 @@
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { getRelativeTime } from '$lib/timeUtils';
+  import { getRelativeTime } from '$lib/utils/time';
   import type { PageData } from './$types';
 
   interface Props {

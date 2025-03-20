@@ -8,7 +8,7 @@
   import { languageTag } from '$lib/paraglide/runtime';
   import type { PrunedProject } from '$lib/projects/common';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
-  import { byName } from '$lib/utils';
+  import { byName } from '$lib/utils/sorting';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';

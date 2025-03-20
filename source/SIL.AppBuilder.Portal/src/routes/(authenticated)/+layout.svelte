@@ -5,7 +5,7 @@
   import LanguageSelector from '$lib/components/LanguageSelector.svelte';
   import { HamburgerIcon } from '$lib/icons';
   import * as m from '$lib/paraglide/messages';
-  import { isAdmin, isSuperAdmin } from '$lib/utils';
+  import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
   import { signOut } from '@auth/sveltekit/client';
   import type { LayoutData } from './$types';
 

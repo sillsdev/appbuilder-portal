@@ -3,7 +3,7 @@
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
   import { importJSONSchema } from '$lib/projects/common';
-  import { byName, byString } from '$lib/utils';
+  import { byName, byString } from '$lib/utils/sorting';
   import { onMount } from 'svelte';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
