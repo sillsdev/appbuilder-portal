@@ -109,6 +109,8 @@ export async function checkSystemStatuses(
   };
 }
 
+const sectionDelim = '********************';
+
 export async function refreshLangTags(
   job: Job<BullMQ.Recurring.RefreshLangTags>
 ): Promise<unknown> {
@@ -119,71 +121,49 @@ export async function refreshLangTags(
   if (!existsSync(localDir)) {
     await mkdir(localDir);
   }
-  const path = join(localDir, 'langtags.json');
+  const tempPath = join(localDir, 'langtags.tmp.json');
+  const langtagsPath = join(localDir, 'langtags.json');
+
   const ret = {};
-  job.log('********************');
-  if (existsSync(path)) {
-    job.log('langtags.json exists');
-    try {
-      const mtime = (await stat(path)).mtimeMs;
-      const lastModified = new Date(
-        (await fetch('https://ldml.api.sil.org/langtags.json', { method: 'HEAD' })).headers.get(
-          'Last-Modified'
-        )
-      );
 
-      if (mtime >= lastModified?.valueOf()) {
-        job.updateProgress(100);
-        return {
-          mtime: new Date(mtime),
-          lastModified
-        };
-      } else {
-        ret['mtime'] = new Date(mtime);
-        ret['lastModified'] = lastModified;
-      }
-      job.log('langtags.json is out of date');
-    } catch (err) {
-      // an error either happened when reading the file stats (i.e. it probably doesn't exist)
-      // or when fetching the headers
-      job.log(err);
-    }
-  } else {
-    job.log('langtags.json not found');
-  }
-
-  job.log('********************');
-
-  job.updateProgress(25);
+  const log = (msg: string) => job.log(msg);
 
   try {
-    const tempPath = join(localDir, 'langtags.tmp.json');
-    const langtagsPath = join(localDir, 'langtags.json');
-    const specialTagsPath = join(localDir, 'specialtags.json');
+    job.log(sectionDelim);
 
-    job.log('********************\nDownloading all supported languages...');
+    const shouldUpdateLangtags = await shouldUpdate(
+      langtagsPath,
+      'https://ldml.api.sil.org/langtags.json',
+      log
+    );
+
+    ret['langtags'] = shouldUpdateLangtags;
+
+    job.log(sectionDelim);
+
+    job.updateProgress(25);
+
+    job.log(`${sectionDelim}\nDownloading all supported languages...`);
     await writeFile(
       tempPath,
       JSON.stringify(await fetch('https://ldml.api.sil.org/langtags.json').then((r) => r.json()))
     );
 
-    const log = (msg: string) => job.log(msg);
+    const split = await splitLangtagsJson(tempPath, langtagsPath, log);
 
-    const split = await splitLangtagsJson(tempPath, langtagsPath, specialTagsPath, log);
-    job.log('Downloaded all supported languages\n********************');
+    ret['langtags']['length'] = split.langtags;
+    //ret['specialtags'] = split.specialtags;
 
-    ret['langtags'] = split.langtags;
-    ret['specialtags'] = split.specialtags;
-
+    job.log(`Downloaded all supported languages\n${sectionDelim}`);
     job.updateProgress(55);
 
-    await downloadAndConvert(localDir, 'es-419', log);
+    ret['es-419'] = await downloadAndConvert(localDir, 'es-419', log);
     job.updateProgress(70);
     // TODO: should we rename our en-us translations to en?
     //       this would _only_ be because the ldml endpoint does not have an en-us entry
-    await downloadAndConvert(localDir, 'en', log, 'en-US');
+    ret['en-US'] = await downloadAndConvert(localDir, 'en', log, 'en-US');
     job.updateProgress(85);
-    await downloadAndConvert(localDir, 'fr-FR', log);
+    ret['fr-FR'] = await downloadAndConvert(localDir, 'fr-FR', log);
 
     job.updateProgress(100);
   } catch (err) {
@@ -195,6 +175,33 @@ export async function refreshLangTags(
 
 type Logger = (msg: string) => void;
 
+async function shouldUpdate(localPath: string, remotePath: string, logger: Logger) {
+  if (existsSync(localPath)) {
+    logger(`Found ${localPath}`);
+    try {
+      const localLastModified = new Date((await stat(localPath)).mtimeMs);
+      logger(`Local LastModified: ${localLastModified}`);
+      const res = await fetch(remotePath, { method: 'HEAD' });
+      logger(`Fetching HEAD of ${remotePath}\n\\=> ${res.status} ${res.statusText}`);
+      const remoteLastModified = new Date(res.headers.get('Last-Modified'));
+      logger(`Remote LastModified: ${remoteLastModified}`);
+
+      return {
+        shouldUpdate: localLastModified?.valueOf() >= remoteLastModified?.valueOf(),
+        localLastModified,
+        remoteLastModified
+      };
+    } catch (err) {
+      logger(err);
+    }
+  } else {
+    logger(`${localPath} does not exist`);
+  }
+  return {
+    shouldUpdate: true
+  };
+}
+
 async function downloadAndConvert(
   localDir: string,
   lang: string,
@@ -202,45 +209,50 @@ async function downloadAndConvert(
   fileName?: string
 ) {
   fileName ??= lang;
+
   const tmpName = join(localDir, `ldml.tmp.${fileName}.json`);
   const finalDir = join(localDir, fileName);
   if (!existsSync(finalDir)) {
     await mkdir(finalDir);
   }
   const finalName = join(finalDir, 'ldml.json');
-
-  logger(`********************\nDownloading ldml data for ${lang}...`);
-
   const endpoint = `https://ldml.api.sil.org/${lang}?inc[0]=localeDisplayNames`;
 
-  const res = await fetch(endpoint);
+  logger(`${sectionDelim}`);
 
-  logger(`Fetching ${endpoint}\n \\=> ${res.status} ${res.statusText}`);
+  const update = await shouldUpdate(finalName, endpoint, logger);
 
-  const parser = new XMLParser({
-    ignoreAttributes: false,
-    attributeNamePrefix: '@_'
-  });
-  const parsed = parser.parse(await res.text());
-  await writeFile(tmpName, JSON.stringify(parsed));
+  if (update.shouldUpdate) {
+    logger(`Downloading ldml data for ${lang}...`);
 
-  logger(`Writing temporary file ${tmpName}`);
+    const res = await fetch(endpoint);
 
-  // TODO: use a custom node script to convert the language
-  // list to something more easily consumeable by a javascript app.
-  await cleanupLDMLJSON(tmpName, finalName, logger);
+    logger(`Fetching ${endpoint}\n \\=> ${res.status} ${res.statusText}`);
 
-  await rm(tmpName);
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: '@_'
+    });
+    const parsed = parser.parse(await res.text());
+    await writeFile(tmpName, JSON.stringify(parsed));
 
-  logger(`Removed ${tmpName}\n********************`);
+    logger(`Writing temporary file ${tmpName}`);
+
+    // TODO: use a custom node script to convert the language
+    // list to something more easily consumeable by a javascript app.
+    await cleanupLDMLJSON(tmpName, finalName, logger);
+
+    await rm(tmpName);
+
+    logger(`Removed ${tmpName}\n${sectionDelim}`);
+  } else {
+    logger(`Skipping ${lang}\n${sectionDelim}`);
+  }
+
+  return update;
 }
 
-async function splitLangtagsJson(
-  inputName: string,
-  outputName: string,
-  specialName: string,
-  logger: Logger
-) {
+async function splitLangtagsJson(inputName: string, outputName: string, logger: Logger) {
   logger(`Splitting langtags @ ${inputName}`);
   const raw = (await readFile(inputName)).toString();
   const data = JSON.parse(raw) as { tag: string }[];
@@ -249,17 +261,21 @@ async function splitLangtagsJson(
     return !el.tag.startsWith('_');
   });
 
-  const special = data.filter((el: { tag: string }) => {
+  /*const special = data.filter((el: { tag: string }) => {
     return el.tag.startsWith('_');
-  });
+  });*/
 
   await writeFile(outputName, JSON.stringify(output));
 
-  await writeFile(specialName, JSON.stringify(special));
+  //await writeFile(specialName, JSON.stringify(special));
 
-  logger(`JSON output written to ${outputName} and ${specialName}`);
+  logger(`JSON output written to ${outputName}`); // and ${specialName}`);
 
-  return { langtags: output.length, specialtags: special.length };
+  await rm(inputName);
+
+  logger(`Removed ${inputName}`);
+
+  return { langtags: output.length }; //, specialtags: special.length };
 }
 
 function toAbbrTextMap(arr: Record<string, unknown>[]) {
