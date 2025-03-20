@@ -3,9 +3,9 @@
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
+  import type { PrunedProject } from '$lib/projects';
   import { byString } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
-  import type { PrunedProject } from '..';
 
   interface Props {
     project: PrunedProject;
