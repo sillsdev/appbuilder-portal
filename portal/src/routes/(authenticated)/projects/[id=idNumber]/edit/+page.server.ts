@@ -4,7 +4,7 @@ import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import { verifyCanViewAndEdit } from '$lib/projects/common.server';
+import { verifyCanViewAndEdit } from '$lib/projects/server';
 import type { Actions, PageServerLoad } from './$types';
 
 const projectPropertyEditSchema = v.object({
