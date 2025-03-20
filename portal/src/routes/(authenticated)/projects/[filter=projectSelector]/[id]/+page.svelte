@@ -8,8 +8,8 @@
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import type { ProjectForAction, PrunedProject } from '$lib/projects/common';
-  import { canArchive, canReactivate } from '$lib/projects/common';
+  import type { ProjectForAction, PrunedProject } from '$lib/projects';
+  import { canArchive, canReactivate } from '$lib/projects';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';

@@ -5,7 +5,7 @@
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
   import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
-  import { canModifyProject } from '$lib/projects/common';
+  import { canModifyProject } from '$lib/projects';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
   import type { PageData } from './$types';

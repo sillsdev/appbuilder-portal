@@ -6,7 +6,7 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import type { PrunedProject } from '$lib/projects/common';
+  import type { PrunedProject } from '$lib/projects';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import { byName } from '$lib/utils/sorting';
   import type { FormResult } from 'sveltekit-superforms';
@@ -99,7 +99,7 @@
   {#if projects.length > 0}
     <div class="w-full relative p-4">
       {#each projects as project}
-        <ProjectCard project={project} route='directory' />
+        <ProjectCard {project} route="directory" />
       {/each}
     </div>
   {:else}
