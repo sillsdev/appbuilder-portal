@@ -3,7 +3,8 @@
   import SortTable from '$lib/components/SortTable.svelte';
   import * as m from '$lib/paraglide/messages';
   import { languageTag } from '$lib/paraglide/runtime';
-  import { byName, byNumber, byString, bytesToHumanSize } from '$lib/utils';
+  import { bytesToHumanSize } from '$lib/utils';
+  import { byName, byNumber, byString } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { instructions } from './instructions';

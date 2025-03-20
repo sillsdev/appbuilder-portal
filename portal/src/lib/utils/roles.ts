@@ -1,44 +1,4 @@
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-
-export function bytesToHumanSize(bytes: bigint | null) {
-  if (bytes === null) {
-    return '--';
-  }
-  const base = BigInt('1024');
-  if (bytes > base ** BigInt(3)) {
-    return bytes / base ** BigInt(3) + ' GB';
-  } else if (bytes > base * base) {
-    return bytes / (base * base) + ' MB';
-  } else if (bytes > base) {
-    return bytes / base + ' KB';
-  } else {
-    return bytes + ' bytes';
-  }
-}
-
-interface NamedEntity {
-  Name: string | null | undefined;
-}
-
-export function byName(
-  a: NamedEntity | null | undefined,
-  b: NamedEntity | null | undefined,
-  languageTag: string
-): number {
-  return byString(a?.Name, b?.Name, languageTag);
-}
-
-export function byString(
-  a: string | null | undefined,
-  b: string | null | undefined,
-  languageTag: string
-): number {
-  return a?.localeCompare(b ?? '', languageTag) ?? 0;
-}
-
-export function byNumber(a: number | bigint | null, b: number | bigint | null): number {
-  return a === b ? 0 : (a ?? 0) > (b ?? 0) ? 1 : -1;
-}
+import { RoleId } from "sil.appbuilder.portal.common/prisma";
 
 /** returns true if user is a SuperAdmin, or is an OrgAdmin for the specified organization
  * @param roles [RoleId, OrganizationId][]

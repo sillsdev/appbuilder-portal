@@ -1,7 +1,7 @@
 <script lang="ts">
   import IconContainer from '$lib/components/IconContainer.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { getTimeDateString } from '$lib/timeUtils';
+  import { getTimeDateString } from '$lib/utils/time';
   import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
 
   interface Props {

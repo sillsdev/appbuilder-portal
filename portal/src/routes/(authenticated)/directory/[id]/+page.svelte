@@ -6,8 +6,8 @@
   import { languageTag } from '$lib/paraglide/runtime';
   import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
   import { canModifyProject } from '$lib/projects/common';
-  import { getRelativeTime } from '$lib/timeUtils';
-  import { byName } from '$lib/utils';
+  import { byName } from '$lib/utils/sorting';
+  import { getRelativeTime } from '$lib/utils/time';
   import type { PageData } from './$types';
 
   interface Props {

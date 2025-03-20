@@ -1,4 +1,4 @@
-import { isAdminForOrg, isSuperAdmin } from '$lib/utils';
+import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';

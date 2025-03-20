@@ -1,4 +1,4 @@
-import { isAdmin } from '$lib/utils.js';
+import { isAdmin } from '$lib/utils/roles';
 import { error, json } from '@sveltejs/kit';
 import { jwtVerify } from 'jose';
 import { createPublicKey } from 'node:crypto';
