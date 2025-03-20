@@ -98,7 +98,7 @@
         classes="w-full {!tzValue || timeZoneMap.has(tzValue) ? '' : 'select-error'}"
         dropdownClasses="w-full"
       >
-        {#snippet listElement({ item })}
+        {#snippet listElement(item)}
           <div class="w-full right-0">
             <span>{item.item.value}</span>
           </div>
