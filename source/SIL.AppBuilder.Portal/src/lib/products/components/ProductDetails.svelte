@@ -16,6 +16,7 @@
       Command: string | null;
       Comment: string | null;
       DateTransition: Date | null;
+      User: { Name: string | null } | null;
     }[];
   };
   }
@@ -101,7 +102,7 @@
             <td>
               <!-- Does not include WorkflowUserId mapping. Might be needed but didn't seem like it to me -->
               {#if ![2, 3, 4].includes(transition.TransitionType)}
-                {transition.AllowedUserNames || m.appName()}
+                {transition.User?.Name || transition.AllowedUserNames || m.appName()}
               {/if}
             </td>
             <td>{transition.Command ?? ''}</td>
