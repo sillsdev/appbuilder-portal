@@ -249,9 +249,9 @@ model ProductPublications {
 model ProductTransitions {
   Id               Int       @id(map: "PK_ProductTransitions") @default(autoincrement())
   ProductId        String    @db.Uuid
+  // Since users are never deleted, only locked, this should be fine
+  UserId           Int?
   // TODO: remove when DWKit is replaced
-  // Could possibly be replaced with regular UserId, but probably shouldn't, because what if a User is deleted?
-  // Maybe replace with name? Or perhaps this would already be taken care of by populating AllowedUserNames with just the name of the user who caused the product transition...
   WorkflowUserId   String?   @db.Uuid
   AllowedUserNames String?
   InitialState     String?
@@ -262,6 +262,7 @@ model ProductTransitions {
   TransitionType   Int       @default(1)
   WorkflowType     Int?
   Product          Products  @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductTransitions_Products_ProductId")
+  User             Users?    @relation(fields: [UserId], references: [Id])
 
   @@index([ProductId], map: "IX_ProductTransitions_ProductId")
 }
@@ -472,6 +473,7 @@ model Users {
   Projects                      Projects[]
   UserRoles                     UserRoles[]
   UserTasks                     UserTasks[]
+  ProductTransitions            ProductTransitions[]
 
   @@index([WorkflowUserId], map: "IX_Users_WorkflowUserId")
 }

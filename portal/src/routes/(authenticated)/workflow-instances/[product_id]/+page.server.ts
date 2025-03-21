@@ -50,7 +50,12 @@ export const load: PageServerLoad = async ({ params }) => {
           TransitionType: true,
           WorkflowType: true,
           AllowedUserNames: true,
-          Comment: true
+          Comment: true,
+          User: {
+            select: {
+              Name: true
+            }
+          }
         },
         orderBy: [
           {

@@ -209,6 +209,7 @@ export async function POST({ params, request, fetch }) {
       TransitionType: ProductTransitionType.ProjectAccess,
       InitialState: 'Project ' + use,
       WorkflowUserId: user[0].WorkflowUserId,
+      UserId: user[0].Id,
       DateTransition: new Date()
     }))
   });

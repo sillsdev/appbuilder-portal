@@ -287,7 +287,8 @@ export class Workflow {
         where: {
           ProductId: this.productId,
           DateTransition: null,
-          WorkflowUserId: null
+          WorkflowUserId: null,
+          UserId: null
         }
       });
       // Yes, the ModifyUserTasks will also delete tasks. I just have this here so the tasks are cleared immediately, and so that the tasks are also cleared when the instance is deleted.
@@ -486,6 +487,7 @@ export class Workflow {
           Id: transition.Id
         },
         data: {
+          UserId: userId,
           WorkflowUserId: user?.WorkflowUserId ?? null,
           AllowedUserNames: user?.Name ?? null,
           Command: command ?? null,
@@ -497,6 +499,7 @@ export class Workflow {
       await DatabaseWrites.productTransitions.create({
         data: {
           ProductId: this.productId,
+          UserId: userId,
           WorkflowUserId: user?.WorkflowUserId ?? null,
           AllowedUserNames: user?.Name ?? null,
           InitialState: initialState,
