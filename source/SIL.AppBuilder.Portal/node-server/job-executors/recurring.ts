@@ -1,7 +1,7 @@
 import { Job } from 'bullmq';
 import { XMLParser } from 'fast-xml-parser';
 import { existsSync } from 'fs';
-import { mkdir, stat, writeFile } from 'fs/promises';
+import { mkdir, readFile, stat, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { BuildEngine, BullMQ, DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 
@@ -142,27 +142,29 @@ export async function refreshLangTags(
 
     job.updateProgress(25);
 
-    job.log(`${sectionDelim}\nDownloading all supported languages...`);
+    if (shouldUpdateLangtags.shouldUpdate) {
+      job.log(`${sectionDelim}\nDownloading all supported languages...`);
 
-    const res = await fetchWithLog('https://ldml.api.sil.org/langtags.json', log);
+      const res = await fetchWithLog('https://ldml.api.sil.org/langtags.json', log);
 
-    const langtags = (
-      (await res.json()) as {
-        tag: string;
-        localname?: string;
-        name: string;
-      }[]
-    )
-      .filter((lang) => !lang.tag.startsWith('_'))
-      .map(({ tag, localname, name }) => ({ tag, localname, name }));
+      const langtags = (
+        (await res.json()) as {
+          tag: string;
+          localname?: string;
+          name: string;
+        }[]
+      )
+        .filter((lang) => !lang.tag.startsWith('_'))
+        .map(({ tag, localname, name }) => ({ tag, localname, name }));
 
-    await writeFile(langtagsPath, JSON.stringify(langtags));
+      await writeFile(langtagsPath, JSON.stringify(langtags));
 
-    job.log(`langtags written to ${langtagsPath}`);
+      job.log(`langtags written to ${langtagsPath}`);
 
-    ret['langtags']['length'] = langtags.length;
+      ret['langtags']['length'] = langtags.length;
 
-    job.log(`Downloaded all supported languages\n${sectionDelim}`);
+      job.log(`Downloaded all supported languages\n${sectionDelim}`);
+    }
     job.updateProgress(55);
 
     ret['es-419'] = await processLocalizedNames(localDir, 'es-419', log);
@@ -194,13 +196,20 @@ async function shouldUpdate(localPath: string, remotePath: string, logger: Logge
     logger(`Found ${localPath}`);
     try {
       const localLastModified = new Date((await stat(localPath)).mtimeMs);
-      logger(`Local LastModified: ${localLastModified}`);
       const res = await fetchWithLog(remotePath, logger, { method: 'HEAD' });
+      if (res.status === 304) {
+        // HTTP 304 Not Modified
+        return {
+          shouldUpdate: false,
+          status: res.status + ' ' + res.statusText
+        };
+      }
+      logger(`Local LastModified: ${localLastModified.valueOf()} (${localLastModified})`);
       const remoteLastModified = new Date(res.headers.get('Last-Modified'));
-      logger(`Remote LastModified: ${remoteLastModified}`);
+      logger(`Remote LastModified: ${remoteLastModified.valueOf()} (${remoteLastModified})`);
 
       return {
-        shouldUpdate: localLastModified?.valueOf() >= remoteLastModified?.valueOf(),
+        shouldUpdate: localLastModified.valueOf() < remoteLastModified.valueOf(),
         localLastModified,
         remoteLastModified
       };
@@ -228,16 +237,22 @@ async function processLocalizedNames(
     await mkdir(finalDir);
   }
   const finalName = join(finalDir, 'ldml.json');
-  const endpoint = `https://ldml.api.sil.org/${lang}?inc[0]=localeDisplayNames`;
+  const revIdFileName = join(finalDir, 'revid');
+  const endpoint = `https://ldml.api.sil.org/${lang}`;
 
   logger(`${sectionDelim}`);
 
-  const update = await shouldUpdate(finalName, endpoint, logger);
+  let revid = '';
+  if (existsSync(revIdFileName)) {
+    revid = '?revid=' + (await readFile(revIdFileName)).toString();
+  }
+
+  const update = await shouldUpdate(finalName, endpoint + revid, logger);
 
   if (update.shouldUpdate) {
     logger(`Downloading ldml data for ${lang}...`);
 
-    const res = await fetchWithLog(endpoint, logger);
+    const res = await fetchWithLog(endpoint + '?inc[0]=localeDisplayNames', logger);
 
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -245,14 +260,20 @@ async function processLocalizedNames(
     });
     const parsed = parser.parse(await res.text());
 
-    const output = parsed.ldml.localeDisplayNames.languages.language.map((item) => [
-      item['@_type'],
-      item['#text']
-    ]);
+    revid = parsed.ldml.identity.special['sil:identity']['@_revid'];
 
-    update['length'] = output.length;
+    const output = {
+      languages: parsed.ldml.localeDisplayNames.languages.language.map((item) => [
+        item['@_type'],
+        item['#text']
+      ])
+    };
+
+    update['length'] = output.languages.length;
+    update['revid'] = revid;
 
     await writeFile(finalName, JSON.stringify(output));
+    await writeFile(revIdFileName, revid);
 
     logger(`Localized language names for ${lang} written to ${finalName}`);
   } else {
