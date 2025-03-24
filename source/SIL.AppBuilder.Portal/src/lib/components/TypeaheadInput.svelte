@@ -12,7 +12,7 @@
     search?: string;
     inputElement?: HTMLInputElement;
     custom?: Snippet;
-    listElement?: Snippet<[T]>;
+    listElement?: Snippet<[T, boolean]>;
     onItemClicked?: (item: T) => void;
   }
 
@@ -79,19 +79,15 @@
     >
       {#each list as item, i}
         <li
-          class:selected={i === selectedIndex}
           role="option"
           aria-selected={selectedIndex === i}
           onmousedown={() => selectItem(item)}
           onmouseover={() => (selectedIndex = i)}
           onfocus={() => (selectedIndex = i)}
         >
-          {@render listElement?.(item)}
+          {@render listElement?.(item, i === selectedIndex)}
         </li>
       {/each}
     </ul>
   {/if}
 </div>
-
-<style>
-</style>

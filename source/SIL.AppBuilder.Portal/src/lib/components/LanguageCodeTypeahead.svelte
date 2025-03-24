@@ -155,13 +155,14 @@
       {langtagList.find((l) => l.tag === langCode)?.name ?? ''}
     </span>
   {/snippet}
-  {#snippet listElement(res)}
+  {#snippet listElement(res, selected)}
     {@const additionalMatch = res.matches
       ?.filter((match) => ['names', 'variants', 'region', 'regions'].includes(match.key ?? ''))
       .at(0)}
     {@const nameDiffersInLocale = res.item.localname !== res.item.nameInLocale}
     <div
       class="w-96 p-2 border border-b-0 border-neutral cursor-pointer flex flex-col place-content-between bg-base-100"
+      class:selected
     >
       <div class="flex flex-row place-content-between">
         <!-- Debug -->
@@ -210,3 +211,9 @@
     </div>
   {/snippet}
 </TypeaheadInput>
+
+<style>
+  .selected {
+    background-color: oklch(var(--b2));
+  }
+</style>
