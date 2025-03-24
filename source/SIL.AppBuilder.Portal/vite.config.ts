@@ -1,4 +1,4 @@
-import { paraglide } from '@inlang/paraglide-sveltekit/vite';
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { spawn, type ChildProcessWithoutNullStreams } from 'child_process';
 import { stat, writeFile } from 'fs/promises';
@@ -56,8 +56,15 @@ export default defineConfig({
         }
       }
     },
-    paraglide({ project: './project.inlang', outdir: './src/lib/paraglide' }),
     sveltekit(),
+    paraglideVitePlugin({
+      project: './project.inlang',
+      outdir: './src/lib/paraglide',
+      // TODO: not sure how we want to specify the strategy
+      // The example has ['url', 'cookie', 'baseLocale']
+      // As best as I can tell, url is what we were using before...
+      strategy: ['url']
+    }),
     (() => {
       let executingProcess: ChildProcessWithoutNullStreams;
       let running: boolean;
