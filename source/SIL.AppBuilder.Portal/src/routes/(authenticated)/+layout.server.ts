@@ -1,6 +1,7 @@
 import { i18n } from '$lib/i18n';
+import type { Entries } from '$lib/utils';
+import { langtagsSchema, type l10nEntries, type l10nKeys } from '$lib/utils/locales';
 import { isSuperAdmin } from '$lib/utils/roles';
-import { langtagsSchema } from '$lib/valibot';
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
@@ -70,10 +71,10 @@ export const load: LayoutServerLoad = async (event) => {
         let ret = null;
         if (existsSync(filePath)) {
           const file = (await readFile(filePath)).toString();
-          ret = JSON.parse(file) as [string, string][];
+          ret = JSON.parse(file) as Entries<l10nKeys, Entries<string, string>>;
         }
         return [tag, ret] as [typeof tag, typeof ret];
       })
-    )
+    ) as l10nEntries
   };
 };

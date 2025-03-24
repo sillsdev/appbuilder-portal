@@ -150,12 +150,24 @@ export async function refreshLangTags(
       const langtags = (
         (await res.json()) as {
           tag: string;
-          localname?: string;
+          localname?: string | undefined;
           name: string;
+          names?: string[] | undefined;
+          region: string;
+          regions?: string[] | undefined;
+          variants?: string[] | undefined;
         }[]
       )
         .filter((lang) => !lang.tag.startsWith('_'))
-        .map(({ tag, localname, name }) => ({ tag, localname, name }));
+        .map(({ tag, localname, name, names, region, regions, variants }) => ({
+          tag,
+          localname,
+          name,
+          names,
+          region,
+          regions,
+          variants
+        }));
 
       await writeFile(langtagsPath, JSON.stringify(langtags));
 
@@ -187,7 +199,7 @@ type Logger = (msg: string) => void;
 
 async function fetchWithLog(url: string, logger: Logger, fetchInit?: RequestInit) {
   const res = await fetch(url, fetchInit);
-  logger(`Fetching ${url}\n\\=> ${res.status} ${res.statusText}`);
+  logger(`${fetchInit?.method ?? 'GET'} ${url}\n\\=> ${res.status} ${res.statusText}`);
   return res;
 }
 
@@ -224,6 +236,10 @@ async function shouldUpdate(localPath: string, remotePath: string, logger: Logge
   };
 }
 
+function mapXMLAttributes(item: unknown) {
+  return [item['@_type'], item['#text']];
+}
+
 async function processLocalizedNames(
   localDir: string,
   lang: string,
@@ -243,13 +259,18 @@ async function processLocalizedNames(
   logger(`${sectionDelim}`);
 
   let revid = '';
+  let update: Awaited<ReturnType<typeof shouldUpdate>>;
   if (existsSync(revIdFileName)) {
-    revid = '?revid=' + (await readFile(revIdFileName)).toString();
+    revid = (await readFile(revIdFileName)).toString();
+    update = await shouldUpdate(finalName, endpoint + '?revid=' + revid, logger);
+  } else {
+    logger(`${revIdFileName} does not exist`);
+    update = { shouldUpdate: true };
   }
 
-  const update = await shouldUpdate(finalName, endpoint + revid, logger);
+  update['foundRevid'] = revid;
 
-  if (update.shouldUpdate) {
+  if (update.shouldUpdate || !revid) {
     logger(`Downloading ldml data for ${lang}...`);
 
     const res = await fetchWithLog(endpoint + '?inc[0]=localeDisplayNames', logger);
@@ -262,14 +283,13 @@ async function processLocalizedNames(
 
     revid = parsed.ldml.identity.special['sil:identity']['@_revid'];
 
-    const output = {
-      languages: parsed.ldml.localeDisplayNames.languages.language.map((item) => [
-        item['@_type'],
-        item['#text']
-      ])
-    };
+    const output = [
+      ['languages', parsed.ldml.localeDisplayNames.languages.language.map(mapXMLAttributes)],
+      ['territories', parsed.ldml.localeDisplayNames.territories.territory.map(mapXMLAttributes)]
+    ];
 
-    update['length'] = output.languages.length;
+    update['languages'] = output[0][1].length;
+    update['territories'] = output[1][1].length;
     update['revid'] = revid;
 
     await writeFile(finalName, JSON.stringify(output));

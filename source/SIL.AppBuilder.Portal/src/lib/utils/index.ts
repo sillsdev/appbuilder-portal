@@ -13,3 +13,5 @@ export function bytesToHumanSize(bytes: bigint | null) {
     return bytes + ' bytes';
   }
 }
+
+export type Entries<K, V> = [K, V][];

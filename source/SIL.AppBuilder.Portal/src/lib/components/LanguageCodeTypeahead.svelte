@@ -4,50 +4,59 @@
   import { page } from '$app/state';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
-  import type { Langtags } from '$lib/valibot';
+  import {
+    createl10nMapFromEntries,
+    localizeTagData,
+    type LangInfo,
+    type l10nEntries
+  } from '$lib/utils/locales';
   import type { FuseResultMatch } from 'fuse.js';
   import TypeaheadInput from './TypeaheadInput.svelte';
 
-  const langtagmap = new Map(
-    (page.data.localizedNames as [string, [string, string][] | null][]).map(([tag, localized]) => [
-      tag,
-      localized ? new Map(localized) : null
-    ])
-  );
+  const langtagmap = createl10nMapFromEntries(page.data.localizedNames as l10nEntries);
 
-  const currentLangtagMap = langtagmap.get(getLocale());
+  let langtagList = localizeTagData(page.data.langtags as LangInfo[], langtagmap, getLocale());
 
   // https://www.fusejs.io/api/options.html
   // Search the tag, name and localname. Give tag a double weighting
   // This seems very fast to me, but if it is found to be slow investigate providing an index at compile time
-  const fuzzySearch = new Fuse(
-    (page.data.langtags as Langtags).map((langtag) => ({
-      ...langtag,
-      name: currentLangtagMap?.get(langtag.tag) ?? langtag.name
-    })),
-    {
-      keys: [
-        {
-          name: 'tag',
-          weight: 2
-        },
-        'name',
-        'localname'
-      ],
-      includeScore: true,
-      includeMatches: true,
-      isCaseSensitive: false,
-      threshold: 0.6,
-      ignoreLocation: true,
-      ignoreFieldNorm: true
-      // minMatchCharLength: 2
-    }
-  );
+  const fuzzySearch = new Fuse(langtagList, {
+    keys: [
+      {
+        name: 'tag',
+        weight: 3
+      },
+      {
+        name: 'nameInLocale',
+        weight: 3
+      },
+      {
+        name: 'name',
+        weight: 2
+      },
+      {
+        name: 'localname',
+        weight: 2
+      },
+      // additional matches
+      'region',
+      'regions',
+      'names',
+      'variants'
+    ],
+    includeScore: true,
+    includeMatches: true,
+    isCaseSensitive: false,
+    threshold: 0.6,
+    ignoreLocation: true,
+    ignoreFieldNorm: true
+    // minMatchCharLength: 2
+  });
 
   function search(searchValue: string) {
     return fuzzySearch.search(searchValue);
   }
-  type SearchValue = ReturnType<typeof search>[0];
+  type FuseResult = ReturnType<typeof search>[number];
 
   // This could possibly be converted to an iterator/generator function?
   function parseMatches(
@@ -78,7 +87,6 @@
     }
     return ret;
   }
-  let langtagList = page.data.langtags as Langtags;
   let typeaheadInput: HTMLInputElement | undefined = $state(undefined);
   interface Props {
     langCode: string;
@@ -96,8 +104,8 @@
 </script>
 
 {#snippet colorValueForKeyMatch(
-  searchItem: SearchValue['item'],
-  key: keyof SearchValue['item'],
+  searchItem: FuseResult['item'],
+  key: keyof FuseResult['item'],
   matches?: readonly FuseResultMatch[]
 )}
   {@const value = searchItem[key]}
@@ -108,21 +116,18 @@
     {#if !matchList.length}
       {value}
     {:else}
-      {@const hasMultiCharMatch = matches.some((match) =>
+      {@const hasMultiCharMatch = matchList.some((match) =>
         // Note: match indices are inclusive (e.x. a match of indices [0, 2] indicates the
         // first three chars of a string) so we use +1 a lot to get the length of the match
         match.indices.some(([x, y]) => y - x + 1 > 2)
       )}
-      <div>
-        <!--ret-->
-        {#each parseMatches(value!, matchList, hasMultiCharMatch) as match}
-          {#if match.h}
-            <span class="bg-yellow-300 dark:bg-accent">{match.v}</span>
-          {:else}
-            {match.v}
-          {/if}
-        {/each}
-      </div>
+      {#each parseMatches(value!, matchList, hasMultiCharMatch) as match}
+        {#if match.h}
+          <span class="bg-yellow-300 dark:bg-accent">{match.v}</span>
+        {:else}
+          {match.v}
+        {/if}
+      {/each}
     {/if}
   {/if}
 {/snippet}
@@ -132,8 +137,8 @@
   getList={(searchValue) => search(searchValue).slice(0, 5)}
   classes="pr-20 {inputClasses}"
   bind:search={langCode}
-  onItemClicked={(item) => {
-    langCode = item.item.tag;
+  onItemClicked={(res) => {
+    langCode = res.item.tag;
     onLangCodeSelected?.(langCode);
   }}
   {dropdownClasses}
@@ -151,33 +156,57 @@
     </span>
   {/snippet}
   {#snippet listElement(res)}
+    {@const additionalMatch = res.matches
+      ?.filter((match) => ['names', 'variants', 'region', 'regions'].includes(match.key ?? ''))
+      .at(0)}
+    {@const nameDiffersInLocale = res.item.localname !== res.item.nameInLocale}
     <div
-      class="w-96 p-2 border border-b-0 border-neutral listElement cursor-pointer flex flex-row place-content-between bg-base-100"
+      class="w-96 p-2 border border-b-0 border-neutral cursor-pointer flex flex-col place-content-between bg-base-100"
     >
-      <!-- Debug -->
-      <!-- <span class="absolute [right:-10rem] bg-black">{item.score}</span> -->
-      <span class="mr-4">
-        {#if res.item.localname}
+      <div class="flex flex-row place-content-between">
+        <!-- Debug -->
+        <!-- <span class="absolute [right:-10rem] bg-black">{item.score}</span> -->
+        <span class="mr-4">
           <b>
-            {@render colorValueForKeyMatch(res.item, 'localname', res.matches)}
+            {#if res.item.localname !== res.item.name}
+              {@render colorValueForKeyMatch(res.item, 'localname', res.matches)}
+            {:else}
+              {@render colorValueForKeyMatch(res.item, 'name', res.matches)}
+            {/if}
           </b>
           <br />
-          <span class="text-sm">
-            {@render colorValueForKeyMatch(res.item, 'name', res.matches)}
-          </span>
-        {:else}
-          <b>
-            {@render colorValueForKeyMatch(res.item, 'name', res.matches)}
-          </b>
-        {/if}
-      </span>
-      <span class="w-16">
-        <span>
-          {@render colorValueForKeyMatch(res.item, 'tag', res.matches)}
+          {#if nameDiffersInLocale}
+            <span class="text-base-content text-opacity-75 text-sm">
+              {@render colorValueForKeyMatch(res.item, 'nameInLocale', res.matches)}
+            </span>
+          {/if}
         </span>
-        <br />
-        <span class="text-base-content text-opacity-75 text-sm">{m.localePicker_code()}</span>
-      </span>
+        <span class="w-16">
+          <span>
+            {@render colorValueForKeyMatch(res.item, 'tag', res.matches)}
+          </span>
+          <br />
+          <span class="text-base-content text-opacity-75 text-sm">{m.localePicker_code()}</span>
+        </span>
+      </div>
+      {#if additionalMatch && additionalMatch.key}
+        <div class="flex-row justify-content-space-between mt-2">
+          <div class="flex-col">
+            <div class="text-base-content text-opacity-75 uppercase">
+              <!-- TODO: i18n (requires pluralization) -->
+              {additionalMatch.key}
+            </div>
+            <div class="line-clamp-1 max-w-80">
+              {@render colorValueForKeyMatch(
+                res.item,
+                //@ts-expect-error the type is correct
+                additionalMatch.key,
+                res.matches
+              )}
+            </div>
+          </div>
+        </div>
+      {/if}
     </div>
   {/snippet}
 </TypeaheadInput>

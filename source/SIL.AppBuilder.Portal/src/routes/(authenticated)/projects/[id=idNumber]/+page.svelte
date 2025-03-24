@@ -9,6 +9,7 @@
   import { getLocale, locales, localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
+  import { createl10nMapFromEntries } from '$lib/utils/locales';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
@@ -23,9 +24,7 @@
 
   let { data = $bindable() }: Props = $props();
 
-  const langtagmap = new Map(
-    data.localizedNames.map(([tag, localized]) => [tag, localized ? new Map(localized) : null])
-  );
+  const langtagmap = createl10nMapFromEntries(data.localizedNames);
 
   const { form: authorForm, enhance: authorEnhance } = superForm(data.authorForm);
   const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm, {
@@ -148,7 +147,8 @@
             </span>
             <span>
               {data.project?.Language} ({langtagmap
-                .get(languageTag())
+                .get(getLocale())
+                ?.get('languages')
                 ?.get(data.project.Language ?? '')})
             </span>
           </div>
