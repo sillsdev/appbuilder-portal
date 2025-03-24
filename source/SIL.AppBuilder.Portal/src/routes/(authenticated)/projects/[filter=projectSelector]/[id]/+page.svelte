@@ -7,7 +7,7 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { getLocale } from '$lib/paraglide/runtime';
   import type { ProjectForAction, PrunedProject } from '$lib/projects';
   import { canArchive, canReactivate } from '$lib/projects';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
@@ -222,12 +222,12 @@
           </div>
           <hr />
           <div class="flex flex-col pt-1 space-y-1">
-            {#each selectedProjects.toSorted((a, b) => byName(a, b, languageTag())) as project}
+            {#each selectedProjects.toSorted((a, b) => byName(a, b, getLocale())) as project}
               {@const products = project.Products?.filter((p) => p.CanRebuild || p.CanRepublish)}
               <div class="p-2">
                 <h3>{project.Name}</h3>
                 {#if products?.length}
-                  {#each products.toSorted( (a, b) => byString(a.ProductDefinitionName, b.ProductDefinitionName, languageTag()) ) as product}
+                  {#each products.toSorted( (a, b) => byString(a.ProductDefinitionName, b.ProductDefinitionName, getLocale()) ) as product}
                     <!-- svelte-ignore a11y_click_events_have_key_events -->
                     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                     <label
@@ -318,9 +318,9 @@
     {/if}
   </div>
   {#if projects.length > 0}
-    {@const langTag = languageTag()}
+    {@const locale = getLocale()}
     <div class="w-full relative p-4">
-      {#each projects.toSorted((a, b) => byName(a, b, langTag)) as project}
+      {#each projects.toSorted((a, b) => byName(a, b, locale)) as project}
         <ProjectCard {project}>
           {#snippet select()}
             <input

@@ -2,7 +2,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { getLocale } from '$lib/paraglide/runtime';
   import type { PrunedProject } from '$lib/projects';
   import { byString } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
@@ -80,7 +80,7 @@
   </div>
   <div class="w-full bg-base-100 p-4 pt-2">
     {#if project.Products.length > 0}
-      {@const langTag = languageTag()}
+      {@const locale = getLocale()}
       <table class="w-full">
         <thead>
           <tr class="text-left">
@@ -90,7 +90,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each project.Products.toSorted( (a, b) => byString(a.ProductDefinitionName, b.ProductDefinitionName, langTag) ) as product}
+          {#each project.Products.toSorted( (a, b) => byString(a.ProductDefinitionName, b.ProductDefinitionName, locale) ) as product}
             <tr>
               <td class="p-2">
                 <div class="flex items-center">

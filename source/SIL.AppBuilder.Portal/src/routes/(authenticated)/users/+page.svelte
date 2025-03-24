@@ -5,7 +5,7 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { isAdmin } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
   import { superForm, type FormResult } from 'sveltekit-superforms';
@@ -65,7 +65,7 @@
       class="flex flex-row flex-wrap place-content-end items-center p-2 gap-1"
     >
       {#if data.organizations.length > 1}
-        {@const langTag = languageTag()}
+        {@const locale = getLocale()}
         <label class="flex flex-wrap items-center gap-x-2 {mobileSizing}">
           <span class="label-text">{m.users_organization_filter()}:</span>
           <OrganizationDropdown
@@ -91,9 +91,9 @@
       </thead>
       <tbody>
         {#each users as user}
-          {@const langTag = languageTag()}
+          {@const locale = getLocale()}
           {@const userOrgs = user.O.map((o) => ({ ...o, Name: orgMap.get(o.I) })).sort((a, b) =>
-            byName(a, b, langTag)
+            byName(a, b, locale)
           )}
           <tr class="align-top">
             <td class="p-2">
@@ -125,7 +125,7 @@
                         m.users_roles_author()
                       ][r]
                   )
-                    .sort((a, b) => byString(a, b, langTag))
+                    .sort((a, b) => byString(a, b, locale))
                     .join(', ') || m.users_noRoles()}
                 </div>
               {/each}
@@ -140,7 +140,7 @@
                   </span>
                   <br />
                   {org.G.map((g) => groupMap.get(g))
-                    .sort((a, b) => byString(a, b, langTag))
+                    .sort((a, b) => byString(a, b, locale))
                     .join(', ') || m.common_none()}
                 </div>
               {/each}

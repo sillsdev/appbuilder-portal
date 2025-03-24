@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -20,17 +20,17 @@
     }
   });
 
-  const langTag = languageTag();
+  const locale = getLocale();
 
   const workflows = data.options.workflows
     .filter((w) => w.Type === 1)
-    .sort((a, b) => byName(a, b, langTag));
+    .sort((a, b) => byName(a, b, locale));
   const rebuildWorkflows = data.options.workflows
     .filter((w) => w.Type === 2)
-    .sort((a, b) => byName(a, b, langTag));
+    .sort((a, b) => byName(a, b, locale));
   const republishWorkflows = data.options.workflows
     .filter((w) => w.Type === 3)
-    .sort((a, b) => byName(a, b, langTag));
+    .sort((a, b) => byName(a, b, locale));
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->
@@ -45,7 +45,7 @@
       name="applicationType"
       bind:value={$form.applicationType}
     >
-      {#each data.options.applicationTypes.toSorted((a, b) => byName(a, b, langTag)) as type}
+      {#each data.options.applicationTypes.toSorted((a, b) => byName(a, b, locale)) as type}
         <option value={type.Id}>{type.Name}</option>
       {/each}
     </select>

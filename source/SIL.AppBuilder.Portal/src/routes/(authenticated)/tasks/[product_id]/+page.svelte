@@ -2,7 +2,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { bytesToHumanSize } from '$lib/utils';
   import { byName, byNumber, byString } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
@@ -219,7 +219,7 @@
     </div>
   {/if}
   {#if data?.files?.length}
-    {@const langTag = languageTag()}
+    {@const locale = getLocale()}
     <h3>{m.products_files_title()}</h3>
     <div class="w-full overflow-x-auto">
       <SortTable
@@ -229,7 +229,7 @@
           {
             id: 'artifactType',
             header: m.project_type(),
-            compare: (a, b) => byString(a.ArtifactType, b.ArtifactType, langTag)
+            compare: (a, b) => byString(a.ArtifactType, b.ArtifactType, locale)
           },
           {
             id: 'fileSize',
@@ -266,7 +266,7 @@
     </div>
   {/if}
   {#if data?.reviewers?.length}
-    {@const langTag = languageTag()}
+    {@const locale = getLocale()}
     <h3>{m.project_side_reviewers_title()}</h3>
     <div class="w-full overflow-x-auto">
       <SortTable
@@ -276,12 +276,12 @@
           {
             id: 'name',
             header: m.common_name(),
-            compare: (a, b) => byName(a, b, langTag)
+            compare: (a, b) => byName(a, b, locale)
           },
           {
             id: 'email',
             header: m.profile_email(),
-            compare: (a, b) => byString(a.Email, b.Email, langTag)
+            compare: (a, b) => byString(a.Email, b.Email, locale)
           }
         ]}
       >

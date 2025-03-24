@@ -4,7 +4,7 @@
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -32,7 +32,7 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_organizations_owner">
     <select class="select select-bordered" name="owner" bind:value={$form.owner}>
-      {#each data.options.users.toSorted((a, b) => byName(a, b, languageTag())) as option}
+      {#each data.options.users.toSorted((a, b) => byName(a, b, getLocale())) as option}
         <option value={option.Id}>{option.Name}</option>
       {/each}
     </select>

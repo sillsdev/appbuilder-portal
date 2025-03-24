@@ -4,7 +4,7 @@
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/utils/time';
   import type { PageData } from './$types';
 
@@ -19,7 +19,7 @@
   <h1>{m.tasks_title()}</h1>
   <div class="m-4 relative mt-0">
     {#if data.tasks.length > 0}
-      {@const langTag = languageTag()}
+      {@const locale = getLocale()}
       <table class="w-full">
         <thead>
           <tr class="border-b-2 text-left">
@@ -53,7 +53,7 @@
                 </a>
               </td>
               <td>
-                <Tooltip tip={task.DateUpdated?.toLocaleString(langTag)}>
+                <Tooltip tip={task.DateUpdated?.toLocaleString(locale)}>
                   {task.DateUpdated ? getRelativeTime(task.DateUpdated) : 'null'}
                 </Tooltip>
               </td>

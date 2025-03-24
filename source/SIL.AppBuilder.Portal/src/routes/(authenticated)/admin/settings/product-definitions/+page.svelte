@@ -3,7 +3,7 @@
   import { base } from '$app/paths';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import type { PageData } from './$types';
 
@@ -19,7 +19,7 @@
 </a>
 
 <div class="flex flex-col w-full">
-  {#each data.productDefinitions.toSorted((a, b) => byName(a, b, languageTag())) as pD}
+  {#each data.productDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as pD}
     <DataDisplayBox
       editable
       onEdit={() => goto(base + '/admin/settings/product-definitions/edit?id=' + pD.Id)}
