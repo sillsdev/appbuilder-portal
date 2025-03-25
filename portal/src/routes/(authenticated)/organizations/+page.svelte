@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import OrganizationSelector from '$lib/components/OrganizationSelector.svelte';
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import type { PageData } from './$types';
 
   interface Props {

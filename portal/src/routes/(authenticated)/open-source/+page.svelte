@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
 </script>
 
 <div class="w-full max-w-2xl mx-auto">

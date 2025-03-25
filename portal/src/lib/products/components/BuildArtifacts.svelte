@@ -1,8 +1,8 @@
 <script lang="ts">
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { bytesToHumanSize } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
@@ -45,17 +45,6 @@
     }
     return version;
   }
-
-  // temporary fix until paraglide supports pluralization
-  function pluralized(amount: number): string {
-    const message = m.project_products_numArtifacts({ amount });
-    if (amount === 0) {
-      return message.match(/=0 *\{(.*?)\}/)![1];
-    } else {
-      const matches = message.match(/other *\{(.*?)\{ amount \}(.*?)\}/);
-      return `${matches![1]}${amount}${matches![2]}`;
-    }
-  }
 </script>
 
 <div class="rounded-md border border-slate-400 w-full my-2">
@@ -64,14 +53,14 @@
       {versionString(build)}
     </span>
     <span>
-      {pluralized(build.ProductArtifacts.length)}
+      {m.project_products_numArtifacts({ amount: build.ProductArtifacts.length})}
     </span>
   </div>
   <div class="p-2 overflow-x-auto">
     {#if !build.ProductArtifacts.length}
       {m.project_products_noArtifacts()}
     {:else}
-      {@const langTag = languageTag()}
+      {@const locale = getLocale()}
       <table class="table table-auto bg-base-100">
         <thead>
           <tr>
@@ -82,11 +71,11 @@
           </tr>
         </thead>
         <tbody>
-          {#each build.ProductArtifacts.toSorted( (a, b) => byString(a.ArtifactType, b.ArtifactType, langTag) ) as artifact}
+          {#each build.ProductArtifacts.toSorted( (a, b) => byString(a.ArtifactType, b.ArtifactType, locale) ) as artifact}
             <tr>
               <td><IconContainer icon="mdi:file" width="20" /> {artifact.ArtifactType}</td>
               <td>
-                <Tooltip tip={artifact.DateUpdated?.toLocaleString(langTag)}>
+                <Tooltip tip={artifact.DateUpdated?.toLocaleString(locale)}>
                   {getRelativeTime(artifact.DateUpdated)}
                 </Tooltip>
               </td>
@@ -121,7 +110,7 @@
                 ? m.project_products_publications_succeeded()
                 : m.project_products_publications_failed()}
             </td>
-            <td>{pub.DateUpdated?.toLocaleDateString(languageTag())}</td>
+            <td>{pub.DateUpdated?.toLocaleDateString(getLocale())}</td>
             <td>
               <a href={pub.LogUrl} class="link">{m.project_products_publications_console()}</a>
             </td>

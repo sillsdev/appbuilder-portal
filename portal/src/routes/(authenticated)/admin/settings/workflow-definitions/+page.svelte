@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
-  import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import type { PageData } from './$types';
 
@@ -18,7 +18,7 @@
 </a>
 
 <div class="flex flex-col w-full">
-  {#each data.workflowDefinitions.toSorted((a, b) => byName(a, b, languageTag())) as wd}
+  {#each data.workflowDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as wd}
     <DataDisplayBox
       editable
       onEdit={() => goto('/admin/settings/workflow-definitions/edit?id=' + wd.Id)}

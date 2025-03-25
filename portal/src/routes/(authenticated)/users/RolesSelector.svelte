@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
   interface Props {
     roles: RoleId[];

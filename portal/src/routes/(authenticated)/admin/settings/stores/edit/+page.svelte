@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -35,7 +35,7 @@
   </LabeledFormInput>
   <LabeledFormInput name="storeTypes_name">
     <select class="select select-bordered" name="storeType" bind:value={$form.storeType}>
-      {#each data.options.toSorted((a, b) => byName(a, b, languageTag())) as option}
+      {#each data.options.toSorted((a, b) => byName(a, b, getLocale())) as option}
         <option value={option.Id}>{option.Name}</option>
       {/each}
     </select>

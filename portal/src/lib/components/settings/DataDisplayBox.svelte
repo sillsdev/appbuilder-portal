@@ -4,7 +4,7 @@
 -->
 <script lang="ts" generics="T extends Record<string, unknown>">
   import type { ValidI13nKey } from '$lib/i18n';
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import Icon from '@iconify/svelte';
 
   interface Props {

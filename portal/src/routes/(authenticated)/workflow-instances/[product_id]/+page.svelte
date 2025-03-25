@@ -1,7 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import IconContainer from '$lib/components/IconContainer.svelte';
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import { Springy } from '$lib/springyGraph.js';
   import { onMount } from 'svelte';

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
 
   interface Props {
@@ -12,7 +12,7 @@
 
 <div class="flex w-full">
   <div class="shrink space-y-2">
-    {#each groups.toSorted((a, b) => byName(a, b, languageTag())) as group}
+    {#each groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
       <div class="flex space-x-2">
         <input
           type="checkbox"
