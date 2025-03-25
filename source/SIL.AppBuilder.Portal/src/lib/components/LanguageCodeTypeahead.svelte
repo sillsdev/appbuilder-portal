@@ -152,7 +152,7 @@
       class="absolute right-4 italic [line-height:3rem]"
       onclick={() => typeaheadInput?.focus()}
     >
-      {langtagList.find((l) => l.tag === langCode)?.name ?? ''}
+      {langtagList.find((l) => l.tag === langCode)?.nameInLocale ?? ''}
     </span>
   {/snippet}
   {#snippet listElement(res, selected)}
