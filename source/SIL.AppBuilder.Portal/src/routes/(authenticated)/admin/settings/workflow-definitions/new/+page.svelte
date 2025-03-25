@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { byName, byString } from '$lib/utils/sorting';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
@@ -48,7 +48,7 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_storeType">
     <select class="select select-bordered" name="storeType" bind:value={$form.storeType}>
-      {#each data.options.storeType.toSorted((a, b) => byName(a, b, languageTag())) as type}
+      {#each data.options.storeType.toSorted((a, b) => byName(a, b, getLocale())) as type}
         <option value={type.Id}>{type.Name}</option>
       {/each}
     </select>
@@ -82,7 +82,7 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowScheme">
     <select class="select select-bordered" name="workflowScheme" bind:value={$form.workflowScheme}>
-      {#each data.options.schemes.toSorted((a, b) => byString(a.Code, b.Code, languageTag())) as scheme}
+      {#each data.options.schemes.toSorted((a, b) => byString(a.Code, b.Code, getLocale())) as scheme}
         <option value={scheme.Code}>{scheme.Code}</option>
       {/each}
     </select>

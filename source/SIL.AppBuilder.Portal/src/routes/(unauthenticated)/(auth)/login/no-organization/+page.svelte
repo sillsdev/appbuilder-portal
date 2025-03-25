@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
 </script>
 
 <div class="card shadow-xl bg-base-100 border p-4 flex flex-column items-center">

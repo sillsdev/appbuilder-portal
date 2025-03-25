@@ -7,21 +7,53 @@
   "updated": "¡Actualizado!",
   "opensource": "Código abierto",
   "home": "Inicio",
-  "tabAppName_zero": "Scriptoria",
-  "tabAppName_other": "({{count}}) Scriptoria",
+  "tabAppName": [{
+    "match": {
+      "count=0": "Scriptoria",
+      "count=*": "({count}) Scriptoria"
+    }
+  }],
   "localePicker_code": "Código",
   "localePicker_country": "País",
   "localePicker_other": "Otros nombres",
   "localePicker_label": "Lenguaje",
   "localePicker_placeholder": "Buscar por idioma...",
-  "localePicker_region": "{num, plural,one {{Region}}other {Region}}",
-  "localePicker_name": "{num, plural, one {{Name}} other {Names}}",
-  "localePicker_tag": "{num, plural, one {{Tag}} other {Tags}}",
-  "localePicker_variant": "{num, plural, one {{Variant}} other {Variants}}",
+  "localePicker_region": [{
+    "declarations": ["input count", "local countPlural = count: plural"],
+    "selectors": ["countPlural"],
+    "match": {
+      "countPlural=one": "Region",
+      "countPlural=other": "Region"
+    }
+  }],
+  "localePicker_name": [{
+    "declarations": ["input count", "local countPlural = count: plural"],
+    "selectors": ["countPlural"],
+    "match": {
+      "countPlural=one": "Name",
+      "countPlural=other": "Names"
+    }
+  }],
+  "localePicker_tag": [{
+    "declarations": ["input count", "local countPlural = count: plural"],
+    "selectors": ["countPlural"],
+    "match": {
+      "countPlural=one": "Tag",
+      "countPlural=other": "Tags"
+    }
+  }],
+  "localePicker_variant": [{
+    "declarations": ["input count", "local countPlural = count: plural"],
+    "selectors": ["countPlural"],
+    "match": {
+      "countPlural=one": "Variant",
+      "countPlural=other": "Variants"
+    }
+  }],
   "localePicker_regionName": "Nombre de región",
   "attributions_title": "Proyecto de código abierto usado en Scriptoria",
   "attributions_subtitle": "Librerías usadas por la licencia",
-  "notifications_buildComplete": "¡La construcción para {{projectName}} se ha completado!",
+  "notifications_buildComplete": "¡La construcción para {projectName} se ha completado!",
   "notifications_buildServerConnectionLost": "¡Se ha perdido la conexión con el servidor de compilación!",
   "common_search": "Buscar",
   "common_noResults": "Sin resultados...",
@@ -44,15 +76,20 @@
   "common_error": "Error",
   "common_workflow": "Flujo trabajo",
   "common_default": "Default",
-  "models_add": "Añadir {{name}}",
-  "models_edit": "Editar {{name}}",
-  "models_save": "Guardar {{name}}",
-  "models_createSuccess": "¡{{name}} fue creado con éxito!",
-  "models_updateSuccess": "¡{{name}} fue actualizado con éxito!",
+  "models_add": "Añadir {name}",
+  "models_edit": "Editar {name}",
+  "models_save": "Guardar {name}",
+  "models_createSuccess": "¡{name} fue creado con éxito!",
+  "models_updateSuccess": "¡{name} fue actualizado con éxito!",
   "auth_title": "Scriptoria",
   "auth_signup": "Registrarse",
   "auth_login": "Ingresar",
-  "directory_title": "Directorio de proyectos ({{numProjects}})",
+  "directory_title": [{
+    "match": {
+      "numProjects=0": "Directorio de proyectos",
+      "numProjects=*": "Directorio de proyectos ({numProjects})"
+    }
+  }],
   "directory_searchHelp": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name<br />• Group Name",
   "directory_filters_dateRange": "Rango de Fechas",
   "header_myProfile": "Mi perfil",
@@ -61,8 +98,12 @@
   "header_signOut": "Salir",
   "header_clearAll": "Limpiar todo",
   "header_emptyNotifications": "No tienes notificaciones.",
-  "sidebar_myTasks_zero": "¡Mis tareas",
-  "sidebar_myTasks_other": "¡Mis tareas ({{count}})",
+  "sidebar_myTasks": [{
+    "match": {
+      "count=0": "¡Mis tareas",
+      "count=*": "¡Mis tareas ({count})"
+    }
+  }],
   "sidebar_myProjects": "Mis Proyectos",
   "sidebar_activeProjects": "Proyectos activos",
   "sidebar_organizationProjects": "Proyectos de organización",
@@ -114,16 +155,16 @@
   "org_buildEngineUrl": "URL del motor de compilación",
   "org_buildEngineApiAccessToken": "Token de acceso del motor de construcción",
   "products_definition": "Archivos útiles que resultan de una serie de pasos.",
-  "products_storeSelect": "Seleccione una tienda para {{name}}",
+  "products_storeSelect": "Seleccione una tienda para {name}",
   "products_noStoresAvailable": "No hay tiendas disponibles para el producto seleccionado. Por favor, contacte con el administrador de su organización.",
-  "products_actions_executed": "{{actionName}} fue ejecutado con éxito.",
-  "products_actions_cancelled": "{{actionName}} fue cancelado con éxito.",
+  "products_actions_executed": "{actionName} fue ejecutado con éxito.",
+  "products_actions_cancelled": "{actionName} fue cancelado con éxito.",
   "products_actions_rebuild": "Reconstruir",
   "products_actions_republish": "Publicar nuevamente",
   "products_actions_cancel": "Cancelar",
   "products_actions_noneAvailable": "No hay acciones disponibles actualmente para este producto.",
-  "products_actions_bulkNotAllAllowed": "No todos los productos de los proyectos seleccionados pueden tener la acción {{action}} aplicada.",
-  "products_actions_dispatched": "La acción {{action}} ha sido enviada.",
+  "products_actions_bulkNotAllAllowed": "No todos los productos de los proyectos seleccionados pueden tener la acción {action} aplicada.",
+  "products_actions_dispatched": "La acción {action} ha sido enviada.",
   "products_actions_properties": "Properties",
   "products_files_title": "Product Files",
   "profile_title": "Perfil",
@@ -151,8 +192,8 @@
   "profile_noTimezone": "(GMT-0)",
   "profile_visibility_visible": "La información de mi perfil es pública",
   "profile_visibility_restricted": "Mi información de perfil es restringida al público",
-  "errors_generic": "¡Ha ocurrido un error! {{errorMessage}}",
-  "errors_requiredField": "El {{field}} es requerido, pero no tiene ningún valor",
+  "errors_generic": "¡Ha ocurrido un error! {errorMessage}",
+  "errors_requiredField": "El {field} es requerido, pero no tiene ningún valor",
   "errors_notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a que expiró un inicio de sesión previo.",
   "errors_notFoundTitle": "\n¡No encontrado!",
   "errors_notFoundDescription": "¡Algo salió mal y la página o recursos no se pudo encontrar!",
@@ -181,15 +222,15 @@
   "tasks_noTasksTitle": "No tiene tareas asignadas.",
   "tasks_noTasksDescription": "Las tareas que requieren su atención aparecerán aquí.",
   "tasks_reassign": "Reasignar",
-  "tasks_waiting": "Esperando {{waitTime}}",
-  "tasks_forNames": "para {{allowedNames}} a {{activityName}}",
+  "tasks_waiting": "Esperando {waitTime}",
+  "tasks_forNames": "para {allowedNames} a {activityName}",
   "tasks_scriptoria": "Scriptoria",
   "projects_noBuilds": "No Builds Yet",
-  "projects_latestBuild": "Última compilación ({{version}})",
+  "projects_latestBuild": "Última compilación ({version})",
   "projects_buildPending": "Build Pending",
   "projects_buildFailed": "Build Failed",
-  "projects_switcher_myProjects": "Mis proyectos ({{numProjects}})",
-  "projects_switcher_archived": "Archivados ({{numProjects}})",
+  "projects_switcher_myProjects": "Mis proyectos ({numProjects})",
+  "projects_switcher_archived": "Archivados ({numProjects})",
   "projects_switcher_dropdown_orgProjects": "Proyectos de organización",
   "projects_switcher_dropdown_myProjects": "Mis Proyectos",
   "projects_switcher_dropdown_activeProjects": "Proyectos activos",
@@ -256,10 +297,10 @@
   "project_products_transitions_comment": "Comentario",
   "project_products_transitions_date": "Fecha",
   "project_products_transitions_transitionTypes_1": "Actividad",
-  "project_products_transitions_transitionTypes_2": "{{workflowType}} Workflow Started",
-  "project_products_transitions_transitionTypes_3": "{{workflowType}} Workflow Completed",
-  "project_products_transitions_transitionTypes_4": "{{workflowType}} Workflow Cancelled",
-  "project_products_transitions_transitionTypes_5": "{{workflowType}} Project Access",
+  "project_products_transitions_transitionTypes_2": "{workflowType} Workflow Started",
+  "project_products_transitions_transitionTypes_3": "{workflowType} Workflow Completed",
+  "project_products_transitions_transitionTypes_4": "{workflowType} Workflow Cancelled",
+  "project_products_transitions_transitionTypes_5": "{workflowType} Project Access",
   "project_products_properties_computeType": "Compute Type",
   "project_products_properties_selectComputeType": "Select compute type",
   "project_products_properties_small": "Small",
@@ -270,7 +311,15 @@
   "project_products_filename": "Nombre de archivo",
   "project_products_published": "Publicado",
   "project_products_unpublished": "Sin publicar",
-  "project_products_numArtifacts": "{amount, plural, =0 {No Product Files} other {{ amount } Product Files}}",
+  "project_products_numArtifacts": [{
+    "declarations": ["local countPlural = amount: plural"],
+    "selectors": ["countPlural"],
+    "match": {
+      "amount=0": "No Product Files",
+      "countPlural=one": "{ amount } Product File",
+      "countPlural=other": "{ amount } Product Files"
+    }
+  }],
   "project_products_noArtifacts": "No hay archivos de producto",
   "project_products_rebuild": "reconstruir",
   "project_products_creationInProgress": "Pendiente: No puede añadir un producto hasta que la configuración del proyecto se haya completado.",
@@ -334,8 +383,8 @@
   "users_noRoles": "No hay roles asignados",
   "users_title": "Administrar usuarios",
   "users_addUser_placeholder": "Ingrese un correo electrónico",
-  "users_addUser_button": "Añadir usuario a {{organization}}",
-  "users_addUser_modalTitle": "Añadir usuario a {{organization}}",
+  "users_addUser_button": "Añadir usuario a {organization}",
+  "users_addUser_modalTitle": "Añadir usuario a {organization}",
   "users_addUser_modalAddButton": "Añadir",
   "users_addUser_error": "No se ha encontrado ningún usuario con esa dirección de correo electrónico. Por favor, pídeles que cree una cuenta.",
   "users_table_columns_name": "Nombre",
@@ -430,9 +479,9 @@
   "organizationMembership_invite_error_expired": "La invitación ha caducado",
   "organizationMembership_invite_error_redeemed": "La invitación ya ha sido canjeada",
   "organizationMembership_invite_error_notFound": "No se encontró la invitación",
-  "organizationMembership_invite_error_unexpected": "Ocurrió un error inesperado: {{response}}",
+  "organizationMembership_invite_error_unexpected": "Ocurrió un error inesperado: {response}",
   "organizationMembership_invite_error_invalidResponse": "Hemos recibido una respuesta no válida... por favor, actualiza la página para intentarlo de nuevo.",
-  "organizationMembership_invite_create_success": "Invitación enviada a {{email}}.",
+  "organizationMembership_invite_create_success": "Invitación enviada a {email}.",
   "organizationMembership_invite_create_error": "Ocurrió un error mientras se intentaba invitar al usuario.",
   "organizationMembership_invite_create_inviteUserButtonTitle": "Invitar usuario",
   "organizationMembership_invite_create_inviteUserModalTitle": "Invitar usuario",

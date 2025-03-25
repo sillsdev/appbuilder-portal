@@ -2,7 +2,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';

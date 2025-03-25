@@ -1,6 +1,6 @@
 <script>
   import ScriptoriaIcon from '$lib/icons/ScriptoriaIcon.svelte';
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import { SignIn } from '@auth/sveltekit/components';
 </script>
 

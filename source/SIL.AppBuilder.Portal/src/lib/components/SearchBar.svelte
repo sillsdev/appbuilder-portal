@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as m from '../paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import IconContainer from './IconContainer.svelte';
 
   interface Props {

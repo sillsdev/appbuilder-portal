@@ -3,7 +3,7 @@
 
   import langtags from '$lib/langtags.json';
 
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import type { FuseResultMatch } from 'fuse.js';
   import TypeaheadInput from './TypeaheadInput.svelte';
 
