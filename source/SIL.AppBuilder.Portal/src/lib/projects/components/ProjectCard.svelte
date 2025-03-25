@@ -1,7 +1,7 @@
 <script lang="ts">
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import type { PrunedProject } from '$lib/projects';
   import { byString } from '$lib/utils/sorting';

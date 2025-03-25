@@ -5,7 +5,7 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';

@@ -1,7 +1,7 @@
 <script lang="ts">
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byString } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';

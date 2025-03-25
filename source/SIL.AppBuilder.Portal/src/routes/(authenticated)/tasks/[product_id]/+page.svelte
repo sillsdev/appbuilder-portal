@@ -1,7 +1,7 @@
 <script lang="ts">
   import IconContainer from '$lib/components/IconContainer.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { bytesToHumanSize } from '$lib/utils';
   import { byName, byNumber, byString } from '$lib/utils/sorting';

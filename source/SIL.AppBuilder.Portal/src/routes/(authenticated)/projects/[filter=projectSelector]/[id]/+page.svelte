@@ -6,7 +6,7 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import type { ProjectForAction, PrunedProject } from '$lib/projects';
   import { canArchive, canReactivate } from '$lib/projects';

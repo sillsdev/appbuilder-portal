@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { importJSONSchema } from '$lib/projects';
   import { byName, byString } from '$lib/utils/sorting';

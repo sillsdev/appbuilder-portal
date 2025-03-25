@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
   import RolesSelector from '../../../RolesSelector.svelte';
   import type { PageData } from './$types';

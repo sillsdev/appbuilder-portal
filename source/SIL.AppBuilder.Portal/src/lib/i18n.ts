@@ -1,4 +1,4 @@
-import * as m from './paraglide/messages';
+import { m } from '$lib/paraglide/messages';
 
 type ValidKey<T extends object> = {
   [K in keyof T]: T[K] extends () => void ? K : never;
