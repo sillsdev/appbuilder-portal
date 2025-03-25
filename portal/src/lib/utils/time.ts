@@ -1,12 +1,12 @@
-import { languageTag } from '../paraglide/runtime';
+import { getLocale } from '../paraglide/runtime';
 
-let langtag = languageTag();
-let relativeTimeFormatter = new Intl.RelativeTimeFormat(langtag);
+let locale = getLocale();
+let relativeTimeFormatter = new Intl.RelativeTimeFormat(locale);
 export function getRelativeTime(date: Date | null) {
   if (!date) return '-';
-  if (langtag !== languageTag()) {
-    langtag = languageTag();
-    relativeTimeFormatter = new Intl.RelativeTimeFormat(langtag);
+  if (locale !== getLocale()) {
+    locale = getLocale();
+    relativeTimeFormatter = new Intl.RelativeTimeFormat(locale);
   }
   // in miliseconds
   const units = {
@@ -31,9 +31,9 @@ export function getRelativeTime(date: Date | null) {
   return 'ERROR';
 }
 export function getTimeDateString(date: Date | null) {
-  return `${date?.toLocaleDateString(languageTag()) ?? '-'} ${
+  return `${date?.toLocaleDateString(getLocale()) ?? '-'} ${
     date
-      ?.toLocaleTimeString(languageTag(), {
+      ?.toLocaleTimeString(getLocale(), {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true

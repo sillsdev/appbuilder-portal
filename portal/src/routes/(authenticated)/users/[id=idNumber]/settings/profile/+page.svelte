@@ -2,7 +2,7 @@
   import { page } from '$app/state';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import { getTimeZones } from '@vvo/tzdb';
   import Fuse from 'fuse.js';
   import { superForm } from 'sveltekit-superforms';

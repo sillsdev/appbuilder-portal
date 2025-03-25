@@ -2,8 +2,8 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
-  import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
   import { canModifyProject } from '$lib/projects';
   import { byName } from '$lib/utils/sorting';
@@ -33,7 +33,7 @@
       {/if}
       <span>
         {m.project_createdOn()}
-        <Tooltip tip={data.project?.DateCreated?.toLocaleString(languageTag())}>
+        <Tooltip tip={data.project?.DateCreated?.toLocaleString(getLocale())}>
           {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
         </Tooltip>
       </span>
@@ -71,8 +71,8 @@
       {#if !data.project?.Products.length}
         {m.projectTable_noProducts()}
       {:else}
-        {@const langTag = languageTag()}
-        {#each data.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, langTag) ) as product}
+        {@const locale = getLocale()}
+        {#each data.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, locale) ) as product}
           {@const release = product.ProductPublications.at(0)}
           {@const build = release?.ProductBuild}
           <div>

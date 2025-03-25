@@ -1,8 +1,8 @@
 <script lang="ts">
   import { page } from '$app/state';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
-  import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { byName, byString } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -34,7 +34,7 @@
         <label class="form-control">
           <span class="label-text">{m.project_projectGroup()}:</span>
           <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
-            {#each data.organization.Groups.toSorted( (a, b) => byName(a, b, languageTag()) ) as group}
+            {#each data.organization.Groups.toSorted( (a, b) => byName(a, b, getLocale()) ) as group}
               <option value={group.Id}>{group.Name}</option>
             {/each}
           </select>
@@ -54,7 +54,7 @@
         <label class="form-control">
           <span class="label-text">{m.project_type()}:</span>
           <select name="type" id="type" class="select select-bordered" bind:value={$form.type}>
-            {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, languageTag()) ) as type}
+            {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
               <option value={type.Id}>{type.Description}</option>
             {/each}
           </select>

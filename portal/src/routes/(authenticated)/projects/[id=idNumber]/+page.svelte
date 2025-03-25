@@ -3,11 +3,10 @@
   import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { i18n } from '$lib/i18n';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import langtags from '$lib/langtags.json';
-  import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { m } from '$lib/paraglide/messages';
+  import { getLocale, locales } from '$lib/paraglide/runtime';
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
@@ -106,7 +105,7 @@
       <span>-</span>
       <span>
         {m.project_createdOn()}
-        <Tooltip tip={data.project?.DateCreated?.toLocaleString(languageTag())}>
+        <Tooltip tip={data.project?.DateCreated?.toLocaleString(getLocale())}>
           {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
         </Tooltip>
       </span>
@@ -192,7 +191,7 @@
               </div>
               <hr />
               <div class="flex flex-col pt-1 space-y-1">
-                {#each data.productsToAdd.toSorted( (a, b) => byName(a, b, languageTag()) ) as productDef, i}
+                {#each data.productsToAdd.toSorted( (a, b) => byName(a, b, getLocale()) ) as productDef, i}
                   <!-- svelte-ignore a11y_click_events_have_key_events -->
                   <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                   <label
@@ -237,8 +236,8 @@
               <hr />
               <div class="flex flex-col pt-1 space-y-1">
                 {#if availableStores.length}
-                  {@const langTag = languageTag()}
-                  {#each availableStores.toSorted((a, b) => byName(a, b, langTag)) as store}
+                  {@const locale = getLocale()}
+                  {#each availableStores.toSorted((a, b) => byName(a, b, locale)) as store}
                     <!-- svelte-ignore a11y_click_events_have_key_events -->
                     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                     <label
@@ -275,8 +274,8 @@
         {#if !data.project?.Products.length}
           {m.projectTable_noProducts()}
         {:else}
-          {@const langTag = languageTag()}
-          {#each data.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, langTag) ) as product}
+          {@const locale = getLocale()}
+          {#each data.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, locale) ) as product}
             <div class="rounded-md border border-slate-400 w-full my-2">
               <div class="bg-neutral p-2 flex flex-row rounded-t-md">
                 <span class="grow min-w-0">
@@ -306,14 +305,14 @@
                 <span class="w-32 inline-block">
                   {m.project_products_updated()}
                   <br />
-                  <Tooltip tip={product.DateUpdated?.toLocaleString(langTag)}>
+                  <Tooltip tip={product.DateUpdated?.toLocaleString(locale)}>
                     {getRelativeTime(product.DateUpdated)}
                   </Tooltip>
                 </span>
                 <span class="w-32 inline-block">
                   {m.project_products_published()}
                   <br />
-                  <Tooltip tip={product.DatePublished?.toLocaleString(langTag)}>
+                  <Tooltip tip={product.DatePublished?.toLocaleString(locale)}>
                     {getRelativeTime(product.DatePublished)}
                   </Tooltip>
                 </span>
@@ -513,7 +512,7 @@
                       bind:this={ownerField}
                     />
                     <ul class="menu menu-compact overflow-hidden rounded-md">
-                      {#each data.possibleProjectOwners.toSorted( (a, b) => byName(a, b, languageTag()) ) as owner}
+                      {#each data.possibleProjectOwners.toSorted( (a, b) => byName(a, b, getLocale()) ) as owner}
                         <li class="w-full rounded-none">
                           <button
                             class="text-nowrap"
@@ -560,7 +559,7 @@
                       bind:this={groupField}
                     />
                     <ul class="menu menu-compact overflow-hidden rounded-md">
-                      {#each data.possibleGroups.toSorted( (a, b) => byName(a, b, languageTag()) ) as group}
+                      {#each data.possibleGroups.toSorted( (a, b) => byName(a, b, getLocale()) ) as group}
                         <li class="w-full rounded-none">
                           <button
                             class="text-nowrap"
@@ -589,8 +588,8 @@
         </div>
         <div class="p-2">
           {#if data.project.Authors.length}
-            {@const langTag = languageTag()}
-            {#each data.project.Authors.toSorted((a, b) => byName(a.Users, b.Users, langTag)) as author}
+            {@const locale = getLocale()}
+            {#each data.project.Authors.toSorted((a, b) => byName(a.Users, b.Users, locale)) as author}
               <div class="flex flex-row w-full place-content-between p-2">
                 <span>{author.Users.Name}</span>
                 <form action="?/deleteAuthor" method="post" use:authorDeleteEnhance>
@@ -615,7 +614,7 @@
               >
                 {#each data.authorsToAdd
                   .filter((author) => !data.project?.Authors.some((au) => au.Users.Id === author.Id))
-                  .sort((a, b) => byName(a, b, languageTag())) as author}
+                  .sort((a, b) => byName(a, b, getLocale())) as author}
                   <option value={author.Id}>
                     {author.Name}
                   </option>
@@ -634,8 +633,8 @@
         </div>
         <div class="p-2">
           {#if data.project.Reviewers.length}
-            {@const langTag = languageTag()}
-            {#each data.project.Reviewers.toSorted((a, b) => byName(a, b, langTag)) as reviewer}
+            {@const locale = getLocale()}
+            {#each data.project.Reviewers.toSorted((a, b) => byName(a, b, locale)) as reviewer}
               <div class="flex flex-row w-full place-content-between p-2">
                 <span>{reviewer.Name} ({reviewer.Email})</span>
                 <form action="?/deleteReviewer" method="post" use:reviewerDeleteEnhance>
@@ -675,8 +674,8 @@
                   class="grow select select-bordered"
                   bind:value={$reviewerForm.language}
                 >
-                  {#each i18n.config.runtime.availableLanguageTags as tag}
-                    <option value={tag}>{tag.split('-')[0]}</option>
+                  {#each locales as locale}
+                    <option value={locale}>{locale.split('-')[0]}</option>
                   {/each}
                 </select>
                 <button type="submit" class="btn btn-primary">

@@ -2,8 +2,8 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
-  import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -34,7 +34,7 @@
       <div class="w-full flex place-content-between">
         <label for="owner">{m.project_projectOwner()}</label>
         <select name="owner" id="owner" class="select select-bordered" bind:value={$form.owner}>
-          {#each data.owners.toSorted((a, b) => byName(a, b, languageTag())) as owner}
+          {#each data.owners.toSorted((a, b) => byName(a, b, getLocale())) as owner}
             <option value={owner.Id}>{owner.Name}</option>
           {/each}
         </select>
@@ -42,7 +42,7 @@
       <div class="w-full flex place-content-between">
         <label for="group">{m.project_projectGroup()}:</label>
         <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
-          {#each data.groups.toSorted((a, b) => byName(a, b, languageTag())) as group}
+          {#each data.groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
             <option value={group.Id}>{group.Name}</option>
           {/each}
         </select>

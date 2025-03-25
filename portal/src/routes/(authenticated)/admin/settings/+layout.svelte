@@ -6,7 +6,7 @@
 <script lang="ts">
   import { base } from '$app/paths';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   interface Props {
     children?: import('svelte').Snippet;
   }

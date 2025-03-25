@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -21,17 +21,17 @@
     }
   });
 
-  const langTag = languageTag();
+  const locale = getLocale();
 
   const workflows = data.options.workflows
     .filter((w) => w.Type === 1)
-    .sort((a, b) => byName(a, b, langTag));
+    .sort((a, b) => byName(a, b, locale));
   const rebuildWorkflows = data.options.workflows
     .filter((w) => w.Type === 2)
-    .sort((a, b) => byName(a, b, langTag));
+    .sort((a, b) => byName(a, b, locale));
   const republishWorkflows = data.options.workflows
     .filter((w) => w.Type === 3)
-    .sort((a, b) => byName(a, b, langTag));
+    .sort((a, b) => byName(a, b, locale));
 </script>
 
 <h3>{m.admin_settings_productDefinitions_add()}</h3>

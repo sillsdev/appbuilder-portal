@@ -1,5 +1,5 @@
 <script>
-  import * as m from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   /** @type {{children?: import('svelte').Snippet}} */
   let { children } = $props();
 </script>

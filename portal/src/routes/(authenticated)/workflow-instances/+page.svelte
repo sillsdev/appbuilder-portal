@@ -5,8 +5,8 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import * as m from '$lib/paraglide/messages';
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
   import type { FormResult } from 'sveltekit-superforms';
@@ -75,7 +75,7 @@
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}">
       <select class="select select-bordered {mobileSizing}" bind:value={$form.productDefinitionId}>
         <option value={null} selected>{m.productDefinitions_filterAllProjects()}</option>
-        {#each data.productDefinitions.toSorted((a, b) => byName(a, b, languageTag())) as pD}
+        {#each data.productDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as pD}
           <option value={pD.Id}>{pD.Name}</option>
         {/each}
       </select>
@@ -87,7 +87,7 @@
   </form>
   <div class="m-4 relative mt-1 w-full overflow-x-auto">
     {#if instances.length > 0}
-      {@const langTag = languageTag()}
+      {@const locale = getLocale()}
       <SortTable
         data={instances}
         columns={[
@@ -143,7 +143,7 @@
             </td>
             <td class="border">{instance.State}</td>
             <td class="border">
-              <Tooltip className="text-left" tip={instance.DateUpdated?.toLocaleString(langTag)}>
+              <Tooltip className="text-left" tip={instance.DateUpdated?.toLocaleString(locale)}>
                 {getRelativeTime(instance.DateUpdated)}
               </Tooltip>
             </td>

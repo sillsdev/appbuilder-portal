@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { languageTag } from '$lib/paraglide/runtime';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import type { Prisma } from '@prisma/client';
   interface Props {
@@ -25,7 +25,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each organizations.toSorted((a, b) => byName(a, b, languageTag())) as org}
+      {#each organizations.toSorted((a, b) => byName(a, b, getLocale())) as org}
         <tr
           class="h-16 border-y hover:bg-base-200 cursor-pointer"
           onclick={() => onSelect(org.Id)}
