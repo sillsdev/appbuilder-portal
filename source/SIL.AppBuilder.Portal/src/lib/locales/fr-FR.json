@@ -300,10 +300,11 @@
   "project_products_published": "Published",
   "project_products_unpublished": "Unpublished",
   "project_products_numArtifacts": [{
-    "declarations": ["input amount", "local countPlural = amount: plural"],
+    "declarations": ["local countPlural = amount: plural"],
     "selectors": ["countPlural"],
     "match": {
       "countPlural=zero": "No Product Files",
+      "countPlural=one": "{ amount } Product File",
       "countPlural=other": "{ amount } Product Files"
     }
   }],
