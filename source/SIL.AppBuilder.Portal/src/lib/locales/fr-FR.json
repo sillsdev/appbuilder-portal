@@ -7,8 +7,12 @@
   "updated": "Updated!",
   "opensource": "Open Source",
   "home": "Home",
-  "tabAppName_zero": "Scriptoria",
-  "tabAppName_other": "({count}) Scriptoria",
+  "tabAppName": [{
+    "match": {
+      "count=0": "Scriptoria",
+      "count=*": "({count}) Scriptoria"
+    }
+  }],
   "localePicker_code": "Code",
   "localePicker_country": "Country",
   "localePicker_other": "Other Names",
@@ -80,8 +84,12 @@
   "auth_title": "Scriptoria",
   "auth_signup": "Sign Up",
   "auth_login": "Log In",
-  "directory_title_zero": "Project Directory",
-  "directory_title_other": "Project Directory ({numProjects})",
+  "directory_title": [{
+    "match": {
+      "numProjects=0": "Project Directory",
+      "numProjects=*": "Project Directory ({numProjects})"
+    }
+  }],
   "directory_searchHelp": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name<br />• Group Name",
   "directory_filters_dateRange": "Project Updated Date Between",
   "header_myProfile": "My Profile",
@@ -90,8 +98,12 @@
   "header_signOut": "Sign out",
   "header_clearAll": "Clear All",
   "header_emptyNotifications": "You have no notifications.",
-  "sidebar_myTasks_zero": "My Tasks",
-  "sidebar_myTasks_other": "My Tasks ({count})",
+  "sidebar_myTasks": [{
+    "match": {
+      "count=0": "My Tasks",
+      "count=*": "My Tasks ({count})"
+    }
+  }],
   "sidebar_myProjects": "My Projects",
   "sidebar_activeProjects": "Active Projects",
   "sidebar_organizationProjects": "Organization Projects",

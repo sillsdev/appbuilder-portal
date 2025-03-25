@@ -33,9 +33,7 @@
 
 <svelte:head>
   <title>
-    {data.numberOfTasks
-      ? m.tabAppName_other({ count: data.numberOfTasks })
-      : m.tabAppName_zero()}{dev ? ' - SvelteKit' : ''}
+    {m.tabAppName({ count: data.numberOfTasks })}{dev ? ' - SvelteKit' : ''}
   </title>
 </svelte:head>
 
@@ -108,9 +106,7 @@
               href="{base}/tasks"
               onclick={closeDrawer}
             >
-              {data.numberOfTasks
-                ? m.sidebar_myTasks_other({ count: data.numberOfTasks })
-                : m.sidebar_myTasks_zero()}
+              {m.sidebar_myTasks({ count: data.numberOfTasks })}
             </a>
           </li>
           <li>

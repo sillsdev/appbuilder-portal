@@ -28,7 +28,7 @@
   <div class="flex flex-row gap-x-3 p-2 flex-wrap">
     <div class="breadcrumbs">
       <ul>
-        <li><a class="link" href="/tasks">{m.sidebar_myTasks_zero()}</a></li>
+        <li><a class="link" href="/tasks">{m.sidebar_myTasks({ count: 0 })}</a></li>
         <li><a class="link" href="/projects/{data.projectId}">{data.fields.projectName}</a></li>
         <li>{data.productDescription}</li>
       </ul>
