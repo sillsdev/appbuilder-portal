@@ -120,7 +120,7 @@
   </form>
 </div>
 
-<style lang="postcss">
+<style>
   :global(li:first-child .listElement) {
     border-radius: 0.375rem 0.375rem 0 0;
   }
@@ -129,6 +129,6 @@
     border-bottom-width: 1px;
   }
   :global(li[aria-selected='true'] .listElement) {
-    background-color: oklch(var(--b2));
+    background-color: var(--color-base-200);
   }
 </style>

@@ -1,5 +1,6 @@
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { sveltekit } from '@sveltejs/kit/vite';
+import tailwindcss from '@tailwindcss/vite';
 import { spawn, type ChildProcessWithoutNullStreams } from 'child_process';
 import { stat, writeFile } from 'fs/promises';
 import {
@@ -56,6 +57,7 @@ export default defineConfig({
         }
       }
     },
+    tailwindcss(),
     sveltekit(),
     paraglideVitePlugin({
       project: './project.inlang',

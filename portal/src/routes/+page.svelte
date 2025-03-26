@@ -66,7 +66,7 @@
     bottom: 0;
     z-index: -1;
     background-blend-mode: multiply;
-    /* flex-grow: 2; */
+    /* grow: 2; */
     /* background-position-y: bottom 100px; */
   }
   .loginside {
