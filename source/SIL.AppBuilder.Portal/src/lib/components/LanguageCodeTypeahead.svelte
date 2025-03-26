@@ -2,14 +2,14 @@
   import Fuse from 'fuse.js';
 
   import { page } from '$app/state';
-  import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
   import {
     createl10nMapFromEntries,
     localizeTagData,
     type LangInfo,
     type l10nEntries
-  } from '$lib/utils/locales';
+  } from '$lib/i18n';
+  import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   import type { FuseResultMatch } from 'fuse.js';
   import TypeaheadInput from './TypeaheadInput.svelte';
 

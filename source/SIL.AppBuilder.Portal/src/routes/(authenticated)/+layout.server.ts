@@ -1,6 +1,6 @@
+import { langtagsSchema, type l10nEntries, type l10nKeys } from '$lib/i18n';
 import { locales, type Locale } from '$lib/paraglide/runtime';
 import type { Entries } from '$lib/utils';
-import { langtagsSchema, type l10nEntries, type l10nKeys } from '$lib/utils/locales';
 import { isSuperAdmin } from '$lib/utils/roles';
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';

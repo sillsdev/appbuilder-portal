@@ -4,12 +4,12 @@
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
+  import { createl10nMapFromEntries } from '$lib/i18n';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, locales, localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
-  import { createl10nMapFromEntries } from '$lib/utils/locales';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
