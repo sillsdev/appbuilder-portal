@@ -4,6 +4,7 @@ A simple dropdown menu from DaisyUI.
 
 -->
 <script lang="ts">
+  import { onNavigate } from '$app/navigation';
   import type { Snippet } from 'svelte';
   interface Props {
     /** class="dropdown ..." */
@@ -27,9 +28,24 @@ A simple dropdown menu from DaisyUI.
     onclick,
     open = $bindable(false)
   }: Props = $props();
+
+  onNavigate(() => {
+    // close opened dropdown when navigating (this is mostly important for the dropdowns in the navbar)
+    open = false;
+  });
 </script>
 
-<svelte:window onclick={() => (open = false)} />
+<svelte:window
+  onclick={(e) => {
+    // Only close if click is outside this dropdown
+    const dropdown = document.querySelector('.dropdown');
+    if (dropdown && !dropdown.contains(e.target as Node)) {
+      open = false;
+      // stopPropagation prevents the click from registering on the dropdown again and reopening it
+      e.stopPropagation();
+    }
+  }}
+/>
 
 <details class="dropdown {dropdownClasses}" bind:open>
   <summary class="btn btn-ghost {labelClasses}" onclick={() => onclick?.()}>
