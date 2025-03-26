@@ -1,8 +1,22 @@
 <script lang="ts">
   import { LanguageIcon } from '$lib/icons';
-  import { getLocale, locales, setLocale } from '$lib/paraglide/runtime';
-  import Icon from '@iconify/svelte';
+  import { l10nMap } from '$lib/locales.svelte';
+  import { getLocale, locales, setLocale, type Locale } from '$lib/paraglide/runtime';
   import Dropdown from './Dropdown.svelte';
+  import IconContainer from './IconContainer.svelte';
+
+  function getFlag(locale: Locale) {
+    switch (locale) {
+      case 'en-US':
+        return 'us';
+      case 'es-419':
+        return 'mx';
+      case 'fr-FR':
+        return 'fr';
+      default:
+        throw new Error(`Unrecognized language tag ${locale} in getFlag!`);
+    }
+  }
 </script>
 
 {#key getLocale()}
@@ -17,16 +31,21 @@
     {#snippet content()}
       <ul class="menu menu-compact gap-1 p-2">
         {#each locales as locale}
-          <li>
+          {@const langMap = l10nMap.value.get(getLocale())?.get('languages')}
+          <li class="w-full">
             <div
-              class="btn flex flex-nowrap {locale === getLocale() ? 'active' : 'inactive'}"
+              class="btn flex-nowrap justify-start"
+              class:bg-accent={locale === getLocale()}
+              class:text-accent-content={locale === getLocale()}
               onclick={() => setLocale(locale)}
               onkeypress={() => setLocale(locale)}
               role="button"
               tabindex="0"
             >
-              <Icon icon="circle-flags:{locale.split('-')[0]}" color="white" width="24" />
-              {locale.split('-')[0]}
+              <IconContainer icon="circle-flags:{getFlag(locale)}" width="24" />
+              <span class="grow text-left">
+                {langMap?.get(locale) ?? langMap?.get(locale.split('-')[0])}
+              </span>
             </div>
           </li>
         {/each}
