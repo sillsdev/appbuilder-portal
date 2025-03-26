@@ -6,6 +6,7 @@
   import LanguageSelector from '$lib/components/LanguageSelector.svelte';
   import { HamburgerIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
   import { signOut } from '@auth/sveltekit/client';
   import type { Snippet } from 'svelte';
@@ -68,7 +69,11 @@
       {#snippet content()}
         <ul class="menu menu-compact gap-1 p-2">
           <li>
-            <a href="/users/{page.data.session?.user?.userId ?? ''}/settings/profile">
+            <a
+              href={localizeHref(
+                `/users/${page.data.session?.user?.userId ?? ''}/settings/profile`
+              )}
+            >
               {m.header_myProfile()}
             </a>
           </li>
@@ -109,7 +114,7 @@
             <a
               class="rounded-none"
               class:active-menu-item={isActive(page.route.id, '/tasks')}
-              href="{base}/tasks"
+              href={localizeHref('/tasks')}
               onclick={closeDrawer}
             >
               {m.sidebar_myTasks({ count: data.numberOfTasks })}
@@ -119,7 +124,7 @@
             <a
               class="rounded-none"
               class:active-menu-item={isUrlActive(page.url.pathname, '/projects/own')}
-              href="{base}/projects/own"
+              href={localizeHref('/projects/own')}
               onclick={closeDrawer}
             >
               {m.sidebar_myProjects()}
@@ -129,7 +134,7 @@
             <a
               class="rounded-none"
               class:active-menu-item={isUrlActive(page.url.pathname, '/projects/organization')}
-              href="{base}/projects/organization"
+              href={localizeHref('/projects/organization')}
               onclick={closeDrawer}
             >
               {m.sidebar_organizationProjects()}
@@ -140,7 +145,7 @@
               <a
                 class="rounded-none"
                 class:active-menu-item={isUrlActive(page.url.pathname, '/projects/active')}
-                href="{base}/projects/active"
+                href={localizeHref('/projects/active')}
                 onclick={closeDrawer}
               >
                 {m.sidebar_activeProjects()}
@@ -150,7 +155,7 @@
               <a
                 class="rounded-none"
                 class:active-menu-item={isActive(page.route.id, '/users')}
-                href="{base}/users"
+                href={localizeHref('/users')}
                 onclick={closeDrawer}
               >
                 {m.sidebar_users()}
@@ -160,7 +165,7 @@
               <a
                 class="rounded-none"
                 class:active-menu-item={isActive(page.route.id, '/organizations')}
-                href="{base}/organizations/"
+                href={localizeHref('/organizations')}
                 onclick={closeDrawer}
               >
                 {m.sidebar_organizationSettings()}
@@ -172,7 +177,7 @@
               <a
                 class="rounded-none"
                 class:active-menu-item={isActive(page.route.id, '/admin/settings')}
-                href="{base}/admin/settings/organizations"
+                href={localizeHref('/admin/settings/organizations')}
                 onclick={closeDrawer}
               >
                 {m.sidebar_adminSettings()}
@@ -191,7 +196,7 @@
             <li>
               <a
                 class:active-menu-item={isActive(page.route.id, '/workflow-instances')}
-                href="{base}/workflow-instances"
+                href={localizeHref('/workflow-instances')}
                 onclick={closeDrawer}
               >
                 {m.workflowInstances_title()}
@@ -202,7 +207,7 @@
             <a
               class="rounded-none"
               class:active-menu-item={isActive(page.route.id, '/directory')}
-              href="{base}/directory"
+              href={localizeHref('/directory')}
               onclick={closeDrawer}
             >
               {m.sidebar_projectDirectory()}
@@ -212,7 +217,7 @@
             <a
               class="rounded-none mt-10"
               class:active-menu-item={isActive(page.route.id, '/open-source')}
-              href="{base}/open-source"
+              href={localizeHref('/open-source')}
               onclick={closeDrawer}
             >
               {m.opensource()}

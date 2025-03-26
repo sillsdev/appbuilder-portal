@@ -7,7 +7,7 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import type { ProjectForAction, PrunedProject } from '$lib/projects';
   import { canArchive, canReactivate } from '$lib/projects';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
@@ -309,11 +309,14 @@
       <div class="flex flex-row flex-wrap gap-1 mx-4 {mobileSizing}">
         <a
           class="btn btn-outline {mobileSizing}"
-          href="/projects/import/{$pageForm.organizationId}"
+          href={localizeHref(`/projects/import/${$pageForm.organizationId}`)}
         >
           {m.project_importProjects()}
         </a>
-        <a class="btn btn-outline {mobileSizing}" href="/projects/new/{$pageForm.organizationId}">
+        <a
+          class="btn btn-outline {mobileSizing}"
+          href={localizeHref(`/projects/new/${$pageForm.organizationId}`)}
+        >
           {m.sidebar_addProject()}
         </a>
       </div>

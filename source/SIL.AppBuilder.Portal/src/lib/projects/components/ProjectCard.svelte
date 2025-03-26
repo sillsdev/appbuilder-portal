@@ -2,7 +2,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import type { PrunedProject } from '$lib/projects';
   import { byString } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
@@ -23,7 +23,7 @@
     <span class="flex flex-row">
       {@render select?.()}
       <div class="flex flex-row flex-wrap grow">
-        <a href="/{route}/{project.Id}">
+        <a href={localizeHref(`/${route}/${project.Id}`)}>
           <b class="[color:#55f]">
             {project.Name}
           </b>

@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -11,10 +12,12 @@
 
   let { data }: Props = $props();
 
+  const base = '/admin/settings/store-types';
+
   const { form, enhance, allErrors } = superForm(data.form, {
     onUpdated(event) {
       if (event.form.valid) {
-        goto('/admin/settings/store-types');
+        goto(localizeHref(base));
       }
     }
   });
@@ -46,6 +49,6 @@
   {/if}
   <div class="my-4">
     <input type="submit" class="btn btn-primary" value="Submit" />
-    <a class="btn" href="/admin/settings/store-types">Cancel</a>
+    <a class="btn" href={localizeHref(base)}>Cancel</a>
   </div>
 </form>

@@ -2,6 +2,7 @@
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import GroupsSelector from '../GroupsSelector.svelte';
@@ -22,7 +23,7 @@
         inputEle.value = 'Success!';
         inputEle.classList.remove('btn-primary');
         setTimeout(() => {
-          window.location.href = '/users';
+          window.location.href = localizeHref('/users');
         }, 2000);
       }
     }
@@ -97,7 +98,7 @@
         value={m.organizationMembership_invite_create_sendInviteButton()}
         bind:this={inputEle}
       />
-      <a class="btn" href="/users">{m.common_cancel()}</a>
+      <a class="btn" href={localizeHref('/users')}>{m.common_cancel()}</a>
     </div>
   </form>
 </div>
