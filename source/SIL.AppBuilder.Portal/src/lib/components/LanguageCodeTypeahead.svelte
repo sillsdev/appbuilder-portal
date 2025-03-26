@@ -3,19 +3,16 @@
 
   import { page } from '$app/state';
   import {
-    createl10nMapFromEntries,
+    l10nMap,
     localizeTagData,
-    type LangInfo,
-    type l10nEntries
-  } from '$lib/i18n';
+    type LangInfo
+  } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import type { FuseResultMatch } from 'fuse.js';
   import TypeaheadInput from './TypeaheadInput.svelte';
 
-  const langtagmap = createl10nMapFromEntries(page.data.localizedNames as l10nEntries);
-
-  let langtagList = localizeTagData(page.data.langtags as LangInfo[], langtagmap, getLocale());
+  let langtagList = localizeTagData(page.data.langtags as LangInfo[], l10nMap.value, getLocale());
 
   // https://www.fusejs.io/api/options.html
   // Search the tag, name and localname. Give tag a double weighting

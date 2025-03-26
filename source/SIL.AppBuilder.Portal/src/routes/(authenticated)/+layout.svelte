@@ -5,6 +5,7 @@
   import Dropdown from '$lib/components/Dropdown.svelte';
   import LanguageSelector from '$lib/components/LanguageSelector.svelte';
   import { HamburgerIcon } from '$lib/icons';
+  import { createl10nMapFromEntries, l10nMap } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
@@ -27,6 +28,10 @@
   function isUrlActive(route: string) {
     return deLocalizeUrl(page.url).pathname?.startsWith(`${base}${route}`);
   }
+  
+  $effect(() => {
+    l10nMap.value = createl10nMapFromEntries(data.localizedNames);
+  });
 </script>
 
 <svelte:head>

@@ -1,4 +1,4 @@
-import { langtagsSchema, type l10nEntries, type l10nKeys } from '$lib/i18n';
+import { langtagsSchema, type L10NEntries, type L10NKeys } from '$lib/locales.svelte';
 import { locales, type Locale } from '$lib/paraglide/runtime';
 import type { Entries } from '$lib/utils';
 import { isSuperAdmin } from '$lib/utils/roles';
@@ -69,10 +69,10 @@ export const load: LayoutServerLoad = async (event) => {
         let ret = null;
         if (existsSync(filePath)) {
           const file = (await readFile(filePath)).toString();
-          ret = JSON.parse(file) as Entries<l10nKeys, Entries<string, string>>;
+          ret = JSON.parse(file) as Entries<L10NKeys, Entries<string, string>>;
         }
         return [locale, ret] as [Locale, typeof ret];
       })
-    ) as l10nEntries
+    ) as L10NEntries
   };
 };

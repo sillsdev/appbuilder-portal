@@ -4,8 +4,8 @@
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { createl10nMapFromEntries } from '$lib/i18n';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { l10nMap } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, locales, localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
@@ -23,8 +23,6 @@
   }
 
   let { data = $bindable() }: Props = $props();
-
-  const langtagmap = createl10nMapFromEntries(data.localizedNames);
 
   const { form: authorForm, enhance: authorEnhance } = superForm(data.authorForm);
   const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm, {
@@ -146,7 +144,7 @@
               {m.project_details_language()}:
             </span>
             <span>
-              {data.project?.Language} ({langtagmap
+              {data.project?.Language} ({l10nMap.value
                 .get(getLocale())
                 ?.get('languages')
                 ?.get(data.project.Language ?? '')})
