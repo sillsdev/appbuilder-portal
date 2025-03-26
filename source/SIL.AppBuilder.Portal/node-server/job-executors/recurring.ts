@@ -284,7 +284,12 @@ async function processLocalizedNames(
     revid = parsed.ldml.identity.special['sil:identity']['@_revid'];
 
     const output = [
-      ['languages', parsed.ldml.localeDisplayNames.languages.language.map(mapXMLAttributes)],
+      [
+        'languages',
+        parsed.ldml.localeDisplayNames.languages.language
+          .map(mapXMLAttributes)
+          .map(([code, name]) => [(code as string).replace(/_/g, '-'), name])
+      ],
       ['territories', parsed.ldml.localeDisplayNames.territories.territory.map(mapXMLAttributes)]
     ];
 
