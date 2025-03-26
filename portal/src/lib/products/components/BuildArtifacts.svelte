@@ -121,7 +121,7 @@
   </div>
 </div>
 
-<style lang="postcss">
+<style>
   tr > th:first-child,
   tr > td:first-child {
     position: sticky;
@@ -130,6 +130,6 @@
 
   tr td,
   tr th {
-    @apply bg-base-100;
+    background-color: var(--color-base-100);
   }
 </style>

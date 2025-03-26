@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
@@ -88,26 +89,16 @@
       bind:value={$form.logoURL}
     />
   </LabeledFormInput>
-  <div>
-    <label>
-      <div class="label flex flex-row">
-        <div class="flex flex-col">
-          <span class="">
-            {m.admin_settings_organizations_publicByDefault()}
-          </span>
-          <span class="text-sm">
-            {m.admin_settings_organizations_publicByDefaultDescription()}
-          </span>
-        </div>
-        <input
-          name="publicByDefault"
-          class="toggle toggle-accent"
-          type="checkbox"
-          bind:checked={$form.publicByDefault}
-        />
-      </div>
-    </label>
-  </div>
+  <LabeledFormInput name="admin_settings_organizations_publicByDefault" className="py-1">
+    <InputWithMessage name="admin_settings_organizations_publicByDefaultDescription">
+      <input
+        name="publicByDefault"
+        class="toggle toggle-accent"
+        type="checkbox"
+        bind:checked={$form.publicByDefault}
+      />
+    </InputWithMessage>
+  </LabeledFormInput>
   <!-- TODO: sort this. I think this will need a refactor of MultiselectBox -->
   <MultiselectBox header={m.org_storeSelectTitle()}>
     {#each $form.stores as store}

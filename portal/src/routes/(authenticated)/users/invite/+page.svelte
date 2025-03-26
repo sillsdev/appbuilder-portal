@@ -64,7 +64,7 @@
       </div>
       <div class="flex flex-col h-full min-w-96">
         <!-- TODO: i18n -->
-        <span class="label-text my-2">Assigned Roles and Groups</span>
+        <span class="fieldset-label my-2">Assigned Roles and Groups</span>
         <div class="grow border border-opacity-15 border-gray-50 rounded-lg p-4">
           <div class="flex flex-row space-x-2">
             <div>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { importJSONSchema } from '$lib/projects';
@@ -76,24 +77,21 @@
       {m.project_importProjectsHelp()}
     </a>
     <div class="flex flex-row gap-4 flex-wrap place-content-center sm:place-content-start p-4">
-      <label class="form-control w-full max-w-xs">
-        <span class="label-text">{m.project_projectGroup()}:</span>
+      <LabeledFormInput name="project_projectGroup" className="max-w-xs">
         <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
           {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
             <option value={group.Id}>{group.Name}</option>
           {/each}
         </select>
-      </label>
-      <label class="form-control w-full max-w-xs">
-        <span class="label-text">{m.project_type()}:</span>
+      </LabeledFormInput>
+      <LabeledFormInput name="project_type" className="max-w-xs">
         <select name="type" id="type" class="select select-bordered" bind:value={$form.type}>
           {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
             <option value={type.Id}>{type.Description}</option>
           {/each}
         </select>
-      </label>
-      <label class="form-control w-full max-w-xs">
-        <span class="label-text">{m.projectImport_importFile()}:</span>
+      </LabeledFormInput>
+      <LabeledFormInput name="projectImport_importFile" className="max-w-xs">
         <input
           type="file"
           class="file-input file-input-bordered"
@@ -111,7 +109,7 @@
             }
           }}
         />
-      </label>
+      </LabeledFormInput>
     </div>
     {#if $allErrors.length}
       <ul>

@@ -39,6 +39,6 @@
   <img
     src="https://cdn.auth0.com/oss/badges/a0-badge-dark.png"
     alt="Auth0 badge"
-    class="w-1/2 mx-auto hidden dark:block shadow-xl rounded"
+    class="w-1/2 mx-auto hidden dark:block shadow-xl rounded-sm"
   />
 </a>

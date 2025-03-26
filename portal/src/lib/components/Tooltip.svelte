@@ -9,12 +9,12 @@
   
 </script>
 
-<span class="tooltip [--tooltip-color:#FFFFFF] dark:tooltip-secondary {className}" data-tip={tip}>
+<span class="tooltip [--tt-bg:#FFFFFF] dark:tooltip-secondary {className}" data-tip={tip}>
   {@render children?.()}
 </span>
 
-<style lang="postcss">
+<style>
   .tooltip::before {
-    @apply shadow-md;
+    box-shadow: var(--shadow-md);
   }
 </style>

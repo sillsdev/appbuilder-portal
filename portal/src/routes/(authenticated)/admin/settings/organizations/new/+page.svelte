@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
@@ -86,26 +87,16 @@
       bind:value={$form.logoURL}
     />
   </LabeledFormInput>
-  <div>
-    <label>
-      <div class="label flex flex-row">
-        <div class="flex flex-col">
-          <span class="">
-            {m.admin_settings_organizations_publicByDefault()}
-          </span>
-          <span class="text-sm">
-            {m.admin_settings_organizations_publicByDefaultDescription()}
-          </span>
-        </div>
-        <input
-          name="publicByDefault"
-          class="toggle toggle-accent"
-          type="checkbox"
-          bind:checked={$form.publicByDefault}
-        />
-      </div>
-    </label>
-  </div>
+  <LabeledFormInput name="admin_settings_organizations_publicByDefault" className="py-1">
+    <InputWithMessage name="admin_settings_organizations_publicByDefaultDescription">
+      <input
+        name="publicByDefault"
+        class="toggle toggle-accent"
+        type="checkbox"
+        bind:checked={$form.publicByDefault}
+      />
+    </InputWithMessage>
+  </LabeledFormInput>
   {#if $allErrors.length}
     <ul>
       {#each $allErrors as error}

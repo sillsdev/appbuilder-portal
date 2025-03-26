@@ -18,7 +18,7 @@
   data-tip={tooltip}
 >
   <label class="input input-bordered flex items-center gap-2 w-full">
-    <input type="text" placeholder={m.search()} class="flex-grow" bind:value />
+    <input type="text" placeholder={m.search()} class="grow" bind:value />
     <IconContainer icon="mdi:search" class="ml-auto" width={24} />
   </label>
 </div>
