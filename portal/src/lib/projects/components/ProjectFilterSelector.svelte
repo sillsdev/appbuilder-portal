@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import Dropdown from '$lib/components/Dropdown.svelte';
   import { m } from '$lib/paraglide/messages';
   import Icon from '@iconify/svelte';
 
@@ -10,21 +11,27 @@
     ['active', m.projects_switcher_dropdown_activeProjects()],
     ['archived', m.projects_switcher_dropdown_archived()]
   ]);
+  let open = $state(false);
 </script>
 
-<div class="dropdown dropdown-start">
-  <!-- When .dropdown is focused, .dropdown-content is revealed making this actually interactive -->
-  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-  <h1 tabindex="0" class="p-4 pl-6 cursor-pointer">
-    <div class="flex flex-row items-center">
-      {textsForPaths.get(page.params.filter)}
-      <div class="dropdown-icon">
-        <Icon width="24" class="dropdown-icon" icon="gridicons:dropdown" />
+<Dropdown
+  dropdownClasses="dropdown-start"
+  labelClasses="no-animation hover:bg-transparent"
+  contentClasses="overflow-y-auto left-2 p-2 border m-2"
+  bind:open
+>
+  {#snippet label()}
+    <h1 class="p-4 pl-6 cursor-pointer">
+      <div class="flex flex-row items-center">
+        {textsForPaths.get(page.params.filter)}
+        <div class="dropdown-icon" class:open>
+          <Icon width="24" class="dropdown-icon" icon="gridicons:dropdown" />
+        </div>
       </div>
-    </div>
-  </h1>
-  <div class="dropdown-content z-10 overflow-y-auto left-2">
-    <div class="p-2 border m-2 rounded-md bg-base-200 px-4">
+    </h1>
+  {/snippet}
+  {#snippet content()}
+    <div class="px-4">
       {#each textsForPaths as route}
         <a
           href="/projects/{route[0]}{page.params.id ? '/' + page.params.id : ''}"
@@ -35,15 +42,15 @@
         </a>
       {/each}
     </div>
-  </div>
-</div>
+  {/snippet}
+</Dropdown>
 
 <style>
   .dropdown-icon {
     transition: transform 0.15s;
     transform: rotate(0deg);
   }
-  .dropdown:focus-within .dropdown-icon {
+  .dropdown-icon.open {
     transform: rotate(180deg);
   }
 </style>

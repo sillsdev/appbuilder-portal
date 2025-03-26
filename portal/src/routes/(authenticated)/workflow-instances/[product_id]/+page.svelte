@@ -8,6 +8,7 @@
   import { superForm } from 'sveltekit-superforms';
   import { Anchor, Node, Svelvet } from 'svelvet';
   import type { PageData } from './$types';
+  import Dropdown from '$lib/components/Dropdown.svelte';
 
   interface Props {
     data: PageData;
@@ -126,13 +127,11 @@
       </ul>
     </div>
     <span class="navbar-end w-auto">
-      <div role="button" class="dropdown" tabindex="0">
-        <div class="btn btn-ghost px-1">
+      <Dropdown labelClasses="px-1" contentClasses="top-12 right-0 p-1 min-w-36 w-auto">
+        {#snippet label()}
           <IconContainer icon="charm:menu-kebab" width="20" />
-        </div>
-        <div
-          class="dropdown-content top-12 right-0 p-1 bg-base-200 z-10 rounded-md min-w-36 w-auto shadow-lg"
-        >
+        {/snippet}
+        {#snippet content()}
           <ul class="menu menu-compact overflow-hidden rounded-md">
             <li class="w-full rounded-none">
               <button class="text-nowrap" onclick={() => openModal(data.product.Id)}>
@@ -150,8 +149,8 @@
               </form>
             </li>
           </ul>
-        </div>
-      </div>
+        {/snippet}
+      </Dropdown>
     </span>
   </div>
   <ProductDetails product={data.product} />

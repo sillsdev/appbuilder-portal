@@ -1,6 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
+  import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
@@ -316,14 +317,15 @@
                     {getRelativeTime(product.DatePublished)}
                   </Tooltip>
                 </span>
-                <span>
-                  <div role="button" class="dropdown" tabindex="0">
-                    <div class="btn btn-ghost px-1">
+                <span class="dropdown-wrapper">
+                  <Dropdown
+                    labelClasses="px-1"
+                    contentClasses="drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto"
+                  >
+                    {#snippet label()}
                       <IconContainer icon="charm:menu-kebab" width="20" />
-                    </div>
-                    <div
-                      class="dropdown-content bottom-12 right-0 p-1 bg-base-200 z-10 rounded-md min-w-36 w-auto shadow-lg"
-                    >
+                    {/snippet}
+                    {#snippet content()}
                       <ul class="menu menu-compact overflow-hidden rounded-md">
                         {#each product.actions as action}
                           {@const message =
@@ -378,8 +380,8 @@
                           </label>
                         </li>
                       </ul>
-                    </div>
-                  </div>
+                    {/snippet}
+                  </Dropdown>
                 </span>
               </div>
               {#if product.WorkflowInstance}
@@ -490,21 +492,18 @@
                 <IconContainer icon="mdi:user" width="20" />
                 {m.project_side_projectOwner()}
               </span>
-              <span class="text-right flex place-content-end">
-                <div class="dropdown" role="button" tabindex="0">
-                  <div
-                    class="btn btn-ghost p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
-                  >
+              <span class="text-right flex place-content-end dropdown-wrapper">
+                <Dropdown
+                  labelClasses="p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
+                  contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
+                >
+                  {#snippet label()}
                     <span class="flex items-center pl-1">
                       {data.project?.Owner.Name}
                       <IconContainer icon="gridicons:dropdown" width="20" />
                     </span>
-                  </div>
-                  <div
-                    role="button"
-                    tabindex="0"
-                    class="dropdown-content arrow-top menu drop-shadow-lg bg-base-200 z-20 min-w-[10rem] top-8 right-0 rounded-md"
-                  >
+                  {/snippet}
+                  {#snippet content()}
                     <input
                       type="hidden"
                       name="owner"
@@ -527,8 +526,8 @@
                         </li>
                       {/each}
                     </ul>
-                  </div>
-                </div>
+                  {/snippet}
+                </Dropdown>
               </span>
             </div>
             <div class="divider my-2"></div>
@@ -537,21 +536,18 @@
                 <IconContainer icon="mdi:account-group" width={20} />
                 {m.project_side_projectGroup()}
               </span>
-              <span class="shrink text-right flex place-content-end items-center">
-                <div class="dropdown" role="button" tabindex="0">
-                  <div
-                    class="btn btn-ghost p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
-                  >
+              <span class="shrink text-right flex place-content-end items-center dropdown-wrapper">
+                <Dropdown
+                  labelClasses="p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
+                  contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
+                >
+                  {#snippet label()}
                     <span class="flex items-center pl-1">
                       {data.project?.Group.Name}
                       <IconContainer icon="gridicons:dropdown" width="20" />
                     </span>
-                  </div>
-                  <div
-                    role="button"
-                    tabindex="0"
-                    class="dropdown-content arrow-top menu drop-shadow-lg bg-base-200 z-20 min-w-[10rem] top-8 right-0 rounded-md"
-                  >
+                  {/snippet}
+                  {#snippet content()}
                     <input
                       type="hidden"
                       name="group"
@@ -574,8 +570,8 @@
                         </li>
                       {/each}
                     </ul>
-                  </div>
-                </div>
+                  {/snippet}
+                </Dropdown>
               </span>
             </div>
           </div>
@@ -696,7 +692,7 @@
       flex-direction: row;
     }
   }
-  div.dropdown-content::after {
+  .dropdown-wrapper :global(.drop-arrow::after) {
     content: '';
     width: 10px;
     height: 10px;
@@ -706,7 +702,7 @@
     right: 10px;
     background-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-bg-opacity)));
   }
-  div.dropdown-content.arrow-top::after {
+  .dropdown-wrapper :global(.drop-arrow.arrow-top::after) {
     bottom: auto;
     top: -5px;
   }

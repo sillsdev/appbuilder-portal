@@ -8,6 +8,7 @@
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
   import { signOut } from '@auth/sveltekit/client';
   import type { LayoutData } from './$types';
+  import Dropdown from '$lib/components/Dropdown.svelte';
 
   interface Props {
     data: LayoutData;
@@ -50,16 +51,20 @@
   </div>
   <div class="navbar-end">
     <LanguageSelector />
-    <div class="dropdown dropdown-end">
-      <div role="button" class="btn btn-ghost m-2 p-2 rounded-xl" tabindex="0">
+    <Dropdown
+      dropdownClasses="dropdown-end"
+      labelClasses="m-2 p-2 rounded-xl"
+      contentClasses="w-36 overflow-y-auto"
+    >
+      {#snippet label()}
         <img
           src={page.data.session?.user?.image}
           alt="User profile"
           referrerpolicy="no-referrer"
           class="h-full rounded-xl"
         />
-      </div>
-      <div class="dropdown-content w-36 z-10 bg-base-200 rounded-md overflow-y-auto">
+      {/snippet}
+      {#snippet content()}
         <ul class="menu menu-compact gap-1 p-2">
           <li>
             <a href="/users/{page.data.session?.user?.userId ?? ''}/settings/profile">
@@ -80,8 +85,8 @@
             <button onclick={() => signOut({ callbackUrl: '/' })}>{m.header_signOut()}</button>
           </li>
         </ul>
-      </div>
-    </div>
+      {/snippet}
+    </Dropdown>
   </div>
 </div>
 <div class="flex grow min-h-0">
