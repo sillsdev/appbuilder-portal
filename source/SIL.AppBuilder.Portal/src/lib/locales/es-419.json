@@ -316,8 +316,8 @@
     "selectors": ["countPlural"],
     "match": {
       "amount=0": "No Product Files",
-      "countPlural=one": "{ amount } Product File",
-      "countPlural=other": "{ amount } Product Files"
+      "countPlural=one": "{amount} Product File",
+      "countPlural=other": "{amount} Product Files"
     }
   }],
   "project_products_noArtifacts": "No hay archivos de producto",
