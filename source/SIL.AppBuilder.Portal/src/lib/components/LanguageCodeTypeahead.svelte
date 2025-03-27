@@ -211,6 +211,6 @@
 
 <style>
   .selected {
-    background-color: oklch(var(--b2));
+    background-color: var(--color-base-200);
   }
 </style>

@@ -98,8 +98,8 @@
         classes="w-full {!tzValue || timeZoneMap.has(tzValue) ? '' : 'select-error'}"
         dropdownClasses="w-full"
       >
-        {#snippet listElement(res)}
-          <div class="w-full right-0">
+        {#snippet listElement(res, selected)}
+          <div class="w-full right-0" class:selected>
             <span>{res.item.value}</span>
           </div>
         {/snippet}
@@ -162,3 +162,9 @@
     </div>
   </div>
 </form>
+
+<style>
+  .selected {
+    background-color: var(--color-base-200);
+  }
+</style>
