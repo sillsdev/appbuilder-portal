@@ -1,4 +1,5 @@
 import { checkInviteErrors } from '$lib/organizationInvites';
+import { localizeHref } from '$lib/paraglide/runtime';
 import { verifyCanViewAndEdit } from '$lib/projects/server';
 import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import type { Session } from '@auth/express';
@@ -123,11 +124,11 @@ export const checkUserExistsHandle: Handle = async ({ event, resolve }) => {
   });
   if (!user || (user.OrganizationMemberships.length === 0 && !event.cookies.get('inviteToken'))) {
     event.cookies.set('authjs.session-token', '', { path: '/' });
-    return redirect(302, '/login/no-organization');
+    return redirect(302, localizeHref('/login/no-organization'));
   }
   if (user.IsLocked) {
     event.cookies.set('authjs.session-token', '', { path: '/' });
-    return redirect(302, '/login/locked');
+    return redirect(302, localizeHref('/login/locked'));
   }
   return resolve(event);
 };
@@ -164,7 +165,7 @@ export const localRouteHandle: Handle = async ({ event, resolve }) => {
     event.route.id !== null
   ) {
     const session = await event.locals.auth();
-    if (!session) return redirect(302, '/login');
+    if (!session) return redirect(302, localizeHref('/login'));
     if (!(await validateRouteForAuthenticatedUser(session, event.route.id, event.params)))
       return error(403);
   }
@@ -188,8 +189,7 @@ async function validateRouteForAuthenticatedUser(
       // Must be org admin or super admin for some organization
       if (!isAdmin(session?.user?.roles)) return false;
       // Must be org admin or super admin for this organization
-      if (params.id)
-        return isAdminForOrg(parseInt(params.id!), session?.user?.roles);
+      if (params.id) return isAdminForOrg(parseInt(params.id!), session?.user?.roles);
       return true;
     } else if (path[1] === 'products') {
       // TODO not sure, probably based on ownership of the project

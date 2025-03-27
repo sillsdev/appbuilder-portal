@@ -1,3 +1,4 @@
+import { localizeHref } from '$lib/paraglide/runtime';
 import { paginateSchema } from '$lib/table';
 import { isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
@@ -84,7 +85,7 @@ function adminOrDefaultWhere(isSuper: boolean, orgIds: number[]) {
 export const load = (async (event) => {
   const userInfo = (await event.locals.auth())?.user;
   const userId = userInfo?.userId;
-  if (!userId) return redirect(302, '/');
+  if (!userId) return redirect(302, localizeHref('/'));
 
   const isSuper = isSuperAdmin(userInfo.roles);
 

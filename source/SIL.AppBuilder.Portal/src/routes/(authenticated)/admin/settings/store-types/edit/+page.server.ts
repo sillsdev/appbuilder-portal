@@ -1,4 +1,4 @@
-import { base } from '$app/paths';
+import { localizeHref } from '$lib/paraglide/runtime';
 import { idSchema } from '$lib/valibot';
 import { fail, redirect } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
@@ -15,14 +15,14 @@ const editSchema = v.object({
 export const load = (async ({ url }) => {
   const id = parseInt(url.searchParams.get('id') ?? '');
   if (isNaN(id)) {
-    return redirect(302, base + '/admin/settings/store-types');
+    return redirect(302, localizeHref('/admin/settings/store-types'));
   }
   const data = await prisma.storeTypes.findFirst({
     where: {
       Id: id
     }
   });
-  if (!data) return redirect(302, base + '/admin/settings/store-types');
+  if (!data) return redirect(302, localizeHref('/admin/settings/store-types'));
   const form = await superValidate(
     {
       id: data.Id,
