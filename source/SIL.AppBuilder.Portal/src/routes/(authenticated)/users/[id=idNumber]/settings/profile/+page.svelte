@@ -87,20 +87,20 @@
       <TypeaheadInput
         inputElProps={{ placeholder: m.profile_timezonePlaceholder() }}
         getList={(search) => fuzzySearch.search(search).slice(0, 7)}
-        onItemClicked={(item) => {
+        onItemClicked={(res) => {
           // Not strictly necessary because it will be set onSubmit but here anyways
           // @ts-expect-error the property key should always exist in our use case
-          $form.timezone = item.key;
+          $form.timezone = res.key;
           // @ts-expect-error the property value should always exist in our use case
-          tzValue = item.value;
+          tzValue = res.value;
         }}
         bind:search={tzValue}
         classes="w-full {!tzValue || timeZoneMap.has(tzValue) ? '' : 'select-error'}"
         dropdownClasses="w-full"
       >
-        {#snippet listElement(item)}
+        {#snippet listElement(res)}
           <div class="w-full right-0">
-            <span>{item.item.value}</span>
+            <span>{res.item.value}</span>
           </div>
         {/snippet}
       </TypeaheadInput>
