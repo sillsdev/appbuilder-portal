@@ -14,7 +14,8 @@
       case 'fr-FR':
         return 'fr';
       default:
-        throw new Error(`Unrecognized language tag ${locale} in getFlag!`);
+        console.warn(`Unrecognized language tag ${locale} in getFlag, using default flag.`);
+        return 'un'; // UN flag as fallback
     }
   }
 </script>
