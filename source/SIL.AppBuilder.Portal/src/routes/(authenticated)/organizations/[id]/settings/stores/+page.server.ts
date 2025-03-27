@@ -1,6 +1,4 @@
-import { base } from '$app/paths';
 import { idSchema } from '$lib/valibot';
-import { redirect } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -17,24 +15,17 @@ const editStoresSchema = v.object({
   )
 });
 export const load = (async (event) => {
-  const id = parseInt(event.params.id);
-  if (isNaN(id)) return redirect(302, base + '/organizations');
-  const data = await prisma.organizations.findUnique({
-    where: {
-      Id: id
-    }
-  });
+  const { organization } = await event.parent();
   const orgStores = await prisma.organizationStores.findMany({
     where: {
-      OrganizationId: id
+      OrganizationId: organization.Id
     }
   });
   const allStores = (await prisma.stores.findMany()).map((s) => [s.Id, s] as [number, typeof s]);
-  if (!data) return redirect(302, base + '/organizations');
   const setOrgStores = new Set(orgStores.map((p) => p.StoreId));
   const form = await superValidate(
     {
-      id: data.Id,
+      id: organization.Id,
       stores: allStores.map((s) => ({
         storeId: s[0],
         enabled: setOrgStores.has(s[0])
@@ -42,7 +33,7 @@ export const load = (async (event) => {
     },
     valibot(editStoresSchema)
   );
-  return { organization: data, orgStores, allStores, form };
+  return { organization: organization, orgStores, allStores, form };
 }) satisfies PageServerLoad;
 
 export const actions = {

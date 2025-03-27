@@ -1,6 +1,5 @@
 import { idSchema } from '$lib/valibot';
-import { redirect } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -13,13 +12,7 @@ const editInfoSchema = v.object({
 });
 
 export const load = (async (event) => {
-  if (isNaN(parseInt(event.params.id))) return redirect(302, '/organizations');
-  const organization = await prisma.organizations.findUnique({
-    where: {
-      Id: parseInt(event.params.id)
-    }
-  });
-  if (!organization) return redirect(302, '/organizations');
+  const { organization } = await event.parent();
   const form = await superValidate(
     {
       id: organization.Id,
@@ -28,7 +21,7 @@ export const load = (async (event) => {
     },
     valibot(editInfoSchema)
   );
-  return { organization, form };
+  return { form };
 }) satisfies PageServerLoad;
 
 export const actions = {
