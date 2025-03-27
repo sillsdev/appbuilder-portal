@@ -46,10 +46,15 @@ export const langtagsSchema = v.array(
 
 export type LangInfo = v.InferOutput<typeof langtagsSchema>[number];
 
-export function localizeTagData(data: LangInfo[], lookup: L10NMap, locale: Locale) {
-  const tryLocalize = (namespace: L10NKeys, str: string, name: string) =>
-    lookup.get(locale)?.get(namespace)?.get(str) || name;
+function tryLocalize(lookup: L10NMap, locale: Locale, namespace: L10NKeys, str: string, name: string) {
+  return lookup.get(locale)?.get(namespace)?.get(str) || name;
+}
 
+export function tryLocalizeName(data: LangInfo[], lookup: L10NMap, locale: Locale, tag: string) {
+  return tryLocalize(lookup, locale, 'languages', tag, data.find((l) => l.tag === tag)?.name ?? '');
+}
+
+export function localizeTagData(data: LangInfo[], lookup: L10NMap, locale: Locale) {
   // TODO: localized separator
   return data.map((info) => ({
     names: (info.names ?? []).join(", "),
@@ -58,10 +63,10 @@ export function localizeTagData(data: LangInfo[], lookup: L10NMap, locale: Local
     variants: (info.variants ?? []).join(", "),
     tag: info.tag,
     // These are the only fields that need localization
-    nameInLocale: tryLocalize('languages', info.tag, info.name),
-    region: info.region && tryLocalize('territories', info.region, info.region),
+    nameInLocale: tryLocalizeName(data, lookup, locale, info.tag),
+    region: info.region && tryLocalize(lookup, locale, 'territories', info.region, info.region),
     regions: (
-      info.regions?.map((region) => tryLocalize('territories', region, region)) ?? []
+      info.regions?.map((region) => tryLocalize(lookup, locale, 'territories', region, region)) ?? []
     ).join(", ")
   }));
 }

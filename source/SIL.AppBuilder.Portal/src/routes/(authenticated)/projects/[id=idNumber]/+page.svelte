@@ -5,7 +5,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
-  import { l10nMap } from '$lib/locales.svelte';
+  import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, locales, localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
@@ -144,10 +144,12 @@
               {m.project_details_language()}:
             </span>
             <span>
-              {data.project?.Language} ({l10nMap.value
-                .get(getLocale())
-                ?.get('languages')
-                ?.get(data.project.Language ?? '')})
+              {data.project?.Language} ({tryLocalizeName(
+                data.langtags,
+                l10nMap.value,
+                getLocale(),
+                data.project.Language ?? ''
+              )})
             </span>
           </div>
           <div class="flex place-content-between">
