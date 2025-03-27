@@ -33,7 +33,7 @@ export const load = (async (event) => {
     },
     valibot(editStoresSchema)
   );
-  return { organization: organization, orgStores, allStores, form };
+  return { orgStores, allStores, form };
 }) satisfies PageServerLoad;
 
 export const actions = {
