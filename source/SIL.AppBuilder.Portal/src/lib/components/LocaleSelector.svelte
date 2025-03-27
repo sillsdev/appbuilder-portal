@@ -24,7 +24,7 @@
   <Dropdown
     dropdownClasses="dropdown-end"
     labelClasses="m-2 p-2 rounded-xl items-middle justify-center flex-nowrap"
-    contentClasses="overflow-y-auto"
+    contentClasses="overflow-y-auto min-w-52"
   >
     {#snippet label()}
       <LanguageIcon color="white" />
@@ -35,7 +35,7 @@
           {@const langMap = l10nMap.value.get(getLocale())?.get('languages')}
           <li class="w-full">
             <div
-              class="btn flex-nowrap justify-start"
+              class="btn flex-nowrap justify-start pl-2 pr-1"
               class:bg-accent={locale === getLocale()}
               class:text-accent-content={locale === getLocale()}
               onclick={() => setLocale(locale)}

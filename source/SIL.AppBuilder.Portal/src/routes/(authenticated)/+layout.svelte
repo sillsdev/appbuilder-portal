@@ -3,7 +3,7 @@
   import { base } from '$app/paths';
   import { page } from '$app/state';
   import Dropdown from '$lib/components/Dropdown.svelte';
-  import LanguageSelector from '$lib/components/LanguageSelector.svelte';
+  import LocaleSelector from '$lib/components/LocaleSelector.svelte';
   import { HamburgerIcon } from '$lib/icons';
   import { createl10nMapFromEntries, l10nMap } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -52,7 +52,7 @@
     <!-- <p>SCRIPTORIA</p> -->
   </div>
   <div class="navbar-end">
-    <LanguageSelector />
+    <LocaleSelector />
     <Dropdown
       dropdownClasses="dropdown-end"
       labelClasses="m-2 p-2 rounded-xl"
