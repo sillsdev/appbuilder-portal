@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import type { Snippet } from 'svelte';
   import IconContainer from '../IconContainer.svelte';
 
   interface Props {
@@ -11,8 +12,8 @@
     routeId: string;
     titleString?: string;
     allowTitleWrap?: boolean;
-    children?: import('svelte').Snippet;
-    title?: import('svelte').Snippet;
+    children?: Snippet;
+    title?: Snippet;
   }
 
   let {
