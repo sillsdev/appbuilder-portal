@@ -1,4 +1,5 @@
 import { acceptOrganizationInvite, checkInviteErrors } from '$lib/organizationInvites';
+import { localizeHref } from '$lib/paraglide/runtime';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
@@ -18,6 +19,6 @@ export const load = (async (event) => {
     event.cookies.set('inviteToken', inviteToken, {
       path: '/'
     });
-    return redirect(302, '/login');
+    return redirect(302, localizeHref('/login'));
   }
 }) satisfies PageServerLoad;

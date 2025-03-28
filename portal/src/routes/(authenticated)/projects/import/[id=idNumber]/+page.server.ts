@@ -1,3 +1,4 @@
+import { localizeHref } from '$lib/paraglide/runtime';
 import { importJSONSchema } from '$lib/projects';
 import { verifyCanCreateProject } from '$lib/projects/server';
 import { idSchema } from '$lib/valibot';
@@ -202,6 +203,6 @@ export const actions: Actions = {
       return fail(400, { form, ok: false, errors });
     }
 
-    return redirect(302, `/projects/own/${organizationId}`);
+    return redirect(302, localizeHref(`/projects/own/${organizationId}`));
   }
 };

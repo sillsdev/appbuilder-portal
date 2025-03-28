@@ -4,7 +4,7 @@
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/utils/time';
   import type { PageData } from './$types';
 
@@ -30,7 +30,10 @@
         </thead>
         <tbody>
           {#each data.tasks as task}
-            <tr class="cursor-pointer" onclick={() => goto(`/tasks/${task.ProductId}`)}>
+            <tr
+              class="cursor-pointer"
+              onclick={() => goto(localizeHref(`/tasks/${task.ProductId}`))}
+            >
               <td>
                 <span class="flex items-center">
                   <IconContainer
@@ -48,7 +51,7 @@
                 </span>
               </td>
               <td>
-                <a class="link" href="/projects/{task.Product.ProjectId}">
+                <a class="link" href={localizeHref(`/projects/${task.Product.ProjectId}`)}>
                   {task.Product.Project.Name}
                 </a>
               </td>

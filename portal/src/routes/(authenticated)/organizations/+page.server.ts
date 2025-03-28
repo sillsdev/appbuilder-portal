@@ -1,3 +1,4 @@
+import { localizeHref } from '$lib/paraglide/runtime';
 import { isSuperAdmin } from '$lib/utils/roles';
 import { redirect } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
@@ -24,7 +25,7 @@ export const load = (async (event) => {
       }
     });
   if (organizations.length === 1) {
-    return redirect(302, '/organizations/' + organizations[0].Id + '/settings');
+    return redirect(302, localizeHref(`/organizations/${organizations[0].Id}/settings`));
   }
   return { organizations };
 }) satisfies PageServerLoad;

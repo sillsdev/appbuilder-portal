@@ -1,4 +1,4 @@
-import { base } from '$app/paths';
+import { localizeHref } from '$lib/paraglide/runtime';
 import { idSchema } from '$lib/valibot';
 import { fail, redirect } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
@@ -27,7 +27,7 @@ const editSchema = v.object({
 export const load = (async ({ url }) => {
   const id = parseInt(url.searchParams.get('id') ?? '');
   if (isNaN(id)) {
-    return redirect(302, base + '/admin/settings/organizations');
+    return redirect(302, localizeHref('/admin/settings/organizations'));
   }
   const data = await prisma.organizations.findUnique({
     where: {
@@ -39,7 +39,7 @@ export const load = (async ({ url }) => {
       OrganizationId: id
     }
   });
-  if (!data) return redirect(302, base + '/admin/settings/organizations');
+  if (!data) return redirect(302, localizeHref('/admin/settings/organizations'));
   const users = await prisma.users.findMany();
   const orgStoreNumList = new Set(orgStores.map((s) => s.StoreId));
   const stores = await prisma.stores.findMany();

@@ -5,7 +5,7 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { isAdmin } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
   import { superForm, type FormResult } from 'sveltekit-superforms';
@@ -52,7 +52,7 @@
     <div class="flex flex-row items-center">
       <h1>{m.users_title()}</h1>
       {#if isAdmin(data.session?.user.roles)}
-        <a href="/users/invite" class="btn btn-outline">
+        <a href={localizeHref('/users/invite')} class="btn btn-outline">
           <IconContainer icon="mdi:user-add" width="20" />
           <span>{m.organizationMembership_invite_create_inviteUserButtonTitle()}</span>
         </a>
@@ -97,7 +97,7 @@
           <tr class="align-top">
             <td class="p-2">
               <p>
-                <a href="/users/{user.I}/settings" class="link pb-2">
+                <a href={localizeHref(`/users/${user.I}/settings`)} class="link pb-2">
                   {user.N}
                 </a>
               </p>

@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import Icon from '@iconify/svelte';
 
   const textsForPaths = new Map([
@@ -34,7 +35,7 @@
     <div class="px-4">
       {#each textsForPaths as route}
         <a
-          href="/projects/{route[0]}{page.params.id ? '/' + page.params.id : ''}"
+          href={localizeHref(`/projects/${route[0]}${page.params.id ? '/' + page.params.id : ''}`)}
           class:font-extrabold={page.params.filter === route[0]}
           class="p-1 text-nowrap block"
         >

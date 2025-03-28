@@ -4,7 +4,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import type { ValidI13nKey } from '$lib/i18n';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName, byString } from '$lib/utils/sorting';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
@@ -17,11 +17,13 @@
 
   let { data }: Props = $props();
 
+  const base = '/admin/settings/workflow-definitions';
+
   const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',
     onUpdated(event) {
       if (event.form.valid) {
-        goto('/admin/settings/workflow-definitions');
+        goto(localizeHref(base));
       }
     }
   });
@@ -155,7 +157,7 @@
   {/if}
   <div class="my-4">
     <input type="submit" class="btn btn-primary" value={m.common_save()} />
-    <a class="btn" href="/admin/settings/workflow-definitions">{m.common_cancel()}</a>
+    <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
   </div>
 </form>
 

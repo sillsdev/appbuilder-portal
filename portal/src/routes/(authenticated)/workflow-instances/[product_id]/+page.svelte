@@ -1,14 +1,15 @@
 <script lang="ts">
   import { browser } from '$app/environment';
+  import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import { Springy } from '$lib/springyGraph.js';
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import { Anchor, Node, Svelvet } from 'svelvet';
   import type { PageData } from './$types';
-  import Dropdown from '$lib/components/Dropdown.svelte';
 
   interface Props {
     data: PageData;
@@ -107,17 +108,20 @@
     <div class="breadcrumbs text-sm grow">
       <ul>
         <li>
-          <a class="link" href="/projects/organization/{data.product?.Project.Organization.Id}">
+          <a
+            class="link"
+            href={localizeHref(`/projects/organization/${data.product?.Project.Organization.Id}`)}
+          >
             {data.product?.Project.Organization.Name}
           </a>
         </li>
         <li>
-          <a class="link" href="/projects/{data.product?.Project.Id}">
+          <a class="link" href={localizeHref(`/projects/${data.product?.Project.Id}`)}>
             {data.product?.Project.Name}
           </a>
         </li>
         <li>
-          <a class="link" href="/workflow-instances">
+          <a class="link" href={localizeHref('/workflow-instances')}>
             {m.workflowInstances_title()}
           </a>
         </li>

@@ -2,7 +2,7 @@
   import { page } from '$app/state';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { importJSONSchema } from '$lib/projects';
   import { byName, byString } from '$lib/utils/sorting';
   import { onMount } from 'svelte';
@@ -154,7 +154,9 @@
       </ul>
     {/if}
     <div class="flex flex-wrap place-content-center gap-4 p-4">
-      <a href="/projects/own/{page.params.id}" class="btn w-full max-w-xs">{m.common_cancel()}</a>
+      <a href={localizeHref(`/projects/own/${page.params.id}`)} class="btn w-full max-w-xs">
+        {m.common_cancel()}
+      </a>
       <button class="btn btn-primary w-full max-w-xs" disabled={!canSubmit} type="submit">
         {m.common_save()}
       </button>

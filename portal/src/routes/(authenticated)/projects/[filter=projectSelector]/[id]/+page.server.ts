@@ -1,3 +1,4 @@
+import { localizeHref } from '$lib/paraglide/runtime';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import {
@@ -27,46 +28,50 @@ function whereStatements(
 ): Prisma.ProjectsWhereInput {
   const selector = filter as 'organization' | 'active' | 'archived' | 'all' | 'own';
   switch (selector) {
-  case 'organization':
-    return {
-      OrganizationId: orgId,
-      DateArchived: null
-    };
-  case 'active':
-    return {
-      OrganizationId: orgId,
-      DateActive: {
-        not: null
-      },
-      DateArchived: null
-    };
-  case 'archived':
-    return {
-      OrganizationId: orgId,
-      DateArchived: {
-        not: null
-      }
-    };
-  case 'all':
-    return {
-      OrganizationId: orgId
-    };
-  case 'own':
-    return {
-      OrganizationId: orgId,
-      OwnerId: userId,
-      DateArchived: null
-    };
+    case 'organization':
+      return {
+        OrganizationId: orgId,
+        DateArchived: null
+      };
+    case 'active':
+      return {
+        OrganizationId: orgId,
+        DateActive: {
+          not: null
+        },
+        DateArchived: null
+      };
+    case 'archived':
+      return {
+        OrganizationId: orgId,
+        DateArchived: {
+          not: null
+        }
+      };
+    case 'all':
+      return {
+        OrganizationId: orgId
+      };
+    case 'own':
+      return {
+        OrganizationId: orgId,
+        OwnerId: userId,
+        DateArchived: null
+      };
   }
 }
 
-export const load = (async ({ params, url, locals }) => {
+export const load = (async ({ params, locals }) => {
   const userId = (await locals.auth())?.user.userId;
   const orgId = parseInt(params.id);
-  if (isNaN(orgId) || !(orgId + '' === params.id)) {
-    const paths = url.pathname.split('/');
-    return redirect(302, paths.slice(0, paths.length - 1).join('/'));
+  if (
+    isNaN(orgId) ||
+    !(orgId + '' === params.id) ||
+    !(await prisma.organizations.findFirst({ where: { Id: orgId } }))
+  ) {
+    return redirect(302, localizeHref(`/projects/${params.filter}`));
   }
+
   const projects = await prisma.projects.findMany({
     where: whereStatements(params.filter, orgId, userId),
     include: {
@@ -143,7 +148,13 @@ export const actions: Actions = {
     const session = await event.locals.auth();
     if (!session) return fail(403);
     const orgId = parseInt(event.params.id!);
-    if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
+    if (
+      isNaN(orgId) ||
+      !(orgId + '' === event.params.id) ||
+      !(await prisma.organizations.findFirst({ where: { Id: orgId } }))
+    ) {
+      return fail(404);
+    }
 
     const form = await superValidate(event.request, valibot(bulkProjectActionSchema));
     if (

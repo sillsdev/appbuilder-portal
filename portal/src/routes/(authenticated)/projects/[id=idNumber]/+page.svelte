@@ -7,7 +7,7 @@
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import langtags from '$lib/langtags.json';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, locales } from '$lib/paraglide/runtime';
+  import { getLocale, locales, localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
@@ -113,7 +113,10 @@
     </div>
     <div class="grow">
       <Tooltip className="tooltip-bottom" tip={m.project_editProject()}>
-        <a href="/projects/{data.project?.Id}/edit" title={m.project_editProject()}>
+        <a
+          href={localizeHref(`/projects/${data.project?.Id}/edit`)}
+          title={m.project_editProject()}
+        >
           <IconContainer width="24" icon="mdi:pencil" />
         </a>
       </Tooltip>
@@ -349,7 +352,10 @@
                           </button>
                         </li>
                         <li class="w-full rounded-none">
-                          <a href="/products/{product.Id}/files" class="text-nowrap">
+                          <a
+                            href={localizeHref(`/products/${product.Id}/files`)}
+                            class="text-nowrap"
+                          >
                             {m.project_productFiles()}
                           </a>
                         </li>
@@ -363,7 +369,7 @@
                         {/if}
                         {#if isSuperAdmin(data.session?.user.roles) && !!product.WorkflowInstance}
                           <li class="w-full-rounded-none">
-                            <a href="/workflow-instances/{product.Id}">
+                            <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
                               {m.common_workflow()}
                             </a>
                           </li>
@@ -403,7 +409,7 @@
                     // activityName appears to show up blank primarily at the very startup of a new product?
                   })}
                   {#if product.UserTasks.slice(-1)[0]?.UserId === page.data.session?.user.userId}
-                    <a class="link mx-2" href="/tasks/{product.Id}">
+                    <a class="link mx-2" href={localizeHref(`/tasks/${product.Id}`)}>
                       {m.common_continue()}
                     </a>
                   {/if}
@@ -585,7 +591,7 @@
         <div class="p-2">
           {#if data.project.Authors.length}
             {@const locale = getLocale()}
-            {#each data.project.Authors.toSorted((a, b) => byName(a.Users, b.Users, locale)) as author}
+            {#each data.project.Authors.toSorted( (a, b) => byName(a.Users, b.Users, locale) ) as author}
               <div class="flex flex-row w-full place-content-between p-2">
                 <span>{author.Users.Name}</span>
                 <form action="?/deleteAuthor" method="post" use:authorDeleteEnhance>
@@ -743,7 +749,9 @@
     column-gap: 0.75rem;
   }
   /* source: https://github.com/saadeghi/daisyui/issues/3040#issuecomment-2250530354 */
-  :root:has(:global(:is(.modal-open, .modal:target, .modal-toggle:checked + .modal, .modal[open]))) {
+  :root:has(
+      :global(:is(.modal-open, .modal:target, .modal-toggle:checked + .modal, .modal[open]))
+    ) {
     scrollbar-gutter: unset;
   }
 </style>

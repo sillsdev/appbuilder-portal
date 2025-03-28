@@ -1,3 +1,4 @@
+import { localizeHref } from '$lib/paraglide/runtime';
 import { projectCreateSchema } from '$lib/projects';
 import { verifyCanCreateProject } from '$lib/projects/server';
 import { error, redirect } from '@sveltejs/kit';
@@ -76,7 +77,7 @@ export const actions: Actions = {
         },
         BullMQ.Retry5e5
       );
-      return redirect(302, `/projects/${project}`);
+      return redirect(302, localizeHref(`/projects/${project}`));
     }
     return {
       form,

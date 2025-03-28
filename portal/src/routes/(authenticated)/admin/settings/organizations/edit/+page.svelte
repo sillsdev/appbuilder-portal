@@ -5,7 +5,7 @@
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -15,11 +15,14 @@
   }
 
   let { data }: Props = $props();
+
+  const base = '/admin/settings/organizations';
+
   const { form, enhance, allErrors } = superForm(data.form, {
     dataType: 'json',
     onUpdated(event) {
       if (event.form.valid) {
-        goto('/admin/settings/organizations');
+        goto(localizeHref(base));
       }
     }
   });
@@ -122,6 +125,6 @@
   {/if}
   <div class="my-4">
     <input type="submit" class="btn btn-primary" value="Submit" />
-    <a class="btn" href="/admin/settings/organizations">Cancel</a>
+    <a class="btn" href={localizeHref(base)}>Cancel</a>
   </div>
 </form>

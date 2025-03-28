@@ -6,7 +6,7 @@
   import SortTable from '$lib/components/SortTable.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
   import type { FormResult } from 'sveltekit-superforms';
@@ -129,15 +129,15 @@
           {@const prodDef = instance.Product.ProductDefinition}
           <tr class="cursor-pointer hover:bg-neutral">
             <td class="border">
-              <a class="link" href="/projects/organization/{org.Id}">
+              <a class="link" href={localizeHref(`/projects/organization/${org.Id}`)}>
                 {org.Name}
               </a>
             </td>
             <td class="border">
-              <a class="link" href="/projects/{project.Id}">{project.Name}</a>
+              <a class="link" href={localizeHref(`/projects/${project.Id}`)}>{project.Name}</a>
             </td>
             <td class="border">
-              <a class="link" href="/workflow-instances/{instance.Product.Id}">
+              <a class="link" href={localizeHref(`/workflow-instances/${instance.Product.Id}`)}>
                 {prodDef.Name}
               </a>
             </td>

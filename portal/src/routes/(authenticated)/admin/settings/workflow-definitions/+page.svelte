@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import type { PageData } from './$types';
 
@@ -11,9 +11,11 @@
   }
 
   let { data }: Props = $props();
+
+  const base = '/admin/settings/workflow-definitions';
 </script>
 
-<a href="workflow-definitions/new" class="btn btn-outline m-4 mt-0">
+<a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
   {m.admin_settings_workflowDefinitions_add()}
 </a>
 
@@ -21,7 +23,7 @@
   {#each data.workflowDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as wd}
     <DataDisplayBox
       editable
-      onEdit={() => goto('/admin/settings/workflow-definitions/edit?id=' + wd.Id)}
+      onEdit={() => goto(localizeHref(`${base}/edit?id=${wd.Id}`))}
       title={wd.Name}
       fields={[
         {
@@ -49,7 +51,7 @@
             m.admin_settings_workflowDefinitions_workflowTypes_2(),
             m.admin_settings_workflowDefinitions_workflowTypes_3()
           ][wd.Type]
-        },
+        }
         // Do we want to show options here?
       ]}
     />

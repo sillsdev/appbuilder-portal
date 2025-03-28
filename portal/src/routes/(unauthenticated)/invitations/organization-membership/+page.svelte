@@ -1,5 +1,6 @@
 <script lang="ts">
   import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import type { PageData } from './$types';
 
   interface Props {
@@ -36,7 +37,7 @@
           <h3>{data.joinedOrganization?.name}</h3>
         </div>
       </div>
-      <a href="/tasks" class="btn btn-primary">
+      <a href={localizeHref('/tasks')} class="btn btn-primary">
         {m.organizationMembership_invite_returnToDashboard()}
       </a>
     {/if}

@@ -4,7 +4,7 @@
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName, byString } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -34,7 +34,7 @@
         </LabeledFormInput>
         <LabeledFormInput name="project_projectGroup" className="md:max-w-xs">
           <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
-            {#each data.organization.Groups.toSorted( (a, b) => byName(a, b, getLocale()) ) as group}
+            {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
               <option value={group.Id}>{group.Name}</option>
             {/each}
           </select>
@@ -88,7 +88,9 @@
         </ul>
       {/if}
       <div class="flex flex-wrap place-content-center gap-4 p-4">
-        <a href="/projects/own/{page.params.id}" class="btn w-full max-w-xs">{m.common_cancel()}</a>
+        <a href={localizeHref(`/projects/own/${page.params.id}`)} class="btn w-full max-w-xs">
+          {m.common_cancel()}
+        </a>
         <button
           class="btn btn-primary w-full max-w-xs"
           class:btn-disabled={!($form.Name.length && $form.Language.length)}
