@@ -4,6 +4,7 @@
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
+  import Tooltip from '$lib/components/Tooltip.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import type { PrunedProject } from '$lib/projects';
@@ -69,11 +70,12 @@
           bind:value={$form.organizationId}
           allowNull={true}
         />
-        <SearchBar
-          bind:value={$form.search}
-          className={mobileSizing}
-          tooltip={m.directory_searchHelp()}
-        />
+        <Tooltip className="tooltip-bottom {mobileSizing}">
+          <div class="tooltip-content text-left">
+            {@html m.directory_searchHelp()}
+          </div>
+          <SearchBar bind:value={$form.search} />
+        </Tooltip>
       </div>
     </div>
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}">

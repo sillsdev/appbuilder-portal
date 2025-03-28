@@ -5,6 +5,7 @@
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
+  import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
@@ -151,7 +152,12 @@
           bind:value={$pageForm.organizationId}
           onchange={() => goto($pageForm.organizationId + '')}
         />
-        <SearchBar bind:value={$pageForm.search} className={mobileSizing} />
+        <Tooltip className="tooltip-bottom {mobileSizing}">
+          <div class="tooltip-content text-left">
+            {@html m.directory_searchHelp()}
+          </div>
+          <SearchBar bind:value={$pageForm.search} />
+        </Tooltip>
       </div>
     </div>
   </form>
