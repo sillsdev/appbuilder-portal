@@ -6,10 +6,12 @@
 <script lang="ts">
   import type { ValidI13nKey } from '$lib/i18n';
   import { m } from '$lib/paraglide/messages';
+  import type { Snippet } from 'svelte';
+  
   interface Props {
     name: ValidI13nKey;
     className?: string;
-    children?: import('svelte').Snippet;
+    children?: Snippet;
   }
 
   let { name, className = '', children }: Props = $props();
