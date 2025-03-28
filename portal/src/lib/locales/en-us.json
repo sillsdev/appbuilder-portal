@@ -92,7 +92,7 @@
       "numProjects=*": "Project Directory ({numProjects})"
     }
   }],
-  "directory_searchHelp": "This allows you to search over: \n• Project Name\n• Project Language \n• Owner Name\n• Organization Name\n• Group Name",
+  "directory_searchHelp": "This allows you to search over: <br />• Project Name<br />• Project Language<br />• Owner Name<br />• Organization Name<br />• Group Name",
   "directory_filters_dateRange": "Project Updated Date Between",
   "header_myProfile": "My Profile",
   "header_community": "Community",
