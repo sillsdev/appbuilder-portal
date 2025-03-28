@@ -6,6 +6,7 @@
   import type { ValidI13nKey } from '$lib/i18n';
   import { m } from '$lib/paraglide/messages';
   import Icon from '@iconify/svelte';
+  import type { Snippet } from 'svelte';
 
   interface Props {
     title: string | null;
@@ -13,10 +14,10 @@
     fields: {
       key: ValidI13nKey;
       value?: string | null;
-      snippet?: import('svelte').Snippet<[T | undefined]>;
+      snippet?: Snippet<[T | undefined]>;
     }[];
     editable?: boolean;
-    children?: import('svelte').Snippet;
+    children?: Snippet;
     onEdit?: () => void;
   }
 

@@ -3,6 +3,7 @@
   import { page } from '$app/state';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
   import { m } from '$lib/paraglide/messages';
+  import type { Snippet } from 'svelte';
   import type { LayoutData } from './$types';
 
   let userSettingsLinks = [
@@ -13,7 +14,7 @@
 
   interface Props {
     data: LayoutData;
-    children?: import('svelte').Snippet;
+    children?: Snippet;
   }
 
   let { data, children }: Props = $props();
