@@ -3,6 +3,7 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
   import { superForm, type FormResult } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -38,7 +39,7 @@
     <div class="breadcrumbs text-sm pl-4">
       <ul>
         <li>
-          <a class="link" href="/projects/{data.product?.Project.Id}">
+          <a class="link" href={localizeHref(`/projects/${data.product?.Project.Id}`)}>
             {data.product?.Project.Name}
           </a>
         </li>

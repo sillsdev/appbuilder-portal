@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import type { Snippet } from 'svelte';
   import IconContainer from '../IconContainer.svelte';
 
@@ -56,7 +57,7 @@
             {#each menuItems as item}
               <a
                 class="bg-base-200 border-t border-slate-600 p-3 w-full block"
-                href="{base}/{item.route}"
+                href={localizeHref(`${base}/${item.route}`)}
               >
                 {item.text}
               </a>
@@ -72,7 +73,7 @@
               <a
                 class="rounded-none bg-base-200 p-3"
                 class:active={isActive(item.route)}
-                href="{base}/{item.route}"
+                href={localizeHref(`${base}/${item.route}`)}
               >
                 {item.text}
               </a>

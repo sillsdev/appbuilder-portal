@@ -6,6 +6,7 @@
   import LanguageSelector from '$lib/components/LanguageSelector.svelte';
   import { HamburgerIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
+  import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
   import { signOut } from '@auth/sveltekit/client';
   import type { Snippet } from 'svelte';
@@ -23,13 +24,8 @@
     drawerToggle.click();
   }
 
-  let orgMenuOpen = false;
-
-  function isActive(currentRoute: string | null, menuRoute: string) {
-    return currentRoute?.startsWith(`${base}/(authenticated)${menuRoute}`);
-  }
-  function isUrlActive(currentUrl: string | null, route: string) {
-    return currentUrl?.startsWith(`${base}${route}`);
+  function isUrlActive(route: string) {
+    return deLocalizeUrl(page.url).pathname?.startsWith(`${base}${route}`);
   }
 </script>
 
@@ -68,7 +64,11 @@
       {#snippet content()}
         <ul class="menu menu-compact gap-1 p-2">
           <li>
-            <a href="/users/{page.data.session?.user?.userId ?? ''}/settings/profile">
+            <a
+              href={localizeHref(
+                `/users/${page.data.session?.user?.userId ?? ''}/settings/profile`
+              )}
+            >
               {m.header_myProfile()}
             </a>
           </li>
@@ -108,8 +108,8 @@
           <li>
             <a
               class="rounded-none"
-              class:active-menu-item={isActive(page.route.id, '/tasks')}
-              href="{base}/tasks"
+              class:active-menu-item={isUrlActive('/tasks')}
+              href={localizeHref('/tasks')}
               onclick={closeDrawer}
             >
               {m.sidebar_myTasks({ count: data.numberOfTasks })}
@@ -118,8 +118,8 @@
           <li>
             <a
               class="rounded-none"
-              class:active-menu-item={isUrlActive(page.url.pathname, '/projects/own')}
-              href="{base}/projects/own"
+              class:active-menu-item={isUrlActive('/projects/own')}
+              href={localizeHref('/projects/own')}
               onclick={closeDrawer}
             >
               {m.sidebar_myProjects()}
@@ -128,8 +128,8 @@
           <li>
             <a
               class="rounded-none"
-              class:active-menu-item={isUrlActive(page.url.pathname, '/projects/organization')}
-              href="{base}/projects/organization"
+              class:active-menu-item={isUrlActive('/projects/organization')}
+              href={localizeHref('/projects/organization')}
               onclick={closeDrawer}
             >
               {m.sidebar_organizationProjects()}
@@ -139,8 +139,8 @@
             <li>
               <a
                 class="rounded-none"
-                class:active-menu-item={isUrlActive(page.url.pathname, '/projects/active')}
-                href="{base}/projects/active"
+                class:active-menu-item={isUrlActive('/projects/active')}
+                href={localizeHref('/projects/active')}
                 onclick={closeDrawer}
               >
                 {m.sidebar_activeProjects()}
@@ -149,8 +149,8 @@
             <li>
               <a
                 class="rounded-none"
-                class:active-menu-item={isActive(page.route.id, '/users')}
-                href="{base}/users"
+                class:active-menu-item={isUrlActive('/users')}
+                href={localizeHref('/users')}
                 onclick={closeDrawer}
               >
                 {m.sidebar_users()}
@@ -159,8 +159,8 @@
             <li>
               <a
                 class="rounded-none"
-                class:active-menu-item={isActive(page.route.id, '/organizations')}
-                href="{base}/organizations/"
+                class:active-menu-item={isUrlActive('/organizations')}
+                href={localizeHref('/organizations')}
                 onclick={closeDrawer}
               >
                 {m.sidebar_organizationSettings()}
@@ -171,8 +171,8 @@
             <li>
               <a
                 class="rounded-none"
-                class:active-menu-item={isActive(page.route.id, '/admin/settings')}
-                href="{base}/admin/settings/organizations"
+                class:active-menu-item={isUrlActive('/admin/settings')}
+                href={localizeHref('/admin/settings/organizations')}
                 onclick={closeDrawer}
               >
                 {m.sidebar_adminSettings()}
@@ -190,8 +190,9 @@
             </li>
             <li>
               <a
-                class:active-menu-item={isActive(page.route.id, '/workflow-instances')}
-                href="{base}/workflow-instances"
+                class="rounded-none"
+                class:active-menu-item={isUrlActive('/workflow-instances')}
+                href={localizeHref('/workflow-instances')}
                 onclick={closeDrawer}
               >
                 {m.workflowInstances_title()}
@@ -201,8 +202,8 @@
           <li class="menu-item-divider-top menu-item-divider-bottom">
             <a
               class="rounded-none"
-              class:active-menu-item={isActive(page.route.id, '/directory')}
-              href="{base}/directory"
+              class:active-menu-item={isUrlActive('/directory')}
+              href={localizeHref('/directory')}
               onclick={closeDrawer}
             >
               {m.sidebar_projectDirectory()}
@@ -211,8 +212,8 @@
           <li>
             <a
               class="rounded-none mt-10"
-              class:active-menu-item={isActive(page.route.id, '/open-source')}
-              href="{base}/open-source"
+              class:active-menu-item={isUrlActive('/open-source')}
+              href={localizeHref('/open-source')}
               onclick={closeDrawer}
             >
               {m.opensource()}
@@ -241,7 +242,7 @@
   }
 
   .active-menu-item {
-    border-left: 5px solid #1c3258; /* Adjust the border color and width to your preferences */
+    border-left: 5px solid var(--color-accent); /* Adjust the border color and width to your preferences */
     font-weight: bold;
   }
   :global(.signOutButton > button) {
