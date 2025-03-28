@@ -1,8 +1,10 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
+  
   interface Props {
     tip: string | null | undefined;
     className?: string; // TODO: Add snippet support once we have DaisyUI 5
-    children?: import('svelte').Snippet;
+    children?: Snippet;
   }
 
   let { tip, className = '', children }: Props = $props();

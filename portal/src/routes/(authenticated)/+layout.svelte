@@ -2,17 +2,18 @@
   import { dev } from '$app/environment';
   import { base } from '$app/paths';
   import { page } from '$app/state';
+  import Dropdown from '$lib/components/Dropdown.svelte';
   import LanguageSelector from '$lib/components/LanguageSelector.svelte';
   import { HamburgerIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
   import { signOut } from '@auth/sveltekit/client';
+  import type { Snippet } from 'svelte';
   import type { LayoutData } from './$types';
-  import Dropdown from '$lib/components/Dropdown.svelte';
 
   interface Props {
     data: LayoutData;
-    children?: import('svelte').Snippet;
+    children?: Snippet;
   }
 
   let { data, children }: Props = $props();

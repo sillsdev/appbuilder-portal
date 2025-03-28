@@ -1,4 +1,5 @@
 <script lang="ts" generics="T">
+  import type { Snippet } from 'svelte';
   import type { HTMLInputAttributes } from 'svelte/elements';
 
   let selectedIndex = $state(-1);
@@ -10,8 +11,8 @@
     getList: (searchTerm: string) => T[];
     search?: string;
     inputElement?: HTMLInputElement;
-    custom?: import('svelte').Snippet;
-    listElement?: import('svelte').Snippet<[any]>;
+    custom?: Snippet;
+    listElement?: Snippet<[any]>;
     onItemClicked?: (item: T) => void;
   }
 

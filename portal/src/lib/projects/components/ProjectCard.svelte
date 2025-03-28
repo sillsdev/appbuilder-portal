@@ -6,12 +6,13 @@
   import type { PrunedProject } from '$lib/projects';
   import { byString } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
+  import type { Snippet } from 'svelte';
 
   interface Props {
     project: PrunedProject;
     route?: string;
-    select?: import('svelte').Snippet;
-    actions?: import('svelte').Snippet;
+    select?: Snippet;
+    actions?: Snippet;
   }
 
   let { project, route = 'projects', select, actions }: Props = $props();
