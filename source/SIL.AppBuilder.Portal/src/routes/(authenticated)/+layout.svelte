@@ -6,7 +6,7 @@
   import LanguageSelector from '$lib/components/LanguageSelector.svelte';
   import { HamburgerIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
-  import { localizeHref } from '$lib/paraglide/runtime';
+  import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
   import { signOut } from '@auth/sveltekit/client';
   import type { Snippet } from 'svelte';
@@ -24,13 +24,8 @@
     drawerToggle.click();
   }
 
-  let orgMenuOpen = false;
-
-  function isActive(currentRoute: string | null, menuRoute: string) {
-    return currentRoute?.startsWith(`${base}/(authenticated)${menuRoute}`);
-  }
-  function isUrlActive(currentUrl: string | null, route: string) {
-    return currentUrl?.startsWith(`${base}${route}`);
+  function isUrlActive(route: string) {
+    return deLocalizeUrl(page.url).pathname?.startsWith(`${base}${route}`);
   }
 </script>
 
@@ -113,7 +108,7 @@
           <li>
             <a
               class="rounded-none"
-              class:active-menu-item={isActive(page.route.id, '/tasks')}
+              class:active-menu-item={isUrlActive('/tasks')}
               href={localizeHref('/tasks')}
               onclick={closeDrawer}
             >
@@ -123,7 +118,7 @@
           <li>
             <a
               class="rounded-none"
-              class:active-menu-item={isUrlActive(page.url.pathname, '/projects/own')}
+              class:active-menu-item={isUrlActive('/projects/own')}
               href={localizeHref('/projects/own')}
               onclick={closeDrawer}
             >
@@ -133,7 +128,7 @@
           <li>
             <a
               class="rounded-none"
-              class:active-menu-item={isUrlActive(page.url.pathname, '/projects/organization')}
+              class:active-menu-item={isUrlActive('/projects/organization')}
               href={localizeHref('/projects/organization')}
               onclick={closeDrawer}
             >
@@ -144,7 +139,7 @@
             <li>
               <a
                 class="rounded-none"
-                class:active-menu-item={isUrlActive(page.url.pathname, '/projects/active')}
+                class:active-menu-item={isUrlActive('/projects/active')}
                 href={localizeHref('/projects/active')}
                 onclick={closeDrawer}
               >
@@ -154,7 +149,7 @@
             <li>
               <a
                 class="rounded-none"
-                class:active-menu-item={isActive(page.route.id, '/users')}
+                class:active-menu-item={isUrlActive('/users')}
                 href={localizeHref('/users')}
                 onclick={closeDrawer}
               >
@@ -164,7 +159,7 @@
             <li>
               <a
                 class="rounded-none"
-                class:active-menu-item={isActive(page.route.id, '/organizations')}
+                class:active-menu-item={isUrlActive('/organizations')}
                 href={localizeHref('/organizations')}
                 onclick={closeDrawer}
               >
@@ -176,7 +171,7 @@
             <li>
               <a
                 class="rounded-none"
-                class:active-menu-item={isActive(page.route.id, '/admin/settings')}
+                class:active-menu-item={isUrlActive('/admin/settings')}
                 href={localizeHref('/admin/settings/organizations')}
                 onclick={closeDrawer}
               >
@@ -195,7 +190,8 @@
             </li>
             <li>
               <a
-                class:active-menu-item={isActive(page.route.id, '/workflow-instances')}
+                class="rounded-none"
+                class:active-menu-item={isUrlActive('/workflow-instances')}
                 href={localizeHref('/workflow-instances')}
                 onclick={closeDrawer}
               >
@@ -206,7 +202,7 @@
           <li class="menu-item-divider-top menu-item-divider-bottom">
             <a
               class="rounded-none"
-              class:active-menu-item={isActive(page.route.id, '/directory')}
+              class:active-menu-item={isUrlActive('/directory')}
               href={localizeHref('/directory')}
               onclick={closeDrawer}
             >
@@ -216,7 +212,7 @@
           <li>
             <a
               class="rounded-none mt-10"
-              class:active-menu-item={isActive(page.route.id, '/open-source')}
+              class:active-menu-item={isUrlActive('/open-source')}
               href={localizeHref('/open-source')}
               onclick={closeDrawer}
             >
@@ -246,7 +242,7 @@
   }
 
   .active-menu-item {
-    border-left: 5px solid #1c3258; /* Adjust the border color and width to your preferences */
+    border-left: 5px solid var(--color-accent); /* Adjust the border color and width to your preferences */
     font-weight: bold;
   }
   :global(.signOutButton > button) {
