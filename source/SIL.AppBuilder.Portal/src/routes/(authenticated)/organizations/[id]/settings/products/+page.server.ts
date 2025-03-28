@@ -1,6 +1,4 @@
-import { base } from '$app/paths';
 import { idSchema } from '$lib/valibot';
-import { redirect } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -18,27 +16,20 @@ const editProductsSchema = v.object({
   )
 });
 export const load = (async (event) => {
-  const id = parseInt(event.params.id);
-  if (isNaN(id)) return redirect(302, base + '/organizations');
-  const data = await prisma.organizations.findUnique({
-    where: {
-      Id: id
-    }
-  });
+  const { organization } = await event.parent();
   const orgProductDefs = await prisma.organizationProductDefinitions.findMany({
     where: {
-      OrganizationId: id
+      OrganizationId: organization.Id
     }
   });
   const allProductDefs = (await prisma.productDefinitions.findMany()).map(
     (pd) => [pd.Id, pd] as [number, typeof pd]
   );
-  if (!data) return redirect(302, base + '/organizations');
   const setOrgProductDefs = new Set(orgProductDefs.map((p) => p.ProductDefinitionId));
   const form = await superValidate(
     {
-      id: data.Id,
-      publicByDefault: data.PublicByDefault ?? false,
+      id: organization.Id,
+      publicByDefault: organization.PublicByDefault ?? false,
       products: allProductDefs.map((pD) => ({
         productId: pD[0],
         enabled: setOrgProductDefs.has(pD[0])
@@ -46,7 +37,7 @@ export const load = (async (event) => {
     },
     valibot(editProductsSchema)
   );
-  return { organization: data, orgProductDefs, allProductDefs, form };
+  return { orgProductDefs, allProductDefs, form };
 }) satisfies PageServerLoad;
 
 export const actions = {

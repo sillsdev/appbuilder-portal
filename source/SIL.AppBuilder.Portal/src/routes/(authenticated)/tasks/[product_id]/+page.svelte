@@ -3,7 +3,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { bytesToHumanSize } from '$lib/utils';
   import { byName, byNumber, byString } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
@@ -29,8 +29,8 @@
   <div class="flex flex-row gap-x-3 p-2 flex-wrap">
     <div class="breadcrumbs">
       <ul>
-        <li><a class="link" href="/tasks">{m.sidebar_myTasks({ count: 0 })}</a></li>
-        <li><a class="link" href="/projects/{data.projectId}">{data.fields.projectName}</a></li>
+        <li><a class="link" href={localizeHref("/tasks")}>{m.sidebar_myTasks({ count: 0 })}</a></li>
+        <li><a class="link" href={localizeHref(`/projects/${data.projectId}`)}>{data.fields.projectName}</a></li>
         <li>{data.productDescription}</li>
       </ul>
     </div>

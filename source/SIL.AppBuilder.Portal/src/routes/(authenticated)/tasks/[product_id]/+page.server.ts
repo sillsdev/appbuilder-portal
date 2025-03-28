@@ -1,3 +1,4 @@
+import { localizeHref } from '$lib/paraglide/runtime';
 import { isSuperAdmin } from '$lib/utils/roles';
 import type { Session } from '@auth/sveltekit';
 import { error, redirect } from '@sveltejs/kit';
@@ -206,7 +207,7 @@ export const actions = {
       select: { ProjectId: true }
     }))!;
 
-    redirect(302, `/projects/${product.ProjectId}`);
+    redirect(302, localizeHref(`/projects/${product.ProjectId}`));
   }
 } satisfies Actions;
 
