@@ -33,13 +33,14 @@ A simple dropdown menu from DaisyUI.
     // close opened dropdown when navigating (this is mostly important for the dropdowns in the navbar)
     open = false;
   });
+
+  let dropEl: HTMLDetailsElement | undefined = $state(undefined);
 </script>
 
 <svelte:window
   onclick={(e) => {
     // Only close if click is outside this dropdown
-    const dropdown = document.querySelector('.dropdown');
-    if (dropdown && !dropdown.contains(e.target as Node)) {
+    if (open && dropEl && !dropEl.contains(e.target as Node)) {
       open = false;
       // stopPropagation prevents the click from registering on the dropdown again and reopening it
       e.stopPropagation();
@@ -47,7 +48,7 @@ A simple dropdown menu from DaisyUI.
   }}
 />
 
-<details class="dropdown {dropdownClasses}" bind:open>
+<details class="dropdown {dropdownClasses}" bind:open bind:this={dropEl}>
   <summary class="btn btn-ghost {labelClasses}" onclick={() => onclick?.()}>
     {@render label()}
   </summary>
