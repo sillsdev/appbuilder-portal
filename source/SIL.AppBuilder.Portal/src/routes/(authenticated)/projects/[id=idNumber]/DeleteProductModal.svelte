@@ -44,10 +44,17 @@
           {@html m.deletePrompt_warning()}
         </div>
         <span>
-          {@html m.deletePrompt_prompt({ product: product.ProductDefinition.Name ?? m.tasks_product(), project })}
+          {@html m.deletePrompt_prompt({
+            product: product.ProductDefinition.Name ?? m.tasks_product(),
+            project
+          })}
         </span>
         <label class="w-full">
-          <span class="fieldset-label">{@html m.deletePrompt_label({ sentinel })}</span>
+          <span class="fieldset-label">
+            <span>
+              {@html m.deletePrompt_label({ sentinel })}
+            </span>
+          </span>
           <input
             type="text"
             class="input w-full my-2"
