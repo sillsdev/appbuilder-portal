@@ -37,8 +37,8 @@
         {
           key: 'admin_settings_workflowDefinitions_productType',
           value: [
-            'Android GooglePlay',
-            'Android S3',
+            m.admin_settings_workflowDefinitions_productType_googlePlay(),
+            m.admin_settings_workflowDefinitions_productType_s3(),
             m.admin_settings_workflowDefinitions_productType_assetPackage(),
             m.admin_settings_workflowDefinitions_productType_web()
           ][wd.ProductType]
@@ -52,7 +52,7 @@
             m.admin_settings_workflowDefinitions_workflowTypes_3()
           ][wd.Type]
         }
-        // Do we want to show options here?
+        // TODO: Do we want to show options here?
       ]}
     />
   {/each}

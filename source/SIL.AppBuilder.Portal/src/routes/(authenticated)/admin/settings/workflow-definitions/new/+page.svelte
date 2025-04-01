@@ -59,8 +59,12 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_productType">
     <select class="select select-bordered" name="productType" bind:value={$form.productType}>
-      <option value={ProductType.Android_GooglePlay}>Android GooglePlay</option>
-      <option value={ProductType.Android_S3}>Android S3</option>
+      <option value={ProductType.Android_GooglePlay}>
+        {m.admin_settings_workflowDefinitions_productType_googlePlay()}
+      </option>
+      <option value={ProductType.Android_S3}>
+        {m.admin_settings_workflowDefinitions_productType_s3()}
+      </option>
       <option value={ProductType.AssetPackage}>
         {m.admin_settings_workflowDefinitions_productType_assetPackage()}
       </option>
@@ -86,7 +90,7 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowScheme">
     <select class="select select-bordered" name="workflowScheme" bind:value={$form.workflowScheme}>
-      {#each data.options.schemes.toSorted((a, b) => byString(a.Code, b.Code, getLocale())) as scheme}
+      {#each data.options.schemes.toSorted( (a, b) => byString(a.Code, b.Code, getLocale()) ) as scheme}
         <option value={scheme.Code}>{scheme.Code}</option>
       {/each}
     </select>
