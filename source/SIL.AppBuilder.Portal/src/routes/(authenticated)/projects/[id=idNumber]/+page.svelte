@@ -382,7 +382,7 @@
                             class="text-nowrap text-error"
                             onclick={() => deleteProductModal?.showModal()}
                           >
-                            {m.project_products_remove()}
+                            {m.models_delete({ name: m.tasks_product() })}
                           </button>
                         </li>
                       </ul>
