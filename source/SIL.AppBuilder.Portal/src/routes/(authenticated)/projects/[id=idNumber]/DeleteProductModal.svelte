@@ -1,6 +1,5 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
 
@@ -8,14 +7,16 @@
     modal?: HTMLDialogElement;
     product: {
       Id: string;
+      DatePublished: Date | null;
       ProductDefinition: {
         Name: string | null;
       };
     };
     endpoint: string;
+    project: string;
   }
 
-  let { modal = $bindable(), product, endpoint }: Props = $props();
+  let { modal = $bindable(), product, endpoint, project }: Props = $props();
 
   const sentinel = m.common_delete().toLocaleLowerCase(getLocale());
 
@@ -23,34 +24,28 @@
   let disabled = $derived(!!value.localeCompare(sentinel));
 </script>
 
-<dialog bind:this={modal} class="modal">
+<dialog bind:this={modal} class="modal" onclose={() => (value = '')}>
   <form class="modal-box" action="?/{endpoint}" method="POST" use:enhance>
     <div class="items-center text-center">
-      <div class="flex flex-row">
-        <h2 class="text-lg font-bold grow">
-          {m.models_delete({
-            name: m.tasks_product()
-          })}
-        </h2>
-        <button
-          class="btn btn-ghost"
-          type="button"
-          onclick={() => {
-            modal?.close();
-          }}
-        >
-          <IconContainer icon="mdi:close" width={36} class="opacity-80" />
-        </button>
-      </div>
+      <h2 class="text-lg font-bold grow">
+        {m.models_delete({
+          name: m.tasks_product()
+        })}
+      </h2>
       <hr />
-      <div class="flex flex-col gap-2 items-center w-full pt-2">
+      <div class="flex flex-col gap-2 items-center w-full pt-2 text-left">
         <input type="hidden" name="productId" value={product.Id} />
-        <div class="border-2 border-warning p-2 text-left w-full rounded-md">
+        {#if true || product.DatePublished}
+          <div class="border-2 border-error p-2 w-full rounded-md">
+            {@html m.deletePrompt_warningIfPublished()}
+          </div>
+        {/if}
+        <div class="border-2 border-warning p-2 w-full rounded-md">
           {@html m.deletePrompt_warning()}
         </div>
-        <h3>
-          {m.deletePrompt_prompt({ name: product.ProductDefinition.Name ?? m.tasks_product() })}
-        </h3>
+        <span>
+          {@html m.deletePrompt_prompt({ product: product.ProductDefinition.Name ?? m.tasks_product(), project })}
+        </span>
         <label class="w-full">
           <span class="fieldset-label">{@html m.deletePrompt_label({ sentinel })}</span>
           <input

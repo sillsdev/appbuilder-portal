@@ -392,6 +392,7 @@
                     bind:modal={deleteProductModal}
                     {product}
                     endpoint="deleteProduct"
+                    project={data.project.Name ?? m.tasks_project()}
                   />
                 </span>
               </div>
