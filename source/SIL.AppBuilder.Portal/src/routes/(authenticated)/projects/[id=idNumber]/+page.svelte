@@ -16,6 +16,7 @@
   import { ProductType } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import DeleteProductModal from './DeleteProductModal.svelte';
 
   const langtagmap = new Map(langtags.map((tag) => [tag.tag, /* tag.localname ?? */ tag.name]));
 
@@ -92,6 +93,8 @@
       (s) => s.StoreTypeId === data.productsToAdd[selectedProduct]?.Workflow.StoreTypeId
     )
   );
+
+  let deleteProductModal: HTMLDialogElement | undefined = $state(undefined);
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
@@ -375,19 +378,22 @@
                           </li>
                         {/if}
                         <li class=" w-full rounded-none">
-                          <!-- TODO: Might want a confirmation modal -->
-                          <label class="text-nowrap text-error">
-                            {m.project_products_remove()}
-
-                            <form action="?/deleteProduct" method="post" use:enhance>
-                              <input type="hidden" name="productId" value={product.Id} />
-                              <input type="submit" class="hidden" />
-                            </form>
-                          </label>
+                          <button
+                            class="text-nowrap text-error"
+                            onclick={() => deleteProductModal?.showModal()}
+                          >
+                            {m.models_delete({ name: m.tasks_product() })}
+                          </button>
                         </li>
                       </ul>
                     {/snippet}
                   </Dropdown>
+                  <DeleteProductModal
+                    bind:modal={deleteProductModal}
+                    {product}
+                    endpoint="deleteProduct"
+                    project={data.project.Name ?? m.tasks_project()}
+                  />
                 </span>
               </div>
               {#if product.WorkflowInstance}
