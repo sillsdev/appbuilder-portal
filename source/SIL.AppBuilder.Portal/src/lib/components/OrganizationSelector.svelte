@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import type { Prisma } from '@prisma/client';
@@ -18,9 +19,8 @@
   <table class="w-full">
     <thead>
       <tr class="text-left">
-        <!-- TODO: i18n -->
-        <th>Organization</th>
-        <th>Owner</th>
+        <th>{m.project_side_organization()}</th>
+        <th>{m.admin_settings_organizations_owner()}</th>
         <!-- <th>Projects</th> -->
       </tr>
     </thead>

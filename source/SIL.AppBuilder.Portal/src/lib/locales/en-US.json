@@ -1,6 +1,7 @@
 {
   "appName": "Scriptoria",
   "welcome": "Welcome to Scriptoria",
+  "about": "Scriptoria is a service that helps you keep your apps made with the App Builders software up-to-date.",
   "search": "Search",
   "contactUs": "Contact Us",
   "exampleForm": "Example Form",
@@ -90,8 +91,8 @@
   "deletePrompt_prompt": "Delete <b>{product}</b> for project <b>{project}</b>?",
   "deletePrompt_label": "To confirm deletion, type <i>{sentinel}</i> in the text input field",
   "auth_title": "Scriptoria",
-  "auth_signup": "Sign Up",
-  "auth_login": "Log In",
+  "auth_login": "Login",
+  "auth_loginNewSession": "Login with a different account",
   "directory_title": [{
     "match": {
       "numProjects=0": "Project Directory",
@@ -525,6 +526,7 @@
   "organizationMembership_invite_create_inviteUserModalTitle": "Invite User",
   "organizationMembership_invite_create_emailInputPlaceholder": "Enter email address",
   "organizationMembership_invite_create_sendInviteButton": "Send Invite",
+  "organizationMembership_invite_create_rolesAndGroups": "Assigned Roles and Groups",
   "organizationMembership_invite_redemptionTitle": "Organization joined!",
   "organizationMembership_invite_returnToDashboard": "Go to dashboard",
   "system_buildFailed": "Build failed",

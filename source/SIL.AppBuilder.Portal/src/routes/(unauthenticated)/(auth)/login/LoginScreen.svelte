@@ -6,7 +6,7 @@
 
 <div class="card shadow-xl bg-white border p-4">
   <div class="w-full flex justify-center">
-    <div class="w-10" />
+    <div class="w-10"></div>
     <ScriptoriaIcon size="128" />
   </div>
   <h1 class="text-center mx-4 py-0 pt-2 text-black">{m.welcome()}</h1>
