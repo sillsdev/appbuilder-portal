@@ -8,49 +8,59 @@
   "updated": "Updated!",
   "opensource": "Open Source",
   "home": "Home",
-  "tabAppName": [{
-    "match": {
-      "count=0": "Scriptoria",
-      "count=*": "({count}) Scriptoria"
+  "tabAppName": [
+    {
+      "match": {
+        "count=0": "Scriptoria",
+        "count=*": "({count}) Scriptoria"
+      }
     }
-  }],
+  ],
   "localePicker_code": "Code",
   "localePicker_country": "Country",
   "localePicker_other": "Other Names",
   "localePicker_label": "Language",
   "localePicker_placeholder": "Search by Language...",
-  "localePicker_region": [{
-    "declarations": ["input count", "local countPlural = count: plural"],
-    "selectors": ["countPlural"],
-    "match": {
-      "countPlural=one": "Region",
-      "countPlural=other": "Regions"
+  "localePicker_region": [
+    {
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "countPlural=one": "Region",
+        "countPlural=other": "Regions"
+      }
     }
-  }],
-  "localePicker_name": [{
-    "declarations": ["input count", "local countPlural = count: plural"],
-    "selectors": ["countPlural"],
-    "match": {
-      "countPlural=one": "Name",
-      "countPlural=other": "Names"
+  ],
+  "localePicker_name": [
+    {
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "countPlural=one": "Name",
+        "countPlural=other": "Names"
+      }
     }
-  }],
-  "localePicker_tag": [{
-    "declarations": ["input count", "local countPlural = count: plural"],
-    "selectors": ["countPlural"],
-    "match": {
-      "countPlural=one": "Tag",
-      "countPlural=other": "Tags"
+  ],
+  "localePicker_tag": [
+    {
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "countPlural=one": "Tag",
+        "countPlural=other": "Tags"
+      }
     }
-  }],
-  "localePicker_variant": [{
-    "declarations": ["input count", "local countPlural = count: plural"],
-    "selectors": ["countPlural"],
-    "match": {
-      "countPlural=one": "Variant",
-      "countPlural=other": "Variants"
+  ],
+  "localePicker_variant": [
+    {
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "countPlural=one": "Variant",
+        "countPlural=other": "Variants"
+      }
     }
-  }],
+  ],
   "localePicker_regionName": "Region Name",
   "attributions_title": "Open Source Project used in Scriptoria",
   "attributions_subtitle": "Libraries used by License",
@@ -93,12 +103,14 @@
   "auth_title": "Scriptoria",
   "auth_login": "Login",
   "auth_loginNewSession": "Login with a different account",
-  "directory_title": [{
-    "match": {
-      "numProjects=0": "Project Directory",
-      "numProjects=*": "Project Directory ({numProjects})"
+  "directory_title": [
+    {
+      "match": {
+        "numProjects=0": "Project Directory",
+        "numProjects=*": "Project Directory ({numProjects})"
+      }
     }
-  }],
+  ],
   "directory_searchHelp": "This allows you to search over: <br />• Project Name<br />• Project Language<br />• Owner Name<br />• Organization Name<br />• Group Name",
   "directory_filters_dateRange": "Project Updated Date Between",
   "header_myProfile": "My Profile",
@@ -107,12 +119,14 @@
   "header_signOut": "Sign out",
   "header_clearAll": "Clear All",
   "header_emptyNotifications": "You have no notifications.",
-  "sidebar_myTasks": [{
-    "match": {
-      "count=0": "My Tasks",
-      "count=*": "My Tasks ({count})"
+  "sidebar_myTasks": [
+    {
+      "match": {
+        "count=0": "My Tasks",
+        "count=*": "My Tasks ({count})"
+      }
     }
-  }],
+  ],
   "sidebar_myProjects": "My Projects",
   "sidebar_activeProjects": "Active Projects",
   "sidebar_organizationProjects": "Organization Projects",
@@ -311,11 +325,17 @@
   "project_products_transitions_command": "Command",
   "project_products_transitions_comment": "Comment",
   "project_products_transitions_date": "Date",
-  "project_products_transitions_transitionTypes_1": "Activity",
-  "project_products_transitions_transitionTypes_2": "{workflowType} Workflow Started",
-  "project_products_transitions_transitionTypes_3": "{workflowType} Workflow Completed",
-  "project_products_transitions_transitionTypes_4": "{workflowType} Workflow Cancelled",
-  "project_products_transitions_transitionTypes_5": "{workflowType} Project Access",
+  "project_products_transitions_transitionTypes": [
+    {
+      "match": {
+        "type=1": "Activity",
+        "type=2": "{workflowType} Workflow Started",
+        "type=3": "{workflowType} Workflow Completed",
+        "type=4": "{workflowType} Workflow Cancelled",
+        "type=5": "{workflowType} Project Access"
+      }
+    }
+  ],
   "project_products_properties_computeType": "Compute Type",
   "project_products_properties_selectComputeType": "Select compute type",
   "project_products_properties_small": "Small",
@@ -326,15 +346,17 @@
   "project_products_filename": "Filename",
   "project_products_published": "Published",
   "project_products_unpublished": "Unpublished",
-  "project_products_numArtifacts": [{
-    "declarations": ["local countPlural = amount: plural"],
-    "selectors": ["countPlural"],
-    "match": {
-      "amount=0": "No Product Files",
-      "countPlural=one": "{amount} Product File",
-      "countPlural=other": "{amount} Product Files"
+  "project_products_numArtifacts": [
+    {
+      "declarations": ["local countPlural = amount: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "amount=0": "No Product Files",
+        "countPlural=one": "{amount} Product File",
+        "countPlural=other": "{amount} Product Files"
+      }
     }
-  }],
+  ],
   "project_products_noArtifacts": "No Product Files",
   "project_products_rebuild": "rebuild",
   "project_products_creationInProgress": "Pending: You cannot add a product until the project setup has been completed.",
@@ -399,10 +421,16 @@
   "users_userRoles": "Organization Roles",
   "users_noneFound": "No users matching the selected criteria were found.",
   "users_noRoles": "No roles assigned",
-  "users_roles_superAdmin": "Super Admin",
-  "users_roles_orgAdmin": "Organization Admin",
-  "users_roles_appBuilder": "App Builder",
-  "users_roles_author": "Author",
+  "users_roles": [
+    {
+      "match": {
+        "role=1": "Super Admin",
+        "role=2": "Organization Admin",
+        "role=3": "App Builder",
+        "role=4": "Author"
+      }
+    }
+  ],
   "users_organization_filter": "Filter organization",
   "users_title": "Manage Users",
   "users_addUser_placeholder": "Enter an email",
@@ -461,18 +489,36 @@
   "admin_settings_workflowDefinitions_emptyStoreType": "Need to select a store type for this workflow definition",
   "admin_settings_workflowDefinitions_emptyWorkflowType": "Need to select a workflow type for this workflow definition",
   "admin_settings_workflowDefinitions_workflowType": "Workflow Type",
-  "admin_settings_workflowDefinitions_workflowTypes_1": "Startup",
-  "admin_settings_workflowDefinitions_workflowTypes_2": "Rebuild",
-  "admin_settings_workflowDefinitions_workflowTypes_3": "Republish",
+  "admin_settings_workflowDefinitions_workflowTypes": [
+    {
+      "match": {
+        "type=1": "Startup",
+        "type=2": "Rebuild",
+        "type=3": "Republish"
+      }
+    }
+  ],
   "admin_settings_workflowDefinitions_productType": "Product Type",
-  "admin_settings_workflowDefinitions_productType_assetPackage": "Asset Package",
-  "admin_settings_workflowDefinitions_productType_web": "Web",
-  "admin_settings_workflowDefinitions_productType_googlePlay": "Android GooglePlay",
-  "admin_settings_workflowDefinitions_productType_s3": "Android S3",
-  "admin_settings_workflowDefinitions_options": "Options",
-  "admin_settings_workflowDefinitions_options_storeAccess": "Require an organization admin to access the GooglePlay developer console.",
-  "admin_settings_workflowDefinitions_options_approval": "Require approval by an organization admin before product is created.",
-  "admin_settings_workflowDefinitions_options_transferToAuthors": "Allow project owner to delegate configuration and product uploads to authors.",
+  "admin_settings_workflowDefinitions_productTypes": [
+    {
+      "match": {
+        "type=0": "Android GooglePlay",
+        "type=1": "Android S3",
+        "type=2": "Asset Package",
+        "type=3": "Web"
+      }
+    }
+  ],
+  "admin_settings_workflowDefinitions_options_title": "Options",
+  "admin_settings_workflowDefinitions_options": [
+    {
+      "match": {
+        "option=1": "Require an organization admin to access the GooglePlay developer console.",
+        "option=2": "Require approval by an organization admin before product is created.",
+        "option=3": "Allow project owner to delegate configuration and product uploads to authors."
+      }
+    }
+  ],
   "admin_settings_productDefinitions_title": "Product Definitions",
   "admin_settings_productDefinitions_name": "Product definition Name",
   "admin_settings_productDefinitions_add": "Add Product Definition",

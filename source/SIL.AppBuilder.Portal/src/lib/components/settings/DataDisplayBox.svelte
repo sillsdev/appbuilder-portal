@@ -13,6 +13,7 @@
     data?: T;
     fields: {
       key: ValidI13nKey;
+      messageParms?: any;
       value?: string | null;
       snippet?: Snippet<[T | undefined]>;
     }[];
@@ -34,7 +35,7 @@
     {/if}
     {#each fields as field}
       <p style="padding-left: 1rem; text-indent: -1rem">
-        <b>{m[field.key]()}:</b>
+        <b>{m[field.key](field.messageParms)}:</b>
         {#if field.snippet}
           {@render field.snippet(data)}
         {:else}

@@ -17,5 +17,5 @@ export function bytesToHumanSize(bytes: bigint | null) {
 export type Entries<K, V> = [K, V][];
 
 export type ValidKey<T extends object> = {
-  [K in keyof T]: T[K] extends () => void ? K : never;
+  [K in keyof T]: T[K] extends (...args: any[]) => void ? K : never;
 }[keyof T];

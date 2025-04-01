@@ -6,42 +6,29 @@
 
   interface Props {
     product: {
-    Id: string;
-    Store: { Description: string | null } | null;
-    Transitions: {
-      TransitionType: number;
-      InitialState: string | null;
-      WorkflowType: number | null;
-      AllowedUserNames: string | null;
-      Command: string | null;
-      Comment: string | null;
-      DateTransition: Date | null;
-      User: { Name: string | null } | null;
-    }[];
-  };
+      Id: string;
+      Store: { Description: string | null } | null;
+      Transitions: {
+        TransitionType: number;
+        InitialState: string | null;
+        WorkflowType: number | null;
+        AllowedUserNames: string | null;
+        Command: string | null;
+        Comment: string | null;
+        DateTransition: Date | null;
+        User: { Name: string | null } | null;
+      }[];
+    };
   }
 
   let { product }: Props = $props();
 
   function stateString(workflowTypeNum: number, transitionType: number) {
-    const workflowType = (
-      m[
-        ('admin_settings_workflowDefinitions_workflowTypes_' + workflowTypeNum) as keyof typeof m
-      ] as any
-    )();
-    switch (transitionType) {
-      case 2:
-        return m.project_products_transitions_transitionTypes_2({
-          workflowType
-        });
-      case 3:
-        return m.project_products_transitions_transitionTypes_3({
-          workflowType
-        });
-      case 4:
-        return m.project_products_transitions_transitionTypes_4({
-          workflowType
-        });
+    if ([2, 3, 4].includes(transitionType)) {
+      return m.project_products_transitions_transitionTypes({
+        type: transitionType,
+        workflowType: m.admin_settings_workflowDefinitions_workflowTypes({ type: workflowTypeNum })
+      });
     }
     return '';
   }
