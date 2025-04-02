@@ -88,7 +88,7 @@
             </a>
           </li>
           <li>
-            <button onclick={() => signOut({ callbackUrl: '/' })}>{m.header_signOut()}</button>
+            <button onclick={() => signOut({ redirectTo: '/', redirect: true })}>{m.header_signOut()}</button>
           </li>
         </ul>
       {/snippet}
