@@ -40,7 +40,7 @@
       <div class="flex flex-row gap-x-3">
         {#each data.actions as action}
           <label class="btn btn-primary">
-            {action}<!-- TODO: i18n (after MVP) -->
+            {action}<!-- ISSUE: #1104 i18n (after MVP) -->
             <input
               type="radio"
               name="flowAction"
