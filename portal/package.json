@@ -64,6 +64,7 @@
     "@auth/sveltekit": "^1.7.4",
     "@bull-board/express": "^6.7.1",
     "express": "^4.21.2",
+    "fast-xml-parser": "^5.0.9",
     "sil.appbuilder.portal.common": "file:common"
   }
 }

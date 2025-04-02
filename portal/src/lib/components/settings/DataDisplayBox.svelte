@@ -3,7 +3,7 @@
     A container box with a title and rows of internationalized information   
 -->
 <script lang="ts" generics="T extends Record<string, unknown>">
-  import type { ValidI13nKey } from '$lib/i18n';
+  import type { ValidI13nKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import Icon from '@iconify/svelte';
   import type { Snippet } from 'svelte';
