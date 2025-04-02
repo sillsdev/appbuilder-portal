@@ -25,10 +25,8 @@ export default defineConfig({
     paraglideVitePlugin({
       project: './project.inlang',
       outdir: './src/lib/paraglide',
-      // TODO: not sure how we want to specify the strategy
-      // The example has ['url', 'cookie', 'baseLocale']
-      // As best as I can tell, url is what we were using before...
-      strategy: ['url']
+      // As best as I can tell, `['url']` corresponds the closest to what we were doing before Paraglide changed the API
+      strategy: ['url'] 
     }),
     (() => {
       let executingProcess: ChildProcessWithoutNullStreams;

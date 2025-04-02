@@ -46,7 +46,6 @@ export const load = (async ({ params, locals }) => {
 
 export const actions = {
   async default(event) {
-    // TODO: test this action
     // ISSUE: #1102 composite keys? I really want to change all many-to-many relationships in db to have composite primary keys
     // In this case that would be GroupMemberships PRIMARY KEY(GroupId, UserId)
     // This way they can be added and removed in constant time and in a single command
