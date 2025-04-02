@@ -4,7 +4,7 @@
     
 -->
 <script lang="ts">
-  import type { ValidI13nKey } from '$lib/i18n';
+  import type { ValidI13nKey } from '$lib/locales.svelte';
   import * as m from '$lib/paraglide/messages';
   import type { Snippet } from 'svelte';
 
