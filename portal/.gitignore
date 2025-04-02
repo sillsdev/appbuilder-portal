@@ -7,6 +7,6 @@ node_modules
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-src/lib/langtags.json
+static/languages/*
 node-server/**/*.js
 common/**/*.js
