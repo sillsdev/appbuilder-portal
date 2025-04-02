@@ -48,7 +48,7 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
   );
   job.updateProgress(50);
   if (response.responseType === 'error') {
-    // TODO: What do I do here? Wait some period of time and retry?
+    // ISSUE: #1100 What do I do here? Wait some period of time and retry? Send a notification on the final attempt?
     job.log(response.message);
     throw new Error(response.message);
   } else {
