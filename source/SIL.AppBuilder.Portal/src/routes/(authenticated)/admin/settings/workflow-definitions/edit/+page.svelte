@@ -4,6 +4,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { enumNumVals } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
   import { WorkflowType } from 'sil.appbuilder.portal.common/prisma';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
@@ -44,7 +45,7 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_productType">
     <select class="select select-bordered" name="productType" bind:value={$form.productType}>
-      {#each Object.values(ProductType) as type}
+      {#each enumNumVals(ProductType) as type}
         <option value={type}>
           {m.admin_settings_workflowDefinitions_productTypes({ type })}
         </option>
@@ -53,7 +54,7 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowType">
     <select class="select select-bordered" name="workflowType" bind:value={$form.workflowType}>
-      {#each Object.values(WorkflowType) as type}
+      {#each enumNumVals(WorkflowType) as type}
         <option value={type}>{m.admin_settings_workflowDefinitions_workflowTypes({ type })}</option>
       {/each}
     </select>
@@ -94,7 +95,7 @@
     name="admin_settings_workflowDefinitions_options_title"
     className="border border-warning p-1 my-4 rounded-lg"
   >
-    {#each Object.values(WorkflowOptions) as option}
+    {#each enumNumVals(WorkflowOptions) as option}
       <InputWithMessage
         name="admin_settings_workflowDefinitions_options"
         messageParms={{ option }}
