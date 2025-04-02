@@ -12,7 +12,7 @@
     search?: string;
     inputElement?: HTMLInputElement;
     custom?: Snippet;
-    listElement?: Snippet<[any]>;
+    listElement?: Snippet<[T, boolean]>;
     onItemClicked?: (item: T) => void;
   }
 
@@ -30,12 +30,13 @@
 
   function keypress(event: KeyboardEvent) {
     inputFocused = true;
+    const rangeLength = list.length + 1;
     switch (event.key) {
       case 'ArrowDown':
-        selectedIndex = selectedIndex + (1 % list.length);
+        selectedIndex = (selectedIndex + rangeLength + 1) % rangeLength;
         break;
       case 'ArrowUp':
-        selectedIndex = selectedIndex - (1 % list.length);
+        selectedIndex = (selectedIndex + rangeLength - 1) % rangeLength;
         break;
       case 'Enter':
         selectItem(list[selectedIndex]);
@@ -43,14 +44,16 @@
     }
   }
   function selectItem(item: T) {
-    inputElement.blur();
-    // Clicked element will become first in fuzzy search
-    selectedIndex = 0;
-    // One sidecase: when an item is selected we want to close the menu but
-    // input should stay selected and further keypresses should reopen the menu
-    inputElement.focus();
-    inputFocused = false;
-    onItemClicked?.(item);
+    if (selectedIndex >= 0 && selectedIndex < list.length) {
+      inputElement.blur();
+      // Clicked element will become first in fuzzy search
+      selectedIndex = 0;
+      // One sidecase: when an item is selected we want to close the menu but
+      // input should stay selected and further keypresses should reopen the menu
+      inputElement.focus();
+      inputFocused = false;
+      onItemClicked?.(item);
+    }
   }
   function onFocus() {
     selectedIndex = -1;
@@ -79,19 +82,15 @@
     >
       {#each list as item, i}
         <li
-          class:selected={i === selectedIndex}
           role="option"
           aria-selected={selectedIndex === i}
           onmousedown={() => selectItem(item)}
           onmouseover={() => (selectedIndex = i)}
           onfocus={() => (selectedIndex = i)}
         >
-          {@render listElement?.({ item })}
+          {@render listElement?.(item, i === selectedIndex)}
         </li>
       {/each}
     </ul>
   {/if}
 </div>
-
-<style>
-</style>

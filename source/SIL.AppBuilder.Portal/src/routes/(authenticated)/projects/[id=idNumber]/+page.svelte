@@ -5,7 +5,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
-  import langtags from '$lib/langtags.json';
+  import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, locales, localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
@@ -17,8 +17,6 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import DeleteProductModal from './DeleteProductModal.svelte';
-
-  const langtagmap = new Map(langtags.map((tag) => [tag.tag, /* tag.localname ?? */ tag.name]));
 
   interface Props {
     data: PageData;
@@ -145,7 +143,14 @@
               <IconContainer icon="ph:globe" width={20} />
               {m.project_details_language()}:
             </span>
-            <span>{data.project?.Language} ({langtagmap.get(data.project.Language ?? '')})</span>
+            <span>
+              {data.project?.Language} ({tryLocalizeName(
+                data.langtags,
+                l10nMap.value,
+                getLocale(),
+                data.project.Language ?? ''
+              )})
+            </span>
           </div>
           <div class="flex place-content-between">
             <span>{m.project_details_type()}:</span>
