@@ -2,11 +2,7 @@
   import Fuse from 'fuse.js';
 
   import { page } from '$app/state';
-  import {
-    l10nMap,
-    localizeTagData,
-    type LangInfo
-  } from '$lib/locales.svelte';
+  import { l10nMap, localizeTagData, type LangInfo } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import type { FuseResultMatch } from 'fuse.js';
@@ -188,11 +184,16 @@
         </span>
       </div>
       {#if additionalMatch && additionalMatch.key}
+        {@const msg =
+          //@ts-expect-error this will create a correct key for messages
+          m['localePicker_' + additionalMatch.key.replace(/s$/, '')]({
+            //@ts-expect-error again, this works just fine...
+            count: res.item[additionalMatch.key].split(', ').length
+          })}
         <div class="flex-row justify-content-space-between mt-2">
           <div class="flex-col">
             <div class="text-base-content text-opacity-75 uppercase">
-              <!-- TODO: i18n (requires pluralization) -->
-              {additionalMatch.key}
+              {msg}
             </div>
             <div class="line-clamp-1 max-w-80">
               {@render colorValueForKeyMatch(
