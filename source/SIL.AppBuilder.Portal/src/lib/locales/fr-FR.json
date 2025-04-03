@@ -1,7 +1,7 @@
 {
   "appName": "Scriptoria",
   "welcome": "Bienvenue sur Scriptoria",
-  "about": "Scriptoria is a service that helps you keep your apps made with the App Builders software up-to-date.",
+  "about": "Scriptoria helps you publish your apps and keep them updated every time the App Builder software is improved. You provide the service with your app project data and it will build and publish the app to the Google Play store or a website.",
   "search": "Search",
   "contactUs": "Contact Us",
   "exampleForm": "Example Form",
@@ -89,6 +89,7 @@
   "common_default": "Default",
   "common_delete": "Delete",
   "common_close": "close",
+  "common_or": "o",
   "models_add": "Add {name}",
   "models_edit": "Edit {name}",
   "models_save": "Save {name}",
