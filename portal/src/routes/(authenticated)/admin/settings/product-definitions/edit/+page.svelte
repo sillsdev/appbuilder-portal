@@ -110,6 +110,6 @@
   {/if}
   <div class="my-4">
     <input type="submit" class="btn btn-primary" value="Submit" />
-    <a class="btn" href={localizeHref(base)}>Cancel</a>
+    <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
   </div>
 </form>

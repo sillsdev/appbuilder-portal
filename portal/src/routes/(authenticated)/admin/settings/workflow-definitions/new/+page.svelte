@@ -2,10 +2,11 @@
   import { goto } from '$app/navigation';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import type { ValidI13nKey } from '$lib/i18n';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { enumNumVals } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
+  import { WorkflowType } from 'sil.appbuilder.portal.common/prisma';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import { businessFlows } from '../common';
@@ -28,20 +29,7 @@
     }
   });
 
-  const workflowOptions: { message: ValidI13nKey; value: WorkflowOptions }[] = [
-    {
-      message: 'admin_settings_workflowDefinitions_options_storeAccess',
-      value: WorkflowOptions.AdminStoreAccess
-    },
-    {
-      message: 'admin_settings_workflowDefinitions_options_approval',
-      value: WorkflowOptions.ApprovalProcess
-    },
-    {
-      message: 'admin_settings_workflowDefinitions_options_transferToAuthors',
-      value: WorkflowOptions.AllowTransferToAuthors
-    }
-  ];
+  console.log(enumNumVals(ProductType));
 </script>
 
 <h3>{m.admin_settings_workflowDefinitions_add()}</h3>
@@ -59,21 +47,18 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_productType">
     <select class="select select-bordered" name="productType" bind:value={$form.productType}>
-      <option value={ProductType.Android_GooglePlay}>Android GooglePlay</option>
-      <option value={ProductType.Android_S3}>Android S3</option>
-      <option value={ProductType.AssetPackage}>
-        {m.admin_settings_workflowDefinitions_productType_assetPackage()}
-      </option>
-      <option value={ProductType.Web}>
-        {m.admin_settings_workflowDefinitions_productType_web()}
-      </option>
+      {#each enumNumVals(ProductType) as type}
+        <option value={type}>
+          {m.admin_settings_workflowDefinitions_productTypes({ type })}
+        </option>
+      {/each}
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowType">
     <select class="select select-bordered" name="workflowType" bind:value={$form.workflowType}>
-      <option value={1}>{m.admin_settings_workflowDefinitions_workflowTypes_1()}</option>
-      <option value={2}>{m.admin_settings_workflowDefinitions_workflowTypes_2()}</option>
-      <option value={3}>{m.admin_settings_workflowDefinitions_workflowTypes_3()}</option>
+      {#each enumNumVals(WorkflowType) as type}
+        <option value={type}>{m.admin_settings_workflowDefinitions_workflowTypes({ type })}</option>
+      {/each}
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_description">
@@ -86,7 +71,7 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowScheme">
     <select class="select select-bordered" name="workflowScheme" bind:value={$form.workflowScheme}>
-      {#each data.options.schemes.toSorted((a, b) => byString(a.Code, b.Code, getLocale())) as scheme}
+      {#each data.options.schemes.toSorted( (a, b) => byString(a.Code, b.Code, getLocale()) ) as scheme}
         <option value={scheme.Code}>{scheme.Code}</option>
       {/each}
     </select>
@@ -111,16 +96,20 @@
     />
   </LabeledFormInput>
   <LabeledFormInput
-    name="admin_settings_workflowDefinitions_options"
+    name="admin_settings_workflowDefinitions_options_title"
     className="border border-warning p-1 my-4 rounded-lg"
   >
-    {#each workflowOptions as opt}
-      <InputWithMessage name={opt.message} className="my-1">
+    {#each enumNumVals(WorkflowOptions) as option}
+      <InputWithMessage
+        name="admin_settings_workflowDefinitions_options"
+        messageParms={{ option }}
+        className="my-1"
+      >
         <input
           class="toggle toggle-warning border-warning"
           type="checkbox"
           bind:group={$form.options}
-          value={opt.value}
+          value={option}
         />
       </InputWithMessage>
     {/each}

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
@@ -55,6 +56,6 @@
   {/if}
   <div class="my-4">
     <input type="submit" class="btn btn-primary" value="Submit" />
-    <a class="btn" href={localizeHref(base)}>Cancel</a>
+    <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
   </div>
 </form>

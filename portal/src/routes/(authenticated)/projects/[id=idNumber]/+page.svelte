@@ -278,7 +278,7 @@
             </div>
           </form>
           <form method="dialog" class="modal-backdrop">
-            <button onclick={() => (selectingStore = false)}>close</button>
+            <button onclick={() => (selectingStore = false)}>{m.common_close()}</button>
           </form>
         </dialog>
       </div>
