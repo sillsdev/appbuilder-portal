@@ -114,16 +114,7 @@
                     </b>
                   </span>
                   <br />
-                  {org.R.map(
-                    (r) =>
-                      [
-                        '',
-                        m.users_roles_superAdmin(),
-                        m.users_roles_orgAdmin(),
-                        m.users_roles_appBuilder(),
-                        m.users_roles_author()
-                      ][r]
-                  )
+                  {org.R.map((role) => m.users_roles({ role }))
                     .sort((a, b) => byString(a, b, locale))
                     .join(', ') || m.users_noRoles()}
                 </div>

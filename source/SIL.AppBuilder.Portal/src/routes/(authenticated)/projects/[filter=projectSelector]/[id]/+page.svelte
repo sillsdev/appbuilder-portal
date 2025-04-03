@@ -308,7 +308,7 @@
         </div>
       </form>
       <form method="dialog" class="modal-backdrop">
-        <button>close</button>
+        <button>{m.common_close()}</button>
       </form>
     </dialog>
     {#if page.params.filter === 'own'}

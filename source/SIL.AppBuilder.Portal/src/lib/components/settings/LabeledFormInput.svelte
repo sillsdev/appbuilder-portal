@@ -10,17 +10,18 @@
   
   interface Props {
     name: ValidI13nKey;
+    messageParms?: any;
     className?: string;
     children?: Snippet;
   }
 
-  let { name, className = '', children }: Props = $props();
+  let { name, messageParms, className = '', children }: Props = $props();
 </script>
 
 <label class="flex flex-col w-full {className}">
   <div class="label">
     <span class="fieldset-label">
-      {m[name]()}
+      {m[name](messageParms)}
     </span>
   </div>
   {@render children?.()}

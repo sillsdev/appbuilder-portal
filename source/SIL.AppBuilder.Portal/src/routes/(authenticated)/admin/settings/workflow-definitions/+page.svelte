@@ -36,23 +36,13 @@
         },
         {
           key: 'admin_settings_workflowDefinitions_productType',
-          value: [
-            'Android GooglePlay',
-            'Android S3',
-            m.admin_settings_workflowDefinitions_productType_assetPackage(),
-            m.admin_settings_workflowDefinitions_productType_web()
-          ][wd.ProductType]
+          value: m.admin_settings_workflowDefinitions_productTypes({ type: wd.ProductType })
         },
         {
           key: 'admin_settings_workflowDefinitions_workflowType',
-          value: [
-            ,
-            m.admin_settings_workflowDefinitions_workflowTypes_1(),
-            m.admin_settings_workflowDefinitions_workflowTypes_2(),
-            m.admin_settings_workflowDefinitions_workflowTypes_3()
-          ][wd.Type]
+          value: m.admin_settings_workflowDefinitions_workflowTypes({ type: wd.Type })
         }
-        // Do we want to show options here?
+        // TODO: Do we want to show options here?
       ]}
     />
   {/each}
