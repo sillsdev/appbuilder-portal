@@ -11,14 +11,17 @@
 
   let { value = $bindable(), name, className = '', ok = $bindable(true) }: Props = $props();
 
-  let parsed = $derived(safeParse(propertiesSchema, value));
+  const parsed = $derived(safeParse(propertiesSchema, value));
 
   let rawValue = $state(value);
 
   $effect(() => {
-    if (parsed.success) {
+    if (rawValue !== value) {
       rawValue = value;
     }
+  })
+
+  $effect(() => {
     ok = parsed.success;
   });
 </script>
