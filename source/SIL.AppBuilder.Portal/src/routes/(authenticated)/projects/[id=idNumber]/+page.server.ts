@@ -7,7 +7,7 @@ import {
   userGroupsForOrg,
   verifyCanViewAndEdit
 } from '$lib/projects/server';
-import { idSchema } from '$lib/valibot';
+import { idSchema, propertiesSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
@@ -37,6 +37,10 @@ const updateOwnerGroupSchema = v.object({
 const addProductSchema = v.object({
   productDefinitionId: idSchema,
   storeId: idSchema
+});
+const updateProductPropertiesSchema = v.object({
+  productId: v.string(),
+  properties: propertiesSchema
 });
 
 const productActionSchema = v.object({
@@ -79,6 +83,7 @@ export const load = (async ({ locals, params }) => {
           DateUpdated: true,
           DatePublished: true,
           PublishLink: true,
+          Properties: true,
           ProductDefinition: {
             select: {
               Id: true,
@@ -377,6 +382,18 @@ export const actions = {
     await doProductAction(form.data.productId, form.data.productAction);
 
     return { form, ok: true };
+  },
+  async updateProduct(event) {
+    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
+      return fail(403);
+    const form = await superValidate(event.request, valibot(updateProductPropertiesSchema));
+    console.log(form);
+    if (!form.valid) return fail(400, { form, ok: false });
+    const productId = await DatabaseWrites.products.update(form.data.productId, {
+      Properties: form.data.properties
+    });
+
+    return { form, ok: !!productId };
   },
   async addAuthor(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
