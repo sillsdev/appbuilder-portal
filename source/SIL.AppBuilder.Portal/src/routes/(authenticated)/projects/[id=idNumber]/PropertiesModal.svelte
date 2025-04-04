@@ -3,6 +3,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { onMount } from 'svelte';
 
   interface Props {
     modal?: HTMLDialogElement;
@@ -19,11 +20,22 @@
   let value = $state(product.Properties);
 
   const computeTypes = ['small', 'medium'] as const;
+  type ComputeType = (typeof computeTypes)[number];
 
-  function updateComputeType(type?: (typeof computeTypes)[number]) {
+  let computeType: ComputeType | null = $state(null);
+
+  onMount(() => {
+    try {
+      const parsed = JSON.parse(value || '{}');
+      computeType = (parsed['environment']['BUILD_COMPUTE_TYPE'] as ComputeType) ?? null;
+    } catch {}
+  });
+
+  function updateComputeType(type?: ComputeType) {
     const toAdd = type
       ? { BUILD_COMPUTE_TYPE: type }
-      : {// default value
+      : {
+          // default value
           BUILD_COMPUTE_TYPE: 'small',
           BUILD_IMAGE_TAG: 'latest'
         };
@@ -38,6 +50,7 @@
         parsed['environment'] = { ...toAdd };
       }
       value = JSON.stringify(parsed, null, 4);
+      computeType = toAdd.BUILD_COMPUTE_TYPE as ComputeType;
     }
   }
 </script>
@@ -56,10 +69,13 @@
             class="select select-bordered w-full"
             placeholder={m.project_products_properties_selectComputeType()}
             onchange={(e) => {
-              updateComputeType(e.currentTarget.value as (typeof computeTypes)[number]);
+              updateComputeType(e.currentTarget.value as ComputeType);
             }}
+            bind:value={computeType}
           >
-            <option selected disabled hidden>{m.project_products_properties_selectComputeType()}</option>
+            <option selected disabled hidden value={null}>
+              {m.project_products_properties_selectComputeType()}
+            </option>
             {#each computeTypes as type}
               {@const msg =
                 //@ts-expect-error the typing is correct
