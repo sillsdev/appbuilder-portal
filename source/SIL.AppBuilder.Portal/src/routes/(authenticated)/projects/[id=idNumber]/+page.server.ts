@@ -387,7 +387,6 @@ export const actions = {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
       return fail(403);
     const form = await superValidate(event.request, valibot(updateProductPropertiesSchema));
-    console.log(form);
     if (!form.valid) return fail(400, { form, ok: false });
     const productId = await DatabaseWrites.products.update(form.data.productId, {
       Properties: form.data.properties

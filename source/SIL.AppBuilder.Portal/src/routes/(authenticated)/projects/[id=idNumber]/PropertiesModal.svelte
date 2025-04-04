@@ -56,7 +56,16 @@
 </script>
 
 <dialog bind:this={modal} class="modal">
-  <form class="modal-box" action="?/{endpoint}" method="POST" use:enhance>
+  <form
+    class="modal-box"
+    action="?/{endpoint}"
+    method="POST"
+    use:enhance={() => {
+      return async ({ update }) => {
+        update({ reset: false });
+      };
+    }}
+  >
     <div class="items-center text-center">
       <h2 class="text-lg font-bold grow">
         {m.project_products_properties_title()}

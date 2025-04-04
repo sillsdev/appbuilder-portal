@@ -16,10 +16,8 @@
   let rawValue = $state(value);
 
   $effect(() => {
-    if (rawValue !== value) {
-      rawValue = value;
-    }
-  })
+    rawValue = value;
+  });
 
   $effect(() => {
     ok = parsed.success;
