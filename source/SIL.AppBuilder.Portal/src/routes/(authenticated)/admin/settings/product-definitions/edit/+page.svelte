@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
@@ -92,11 +93,7 @@
     ></textarea>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_properties">
-    <textarea
-      name="properties"
-      class="textarea textarea-bordered w-full"
-      bind:value={$form.properties}
-    ></textarea>
+    <PropertiesEditor name="properties" className="w-full" bind:value={$form.properties} />
   </LabeledFormInput>
   {#if $allErrors.length}
     <ul>

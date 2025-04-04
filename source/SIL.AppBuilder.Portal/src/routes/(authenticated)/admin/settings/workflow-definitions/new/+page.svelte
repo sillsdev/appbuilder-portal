@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { enumNumVals } from '$lib/utils';
@@ -88,12 +89,7 @@
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_properties">
-    <input
-      type="text"
-      name="properties"
-      class="input input-bordered w-full"
-      bind:value={$form.properties}
-    />
+    <PropertiesEditor name="properties" className="w-full" bind:value={$form.properties} />
   </LabeledFormInput>
   <LabeledFormInput
     name="admin_settings_workflowDefinitions_options_title"
