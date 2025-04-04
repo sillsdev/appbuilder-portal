@@ -97,7 +97,7 @@ export async function POST({ params, request, fetch }) {
 
   // Check roles
   if (readOnly === null) {
-    if (isAdmin(user[0].UserRoles.map((ur) => [ur.RoleId, ur.OrganizationId]))) {
+    if (isAdmin(user[0].UserRoles.map((ur) => [ur.OrganizationId, ur.RoleId]))) {
       readOnly = true;
     }
   }
