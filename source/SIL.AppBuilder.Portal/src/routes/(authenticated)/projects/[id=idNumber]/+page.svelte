@@ -401,7 +401,7 @@
                   />
                 </span>
               </div>
-              {#if product.WorkflowInstance}
+              {#if product.WorkflowInstance && !data.project.DateArchived}
                 <div class="p-2 flex gap-1">
                   <span class="text-red-500">
                     {m.tasks_waiting({
