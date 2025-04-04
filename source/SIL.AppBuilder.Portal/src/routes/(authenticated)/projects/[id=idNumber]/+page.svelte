@@ -288,8 +288,12 @@
         {:else}
           {@const locale = getLocale()}
           {#each data.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, locale) ) as product}
+            {@const showTaskWaiting = product.WorkflowInstance && !data.project.DateArchived}
             <div class="rounded-md border border-slate-400 w-full my-2">
-              <div class="bg-neutral p-2 flex flex-row rounded-t-md">
+              <div
+                class="bg-neutral p-2 flex flex-row rounded-t-md"
+                class:rounded-b-md={!showTaskWaiting}
+              >
                 <span class="grow min-w-0">
                   <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
                   {product.ProductDefinition.Name}
@@ -401,7 +405,7 @@
                   />
                 </span>
               </div>
-              {#if product.WorkflowInstance && !data.project.DateArchived}
+              {#if showTaskWaiting}
                 <div class="p-2 flex gap-1">
                   <span class="text-red-500">
                     {m.tasks_waiting({
