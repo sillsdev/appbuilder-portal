@@ -15,7 +15,7 @@ export const load = (async (event) => {
     : await prisma.organizations.findMany({
       where: {
         OrganizationMemberships: {
-          every: {
+          some: {
             UserId: user.userId
           }
         }
@@ -25,7 +25,7 @@ export const load = (async (event) => {
       }
     });
   if (organizations.length === 1) {
-    return redirect(302, localizeHref(`/organizations/${organizations[0].Id}/settings`));
+    return redirect(302, localizeHref(`/organizations/${organizations[0].Id}/settings/info`));
   }
   return { organizations };
 }) satisfies PageServerLoad;
