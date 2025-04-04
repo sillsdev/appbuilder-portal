@@ -113,12 +113,21 @@ export const actions = {
 
     if (!flow) return fail(404, { form, ok: false });
 
-    // TODO: What if the parent project is archived? This will create user tasks, which we probably don't want.
-    flow.send({
-      type: WorkflowAction.Jump,
-      target: form.data.state as WorkflowState,
-      userId: null
+    const product = await prisma.products.findUnique({
+      where: { Id: params.product_id },
+      select: { Project: { select: { DateArchived: true } } }
     });
+
+    if (product?.Project.DateArchived) {
+      form.data.state = flow.state() ?? form.data.state;
+    }
+    else {
+      flow.send({
+        type: WorkflowAction.Jump,
+        target: form.data.state as WorkflowState,
+        userId: null
+      });
+    }
 
     return { form, ok: true };
   }
