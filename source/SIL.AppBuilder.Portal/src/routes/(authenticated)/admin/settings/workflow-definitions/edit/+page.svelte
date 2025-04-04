@@ -7,7 +7,6 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { enumNumVals } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
-  import { WorkflowType } from 'sil.appbuilder.portal.common/prisma';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import { businessFlows } from '../common';
@@ -21,11 +20,14 @@
 
   const base = '/admin/settings/workflow-definitions';
 
-  const { form, enhance, allErrors } = superForm(data.form, {
+  const { form, enhance } = superForm(data.form, {
     dataType: 'json',
-    onUpdated(event) {
-      if (event.form.valid) {
+    onUpdated({ form }) {
+      if (form.valid) {
         goto(localizeHref(base));
+      } else {
+        // ISSUE: #1107 Add toasts for server-side errors?
+        console.warn(form.errors);
       }
     }
   });
@@ -40,27 +42,32 @@
     <input class="input w-full input-bordered" type="text" name="name" bind:value={$form.name} />
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_storeType">
-    <select class="select select-bordered" name="storeType" bind:value={$form.storeType}>
-      {#each data.storeTypes.toSorted((a, b) => byName(a, b, getLocale())) as storeType}
-        <option value={storeType.Id}>{storeType.Name}</option>
+    <select
+      class="select select-bordered validator"
+      name="storeType"
+      bind:value={$form.storeType}
+      required
+    >
+      {#each data.storeTypes.toSorted((a, b) => byName(a, b, getLocale())) as type}
+        <option value={type.Id}>{type.Name}</option>
       {/each}
     </select>
+    <span class="validator-hint">{m.admin_settings_workflowDefinitions_emptyStoreType()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_productType">
-    <select class="select select-bordered" name="productType" bind:value={$form.productType}>
+    <select
+      class="select select-bordered validator"
+      name="productType"
+      bind:value={$form.productType}
+      required
+    >
       {#each enumNumVals(ProductType) as type}
         <option value={type}>
           {m.admin_settings_workflowDefinitions_productTypes({ type })}
         </option>
       {/each}
     </select>
-  </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_workflowType">
-    <select class="select select-bordered" name="workflowType" bind:value={$form.workflowType}>
-      {#each enumNumVals(WorkflowType) as type}
-        <option value={type}>{m.admin_settings_workflowDefinitions_workflowTypes({ type })}</option>
-      {/each}
-    </select>
+    <span class="validator-hint">{m.admin_settings_workflowDefinitions_emptyProductType()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_description">
     <textarea
@@ -134,16 +141,6 @@
       </div>
     </label>
   </div>
-  {#if $allErrors.length}
-    <ul>
-      {#each $allErrors as error}
-        <li class="text-red-500">
-          <b>{error.path}:</b>
-          {error.messages.join('. ')}
-        </li>
-      {/each}
-    </ul>
-  {/if}
   <div class="my-4">
     <input type="submit" class="btn btn-primary" value={m.common_save()} disabled={!propsOk} />
     <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>

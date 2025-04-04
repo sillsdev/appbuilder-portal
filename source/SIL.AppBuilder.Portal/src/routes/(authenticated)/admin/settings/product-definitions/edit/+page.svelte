@@ -16,10 +16,13 @@
 
   const base = '/admin/settings/product-definitions';
 
-  const { form, enhance, allErrors } = superForm(data.form, {
-    onUpdated(event) {
-      if (event.form.valid) {
+  const { form, enhance } = superForm(data.form, {
+    onUpdated({ form }) {
+      if (form.valid) {
         goto(localizeHref(base));
+      } else {
+        // ISSUE: #1107 Add toasts for server-side errors?
+        console.warn(form.errors);
       }
     }
   });
@@ -43,25 +46,40 @@
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
   <LabeledFormInput name="admin_settings_productDefinitions_name">
-    <input class="input w-full input-bordered" type="text" name="name" bind:value={$form.name} />
+    <input
+      type="text"
+      name="name"
+      class="input input-bordered w-full validator"
+      bind:value={$form.name}
+      required
+    />
+    <span class="validator-hint">{m.admin_settings_productDefinitions_emptyName()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_type">
     <select
-      class="select select-bordered"
+      class="select select-bordered validator"
       name="applicationType"
       bind:value={$form.applicationType}
+      required
     >
-      {#each data.options.applicationTypes.toSorted((a, b) => byName(a, b, locale)) as type}
+      {#each data.options.applicationTypes as type}
         <option value={type.Id}>{type.Name}</option>
       {/each}
     </select>
+    <span class="validator-hint">{m.admin_settings_productDefinitions_emptyType()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_workflow">
-    <select class="select select-bordered" name="workflow" bind:value={$form.workflow}>
-      {#each workflows as workflow}
-        <option value={workflow.Id}>{workflow.Name}</option>
+    <select
+      class="select select-bordered validator"
+      name="workflow"
+      bind:value={$form.workflow}
+      required
+    >
+      {#each workflows as wf}
+        <option value={wf.Id}>{wf.Name}</option>
       {/each}
     </select>
+    <span class="validator-hint">{m.admin_settings_productDefinitions_emptyWorkflow()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_rebuildWorkflow">
     <select
@@ -97,18 +115,8 @@
   <LabeledFormInput name="admin_settings_productDefinitions_properties">
     <PropertiesEditor name="properties" className="w-full" bind:value={$form.properties} bind:ok={propsOk} />
   </LabeledFormInput>
-  {#if $allErrors.length}
-    <ul>
-      {#each $allErrors as error}
-        <li class="text-red-500">
-          <b>{error.path}:</b>
-          {error.messages.join('. ')}
-        </li>
-      {/each}
-    </ul>
-  {/if}
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value="Submit" disabled={!propsOk} />
+    <input type="submit" class="btn btn-primary" value={m.common_save()} disabled={!propsOk} />
     <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
   </div>
 </form>

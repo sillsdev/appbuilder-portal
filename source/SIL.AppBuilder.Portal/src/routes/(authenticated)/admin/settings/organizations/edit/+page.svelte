@@ -18,11 +18,14 @@
 
   const base = '/admin/settings/organizations';
 
-  const { form, enhance, allErrors } = superForm(data.form, {
+  const { form, enhance } = superForm(data.form, {
     dataType: 'json',
-    onUpdated(event) {
-      if (event.form.valid) {
+    onUpdated({ form }) {
+      if (form.valid) {
         goto(localizeHref(base));
+      } else {
+        // ISSUE: #1107 Add toasts for server-side errors?
+        console.warn(form.errors);
       }
     }
   });
@@ -35,11 +38,12 @@
     <input class="input w-full input-bordered" type="text" name="name" bind:value={$form.name} />
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_organizations_owner">
-    <select class="select select-bordered" name="owner" bind:value={$form.owner}>
-      {#each data.options.users.toSorted((a, b) => byName(a, b, getLocale())) as option}
-        <option value={option.Id}>{option.Name}</option>
+    <select class="select select-bordered validator" name="owner" bind:value={$form.owner} required>
+      {#each data.options.users.toSorted((a, b) => byName(a, b, getLocale())) as user}
+        <option value={user.Id}>{user.Name}</option>
       {/each}
     </select>
+    <span class="validator-hint">{m.admin_settings_organizations_emptyOwner()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_organizations_websiteURL">
     <input
@@ -113,18 +117,8 @@
       />
     {/each}
   </MultiselectBox>
-  {#if $allErrors.length}
-    <ul>
-      {#each $allErrors as error}
-        <li class="text-red-500">
-          <b>{error.path}:</b>
-          {error.messages.join('. ')}
-        </li>
-      {/each}
-    </ul>
-  {/if}
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value="Submit" />
+    <input type="submit" class="btn btn-primary" value={m.common_save()} />
     <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
   </div>
 </form>

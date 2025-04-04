@@ -14,10 +14,13 @@
 
   const base = '/admin/settings/store-types';
 
-  const { form, enhance, allErrors } = superForm(data.form, {
-    onUpdated(event) {
-      if (event.form.valid) {
+  const { form, enhance } = superForm(data.form, {
+    onUpdated({ form }) {
+      if (form.valid) {
         goto(localizeHref(base));
+      } else {
+        // ISSUE: #1107 Add toasts for server-side errors?
+        console.warn(form.errors);
       }
     }
   });
@@ -27,7 +30,15 @@
 
 <form class="m-4" method="post" action="?/new" use:enhance>
   <LabeledFormInput name="admin_settings_storeTypes_name">
-    <input type="text" name="name" class="input input-bordered w-full" bind:value={$form.name} />
+    <!-- ISSUE: #1107 So this can be null in the database? but S1 UI shows it as required... -->
+    <input
+      type="text"
+      name="name"
+      class="input input-bordered w-full validator"
+      bind:value={$form.name}
+      required
+    />
+    <span class="validator-hint">{m.admin_settings_storeTypes_emptyName()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_storeTypes_description">
     <input
@@ -37,18 +48,8 @@
       bind:value={$form.description}
     />
   </LabeledFormInput>
-  {#if $allErrors.length}
-    <ul>
-      {#each $allErrors as error}
-        <li class="text-red-500">
-          <b>{error.path}:</b>
-          {error.messages.join('. ')}
-        </li>
-      {/each}
-    </ul>
-  {/if}
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value="Submit" />
+    <input type="submit" class="btn btn-primary" value={m.common_save()} />
     <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
   </div>
 </form>

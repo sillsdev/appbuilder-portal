@@ -478,6 +478,7 @@
   "admin_settings_workflowDefinitions_workflowUpdated": "Workflow Definition updated",
   "admin_settings_workflowDefinitions_emptyStoreType": "Need to select a store type for this workflow definition",
   "admin_settings_workflowDefinitions_emptyWorkflowType": "Need to select a workflow type for this workflow definition",
+  "admin_settings_workflowDefinitions_emptyProductType": "Need to select a product type for this workflow definition",
   "admin_settings_workflowDefinitions_workflowType": "Workflow Type",
   "admin_settings_workflowDefinitions_workflowTypes": [
     {
