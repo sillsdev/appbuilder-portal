@@ -27,6 +27,8 @@
   });
 </script>
 
+<h3>{m.models_edit({ name: m.stores_name() })}</h3>
+
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />

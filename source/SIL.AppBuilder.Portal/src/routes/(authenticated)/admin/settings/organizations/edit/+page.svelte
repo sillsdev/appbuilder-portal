@@ -31,6 +31,8 @@
   });
 </script>
 
+<h3>{m.admin_settings_organizations_edit()}</h3>
+
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
