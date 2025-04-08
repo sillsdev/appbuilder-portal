@@ -1,4 +1,5 @@
-import { localizeHref } from '$lib/paraglide/runtime';
+import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+import { byName } from '$lib/utils/sorting';
 import { idSchema } from '$lib/valibot';
 import { fail, redirect } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
@@ -42,7 +43,8 @@ export const load = (async ({ url }) => {
   if (!data) return redirect(302, localizeHref('/admin/settings/organizations'));
   const users = await prisma.users.findMany();
   const orgStoreNumList = new Set(orgStores.map((s) => s.StoreId));
-  const stores = await prisma.stores.findMany();
+  const locale = getLocale();
+  const stores = (await prisma.stores.findMany()).sort((a, b) => byName(a, b, locale));
   const enabledStores = stores.map((store) => ({
     storeId: store.Id,
     enabled: orgStoreNumList.has(store.Id)

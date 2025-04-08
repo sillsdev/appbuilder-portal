@@ -20,7 +20,7 @@
 
 <h2>{m.org_storesTitle()}</h2>
 <form action="" class="m-4" method="post" use:enhance>
-  <!-- TODO: sort this. I think this will need a refactor of MultiselectBox -->
+  <!-- Sorted on server -->
   <MultiselectBox header={m.org_storeSelectTitle()}>
     <div>
       {#each $form.stores as store}

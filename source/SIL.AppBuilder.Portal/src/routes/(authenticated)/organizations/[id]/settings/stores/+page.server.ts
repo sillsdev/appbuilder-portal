@@ -1,3 +1,5 @@
+import { getLocale } from '$lib/paraglide/runtime';
+import { byName } from '$lib/utils/sorting';
 import { idSchema } from '$lib/valibot';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
@@ -21,7 +23,10 @@ export const load = (async (event) => {
       OrganizationId: organization.Id
     }
   });
-  const allStores = (await prisma.stores.findMany()).map((s) => [s.Id, s] as [number, typeof s]);
+  const locale = getLocale();
+  const allStores = (await prisma.stores.findMany())
+    .sort((a, b) => byName(a, b, locale))
+    .map((s) => [s.Id, s] as [number, typeof s]);
   const setOrgStores = new Set(orgStores.map((p) => p.StoreId));
   const form = await superValidate(
     {

@@ -108,7 +108,7 @@
       />
     </InputWithMessage>
   </LabeledFormInput>
-  <!-- TODO: sort this. I think this will need a refactor of MultiselectBox -->
+  <!-- Sorted on server -->
   <MultiselectBox header={m.org_storeSelectTitle()}>
     {#each $form.stores as store}
       {@const storeInfo = data.options.stores.find((s) => s.Id === store.storeId)}

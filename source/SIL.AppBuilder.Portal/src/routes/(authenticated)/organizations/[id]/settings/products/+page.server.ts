@@ -1,3 +1,5 @@
+import { getLocale } from '$lib/paraglide/runtime';
+import { byName } from '$lib/utils/sorting';
 import { idSchema } from '$lib/valibot';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
@@ -22,7 +24,8 @@ export const load = (async (event) => {
       OrganizationId: organization.Id
     }
   });
-  const allProductDefs = (await prisma.productDefinitions.findMany()).map(
+  const locale = getLocale();
+  const allProductDefs = (await prisma.productDefinitions.findMany()).sort((a, b) => byName(a, b, locale)).map(
     (pd) => [pd.Id, pd] as [number, typeof pd]
   );
   const setOrgProductDefs = new Set(orgProductDefs.map((p) => p.ProductDefinitionId));

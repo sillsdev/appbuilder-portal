@@ -40,7 +40,7 @@
       </div>
     </label>
   </div>
-  <!-- TODO: sort this. I think this will need a refactor of MultiselectBox -->
+  <!-- Sorted on server -->
   <MultiselectBox header={m.org_productSelectTitle()}>
     {#each $form.products as productDef}
       {@const pdLook = allProductDefs.get(productDef.productId)}
