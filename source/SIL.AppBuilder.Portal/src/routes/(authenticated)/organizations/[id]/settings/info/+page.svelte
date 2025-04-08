@@ -1,6 +1,6 @@
 <script lang="ts">
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import { org_noteLogUrl } from '$lib/paraglide/messages';
+  import { common_save, org_nameError, org_noteLogUrl } from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -9,7 +9,7 @@
   }
 
   let { data }: Props = $props();
-  const { form, enhance, allErrors } = superForm(data.form, { resetForm: false });
+  const { form, enhance } = superForm(data.form, { resetForm: false });
 </script>
 
 <form action="" class="m-4" method="post" use:enhance>
@@ -20,9 +20,11 @@
         <input
           type="text"
           name="name"
-          class="input w-full input-bordered"
+          class="input w-full input-bordered validator"
           bind:value={$form.name}
+          required
         />
+        <span class="validator-hint">{org_nameError()}</span>
       </LabeledFormInput>
       <LabeledFormInput name="org_logoUrl">
         <input
@@ -39,6 +41,6 @@
     </div>
   </div>
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value="Submit" />
+    <input type="submit" class="btn btn-primary" value={common_save()} />
   </div>
 </form>

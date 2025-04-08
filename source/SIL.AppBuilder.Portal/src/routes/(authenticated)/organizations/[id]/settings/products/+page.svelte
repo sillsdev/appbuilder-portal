@@ -10,7 +10,7 @@
 
   let { data }: Props = $props();
 
-  const { form, enhance, allErrors } = superForm(data.form, {
+  const { form, enhance } = superForm(data.form, {
     dataType: 'json',
     resetForm: false
   });
@@ -52,6 +52,6 @@
     {/each}
   </MultiselectBox>
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value="Submit" />
+    <input type="submit" class="btn btn-primary" value={m.common_save()} />
   </div>
 </form>

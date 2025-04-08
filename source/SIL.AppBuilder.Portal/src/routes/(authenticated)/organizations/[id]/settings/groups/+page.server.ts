@@ -16,11 +16,7 @@ const deleteGroupSchema = v.object({
 
 export const load = (async (event) => {
   const { organization } = await event.parent();
-  const addForm = await superValidate(valibot(addGroupSchema));
-  const deleteForm = await superValidate(valibot(deleteGroupSchema));
   return {
-    addForm,
-    deleteForm,
     groups: await prisma.groups.findMany({ where: { OwnerId: organization.Id } })
   };
 }) satisfies PageServerLoad;
