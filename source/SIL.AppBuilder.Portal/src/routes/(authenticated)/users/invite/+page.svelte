@@ -15,7 +15,7 @@
 
   let { data }: Props = $props();
   let inputEle: HTMLInputElement;
-  const { form, enhance, allErrors } = superForm(data.form, {
+  const { form, enhance } = superForm(data.form, {
     dataType: 'json',
     onUpdated(event) {
       if (event.form.valid) {
@@ -49,9 +49,11 @@
             type="email"
             name="email"
             placeholder="user@example.com"
-            class="input input-bordered w-full"
+            class="input input-bordered w-full validator"
             bind:value={$form.email}
+            required
           />
+          <span class="validator-hint">{m.project_side_reviewers_form_invalidEmailError()}</span>
         </LabeledFormInput>
         <LabeledFormInput name="project_side_organization">
           <OrganizationDropdown
@@ -80,17 +82,6 @@
         </div>
       </div>
     </div>
-
-    {#if $allErrors.length}
-      <ul>
-        {#each $allErrors as error}
-          <li class="text-red-500">
-            <b>{error.path}:</b>
-            {error.messages.join('. ')}
-          </li>
-        {/each}
-      </ul>
-    {/if}
     <div class="my-4 flex justify-end gap-2">
       <input
         type="submit"

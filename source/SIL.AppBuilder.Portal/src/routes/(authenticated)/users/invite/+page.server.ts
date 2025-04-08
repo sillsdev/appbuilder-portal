@@ -21,7 +21,7 @@ export const load = (async ({ locals }) => {
   const user = await locals.auth();
   const groupsByOrg = await prisma.organizations.findMany({
     where: {
-      // Only send a list of groups for orgs that the subject user is in and the current user has access to
+      // Only send a list of groups for orgs that the current user has access to
       UserRoles: isSuperAdmin(user?.user.roles)
         ? undefined
         : {
