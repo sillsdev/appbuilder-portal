@@ -35,6 +35,8 @@
   const republishWorkflows = data.options.workflows
     .filter((w) => w.Type === 3)
     .sort((a, b) => byName(a, b, locale));
+
+  let propsOk = $state(true);
 </script>
 
 <h3>{m.admin_settings_productDefinitions_add()}</h3>
@@ -94,7 +96,7 @@
     />
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_properties">
-    <PropertiesEditor name="properties" className="w-full" bind:value={$form.properties} />
+    <PropertiesEditor name="properties" className="w-full" bind:value={$form.properties} bind:ok={propsOk} />
   </LabeledFormInput>
   {#if $allErrors.length}
     <ul>
@@ -107,7 +109,7 @@
     </ul>
   {/if}
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value="Submit" />
+    <input type="submit" class="btn btn-primary" value="Submit" disabled={!propsOk} />
     <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
   </div>
 </form>

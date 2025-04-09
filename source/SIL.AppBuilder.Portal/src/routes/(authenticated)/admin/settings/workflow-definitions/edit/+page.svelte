@@ -29,6 +29,8 @@
       }
     }
   });
+
+  let propsOk = $state(true);
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->
@@ -86,7 +88,12 @@
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_properties">
-    <PropertiesEditor name="properties" className="w-full" bind:value={$form.properties} />
+    <PropertiesEditor
+      name="properties"
+      className="w-full"
+      bind:value={$form.properties}
+      bind:ok={propsOk}
+    />
   </LabeledFormInput>
   <LabeledFormInput
     name="admin_settings_workflowDefinitions_options_title"
@@ -138,7 +145,7 @@
     </ul>
   {/if}
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <input type="submit" class="btn btn-primary" value={m.common_save()} disabled={!propsOk} />
     <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
   </div>
 </form>
