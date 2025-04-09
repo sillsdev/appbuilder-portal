@@ -24,10 +24,8 @@
   let computeType: ComputeType | null = $state(null);
 
   $effect(() => {
-    try {
-      const parsed = JSON.parse(value || '{}');
-      computeType = (parsed['environment']['BUILD_COMPUTE_TYPE'] as ComputeType) ?? null;
-    } catch {}
+    const parsed = JSON.parse(value || '{}');
+    computeType = (parsed['environment']?.['BUILD_COMPUTE_TYPE'] as ComputeType) ?? null;
   });
 
   function updateComputeType(type?: ComputeType) {
