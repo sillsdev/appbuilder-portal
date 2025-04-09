@@ -3,7 +3,6 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { onMount } from 'svelte';
 
   interface Props {
     modal?: HTMLDialogElement;
@@ -24,7 +23,7 @@
 
   let computeType: ComputeType | null = $state(null);
 
-  onMount(() => {
+  $effect(() => {
     try {
       const parsed = JSON.parse(value || '{}');
       computeType = (parsed['environment']['BUILD_COMPUTE_TYPE'] as ComputeType) ?? null;
@@ -50,7 +49,6 @@
         parsed['environment'] = { ...toAdd };
       }
       value = JSON.stringify(parsed, null, 4);
-      computeType = toAdd.BUILD_COMPUTE_TYPE as ComputeType;
     }
   }
 </script>
@@ -102,6 +100,7 @@
             type="button"
             onclick={() => {
               modal?.close();
+              value = product.Properties;
             }}
           >
             {m.common_cancel()}
