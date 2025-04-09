@@ -1,3 +1,5 @@
+import { toast } from '@zerodevx/svelte-toast';
+
 export function bytesToHumanSize(bytes: bigint | null) {
   if (bytes === null) {
     return '--';
@@ -22,12 +24,17 @@ export type ValidKey<T extends object> = {
 
 /**
  * Utility function to get just the numeric values of an enum, because of how enums are implemented in TS
- * 
+ *
  * Using Record for type because TS currently does not support `extends enum` https://github.com/microsoft/TypeScript/issues/30611
- * 
+ *
  * @param e any enum
  * @returns the numeric values of the enum
  */
 export function enumNumVals<E extends Record<string, string | number>>(e: E): number[] {
   return Object.values(e).filter((v) => !(typeof v === 'string'));
 }
+
+function pushToast(type: 'info' | 'success' | 'warning' | 'error', message: string) {
+  toast.push(message, { pausable: true, classes: [type] });
+}
+export { pushToast as toast };
