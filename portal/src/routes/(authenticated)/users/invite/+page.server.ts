@@ -25,11 +25,11 @@ export const load = (async ({ locals }) => {
       UserRoles: isSuperAdmin(user?.user.roles)
         ? undefined
         : {
-          some: {
-            UserId: user?.user.userId,
-            RoleId: RoleId.OrgAdmin
+            some: {
+              UserId: user?.user.userId,
+              RoleId: RoleId.OrgAdmin
+            }
           }
-        }
     },
     select: {
       Id: true,
@@ -48,26 +48,21 @@ export const actions = {
     }
     const user = await locals.auth();
     if (!user || !isAdminForOrg(form.data.organizationId, user.user.roles)) return fail(401);
-    try {
-      const { email, organizationId, roles, groups } = form.data;
-      const inviteToken = await DatabaseWrites.organizationMemberships.createOrganizationInvite(
-        email,
-        organizationId,
-        user.user.userId,
-        roles,
-        groups
-      );
-      const inviteLink = `${url.origin}/invitations/organization-membership?t=${inviteToken}`;
-      Queues.EmailTasks.add('Invite User ' + email, {
-        type: BullMQ.JobType.Email_InviteUser,
-        email,
-        inviteToken,
-        inviteLink
-      });
-      return { ok: true, form };
-    } catch (e) {
-      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
-      throw e;
-    }
+    const { email, organizationId, roles, groups } = form.data;
+    const inviteToken = await DatabaseWrites.organizationMemberships.createOrganizationInvite(
+      email,
+      organizationId,
+      user.user.userId,
+      roles,
+      groups
+    );
+    const inviteLink = `${url.origin}/invitations/organization-membership?t=${inviteToken}`;
+    await Queues.EmailTasks.add('Invite User ' + email, {
+      type: BullMQ.JobType.Email_InviteUser,
+      email,
+      inviteToken,
+      inviteLink
+    });
+    return { ok: true, form };
   }
 } satisfies Actions;
