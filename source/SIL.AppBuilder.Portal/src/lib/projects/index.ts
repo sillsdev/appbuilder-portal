@@ -133,27 +133,55 @@ export const projectCreateSchema = v.object({
   type: idSchema
 });
 
-export const importJSONSchema = v.object({
-  Projects: v.pipe(
-    v.array(
-      v.object({
-        ...projectSchemaBase.entries,
-        AllowDownloads: v.optional(v.boolean()),
-        AutomaticBuilds: v.optional(v.boolean())
-      })
+export const importJSONSchema = v.pipe(
+  v.string(),
+  // make sure it is valid JSON
+  v.rawTransform(({ dataset, addIssue, NEVER }) => {
+    try {
+      return JSON.parse(dataset.value || '{}');
+    } catch (e) {
+      //console.warn(e);
+      addIssue({
+        message: e as string,
+        path: [
+          {
+            type: 'unknown',
+            origin: 'value',
+            input: dataset.value,
+            key: 'root',
+            value: dataset.value
+          }
+        ]
+      });
+      return NEVER;
+    }
+  }),
+  // make sure it has the right structure
+  v.strictObject({
+    Projects: v.pipe(
+      v.array(
+        v.strictObject({
+          ...projectSchemaBase.entries,
+          AllowDownloads: v.optional(v.boolean()),
+          AutomaticBuilds: v.optional(v.boolean())
+        })
+      ),
+      v.minLength(1)
     ),
-    v.minLength(1)
-  ),
-  Products: v.pipe(
-    v.array(
-      v.object({
-        Name: v.string(),
-        Store: v.string()
-      })
-    ),
-    v.minLength(1)
-  )
-});
+    Products: v.pipe(
+      v.array(
+        v.strictObject({
+          Name: v.string(),
+          Store: v.string()
+        }, (issue) => {
+          console.log(issue);
+          return issue.message;
+        })
+      ),
+      v.minLength(1)
+    )
+  })
+);
 
 export const projectActionSchema = v.object({
   operation: v.nullable(v.picklist(['archive', 'reactivate', 'claim'])),

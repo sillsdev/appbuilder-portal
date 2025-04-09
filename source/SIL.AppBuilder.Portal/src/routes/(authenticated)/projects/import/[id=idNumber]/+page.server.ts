@@ -13,7 +13,10 @@ const projectsImportSchema = v.object({
   group: idSchema,
   type: idSchema,
   // I would use v.file, but that is not supported until after Node 18
-  json: importJSONSchema
+  json: v.pipe(
+    importJSONSchema,
+    v.transform((i) => JSON.stringify(i))
+  )
 });
 
 export const load = (async ({ locals, params }) => {
@@ -79,6 +82,7 @@ export const actions: Actions = {
     if (!verifyCanCreateProject(session, organizationId)) return error(403);
 
     const form = await superValidate(event.request, valibot(projectsImportSchema));
+    console.log(form);
     if (!form.valid) {
       return fail(400, { form, ok: false, errors: form.errors });
     }
@@ -98,60 +102,79 @@ export const actions: Actions = {
       messages: string[];
     }[] = [];
 
+    // this will always be successful because it has already passed the original form validation
+    const importJSON = v.safeParse(importJSONSchema, form.data.json).output as v.InferOutput<
+      typeof importJSONSchema
+    >;
+
     await Promise.all(
-      form.data.json.Products.map(async (p, i) => {
-        const pdi = (
-          await prisma.productDefinitions.findFirst({
-            where: {
-              Name: p.Name,
-              OrganizationProductDefinitions: {
-                some: {
-                  OrganizationId: organizationId
+      importJSON.Products.map(async (product, i) => {
+        const prodDef = await prisma.productDefinitions.findFirst({
+          where: {
+            Name: product.Name
+          },
+          select: {
+            Id: true,
+            _count: {
+              select: {
+                OrganizationProductDefinitions: {
+                  where: {
+                    OrganizationId: organizationId
+                  }
                 }
               }
-            },
-            select: {
-              Id: true
             }
-          })
-        )?.Id;
+          }
+        });
 
-        if (pdi === undefined) {
-          // TODO: better errors
+        // TODO: i18n for server-side errors
+        if (!prodDef) {
+          errors.push({
+            path: `json.Products[${i}].Name`,
+            messages: [`Could not find ProductDefinition: "${product.Name}"`]
+          });
+        } else if (!prodDef?._count.OrganizationProductDefinitions) {
           errors.push({
             path: `json.Products[${i}].Name`,
             messages: [
-              `Could not find ProductDefinition: "${p.Name}" for Organization: ${organization.Name}`
+              `Invalid ProductDefinition: "${product.Name}" for Organization: ${organization.Name}`
             ]
           });
         }
 
-        const si = (
-          await prisma.stores.findFirst({
-            where: {
-              Name: p.Store,
-              OrganizationStores: {
-                some: {
-                  OrganizationId: organizationId
+        const store = await prisma.stores.findFirst({
+          where: {
+            Name: product.Store
+          },
+          select: {
+            Id: true,
+            _count: {
+              select: {
+                OrganizationStores: {
+                  where: {
+                    OrganizationId: organizationId
+                  }
                 }
               }
-            },
-            select: {
-              Id: true
             }
-          })
-        )?.Id;
+          }
+        });
 
-        if (si === undefined) {
-          // TODO: better errors
+        // TODO: i18n for server-side errors
+        if (!store) {
           errors.push({
             path: `json.Products[${i}].Store`,
-            messages: [`Could not find Store: "${p.Store}" for Organization: ${organization.Name}`]
+            messages: [`Could not find Store: "${product.Store}"`]
+          });
+        } else if (!store?._count.OrganizationStores) {
+          errors.push({
+            path: `json.Products[${i}].Store`,
+            messages: [`Invalid Store: "${product.Store}" for Organization: ${organization.Name}`]
           });
         }
         return {
-          ProductDefinitionId: pdi,
-          StoreId: si
+          ProductDefinitionId: prodDef?.Id,
+          StoreId: store?.Id
         };
       })
     );
@@ -170,7 +193,7 @@ export const actions: Actions = {
         }
       });
       const projects = await DatabaseWrites.projects.createMany(
-        form.data.json.Projects.map((pj) => {
+        importJSON.Projects.map((pj) => {
           return {
             OrganizationId: organizationId,
             Name: pj.Name,

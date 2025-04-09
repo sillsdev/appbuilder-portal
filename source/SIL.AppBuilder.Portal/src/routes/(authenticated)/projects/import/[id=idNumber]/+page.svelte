@@ -21,7 +21,7 @@
     path: string;
     messages: string[];
   }[] = $state([]);
-  const { form, enhance, allErrors } = superForm(data.form, {
+  const { form, enhance } = superForm(data.form, {
     dataType: 'json',
     resetForm: false,
     onUpdate(event) {
@@ -43,24 +43,20 @@
   // set to null *only* if the file has been parsed *and* there are no errors
   let parseErrors: ReturnType<typeof flatten<typeof importJSONSchema>> | null = $state({});
 
-  let canSubmit = $derived(!$allErrors.length && !parseErrors && !returnedErrors.length);
+  let canSubmit = $derived(!parseErrors && !returnedErrors.length);
 
   onMount(() => {
     reader = new FileReader();
 
     reader.onloadend = (ev) => {
-      try {
-        const res = safeParse(importJSONSchema, JSON.parse((reader.result as string) ?? ''));
-        returnedErrors = [];
-        if (res.success) {
-          $form.json = res.output;
-          parseErrors = null;
-        } else {
-          parseErrors = flatten<typeof importJSONSchema>(res.issues);
-        }
-      } catch (e) {
-        //@ts-expect-error I just want to add the error!
-        parseErrors = { root: [e] };
+      const res = safeParse(importJSONSchema, reader.result?.toString());
+      console.log(res);
+      returnedErrors = [];
+      if (res.success) {
+        $form.json = JSON.stringify(res.output);
+        parseErrors = null;
+      } else {
+        parseErrors = flatten<typeof importJSONSchema>(res.issues);
       }
     };
   });
@@ -111,20 +107,10 @@
         />
       </LabeledFormInput>
     </div>
-    {#if $allErrors.length}
-      <ul>
-        {#each $allErrors as error}
-          <li class="text-red-500">
-            <b>{error.path}:</b>
-            {error.messages.join('. ')}
-          </li>
-        {/each}
-      </ul>
-    {/if}
     {#if returnedErrors.length}
       <ul>
         {#each returnedErrors as error}
-          <li class="text-red-500">
+          <li class="text-error">
             <b>{error.path}:</b>
             {error.messages.join('. ')}
           </li>
@@ -134,21 +120,23 @@
     {#if parseErrors}
       <ul>
         {#each parseErrors.root ?? [] as error}
-          <li class="text-red-500">
-            <b>{error}</b>
+          <li class="text-error">
+            {error}
           </li>
         {/each}
         {#if parseErrors.nested}
-          {#each Object.entries(parseErrors.nested) as error}
-            <li class="text-red-500">
-              <b>{error[0]}:</b>
-              {error[1]?.join('. ')}
+          {#each Object.entries(parseErrors.nested) as entry}
+            {@const errLoc = entry[0]}
+            {@const errors = (entry[1] as string[])?.join('. ')}
+            <li class="text-error">
+              <b>{errLoc}:</b>
+              {errors}
             </li>
           {/each}
         {/if}
         {#each parseErrors.other ?? [] as error}
-          <li class="text-red-500">
-            <b>{error}</b>
+          <li class="text-error">
+            {error}
           </li>
         {/each}
       </ul>
