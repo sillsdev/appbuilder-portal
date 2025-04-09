@@ -113,21 +113,11 @@ export const actions = {
 
     if (!flow) return fail(404, { form, ok: false });
 
-    const product = await prisma.products.findUnique({
-      where: { Id: params.product_id },
-      select: { Project: { select: { DateArchived: true } } }
+    flow.send({
+      type: WorkflowAction.Jump,
+      target: form.data.state as WorkflowState,
+      userId: null
     });
-
-    if (product?.Project.DateArchived) {
-      form.data.state = flow.state() ?? form.data.state;
-    }
-    else {
-      flow.send({
-        type: WorkflowAction.Jump,
-        target: form.data.state as WorkflowState,
-        userId: null
-      });
-    }
 
     return { form, ok: true };
   }

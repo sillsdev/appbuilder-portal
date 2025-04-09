@@ -21,6 +21,11 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
   job.updateProgress(10);
   const projectId = job.data.scope === 'Project' ? job.data.projectId : products[0].ProjectId;
 
+  const project = await prisma.projects.findUnique({
+    where: { Id: projectId },
+    select: { DateArchived: true }
+  });
+
   const productIds = products.map((p) => p.Id);
 
   let createdTasks: Prisma.UserTasksCreateManyInput[] = [];
@@ -49,9 +54,8 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
 
     mapping = await Promise.all(
       job.data.operation.userMapping.map(async (u) => ({
-        from: (
-          await prisma.users.findUnique({ where: { Id: u.from }, select: { Name: true } })
-        ).Name,
+        from: (await prisma.users.findUnique({ where: { Id: u.from }, select: { Name: true } }))
+          .Name,
         to: (await prisma.users.findUnique({ where: { Id: u.to }, select: { Name: true } })).Name,
         count: (
           await DatabaseWrites.userTasks.updateMany({
@@ -103,12 +107,12 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
             job.data.operation.type === BullMQ.UserTasks.OpType.Update
               ? undefined
               : {
-                in:
+                  in:
                     job.data.operation.users ??
                     Array.from(
                       new Set(Object.entries(allUsers).map(([user, roles]) => parseInt(user)))
                     )
-              },
+                },
           Role: job.data.operation.roles ? { in: job.data.operation.roles } : undefined
         }
       });
@@ -120,35 +124,37 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         const product = products[i];
         // Create tasks for all users that could perform this activity
         const snap = await Workflow.getSnapshot(product.Id);
-        const roleSet = new Set(
-          (
-            Workflow.availableTransitionsFromName(snap.state, snap.config)
-              .filter((t) => t[0].meta.type === ActionType.User)
-              .map((t) => t[0].meta.user) as RoleId[]
-          ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
-        );
-        job.updateProgress(40 + ((i + 0.33) * 40) / products.length);
-        createdTasks = Array.from(
-          new Set(
-            Object.entries(allUsers)
-              .filter(([users, roles]) => !roleSet.isDisjointFrom(roles))
-              .map(([user, roles]) => parseInt(user))
-          )
-        )
-          .filter((u) => job.data.operation.users?.includes(u) ?? true)
-          .flatMap((user) =>
-            Array.from(roleSet).map((r) => ({
-              UserId: user,
-              ProductId: product.Id,
-              ActivityName: snap.state,
-              Status: snap.state,
-              Comment: job.data.comment,
-              Role: r
-            }))
+        if (!project.DateArchived) {
+          const roleSet = new Set(
+            (
+              Workflow.availableTransitionsFromName(snap.state, snap.config)
+                .filter((t) => t[0].meta.type === ActionType.User)
+                .map((t) => t[0].meta.user) as RoleId[]
+            ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
           );
-        await DatabaseWrites.userTasks.createMany({
-          data: createdTasks
-        });
+          job.updateProgress(40 + ((i + 0.33) * 40) / products.length);
+          createdTasks = Array.from(
+            new Set(
+              Object.entries(allUsers)
+                .filter(([users, roles]) => !roleSet.isDisjointFrom(roles))
+                .map(([user, roles]) => parseInt(user))
+            )
+          )
+            .filter((u) => job.data.operation.users?.includes(u) ?? true)
+            .flatMap((user) =>
+              Array.from(roleSet).map((r) => ({
+                UserId: user,
+                ProductId: product.Id,
+                ActivityName: snap.state,
+                Status: snap.state,
+                Comment: job.data.comment,
+                Role: r
+              }))
+            );
+          await DatabaseWrites.userTasks.createMany({
+            data: createdTasks
+          });
+        }
         job.updateProgress(40 + ((i + 0.67) * 40) / products.length);
         await DatabaseWrites.productTransitions.createMany({
           data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, snap.config)
@@ -183,6 +189,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         roles: t.Role
       }))
     },
-    reassignMap: mapping
+    reassignMap: mapping,
+    projectArchived: project.DateArchived ?? false
   };
 }
