@@ -232,7 +232,9 @@
     </div>
     <div class="drawer-content grow items-start justify-start">
       {@render children?.()}
-      <SvelteToast options={{ classes: ['toast toast-top toast-end'] }} />
+      <div class="toast toast-top toast-end">
+        <SvelteToast />
+      </div>
     </div>
   </div>
 </div>
