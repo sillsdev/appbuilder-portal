@@ -101,16 +101,26 @@
       <h1 class="p-0">
         {data.project?.Name}
       </h1>
-      <span class="font-bold">
-        {data.project?.IsPublic ? m.project_public() : m.project_private()}
-      </span>
-      <span>-</span>
-      <span>
-        {m.project_createdOn()}
-        <Tooltip tip={data.project?.DateCreated?.toLocaleString(getLocale())}>
-          {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
-        </Tooltip>
-      </span>
+      <div>
+        <span class="font-bold">
+          {data.project?.IsPublic ? m.project_public() : m.project_private()}
+        </span>
+        <span>-</span>
+        <span>
+          {m.project_createdOn()}
+          <Tooltip tip={data.project?.DateCreated?.toLocaleString(getLocale())}>
+            {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
+          </Tooltip>
+        </span>
+      </div>
+      {#if data.project?.DateArchived}
+        <span>
+          {m.project_archivedOn()}
+          <Tooltip tip={data.project?.DateArchived?.toLocaleString(getLocale())}>
+            {data.project?.DateArchived ? getRelativeTime(data.project?.DateArchived) : 'null'}
+          </Tooltip>
+        </span>
+      {/if}
     </div>
     <div class="grow">
       <Tooltip className="tooltip-bottom" tip={m.project_editProject()}>
