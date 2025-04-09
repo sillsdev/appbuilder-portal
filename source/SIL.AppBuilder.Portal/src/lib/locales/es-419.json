@@ -246,7 +246,7 @@
   "tasks_noTasksDescription": "Las tareas que requieren su atención aparecerán aquí.",
   "tasks_reassign": "Reasignar",
   "tasks_waiting": "Esperando {waitTime}",
-  "tasks_forNames": "para {allowedNames} a {activityName}",
+  "tasks_forNames": "para {allowedNames} a <b>{activityName}</b>",
   "tasks_archivedAt": "Archivado en <b>{activityName}</b>",
   "tasks_scriptoria": "Scriptoria",
   "projects_noBuilds": "No Builds Yet",

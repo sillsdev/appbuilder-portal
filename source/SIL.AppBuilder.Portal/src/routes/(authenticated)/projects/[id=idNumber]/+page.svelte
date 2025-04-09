@@ -418,11 +418,9 @@
               {#if showTaskWaiting}
                 <div class="p-2 flex gap-1">
                   {#if data.project.DateArchived}
-                    <span>
-                      {@html m.tasks_archivedAt({
-                        activityName: product.ActiveTransition?.InitialState ?? ''
-                      })}
-                    </span>
+                    {@html m.tasks_archivedAt({
+                      activityName: product.ActiveTransition?.InitialState ?? ''
+                    })}
                   {:else}
                     <span class="text-red-500">
                       {m.tasks_waiting({
@@ -435,7 +433,7 @@
                         )
                       })}
                     </span>
-                    {m.tasks_forNames({
+                    {@html m.tasks_forNames({
                       allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
                       activityName: product.ActiveTransition?.InitialState ?? ''
                       // activityName appears to show up blank primarily at the very startup of a new product?
