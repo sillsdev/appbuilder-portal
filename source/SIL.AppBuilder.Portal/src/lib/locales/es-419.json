@@ -247,6 +247,7 @@
   "tasks_reassign": "Reasignar",
   "tasks_waiting": "Esperando {waitTime}",
   "tasks_forNames": "para {allowedNames} a {activityName}",
+  "tasks_archivedAt": "Archivado en <b>{activityName}</b>",
   "tasks_scriptoria": "Scriptoria",
   "projects_noBuilds": "No Builds Yet",
   "projects_latestBuild": "Última compilación ({version})",

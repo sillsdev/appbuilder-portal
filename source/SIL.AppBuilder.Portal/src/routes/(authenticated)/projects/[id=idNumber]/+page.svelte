@@ -298,7 +298,7 @@
         {:else}
           {@const locale = getLocale()}
           {#each data.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, locale) ) as product}
-            {@const showTaskWaiting = product.WorkflowInstance && !data.project.DateArchived}
+            {@const showTaskWaiting = product.WorkflowInstance}
             <div class="rounded-md border border-slate-400 w-full my-2">
               <div
                 class="bg-neutral p-2 flex flex-row rounded-t-md"
@@ -417,26 +417,34 @@
               </div>
               {#if showTaskWaiting}
                 <div class="p-2 flex gap-1">
-                  <span class="text-red-500">
-                    {m.tasks_waiting({
-                      // waiting since EITHER (the last task exists) -> that task's creation time
-                      // OR (there are no tasks for this product) -> the last completed transition's completion time
-                      waitTime: getRelativeTime(
-                        product.UserTasks.slice(-1)[0]?.DateCreated ??
-                          product.PreviousTransition?.DateTransition ??
-                          null
-                      )
+                  {#if data.project.DateArchived}
+                    <span>
+                      {@html m.tasks_archivedAt({
+                        activityName: product.ActiveTransition?.InitialState ?? ''
+                      })}
+                    </span>
+                  {:else}
+                    <span class="text-red-500">
+                      {m.tasks_waiting({
+                        // waiting since EITHER (the last task exists) -> that task's creation time
+                        // OR (there are no tasks for this product) -> the last completed transition's completion time
+                        waitTime: getRelativeTime(
+                          product.UserTasks.slice(-1)[0]?.DateCreated ??
+                            product.PreviousTransition?.DateTransition ??
+                            null
+                        )
+                      })}
+                    </span>
+                    {m.tasks_forNames({
+                      allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
+                      activityName: product.ActiveTransition?.InitialState ?? ''
+                      // activityName appears to show up blank primarily at the very startup of a new product?
                     })}
-                  </span>
-                  {m.tasks_forNames({
-                    allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
-                    activityName: product.ActiveTransition?.InitialState ?? ''
-                    // activityName appears to show up blank primarily at the very startup of a new product?
-                  })}
-                  {#if product.UserTasks.slice(-1)[0]?.UserId === page.data.session?.user.userId}
-                    <a class="link mx-2" href={localizeHref(`/tasks/${product.Id}`)}>
-                      {m.common_continue()}
-                    </a>
+                    {#if product.UserTasks.find((ut) => ut.UserId === page.data.session?.user.userId)}
+                      <a class="link mx-2" href={localizeHref(`/tasks/${product.Id}`)}>
+                        {m.common_continue()}
+                      </a>
+                    {/if}
                   {/if}
                 </div>
               {/if}

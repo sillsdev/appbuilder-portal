@@ -249,6 +249,7 @@
   "tasks_reassign": "Reassign",
   "tasks_waiting": "Waiting {waitTime}",
   "tasks_forNames": "for {allowedNames} to {activityName}",
+  "tasks_archivedAt": "Archived at <b>{activityName}</b>",
   "tasks_scriptoria": "Scriptoria",
   "tasks_storeLanguage": "Store Listing Language",
   "tasks_appProjectURL": "App Project URL",
