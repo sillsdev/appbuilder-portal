@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { enumNumVals } from '$lib/utils';
@@ -28,6 +29,8 @@
       }
     }
   });
+
+  let propsOk = $state(true);
 </script>
 
 <!-- <SuperDebug data={superForm} /> -->
@@ -85,11 +88,12 @@
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_properties">
-    <textarea
+    <PropertiesEditor
       name="properties"
-      class="textarea textarea-bordered w-full"
+      className="w-full"
       bind:value={$form.properties}
-    ></textarea>
+      bind:ok={propsOk}
+    />
   </LabeledFormInput>
   <LabeledFormInput
     name="admin_settings_workflowDefinitions_options_title"
@@ -141,7 +145,7 @@
     </ul>
   {/if}
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <input type="submit" class="btn btn-primary" value={m.common_save()} disabled={!propsOk} />
     <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
   </div>
 </form>

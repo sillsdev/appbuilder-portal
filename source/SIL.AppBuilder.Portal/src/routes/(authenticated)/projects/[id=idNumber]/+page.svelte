@@ -17,6 +17,7 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import DeleteProductModal from './DeleteProductModal.svelte';
+  import PropertiesModal from './PropertiesModal.svelte';
 
   interface Props {
     data: PageData;
@@ -93,6 +94,7 @@
   );
 
   let deleteProductModal: HTMLDialogElement | undefined = $state(undefined);
+  let updateProductModal: HTMLDialogElement | undefined = $state(undefined);
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
@@ -369,10 +371,12 @@
                         </li>
                         {#if isAdminForOrg(data.project?.Organization.Id, data.session?.user.roles)}
                           <li class="w-full rounded-none">
-                            <span class="text-nowrap">
-                              <!-- TODO: figure out Publishing Properties -->
+                            <button
+                              class="text-nowrap"
+                              onclick={() => updateProductModal?.showModal()}
+                            >
                               {m.project_products_popup_properties()}
-                            </span>
+                            </button>
                           </li>
                         {/if}
                         {#if isSuperAdmin(data.session?.user.roles) && !!product.WorkflowInstance}
@@ -398,6 +402,11 @@
                     {product}
                     endpoint="deleteProduct"
                     project={data.project.Name ?? m.tasks_project()}
+                  />
+                  <PropertiesModal
+                    bind:modal={updateProductModal}
+                    {product}
+                    endpoint="updateProduct"
                   />
                 </span>
               </div>

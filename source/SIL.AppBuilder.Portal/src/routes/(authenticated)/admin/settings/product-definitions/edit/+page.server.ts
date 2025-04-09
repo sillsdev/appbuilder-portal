@@ -1,5 +1,5 @@
 import { localizeHref } from '$lib/paraglide/runtime';
-import { idSchema } from '$lib/valibot';
+import { idSchema, propertiesSchema } from '$lib/valibot';
 import { fail, redirect } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
@@ -15,7 +15,7 @@ const editSchema = v.object({
   rebuildWorkflow: v.nullable(idSchema),
   republishWorkflow: v.nullable(idSchema),
   description: v.nullable(v.string()),
-  properties: v.nullable(v.string())
+  properties: propertiesSchema
 });
 export const load = (async ({ url }) => {
   const id = parseInt(url.searchParams.get('id') ?? '');
