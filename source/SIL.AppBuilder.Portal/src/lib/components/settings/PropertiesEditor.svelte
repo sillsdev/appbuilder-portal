@@ -12,12 +12,8 @@
   let { value = $bindable(), name, className = '', ok = $bindable(true) }: Props = $props();
 
   const parsed = $derived(safeParse(propertiesSchema, value));
-
-  let rawValue = $state(value);
-
-  $effect(() => {
-    rawValue = value;
-  });
+  
+  let showErrors = $state(true);
 
   $effect(() => {
     ok = parsed.success;
@@ -28,12 +24,15 @@
   <textarea
     {name}
     class="textarea textarea-bordered h-48 {className}"
-    onchange={() => {
-      value = rawValue;
+    onfocus={() => {
+      showErrors = false;
     }}
-    bind:value={rawValue}
+    onchange={() => {
+      showErrors = true;
+    }}
+    bind:value
   ></textarea>
-  {#if parsed.issues}
+  {#if showErrors && parsed.issues}
     {@const parseErrors = flatten<typeof propertiesSchema>(parsed.issues)}
     <ul>
       {#each parseErrors.root ?? [] as error}
