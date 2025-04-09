@@ -162,7 +162,8 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     }
     job.updateProgress(80);
   }
-  const notifications = [];
+
+  const notifications: BullMQ.Email.SendBatchUserTaskNotifications['notifications'] = [];
   for (const task of createdTasks) {
     const productInfo = await prisma.products.findUnique({
       where: {
@@ -178,32 +179,18 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         ProductDefinition: true
       }
     });
-    const username = (
-      await prisma.userTasks.findUniqueOrThrow({
-        where: {
-          Id: task.Id
-        },
-        include: {
-          User: {
-            select: {
-              Name: true
-            }
-          }
-        }
-      })
-    ).User.Name;
     notifications.push({
       activityName: task.ActivityName,
       project: productInfo.Project.Name,
       productName: productInfo.ProductDefinition.Name,
       status: task.Status,
       originator: productInfo.Project.Owner.Name,
-      to: username,
-      comment: task.Comment
+      comment: task.Comment ?? '',
+      userId: task.UserId
     });
   }
   // might be good to use one job type for all notification types
-  Queues.EmailTasks.add('Email Notifications', {
+  await Queues.EmailTasks.add('Email Notifications', {
     type: BullMQ.JobType.Email_SendBatchUserTaskNotifications,
     notifications
   });
@@ -229,6 +216,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
       }))
     },
     reassignMap: mapping,
-    projectArchived: project.DateArchived ?? false
+    projectArchived: project.DateArchived ?? false,
+    notifications: notifications.length
   };
 }

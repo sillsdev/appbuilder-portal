@@ -44,7 +44,7 @@
       "recordNotFound": "<p>Task {{taskName}} Failed: Unable to find record:</p><ul><li>recordName={{recordName}}</li><li>id={{recordId}}</li></ul>"
     },
     "subject": {
-      "userTaskAdded": "Scriptoria: {{activity}} asignado para {{productName}} - {{project}}",
+      "userTaskAdded": "Scriptoria: {{activityName}} asignado para {{productName}} - {{project}}",
       "buildengineDisconnected": "Scriptoria: {{url}} Build Engine Disconnected",
       "projectFailedBuildEngine": "Scriptoria: Create Project {{projectName}} Failed",
       "projectFailedUnableToCreate": "Scriptoria: Create Project {{projectName}} Failed",
