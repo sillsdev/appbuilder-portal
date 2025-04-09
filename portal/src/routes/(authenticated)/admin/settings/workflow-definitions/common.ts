@@ -1,6 +1,6 @@
-import { idSchema } from '$lib/valibot';
-import * as v from 'valibot';
+import { idSchema, propertiesSchema } from '$lib/valibot';
 import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
+import * as v from 'valibot';
 
 export const businessFlows = [
   'SIL_AppBuilders_AssetPackage_Flow',
@@ -17,7 +17,7 @@ export const workflowDefinitionSchemaBase = v.object({
   workflowScheme: v.nullable(v.string()),
   workflowBusinessFlow: v.nullable(v.picklist(businessFlows)),
   description: v.nullable(v.string()),
-  properties: v.nullable(v.string()),
+  properties: propertiesSchema,
   options: v.array(v.pipe(idSchema, v.enum(WorkflowOptions))),
   enabled: v.boolean()
 });
