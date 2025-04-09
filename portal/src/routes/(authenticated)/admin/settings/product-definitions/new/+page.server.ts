@@ -1,3 +1,4 @@
+import { propertiesSchema } from '$lib/valibot';
 import { fail } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
@@ -12,7 +13,7 @@ const createSchema = v.object({
   rebuildWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
   republishWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
   description: v.nullable(v.string()),
-  properties: v.nullable(v.string())
+  properties: propertiesSchema
 });
 
 export const load = (async ({ url }) => {
