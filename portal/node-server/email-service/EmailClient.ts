@@ -10,8 +10,8 @@ if (!process.env.VITE_SPARKPOST_API_KEY) {
 }
 
 const sp = new SparkPost(process.env.VITE_SPARKPOST_API_KEY);
-export function sendEmail(to: { email: string; name: string }[], subject: string, body: string) {
-  sp.transmissions.send({
+export async function sendEmail(to: { email: string; name: string }[], subject: string, body: string) {
+  return sp.transmissions.send({
     options: {
       transactional: true,
       click_tracking: false,

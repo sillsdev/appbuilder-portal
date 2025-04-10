@@ -22,16 +22,17 @@ export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unk
   });
   // We have no localization information because the user isn't created yet
   // Assume English
-  await sendEmail(
-    [{ email: job.data.email, name: job.data.email }],
-    translate('en', 'organizationMembershipInvites.subject'),
-    addProperties(OrganizationMembershipInviteTemplate, {
-      OrganizationName: inviteInformation.Organization.Name,
-      InvitedBy: inviteInformation.User.Name,
-      InviteUrl: job.data.inviteLink
-    })
-  );
-  return {};
+  return {
+    email: await sendEmail(
+      [{ email: job.data.email, name: job.data.email }],
+      translate('en', 'organizationMembershipInvites.subject'),
+      addProperties(OrganizationMembershipInviteTemplate, {
+        OrganizationName: inviteInformation.Organization.Name,
+        InvitedBy: inviteInformation.User.Name,
+        InviteUrl: job.data.inviteLink
+      })
+    )
+  };
 }
 export async function sendNotificationToReviewers(
   job: Job<BullMQ.Email.SendNotificationToReviewers>
@@ -79,34 +80,37 @@ export async function sendNotificationToReviewers(
     assetPreviewUrl,
     comment: product.WorkflowComment
   };
-  for (const r of product.Project.Reviewers) {
-    sendEmail(
-      [{ email: r.Email, name: r.Name }],
+
+  return {
+    reviewerEmails: await Promise.all(
+      product.Project.Reviewers.map((r) =>
+        sendEmail(
+          [{ email: r.Email, name: r.Name }],
+          translate('en', 'notifications.subject.' + messageId, properties),
+          addProperties(NotificationEmailTemplate, {
+            Message: translate('en', 'notifications.body.' + messageId, {
+              ...properties,
+              reviewerName: r.Name
+            })
+          })
+        )
+      )
+    ),
+    ownerEmail: sendEmail(
+      [{ email: product.Project.Owner.Email, name: product.Project.Owner.Name }],
       translate('en', 'notifications.subject.' + messageId, properties),
-      addProperties(NotificationEmailTemplate, {
+      addProperties(ReviewProductTemplate, {
         Message: translate('en', 'notifications.body.' + messageId, {
           ...properties,
-          reviewerName: r.Name
+          ownerName: product.Project.Owner.Name,
+          reviewerNames: product.Project.Reviewers.map((r) => r.Name + ' (' + r.Email + ')').join(
+            ', '
+          ),
+          reviewerName: 'REVIEWER_NAME'
         })
       })
-    );
-  }
-  sendEmail(
-    [{ email: product.Project.Owner.Email, name: product.Project.Owner.Name }],
-    translate('en', 'notifications.subject.' + messageId, properties),
-    addProperties(ReviewProductTemplate, {
-      Message: translate('en', 'notifications.body.' + messageId, {
-        ...properties,
-        ownerName: product.Project.Owner.Name,
-        reviewerNames: product.Project.Reviewers.map((r) => r.Name + ' (' + r.Email + ')').join(
-          ', '
-        ),
-        reviewerName: 'REVIEWER_NAME'
-      })
-    })
-  );
-
-  return {};
+    )
+  };
 }
 export async function sendBatchUserTaskNotifications(
   job: Job<BullMQ.Email.SendBatchUserTaskNotifications>
@@ -126,6 +130,8 @@ export async function sendBatchUserTaskNotifications(
     };
     // Fairly certain S1 only uses notifications.notification.* for logging which is weird
     // const message = translate(user.Locale, 'notifications.notification.userTaskAdded', properties);
+    //// S1 used to have notifications in the frontend, with emails also being sent,
+    //// but that feature was removed a while ago (but the i18n is still present for some reason...)
     const message = translate(user.Locale, 'notifications.body.userTaskAdded', properties);
     allEmails.push(
       sendEmail(
@@ -137,6 +143,5 @@ export async function sendBatchUserTaskNotifications(
       )
     );
   }
-  await Promise.all(allEmails);
-  return {};
+  return { emails: await Promise.all(allEmails) };
 }
