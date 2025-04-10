@@ -46,7 +46,7 @@ export const load = (async (event) => {
 export const actions = {
   async default(event) {
     const form = await superValidate(event.request, valibot(editProductsSchema));
-    if (!form.valid) return fail(400, { form, ok: false, errors: form.errors });
+    if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.organizationProductDefinitions.updateOrganizationProductDefinitions(
       form.data.id,
       form.data.products.filter((p) => p.enabled).map((p) => p.productId)

@@ -66,7 +66,7 @@ export const load = (async ({ locals, params }) => {
       type: types?.at(0)?.Id ?? undefined
     },
     valibot(projectsImportSchema),
-    { errors: false }
+    { errors: false } // prevents form from showing errors on init
   );
   return { form, organization, types };
 }) satisfies PageServerLoad;
@@ -84,7 +84,7 @@ export const actions: Actions = {
     const form = await superValidate(event.request, valibot(projectsImportSchema));
     console.log(form);
     if (!form.valid) {
-      return fail(400, { form, ok: false, errors: form.errors });
+      return fail(400, { form, ok: false });
     }
 
     const organization = await prisma.organizations.findUnique({

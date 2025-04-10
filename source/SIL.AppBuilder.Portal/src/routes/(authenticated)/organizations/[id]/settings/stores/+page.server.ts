@@ -44,7 +44,7 @@ export const load = (async (event) => {
 export const actions = {
   async default(event) {
     const form = await superValidate(event.request, valibot(editStoresSchema));
-    if (!form.valid) return fail(400, { form, ok: false, errors: form.errors });
+    if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.organizationStores.updateOrganizationStores(
       form.data.id,
       form.data.stores.filter((s) => s.enabled).map((s) => s.storeId)

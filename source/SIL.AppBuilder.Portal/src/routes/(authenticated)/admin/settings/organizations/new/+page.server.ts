@@ -29,7 +29,7 @@ export const actions = {
   async new({ cookies, request }) {
     const form = await superValidate(request, valibot(createSchema));
     if (!form.valid) {
-      return fail(400, { form, ok: false, errors: form.errors });
+      return fail(400, { form, ok: false });
     }
     await DatabaseWrites.organizations.create({
       data: {

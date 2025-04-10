@@ -42,7 +42,7 @@ export const load = (async ({ locals, params }) => {
       IsPublic: organization?.PublicByDefault ?? undefined
     },
     valibot(projectCreateSchema),
-    { errors: false }
+    { errors: false } // prevents form from showing errors on init
   );
   return { form, organization, types };
 }) satisfies PageServerLoad;
@@ -55,7 +55,7 @@ export const actions: Actions = {
     if (isNaN(organizationId)) return error(404);
     if (!verifyCanCreateProject(session, organizationId)) return error(403);
     if (!form.valid) {
-      return fail(400, { form, ok: false, errors: form.errors });
+      return fail(400, { form, ok: false });
     }
     const project = await DatabaseWrites.projects.create({
       OrganizationId: organizationId,

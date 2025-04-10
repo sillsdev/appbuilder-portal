@@ -44,7 +44,7 @@ export const actions = {
   async new({ request, locals, url }) {
     const form = await superValidate(request, valibot(createSchema));
     if (!form.valid) {
-      return fail(400, { form, ok: false, errors: form.errors });
+      return fail(400, { form, ok: false });
     }
     const user = await locals.auth();
     if (!user || !isAdminForOrg(form.data.organizationId, user.user.roles)) return fail(401);
