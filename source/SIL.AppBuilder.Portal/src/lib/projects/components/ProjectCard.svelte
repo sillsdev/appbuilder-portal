@@ -76,6 +76,16 @@
             {getTimeDateString(project.DateActive)}
           </span>
         </span>
+        {#if project.DateArchived}
+        <span class="flex items-center" title={m.projectTable_columns_activeSince()}>
+          <span class="overflow-hidden text-nowrap mr-1">
+            {m.projectTable_columns_archivedOn()}:
+          </span>
+          <span class="text-nowrap w-40 text-center">
+            {getTimeDateString(project.DateArchived)}
+          </span>
+        </span>
+        {/if}
       </div>
     </div>
   </div>

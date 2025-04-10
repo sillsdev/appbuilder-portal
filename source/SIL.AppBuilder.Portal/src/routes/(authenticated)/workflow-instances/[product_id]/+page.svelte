@@ -20,8 +20,8 @@
   let active = $state(data.form.data.state);
 
   const { form, enhance } = superForm(data.form, {
-    onUpdate: () => {
-      active = $form.state;
+    onUpdate: ({ form }) => {
+      active = form.data.state;
     },
     invalidateAll: false,
     resetForm: false

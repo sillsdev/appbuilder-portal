@@ -2,7 +2,7 @@ import { canClaimProject, canModifyProject, type ProjectForAction } from '$lib/p
 import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
 import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 
 export async function verifyCanViewAndEdit(user: Session, projectId: number) {
@@ -140,12 +140,26 @@ export async function doProjectAction(
     await DatabaseWrites.projects.update(project.Id, {
       DateArchived: new Date()
     });
-    // TODO: Delete UserTasks for Archived Project?
+    await Queues.UserTasks.add(`Delete UserTasks for Archived Project #${project.Id}`, {
+      type: BullMQ.JobType.UserTasks_Modify,
+      scope: 'Project',
+      projectId: project.Id,
+      operation: {
+        type: BullMQ.UserTasks.OpType.Delete
+      }
+    });
   } else if (operation === 'reactivate' && !!project?.DateArchived) {
     await DatabaseWrites.projects.update(project.Id, {
       DateArchived: null
     });
-    // TODO: Create UserTasks for Reactivated Project?
+    await Queues.UserTasks.add(`Create UserTasks for Reactivated Project #${project.Id}`, {
+      type: BullMQ.JobType.UserTasks_Modify,
+      scope: 'Project',
+      projectId: project.Id,
+      operation: {
+        type: BullMQ.UserTasks.OpType.Create
+      }
+    });
   } else if (
     operation === 'claim' &&
     canClaimProject(session, project?.OwnerId, orgId, project?.GroupId, groups)
