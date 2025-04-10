@@ -119,50 +119,48 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
       deletedCount = res.count;
       job.updateProgress(job.data.operation.type === BullMQ.UserTasks.OpType.Delete ? 90 : 40);
     }
-    if (job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
-      for (let i = 0; i < products.length; i++) {
-        const product = products[i];
-        // Create tasks for all users that could perform this activity
-        const snap = await Workflow.getSnapshot(product.Id);
-        if (!project.DateArchived) {
-          const roleSet = new Set(
-            (
-              Workflow.availableTransitionsFromName(snap.state, snap.config)
-                .filter((t) => t[0].meta.type === ActionType.User)
-                .map((t) => t[0].meta.user) as RoleId[]
-            ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
-          );
-          job.updateProgress(40 + ((i + 0.33) * 40) / products.length);
-          createdTasks = Array.from(
-            new Set(
-              Object.entries(allUsers)
-                .filter(([users, roles]) => !roleSet.isDisjointFrom(roles))
-                .map(([user, roles]) => parseInt(user))
-            )
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      const snap = await Workflow.getSnapshot(product.Id);
+      // Create tasks for all users that could perform this activity
+      if (!project.DateArchived && job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
+        const roleSet = new Set(
+          (
+            Workflow.availableTransitionsFromName(snap.state, snap.config)
+              .filter((t) => t[0].meta.type === ActionType.User)
+              .map((t) => t[0].meta.user) as RoleId[]
+          ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
+        );
+        job.updateProgress(40 + ((i + 0.33) * 40) / products.length);
+        createdTasks = Array.from(
+          new Set(
+            Object.entries(allUsers)
+              .filter(([users, roles]) => !roleSet.isDisjointFrom(roles))
+              .map(([user, roles]) => parseInt(user))
           )
-            .filter((u) => job.data.operation.users?.includes(u) ?? true)
-            .flatMap((user) =>
-              Array.from(roleSet).map((r) => ({
-                UserId: user,
-                ProductId: product.Id,
-                ActivityName: snap.state,
-                Status: snap.state,
-                Comment: job.data.comment,
-                Role: r
-              }))
-            );
-          await DatabaseWrites.userTasks.createMany({
-            data: createdTasks
-          });
-        }
-        job.updateProgress(40 + ((i + 0.67) * 40) / products.length);
-        await DatabaseWrites.productTransitions.createMany({
-          data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, snap.config)
+        )
+          .filter((u) => job.data.operation.users?.includes(u) ?? true)
+          .flatMap((user) =>
+            Array.from(roleSet).map((r) => ({
+              UserId: user,
+              ProductId: product.Id,
+              ActivityName: snap.state,
+              Status: snap.state,
+              Comment: job.data.comment,
+              Role: r
+            }))
+          );
+        await DatabaseWrites.userTasks.createMany({
+          data: createdTasks
         });
-        job.updateProgress(40 + ((i + 1) * 40) / products.length);
       }
-      job.updateProgress(80);
+      job.updateProgress(40 + ((i + 0.67) * 40) / products.length);
+      await DatabaseWrites.productTransitions.createManyAndReturn({
+        data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, snap.config)
+      });
+      job.updateProgress(40 + ((i + 1) * 40) / products.length);
     }
+    job.updateProgress(80);
   }
   for (const task of createdTasks) {
     // TODO: Send notification for the new task
