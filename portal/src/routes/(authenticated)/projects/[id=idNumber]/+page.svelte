@@ -103,16 +103,26 @@
       <h1 class="p-0">
         {data.project?.Name}
       </h1>
-      <span class="font-bold">
-        {data.project?.IsPublic ? m.project_public() : m.project_private()}
-      </span>
-      <span>-</span>
-      <span>
-        {m.project_createdOn()}
-        <Tooltip tip={data.project?.DateCreated?.toLocaleString(getLocale())}>
-          {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
-        </Tooltip>
-      </span>
+      <div>
+        <span class="font-bold">
+          {data.project?.IsPublic ? m.project_public() : m.project_private()}
+        </span>
+        <span>-</span>
+        <span>
+          {m.project_createdOn()}
+          <Tooltip tip={data.project?.DateCreated?.toLocaleString(getLocale())}>
+            {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
+          </Tooltip>
+        </span>
+      </div>
+      {#if data.project?.DateArchived}
+        <span>
+          {m.project_archivedOn()}
+          <Tooltip tip={data.project?.DateArchived?.toLocaleString(getLocale())}>
+            {data.project?.DateArchived ? getRelativeTime(data.project?.DateArchived) : 'null'}
+          </Tooltip>
+        </span>
+      {/if}
     </div>
     <div class="grow">
       <Tooltip className="tooltip-bottom" tip={m.project_editProject()}>
@@ -290,8 +300,12 @@
         {:else}
           {@const locale = getLocale()}
           {#each data.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, locale) ) as product}
+            {@const showTaskWaiting = product.WorkflowInstance}
             <div class="rounded-md border border-slate-400 w-full my-2">
-              <div class="bg-neutral p-2 flex flex-row rounded-t-md">
+              <div
+                class="bg-neutral p-2 flex flex-row rounded-t-md"
+                class:rounded-b-md={!showTaskWaiting}
+              >
                 <span class="grow min-w-0">
                   <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
                   {product.ProductDefinition.Name}
@@ -410,28 +424,34 @@
                   />
                 </span>
               </div>
-              {#if product.WorkflowInstance}
+              {#if showTaskWaiting}
                 <div class="p-2 flex gap-1">
-                  <span class="text-red-500">
-                    {m.tasks_waiting({
-                      // waiting since EITHER (the last task exists) -> that task's creation time
-                      // OR (there are no tasks for this product) -> the last completed transition's completion time
-                      waitTime: getRelativeTime(
-                        product.UserTasks.slice(-1)[0]?.DateCreated ??
-                          product.PreviousTransition?.DateTransition ??
-                          null
-                      )
+                  {#if data.project.DateArchived}
+                    {@html m.tasks_archivedAt({
+                      activityName: product.ActiveTransition?.InitialState ?? ''
                     })}
-                  </span>
-                  {m.tasks_forNames({
-                    allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
-                    activityName: product.ActiveTransition?.InitialState ?? ''
-                    // activityName appears to show up blank primarily at the very startup of a new product?
-                  })}
-                  {#if product.UserTasks.slice(-1)[0]?.UserId === page.data.session?.user.userId}
-                    <a class="link mx-2" href={localizeHref(`/tasks/${product.Id}`)}>
-                      {m.common_continue()}
-                    </a>
+                  {:else}
+                    <span class="text-red-500">
+                      {m.tasks_waiting({
+                        // waiting since EITHER (the last task exists) -> that task's creation time
+                        // OR (there are no tasks for this product) -> the last completed transition's completion time
+                        waitTime: getRelativeTime(
+                          product.UserTasks.slice(-1)[0]?.DateCreated ??
+                            product.PreviousTransition?.DateTransition ??
+                            null
+                        )
+                      })}
+                    </span>
+                    {@html m.tasks_forNames({
+                      allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
+                      activityName: product.ActiveTransition?.InitialState ?? ''
+                      // activityName appears to show up blank primarily at the very startup of a new product?
+                    })}
+                    {#if product.UserTasks.find((ut) => ut.UserId === page.data.session?.user.userId)}
+                      <a class="link mx-2" href={localizeHref(`/tasks/${product.Id}`)}>
+                        {m.common_continue()}
+                      </a>
+                    {/if}
                   {/if}
                 </div>
               {/if}
