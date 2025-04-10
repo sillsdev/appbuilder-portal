@@ -41,7 +41,14 @@
 
 <form class="m-4" method="post" action="?/new" use:enhance>
   <LabeledFormInput name="admin_settings_workflowDefinitions_name">
-    <input type="text" name="name" class="input input-bordered w-full" bind:value={$form.name} />
+    <input
+      type="text"
+      name="name"
+      class="input input-bordered w-full validator"
+      bind:value={$form.name}
+      required
+    />
+    <span class="validator-hint">{m.admin_settings_productDefinitions_emptyName()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_storeType">
     <select
