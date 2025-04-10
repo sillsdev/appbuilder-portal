@@ -21,6 +21,11 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
   job.updateProgress(10);
   const projectId = job.data.scope === 'Project' ? job.data.projectId : products[0].ProjectId;
 
+  const project = await prisma.projects.findUnique({
+    where: { Id: projectId },
+    select: { DateArchived: true }
+  });
+
   const productIds = products.map((p) => p.Id);
 
   let createdTasks: Prisma.UserTasksCreateManyInput[] = [];
@@ -49,9 +54,8 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
 
     mapping = await Promise.all(
       job.data.operation.userMapping.map(async (u) => ({
-        from: (
-          await prisma.users.findUnique({ where: { Id: u.from }, select: { Name: true } })
-        ).Name,
+        from: (await prisma.users.findUnique({ where: { Id: u.from }, select: { Name: true } }))
+          .Name,
         to: (await prisma.users.findUnique({ where: { Id: u.to }, select: { Name: true } })).Name,
         count: (
           await DatabaseWrites.userTasks.updateMany({
@@ -103,23 +107,23 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
             job.data.operation.type === BullMQ.UserTasks.OpType.Update
               ? undefined
               : {
-                in:
+                  in:
                     job.data.operation.users ??
                     Array.from(
                       new Set(Object.entries(allUsers).map(([user, roles]) => parseInt(user)))
                     )
-              },
+                },
           Role: job.data.operation.roles ? { in: job.data.operation.roles } : undefined
         }
       });
       deletedCount = res.count;
       job.updateProgress(job.data.operation.type === BullMQ.UserTasks.OpType.Delete ? 90 : 40);
     }
-    if (job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
-      for (let i = 0; i < products.length; i++) {
-        const product = products[i];
-        // Create tasks for all users that could perform this activity
-        const snap = await Workflow.getSnapshot(product.Id);
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      const snap = await Workflow.getSnapshot(product.Id);
+      // Create tasks for all users that could perform this activity
+      if (!project.DateArchived && job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
         const roleSet = new Set(
           (
             Workflow.availableTransitionsFromName(snap.state, snap.config)
@@ -149,14 +153,14 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         await DatabaseWrites.userTasks.createMany({
           data: createdTasks
         });
-        job.updateProgress(40 + ((i + 0.67) * 40) / products.length);
-        await DatabaseWrites.productTransitions.createMany({
-          data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, snap.config)
-        });
-        job.updateProgress(40 + ((i + 1) * 40) / products.length);
       }
-      job.updateProgress(80);
+      job.updateProgress(40 + ((i + 0.67) * 40) / products.length);
+      await DatabaseWrites.productTransitions.createManyAndReturn({
+        data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, snap.config)
+      });
+      job.updateProgress(40 + ((i + 1) * 40) / products.length);
     }
+    job.updateProgress(80);
   }
   for (const task of createdTasks) {
     // TODO: Send notification for the new task
@@ -183,6 +187,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         roles: t.Role
       }))
     },
-    reassignMap: mapping
+    reassignMap: mapping,
+    projectArchived: project.DateArchived ?? false
   };
 }
