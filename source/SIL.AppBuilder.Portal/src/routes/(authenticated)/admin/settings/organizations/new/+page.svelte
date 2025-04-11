@@ -34,7 +34,14 @@
 
 <form class="m-4" method="post" action="?/new" use:enhance>
   <LabeledFormInput name="admin_settings_organizations_name">
-    <input type="text" name="name" class="input input-bordered w-full" bind:value={$form.name} />
+    <input
+      class="input w-full input-bordered validator"
+      type="text"
+      name="name"
+      bind:value={$form.name}
+      required
+    />
+    <span class="validator-hint">{m.org_nameError()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_organizations_owner">
     <select class="select select-bordered validator" name="owner" bind:value={$form.owner} required>
@@ -73,26 +80,26 @@
     <LabeledFormInput name="admin_settings_organizations_buildEngineURL">
       <input
         type="text"
-        name="buildEngineURL"
+        name="buildEngineUrl"
         class="input input-bordered w-full"
-        bind:value={$form.buildEngineURL}
+        bind:value={$form.buildEngineUrl}
       />
     </LabeledFormInput>
     <LabeledFormInput name="admin_settings_organizations_accessToken">
       <input
         type="text"
-        name="buildEngineAccessToken"
+        name="buildEngineApiAccessToken"
         class="input input-bordered w-full"
-        bind:value={$form.buildEngineAccessToken}
+        bind:value={$form.buildEngineApiAccessToken}
       />
     </LabeledFormInput>
   {/if}
   <LabeledFormInput name="admin_settings_organizations_logoURL">
     <input
       type="text"
-      name="logoURL"
+      name="logoUrl"
       class="input input-bordered w-full"
-      bind:value={$form.logoURL}
+      bind:value={$form.logoUrl}
     />
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_organizations_publicByDefault" className="py-1">

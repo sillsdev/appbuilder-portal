@@ -30,7 +30,7 @@
 {/each}
 <form action="?/addGroup" class="m-2" method="post" use:enhance>
   {org_addGroupButton()}
-  <input type="hidden" name="id" value={data.organization.Id} />
+  <input type="hidden" name="orgId" value={data.organization.Id} />
   <div class="my-4 flex flex-row w-full space-x-2 items-center">
     <LabeledFormInput name="common_name">
       <input

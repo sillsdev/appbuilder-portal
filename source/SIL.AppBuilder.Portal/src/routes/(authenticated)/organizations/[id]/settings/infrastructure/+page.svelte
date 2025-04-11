@@ -37,16 +37,16 @@
         <LabeledFormInput name="org_buildEngineUrl">
           <input
             type="text"
-            name="buildEngineUrl"
-            class="input w-full input-bordered"
+            name="buildEngineURL"
+            class="input input-bordered w-full"
             bind:value={$form.buildEngineUrl}
           />
         </LabeledFormInput>
         <LabeledFormInput name="org_buildEngineApiAccessToken">
           <input
             type="text"
-            name="buildEngineApiAccessToken"
-            class="input w-full input-bordered"
+            name="buildEngineAccessToken"
+            class="input input-bordered w-full"
             bind:value={$form.buildEngineApiAccessToken}
           />
         </LabeledFormInput>

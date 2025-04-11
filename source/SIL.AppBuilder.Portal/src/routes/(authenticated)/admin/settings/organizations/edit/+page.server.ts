@@ -1,3 +1,4 @@
+import { organizationBaseSchema, storesSchema } from '$lib/organizations';
 import { getLocale, localizeHref } from '$lib/paraglide/runtime';
 import { byName } from '$lib/utils/sorting';
 import { idSchema } from '$lib/valibot';
@@ -10,20 +11,8 @@ import type { Actions, PageServerLoad } from './$types';
 
 const editSchema = v.object({
   id: idSchema,
-  name: v.nullable(v.string()),
-  owner: idSchema,
-  websiteURL: v.nullable(v.string()),
-  buildEngineURL: v.nullable(v.string()),
-  buildEngineAccessToken: v.nullable(v.string()),
-  logoURL: v.nullable(v.string()),
-  publicByDefault: v.boolean(),
-  useDefaultBuildEngine: v.boolean(),
-  stores: v.array(
-    v.object({
-      storeId: idSchema,
-      enabled: v.boolean()
-    })
-  )
+  ...organizationBaseSchema.entries,
+  ...storesSchema.entries
 });
 export const load = (async ({ url }) => {
   const id = parseInt(url.searchParams.get('id') ?? '');
@@ -56,9 +45,9 @@ export const load = (async ({ url }) => {
       name: data.Name,
       owner: data.OwnerId,
       websiteURL: data.WebsiteUrl,
-      buildEngineURL: data.BuildEngineUrl,
-      buildEngineAccessToken: data.BuildEngineApiAccessToken,
-      logoURL: data.LogoUrl,
+      buildEngineUrl: data.BuildEngineUrl,
+      buildEngineApiAccessToken: data.BuildEngineApiAccessToken,
+      logoUrl: data.LogoUrl,
       useDefaultBuildEngine: data.UseDefaultBuildEngine ?? true,
       publicByDefault: data.PublicByDefault ?? false,
       stores: enabledStores
@@ -80,9 +69,9 @@ export const actions = {
       },
       data: {
         Name: form.data.name,
-        BuildEngineApiAccessToken: form.data.buildEngineAccessToken,
-        BuildEngineUrl: form.data.buildEngineURL,
-        LogoUrl: form.data.logoURL,
+        BuildEngineApiAccessToken: form.data.buildEngineApiAccessToken,
+        BuildEngineUrl: form.data.buildEngineUrl,
+        LogoUrl: form.data.logoUrl,
         OwnerId: form.data.owner,
         PublicByDefault: form.data.publicByDefault,
         UseDefaultBuildEngine: form.data.useDefaultBuildEngine,

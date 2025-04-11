@@ -6,7 +6,7 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 
 const addGroupSchema = v.object({
-  id: idSchema,
+  orgId: idSchema,
   name: v.string(),
   abbreviation: v.string()
 });
@@ -24,8 +24,8 @@ export const load = (async (event) => {
 export const actions = {
   async addGroup(event) {
     const form = await superValidate(event.request, valibot(addGroupSchema));
-    await DatabaseWrites.groups.createGroup(form.data.name, form.data.abbreviation, form.data.id);
     if (!form.valid) return fail(400, { form, ok: false });
+    await DatabaseWrites.groups.createGroup(form.data.name, form.data.abbreviation, form.data.orgId);
     return { form, ok: true };
   },
   async deleteGroup(event) {

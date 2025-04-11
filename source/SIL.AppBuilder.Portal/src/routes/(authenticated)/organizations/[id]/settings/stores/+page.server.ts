@@ -1,3 +1,4 @@
+import { storesSchema } from '$lib/organizations';
 import { getLocale } from '$lib/paraglide/runtime';
 import { byName } from '$lib/utils/sorting';
 import { idSchema } from '$lib/valibot';
@@ -9,12 +10,7 @@ import type { Actions, PageServerLoad } from './$types';
 
 const editStoresSchema = v.object({
   id: idSchema,
-  stores: v.array(
-    v.object({
-      storeId: idSchema,
-      enabled: v.boolean()
-    })
-  )
+  ...storesSchema.entries
 });
 export const load = (async (event) => {
   const { organization } = await event.parent();

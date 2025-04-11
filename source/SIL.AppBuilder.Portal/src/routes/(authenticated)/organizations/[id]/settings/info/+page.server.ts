@@ -1,3 +1,4 @@
+import { infoSchema } from '$lib/organizations';
 import { idSchema } from '$lib/valibot';
 import { DatabaseWrites } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
@@ -7,8 +8,7 @@ import type { Actions, PageServerLoad } from './$types';
 
 const editInfoSchema = v.object({
   id: idSchema,
-  name: v.nullable(v.string()),
-  logoUrl: v.nullable(v.string())
+  ...infoSchema.entries
 });
 
 export const load = (async (event) => {
