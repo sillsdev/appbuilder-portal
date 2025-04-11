@@ -50,7 +50,6 @@
 
     reader.onloadend = (ev) => {
       const res = safeParse(importJSONSchema, reader.result?.toString());
-      console.log(res);
       returnedErrors = [];
       if (res.success) {
         $form.json = JSON.stringify(res.output);

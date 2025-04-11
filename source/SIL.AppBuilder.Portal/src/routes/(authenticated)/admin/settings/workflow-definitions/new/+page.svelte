@@ -27,9 +27,6 @@
       if (form.valid) {
         goto(localizeHref(base));
         toast('success', m.admin_settings_workflowDefinitions_workflowAdded());
-      } else {
-        // ISSUE: #1107 Add toasts for server-side errors?
-        console.warn(form.errors);
       }
     }
   });

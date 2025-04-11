@@ -21,9 +21,6 @@
       if (form.valid) {
         goto(localizeHref(base));
         toast('success', m.models_updateSuccess({ name: m.stores_name() }));
-      } else {
-        // ISSUE: #1107 Add toasts for server-side errors?
-        console.warn(form.errors);
       }
     }
   });
@@ -35,7 +32,6 @@
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
   <LabeledFormInput name="admin_settings_storeTypes_name">
-    <!-- ISSUE: #1107 So this can be null in the database? but S1 UI shows it as required... -->
     <input
       type="text"
       name="name"

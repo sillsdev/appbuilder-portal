@@ -82,7 +82,6 @@ export const actions: Actions = {
     if (!verifyCanCreateProject(session, organizationId)) return error(403);
 
     const form = await superValidate(event.request, valibot(projectsImportSchema));
-    console.log(form);
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }

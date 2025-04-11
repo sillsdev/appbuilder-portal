@@ -173,9 +173,6 @@ export const importJSONSchema = v.pipe(
         v.strictObject({
           Name: v.string(),
           Store: v.string()
-        }, (issue) => {
-          console.log(issue);
-          return issue.message;
         })
       ),
       v.minLength(1)
