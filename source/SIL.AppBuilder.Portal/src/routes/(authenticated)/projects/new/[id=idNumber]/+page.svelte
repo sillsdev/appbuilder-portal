@@ -33,7 +33,7 @@
         <LabeledFormInput name="project_projectName" className="md:max-w-xs grow">
           <input
             type="text"
-            id="name"
+            name="Name"
             class="input input-bordered validator"
             bind:value={$form.Name}
             required
@@ -41,7 +41,7 @@
           <span class="validator-hint">{m.project_side_reviewers_form_nameError()}</span>
         </LabeledFormInput>
         <LabeledFormInput name="project_projectGroup" className="md:max-w-xs">
-          <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
+          <select name="group" class="select select-bordered" bind:value={$form.group}>
             {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
               <option value={group.Id}>{group.Name}</option>
             {/each}
@@ -62,7 +62,7 @@
           </LanguageCodeTypeahead>
         </LabeledFormInput>
         <LabeledFormInput name="project_type" className="md:max-w-xs">
-          <select name="type" id="type" class="select select-bordered" bind:value={$form.type}>
+          <select name="type" class="select select-bordered" bind:value={$form.type}>
             {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
               <option value={type.Id}>{type.Description}</option>
             {/each}
@@ -72,8 +72,7 @@
       <div class="row">
         <LabeledFormInput name="project_projectDescription" className="md:max-w-xs">
           <textarea
-            name="description"
-            id="description"
+            name="Description"
             class="textarea textarea-bordered h-48 w-full"
             bind:value={$form.Description}
           ></textarea>
@@ -85,8 +84,7 @@
         >
           <input
             type="checkbox"
-            name="public"
-            id="public"
+            name="IsPublic"
             class="toggle"
             bind:checked={$form.IsPublic}
           />

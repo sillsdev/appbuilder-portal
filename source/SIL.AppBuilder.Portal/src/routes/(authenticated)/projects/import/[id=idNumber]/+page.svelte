@@ -74,14 +74,14 @@
     </a>
     <div class="flex flex-row gap-4 flex-wrap place-content-center sm:place-content-start p-4">
       <LabeledFormInput name="project_projectGroup" className="max-w-xs">
-        <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
+        <select name="group" class="select select-bordered" bind:value={$form.group}>
           {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
             <option value={group.Id}>{group.Name}</option>
           {/each}
         </select>
       </LabeledFormInput>
       <LabeledFormInput name="project_type" className="max-w-xs">
-        <select name="type" id="type" class="select select-bordered" bind:value={$form.type}>
+        <select name="type" class="select select-bordered" bind:value={$form.type}>
           {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
             <option value={type.Id}>{type.Description}</option>
           {/each}

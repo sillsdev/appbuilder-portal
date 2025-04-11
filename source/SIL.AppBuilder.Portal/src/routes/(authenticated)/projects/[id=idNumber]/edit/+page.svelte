@@ -33,7 +33,7 @@
         <LabeledFormInput name="project_projectName" className="md:max-w-xs grow">
           <input
             type="text"
-            id="name"
+            name="name"
             class="input input-bordered validator"
             bind:value={$form.name}
             required
@@ -50,7 +50,7 @@
       </div>
       <div class="row">
         <LabeledFormInput name="project_projectGroup" className="md:max-w-xs grow">
-          <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
+          <select name="group" class="select select-bordered" bind:value={$form.group}>
             {#each data.groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
               <option value={group.Id}>{group.Name}</option>
             {/each}
@@ -73,7 +73,6 @@
         <LabeledFormInput name="project_projectDescription" className="w-full max-w-2xl">
           <textarea
             name="description"
-            id="description"
             class="textarea textarea-bordered h-48 w-full"
             bind:value={$form.description}
           ></textarea>

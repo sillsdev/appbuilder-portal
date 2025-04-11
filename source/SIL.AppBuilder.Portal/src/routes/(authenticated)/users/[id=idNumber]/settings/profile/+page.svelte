@@ -108,7 +108,7 @@
     >
       <input
         type="checkbox"
-        id="notifications"
+        name="notifications"
         class="toggle toggle-accent ml-4"
         bind:checked={$form.notifications}
       />
@@ -120,7 +120,7 @@
     >
       <input
         type="checkbox"
-        id="public"
+        name="visible"
         class="toggle toggle-accent ml-4"
         bind:checked={$form.visible}
       />
@@ -128,7 +128,7 @@
     <InputWithMessage className="mt-4" title={{ key: 'users_table_columns_active' }}>
       <input
         type="checkbox"
-        id="active"
+        name="active"
         class="toggle toggle-accent ml-4"
         disabled={page.data.session?.user.userId === data.form.data.id}
         bind:checked={$form.active}

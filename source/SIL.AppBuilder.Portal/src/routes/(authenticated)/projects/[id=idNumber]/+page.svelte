@@ -460,7 +460,6 @@
           >
             <input
               type="checkbox"
-              id="public"
               name="isPublic"
               class="toggle toggle-accent ml-4"
               bind:checked={data.project.IsPublic}
@@ -473,7 +472,6 @@
           >
             <input
               type="checkbox"
-              id="allowDownload"
               name="allowDownload"
               class="toggle toggle-accent ml-4"
               bind:checked={data.project.AllowDownloads}
