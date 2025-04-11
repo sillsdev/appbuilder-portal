@@ -112,7 +112,7 @@
   <LabeledFormInput name="admin_settings_productDefinitions_description">
     <textarea
       name="description"
-      class="textarea textarea-bordered w-full"
+      class="textarea textarea-bordered h-36 w-full"
       bind:value={$form.description}
     ></textarea>
   </LabeledFormInput>

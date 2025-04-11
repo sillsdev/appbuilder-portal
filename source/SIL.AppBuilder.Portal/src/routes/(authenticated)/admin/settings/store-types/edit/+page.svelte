@@ -45,11 +45,12 @@
     <span class="validator-hint">{m.admin_settings_storeTypes_emptyName()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_storeTypes_description">
-    <textarea
+    <input
+      type="text"
       name="description"
-      class="textarea textarea-bordered w-full"
+      class="input input-bordered w-full"
       bind:value={$form.description}
-    ></textarea>
+    />
   </LabeledFormInput>
   <div class="my-4">
     <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>

@@ -108,12 +108,11 @@
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_description">
-    <input
-      type="text"
+    <textarea
       name="description"
-      class="input input-bordered w-full"
+      class="textarea textarea-bordered h-36 w-full"
       bind:value={$form.description}
-    />
+    ></textarea>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_properties">
     <PropertiesEditor name="properties" className="w-full" bind:value={$form.properties} bind:ok={propsOk} />

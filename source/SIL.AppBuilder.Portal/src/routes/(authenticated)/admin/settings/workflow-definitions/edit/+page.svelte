@@ -80,11 +80,12 @@
     <span class="validator-hint">{m.admin_settings_workflowDefinitions_emptyProductType()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_description">
-    <textarea
+    <input
+      type="text"
       name="description"
-      class="textarea textarea-bordered w-full"
+      class="input input-bordered w-full"
       bind:value={$form.description}
-    ></textarea>
+    />
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowScheme">
     <select class="select select-bordered" name="workflowScheme" bind:value={$form.workflowScheme}>

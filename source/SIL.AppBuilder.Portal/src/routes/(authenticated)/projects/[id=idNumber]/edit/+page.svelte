@@ -74,7 +74,7 @@
           <textarea
             name="description"
             id="description"
-            class="textarea textarea-bordered w-full"
+            class="textarea textarea-bordered h-48 w-full"
             bind:value={$form.description}
           ></textarea>
         </LabeledFormInput>
