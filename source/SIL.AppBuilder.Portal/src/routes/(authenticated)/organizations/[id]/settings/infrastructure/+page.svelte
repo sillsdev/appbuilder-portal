@@ -36,7 +36,7 @@
       {#if !$form.useDefaultBuildEngine}
         <LabeledFormInput name="org_buildEngineUrl">
           <input
-            type="text"
+            type="url"
             name="buildEngineURL"
             class="input input-bordered w-full"
             bind:value={$form.buildEngineUrl}

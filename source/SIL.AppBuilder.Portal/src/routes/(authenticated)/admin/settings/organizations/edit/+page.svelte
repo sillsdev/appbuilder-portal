@@ -60,7 +60,7 @@
     <input
       name="websiteURL"
       class="input input-bordered w-full"
-      type="text"
+      type="url"
       bind:value={$form.websiteURL}
     />
   </LabeledFormInput>
@@ -84,7 +84,7 @@
   {#if !$form.useDefaultBuildEngine}
     <LabeledFormInput name="admin_settings_organizations_buildEngineURL">
       <input
-        type="text"
+        type="url"
         name="buildEngineUrl"
         class="input input-bordered w-full"
         bind:value={$form.buildEngineUrl}
@@ -103,7 +103,7 @@
     <input
       name="logoUrl"
       class="input input-bordered w-full"
-      type="text"
+      type="url"
       bind:value={$form.logoUrl}
     />
   </LabeledFormInput>

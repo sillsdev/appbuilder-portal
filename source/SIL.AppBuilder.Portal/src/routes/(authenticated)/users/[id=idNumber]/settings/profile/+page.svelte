@@ -69,7 +69,7 @@
     </LabeledFormInput>
     <LabeledFormInput name="profile_email">
       <input
-        type="text"
+        type="email"
         name="email"
         class="input input-bordered w-full"
         bind:value={$form.email}
@@ -77,7 +77,7 @@
     </LabeledFormInput>
     <LabeledFormInput name="profile_phone">
       <input
-        type="text"
+        type="tel"
         name="phone"
         class="input input-bordered w-full"
         bind:value={$form.phone}

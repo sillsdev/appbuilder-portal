@@ -28,7 +28,7 @@
       </LabeledFormInput>
       <LabeledFormInput name="org_logoUrl">
         <input
-          type="text"
+          type="url"
           name="logoUrl"
           class="input w-full input-bordered"
           bind:value={$form.logoUrl}
