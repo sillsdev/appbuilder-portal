@@ -272,11 +272,11 @@
           </div>
         </div>
         <div class="flex flex-row justify-end gap-2">
-          <button class="btn btn-primary" type="reset" onclick={() => productSelectModal?.close()}>
+          <button class="btn btn-secondary" type="reset" onclick={() => productSelectModal?.close()}>
             {m.common_cancel()}
           </button>
           <label
-            class="btn btn-info"
+            class="btn btn-primary"
             class:btn-disabled={!(
               selectedProducts.length && selectedProducts.every((p) => p.CanRebuild)
             )}
@@ -291,7 +291,7 @@
             />
           </label>
           <label
-            class="btn btn-info"
+            class="btn btn-primary"
             class:btn-disabled={!(
               selectedProducts.length && selectedProducts.every((p) => p.CanRepublish)
             )}

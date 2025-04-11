@@ -118,7 +118,12 @@
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_properties">
-    <PropertiesEditor name="properties" className="w-full" bind:value={$form.properties} bind:ok={propsOk} />
+    <PropertiesEditor
+      name="properties"
+      className="w-full"
+      bind:value={$form.properties}
+      bind:ok={propsOk}
+    />
   </LabeledFormInput>
   <LabeledFormInput
     name="admin_settings_workflowDefinitions_options_title"
@@ -126,8 +131,7 @@
   >
     {#each enumNumVals(WorkflowOptions) as option}
       <InputWithMessage
-        name="admin_settings_workflowDefinitions_options"
-        messageParms={{ option }}
+        message={{ key: 'admin_settings_workflowDefinitions_options', parms: option }}
         className="my-1"
       >
         <input
@@ -139,29 +143,20 @@
       </InputWithMessage>
     {/each}
   </LabeledFormInput>
-  <div>
-    <label>
-      <div class="label flex flex-row">
-        <div class="flex flex-col grow">
-          <span class="">
-            {m.admin_settings_workflowDefinitions_enabled()}
-          </span>
-          <span class="text-sm">
-            {m.admin_settings_workflowDefinitions_enabledDescription()}
-          </span>
-        </div>
-        <input
-          name="enabled"
-          class="toggle toggle-accent"
-          type="checkbox"
-          bind:checked={$form.enabled}
-        />
-      </div>
-    </label>
-  </div>
+  <InputWithMessage
+    title={{ key: 'admin_settings_workflowDefinitions_enabled' }}
+    message={{ key: 'admin_settings_workflowDefinitions_enabledDescription' }}
+  >
+    <input
+      name="enabled"
+      class="toggle toggle-accent"
+      type="checkbox"
+      bind:checked={$form.enabled}
+    />
+  </InputWithMessage>
   <div class="my-4">
+    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
     <input type="submit" class="btn btn-primary" value={m.common_save()} disabled={!propsOk} />
-    <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
   </div>
 </form>
 

@@ -90,13 +90,13 @@
       </div>
     </div>
     <div class="my-4 flex justify-end gap-2">
+      <a class="btn btn-secondary" href={localizeHref('/users')}>{m.common_cancel()}</a>
       <input
         type="submit"
         class="btn btn-primary"
         value={m.organizationMembership_invite_create_sendInviteButton()}
         bind:this={inputEle}
       />
-      <a class="btn" href={localizeHref('/users')}>{m.common_cancel()}</a>
     </div>
   </form>
 </div>

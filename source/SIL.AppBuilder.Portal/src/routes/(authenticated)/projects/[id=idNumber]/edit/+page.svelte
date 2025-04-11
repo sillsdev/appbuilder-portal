@@ -2,8 +2,10 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { langtagRegex } from '$lib/projects';
   import { byName } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -26,56 +28,83 @@
 <div class="w-full max-w-6xl mx-auto relative p-2">
   <form action="" method="post" use:enhance>
     <h1>{m.project_settings_title()}</h1>
-    <div class="grid gap-2 gap-x-8 gridcont">
-      <div class="w-full flex place-content-between">
-        <label for="name">{m.project_projectName()}:</label>
-        <input type="text" id="name" class="input input-bordered" bind:value={$form.name} />
+    <div class="flex flex-col gap-2 items-center">
+      <div class="row">
+        <LabeledFormInput name="project_projectName" className="md:max-w-xs grow">
+          <input
+            type="text"
+            id="name"
+            class="input input-bordered validator"
+            bind:value={$form.name}
+            required
+          />
+          <span class="validator-hint">{m.project_side_reviewers_form_nameError()}</span>
+        </LabeledFormInput>
+        <LabeledFormInput name="project_projectOwner" className="md:max-w-xs">
+          <select name="owner" class="select select-bordered" bind:value={$form.owner}>
+            {#each data.owners.toSorted((a, b) => byName(a, b, getLocale())) as owner}
+              <option value={owner.Id}>{owner.Name}</option>
+            {/each}
+          </select>
+        </LabeledFormInput>
       </div>
-      <div class="w-full flex place-content-between">
-        <label for="owner">{m.project_projectOwner()}</label>
-        <select name="owner" id="owner" class="select select-bordered" bind:value={$form.owner}>
-          {#each data.owners.toSorted((a, b) => byName(a, b, getLocale())) as owner}
-            <option value={owner.Id}>{owner.Name}</option>
-          {/each}
-        </select>
+      <div class="row">
+        <LabeledFormInput name="project_projectGroup" className="md:max-w-xs grow">
+          <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
+            {#each data.groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
+              <option value={group.Id}>{group.Name}</option>
+            {/each}
+          </select>
+        </LabeledFormInput>
+        <LabeledFormInput name="project_languageCode" className="md:max-w-xs">
+          <LanguageCodeTypeahead
+            bind:langCode={$form.language}
+            inputClasses="w-full md:max-w-xs validator"
+            dropdownClasses="left-0"
+            inputElProps={{ required: true, pattern: langtagRegex.toString().slice(1, -1) }}
+          >
+            {#snippet validatorHint()}
+              <span class="validator-hint">Invalid BCP 47 Language Tag</span>
+            {/snippet}
+          </LanguageCodeTypeahead>
+        </LabeledFormInput>
       </div>
-      <div class="w-full flex place-content-between">
-        <label for="group">{m.project_projectGroup()}:</label>
-        <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
-          {#each data.groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
-            <option value={group.Id}>{group.Name}</option>
-          {/each}
-        </select>
+      <div class="row">
+        <LabeledFormInput name="project_projectDescription" className="w-full max-w-2xl">
+          <textarea
+            name="description"
+            id="description"
+            class="textarea textarea-bordered w-full"
+            bind:value={$form.description}
+          ></textarea>
+        </LabeledFormInput>
       </div>
-      <div class="w-full flex place-content-between">
-        <label for="language">{m.project_languageCode()}:</label>
-        <!-- <input type="text" id="language" class="input input-bordered" bind:value={$form.language} /> -->
-        <LanguageCodeTypeahead bind:langCode={$form.language} dropdownClasses="right-0" />
+      <div class="flex flex-row flex-wrap place-content-center gap-4 p-4 w-full">
+        <a
+          href={localizeHref(`/projects/${page.params.id}`)}
+          class="btn btn-secondary w-full max-w-xs"
+        >
+          {m.common_cancel()}
+        </a>
+        <input
+          class="btn btn-primary w-full max-w-xs"
+          class:btn-disabled={!($form.name.length && $form.language.length)}
+          type="submit"
+          value={m.common_save()}
+        />
       </div>
-    </div>
-    <div class="mt-4">
-      <label for="description">
-        {m.project_projectDescription()}
-        <textarea
-          name="description"
-          id="description"
-          class="textarea textarea-bordered w-full"
-          bind:value={$form.description}
-        ></textarea>
-      </label>
-    </div>
-    <div class="flex place-content-end space-x-2">
-      <a href={localizeHref(`/projects/${page.params.id}`)} class="btn">{m.common_cancel()}</a>
-      <button class="btn btn-primary" type="submit">{m.common_save()}</button>
     </div>
   </form>
 </div>
 
 <style>
-  .gridcont {
-    grid-template-columns: repeat(auto-fill, minmax(48%, 1fr));
-  }
-  .gridcont div.flex label {
-    margin-right: 0.4rem;
+  .row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 2);
+    column-gap: calc(var(--spacing) * 4);
+    width: 100%;
+    justify-content: center;
   }
 </style>

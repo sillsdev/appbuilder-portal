@@ -51,7 +51,7 @@
     />
   </LabeledFormInput>
   <div class="my-4">
+    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
     <input type="submit" class="btn btn-primary" value={m.common_save()} />
-    <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
   </div>
 </form>

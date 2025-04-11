@@ -78,20 +78,22 @@
             bind:value={$form.Description}
           ></textarea>
         </LabeledFormInput>
-        <LabeledFormInput name="project_public" className="md:max-w-xs">
-          <InputWithMessage name="project_visibilityDescription">
-            <input
-              type="checkbox"
-              name="public"
-              id="public"
-              class="toggle"
-              bind:checked={$form.IsPublic}
-            />
-          </InputWithMessage>
-        </LabeledFormInput>
+        <InputWithMessage
+          className="md:max-w-xs"
+          title={{ key: 'project_public' }}
+          message={{ key: 'project_visibilityDescription' }}
+        >
+          <input
+            type="checkbox"
+            name="public"
+            id="public"
+            class="toggle"
+            bind:checked={$form.IsPublic}
+          />
+        </InputWithMessage>
       </div>
       <div class="flex flex-row flex-wrap place-content-center gap-4 p-4 w-full">
-        <a href={localizeHref(`/projects/own/${page.params.id}`)} class="btn w-full max-w-xs">
+        <a href={localizeHref(`/projects/own/${page.params.id}`)} class="btn btn-secondary w-full max-w-xs">
           {m.common_cancel()}
         </a>
         <button

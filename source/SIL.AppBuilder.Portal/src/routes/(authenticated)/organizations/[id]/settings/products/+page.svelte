@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -20,26 +21,17 @@
 
 <h2>{m.org_productsTitle()}</h2>
 <form action="" class="m-4" method="post" use:enhance>
-  <div>
-    <label>
-      <div class="label flex flex-row">
-        <div class="flex flex-col">
-          <span class="">
-            {m.admin_settings_organizations_publicByDefault()}
-          </span>
-          <span class="text-sm">
-            {m.admin_settings_organizations_publicByDefaultDescription()}
-          </span>
-        </div>
-        <input
-          name="publicByDefault"
-          class="toggle toggle-accent"
-          type="checkbox"
-          bind:checked={$form.publicByDefault}
-        />
-      </div>
-    </label>
-  </div>
+  <InputWithMessage
+    title={{ key: 'admin_settings_organizations_publicByDefault' }}
+    message={{ key: 'admin_settings_organizations_publicByDefaultDescription' }}
+  >
+    <input
+      name="publicByDefault"
+      class="toggle toggle-accent"
+      type="checkbox"
+      bind:checked={$form.publicByDefault}
+    />
+  </InputWithMessage>
   <!-- Sorted on server -->
   <MultiselectBox header={m.org_productSelectTitle()}>
     {#each $form.products as productDef}

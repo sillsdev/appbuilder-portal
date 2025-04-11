@@ -3,6 +3,7 @@
   import { page } from '$app/state';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
@@ -453,15 +454,10 @@
             update({ reset: false })}
       >
         <div class="space-y-2">
-          <label for="public" class="flex place-content-between">
-            <div class="flex flex-col">
-              <span class="">
-                {m.project_settings_visibility_title()}
-              </span>
-              <span class="text-sm">
-                {m.project_settings_visibility_description()}
-              </span>
-            </div>
+          <InputWithMessage
+            title={{ key: 'project_settings_visibility_title' }}
+            message={{ key: 'project_settings_visibility_description' }}
+          >
             <input
               type="checkbox"
               id="public"
@@ -470,16 +466,11 @@
               bind:checked={data.project.IsPublic}
               onclick={submitSimpleSettingsForm}
             />
-          </label>
-          <label for="allowDownload" class="flex place-content-between">
-            <div class="flex flex-col">
-              <span class="">
-                {m.project_settings_organizationDownloads_title()}
-              </span>
-              <span class="text-sm">
-                {m.project_settings_organizationDownloads_description()}
-              </span>
-            </div>
+          </InputWithMessage>
+          <InputWithMessage
+            title={{ key: 'project_settings_organizationDownloads_title' }}
+            message={{ key: 'project_settings_organizationDownloads_description' }}
+          >
             <input
               type="checkbox"
               id="allowDownload"
@@ -488,7 +479,7 @@
               bind:checked={data.project.AllowDownloads}
               onclick={submitSimpleSettingsForm}
             />
-          </label>
+          </InputWithMessage>
         </div>
       </form>
     </div>

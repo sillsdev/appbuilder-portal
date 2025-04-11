@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -76,12 +77,7 @@
       />
     </LabeledFormInput>
     <LabeledFormInput name="profile_phone">
-      <input
-        type="tel"
-        name="phone"
-        class="input input-bordered w-full"
-        bind:value={$form.phone}
-      />
+      <input type="tel" name="phone" class="input input-bordered w-full" bind:value={$form.phone} />
     </LabeledFormInput>
     <LabeledFormInput name="profile_timezone">
       <TypeaheadInput
@@ -105,50 +101,31 @@
         {/snippet}
       </TypeaheadInput>
     </LabeledFormInput>
-    <div class="flex place-content-between items-center mt-4">
-      <label for="public" class="w-full">
-        <div class="flex flex-col">
-          <span class="">
-            {m.profile_notificationSettingsTitle()}
-          </span>
-          <span class="text-sm">
-            {m.profile_optOutOfEmailOption()}
-          </span>
-        </div>
-      </label>
+    <InputWithMessage
+      className="mt-4"
+      title={{ key: 'profile_notificationSettingsTitle' }}
+      message={{ key: 'profile_optOutOfEmailOption' }}
+    >
       <input
         type="checkbox"
         id="notifications"
         class="toggle toggle-accent ml-4"
         bind:checked={$form.notifications}
       />
-    </div>
-    <div class="flex place-content-between items-center mt-4">
-      <label for="public" class="w-full">
-        <div class="flex flex-col">
-          <span class="">
-            {m.profile_visibleProfile()}
-          </span>
-          <span class="text-sm">
-            {m.profile_visibility_visible()}
-          </span>
-        </div>
-      </label>
+    </InputWithMessage>
+    <InputWithMessage
+      className="mt-4"
+      title={{ key: 'profile_visibleProfile' }}
+      message={{ key: 'profile_visibility_visible' }}
+    >
       <input
         type="checkbox"
         id="public"
         class="toggle toggle-accent ml-4"
         bind:checked={$form.visible}
       />
-    </div>
-    <div class="flex place-content-between items-center mt-4">
-      <label for="public" class="w-full">
-        <div class="flex flex-col">
-          <span class="">
-            {m.users_table_columns_active()}
-          </span>
-        </div>
-      </label>
+    </InputWithMessage>
+    <InputWithMessage className="mt-4" title={{ key: 'users_table_columns_active' }}>
       <input
         type="checkbox"
         id="active"
@@ -156,7 +133,7 @@
         disabled={page.data.session?.user.userId === data.form.data.id}
         bind:checked={$form.active}
       />
-    </div>
+    </InputWithMessage>
     <div class="flex my-2">
       <button type="submit" class="btn btn-primary">{m.common_save()}</button>
     </div>

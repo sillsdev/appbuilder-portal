@@ -1,6 +1,7 @@
 <script lang="ts">
+  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import { common_save, org_useDefaultBuildEngineTitle } from '$lib/paraglide/messages';
+  import { common_save } from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -16,25 +17,16 @@
   <input type="hidden" name="id" value={$form.id} />
   <div class="flex flex-row">
     <div class="w-full">
-      <div>
-        <label>
-          <div class="label flex flex-row">
-            <div class="flex flex-col">
-              <span class="">
-                {org_useDefaultBuildEngineTitle()}
-              </span>
-            </div>
-            <input
-              name="useDefaultBuildEngine"
-              class="toggle toggle-accent"
-              type="checkbox"
-              bind:checked={$form.useDefaultBuildEngine}
-            />
-          </div>
-        </label>
-      </div>
+      <InputWithMessage title={{ key: 'org_useDefaultBuildEngineTitle' }}>
+        <input
+          name="useDefaultBuildEngine"
+          class="toggle toggle-accent"
+          type="checkbox"
+          bind:checked={$form.useDefaultBuildEngine}
+        />
+      </InputWithMessage>
       {#if !$form.useDefaultBuildEngine}
-        <LabeledFormInput name="org_buildEngineUrl">
+        <LabeledFormInput name="admin_settings_organizations_buildEngineURL">
           <input
             type="url"
             name="buildEngineURL"
@@ -42,7 +34,7 @@
             bind:value={$form.buildEngineUrl}
           />
         </LabeledFormInput>
-        <LabeledFormInput name="org_buildEngineApiAccessToken">
+        <LabeledFormInput name="admin_settings_organizations_accessToken">
           <input
             type="text"
             name="buildEngineAccessToken"

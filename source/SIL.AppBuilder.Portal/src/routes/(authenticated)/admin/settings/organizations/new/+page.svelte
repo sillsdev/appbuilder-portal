@@ -59,23 +59,14 @@
       bind:value={$form.websiteURL}
     />
   </LabeledFormInput>
-  <div>
-    <label>
-      <div class="label flex flex-row">
-        <div class="flex flex-col">
-          <span class="">
-            {m.org_useDefaultBuildEngineTitle()}
-          </span>
-        </div>
-        <input
-          name="useDefaultBuildEngine"
-          class="toggle toggle-accent"
-          type="checkbox"
-          bind:checked={$form.useDefaultBuildEngine}
-        />
-      </div>
-    </label>
-  </div>
+  <InputWithMessage title={{ key: 'org_useDefaultBuildEngineTitle' }} className="py-2">
+    <input
+      name="useDefaultBuildEngine"
+      class="toggle toggle-accent"
+      type="checkbox"
+      bind:checked={$form.useDefaultBuildEngine}
+    />
+  </InputWithMessage>
   {#if !$form.useDefaultBuildEngine}
     <LabeledFormInput name="admin_settings_organizations_buildEngineURL">
       <input
@@ -102,18 +93,20 @@
       bind:value={$form.logoUrl}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_organizations_publicByDefault" className="py-1">
-    <InputWithMessage name="admin_settings_organizations_publicByDefaultDescription">
-      <input
-        name="publicByDefault"
-        class="toggle toggle-accent"
-        type="checkbox"
-        bind:checked={$form.publicByDefault}
-      />
-    </InputWithMessage>
-  </LabeledFormInput>
+  <InputWithMessage
+    title={{ key: 'admin_settings_organizations_publicByDefault' }}
+    message={{ key: 'admin_settings_organizations_publicByDefaultDescription' }}
+    className="py-1"
+  >
+    <input
+      name="publicByDefault"
+      class="toggle toggle-accent"
+      type="checkbox"
+      bind:checked={$form.publicByDefault}
+    />
+  </InputWithMessage>
   <div class="my-4">
+    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
     <input type="submit" class="btn btn-primary" value={m.common_save()} />
-    <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
   </div>
 </form>
