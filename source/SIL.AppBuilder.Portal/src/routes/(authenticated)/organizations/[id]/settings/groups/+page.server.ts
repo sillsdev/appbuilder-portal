@@ -1,4 +1,4 @@
-import { idSchema } from '$lib/valibot';
+import { deleteSchema, idSchema } from '$lib/valibot';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -9,9 +9,6 @@ const addGroupSchema = v.object({
   orgId: idSchema,
   name: v.string(),
   abbreviation: v.string()
-});
-const deleteGroupSchema = v.object({
-  id: idSchema
 });
 
 export const load = (async (event) => {
@@ -29,7 +26,7 @@ export const actions = {
     return { form, ok: true };
   },
   async deleteGroup(event) {
-    const form = await superValidate(event.request, valibot(deleteGroupSchema));
+    const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     return { form, ok: await DatabaseWrites.groups.deleteGroup(form.data.id) };
   }

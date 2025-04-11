@@ -7,7 +7,7 @@ import {
   userGroupsForOrg,
   verifyCanViewAndEdit
 } from '$lib/projects/server';
-import { idSchema, propertiesSchema } from '$lib/valibot';
+import { deleteSchema, idSchema, propertiesSchema, stringIdSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
@@ -16,12 +16,6 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 
-const deleteReviewerSchema = v.object({
-  id: idSchema
-});
-const deleteAuthorSchema = v.object({
-  id: idSchema
-});
 const addAuthorSchema = v.object({
   author: idSchema
 });
@@ -39,12 +33,12 @@ const addProductSchema = v.object({
   storeId: idSchema
 });
 const updateProductPropertiesSchema = v.object({
-  productId: v.string(),
+  productId: stringIdSchema,
   properties: propertiesSchema
 });
 
 const productActionSchema = v.object({
-  productId: v.pipe(v.string(), v.uuid()),
+  productId: stringIdSchema,
   productAction: v.enum(ProductActionType)
 });
 
@@ -288,8 +282,8 @@ export const load = (async ({ locals, params }) => {
     authorsToAdd,
     authorForm,
     reviewerForm,
-    deleteAuthorForm: await superValidate(valibot(deleteAuthorSchema)),
-    deleteReviewerForm: await superValidate(valibot(deleteReviewerSchema)),
+    deleteAuthorForm: await superValidate(valibot(deleteSchema)),
+    deleteReviewerForm: await superValidate(valibot(deleteSchema)),
     productsToAdd: productDefinitions.filter((pd) => !projectProductDefinitionIds.includes(pd.Id)),
     addProductForm: await superValidate(valibot(addProductSchema)),
     stores: organization?.OrganizationStores.map((os) => os.Store) ?? [],
@@ -311,7 +305,7 @@ export const actions = {
   async deleteAuthor(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
       return fail(403);
-    const form = await superValidate(event.request, valibot(deleteAuthorSchema));
+    const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const author = await DatabaseWrites.authors.delete({ where: { Id: form.data.id } });
     await Queues.UserTasks.add(`Remove UserTasks for Author #${form.data.id}`, {
@@ -329,7 +323,7 @@ export const actions = {
   async deleteReviewer(event) {
     if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
       return fail(403);
-    const form = await superValidate(event.request, valibot(deleteReviewerSchema));
+    const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.reviewers.delete({
       where: {

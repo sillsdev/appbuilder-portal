@@ -2,6 +2,13 @@ import * as v from 'valibot';
 
 export const idSchema = v.pipe(v.number(), v.minValue(0), v.integer());
 
+/** mostly for product IDs */ 
+export const stringIdSchema = v.pipe(v.string(), v.uuid());
+
+export const deleteSchema = v.object({
+  id: idSchema
+});
+
 const recordSchema = v.record(v.string(), v.string());
 
 export const propertiesSchema = v.nullable(
