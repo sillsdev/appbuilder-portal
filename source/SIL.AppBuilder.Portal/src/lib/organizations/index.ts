@@ -12,15 +12,6 @@ export const infrastructureSchema = v.object({
   useDefaultBuildEngine: v.boolean()
 });
 
-export const storesSchema = v.object({
-  stores: v.array(
-    v.object({
-      storeId: idSchema,
-      enabled: v.boolean()
-    })
-  )
-});
-
 export const organizationBaseSchema = v.object({
   ...infoSchema.entries,
   ...infrastructureSchema.entries,

@@ -2,8 +2,6 @@
   import { goto } from '$app/navigation';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
-  import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -47,7 +45,7 @@
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_organizations_owner">
     <select class="select select-bordered validator" name="owner" bind:value={$form.owner} required>
-      {#each data.options.users.toSorted((a, b) => byName(a, b, getLocale())) as user}
+      {#each data.users.toSorted((a, b) => byName(a, b, getLocale())) as user}
         <option value={user.Id}>{user.Name}</option>
       {/each}
     </select>
@@ -111,17 +109,6 @@
       bind:checked={$form.publicByDefault}
     />
   </InputWithMessage>
-  <!-- Sorted on server -->
-  <MultiselectBox header={m.org_storeSelectTitle()}>
-    {#each $form.stores as store}
-      {@const storeInfo = data.options.stores.find((s) => s.Id === store.storeId)}
-      <MultiselectBoxElement
-        bind:checked={store.enabled}
-        title={storeInfo?.Name ?? ''}
-        description={storeInfo?.Description ?? ''}
-      />
-    {/each}
-  </MultiselectBox>
   <div class="my-4">
     <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
     <input type="submit" class="btn btn-primary" value={m.common_save()} />

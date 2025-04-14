@@ -1,36 +1,24 @@
 import prisma from '../prisma.js';
 
-export async function updateOrganizationProductDefinitions(
-  orgId: number,
-  productDefinitions: number[]
+export async function update(
+  OrganizationId: number,
+  ProductDefinitionId: number,
+  enabled: boolean
 ) {
-  const old = (
-    await prisma.organizationProductDefinitions.findMany({
-      where: {
-        OrganizationId: orgId
-      }
-    })
-  ).map((x) => x.ProductDefinitionId);
-  const newEntries = productDefinitions.filter(
-    (productDefinition) => !old.includes(productDefinition)
-  );
-  const removeEntries = old.filter(
-    (productDefinition) => !productDefinitions.includes(productDefinition)
-  );
-  await prisma.$transaction([
-    prisma.organizationProductDefinitions.deleteMany({
-      where: {
-        OrganizationId: orgId,
-        ProductDefinitionId: {
-          in: removeEntries
-        }
-      }
-    }),
-    prisma.organizationProductDefinitions.createMany({
-      data: newEntries.map((store) => ({
-        OrganizationId: orgId,
-        ProductDefinitionId: store
-      }))
-    })
-  ]);
+  if (enabled) {
+    // ISSUE: #1102 this extra check would be unneccessary if we could switch to composite primary keys
+    const existing = await prisma.organizationProductDefinitions.findFirst({
+      where: { OrganizationId, ProductDefinitionId },
+      select: { Id: true }
+    });
+    if (!existing) {
+      return prisma.organizationProductDefinitions.create({
+        data: { OrganizationId, ProductDefinitionId }
+      });
+    }
+  } else {
+    return prisma.organizationProductDefinitions.deleteMany({
+      where: { OrganizationId, ProductDefinitionId }
+    });
+  }
 }
