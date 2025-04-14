@@ -1,7 +1,7 @@
 <script lang="ts">
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import { common_save } from '$lib/paraglide/messages';
+  import { common_save, m } from '$lib/paraglide/messages';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -29,18 +29,22 @@
         <LabeledFormInput name="org_buildEngineUrl">
           <input
             type="url"
-            class="input input-bordered w-full"
             name="buildEngineUrl"
+            class="input input-bordered w-full validator"
             bind:value={$form.buildEngineUrl}
+            required={!$form.useDefaultBuildEngine}
           />
+          <span class="validator-hint">{m.admin_settings_organizations_emptyBuildEngineURL()}</span>
         </LabeledFormInput>
         <LabeledFormInput name="org_buildEngineApiAccessToken">
           <input
             type="text"
-            class="input input-bordered w-full"
             name="buildEngineApiAccessToken"
+            class="input input-bordered w-full validator"
             bind:value={$form.buildEngineApiAccessToken}
+            required={!$form.useDefaultBuildEngine}
           />
+          <span class="validator-hint">{m.admin_settings_organizations_emptyAccessToken()}</span>
         </LabeledFormInput>
       {/if}
     </div>

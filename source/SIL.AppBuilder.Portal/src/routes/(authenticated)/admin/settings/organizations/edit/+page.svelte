@@ -74,17 +74,21 @@
       <input
         type="url"
         name="buildEngineUrl"
-        class="input input-bordered w-full"
+        class="input input-bordered w-full validator"
         bind:value={$form.buildEngineUrl}
+        required={!$form.useDefaultBuildEngine}
       />
+      <span class="validator-hint">{m.admin_settings_organizations_emptyBuildEngineURL()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="admin_settings_organizations_accessToken">
       <input
         type="text"
         name="buildEngineApiAccessToken"
-        class="input input-bordered w-full"
+        class="input input-bordered w-full validator"
         bind:value={$form.buildEngineApiAccessToken}
+        required={!$form.useDefaultBuildEngine}
       />
+      <span class="validator-hint">{m.admin_settings_organizations_emptyAccessToken()}</span>
     </LabeledFormInput>
   {/if}
   <LabeledFormInput name="admin_settings_organizations_logoURL">

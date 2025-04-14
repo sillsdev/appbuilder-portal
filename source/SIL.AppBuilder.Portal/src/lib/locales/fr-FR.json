@@ -460,6 +460,8 @@
   "admin_settings_organizations_websiteURL": "Website URL",
   "admin_settings_organizations_buildEngineURL": "Build Engine URL",
   "admin_settings_organizations_accessToken": "Build Engine API Access Token",
+  "admin_settings_organizations_emptyBuildEngineURL": "A URL must be provided when not using the Default Build Engine",
+  "admin_settings_organizations_emptyAccessToken": "An API token must be provided when not using the Default Build Engine",
   "admin_settings_organizations_logoURL": "Logo URL",
   "admin_settings_organizations_publicByDefault": "Public By Default",
   "admin_settings_organizations_publicByDefaultDescription": "Projects created under this organization are set to public by default",
