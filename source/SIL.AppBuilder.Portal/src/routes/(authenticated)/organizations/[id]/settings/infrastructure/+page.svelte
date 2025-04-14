@@ -1,7 +1,8 @@
 <script lang="ts">
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import { common_save, m } from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
+  import { toast } from '$lib/utils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -10,7 +11,14 @@
   }
 
   let { data }: Props = $props();
-  const { form, enhance } = superForm(data.form, { resetForm: false });
+  const { form, enhance } = superForm(data.form, {
+    resetForm: false,
+    onUpdated({ form }) {
+      if (form.valid) {
+        toast('success', m.common_updated());
+      }
+    }
+  });
 </script>
 
 <form action="" class="m-4" method="post" use:enhance>
@@ -50,6 +58,6 @@
     </div>
   </div>
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value={common_save()} />
+    <input type="submit" class="btn btn-primary" value={m.common_save()} />
   </div>
 </form>

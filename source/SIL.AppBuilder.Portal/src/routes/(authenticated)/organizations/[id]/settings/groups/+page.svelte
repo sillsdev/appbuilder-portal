@@ -2,10 +2,11 @@
   import { enhance } from '$app/forms';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import { m, org_addGroupButton } from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
-  import type { PageData } from './$types';
+  import type { ActionData, PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -15,7 +16,19 @@
 </script>
 
 {#each data.groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
-  <form action="?/deleteGroup" class="m-2" method="post" use:enhance>
+  <form action="?/deleteGroup" class="m-2" method="post" use:enhance={() => {
+    return async({ result }) => {
+      if (result.type === 'success') {
+        const data = result.data as ActionData;
+        if (data?.ok) {
+          toast('success', m.org_groupDeleted())
+        }
+        else {
+          toast('error', m.errors_generic({ errorMessage: '' }))
+        }
+      }
+    }
+  }}>
     <input type="hidden" name="id" value={group.Id} />
     <div class="border w-full flex flex-row p-2 rounded-md items-center place-content-between">
       <div>
@@ -28,8 +41,17 @@
     </div>
   </form>
 {/each}
-<form action="?/addGroup" class="m-2" method="post" use:enhance>
-  {org_addGroupButton()}
+<form action="?/addGroup" class="m-2" method="post" use:enhance={() => {
+  return async({ result }) => {
+    if (result.type === 'success') {
+      const data = result.data as ActionData;
+      if (data?.ok) {
+        toast('success', m.org_groupCreated())
+      }
+    }
+  }
+}}>
+  {m.org_addGroupButton()}
   <input type="hidden" name="orgId" value={data.organization.Id} />
   <div class="my-4 flex flex-row w-full space-x-2 items-center">
     <LabeledFormInput name="common_name">
