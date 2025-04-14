@@ -26,19 +26,19 @@
         />
       </InputWithMessage>
       {#if !$form.useDefaultBuildEngine}
-        <LabeledFormInput name="admin_settings_organizations_buildEngineURL">
+        <LabeledFormInput name="org_buildEngineUrl">
           <input
             type="url"
-            name="buildEngineURL"
             class="input input-bordered w-full"
+            name="buildEngineUrl"
             bind:value={$form.buildEngineUrl}
           />
         </LabeledFormInput>
-        <LabeledFormInput name="admin_settings_organizations_accessToken">
+        <LabeledFormInput name="org_buildEngineApiAccessToken">
           <input
             type="text"
-            name="buildEngineAccessToken"
             class="input input-bordered w-full"
+            name="buildEngineApiAccessToken"
             bind:value={$form.buildEngineApiAccessToken}
           />
         </LabeledFormInput>
