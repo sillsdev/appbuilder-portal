@@ -68,7 +68,7 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
 
 export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
   constructor() {
-    super(BullMQ.QueueName.SystemRecurring);
+    super(BullMQ.QueueName.SystemStartup);
     Queues.SystemStartup.add('Check System Statuses (Startup)', {
       type: BullMQ.JobType.System_CheckEngineStatuses
     });
