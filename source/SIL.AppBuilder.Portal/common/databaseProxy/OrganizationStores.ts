@@ -12,13 +12,14 @@ export async function toggleForOrg(
       select: { Id: true }
     });
     if (!existing) {
-      return prisma.organizationStores.create({
+      await prisma.organizationStores.create({
         data: { OrganizationId, StoreId }
       });
     }
   } else {
-    return prisma.organizationStores.deleteMany({
+    await prisma.organizationStores.deleteMany({
       where: { OrganizationId, StoreId }
     });
   }
+  return true;
 }
