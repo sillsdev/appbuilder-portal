@@ -11,11 +11,11 @@ export abstract class BullWorker<T> {
   abstract run(job: Job<T>): Promise<unknown>;
 }
 
-export class Builds extends BullWorker<BullMQ.Job> {
+export class Builds<J extends BullMQ.BuildJob> extends BullWorker<J> {
   constructor() {
     super(BullMQ.QueueName.Builds);
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.Build_Product:
         return Executor.Build.product(job as Job<BullMQ.Build.Product>);
@@ -25,7 +25,7 @@ export class Builds extends BullWorker<BullMQ.Job> {
   }
 }
 
-export class DefaultRecurring extends BullWorker<BullMQ.Job> {
+export class DefaultRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J> {
   constructor() {
     super(BullMQ.QueueName.DefaultRecurring);
     Queues.DefaultRecurring.upsertJobScheduler(
@@ -55,7 +55,7 @@ export class DefaultRecurring extends BullWorker<BullMQ.Job> {
       }
     );
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.Recurring_CheckSystemStatuses:
         return Executor.Recurring.checkSystemStatuses(
@@ -67,11 +67,11 @@ export class DefaultRecurring extends BullWorker<BullMQ.Job> {
   }
 }
 
-export class Miscellaneous extends BullWorker<BullMQ.Job> {
+export class Miscellaneous<J extends BullMQ.MiscJob> extends BullWorker<J>  {
   constructor() {
     super(BullMQ.QueueName.Miscellaneous);
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.Product_Create:
         return Executor.Product.create(job as Job<BullMQ.Product.Create>);
@@ -87,11 +87,11 @@ export class Miscellaneous extends BullWorker<BullMQ.Job> {
   }
 }
 
-export class Publishing extends BullWorker<BullMQ.Job> {
+export class Publishing<J extends BullMQ.PublishJob> extends BullWorker<J>  {
   constructor() {
     super(BullMQ.QueueName.Publishing);
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.Publish_Product:
         return Executor.Publish.product(job as Job<BullMQ.Publish.Product>);
@@ -101,11 +101,11 @@ export class Publishing extends BullWorker<BullMQ.Job> {
   }
 }
 
-export class RemotePolling extends BullWorker<BullMQ.Job> {
+export class RemotePolling<J extends BullMQ.PollJob> extends BullWorker<J>  {
   constructor() {
     super(BullMQ.QueueName.RemotePolling);
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.Build_Check:
         return Executor.Build.check(job as Job<BullMQ.Build.Check>);
@@ -117,11 +117,11 @@ export class RemotePolling extends BullWorker<BullMQ.Job> {
   }
 }
 
-export class UserTasks extends BullWorker<BullMQ.Job> {
+export class UserTasks<J extends BullMQ.UserTasksJob> extends BullWorker<J>  {
   constructor() {
     super(BullMQ.QueueName.UserTasks);
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.UserTasks_Modify:
         return Executor.UserTasks.modify(job as Job<BullMQ.UserTasks.Modify>);
