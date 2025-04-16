@@ -215,6 +215,8 @@
   "profile_noTimezone": "(GMT-0)",
   "profile_visibility_visible": "La información de mi perfil es pública",
   "profile_visibility_restricted": "Mi información de perfil es restringida al público",
+  "user_addedTo": "{user} added to {name}",
+  "user_removedFrom": "{user} removed from {name}",
   "errors_generic": "¡Ha ocurrido un error! {errorMessage}",
   "errors_requiredField": "El {field} es requerido, pero no tiene ningún valor",
   "errors_notAuthorized": "Usted debe iniciar sesión. Esto podría ser debido a que expiró un inicio de sesión previo.",

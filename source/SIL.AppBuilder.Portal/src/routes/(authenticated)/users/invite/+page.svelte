@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -15,17 +16,13 @@
   }
 
   let { data }: Props = $props();
-  let inputEle: HTMLInputElement;
+
   const { form, enhance } = superForm(data.form, {
     dataType: 'json',
+    resetForm: false,
     onUpdated(event) {
       if (event.form.valid) {
-        inputEle.classList.add('btn-success');
-        inputEle.value = 'Success!';
-        inputEle.classList.remove('btn-primary');
-        setTimeout(() => {
-          window.location.href = localizeHref('/users');
-        }, 2000);
+        goto(localizeHref('/users'));
         toast(
           'success',
           m.organizationMembership_invite_create_success({ email: event.form.data.email })
@@ -79,11 +76,29 @@
           <div class="flex flex-row space-x-2">
             <div>
               {m.users_userRoles()}
-              <RolesSelector bind:roles={$form.roles} />
+              <RolesSelector>
+                {#snippet selector(role)}
+                  <input
+                    type="checkbox"
+                    class="toggle toggle-accent"
+                    value={role}
+                    bind:group={$form.roles}
+                  />
+                {/snippet}
+              </RolesSelector>
             </div>
             <div>
               {m.users_userGroups()}
-              <GroupsSelector groups={currentGroups} bind:selected={$form.groups} />
+              <GroupsSelector groups={currentGroups}>
+                {#snippet selector(group)}
+                  <input
+                    type="checkbox"
+                    class="toggle toggle-accent"
+                    value={group.Id}
+                    bind:group={$form.groups}
+                  />
+                {/snippet}
+              </GroupsSelector>
             </div>
           </div>
         </div>
@@ -95,7 +110,6 @@
         type="submit"
         class="btn btn-primary"
         value={m.organizationMembership_invite_create_sendInviteButton()}
-        bind:this={inputEle}
       />
     </div>
   </form>

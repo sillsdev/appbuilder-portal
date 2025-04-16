@@ -26,12 +26,12 @@
   <TabbedMenu
     routeId="/(authenticated)/users/[id=idNumber]/settings"
     base="{base}/users/{page.params.id}/settings"
-    titleString={m.users_settingsTitle() + ': ' + data.username}
+    titleString={m.users_settingsTitle() + ': ' + data.subject?.Name}
     menuItems={userSettingsLinks}
   >
     {@render children?.()}
   </TabbedMenu>
 {:else}
-  <h1>{m.profile_title()}: {data.username}</h1>
+  <h1>{m.profile_title()}: {data.subject?.Name}</h1>
   {@render children?.()}
 {/if}

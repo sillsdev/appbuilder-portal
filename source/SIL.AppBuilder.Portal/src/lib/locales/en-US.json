@@ -217,6 +217,8 @@
   "profile_noTimezone": "(GMT-0)",
   "profile_visibility_visible": "My profile information is publicly viewable",
   "profile_visibility_restricted": "My profile information is restricted from the public",
+  "user_addedTo": "{user} added to {name}",
+  "user_removedFrom": "{user} removed from {name}",
   "errors_generic": "An error occurred! {errorMessage}",
   "errors_requiredField": "The {field} is required, but has no value",
   "errors_notAuthorized": "You must login. This could be due to a prior login expiring.",

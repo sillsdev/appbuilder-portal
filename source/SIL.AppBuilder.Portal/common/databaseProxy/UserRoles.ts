@@ -2,62 +2,46 @@ import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
 import { RoleId } from '../public/prisma.js';
 
-export async function setUserRolesForOrganization(
-  userId: number,
-  organizationId: number,
-  roles: RoleId[]
+export async function toggleForOrg(
+  OrganizationId: number,
+  UserId: number,
+  role: RoleId,
+  enabled: boolean
 ) {
-  const old = (
-    await prisma.userRoles.findMany({
-      where: {
-        UserId: userId,
-        OrganizationId: organizationId
-      }
-    })
-  ).map((r) => r.RoleId);
-  const remove = old.filter((role) => !roles.includes(role));
-  const add = roles.filter((role) => !old.includes(role));
-  await prisma.$transaction([
-    prisma.userRoles.deleteMany({
-      where: {
-        UserId: userId,
-        OrganizationId: organizationId,
-        RoleId: {
-          in: remove
-        }
-      }
-    }),
-    prisma.userRoles.createMany({
-      data: add.map((r) => ({
-        UserId: userId,
-        OrganizationId: organizationId,
-        RoleId: r
-      }))
-    })
-  ]);
-  if (remove.includes(RoleId.OrgAdmin) || add.includes(RoleId.OrgAdmin)) {
-    const projects = (
-      await prisma.projects.findMany({
-        where: {
-          OrganizationId: organizationId
-        },
-        select: {
-          Id: true
-        }
-      })
-    ).map((p) => p.Id);
+  // ISSUE: #1102 this extra check would be unneccessary if we could switch to composite primary keys
+  const existing = await prisma.userRoles.findFirst({
+    where: { OrganizationId, UserId, RoleId: role },
+    select: { Id: true }
+  });
+  if (enabled) {
+    if (!existing) {
+      await prisma.userRoles.create({
+        data: { OrganizationId, UserId, RoleId: role }
+      });
+    }
+  } else {
+    await prisma.userRoles.deleteMany({
+      where: { OrganizationId, UserId, RoleId: role }
+    });
+  }
 
-    const del = remove.includes(RoleId.OrgAdmin);
+  /* This is the correct condition. Trust me, I worked it out on paper. */
+  if (role === RoleId.OrgAdmin && !(enabled && existing)) {
     await Queues.UserTasks.addBulk(
-      projects.map((pid) => ({
-        name: `${del ? 'Remove' : 'Add'} OrgAdmin tasks for User #${userId} on Project #${pid}`,
+      (
+        await prisma.projects.findMany({
+          where: { OrganizationId },
+          select: { Id: true }
+        })
+      ).map((p) => ({
+        name: `${enabled ? 'Add' : 'Remove'} OrgAdmin tasks for User #${UserId} on Project #${p.Id}`,
         data: {
           type: BullMQ.JobType.UserTasks_Modify,
           scope: 'Project',
-          projectId: pid,
+          projectId: p.Id,
           operation: {
-            type: del ? BullMQ.UserTasks.OpType.Delete : BullMQ.UserTasks.OpType.Create,
-            users: [userId],
+            type: enabled ? BullMQ.UserTasks.OpType.Create : BullMQ.UserTasks.OpType.Delete,
+            users: [UserId],
             roles: [RoleId.OrgAdmin]
           }
         }
@@ -88,7 +72,6 @@ export async function allUsersByRole(
     }
   });
 
-  
   if (!project) return {};
 
   const admins =

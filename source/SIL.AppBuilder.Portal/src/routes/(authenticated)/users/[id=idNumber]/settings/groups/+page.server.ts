@@ -1,4 +1,4 @@
-import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
+import { isAdminForOrgs, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
@@ -8,15 +8,11 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 
-const groupsSchema = v.object({
-  organizations: v.array(
-    v.object({
-      name: v.nullable(v.string()),
-      id: idSchema,
-      groups: v.array(idSchema)
-      // enabled: v.boolean()
-    })
-  )
+const toggleGroupSchema = v.object({
+  orgId: idSchema,
+  userId: idSchema,
+  groupId: idSchema,
+  enabled: v.boolean()
 });
 
 export const load = (async ({ params, locals }) => {
@@ -44,36 +40,34 @@ export const load = (async ({ params, locals }) => {
     },
     select: {
       Id: true,
-      Name: true,
-      Groups: true
+      Groups: {
+        select: {
+          Id: true,
+          Name: true
+        }
+      }
     }
   });
 
-  const groupMemberships = (
-    await prisma.groupMemberships.findMany({
-      where: {
-        UserId: subjectUserId
-      },
-      select: {
-        GroupId: true
-      }
-    })
-  ).map((g) => g.GroupId);
-  // If there are no groups the current user has admin access to return Forbidden
-  if (groupsByOrg.length === 0) return error(403);
-  const form = await superValidate(
-    {
-      organizations: groupsByOrg.map((o) => ({
-        id: o.Id,
-        name: o.Name,
-        groups: o.Groups.filter((g) => groupMemberships.includes(g.Id)).map((g) => g.Id)
-      }))
-    },
-    valibot(groupsSchema)
+  const groupMemberships = new Set(
+    (
+      await prisma.groupMemberships.findMany({
+        where: {
+          UserId: subjectUserId
+        },
+        select: {
+          GroupId: true
+        }
+      })
+    ).map((g) => g.GroupId)
   );
+  // If there are no groups the current user has admin access to return Forbidden
+  if (!groupsByOrg.length) return error(403);
   return {
-    form,
-    groupsByOrg
+    groupsByOrg: groupsByOrg.map((o) => [
+      o.Id,
+      o.Groups.map((g) => ({ ...g, enabled: groupMemberships.has(g.Id) }))
+    ]) as [number, ((typeof groupsByOrg)[number]['Groups'][number] & { enabled: boolean })[]][]
   };
 }) satisfies PageServerLoad;
 
@@ -85,17 +79,25 @@ export const actions = {
     // This way they can be added and removed in constant time and in a single command
     // https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations
 
-    const form = await superValidate(event, valibot(groupsSchema));
+    const form = await superValidate(event, valibot(toggleGroupSchema));
+
     if (!form.valid) return fail(400, { form, ok: false });
+    if (form.data.userId !== parseInt(event.params.id)) return fail(404, { form, ok: false });
 
     const user = (await event.locals.auth())!.user;
+    const subjectOrgs = (
+      await prisma.organizationMemberships.findMany({ where: { UserId: form.data.userId } })
+    ).map((om) => om.UserId);
 
-    // Filter for legal orgs to modify, then map to relevant table entries
-    const newRelationEntries = form.data.organizations
-      .filter((org) => isAdminForOrg(org.id, user.roles))
-      .flatMap((org) => org.groups.map((group) => group));
-    const uId = parseInt(event.params.id);
-    const success = await DatabaseWrites.groupMemberships.updateUserGroups(uId, newRelationEntries);
-    return { form, ok: success };
+    if (!isAdminForOrgs(subjectOrgs, user.roles)) return fail(403, { form, ok: false });
+
+    const ok = await DatabaseWrites.groupMemberships.toggleForOrg(
+      form.data.orgId,
+      form.data.userId,
+      form.data.groupId,
+      form.data.enabled
+    );
+
+    return { form, ok };
   }
 } satisfies Actions;

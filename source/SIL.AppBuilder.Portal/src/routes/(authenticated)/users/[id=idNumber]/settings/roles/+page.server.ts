@@ -1,4 +1,4 @@
-import { isAdminForOrg, isSuperAdmin, orgsForRole } from '$lib/utils/roles';
+import { isAdminForOrgs, isSuperAdmin, orgsForRole } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
@@ -8,21 +8,17 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 
-const rolesSchema = v.object({
-  organizations: v.array(
-    v.object({
-      name: v.nullable(v.string()),
-      id: idSchema,
-      roles: v.array(idSchema)
-      // enabled: v.boolean()
-    })
-  )
+const toggleRoleSchema = v.object({
+  orgId: idSchema,
+  userId: idSchema,
+  roleId: v.pipe(idSchema, v.enum(RoleId)),
+  enabled: v.boolean()
 });
 
 export const load = (async ({ locals, params }) => {
-  const auth = (await locals.auth())?.user.roles;
-  const isSuper = isSuperAdmin(auth);
-  const orgs = orgsForRole(RoleId.OrgAdmin, auth);
+  const user = (await locals.auth())!.user;
+  const isSuper = isSuperAdmin(user.roles);
+  const orgs = orgsForRole(RoleId.OrgAdmin, user.roles);
   if (!(isSuper || orgs?.length)) return error(403);
   const subjectId = parseInt(params.id);
 
@@ -37,10 +33,12 @@ export const load = (async ({ locals, params }) => {
     },
     select: {
       Id: true,
-      Name: true,
       UserRoles: {
         where: {
           UserId: subjectId
+        },
+        select: {
+          RoleId: true
         }
       }
     }
@@ -49,34 +47,30 @@ export const load = (async ({ locals, params }) => {
   // return 404 if user doesn't have any memberships/doesn't exist
   if (!rolesByOrg.length) return error(404);
 
-  const form = await superValidate(
-    {
-      organizations: rolesByOrg.map((o) => ({
-        id: o.Id,
-        name: o.Name,
-        roles: o.UserRoles.map((ur) => ur.RoleId)
-      }))
-    },
-    valibot(rolesSchema)
-  );
-  return { form };
+  return {
+    rolesMap: rolesByOrg.map((o) => [o.Id, o.UserRoles.map((r) => r.RoleId)]) as [
+      number,
+      RoleId[]
+    ][]
+  };
 }) satisfies PageServerLoad;
 
 export const actions = {
   async default(event) {
-    const form = await superValidate(event, valibot(rolesSchema));
+    const form = await superValidate(event, valibot(toggleRoleSchema));
+
     if (!form.valid) return fail(400, { form, ok: false });
+    if (form.data.userId !== parseInt(event.params.id)) return fail(404, { form, ok: false });
 
     const user = (await event.locals.auth())!.user;
+    const subjectOrgs = (
+      await prisma.organizationMemberships.findMany({ where: { UserId: form.data.userId } })
+    ).map((om) => om.UserId);
 
-    // Filter for legal orgs to modify, then map to relevant table entries
-    const newRelationEntries = form.data.organizations.filter((org) =>
-      isAdminForOrg(org.id, user.roles)
-    );
-    const subjectUserId = parseInt(event.params.id);
-    for (const org of newRelationEntries) {
-      await DatabaseWrites.userRoles.setUserRolesForOrganization(subjectUserId, org.id, org.roles);
-    }
+    if (!isAdminForOrgs(subjectOrgs, user.roles)) return fail(403, { form, ok: false });
+
+    await DatabaseWrites.userRoles.toggleForOrg(form.data.orgId, form.data.userId, form.data.roleId, form.data.enabled)
+
     return { form, ok: true };
   }
 } satisfies Actions;

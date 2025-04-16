@@ -4,6 +4,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { toast } from '$lib/utils';
   import { getTimeZones } from '@vvo/tzdb';
   import Fuse from 'fuse.js';
   import { superForm } from 'sveltekit-superforms';
@@ -20,6 +21,11 @@
       // Set the timezone form value (if the value was changed manually and not clicked)
       if (!timeZoneMap.has(tzValue)) input.cancel();
       $form.timezone = timeZoneMap.get(tzValue)!;
+    },
+    onUpdated({ form }) {
+      if (form.valid) {
+        toast('success', m.profile_updated());
+      }
     }
   });
 

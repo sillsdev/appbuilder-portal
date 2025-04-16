@@ -1,6 +1,6 @@
 import prisma from '../prisma.js';
 
-export async function update(
+export async function toggleForOrg(
   OrganizationId: number,
   ProductDefinitionId: number,
   enabled: boolean

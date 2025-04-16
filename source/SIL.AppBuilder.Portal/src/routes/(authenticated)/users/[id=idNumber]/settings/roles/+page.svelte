@@ -1,31 +1,75 @@
 <script lang="ts">
+  import { enhance } from '$app/forms';
   import { m } from '$lib/paraglide/messages';
-  import { superForm } from 'sveltekit-superforms';
+  import { getLocale } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
+  import { byName } from '$lib/utils/sorting';
   import RolesSelector from '../../../RolesSelector.svelte';
-  import type { PageData } from './$types';
+  import type { ActionData, PageData } from './$types';
 
   interface Props {
     data: PageData;
   }
 
   let { data }: Props = $props();
-  const { form, enhance } = superForm(data.form, {
-    dataType: 'json',
-    resetForm: false
-  });
+
+  const rolesMap = new Map(data.rolesMap);
 </script>
 
-<form action="" method="post" use:enhance>
-  <div class="flex flex-col px-4">
-    <!-- I would sort this, but it doesn't work properly... -->
-    {#each $form.organizations as org}
-      <h3>{org.name}</h3>
-      <!-- https://github.com/sveltejs/svelte/issues/12721#issuecomment-2269544690 -->
-      <!-- svelte-ignore binding_property_non_reactive -->
-      <RolesSelector bind:roles={org.roles} />
-    {/each}
-    <div class="flex my-2">
-      <button type="submit" class="btn btn-primary">{m.common_save()}</button>
-    </div>
-  </div>
-</form>
+<div class="flex flex-col px-4">
+  {#each data.subjectOrgs.toSorted((a, b) => byName(a, b, getLocale())) as org}
+    <h3>{org.Name}</h3>
+    <RolesSelector>
+      {#snippet selector(role)}
+        <form
+          action=""
+          method="POST"
+          use:enhance={({ formElement }) => {
+            return async ({ result, update }) => {
+              if (result.type === 'success') {
+                const res = result.data as ActionData;
+                const toggle = formElement.querySelector('[name=enabled]') as HTMLInputElement;
+                if (res?.ok) {
+                  if (toggle.checked) {
+                    toast(
+                      'success',
+                      m.user_addedTo({
+                        user: data.subject?.Name ?? '',
+                        name: m.users_roles({ role })
+                      })
+                    );
+                  } else {
+                    toast(
+                      'success',
+                      m.user_removedFrom({
+                        user: data.subject?.Name ?? '',
+                        name: m.users_roles({ role })
+                      })
+                    );
+                  }
+                } else {
+                  toast('error', m.errors_generic({ errorMessage: '' }));
+                  toggle.checked = !toggle.checked;
+                }
+              }
+              update({ reset: false });
+            };
+          }}
+        >
+          <input type="hidden" name="orgId" value={org.Id} />
+          <input type="hidden" name="userId" value={data.subject?.Id} />
+          <input type="hidden" name="roleId" value={role} />
+          <input
+            type="checkbox"
+            name="enabled"
+            class="toggle toggle-accent"
+            checked={rolesMap.get(org.Id)?.includes(role)}
+            onchange={(e) => {
+              (e.currentTarget.parentElement as HTMLFormElement).requestSubmit();
+            }}
+          />
+        </form>
+      {/snippet}
+    </RolesSelector>
+  {/each}
+</div>
