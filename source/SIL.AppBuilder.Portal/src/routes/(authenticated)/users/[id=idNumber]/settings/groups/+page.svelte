@@ -12,13 +12,11 @@
   }
 
   let { data }: Props = $props();
-
-  const groupMap = new Map(data.groupsByOrg);
 </script>
 
 <div class="flex flex-col px-4">
   {#each data.subjectOrgs.toSorted((a, b) => byName(a, b, getLocale())) as org}
-    {@const groups = groupMap.get(org.Id) ?? []}
+    {@const groups = data.groupsByOrg.find((o) => o.Id === org.Id)?.Groups ?? []}
     <h3>{org.Name}</h3>
     <GroupsSelector {groups}>
       {#snippet selector(group)}
@@ -59,7 +57,7 @@
             type="checkbox"
             name="enabled"
             class="toggle toggle-accent"
-            checked={group.enabled}
+            checked={!!group._count.GroupMemberships}
             onchange={(e) => {
               (e.currentTarget.parentElement as HTMLFormElement).requestSubmit();
             }}

@@ -12,12 +12,11 @@
   }
 
   let { data }: Props = $props();
-
-  const rolesMap = new Map(data.rolesMap);
 </script>
 
 <div class="flex flex-col px-4">
   {#each data.subjectOrgs.toSorted((a, b) => byName(a, b, getLocale())) as org}
+    {@const rolesForOrg = data.rolesByOrg.find((o) => o.Id === org.Id)?.UserRoles ?? []}
     <h3>{org.Name}</h3>
     <RolesSelector>
       {#snippet selector(role)}
@@ -63,7 +62,7 @@
             type="checkbox"
             name="enabled"
             class="toggle toggle-accent"
-            checked={rolesMap.get(org.Id)?.includes(role)}
+            checked={!!rolesForOrg.find((ro) => ro.RoleId === role)}
             onchange={(e) => {
               (e.currentTarget.parentElement as HTMLFormElement).requestSubmit();
             }}
