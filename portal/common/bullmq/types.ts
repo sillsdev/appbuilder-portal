@@ -256,6 +256,28 @@ export namespace Email {
 
 export type Job = JobTypeMap[keyof JobTypeMap];
 
+export type BuildJob = JobTypeMap[JobType.Build_Product | JobType.Build_PostProcess];
+export type RecurringJob = JobTypeMap[
+  | JobType.Recurring_CheckSystemStatuses
+  | JobType.Recurring_RefreshLangTags];
+export type PublishJob = JobTypeMap[JobType.Publish_Product | JobType.Publish_PostProcess];
+export type PollJob = JobTypeMap[
+  | JobType.Build_Check
+  | JobType.Publish_Check
+  | JobType.Project_Check];
+export type UserTasksJob = JobTypeMap[JobType.UserTasks_Modify];
+export type EmailJob = JobTypeMap[
+  | JobType.Email_InviteUser
+  | JobType.Email_SendNotificationToUser
+  | JobType.Email_SendNotificationToReviewers
+  | JobType.Email_SendNotificationToOrgAdminsAndOwner
+  | JobType.Email_SendBatchUserTaskNotifications
+  | JobType.Email_NotifySuperAdminsOfNewOrganizationRequest
+  | JobType.Email_NotifySuperAdminsOfOfflineSystems
+  | JobType.Email_NotifySuperAdminsLowPriority
+  | JobType.Email_ProjectImportReport];
+export type MiscJob = Exclude<Job, BuildJob | RecurringJob | PublishJob | PollJob | UserTasksJob | EmailJob>;
+
 export type JobTypeMap = {
   [JobType.Build_Product]: Build.Product;
   [JobType.Build_Check]: Build.Check;
