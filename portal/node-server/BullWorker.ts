@@ -24,44 +24,66 @@ export class Builds<J extends BullMQ.BuildJob> extends BullWorker<J> {
   }
 }
 
-export class DefaultRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J> {
+export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J> {
   constructor() {
-    super(BullMQ.QueueName.DefaultRecurring);
-    Queues.DefaultRecurring.upsertJobScheduler(
+    super(BullMQ.QueueName.SystemRecurring);
+    Queues.SystemRecurring.upsertJobScheduler(
       BullMQ.JobSchedulerId.CheckSystemStatuses,
       {
         pattern: '*/5 * * * *', // every 5 minutes
-        immediately: true
+        immediately: false
       },
       {
         name: 'Check System Statuses',
         data: {
-          type: BullMQ.JobType.Recurring_CheckSystemStatuses
+          type: BullMQ.JobType.System_CheckEngineStatuses
         }
       }
     );
-    Queues.DefaultRecurring.upsertJobScheduler(
+    Queues.SystemRecurring.upsertJobScheduler(
       BullMQ.JobSchedulerId.RefreshLangTags,
       {
         pattern: '@daily', // every day at midnight
-        immediately: true
+        immediately: false
       },
       {
         name: 'Refresh LangTags',
         data: {
-          type: BullMQ.JobType.Recurring_RefreshLangTags
+          type: BullMQ.JobType.System_RefreshLangTags
         }
       }
     );
   }
   async run(job: Job<J>) {
     switch (job.data.type) {
-      case BullMQ.JobType.Recurring_CheckSystemStatuses:
-        return Executor.Recurring.checkSystemStatuses(
-          job as Job<BullMQ.Recurring.CheckSystemStatuses>
+      case BullMQ.JobType.System_CheckEngineStatuses:
+        return Executor.System.checkSystemStatuses(
+          job as Job<BullMQ.System.CheckEngineStatuses>
         );
-      case BullMQ.JobType.Recurring_RefreshLangTags:
-        return Executor.Recurring.refreshLangTags(job as Job<BullMQ.Recurring.RefreshLangTags>);
+      case BullMQ.JobType.System_RefreshLangTags:
+        return Executor.System.refreshLangTags(job as Job<BullMQ.System.RefreshLangTags>);
+    }
+  }
+}
+
+export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
+  constructor() {
+    super(BullMQ.QueueName.SystemRecurring);
+    Queues.SystemStartup.add('Check System Statuses (Startup)', {
+      type: BullMQ.JobType.System_CheckEngineStatuses
+    });
+    Queues.SystemStartup.add('Refresh LangTags (Startup)', {
+      type: BullMQ.JobType.System_RefreshLangTags
+    });
+  }
+  async run(job: Job<J>) {
+    switch (job.data.type) {
+      case BullMQ.JobType.System_CheckEngineStatuses:
+        return Executor.System.checkSystemStatuses(
+          job as Job<BullMQ.System.CheckEngineStatuses>
+        );
+      case BullMQ.JobType.System_RefreshLangTags:
+        return Executor.System.refreshLangTags(job as Job<BullMQ.System.RefreshLangTags>);
     }
   }
 }

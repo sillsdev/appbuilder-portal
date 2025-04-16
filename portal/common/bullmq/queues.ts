@@ -2,11 +2,12 @@ import { Queue } from 'bullmq';
 import { Redis } from 'ioredis';
 import type {
   BuildJob,
-  Job,
+  EmailJob,
   MiscJob,
   PollJob,
   PublishJob,
   RecurringJob,
+  StartupJob,
   UserTasksJob
 } from './types.js';
 import { QueueName } from './types.js';
@@ -55,7 +56,9 @@ export const config = { connection: connection.connection() } as const;
 /** Queue for Product Builds */
 export const Builds = new Queue<BuildJob>(QueueName.Builds, config);
 /** Queue for default recurring jobs such as the BuildEngine status check */
-export const DefaultRecurring = new Queue<RecurringJob>(QueueName.DefaultRecurring, config);
+export const SystemRecurring = new Queue<RecurringJob>(QueueName.SystemRecurring, config);
+/** Queue for default recurring jobs such as the BuildEngine status check */
+export const SystemStartup = new Queue<StartupJob>(QueueName.SystemStartup, config);
 /** Queue for miscellaneous jobs such as Product and Project Creation */
 export const Miscellaneous = new Queue<MiscJob>(QueueName.Miscellaneous, config);
 /** Queue for Product Publishing  */
