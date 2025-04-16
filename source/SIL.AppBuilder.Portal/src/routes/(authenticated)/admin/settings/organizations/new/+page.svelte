@@ -51,9 +51,9 @@
   <LabeledFormInput name="admin_settings_organizations_websiteURL">
     <input
       type="url"
-      name="websiteURL"
+      name="websiteUrl"
       class="input input-bordered w-full"
-      bind:value={$form.websiteURL}
+      bind:value={$form.websiteUrl}
     />
   </LabeledFormInput>
   <InputWithMessage title={{ key: 'org_useDefaultBuildEngineTitle' }} className="py-2">

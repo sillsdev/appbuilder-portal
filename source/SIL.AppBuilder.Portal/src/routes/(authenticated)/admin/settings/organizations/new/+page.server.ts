@@ -30,7 +30,7 @@ export const actions = {
         OwnerId: form.data.owner,
         PublicByDefault: form.data.publicByDefault,
         UseDefaultBuildEngine: form.data.useDefaultBuildEngine,
-        WebsiteUrl: form.data.websiteURL
+        WebsiteUrl: form.data.websiteUrl
       }
     });
     return { ok: true, form };

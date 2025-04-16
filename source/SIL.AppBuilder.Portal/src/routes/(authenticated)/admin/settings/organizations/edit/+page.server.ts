@@ -34,7 +34,7 @@ export const load = (async ({ url }) => {
       id: data.Id,
       name: data.Name,
       owner: data.OwnerId,
-      websiteURL: data.WebsiteUrl,
+      websiteUrl: data.WebsiteUrl,
       buildEngineUrl: data.BuildEngineUrl,
       buildEngineApiAccessToken: data.BuildEngineApiAccessToken,
       logoUrl: data.LogoUrl,
@@ -64,7 +64,7 @@ export const actions = {
         OwnerId: form.data.owner,
         PublicByDefault: form.data.publicByDefault,
         UseDefaultBuildEngine: form.data.useDefaultBuildEngine,
-        WebsiteUrl: form.data.websiteURL
+        WebsiteUrl: form.data.websiteUrl
       }
     });
 

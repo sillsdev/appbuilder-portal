@@ -15,7 +15,7 @@ export const infrastructureSchema = v.object({
 export const organizationBaseSchema = v.object({
   ...infoSchema.entries,
   ...infrastructureSchema.entries,
-  websiteURL: v.nullable(v.string()),
+  websiteUrl: v.nullable(v.string()),
   publicByDefault: v.boolean(),
   owner: idSchema
 });
