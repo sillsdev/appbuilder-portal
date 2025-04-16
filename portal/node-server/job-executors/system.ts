@@ -343,6 +343,28 @@ async function processLocalizedNames(
 }
 
 export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
+  /**
+   * Migration Tasks:
+   * 1. Delete UserTasks for archived projects
+   * 2. Migrate data from DWKit tables to WorkflowInstances
+   */
+
+  // 1. Delete UserTasks for archived projects
+  const deletedTasks = await DatabaseWrites.userTasks.deleteMany({
+    where: {
+      Product: {
+        Project: {
+          DateArchived: { not: null }
+        }
+      }
+    }
+  });
+  job.updateProgress(50);
+
+  // TODO 2. Migrate data from DWKit tables to WorkflowInstances
+
   job.updateProgress(100);
-  return null;
+  return {
+    deletedTasks: deletedTasks.count
+  };
 }
