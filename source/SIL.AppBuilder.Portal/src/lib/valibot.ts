@@ -19,7 +19,6 @@ export const propertiesSchema = v.nullable(
       try {
         return JSON.parse(dataset.value || '{}');
       } catch (e) {
-        //console.warn(e);
         addIssue({
           message: e as string,
           path: [{

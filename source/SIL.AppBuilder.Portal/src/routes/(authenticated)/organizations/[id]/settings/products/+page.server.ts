@@ -52,7 +52,6 @@ export const actions = {
   },
   async toggleProduct(event) {
     const form = await superValidate(event.request, valibot(toggleProductSchema));
-    console.log(form);
     if (!form.valid) return fail(400, { form, ok: false });
     if (form.data.orgId !== parseInt(event.params.id)) return fail(404, { form, ok: false });
     await DatabaseWrites.organizationProductDefinitions.toggleForOrg(

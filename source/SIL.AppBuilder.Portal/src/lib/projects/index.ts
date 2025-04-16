@@ -140,7 +140,6 @@ export const importJSONSchema = v.pipe(
     try {
       return JSON.parse(dataset.value || '{}');
     } catch (e) {
-      //console.warn(e);
       addIssue({
         message: e as string,
         path: [
