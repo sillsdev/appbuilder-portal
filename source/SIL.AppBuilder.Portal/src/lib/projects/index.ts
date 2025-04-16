@@ -101,7 +101,7 @@ export const importJSONSchema = v.pipe(
       return JSON.parse(dataset.value || '{}');
     } catch (e) {
       addIssue({
-        message: e as string,
+        message: e instanceof Error ? e.message : String(e),
         path: [
           {
             type: 'unknown',
