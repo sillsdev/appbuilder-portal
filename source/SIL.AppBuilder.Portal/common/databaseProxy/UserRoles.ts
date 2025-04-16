@@ -28,7 +28,12 @@ export async function toggleForOrg(
     });
   }
 
-  /* This is the correct condition. Trust me, I worked it out on paper. */
+  /*
+   * Only enqueue tasks when:
+   * 1. The role is OrgAdmin AND
+   * 2. Either we're adding a role that hasn't already been added or removing a role.
+   * This prevents duplicate task enqueuing when adding an already-added role
+   */
   if (role === RoleId.OrgAdmin && !(enabled && existing)) {
     await Queues.UserTasks.addBulk(
       (
