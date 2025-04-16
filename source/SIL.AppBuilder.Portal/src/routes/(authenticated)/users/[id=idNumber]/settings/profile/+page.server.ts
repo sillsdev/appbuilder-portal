@@ -1,5 +1,5 @@
 import { isSuperAdmin } from '$lib/utils/roles';
-import { idSchema } from '$lib/valibot';
+import { idSchema, phoneRegex } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
@@ -14,8 +14,7 @@ const profileSchema = v.object({
   lastName: v.nullable(v.string()),
   displayName: v.nullable(v.string()),
   email: v.nullable(v.pipe(v.string(), v.email())),
-  // Legal phone numbers: (123) 456-7890 1234567890 123-4567890 123 456-7890
-  phone: v.nullable(v.pipe(v.string(), v.regex(/[\d-() ]+/))),
+  phone: v.nullable(v.pipe(v.string(), v.regex(phoneRegex))),
   timezone: v.nullable(v.string()),
   notifications: v.boolean(),
   visible: v.boolean(),

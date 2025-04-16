@@ -5,8 +5,8 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-  import { langtagRegex } from '$lib/projects';
   import { byName } from '$lib/utils/sorting';
+  import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -61,7 +61,7 @@
             bind:langCode={$form.language}
             inputClasses="w-full md:max-w-xs validator"
             dropdownClasses="left-0"
-            inputElProps={{ required: true, pattern: langtagRegex.toString().slice(1, -1) }}
+            inputElProps={{ required: true, pattern: regExpToInputPattern(langtagRegex) }}
           >
             {#snippet validatorHint()}
               <span class="validator-hint">Invalid BCP 47 Language Tag</span>

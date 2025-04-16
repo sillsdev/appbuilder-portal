@@ -5,6 +5,7 @@
   import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
+  import { phoneRegex, regExpToInputPattern } from '$lib/valibot';
   import { getTimeZones } from '@vvo/tzdb';
   import Fuse from 'fuse.js';
   import { superForm } from 'sveltekit-superforms';
@@ -17,6 +18,7 @@
   let { data }: Props = $props();
   const { form, enhance } = superForm(data.form, {
     dataType: 'json',
+    resetForm: false,
     onSubmit(input) {
       // Set the timezone form value (if the value was changed manually and not clicked)
       if (tzValue && !timeZoneMap.has(tzValue)) input.cancel();
@@ -95,7 +97,13 @@
       </span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_phone">
-      <input type="tel" name="phone" class="input input-bordered w-full" bind:value={$form.phone} />
+      <input
+        type="tel"
+        name="phone"
+        class="input input-bordered w-full validator"
+        bind:value={$form.phone}
+        pattern={regExpToInputPattern(phoneRegex)}
+      />
     </LabeledFormInput>
     <LabeledFormInput name="profile_timezone">
       <TypeaheadInput
