@@ -8,6 +8,9 @@ export async function toggleForOrg(
   role: RoleId,
   enabled: boolean
 ) {
+  // check if user is a member of the org
+  if (!(await prisma.organizationMemberships.findFirst({ where: { OrganizationId, UserId } })))
+    return false;
   // ISSUE: #1102 this extra check would be unneccessary if we could switch to composite primary keys
   const existing = await prisma.userRoles.findFirst({
     where: { OrganizationId, UserId, RoleId: role },
@@ -48,6 +51,7 @@ export async function toggleForOrg(
       }))
     );
   }
+  return true;
 }
 
 export async function allUsersByRole(
@@ -64,10 +68,10 @@ export async function allUsersByRole(
       Authors:
         !roles || roles.includes(RoleId.Author)
           ? {
-            select: {
-              UserId: true
+              select: {
+                UserId: true
+              }
             }
-          }
           : undefined
     }
   });
@@ -77,14 +81,14 @@ export async function allUsersByRole(
   const admins =
     !roles || roles.includes(RoleId.OrgAdmin)
       ? await prisma.userRoles.findMany({
-        where: {
-          OrganizationId: project.OrganizationId,
-          RoleId: RoleId.OrgAdmin
-        },
-        select: {
-          UserId: true
-        }
-      })
+          where: {
+            OrganizationId: project.OrganizationId,
+            RoleId: RoleId.OrgAdmin
+          },
+          select: {
+            UserId: true
+          }
+        })
       : [];
 
   const ret: Record<number, Set<RoleId>> = {};

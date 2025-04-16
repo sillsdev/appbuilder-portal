@@ -69,8 +69,13 @@ export const actions = {
 
     if (!isAdminForOrgs(subjectOrgs, user.roles)) return fail(403, { form, ok: false });
 
-    await DatabaseWrites.userRoles.toggleForOrg(form.data.orgId, form.data.userId, form.data.roleId, form.data.enabled)
+    const ok = await DatabaseWrites.userRoles.toggleForOrg(
+      form.data.orgId,
+      form.data.userId,
+      form.data.roleId,
+      form.data.enabled
+    );
 
-    return { form, ok: true };
+    return { form, ok };
   }
 } satisfies Actions;

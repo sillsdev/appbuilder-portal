@@ -3,13 +3,17 @@ import prisma from '../prisma.js';
 // Make sure that group belongs to organization the user is in
 // and removed group is not linked to projects this user owns
 export async function toggleForOrg(
-  orgId: number,
+  OrganizationId: number,
   UserId: number,
   GroupId: number,
   enabled: boolean
 ) {
   // check if group owned by org
-  if (!(await prisma.groups.findFirst({ where: { OwnerId: orgId, Id: GroupId } }))) return false;
+  if (!(await prisma.groups.findFirst({ where: { OwnerId: OrganizationId, Id: GroupId } })))
+    return false;
+  // check if user is a member of the org
+  if (!(await prisma.organizationMemberships.findFirst({ where: { OrganizationId, UserId } })))
+    return false;
   if (enabled) {
     // ISSUE: #1102 this extra check would be unneccessary if we could switch to composite primary keys
     const existing = await prisma.groupMemberships.findFirst({
