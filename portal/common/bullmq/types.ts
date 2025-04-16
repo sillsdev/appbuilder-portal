@@ -55,6 +55,7 @@ export enum JobType {
   // System Tasks
   System_CheckEngineStatuses = 'Check BuildEngine Statuses',
   System_RefreshLangTags = 'Refresh langtags.json',
+  System_Migrate = 'Migrate Features from S1 to S2',
   // UserTasks
   UserTasks_Modify = 'Modify UserTasks',
   // Email
@@ -163,6 +164,9 @@ export namespace System {
   export interface RefreshLangTags {
     type: JobType.System_RefreshLangTags;
   }
+  export interface Migrate {
+    type: JobType.System_Migrate;
+  }
 }
 
 export namespace UserTasks {
@@ -270,7 +274,8 @@ export type RecurringJob = JobTypeMap[
   | JobType.System_RefreshLangTags];
 export type StartupJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
-  | JobType.System_RefreshLangTags];
+  | JobType.System_RefreshLangTags
+  | JobType.System_Migrate];
 export type PublishJob = JobTypeMap[JobType.Publish_Product | JobType.Publish_PostProcess];
 export type PollJob = JobTypeMap[
   | JobType.Build_Check
@@ -304,6 +309,7 @@ export type JobTypeMap = {
   [JobType.Publish_PostProcess]: Publish.PostProcess;
   [JobType.System_CheckEngineStatuses]: System.CheckEngineStatuses;
   [JobType.System_RefreshLangTags]: System.RefreshLangTags;
+  [JobType.System_Migrate]: System.Migrate;
   [JobType.UserTasks_Modify]: UserTasks.Modify;
   [JobType.Email_InviteUser]: Email.InviteUser;
   [JobType.Email_SendNotificationToUser]: Email.SendNotificationToUser;
