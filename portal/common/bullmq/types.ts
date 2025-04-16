@@ -19,7 +19,8 @@ export const RepeatEveryMinute: RepeatOptions = {
 
 export enum QueueName {
   Builds = 'Builds',
-  DefaultRecurring = 'Default Recurring',
+  SystemRecurring = 'System Recurring',
+  SystemStartup = 'System Startup',
   Miscellaneous = 'Miscellaneous',
   Publishing = 'Publishing',
   RemotePolling = 'Remote Polling',
@@ -44,9 +45,9 @@ export enum JobType {
   Publish_Product = 'Publish Product',
   Publish_Check = 'Check Product Publish',
   Publish_PostProcess = 'Postprocess Publish',
-  // Recurring Tasks
-  Recurring_CheckSystemStatuses = 'Check System Statuses',
-  Recurring_RefreshLangTags = 'Refresh langtags.json',
+  // System Tasks
+  System_CheckEngineStatuses = 'Check BuildEngine Statuses',
+  System_RefreshLangTags = 'Refresh langtags.json',
   // UserTasks
   UserTasks_Modify = 'Modify UserTasks',
   // Email
@@ -148,12 +149,12 @@ export namespace Publish {
   }
 }
 
-export namespace Recurring {
-  export interface CheckSystemStatuses {
-    type: JobType.Recurring_CheckSystemStatuses;
+export namespace System {
+  export interface CheckEngineStatuses {
+    type: JobType.System_CheckEngineStatuses;
   }
   export interface RefreshLangTags {
-    type: JobType.Recurring_RefreshLangTags;
+    type: JobType.System_RefreshLangTags;
   }
 }
 
@@ -258,8 +259,11 @@ export type Job = JobTypeMap[keyof JobTypeMap];
 
 export type BuildJob = JobTypeMap[JobType.Build_Product | JobType.Build_PostProcess];
 export type RecurringJob = JobTypeMap[
-  | JobType.Recurring_CheckSystemStatuses
-  | JobType.Recurring_RefreshLangTags];
+  | JobType.System_CheckEngineStatuses
+  | JobType.System_RefreshLangTags];
+export type StartupJob = JobTypeMap[
+  | JobType.System_CheckEngineStatuses
+  | JobType.System_RefreshLangTags];
 export type PublishJob = JobTypeMap[JobType.Publish_Product | JobType.Publish_PostProcess];
 export type PollJob = JobTypeMap[
   | JobType.Build_Check
@@ -291,8 +295,8 @@ export type JobTypeMap = {
   [JobType.Publish_Product]: Publish.Product;
   [JobType.Publish_Check]: Publish.Check;
   [JobType.Publish_PostProcess]: Publish.PostProcess;
-  [JobType.Recurring_CheckSystemStatuses]: Recurring.CheckSystemStatuses;
-  [JobType.Recurring_RefreshLangTags]: Recurring.RefreshLangTags;
+  [JobType.System_CheckEngineStatuses]: System.CheckEngineStatuses;
+  [JobType.System_RefreshLangTags]: System.RefreshLangTags;
   [JobType.UserTasks_Modify]: UserTasks.Modify;
   [JobType.Email_InviteUser]: Email.InviteUser;
   [JobType.Email_SendNotificationToUser]: Email.SendNotificationToUser;

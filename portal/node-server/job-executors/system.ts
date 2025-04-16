@@ -6,7 +6,7 @@ import { join } from 'path';
 import { BuildEngine, BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 
 export async function checkSystemStatuses(
-  job: Job<BullMQ.Recurring.CheckSystemStatuses>
+  job: Job<BullMQ.System.CheckEngineStatuses>
 ): Promise<unknown> {
   const organizations = await prisma.organizations.findMany({
     where: {
@@ -146,7 +146,7 @@ export async function checkSystemStatuses(
 const sectionDelim = '********************';
 
 export async function refreshLangTags(
-  job: Job<BullMQ.Recurring.RefreshLangTags>
+  job: Job<BullMQ.System.RefreshLangTags>
 ): Promise<unknown> {
   const localDir =
     process.env.NODE_ENV === 'development'

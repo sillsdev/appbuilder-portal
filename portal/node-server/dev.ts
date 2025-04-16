@@ -24,7 +24,8 @@ app.use(serverAdapter.getRouter());
 app.listen(6100, () => console.log('Dev server started'));
 
 new Workers.Builds();
-new Workers.DefaultRecurring();
+new Workers.SystemRecurring();
+new Workers.SystemStartup();
 new Workers.Miscellaneous();
 new Workers.Publishing();
 new Workers.RemotePolling();
