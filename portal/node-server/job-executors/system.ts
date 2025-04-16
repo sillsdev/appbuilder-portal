@@ -341,3 +341,8 @@ async function processLocalizedNames(
 
   return update;
 }
+
+export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
+  job.updateProgress(100);
+  return null;
+}
