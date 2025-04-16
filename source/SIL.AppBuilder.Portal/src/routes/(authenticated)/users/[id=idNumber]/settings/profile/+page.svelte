@@ -91,14 +91,12 @@
         getList={(search) => fuzzySearch.search(search).slice(0, 7)}
         onItemClicked={(res) => {
           // Not strictly necessary because it will be set onSubmit but here anyways
-          // @ts-expect-error the property key should always exist in our use case
-          $form.timezone = res.key;
-          // @ts-expect-error the property value should always exist in our use case
-          tzValue = res.value;
+          $form.timezone = res.item.key;
+          tzValue = res.item.value;
         }}
         bind:search={tzValue}
         classes="w-full {!tzValue || timeZoneMap.has(tzValue) ? '' : 'select-error'}"
-        dropdownClasses="w-full"
+        dropdownClasses="w-full bg-base-100"
       >
         {#snippet listElement(res, selected)}
           <div class="w-full right-0" class:selected>
@@ -148,6 +146,6 @@
 
 <style>
   .selected {
-    background-color: var(--color-base-200);
+    background-color: var(--color-accent);
   }
 </style>
