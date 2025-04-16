@@ -10,13 +10,13 @@ import type { Actions, PageServerLoad } from './$types';
 
 const profileSchema = v.object({
   id: idSchema,
-  firstName: v.string(),
-  lastName: v.string(),
-  displayName: v.string(),
-  email: v.pipe(v.string(), v.email()),
+  firstName: v.nullable(v.string()),
+  lastName: v.nullable(v.string()),
+  displayName: v.nullable(v.string()),
+  email: v.nullable(v.pipe(v.string(), v.email())),
   // Legal phone numbers: (123) 456-7890 1234567890 123-4567890 123 456-7890
-  phone: v.pipe(v.string(), v.regex(/[\d-() ]+/)),
-  timezone: v.string(), // ?
+  phone: v.nullable(v.pipe(v.string(), v.regex(/[\d-() ]+/))),
+  timezone: v.nullable(v.string()),
   notifications: v.boolean(),
   visible: v.boolean(),
   active: v.boolean()
@@ -33,12 +33,12 @@ export const load = (async ({ locals, parent }) => {
   const form = await superValidate(
     {
       id: subData.Id,
-      firstName: subData.GivenName ?? '',
-      lastName: subData.FamilyName ?? '',
-      displayName: subData.Name ?? '',
-      email: subData.Email ?? '',
-      phone: subData.Phone ?? '',
-      timezone: subData.Timezone ?? '',
+      firstName: subData.GivenName,
+      lastName: subData.FamilyName,
+      displayName: subData.Name,
+      email: subData.Email,
+      phone: subData.Phone,
+      timezone: subData.Timezone,
       notifications: subData.EmailNotification ?? false,
       visible: !!subData.ProfileVisibility,
       active: !subData.IsLocked

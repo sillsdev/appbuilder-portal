@@ -19,8 +19,8 @@
     dataType: 'json',
     onSubmit(input) {
       // Set the timezone form value (if the value was changed manually and not clicked)
-      if (!timeZoneMap.has(tzValue)) input.cancel();
-      $form.timezone = timeZoneMap.get(tzValue)!;
+      if (tzValue && !timeZoneMap.has(tzValue)) input.cancel();
+      $form.timezone = timeZoneMap.get(tzValue) ?? null;
     },
     onUpdated({ form }) {
       if (form.valid) {
@@ -54,33 +54,45 @@
       <input
         type="text"
         name="firstName"
-        class="input input-bordered w-full"
+        class="input input-bordered w-full validator"
         bind:value={$form.firstName}
+        required
       />
+      <span class="validator-hint">{m.org_nameError()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_lastName">
       <input
         type="text"
         name="lastName"
-        class="input input-bordered w-full"
+        class="input input-bordered w-full validator"
         bind:value={$form.lastName}
+        required
       />
+      <span class="validator-hint">{m.org_nameError()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_name">
       <input
         type="text"
         name="displayName"
-        class="input input-bordered w-full"
+        class="input input-bordered w-full validator"
         bind:value={$form.displayName}
+        required
       />
+      <span class="validator-hint">{m.org_nameError()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_email">
       <input
         type="email"
         name="email"
-        class="input input-bordered w-full"
+        class="input input-bordered w-full validator"
         bind:value={$form.email}
+        required
       />
+      <span class="validator-hint">
+        {$form.email
+          ? m.project_side_reviewers_form_invalidEmailError()
+          : m.project_side_reviewers_form_emptyEmailError()}
+      </span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_phone">
       <input type="tel" name="phone" class="input input-bordered w-full" bind:value={$form.phone} />
