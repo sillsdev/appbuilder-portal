@@ -75,6 +75,9 @@ export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
     Queues.SystemStartup.add('Refresh LangTags (Startup)', {
       type: BullMQ.JobType.System_RefreshLangTags
     });
+    Queues.SystemStartup.add('Migrate Featueres from S1 to S2 (Startup)', {
+      type: BullMQ.JobType.System_Migrate
+    });
   }
   async run(job: Job<J>) {
     switch (job.data.type) {
@@ -84,6 +87,8 @@ export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
         );
       case BullMQ.JobType.System_RefreshLangTags:
         return Executor.System.refreshLangTags(job as Job<BullMQ.System.RefreshLangTags>);
+      case BullMQ.JobType.System_Migrate:
+        return Executor.System.migrate(job as Job<BullMQ.System.Migrate>);
     }
   }
 }
