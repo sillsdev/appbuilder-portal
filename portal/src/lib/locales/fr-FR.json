@@ -215,6 +215,8 @@
   "profile_noTimezone": "(GMT-0)",
   "profile_visibility_visible": "My profile information is publicly viewable",
   "profile_visibility_restricted": "My profile information is restricted from the public",
+  "user_addedTo": "{user} added to {name}",
+  "user_removedFrom": "{user} removed from {name}",
   "errors_generic": "An error occurred! {errorMessage}",
   "errors_requiredField": "The {field} is required, but has no value",
   "errors_notAuthorized": "You must login. This could be due to a prior login expiring.",
@@ -463,6 +465,8 @@
   "admin_settings_organizations_websiteURL": "Website URL",
   "admin_settings_organizations_buildEngineURL": "Build Engine URL",
   "admin_settings_organizations_accessToken": "Build Engine API Access Token",
+  "admin_settings_organizations_emptyBuildEngineURL": "A URL must be provided when not using the Default Build Engine",
+  "admin_settings_organizations_emptyAccessToken": "An API token must be provided when not using the Default Build Engine",
   "admin_settings_organizations_logoURL": "Logo URL",
   "admin_settings_organizations_publicByDefault": "Public By Default",
   "admin_settings_organizations_publicByDefaultDescription": "Projects created under this organization are set to public by default",
@@ -481,6 +485,7 @@
   "admin_settings_workflowDefinitions_workflowUpdated": "Workflow Definition updated",
   "admin_settings_workflowDefinitions_emptyStoreType": "Need to select a store type for this workflow definition",
   "admin_settings_workflowDefinitions_emptyWorkflowType": "Need to select a workflow type for this workflow definition",
+  "admin_settings_workflowDefinitions_emptyProductType": "Need to select a product type for this workflow definition",
   "admin_settings_workflowDefinitions_workflowType": "Workflow Type",
   "admin_settings_workflowDefinitions_workflowTypes": [
     {

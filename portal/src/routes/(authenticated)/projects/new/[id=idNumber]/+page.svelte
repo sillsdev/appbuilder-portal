@@ -6,6 +6,7 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName, byString } from '$lib/utils/sorting';
+  import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -14,7 +15,7 @@
   }
 
   let { data }: Props = $props();
-  const { form, enhance, allErrors } = superForm(data.form, {
+  const { form, enhance } = superForm(data.form, {
     dataType: 'json',
     onSubmit(event) {
       if (!($form.Name.length && $form.Language.length)) {
@@ -30,10 +31,17 @@
     <div class="flex flex-col gap-2 items-center">
       <div class="row">
         <LabeledFormInput name="project_projectName" className="md:max-w-xs grow">
-          <input type="text" id="name" class="input input-bordered" bind:value={$form.Name} />
+          <input
+            type="text"
+            name="Name"
+            class="input input-bordered validator"
+            bind:value={$form.Name}
+            required
+          />
+          <span class="validator-hint">{m.project_side_reviewers_form_nameError()}</span>
         </LabeledFormInput>
         <LabeledFormInput name="project_projectGroup" className="md:max-w-xs">
-          <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
+          <select name="group" class="select select-bordered" bind:value={$form.group}>
             {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
               <option value={group.Id}>{group.Name}</option>
             {/each}
@@ -44,12 +52,17 @@
         <LabeledFormInput name="project_languageCode" className="md:max-w-xs">
           <LanguageCodeTypeahead
             bind:langCode={$form.Language}
-            inputClasses="w-full md:max-w-xs"
+            inputClasses="w-full md:max-w-xs validator"
             dropdownClasses="left-0"
-          />
+            inputElProps={{ required: true, pattern: regExpToInputPattern(langtagRegex) }}
+          >
+            {#snippet validatorHint()}
+              <span class="validator-hint">Invalid BCP 47 Language Tag</span>
+            {/snippet}
+          </LanguageCodeTypeahead>
         </LabeledFormInput>
         <LabeledFormInput name="project_type" className="md:max-w-xs">
-          <select name="type" id="type" class="select select-bordered" bind:value={$form.type}>
+          <select name="type" class="select select-bordered" bind:value={$form.type}>
             {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
               <option value={type.Id}>{type.Description}</option>
             {/each}
@@ -59,36 +72,26 @@
       <div class="row">
         <LabeledFormInput name="project_projectDescription" className="md:max-w-xs">
           <textarea
-            name="description"
-            id="description"
-            class="textarea textarea-bordered w-full"
+            name="Description"
+            class="textarea textarea-bordered h-48 w-full"
             bind:value={$form.Description}
           ></textarea>
         </LabeledFormInput>
-        <LabeledFormInput name="project_public" className="md:max-w-xs">
-          <InputWithMessage name="project_visibilityDescription">
-            <input
-              type="checkbox"
-              name="public"
-              id="public"
-              class="toggle"
-              bind:checked={$form.IsPublic}
-            />
-          </InputWithMessage>
-        </LabeledFormInput>
+        <InputWithMessage
+          className="md:max-w-xs"
+          title={{ key: 'project_public' }}
+          message={{ key: 'project_visibilityDescription' }}
+        >
+          <input
+            type="checkbox"
+            name="IsPublic"
+            class="toggle"
+            bind:checked={$form.IsPublic}
+          />
+        </InputWithMessage>
       </div>
-      {#if $allErrors.length}
-        <ul>
-          {#each $allErrors as error}
-            <li class="text-red-500">
-              <b>{error.path}:</b>
-              {error.messages.join('. ')}
-            </li>
-          {/each}
-        </ul>
-      {/if}
-      <div class="flex flex-wrap place-content-center gap-4 p-4">
-        <a href={localizeHref(`/projects/own/${page.params.id}`)} class="btn w-full max-w-xs">
+      <div class="flex flex-row flex-wrap place-content-center gap-4 p-4 w-full">
+        <a href={localizeHref(`/projects/own/${page.params.id}`)} class="btn btn-secondary w-full max-w-xs">
           {m.common_cancel()}
         </a>
         <button

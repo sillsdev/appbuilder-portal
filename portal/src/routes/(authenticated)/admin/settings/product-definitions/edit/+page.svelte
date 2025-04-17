@@ -4,6 +4,7 @@
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -16,10 +17,11 @@
 
   const base = '/admin/settings/product-definitions';
 
-  const { form, enhance, allErrors } = superForm(data.form, {
-    onUpdated(event) {
-      if (event.form.valid) {
+  const { form, enhance } = superForm(data.form, {
+    onUpdated({ form }) {
+      if (form.valid) {
         goto(localizeHref(base));
+        toast('success', m.admin_settings_productDefinitions_editSuccess());
       }
     }
   });
@@ -39,29 +41,46 @@
   let propsOk = $state(true);
 </script>
 
+<h3>{m.admin_settings_productDefinitions_edit()}</h3>
+
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
   <LabeledFormInput name="admin_settings_productDefinitions_name">
-    <input class="input w-full input-bordered" type="text" name="name" bind:value={$form.name} />
+    <input
+      type="text"
+      name="name"
+      class="input input-bordered w-full validator"
+      bind:value={$form.name}
+      required
+    />
+    <span class="validator-hint">{m.admin_settings_productDefinitions_emptyName()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_type">
     <select
-      class="select select-bordered"
+      class="select select-bordered validator"
       name="applicationType"
       bind:value={$form.applicationType}
+      required
     >
-      {#each data.options.applicationTypes.toSorted((a, b) => byName(a, b, locale)) as type}
+      {#each data.options.applicationTypes as type}
         <option value={type.Id}>{type.Name}</option>
       {/each}
     </select>
+    <span class="validator-hint">{m.admin_settings_productDefinitions_emptyType()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_workflow">
-    <select class="select select-bordered" name="workflow" bind:value={$form.workflow}>
-      {#each workflows as workflow}
-        <option value={workflow.Id}>{workflow.Name}</option>
+    <select
+      class="select select-bordered validator"
+      name="workflow"
+      bind:value={$form.workflow}
+      required
+    >
+      {#each workflows as wf}
+        <option value={wf.Id}>{wf.Name}</option>
       {/each}
     </select>
+    <span class="validator-hint">{m.admin_settings_productDefinitions_emptyWorkflow()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_rebuildWorkflow">
     <select
@@ -90,25 +109,15 @@
   <LabeledFormInput name="admin_settings_productDefinitions_description">
     <textarea
       name="description"
-      class="textarea textarea-bordered w-full"
+      class="textarea textarea-bordered h-36 w-full"
       bind:value={$form.description}
     ></textarea>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_productDefinitions_properties">
     <PropertiesEditor name="properties" className="w-full" bind:value={$form.properties} bind:ok={propsOk} />
   </LabeledFormInput>
-  {#if $allErrors.length}
-    <ul>
-      {#each $allErrors as error}
-        <li class="text-red-500">
-          <b>{error.path}:</b>
-          {error.messages.join('. ')}
-        </li>
-      {/each}
-    </ul>
-  {/if}
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value="Submit" disabled={!propsOk} />
-    <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
+    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
+    <input type="submit" class="btn btn-primary" value={m.common_save()} disabled={!propsOk} />
   </div>
 </form>

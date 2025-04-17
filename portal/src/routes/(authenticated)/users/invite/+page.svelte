@@ -1,8 +1,10 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import GroupsSelector from '../GroupsSelector.svelte';
@@ -14,17 +16,19 @@
   }
 
   let { data }: Props = $props();
-  let inputEle: HTMLInputElement;
-  const { form, enhance, allErrors } = superForm(data.form, {
+
+  const { form, enhance } = superForm(data.form, {
     dataType: 'json',
+    resetForm: false,
     onUpdated(event) {
       if (event.form.valid) {
-        inputEle.classList.add('btn-success');
-        inputEle.value = 'Success!';
-        inputEle.classList.remove('btn-primary');
-        setTimeout(() => {
-          window.location.href = localizeHref('/users');
-        }, 2000);
+        goto(localizeHref('/users'));
+        toast(
+          'success',
+          m.organizationMembership_invite_create_success({ email: event.form.data.email })
+        );
+      } else {
+        toast('error', m.organizationMembership_invite_create_error());
       }
     }
   });
@@ -49,9 +53,11 @@
             type="email"
             name="email"
             placeholder="user@example.com"
-            class="input input-bordered w-full"
+            class="input input-bordered w-full validator"
             bind:value={$form.email}
+            required
           />
+          <span class="validator-hint">{m.project_side_reviewers_form_invalidEmailError()}</span>
         </LabeledFormInput>
         <LabeledFormInput name="project_side_organization">
           <OrganizationDropdown
@@ -70,35 +76,41 @@
           <div class="flex flex-row space-x-2">
             <div>
               {m.users_userRoles()}
-              <RolesSelector bind:roles={$form.roles} />
+              <RolesSelector>
+                {#snippet selector(role)}
+                  <input
+                    type="checkbox"
+                    class="toggle toggle-accent"
+                    value={role}
+                    bind:group={$form.roles}
+                  />
+                {/snippet}
+              </RolesSelector>
             </div>
             <div>
               {m.users_userGroups()}
-              <GroupsSelector groups={currentGroups} bind:selected={$form.groups} />
+              <GroupsSelector groups={currentGroups}>
+                {#snippet selector(group)}
+                  <input
+                    type="checkbox"
+                    class="toggle toggle-accent"
+                    value={group.Id}
+                    bind:group={$form.groups}
+                  />
+                {/snippet}
+              </GroupsSelector>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    {#if $allErrors.length}
-      <ul>
-        {#each $allErrors as error}
-          <li class="text-red-500">
-            <b>{error.path}:</b>
-            {error.messages.join('. ')}
-          </li>
-        {/each}
-      </ul>
-    {/if}
     <div class="my-4 flex justify-end gap-2">
+      <a class="btn btn-secondary" href={localizeHref('/users')}>{m.common_cancel()}</a>
       <input
         type="submit"
         class="btn btn-primary"
         value={m.organizationMembership_invite_create_sendInviteButton()}
-        bind:this={inputEle}
       />
-      <a class="btn" href={localizeHref('/users')}>{m.common_cancel()}</a>
     </div>
   </form>
 </div>

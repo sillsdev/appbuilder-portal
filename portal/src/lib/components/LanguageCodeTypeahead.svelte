@@ -6,6 +6,8 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import type { FuseResultMatch } from 'fuse.js';
+  import type { Snippet } from 'svelte';
+  import type { HTMLInputAttributes } from 'svelte/elements';
   import TypeaheadInput from './TypeaheadInput.svelte';
 
   let langtagList = localizeTagData(page.data.langtags as LangInfo[], l10nMap.value, getLocale());
@@ -86,13 +88,17 @@
     dropdownClasses?: string;
     inputClasses?: string;
     onLangCodeSelected?: (langCode: string) => void;
+    inputElProps?: HTMLInputAttributes;
+    validatorHint?: Snippet;
   }
 
   let {
     langCode = $bindable(),
     dropdownClasses = '',
     inputClasses = '',
-    onLangCodeSelected
+    onLangCodeSelected,
+    inputElProps = {},
+    validatorHint
   }: Props = $props();
 </script>
 
@@ -126,7 +132,7 @@
 {/snippet}
 
 <TypeaheadInput
-  inputElProps={{ placeholder: m.project_languageCode() }}
+  inputElProps={{ placeholder: m.project_languageCode(), ...inputElProps }}
   getList={(searchValue) => search(searchValue).slice(0, 5)}
   classes="pr-20 {inputClasses}"
   bind:search={langCode}
@@ -147,6 +153,10 @@
     >
       {langtagList.find((l) => l.tag === langCode)?.nameInLocale ?? ''}
     </span>
+    {#if validatorHint}
+      <br>
+      {@render validatorHint()}
+    {/if}
   {/snippet}
   {#snippet listElement(res, selected)}
     {@const additionalMatch = res.matches

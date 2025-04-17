@@ -6,6 +6,7 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
   import { isAdmin } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
   import { superForm, type FormResult } from 'sveltekit-superforms';
@@ -45,6 +46,18 @@
   });
 
   const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
+  function getUserLockMessage(locked: boolean, success: boolean): string {
+    if (success) {
+      if (locked) {
+        return m.users_operations_lock_success();
+      }
+      return m.users_operations_unlock_success();
+    }
+    if (locked) {
+      return m.users_operations_lock_error();
+    }
+    return m.users_operations_unlock_error();
+  }
 </script>
 
 <div class="w-full">
@@ -140,8 +153,12 @@
                 method="POST"
                 action="?/lock"
                 use:svk_enhance={() => {
-                  return async ({ update }) => {
+                  return async ({ result, update }) => {
                     await update({ reset: false, invalidateAll: false });
+                    toast(
+                      result.type === 'success' ? 'success' : 'error',
+                      getUserLockMessage(!user.A, result.type === 'success')
+                    );
                   };
                 }}
               >

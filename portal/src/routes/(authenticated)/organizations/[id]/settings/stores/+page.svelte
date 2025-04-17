@@ -1,39 +1,51 @@
 <script lang="ts">
+  import { enhance } from '$app/forms';
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
+  import { getLocale } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
+  import { byName } from '$lib/utils/sorting';
+  import type { ActionData, PageData } from './$types';
   interface Props {
     data: PageData;
   }
 
   let { data }: Props = $props();
-
-  const { form, enhance, allErrors } = superForm(data.form, {
-    dataType: 'json',
-    resetForm: false
-  });
-
-  const allStores = new Map(data.allStores);
 </script>
 
 <h2>{m.org_storesTitle()}</h2>
-<form action="" class="m-4" method="post" use:enhance>
-  <!-- TODO: sort this. I think this will need a refactor of MultiselectBox -->
+<div class="m-4">
   <MultiselectBox header={m.org_storeSelectTitle()}>
-    <div>
-      {#each $form.stores as store}
-        {@const storeLook = allStores.get(store.storeId)}
+    {#each data.stores.toSorted((a, b) => byName(a, b, getLocale())) as store}
+      <form
+        id="store-{store.Id}"
+        method="POST"
+        action=""
+        use:enhance={() => {
+          return async ({ result, update }) => {
+            if (result.type === 'success') {
+              const data = result.data as ActionData;
+              if (data?.ok) {
+                toast('success', m.common_updated());
+              }
+            }
+            return update({ reset: false });
+          };
+        }}
+      >
+        <input type="hidden" name="orgId" value={data.organization.Id} />
+        <input type="hidden" name="storeId" value={store.Id} />
         <MultiselectBoxElement
-          title={storeLook?.Name ?? ''}
-          description={storeLook?.Description ?? ''}
+          title={store.Name ?? ''}
+          description={store?.Description ?? ''}
           bind:checked={store.enabled}
+          checkProps={{
+            name: 'enabled',
+            onchange: () => (document.getElementById(`store-${store.Id}`) as HTMLFormElement).requestSubmit()
+          }}
         />
-      {/each}
-    </div>
+      </form>
+    {/each}
   </MultiselectBox>
-  <div class="my-4">
-    <input type="submit" class="btn btn-primary" value="Submit" />
-  </div>
-</form>
+</div>

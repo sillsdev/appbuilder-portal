@@ -21,7 +21,7 @@
     path: string;
     messages: string[];
   }[] = $state([]);
-  const { form, enhance, allErrors } = superForm(data.form, {
+  const { form, enhance } = superForm(data.form, {
     dataType: 'json',
     resetForm: false,
     onUpdate(event) {
@@ -43,24 +43,19 @@
   // set to null *only* if the file has been parsed *and* there are no errors
   let parseErrors: ReturnType<typeof flatten<typeof importJSONSchema>> | null = $state({});
 
-  let canSubmit = $derived(!$allErrors.length && !parseErrors && !returnedErrors.length);
+  let canSubmit = $derived(!parseErrors && !returnedErrors.length);
 
   onMount(() => {
     reader = new FileReader();
 
     reader.onloadend = (ev) => {
-      try {
-        const res = safeParse(importJSONSchema, JSON.parse((reader.result as string) ?? ''));
-        returnedErrors = [];
-        if (res.success) {
-          $form.json = res.output;
-          parseErrors = null;
-        } else {
-          parseErrors = flatten<typeof importJSONSchema>(res.issues);
-        }
-      } catch (e) {
-        //@ts-expect-error I just want to add the error!
-        parseErrors = { root: [e] };
+      const res = safeParse(importJSONSchema, reader.result?.toString());
+      returnedErrors = [];
+      if (res.success) {
+        $form.json = JSON.stringify(res.output);
+        parseErrors = null;
+      } else {
+        parseErrors = flatten<typeof importJSONSchema>(res.issues);
       }
     };
   });
@@ -78,14 +73,14 @@
     </a>
     <div class="flex flex-row gap-4 flex-wrap place-content-center sm:place-content-start p-4">
       <LabeledFormInput name="project_projectGroup" className="max-w-xs">
-        <select name="group" id="group" class="select select-bordered" bind:value={$form.group}>
+        <select name="group" class="select select-bordered" bind:value={$form.group}>
           {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
             <option value={group.Id}>{group.Name}</option>
           {/each}
         </select>
       </LabeledFormInput>
       <LabeledFormInput name="project_type" className="max-w-xs">
-        <select name="type" id="type" class="select select-bordered" bind:value={$form.type}>
+        <select name="type" class="select select-bordered" bind:value={$form.type}>
           {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
             <option value={type.Id}>{type.Description}</option>
           {/each}
@@ -111,20 +106,10 @@
         />
       </LabeledFormInput>
     </div>
-    {#if $allErrors.length}
-      <ul>
-        {#each $allErrors as error}
-          <li class="text-red-500">
-            <b>{error.path}:</b>
-            {error.messages.join('. ')}
-          </li>
-        {/each}
-      </ul>
-    {/if}
     {#if returnedErrors.length}
       <ul>
         {#each returnedErrors as error}
-          <li class="text-red-500">
+          <li class="text-error">
             <b>{error.path}:</b>
             {error.messages.join('. ')}
           </li>
@@ -134,27 +119,29 @@
     {#if parseErrors}
       <ul>
         {#each parseErrors.root ?? [] as error}
-          <li class="text-red-500">
-            <b>{error}</b>
+          <li class="text-error">
+            {error}
           </li>
         {/each}
         {#if parseErrors.nested}
-          {#each Object.entries(parseErrors.nested) as error}
-            <li class="text-red-500">
-              <b>{error[0]}:</b>
-              {error[1]?.join('. ')}
+          {#each Object.entries(parseErrors.nested) as entry}
+            {@const errLoc = entry[0]}
+            {@const errors = (entry[1] as string[])?.join('. ')}
+            <li class="text-error">
+              <b>{errLoc}:</b>
+              {errors}
             </li>
           {/each}
         {/if}
         {#each parseErrors.other ?? [] as error}
-          <li class="text-red-500">
-            <b>{error}</b>
+          <li class="text-error">
+            {error}
           </li>
         {/each}
       </ul>
     {/if}
     <div class="flex flex-wrap place-content-center gap-4 p-4">
-      <a href={localizeHref(`/projects/own/${page.params.id}`)} class="btn w-full max-w-xs">
+      <a href={localizeHref(`/projects/own/${page.params.id}`)} class="btn btn-secondary w-full max-w-xs">
         {m.common_cancel()}
       </a>
       <button class="btn btn-primary w-full max-w-xs" disabled={!canSubmit} type="submit">

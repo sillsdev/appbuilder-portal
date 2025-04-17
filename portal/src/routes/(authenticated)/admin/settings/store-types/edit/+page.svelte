@@ -3,6 +3,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
 
@@ -14,40 +15,41 @@
 
   const base = '/admin/settings/store-types';
 
-  const { form, enhance, allErrors } = superForm(data.form, {
-    onUpdated(event) {
-      if (event.form.valid) {
+  const { form, enhance } = superForm(data.form, {
+    onUpdated({ form }) {
+      if (form.valid) {
         goto(localizeHref(base));
+        toast('success', m.admin_settings_storeTypes_editSuccess());
       }
     }
   });
 </script>
 
+<h3>{m.admin_settings_storeTypes_edit()}</h3>
+
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
   <LabeledFormInput name="admin_settings_storeTypes_name">
-    <input class="input w-full input-bordered" type="text" name="name" bind:value={$form.name} />
+    <input
+      type="text"
+      name="name"
+      class="input input-bordered w-full validator"
+      bind:value={$form.name}
+      required
+    />
+    <span class="validator-hint">{m.admin_settings_storeTypes_emptyName()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_storeTypes_description">
-    <textarea
+    <input
+      type="text"
       name="description"
-      class="textarea textarea-bordered w-full"
+      class="input input-bordered w-full"
       bind:value={$form.description}
-    ></textarea>
+    />
   </LabeledFormInput>
-  {#if $allErrors.length}
-    <ul>
-      {#each $allErrors as error}
-        <li class="text-red-500">
-          <b>{error.path}:</b>
-          {error.messages.join('. ')}
-        </li>
-      {/each}
-    </ul>
-  {/if}
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value="Submit" />
-    <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
+    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
+    <input type="submit" class="btn btn-primary" value={m.common_save()} />
   </div>
 </form>
