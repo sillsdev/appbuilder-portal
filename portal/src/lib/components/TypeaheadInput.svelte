@@ -39,6 +39,7 @@
         selectedIndex = (selectedIndex + rangeLength - 1) % rangeLength;
         break;
       case 'Enter':
+        event.preventDefault(); // this is to prevent triggering a form submission
         selectItem(list[selectedIndex]);
         break;
     }

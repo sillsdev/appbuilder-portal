@@ -136,3 +136,43 @@
 a.link {
   color: #55f;
 }
+
+/*!important is necessary to take precedence over svelte-toast's internal styling*/
+._toastItem {
+  background-color: var(--color-info) !important;
+  align-items: flex-start !important;
+}
+
+.success > ._toastItem {
+  background-color: var(--color-success) !important;
+}
+
+.warning > ._toastItem {
+  background-color: var(--color-warning) !important;
+}
+
+.error > ._toastItem {
+  background-color: var(--color-error) !important;
+}
+
+._toastMsg {
+  /* text-sm */
+  font-size: var(--text-sm) /* 0.875rem = 14px */;
+  line-height: var(--tw-leading, var(--text-sm--line-height)) /* calc(1.25 / 0.875) ≈ 1.4286 */;
+  /* text-wrap might not work in older browsers... */
+  text-wrap: wrap;
+}
+
+._toastBtn {
+  width: 10%;
+  height: 100%;
+  padding-top: 0.5rem;
+}
+
+._toastBtn::after {
+  align-items: flex-start !important;
+}
+
+._toastBar {
+  --toastBarBackground: #ffffffb0;
+}

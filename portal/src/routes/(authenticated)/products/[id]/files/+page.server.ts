@@ -1,4 +1,4 @@
-import { paginateSchema } from '$lib/table';
+import { paginateSchema } from '$lib/valibot';
 import { fail } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';

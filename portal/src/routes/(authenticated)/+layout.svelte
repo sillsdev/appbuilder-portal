@@ -10,6 +10,7 @@
   import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
   import { signOut } from '@auth/sveltekit/client';
+  import { SvelteToast } from '@zerodevx/svelte-toast';
   import type { Snippet } from 'svelte';
   import type { LayoutData } from './$types';
 
@@ -28,7 +29,7 @@
   function isUrlActive(route: string) {
     return deLocalizeUrl(page.url).pathname?.startsWith(`${base}${route}`);
   }
-  
+
   $effect(() => {
     l10nMap.value = createl10nMapFromEntries(data.localizedNames);
   });
@@ -88,7 +89,9 @@
             </a>
           </li>
           <li>
-            <button onclick={() => signOut({ redirectTo: '/', redirect: true })}>{m.header_signOut()}</button>
+            <button onclick={() => signOut({ redirectTo: '/', redirect: true })}>
+              {m.header_signOut()}
+            </button>
           </li>
         </ul>
       {/snippet}
@@ -229,6 +232,9 @@
     </div>
     <div class="drawer-content grow items-start justify-start">
       {@render children?.()}
+      <div class="toast toast-top toast-end">
+        <SvelteToast />
+      </div>
     </div>
   </div>
 </div>

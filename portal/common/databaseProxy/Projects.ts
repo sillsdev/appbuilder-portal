@@ -114,15 +114,15 @@ async function validateProjectBase(orgId: number, groupId: number, ownerId: numb
   // the relevant data is supplied. If it isn't, then this is an update
   // and the data was valid already, or PostgreSQL will catch it
   /** owner must be a member of project group */
-  const userInGroup = await prisma.groupMemberships.count({
+  const userInGroup = await prisma.groupMemberships.findFirst({
     where: { UserId: ownerId, GroupId: groupId }
   });
   /** owner must be a member of project org */
-  const userInOrg = await prisma.organizationMemberships.count({
+  const userInOrg = await prisma.organizationMemberships.findFirst({
     where: { UserId: ownerId, OrganizationId: orgId }
   });
   /** disregard owner restrictions if owner is Super Admin */
-  const userIsSuperAdmin = await prisma.userRoles.count({
+  const userIsSuperAdmin = await prisma.userRoles.findFirst({
     where: { RoleId: RoleId.SuperAdmin, UserId: ownerId }
   });
   return !!(

@@ -1,6 +1,5 @@
-import { paginateSchema } from '$lib/table';
 import { isSuperAdmin } from '$lib/utils/roles';
-import { idSchema } from '$lib/valibot';
+import { idSchema, paginateSchema } from '$lib/valibot';
 import type { Prisma } from '@prisma/client';
 import { error } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';

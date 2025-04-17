@@ -1,3 +1,4 @@
+import { infrastructureSchema } from '$lib/organizations';
 import { idSchema } from '$lib/valibot';
 import { DatabaseWrites } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
@@ -5,11 +6,9 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 
-const infrastructureSchema = v.object({
+const editInfrastructureSchema = v.object({
   id: idSchema,
-  buildEngineUrl: v.nullable(v.string()),
-  buildEngineApiAccessToken: v.nullable(v.string()),
-  useDefaultBuildEngine: v.boolean()
+  ...infrastructureSchema.entries
 });
 
 export const load = (async (event) => {
@@ -21,15 +20,15 @@ export const load = (async (event) => {
       buildEngineApiAccessToken: organization.BuildEngineApiAccessToken,
       useDefaultBuildEngine: organization.UseDefaultBuildEngine ?? false
     },
-    valibot(infrastructureSchema)
+    valibot(editInfrastructureSchema)
   );
   return { form };
 }) satisfies PageServerLoad;
 
 export const actions = {
   async default(event) {
-    const form = await superValidate(event.request, valibot(infrastructureSchema));
-    if (!form.valid) return fail(400, { form, ok: false, errors: form.errors });
+    const form = await superValidate(event.request, valibot(editInfrastructureSchema));
+    if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.organizations.update({
       where: {
         Id: form.data.id

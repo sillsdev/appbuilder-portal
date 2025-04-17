@@ -1,79 +1,46 @@
-import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
+import { isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
+import { where } from '../common.server';
 import type { Actions, PageServerLoad } from './$types';
 
-const groupsSchema = v.object({
-  organizations: v.array(
-    v.object({
-      name: v.nullable(v.string()),
-      id: idSchema,
-      groups: v.array(idSchema)
-      // enabled: v.boolean()
-    })
-  )
+const toggleGroupSchema = v.object({
+  orgId: idSchema,
+  userId: idSchema,
+  groupId: idSchema,
+  enabled: v.boolean()
 });
 
 export const load = (async ({ params, locals }) => {
-  const userData = (await locals.auth())?.user;
-  const userId = userData?.userId;
-  const isSuper = isSuperAdmin(userData?.roles);
-  const subjectUserId = parseInt(params.id);
+  const subjectId = parseInt(params.id);
+  const user = (await locals.auth())!.user;
 
-  const groupsByOrg = await prisma.organizations.findMany({
-    where: {
-      // Only send a list of groups for orgs that the subject user is in and the current user has access to
-      UserRoles: isSuper
-        ? undefined
-        : {
-            some: {
-              UserId: userId,
-              RoleId: RoleId.OrgAdmin
+  return {
+    groupsByOrg: await prisma.organizations.findMany({
+      where: where(subjectId, user.userId, isSuperAdmin(user.roles)),
+      select: {
+        Id: true,
+        Groups: {
+          select: {
+            Id: true,
+            Name: true,
+            _count: {
+              select: {
+                GroupMemberships: {
+                  where: {
+                    UserId: subjectId
+                  }
+                }
+              }
             }
-          },
-      OrganizationMemberships: {
-        some: {
-          UserId: subjectUserId
+          }
         }
       }
-    },
-    select: {
-      Id: true,
-      Name: true,
-      Groups: true
-    }
-  });
-
-  const groupMemberships = (
-    await prisma.groupMemberships.findMany({
-      where: {
-        UserId: subjectUserId
-      },
-      select: {
-        GroupId: true
-      }
     })
-  ).map((g) => g.GroupId);
-  // If there are no groups the current user has admin access to return Forbidden
-  if (groupsByOrg.length === 0) return error(403);
-  const form = await superValidate(
-    {
-      organizations: groupsByOrg.map((o) => ({
-        id: o.Id,
-        name: o.Name,
-        groups: o.Groups.filter((g) => groupMemberships.includes(g.Id)).map((g) => g.Id)
-      }))
-    },
-    valibot(groupsSchema)
-  );
-  return {
-    form,
-    groupsByOrg
   };
 }) satisfies PageServerLoad;
 
@@ -85,17 +52,28 @@ export const actions = {
     // This way they can be added and removed in constant time and in a single command
     // https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations
 
-    const form = await superValidate(event, valibot(groupsSchema));
+    const form = await superValidate(event, valibot(toggleGroupSchema));
+
     if (!form.valid) return fail(400, { form, ok: false });
+    if (form.data.userId !== parseInt(event.params.id)) return error(404);
 
     const user = (await event.locals.auth())!.user;
 
-    // Filter for legal orgs to modify, then map to relevant table entries
-    const newRelationEntries = form.data.organizations
-      .filter((org) => isAdminForOrg(org.id, user.roles))
-      .flatMap((org) => org.groups.map((group) => group));
-    const uId = parseInt(event.params.id);
-    const success = await DatabaseWrites.groupMemberships.updateUserGroups(uId, newRelationEntries);
-    return { form, ok: success };
+    if (
+      !(await prisma.organizations.findFirst({
+        where: where(form.data.userId, user.userId, isSuperAdmin(user.roles), form.data.orgId)
+      }))
+    ) {
+      return error(403);
+    }
+
+    const ok = await DatabaseWrites.groupMemberships.toggleForOrg(
+      form.data.orgId,
+      form.data.userId,
+      form.data.groupId,
+      form.data.enabled
+    );
+
+    return { form, ok };
   }
 } satisfies Actions;

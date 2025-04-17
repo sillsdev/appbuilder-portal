@@ -1,8 +1,11 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { toast } from '$lib/utils';
+  import { phoneRegex, regExpToInputPattern } from '$lib/valibot';
   import { getTimeZones } from '@vvo/tzdb';
   import Fuse from 'fuse.js';
   import { superForm } from 'sveltekit-superforms';
@@ -15,10 +18,16 @@
   let { data }: Props = $props();
   const { form, enhance } = superForm(data.form, {
     dataType: 'json',
+    resetForm: false,
     onSubmit(input) {
       // Set the timezone form value (if the value was changed manually and not clicked)
-      if (!timeZoneMap.has(tzValue)) input.cancel();
-      $form.timezone = timeZoneMap.get(tzValue)!;
+      if (tzValue && !timeZoneMap.has(tzValue)) input.cancel();
+      $form.timezone = timeZoneMap.get(tzValue) ?? null;
+    },
+    onUpdated({ form }) {
+      if (form.valid) {
+        toast('success', m.profile_updated());
+      }
     }
   });
 
@@ -47,40 +56,53 @@
       <input
         type="text"
         name="firstName"
-        class="input input-bordered w-full"
+        class="input input-bordered w-full validator"
         bind:value={$form.firstName}
+        required
       />
+      <span class="validator-hint">{m.org_nameError()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_lastName">
       <input
         type="text"
         name="lastName"
-        class="input input-bordered w-full"
+        class="input input-bordered w-full validator"
         bind:value={$form.lastName}
+        required
       />
+      <span class="validator-hint">{m.org_nameError()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_name">
       <input
         type="text"
         name="displayName"
-        class="input input-bordered w-full"
+        class="input input-bordered w-full validator"
         bind:value={$form.displayName}
+        required
       />
+      <span class="validator-hint">{m.org_nameError()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_email">
       <input
-        type="text"
+        type="email"
         name="email"
-        class="input input-bordered w-full"
+        class="input input-bordered w-full validator"
         bind:value={$form.email}
+        required
       />
+      <span class="validator-hint">
+        {$form.email
+          ? m.project_side_reviewers_form_invalidEmailError()
+          : m.project_side_reviewers_form_emptyEmailError()}
+      </span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_phone">
       <input
-        type="text"
+        type="tel"
         name="phone"
-        class="input input-bordered w-full"
+        class="input input-bordered w-full validator"
         bind:value={$form.phone}
+        pattern={regExpToInputPattern(phoneRegex)}
       />
     </LabeledFormInput>
     <LabeledFormInput name="profile_timezone">
@@ -89,14 +111,12 @@
         getList={(search) => fuzzySearch.search(search).slice(0, 7)}
         onItemClicked={(res) => {
           // Not strictly necessary because it will be set onSubmit but here anyways
-          // @ts-expect-error the property key should always exist in our use case
-          $form.timezone = res.key;
-          // @ts-expect-error the property value should always exist in our use case
-          tzValue = res.value;
+          $form.timezone = res.item.key;
+          tzValue = res.item.value;
         }}
         bind:search={tzValue}
         classes="w-full {!tzValue || timeZoneMap.has(tzValue) ? '' : 'select-error'}"
-        dropdownClasses="w-full"
+        dropdownClasses="w-full bg-base-100"
       >
         {#snippet listElement(res, selected)}
           <div class="w-full right-0" class:selected>
@@ -105,58 +125,39 @@
         {/snippet}
       </TypeaheadInput>
     </LabeledFormInput>
-    <div class="flex place-content-between items-center mt-4">
-      <label for="public" class="w-full">
-        <div class="flex flex-col">
-          <span class="">
-            {m.profile_notificationSettingsTitle()}
-          </span>
-          <span class="text-sm">
-            {m.profile_optOutOfEmailOption()}
-          </span>
-        </div>
-      </label>
+    <InputWithMessage
+      className="mt-4"
+      title={{ key: 'profile_notificationSettingsTitle' }}
+      message={{ key: 'profile_optOutOfEmailOption' }}
+    >
       <input
         type="checkbox"
-        id="notifications"
+        name="notifications"
         class="toggle toggle-accent ml-4"
         bind:checked={$form.notifications}
       />
-    </div>
-    <div class="flex place-content-between items-center mt-4">
-      <label for="public" class="w-full">
-        <div class="flex flex-col">
-          <span class="">
-            {m.profile_visibleProfile()}
-          </span>
-          <span class="text-sm">
-            {m.profile_visibility_visible()}
-          </span>
-        </div>
-      </label>
+    </InputWithMessage>
+    <InputWithMessage
+      className="mt-4"
+      title={{ key: 'profile_visibleProfile' }}
+      message={{ key: 'profile_visibility_visible' }}
+    >
       <input
         type="checkbox"
-        id="public"
+        name="visible"
         class="toggle toggle-accent ml-4"
         bind:checked={$form.visible}
       />
-    </div>
-    <div class="flex place-content-between items-center mt-4">
-      <label for="public" class="w-full">
-        <div class="flex flex-col">
-          <span class="">
-            {m.users_table_columns_active()}
-          </span>
-        </div>
-      </label>
+    </InputWithMessage>
+    <InputWithMessage className="mt-4" title={{ key: 'users_table_columns_active' }}>
       <input
         type="checkbox"
-        id="active"
+        name="active"
         class="toggle toggle-accent ml-4"
         disabled={page.data.session?.user.userId === data.form.data.id}
         bind:checked={$form.active}
       />
-    </div>
+    </InputWithMessage>
     <div class="flex my-2">
       <button type="submit" class="btn btn-primary">{m.common_save()}</button>
     </div>
@@ -165,6 +166,6 @@
 
 <style>
   .selected {
-    background-color: var(--color-base-200);
+    background-color: var(--color-accent);
   }
 </style>
