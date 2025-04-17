@@ -3,7 +3,22 @@ import { XMLParser } from 'fast-xml-parser';
 import { existsSync } from 'fs';
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { BuildEngine, BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
+import {
+  BuildEngine,
+  BullMQ,
+  DatabaseWrites,
+  prisma,
+  Queues,
+  Workflow
+} from 'sil.appbuilder.portal.common';
+import { WorkflowType, WorkflowTypeString } from 'sil.appbuilder.portal.common/prisma';
+import {
+  Environment,
+  ENVKeys,
+  WorkflowAction,
+  WorkflowInstanceContext,
+  WorkflowState
+} from 'sil.appbuilder.portal.common/workflow';
 
 export async function checkSystemStatuses(
   job: Job<BullMQ.System.CheckEngineStatuses>
@@ -145,9 +160,7 @@ export async function checkSystemStatuses(
 
 const sectionDelim = '********************';
 
-export async function refreshLangTags(
-  job: Job<BullMQ.System.RefreshLangTags>
-): Promise<unknown> {
+export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): Promise<unknown> {
   const localDir =
     process.env.NODE_ENV === 'development'
       ? join(import.meta.dirname, '../../static/languages')
@@ -342,6 +355,19 @@ async function processLocalizedNames(
   return update;
 }
 
+const uninterestedStatuses = new Map([
+  // ProcessStatus.Finalized = 3 // Status of a process which was finalized
+  [3, 'Finalized'],
+  // ProcessStatus.Terminated = 4 // Status of a process which was terminated with an error
+  [4, 'Terminated'],
+  // ProcessStatus.Error = 5 // Status of a process which had an error but not terminated
+  [5, 'Error'],
+  // ProcessStatus.Unknown = 254 // Status of a process which exists in persistence store but its status is not defined
+  [254, 'Unknown'],
+  // ProcessStatus.NotFound = 255 // Status of a process which does not exist in persistence store
+  [255, 'NotFound']
+]);
+
 export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
   /**
    * Migration Tasks:
@@ -361,10 +387,193 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   });
   job.updateProgress(50);
 
-  // TODO 2. Migrate data from DWKit tables to WorkflowInstances
+  // 2. Migrate data from DWKit tables to WorkflowInstances
+
+  // Any product we would be interested in
+  // - already exists in the Products table
+  // - lacks a WorkflowInstance
+  // - has an associated WorkflowProcessInstance
+
+  const products: { Id: string; WorkflowInstance?: unknown; ProcessStatus?: string }[] =
+    await Promise.all(
+      (
+        await prisma.products.findMany({
+          where: { WorkflowInstance: null },
+          select: { Id: true }
+        })
+      ).map(async (product) => {
+        // if there is no process instance, we aren't interested
+        const processInstance = await prisma.workflowProcessInstance.findFirst({
+          // all of the WorkflowProcessInstance* models use Product.Id effectively as a primary/foreign key
+          // why the database doesn't have any relations (i.e. actual primary/foreign keys) based on this is beyond me
+          where: { Id: product.Id },
+          select: { ActivityName: true }
+        });
+        if (!processInstance) return product;
+
+        // if there is no persistence, we aren't interested
+        const processPersistence = await prisma.workflowProcessInstancePersistence.findMany({
+          where: { ProcessId: product.Id }
+        });
+        if (!processPersistence.length) {
+          job.log(`${product.Id}: Instance found but no Persistence`);
+          return { Id: product.Id, ProcessStatus: uninterestedStatuses.get(255) /*NotFound*/ };
+        }
+
+        // if there is no status, we aren't interested
+        const processStatus = await prisma.workflowProcessInstanceStatus.findFirst({
+          where: { Id: product.Id },
+          select: { Status: true }
+        });
+        if (!processStatus) {
+          job.log(`${product.Id}: Persistence found but no Status`);
+          return { Id: product.Id, ProcessStatus: uninterestedStatuses.get(254) /*Unknown*/ };
+        }
+
+        // we aren't interested in Finalized or error states
+        if (uninterestedStatuses.get(processStatus.Status)) {
+          return { Id: product.Id, ProcessStatus: uninterestedStatuses.get(processStatus.Status) };
+        }
+
+        // ProcessStatus.Idled = 2 // Status of a process which is not executing at current moment and awaiting an external interaction
+        if (processStatus.Status === 2) {
+          const res = await tryCreateInstance(
+            product.Id,
+            processInstance.ActivityName,
+            processPersistence,
+            (s) => job.log(s)
+          );
+          return { Id: product.Id, ProcessStatus: 'Idled', WorkflowInstance: res.value };
+        }
+        // ProcessStatus.Initialized = 0 // Status of a process which was created just now
+        // ProcessStatus.Running = 1 // Status of a process which is executing at current moment
+        else if (processStatus.Status === 0 || processStatus.Status === 1) {
+          // if the process is currently running or just created, we want to check back in a little bit
+          // PR #1115: TODO create delayed job to take care of instances that are currently running or initialized???
+          return {
+            Id: product.Id,
+            ProcessStatus: processStatus.Status ? 'Running' : 'Initialized'
+          };
+        } else {
+          job.log(`${product.Id}: Unrecognized status: "${processStatus.Status}"`);
+          return { Id: product.Id, ProcessStatus: uninterestedStatuses.get(254) /*Unknown*/ };
+        }
+      })
+    );
 
   job.updateProgress(100);
   return {
-    deletedTasks: deletedTasks.count
+    deletedTasks: deletedTasks.count,
+    products
   };
+}
+
+async function tryCreateInstance(
+  productId: string,
+  ActivityName: string,
+  persistence: { ParameterName: string; Value: string }[],
+  log: Logger
+): Promise<{ ok: boolean; value: unknown }> {
+  try {
+    const product = await prisma.products.findUnique({
+      where: { Id: productId },
+      select: {
+        ProductDefinition: {
+          select: {
+            Name: true,
+            WorkflowId: true,
+            RebuildWorkflowId: true,
+            RepublishWorkflowId: true
+          }
+        }
+      }
+    });
+
+    if (!product) return { ok: false, value: 'Product not found' };
+
+    if (!Object.values(WorkflowState).includes(ActivityName as WorkflowState)) {
+      return {
+        ok: false,
+        value: `Unrecognized ActivityName "${ActivityName}"`
+      };
+    }
+
+    const mergedEnv = persistence.reduce((p, c) => {
+      try {
+        if (c.ParameterName === 'environment') {
+          const value = JSON.parse(c.Value);
+          return { ...p, ...value };
+        } else {
+          return p;
+        }
+      } catch (e) {
+        log(`${productId}: ${e instanceof Error ? e.message : String(e)}`);
+        return p;
+      }
+    }, {} as Environment);
+
+    // Pass empty string if key is not defined. empty string is at index 0 of WorkflowTypeString
+    const typeIndex = WorkflowTypeString.indexOf(mergedEnv[ENVKeys.WORKFLOW_TYPE] ?? '');
+
+    let workflowType = typeIndex as WorkflowType;
+
+    if (typeIndex < WorkflowType.Startup || typeIndex > WorkflowType.Republish) {
+      log(
+        `${productId}: Invalid WORKFLOW_TYPE (${mergedEnv[ENVKeys.WORKFLOW_TYPE]}) in ProcessPersistence. Assuming Startup`
+      );
+
+      // If not defined assume Startup type
+      workflowType = WorkflowType.Startup;
+    }
+
+    let WorkflowDefinitionId = product.ProductDefinition.WorkflowId; /* Startup */
+    if (workflowType === WorkflowType.Rebuild && product.ProductDefinition.RebuildWorkflowId) {
+      WorkflowDefinitionId = product.ProductDefinition.RebuildWorkflowId;
+    } else if (
+      workflowType === WorkflowType.Republish &&
+      product.ProductDefinition.RepublishWorkflowId
+    ) {
+      WorkflowDefinitionId = product.ProductDefinition.RepublishWorkflowId;
+    } else {
+      return {
+        ok: false,
+        value: `${WorkflowTypeString[workflowType]} is not available for ${product.ProductDefinition.Name}`
+      };
+    }
+
+    const timestamp = new Date();
+
+    const value = await DatabaseWrites.workflowInstances.upsert(productId, {
+      create: {
+        State: ActivityName,
+        Context: JSON.stringify({
+          instructions: null,
+          includeFields: [],
+          includeArtifacts: null,
+          includeReviewers: false,
+          environment: mergedEnv
+        } satisfies WorkflowInstanceContext),
+        WorkflowDefinitionId
+      },
+      update: {}
+    });
+
+    if (value.DateCreated && value.DateCreated > timestamp) {
+      const flow = await Workflow.restore(productId);
+      // this will make sure all fields are correct and UserTasks are created
+      // this is also acceptable if a project is already archived, because no UserTasks will be created if so
+      flow.send({
+        type: WorkflowAction.Jump,
+        target: ActivityName as WorkflowState,
+        userId: null,
+        comment: 'Migrate workflow data to new backend'
+      });
+    }
+
+    // PR #1115: TODO should any models be deleted???
+
+    return { ok: true, value };
+  } catch (e) {
+    return { ok: false, value: e instanceof Error ? e.message : String(e) };
+  }
 }
