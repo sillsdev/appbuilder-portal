@@ -504,7 +504,7 @@ async function tryCreateInstance(
     const mergedEnv = persistence.reduce((p, c) => {
       try {
         if (c.ParameterName === 'environment') {
-          const value = JSON.parse(c.Value);
+          const value = JSON.parse(JSON.parse(c.Value));
           return { ...p, ...value };
         } else {
           return p;
@@ -537,7 +537,7 @@ async function tryCreateInstance(
       product.ProductDefinition.RepublishWorkflowId
     ) {
       WorkflowDefinitionId = product.ProductDefinition.RepublishWorkflowId;
-    } else {
+    } else if (workflowType !== WorkflowType.Startup) {
       return {
         ok: false,
         value: `${WorkflowTypeString[workflowType]} is not available for ${product.ProductDefinition.Name}`
@@ -548,13 +548,14 @@ async function tryCreateInstance(
 
     const value = await DatabaseWrites.workflowInstances.upsert(productId, {
       create: {
-        State: ActivityName,
+        State: WorkflowState.Start,
         Context: JSON.stringify({
           instructions: null,
           includeFields: [],
           includeArtifacts: null,
           includeReviewers: false,
-          environment: mergedEnv
+          environment: mergedEnv,
+          start: ActivityName as WorkflowState
         } satisfies WorkflowInstanceContext),
         WorkflowDefinitionId
       },
