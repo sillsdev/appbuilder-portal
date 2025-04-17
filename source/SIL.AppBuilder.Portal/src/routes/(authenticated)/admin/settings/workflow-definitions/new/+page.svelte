@@ -5,7 +5,7 @@
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-  import { enumNumVals } from '$lib/utils';
+  import { enumNumVals, toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
   import { WorkflowType } from 'sil.appbuilder.portal.common/prisma';
   import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
@@ -21,11 +21,12 @@
 
   const base = '/admin/settings/workflow-definitions';
 
-  const { form, enhance, allErrors } = superForm(data.form, {
+  const { form, enhance } = superForm(data.form, {
     dataType: 'json',
-    onUpdated(event) {
-      if (event.form.valid) {
+    onUpdated({ form }) {
+      if (form.valid) {
         goto(localizeHref(base));
+        toast('success', m.admin_settings_workflowDefinitions_workflowAdded());
       }
     }
   });
@@ -37,30 +38,55 @@
 
 <form class="m-4" method="post" action="?/new" use:enhance>
   <LabeledFormInput name="admin_settings_workflowDefinitions_name">
-    <input type="text" name="name" class="input input-bordered w-full" bind:value={$form.name} />
+    <input
+      type="text"
+      name="name"
+      class="input input-bordered w-full validator"
+      bind:value={$form.name}
+      required
+    />
+    <span class="validator-hint">{m.admin_settings_productDefinitions_emptyName()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_storeType">
-    <select class="select select-bordered" name="storeType" bind:value={$form.storeType}>
+    <select
+      class="select select-bordered validator"
+      name="storeType"
+      bind:value={$form.storeType}
+      required
+    >
       {#each data.options.storeType.toSorted((a, b) => byName(a, b, getLocale())) as type}
         <option value={type.Id}>{type.Name}</option>
       {/each}
     </select>
+    <span class="validator-hint">{m.admin_settings_workflowDefinitions_emptyStoreType()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_productType">
-    <select class="select select-bordered" name="productType" bind:value={$form.productType}>
+    <select
+      class="select select-bordered validator"
+      name="productType"
+      bind:value={$form.productType}
+      required
+    >
       {#each enumNumVals(ProductType) as type}
         <option value={type}>
           {m.admin_settings_workflowDefinitions_productTypes({ type })}
         </option>
       {/each}
     </select>
+    <span class="validator-hint">{m.admin_settings_workflowDefinitions_emptyProductType()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_workflowType">
-    <select class="select select-bordered" name="workflowType" bind:value={$form.workflowType}>
+    <select
+      class="select select-bordered validator"
+      name="workflowType"
+      bind:value={$form.workflowType}
+      required
+    >
       {#each enumNumVals(WorkflowType) as type}
         <option value={type}>{m.admin_settings_workflowDefinitions_workflowTypes({ type })}</option>
       {/each}
     </select>
+    <span class="validator-hint">{m.admin_settings_workflowDefinitions_emptyWorkflowType()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_description">
     <input
@@ -89,7 +115,12 @@
     </select>
   </LabeledFormInput>
   <LabeledFormInput name="admin_settings_workflowDefinitions_properties">
-    <PropertiesEditor name="properties" className="w-full" bind:value={$form.properties} bind:ok={propsOk} />
+    <PropertiesEditor
+      name="properties"
+      className="w-full"
+      bind:value={$form.properties}
+      bind:ok={propsOk}
+    />
   </LabeledFormInput>
   <LabeledFormInput
     name="admin_settings_workflowDefinitions_options_title"
@@ -97,8 +128,7 @@
   >
     {#each enumNumVals(WorkflowOptions) as option}
       <InputWithMessage
-        name="admin_settings_workflowDefinitions_options"
-        messageParms={{ option }}
+        message={{ key: 'admin_settings_workflowDefinitions_options', parms: option }}
         className="my-1"
       >
         <input
@@ -110,39 +140,20 @@
       </InputWithMessage>
     {/each}
   </LabeledFormInput>
-  <div>
-    <label>
-      <div class="label flex flex-row">
-        <div class="flex flex-col grow">
-          <span class="">
-            {m.admin_settings_workflowDefinitions_enabled()}
-          </span>
-          <span class="text-sm">
-            {m.admin_settings_workflowDefinitions_enabledDescription()}
-          </span>
-        </div>
-        <input
-          name="enabled"
-          class="toggle toggle-accent"
-          type="checkbox"
-          bind:checked={$form.enabled}
-        />
-      </div>
-    </label>
-  </div>
-  {#if $allErrors.length}
-    <ul>
-      {#each $allErrors as error}
-        <li class="text-red-500">
-          <b>{error.path}:</b>
-          {error.messages.join('. ')}
-        </li>
-      {/each}
-    </ul>
-  {/if}
+  <InputWithMessage
+    title={{ key: 'admin_settings_workflowDefinitions_enabled' }}
+    message={{ key: 'admin_settings_workflowDefinitions_enabledDescription' }}
+  >
+    <input
+      name="enabled"
+      class="toggle toggle-accent"
+      type="checkbox"
+      bind:checked={$form.enabled}
+    />
+  </InputWithMessage>
   <div class="my-4">
+    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
     <input type="submit" class="btn btn-primary" value={m.common_save()} disabled={!propsOk} />
-    <a class="btn" href={localizeHref(base)}>{m.common_cancel()}</a>
   </div>
 </form>
 

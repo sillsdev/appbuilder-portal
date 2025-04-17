@@ -8,6 +8,7 @@ import {
   pruneProjects
 } from '$lib/projects';
 import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/server';
+import { stringIdSchema } from '$lib/valibot';
 import type { Prisma } from '@prisma/client';
 import { error, redirect, type Actions } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
@@ -17,7 +18,7 @@ import * as v from 'valibot';
 import type { PageServerLoad } from './$types';
 
 const bulkProductActionSchema = v.object({
-  products: v.array(v.pipe(v.string(), v.uuid())),
+  products: v.array(stringIdSchema),
   operation: v.nullable(v.pipe(v.enum(ProductActionType), v.excludes(ProductActionType.Cancel)))
 });
 

@@ -1,19 +1,24 @@
 <script lang="ts">
   import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { enumNumVals } from '$lib/utils';
+  import { byString } from '$lib/utils/sorting';
   import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+  import type { Snippet } from 'svelte';
   interface Props {
-    roles: RoleId[];
+    selector?: Snippet<[RoleId]>;
   }
 
-  let { roles = $bindable() }: Props = $props();
+  let { selector }: Props = $props();
 </script>
 
 <div class="flex w-full">
   <div class="shrink space-y-2">
-    {#each enumNumVals(RoleId).filter((r) => r !== RoleId.SuperAdmin) as role}
+    {#each enumNumVals(RoleId)
+      .filter((r) => r !== RoleId.SuperAdmin)
+      .toSorted( (a, b) => byString(m.users_roles( { role: a } ), m.users_roles( { role: b } ), getLocale()) ) as role}
       <div class="flex space-x-2">
-        <input type="checkbox" class="toggle toggle-accent" value={role} bind:group={roles} />
+        {@render selector?.(role)}
         <span>{m.users_roles({ role })}</span>
       </div>
     {/each}

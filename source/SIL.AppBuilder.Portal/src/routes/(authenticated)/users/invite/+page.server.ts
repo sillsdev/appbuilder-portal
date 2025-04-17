@@ -21,7 +21,7 @@ export const load = (async ({ locals }) => {
   const user = await locals.auth();
   const groupsByOrg = await prisma.organizations.findMany({
     where: {
-      // Only send a list of groups for orgs that the subject user is in and the current user has access to
+      // Only send a list of groups for orgs that the current user has access to
       UserRoles: isSuperAdmin(user?.user.roles)
         ? undefined
         : {
@@ -44,7 +44,7 @@ export const actions = {
   async new({ request, locals, url }) {
     const form = await superValidate(request, valibot(createSchema));
     if (!form.valid) {
-      return fail(400, { form, ok: false, errors: form.errors });
+      return fail(400, { form, ok: false });
     }
     const user = await locals.auth();
     if (!user || !isAdminForOrg(form.data.organizationId, user.user.roles)) return fail(401);
