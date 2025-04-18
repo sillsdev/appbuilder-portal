@@ -113,7 +113,7 @@ export async function POST({ params, request, fetch }) {
       }
     });
     if (authors.find((a) => a.UserId === user[0].Id)) {
-      // TODO: Kalaam now wants authors to be able to update at any time.  In the future, we can add a setting on the author to whether they are a restricted author or not. I don't have time to add the UI at the moment.
+      // ISSUE: #1101 Kalaam now wants authors to be able to update at any time.  In the future, we can add a setting on the author to whether they are a restricted author or not. I don't have time to add the UI at the moment.
       //readOnly = !author.CanUpdate;
       readOnly = false;
     }

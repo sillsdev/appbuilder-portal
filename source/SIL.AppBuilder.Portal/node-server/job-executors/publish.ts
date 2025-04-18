@@ -44,7 +44,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
   });
   if (!productData.WorkflowBuildId || !productBuild) {
     const flow = await Workflow.restore(job.data.productId);
-    // TODO: Send notification of failure
+    // ISSUE: #1100 Send notification of failure
     flow?.send({
       type: WorkflowAction.Publish_Failed,
       userId: null,
@@ -77,7 +77,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     job.updateProgress(50);
     if (response.responseType === 'error') {
       const flow = await Workflow.restore(job.data.productId);
-      // TODO: Send notification of failure
+      // ISSUE: #1100 Send notification of failure
       flow?.send({ type: WorkflowAction.Publish_Failed, userId: null, comment: response.message });
     } else {
       await DatabaseWrites.products.update(job.data.productId, {

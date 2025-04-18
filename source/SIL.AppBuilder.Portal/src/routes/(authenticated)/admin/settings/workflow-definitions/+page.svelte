@@ -42,7 +42,7 @@
           key: 'admin_settings_workflowDefinitions_workflowType',
           value: m.admin_settings_workflowDefinitions_workflowTypes({ type: wd.Type })
         }
-        // TODO: Do we want to show options here?
+        // ISSUE: #1102 Do we want to show WorkflowOptions here?
       ]}
     />
   {/each}

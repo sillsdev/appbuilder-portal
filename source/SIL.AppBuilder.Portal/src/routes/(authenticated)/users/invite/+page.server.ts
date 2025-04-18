@@ -57,7 +57,7 @@ export const actions = {
       groups
     );
     const inviteLink = `${url.origin}/invitations/organization-membership?t=${inviteToken}`;
-    // TODO: send email- log instead
+    // ISSUE: #1100 send email- log instead
     console.log(inviteLink, email);
     return { ok: true, form };
   }

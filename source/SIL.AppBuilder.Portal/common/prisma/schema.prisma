@@ -19,6 +19,7 @@ model ApplicationTypes {
 }
 
 model Authors {
+  // ISSUE: #1102 composite keys?
   Id        Int      @id(map: "PK_Authors") @default(autoincrement())
   UserId    Int
   ProjectId Int
@@ -42,6 +43,7 @@ model Emails {
 }
 
 model GroupMemberships {
+  // ISSUE: #1102 composite keys?
   Id      Int    @id(map: "PK_GroupMemberships") @default(autoincrement())
   UserId  Int
   GroupId Int
@@ -99,6 +101,7 @@ model OrganizationInvites {
 }
 
 model OrganizationMembershipInvites {
+  // ISSUE: #1102 composite keys?
   Id             Int           @id(map: "PK_OrganizationMembershipInvites") @default(autoincrement())
   Token          String        @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   Email          String
@@ -118,6 +121,7 @@ model OrganizationMembershipInvites {
 }
 
 model OrganizationMemberships {
+  // ISSUE: #1102 composite keys?
   Id             Int           @id(map: "PK_OrganizationMemberships") @default(autoincrement())
   UserId         Int
   OrganizationId Int
@@ -140,6 +144,7 @@ model OrganizationProductDefinitions {
 }
 
 model OrganizationStores {
+  // ISSUE: #1102 composite keys?
   Id             Int           @id(map: "PK_OrganizationStores") @default(autoincrement())
   OrganizationId Int
   StoreId        Int
@@ -174,6 +179,7 @@ model Organizations {
 }
 
 model ProductArtifacts {
+  // ISSUE: #1102 composite keys?
   Id             Int           @id(map: "PK_ProductArtifacts") @default(autoincrement())
   ProductId      String        @db.Uuid
   ProductBuildId Int
@@ -201,6 +207,9 @@ model ProductBuilds {
   ProductArtifacts    ProductArtifacts[]
   Product             Products              @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductBuilds_Products_ProductId")
   ProductPublications ProductPublications[]
+  // ISSUE: #1102 Usually a build shouldn't have multiple publications?
+  // Typically, a failed publish will go to Synchronize Data, which will always build before trying to publish
+  // The only edge case would be if a SuperAdmin bypasses that by jumping the workflow state...
 
   @@index([ProductId], map: "IX_ProductBuilds_ProductId")
 }
@@ -208,7 +217,7 @@ model ProductBuilds {
 model ProductDefinitions {
   Id                             Int                              @id(map: "PK_ProductDefinitions") @default(autoincrement())
   Name                           String?
-  TypeId                         Int
+  TypeId                         Int // ISSUE: #1102 This doesn't actually do anything... This should probably be removed?
   Description                    String?
   WorkflowId                     Int
   RebuildWorkflowId              Int?
@@ -228,6 +237,7 @@ model ProductDefinitions {
 }
 
 model ProductPublications {
+  // ISSUE: #1102 composite keys? see comment in ProductBuilds
   Id             Int           @id(map: "PK_ProductPublications") @default(autoincrement())
   ProductId      String        @db.Uuid
   ProductBuildId Int
@@ -251,8 +261,7 @@ model ProductTransitions {
   ProductId        String    @db.Uuid
   // Since users are never deleted, only locked, this should be fine
   UserId           Int?
-  // TODO: remove when DWKit is replaced
-  WorkflowUserId   String?   @db.Uuid
+  WorkflowUserId   String?   @db.Uuid // ISSUE: #1102 remove when DWKit is replaced
   AllowedUserNames String?
   InitialState     String?
   DestinationState String?
@@ -417,9 +426,10 @@ model SystemStatuses {
 }
 
 model UserRoles {
+  // ISSUE: #1102 composite keys?
   Id             Int           @id(map: "PK_UserRoles") @default(autoincrement())
   UserId         Int
-  RoleId         Int
+  RoleId         Int // Do we really *need* a separate database model for Roles?
   OrganizationId Int
   Organization   Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserRoles_Organizations_OrganizationId")
   Role           Roles         @relation(fields: [RoleId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserRoles_Roles_RoleId")
@@ -460,7 +470,7 @@ model Users {
   ExternalId                    String?
   ProfileVisibility             Int                             @default(1)
   EmailNotification             Boolean?                        @default(true)
-  WorkflowUserId                String?                         @db.Uuid // TODO: remove when DWKit is replaced
+  WorkflowUserId                String?                         @db.Uuid // ISSUE: #1102 remove when DWKit is replaced
   DateCreated                   DateTime?                       @default(now()) @db.Timestamp
   DateUpdated                   DateTime?                       @updatedAt @db.Timestamp
   Authors                       Authors[]
@@ -483,8 +493,8 @@ model WorkflowDefinitions {
   Name                 String?
   Enabled              Boolean
   Description          String?
-  WorkflowScheme       String? // TODO: remove when DWKit is replaced
-  WorkflowBusinessFlow String? // TODO: remove when DWKit is replaced
+  WorkflowScheme       String? // ISSUE: #1102 remove when DWKit is replaced
+  WorkflowBusinessFlow String? // ISSUE: #1102 remove when DWKit is replaced
   StoreTypeId          Int?
   Type                 Int                  @default(1)
   Properties           String?
@@ -500,7 +510,7 @@ model WorkflowDefinitions {
 }
 
 //
-// DWKIT Tables - will be removed later when DWKit is replaced
+// DWKIT Tables - will be removed later when DWKit is replaced (ISSUE: #1102)
 //
 
 model WorkflowGlobalParameter {
@@ -760,6 +770,7 @@ model dwUploadedFiles {
 }
 
 model WorkflowInstances {
+  // ISSUE: #1102 composite keys?
   Id                   Int                 @id(map: "PK_WorkflowInstances") @default(autoincrement())
   State                String
   Context              String
