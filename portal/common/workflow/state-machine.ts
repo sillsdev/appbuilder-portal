@@ -751,7 +751,7 @@ export const WorkflowStateMachine = setup({
           },
           guard: hasReviewers,
           actions: () => {
-            // TODO: connect to backend to email reviewers
+            // ISSUE: #1100 connect to backend to email reviewers
             console.log('Emailing Reviewers');
           }
         }

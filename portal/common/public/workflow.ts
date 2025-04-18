@@ -241,7 +241,7 @@ export function jump(
 
 export type StateNode = {
   id: number;
-  label: string; // TODO: i18n (after MVP)
+  label: string; // ISSUE: #1104 i18n (after MVP)
   connections: { id: number; target: string; label: string }[];
   inCount: number;
   start?: boolean;
