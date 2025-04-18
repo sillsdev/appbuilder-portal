@@ -57,9 +57,21 @@ export async function update(
 
 function deleteInstance(productId: string, projectId: number) {
   updateProjectDateActive(productId, projectId);
+  markProcessFinalized(productId);
   return prisma.workflowInstances.deleteMany({ where: { ProductId: productId } });
 }
 export { deleteInstance as delete };
+
+async function markProcessFinalized(ProcessId: string) {
+  await prisma.$transaction([
+    // I am not sure how to go about deleting WorkflowProcessScheme...
+    prisma.workflowProcessTransitionHistory.deleteMany({ where: { ProcessId }}),
+    prisma.workflowProcessTimer.deleteMany({ where: { ProcessId }}),
+    prisma.workflowProcessInstanceStatus.deleteMany({ where: { Id: ProcessId }}),
+    prisma.workflowProcessInstancePersistence.deleteMany({ where: { ProcessId }}),
+    prisma.workflowProcessInstance.deleteMany({ where: { Id: ProcessId }})
+  ]);
+}
 
 async function updateProjectDateActive(productId: string, projectId: number) {
   const project = await prisma.projects.findUniqueOrThrow({
