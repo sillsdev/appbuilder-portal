@@ -297,11 +297,9 @@ export class Workflow {
           ProductId: this.productId
         }
       });
-      if (TerminalStates.includes(xSnap.value)) {
-        // This code will probably never be reachable?
-        // It looks like the inspect hook is not invoked when a final state is reached...
-        await Workflow.delete(this.productId);
-      } else {
+      if (!TerminalStates.includes(xSnap.value))  {
+        // only create snapshot if not in a terminal state
+        // deletion handled in state machine definition instead
         await this.createSnapshot(xSnap.context);
         // This will also create the dummy entries in the ProductTransitions table
         await Queues.UserTasks.add(`Update UserTasks for Product #${this.productId}`, {
