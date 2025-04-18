@@ -55,7 +55,7 @@
           //@ts-expect-error This is somehow how this is supposed to work according to the docs
           dateElement._flatpickr.clear();
         }}
-        title={m.common_delete()}
+        title={m.common_clear()}
       >
         <IconContainer icon="mdi:close" class="ml-auto cursor-pointer" width={24} />
       </button>
