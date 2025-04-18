@@ -415,6 +415,17 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     )
   ).reduce((p, c) => p + c.count, 0);
 
+  const missingWorkflowUserIDs = (
+    await prisma.productTransitions.findMany({
+      where: {
+        UserId: null,
+        WorkflowUserId: { not: null }
+      },
+      select: { WorkflowUserId: true },
+      distinct: 'WorkflowUserId'
+    })
+  ).map(({ WorkflowUserId }) => WorkflowUserId);
+
   job.updateProgress(66);
 
   // 3. Migrate data from DWKit tables to WorkflowInstances
@@ -495,6 +506,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   return {
     deletedTasks: deletedTasks.count,
     updatedTransitions,
+    missingWorkflowUserIDs,
     products
   };
 }
