@@ -54,7 +54,8 @@ export async function checkSystemStatuses(
   }
   const uniquePairs = new Set(organizations.map((o) => JSON.stringify(o)))
     .values()
-    .map((e) => JSON.parse(e))
+    //@ts-expect-error the version of NodeJS we are using does in fact support .map on a SetIterator
+    .map((e: string) => JSON.parse(e))
     .toArray() as typeof organizations;
   job.updateProgress(10);
   // remove statuses that do not correspond to organizations
@@ -63,12 +64,13 @@ export async function checkSystemStatuses(
       OR: [
         {
           BuildEngineUrl: {
-            notIn: uniquePairs.map((o) => o.BuildEngineUrl)
+            // we know these can't be null because that is handled by the query...
+            notIn: uniquePairs.map((o) => o.BuildEngineUrl!)
           }
         },
         {
           BuildEngineApiAccessToken: {
-            notIn: uniquePairs.map((o) => o.BuildEngineApiAccessToken)
+            notIn: uniquePairs.map((o) => o.BuildEngineApiAccessToken!)
           }
         }
       ]
@@ -99,8 +101,8 @@ export async function checkSystemStatuses(
     (await prisma.systemStatuses.findMany()).map(async (s) => {
       const res = await BuildEngine.Requests.systemCheck({
         type: 'provided',
-        url: s.BuildEngineUrl,
-        token: s.BuildEngineApiAccessToken
+        url: s.BuildEngineUrl ?? '',
+        token: s.BuildEngineApiAccessToken ?? ''
       });
       const available = res.status === 200;
       await DatabaseWrites.systemStatuses.update({
@@ -114,7 +116,7 @@ export async function checkSystemStatuses(
       return {
         url: s.BuildEngineUrl,
         // return first 4 characters of token for differentiation purposes
-        partialToken: s.BuildEngineApiAccessToken.substring(0, 4),
+        partialToken: s.BuildEngineApiAccessToken?.substring(0, 4),
         status: res.status,
         error: res.responseType === 'error' ? res : undefined,
         minutes: Math.floor((Date.now() - new Date(s.DateUpdated).valueOf()) / 60000)
@@ -264,7 +266,8 @@ async function shouldUpdate(localPath: string, remotePath: string, logger: Logge
         };
       }
       logger(`Local LastModified: ${localLastModified.valueOf()} (${localLastModified})`);
-      const remoteLastModified = new Date(res.headers.get('Last-Modified'));
+      // If we can't get the headers, assume we should update?
+      const remoteLastModified = new Date(res.headers.get('Last-Modified') ?? Date.now());
       logger(`Remote LastModified: ${remoteLastModified.valueOf()} (${remoteLastModified})`);
 
       return {
@@ -283,7 +286,7 @@ async function shouldUpdate(localPath: string, remotePath: string, logger: Logge
   };
 }
 
-function mapXMLAttributes(item: unknown) {
+function mapXMLAttributes(item: Record<string, unknown>) {
   return [item['@_type'], item['#text']];
 }
 
@@ -606,16 +609,13 @@ async function tryCreateInstance(
       const flow = await Workflow.restore(productId);
       // this will make sure all fields are correct and UserTasks are created
       // this is also acceptable if a project is already archived, because no UserTasks will be created if so
-      flow.send({
+      flow?.send({
         type: WorkflowAction.Jump,
         target: ActivityName as WorkflowState,
         userId: null,
         comment: 'Migrate workflow data to new backend'
       });
     }
-
-    // PR #1115: TODO should any models be deleted???
-
     return { ok: true, value };
   } catch (e) {
     return { ok: false, value: e instanceof Error ? e.message : String(e) };
