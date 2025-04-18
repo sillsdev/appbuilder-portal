@@ -393,7 +393,7 @@ export const actions = {
       return fail(403);
     const form = await superValidate(event.request, valibot(addAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    // Appears that CanUpdate is not used TODO
+    // ISSUE: #1101 Appears that CanUpdate is not used
     const author = await DatabaseWrites.authors.create({
       data: {
         ProjectId: parseInt(event.params.id),

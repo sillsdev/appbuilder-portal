@@ -126,7 +126,7 @@ export const actions: Actions = {
           }
         });
 
-        // TODO: i18n for server-side errors
+        // ISSUE: #1116 i18n for server-side errors
         if (!prodDef) {
           errors.push({
             path: `json.Products[${i}].Name`,
@@ -159,7 +159,7 @@ export const actions: Actions = {
           }
         });
 
-        // TODO: i18n for server-side errors
+        // ISSUE: #1116 i18n for server-side errors
         if (!store) {
           errors.push({
             path: `json.Products[${i}].Store`,

@@ -8,6 +8,7 @@ import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 
+// this works, even though TS/eslint are unhappy (no actual errors here, see the expect errors elsewhere)
 declare module '@auth/sveltekit' {
   interface Session {
     user: {
@@ -181,32 +182,37 @@ async function validateRouteForAuthenticatedUser(
   // Only guarding authenticated routes
   if (path[0] === '(authenticated)') {
     if (path[1] === 'admin' || path[1] === 'workflow-instances')
+      //@ts-expect-error this is the correct type, see comment on the extended Session type
       return isSuperAdmin(session?.user?.roles);
     else if (path[1] === 'directory' || path[1] === 'open-source')
       // Always allowed. Open pages
       return true;
     else if (path[1] === 'organizations') {
-      // Must be org admin or super admin for some organization
+      // Must be org admin for some organization (or a super admin)
+      //@ts-expect-error this is the correct type, see comment on the extended Session type
       if (!isAdmin(session?.user?.roles)) return false;
-      // Must be org admin or super admin for this organization
-      if (params.id) return isAdminForOrg(parseInt(params.id!), session?.user?.roles);
+      if (params.id) {
+        // Must be org admin for specified organization (or a super admin)
+        //@ts-expect-error this is the correct type, see comment on the extended Session type
+        return isAdminForOrg(parseInt(params.id!), session?.user?.roles);
+      }
       return true;
     } else if (path[1] === 'products') {
-      // TODO not sure, probably based on ownership of the project
-      const projectId = (
-        await prisma.products.findFirst({
-          where: {
-            Id: params.id
-          }
-        })
-      )?.ProjectId;
-      if (!projectId) return false;
-      return verifyCanViewAndEdit(session, projectId);
+      const product = await prisma.products.findFirst({
+        where: {
+          Id: params.id
+        }
+      });
+      if (!product) return false;
+      // Must be allowed to view associated project 
+      // (this route was originally part of the project page but was moved elsewhere to improve load time)
+      //@ts-expect-error this is the correct type, see comment on the extended Session type
+      return verifyCanViewAndEdit(session, product.ProjectId);
     } else if (path[1] === 'projects') {
       if (path[2] === '[filter=projectSelector]') return true;
-      // TODO: what are the conditions for viewing a project
-      // I imagine either own it or be organization admin
       else if (path[2] === '[id=idNumber]') {
+        // A project can be viewed if the user owns it, is an org admin for the org, or is a super admin
+        //@ts-expect-error this is the correct type, see comment on the extended Session type
         return await verifyCanViewAndEdit(session, parseInt(params.id!));
       }
       return true;

@@ -75,7 +75,6 @@ export const actions = {
         Name: form.data.displayName,
         Email: form.data.email,
         Phone: form.data.phone,
-        // TODO: sync user data with dwkit
         Timezone: form.data.timezone,
         EmailNotification: form.data.notifications,
         ProfileVisibility: form.data.visible ? 1 : 0,

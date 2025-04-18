@@ -163,7 +163,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     job.updateProgress(80);
   }
   for (const task of createdTasks) {
-    // TODO: Send notification for the new task
+    // ISSUE: #1100 Send notification for the new task
     // sendNotification(task);
   }
   job.updateProgress(100);
