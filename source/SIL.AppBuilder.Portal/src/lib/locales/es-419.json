@@ -88,6 +88,7 @@
   "common_workflow": "Flujo trabajo",
   "common_default": "Default",
   "common_delete": "Delete",
+  "common_clear": "Clear",
   "common_close": "cerrar",
   "common_or": "o",
   "models_add": "Añadir {name}",

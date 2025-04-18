@@ -89,6 +89,7 @@
   "common_default": "Default",
   "common_total": "Total {total}",
   "common_delete": "Delete",
+  "common_clear": "Clear",
   "common_close": "close",
   "common_or": "or",
   "models_add": "Add {name}",
