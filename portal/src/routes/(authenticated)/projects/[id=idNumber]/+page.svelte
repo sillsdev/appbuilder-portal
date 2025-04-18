@@ -87,10 +87,10 @@
   }
   let addProductModal: HTMLDialogElement;
   let selectingStore: boolean = $state(false);
-  let selectedProduct: number = $state(0);
+  let selectedProduct = $state(data.productsToAdd[0]);
   let availableStores = $derived(
     data.stores.filter(
-      (s) => s.StoreTypeId === data.productsToAdd[selectedProduct]?.Workflow.StoreTypeId
+      (s) => s.StoreTypeId === selectedProduct.Workflow.StoreTypeId
     )
   );
 
@@ -216,14 +216,14 @@
               </div>
               <hr />
               <div class="flex flex-col pt-1 space-y-1">
-                {#each data.productsToAdd.toSorted( (a, b) => byName(a, b, getLocale()) ) as productDef, i}
+                {#each data.productsToAdd.toSorted( (a, b) => byName(a, b, getLocale()) ) as productDef}
                   <!-- svelte-ignore a11y_click_events_have_key_events -->
                   <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                   <label
                     class="flex flex-col border border-secondary rounded-sm text-left cursor-pointer"
                     onclick={() => {
                       selectingStore = true;
-                      selectedProduct = i;
+                      selectedProduct = productDef;
                     }}
                   >
                     <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
@@ -245,7 +245,7 @@
               <div class="flex flex-row">
                 <h2 class="text-lg font-bold">
                   {m.products_storeSelect({
-                    name: data.productsToAdd[selectedProduct]?.Name || ''
+                    name: selectedProduct.Name || ''
                   })}
                 </h2>
                 <button
