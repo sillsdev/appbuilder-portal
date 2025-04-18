@@ -375,7 +375,8 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   /**
    * Migration Tasks:
    * 1. Delete UserTasks for archived projects
-   * 2. Migrate data from DWKit tables to WorkflowInstances
+   * 2. Add UserId to transitions with a WorkflowUserId but no UserId
+   * 3. Migrate data from DWKit tables to WorkflowInstances
    */
 
   // 1. Delete UserTasks for archived projects
@@ -388,9 +389,38 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       }
     }
   });
-  job.updateProgress(50);
+  job.updateProgress(33);
 
-  // 2. Migrate data from DWKit tables to WorkflowInstances
+  // 2. Add UserId to transitions with a WorkflowUserId but no UserId
+  const updatedTransitions = (
+    await Promise.all(
+      (
+        await prisma.productTransitions.findMany({
+          where: {
+            UserId: null,
+            WorkflowUserId: { not: null }
+          },
+          select: { WorkflowUserId: true },
+          distinct: 'WorkflowUserId'
+        })
+      ).map(async ({ WorkflowUserId }) => {
+        const user = await prisma.users.findFirst({
+          where: { WorkflowUserId },
+          select: { Id: true }
+        });
+        if (!user) return { count: 0 };
+
+        return await DatabaseWrites.productTransitions.updateMany({
+          where: { UserId: null, WorkflowUserId },
+          data: { UserId: user.Id }
+        });
+      })
+    )
+  ).reduce((p, c) => p + c.count, 0);
+
+  job.updateProgress(66);
+
+  // 3. Migrate data from DWKit tables to WorkflowInstances
 
   // Any product we would be interested in
   // - already exists in the Products table
@@ -467,6 +497,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   job.updateProgress(100);
   return {
     deletedTasks: deletedTasks.count,
+    updatedTransitions,
     products
   };
 }
