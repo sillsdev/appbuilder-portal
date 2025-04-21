@@ -421,21 +421,35 @@ export const actions = {
     });
     return { form, ok: true };
   },
-  async editSettings(event) {
+  async toggleVisibility(event) {
     // permissions checked in auth
     const form = await superValidate(
       event.request,
       valibot(
         v.object({
-          isPublic: v.boolean(),
-          allowDownload: v.boolean()
+          isPublic: v.boolean()
         })
       )
     );
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.projects.update(parseInt(event.params.id), {
-      IsPublic: form.data.isPublic,
-      AllowDownloads: form.data.allowDownload
+      IsPublic: form.data.isPublic
+    });
+    return { form, ok: true };
+  },
+  async toggleDownload(event) {
+    // permissions checked in auth
+    const form = await superValidate(
+      event.request,
+      valibot(
+        v.object({
+          allowDownloads: v.boolean()
+        })
+      )
+    );
+    if (!form.valid) return fail(400, { form, ok: false });
+    await DatabaseWrites.projects.update(parseInt(event.params.id), {
+      AllowDownloads: form.data.allowDownloads
     });
     return { form, ok: true };
   },

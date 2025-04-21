@@ -12,12 +12,13 @@
   import { getLocale, locales, localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails from '$lib/products/components/ProductDetails.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
+  import { toast } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
   import { ProductType } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
+  import type { ActionData, PageData } from './$types';
   import AddProductModal from './AddProductModal.svelte';
   import DeleteProductModal from './DeleteProductModal.svelte';
   import PropertiesModal from './PropertiesModal.svelte';
@@ -45,26 +46,16 @@
   function openModal(id: string) {
     (window[('modal' + id) as any] as any).showModal();
   }
-  let simpleSettingsFormTimeout: NodeJS.Timeout;
-  let simpleSettingsForm: HTMLFormElement;
-  function submitSimpleSettingsForm() {
-    if (simpleSettingsFormTimeout) {
-      clearTimeout(simpleSettingsFormTimeout);
-    }
-    simpleSettingsFormTimeout = setTimeout(() => {
-      simpleSettingsForm.requestSubmit();
-    }, 2000);
-  }
-  let ownerSettingsFormTimeout: NodeJS.Timeout;
-  let ownerSettingsForm: HTMLFormElement;
+  let settingsTimeout: NodeJS.Timeout;
+  let settingsForm: HTMLFormElement;
   let ownerField: HTMLInputElement;
   let groupField: HTMLInputElement;
   function submitOwnerSettingsForm() {
-    if (ownerSettingsFormTimeout) {
-      clearTimeout(ownerSettingsFormTimeout);
+    if (settingsTimeout) {
+      clearTimeout(settingsTimeout);
     }
-    ownerSettingsFormTimeout = setTimeout(() => {
-      ownerSettingsForm.requestSubmit();
+    settingsTimeout = setTimeout(() => {
+      settingsForm.requestSubmit();
     }, 2000);
   }
 
@@ -190,7 +181,11 @@
         >
           {m.project_products_add()}
         </button>
-        <AddProductModal bind:modal={addProductModal} prodDefs={data.productsToAdd} stores={data.stores}/>
+        <AddProductModal
+          bind:modal={addProductModal}
+          prodDefs={data.productsToAdd}
+          stores={data.stores}
+        />
       </div>
       <!-- Products List -->
       <div>
@@ -364,23 +359,64 @@
     <!-- Settings -->
     <div class="settingsarea my-4">
       <h2 class="pl-0 pt-0">{m.project_settings_title()}</h2>
-      <form
-        action="?/editSettings"
-        method="post"
-        bind:this={simpleSettingsForm}
-        use:enhance={() =>
-          ({ update }) =>
-            update({ reset: false })}
-      >
-        <div class="space-y-2">
+      <div class="space-y-2">
+        <form
+          method="POST"
+          action="?/toggleVisibility"
+          use:enhance={() =>
+            ({ update, result }) => {
+              if (result.type === 'success') {
+                const res = result.data as ActionData;
+                const publicInput = document.querySelector('[name=isPublic]') as HTMLInputElement;
+                if (res?.ok) {
+                  if (publicInput.checked) {
+                    toast('success', m.project_operations_isPublic_on());
+                  } else {
+                    toast('success', m.project_operations_isPublic_off());
+                  }
+                } else {
+                  toast('error', m.errors_generic({ errorMessage: '' }));
+                  publicInput.checked = !publicInput.checked;
+                }
+              }
+              update({ reset: false });
+            }}
+        >
           <PublicPrivateToggle
             title={{ key: 'project_settings_visibility_title' }}
             message={{ key: 'project_settings_visibility_description' }}
             formName="isPublic"
             bind:checked={data.project.IsPublic!}
-            onchange={submitSimpleSettingsForm}
+            onchange={() => {
+              const publicInput = document.querySelector('[name=isPublic]') as HTMLInputElement;
+              publicInput.form?.requestSubmit();
+            }}
           />
-
+        </form>
+        <form
+          method="POST"
+          action="?/toggleDownload"
+          use:enhance={() =>
+            ({ update, result }) => {
+              if (result.type === 'success') {
+                const res = result.data as ActionData;
+                const downloadInput = document.querySelector(
+                  '[name=allowDownload]'
+                ) as HTMLInputElement;
+                if (res?.ok) {
+                  if (downloadInput.checked) {
+                    toast('success', m.project_operations_allowDownloads_on());
+                  } else {
+                    toast('success', m.project_operations_allowDownloads_off());
+                  }
+                } else {
+                  toast('error', m.errors_generic({ errorMessage: '' }));
+                  downloadInput.checked = !downloadInput.checked;
+                }
+              }
+              update({ reset: false });
+            }}
+        >
           <InputWithMessage
             title={{ key: 'project_settings_organizationDownloads_title' }}
             message={{ key: 'project_settings_organizationDownloads_description' }}
@@ -389,19 +425,21 @@
               type="checkbox"
               name="allowDownload"
               class="toggle toggle-accent ml-4"
-              bind:checked={data.project.AllowDownloads}
-              onclick={submitSimpleSettingsForm}
+              checked={data.project.AllowDownloads}
+              onchange={(e) => {
+                (e.currentTarget.parentElement?.parentElement as HTMLFormElement).requestSubmit();
+              }}
             />
           </InputWithMessage>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
     <!-- Sidebar Settings -->
     <div class="space-y-2 min-w-0 flex-auto sidebararea">
       <div class="bg-neutral card card-bordered border-slate-400 rounded-md max-w-full">
         <form
           action="?/editOwnerGroup"
-          bind:this={ownerSettingsForm}
+          bind:this={settingsForm}
           method="post"
           use:enhance={() =>
             ({ update }) =>
@@ -528,7 +566,7 @@
               </div>
             {/each}
           {:else}
-            <p class="p-2">{m.project_side_authors_empty()}</p>
+            <p class="p-2">{m.project_side_authors_empty({ group: data.project.Group.Name! })}</p>
           {/if}
         </div>
         <div class="bg-neutral p-2">
