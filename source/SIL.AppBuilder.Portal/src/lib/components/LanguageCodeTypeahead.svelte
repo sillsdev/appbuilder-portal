@@ -42,7 +42,7 @@
     includeScore: true,
     includeMatches: true,
     isCaseSensitive: false,
-    threshold: 0.6,
+    threshold: 0.2,
     ignoreLocation: true,
     ignoreFieldNorm: true
     // minMatchCharLength: 2
