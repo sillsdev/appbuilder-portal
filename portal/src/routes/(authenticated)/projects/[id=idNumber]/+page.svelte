@@ -147,8 +147,6 @@
     <div class="mainarea min-w-0">
       <h2 class="pl-0">{m.project_details_title()}</h2>
       <div>
-        <!-- TODO: I don't like how project visibility and allow downloads are shown. -->
-        <!-- Probably needs new i18n entries -->
         <div class="gridcont grid gap-x-6 gap-y-2">
           <div class="flex place-content-between">
             <span>
@@ -294,6 +292,7 @@
           </form>
         </dialog>
       </div>
+      <!-- Products List -->
       <div>
         {#if !data.project?.Products.length}
           {m.projectTable_noProducts()}
@@ -462,6 +461,7 @@
         <div class="divider"></div>
       </div>
     </div>
+    <!-- Settings -->
     <div class="settingsarea my-4">
       <h2 class="pl-0 pt-0">{m.project_settings_title()}</h2>
       <form
@@ -496,6 +496,7 @@
         </div>
       </form>
     </div>
+    <!-- Sidebar Settings -->
     <div class="space-y-2 min-w-0 flex-auto sidebararea">
       <div class="bg-neutral card card-bordered border-slate-400 rounded-md max-w-full">
         <form
@@ -607,7 +608,7 @@
           </div>
         </form>
       </div>
-
+      <!-- Authors -->
       <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
         <div class="bg-neutral">
           <h2>{m.project_side_authors_title()}</h2>
@@ -659,6 +660,7 @@
           </form>
         </div>
       </div>
+      <!-- Reviewers -->
       <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
         <div class="bg-neutral">
           <h2>{m.project_side_reviewers_title()}</h2>
