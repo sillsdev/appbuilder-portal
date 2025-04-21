@@ -88,6 +88,7 @@
   "common_workflow": "Workflow",
   "common_default": "Default",
   "common_delete": "Delete",
+  "common_clear": "Clear",
   "common_close": "close",
   "common_or": "o",
   "models_add": "Add {name}",
