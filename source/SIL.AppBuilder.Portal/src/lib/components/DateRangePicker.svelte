@@ -1,12 +1,11 @@
 <script lang="ts">
   import { browser } from '$app/environment';
+  import { m } from '$lib/paraglide/messages';
   import sv_flatpickr, { themeChanger, themeNames } from 'svelte-flatpickr-plus';
+  import IconContainer from './IconContainer.svelte';
   // This component is here because the range mode of the Flatpickr svelte package
   // is a bit broken. Essentially, the 'value' property is updated when the second
   // date is clicked but not reassigned, only when the first is and it is set to a new value.
-
-  // TODO: add an obvious clear button to the date picker. Right now the best way to clear
-  // the filter is reloading the page, or choosing a first date and not a second one
 
   // Note: At the moment, the site always follows prefered color scheme
   // If at some point in the future a manual toggle is added, this will need to be changed
@@ -28,26 +27,41 @@
   }
 
   let { chosenDates = $bindable(null), placeholder = '' }: Props = $props();
+
+  let dateElement: HTMLElement;
 </script>
 
-<div class="dateRangePicker">
-  <input
-    name="dateRange"
-    use:sv_flatpickr={{
-      mode: 'range',
-      altInput: true,
-      altFormat: 'M j, Y',
-      static: true,
-      onChange: (v) =>
-        (chosenDates = [
-          v[0],
-          // Add one day to include the final day
-          v[1] ? new Date(v[1].getTime() + 1000 * 60 * 60 * 24) : null
-        ])
-    }}
-    class="input input-bordered w-full min-w-40"
-    {placeholder}
-  />
+<div
+  class="dateRangePicker"
+  bind:this={dateElement}
+  use:sv_flatpickr={{
+    mode: 'range',
+    altInput: true,
+    altFormat: 'M j, Y',
+    wrap: true,
+    onChange: (v) =>
+      (chosenDates = [
+        v[0],
+        // Add one day to include the final day
+        v[1] ? new Date(v[1].getTime() + 1000 * 60 * 60 * 24) : null
+      ])
+  }}
+>
+  <span class="input input-bordered flex items-center gap-2 w-full">
+    <input name="dateRange" class="grow" {placeholder} data-input />
+    {#if chosenDates?.some((d) => !!d)}
+      <button
+        onclick={() => {
+          //@ts-expect-error This is somehow how this is supposed to work according to the docs
+          dateElement._flatpickr.clear();
+          chosenDates = null;
+        }}
+        title={m.common_clear()}
+      >
+        <IconContainer icon="mdi:close" class="ml-auto cursor-pointer" width={24} />
+      </button>
+    {/if}
+  </span>
 </div>
 
 <style>
