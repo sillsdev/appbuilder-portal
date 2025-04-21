@@ -60,6 +60,7 @@
     hasMultiCharMatch: boolean
   ) {
     let i = 0;
+    let firstMatchIndex = 0;
     const ret: {
       /**highlighted*/
       h: boolean;
@@ -77,8 +78,28 @@
         ret.push({ h: false, v: value.substring(i, index[0]) });
         ret.push({ h: true, v: value.substring(index[0], index[1] + 1) });
         i = index[1] + 1;
+        if (firstMatchIndex === 0) {
+          firstMatchIndex = index[0];
+        }
       }
       ret.push({ h: false, v: value.substring(i) });
+    }
+    // if the value is too long and the first match is also beyond that length, it may not be visible due to clamping
+    if (value.length >= 32 && firstMatchIndex >= 32) {
+      // find first portion of the returned value with a match
+      const firstMatchIndex = ret.findIndex((r) => r.h);
+      // find first portion before first match without a match, but with a comma (separator)
+      const firstSeparatedIndex = ret
+        .slice(0, firstMatchIndex)
+        .findLastIndex((r) => !r.h && r.v.includes(','));
+      const firstSeparated = ret.at(firstSeparatedIndex);
+      // truncate separated to just the last bit after the comma
+      if (firstSeparated) {
+        firstSeparated.v = firstSeparated.v.split(',')[-1];
+      }
+
+      // return parse matches starting at last non-match with a separator right before the first match
+      return ret.slice(firstSeparatedIndex);
     }
     return ret;
   }
