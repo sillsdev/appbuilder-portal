@@ -18,6 +18,7 @@
   import { ProductType } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import AddProductModal from './AddProductModal.svelte';
   import DeleteProductModal from './DeleteProductModal.svelte';
   import PropertiesModal from './PropertiesModal.svelte';
 
@@ -41,7 +42,6 @@
       duplicateId: false
     }
   });
-  const { enhance: addProductEnhance } = superForm(data.addProductForm);
   function openModal(id: string) {
     (window[('modal' + id) as any] as any).showModal();
   }
@@ -86,13 +86,7 @@
       console.error('Error performing product action:', error);
     }
   }
-  let addProductModal: HTMLDialogElement;
-  let selectingStore: boolean = $state(false);
-  let selectedProduct = $state(data.productsToAdd[0]);
-  let availableStores = $derived(
-    data.stores.filter((s) => s.StoreTypeId === selectedProduct.Workflow.StoreTypeId)
-  );
-
+  let addProductModal: HTMLDialogElement | undefined = $state(undefined);
   let deleteProductModal: HTMLDialogElement | undefined = $state(undefined);
   let updateProductModal: HTMLDialogElement | undefined = $state(undefined);
 </script>
@@ -191,106 +185,12 @@
         </div>
         <button
           class="btn btn-outline"
-          onclick={() => addProductModal.showModal()}
+          onclick={() => addProductModal?.showModal()}
           disabled={!(data.productsToAdd.length && data.project.WorkflowProjectUrl)}
         >
           {m.project_products_add()}
         </button>
-        <dialog bind:this={addProductModal} class="modal">
-          <form class="modal-box" action="?/addProduct" method="POST" use:addProductEnhance>
-            <div class="items-center text-center" class:hidden={selectingStore}>
-              <div class="flex flex-row">
-                <h2 class="text-lg font-bold grow">{m.project_products_popup_addTitle()}</h2>
-                <button
-                  class="btn btn-ghost"
-                  type="button"
-                  onclick={() => {
-                    addProductModal.close();
-                  }}
-                >
-                  <IconContainer icon="mdi:close" width={36} class="opacity-80" />
-                </button>
-              </div>
-              <hr />
-              <div class="flex flex-col pt-1 space-y-1">
-                {#each data.productsToAdd.toSorted( (a, b) => byName(a, b, getLocale()) ) as productDef}
-                  <!-- svelte-ignore a11y_click_events_have_key_events -->
-                  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-                  <label
-                    class="flex flex-col border border-secondary rounded-sm text-left cursor-pointer"
-                    onclick={() => {
-                      selectingStore = true;
-                      selectedProduct = productDef;
-                    }}
-                  >
-                    <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
-                      <IconContainer icon={getIcon(productDef.Name ?? '')} width="24" />
-                      {productDef.Name}
-                    </div>
-                    <p class="p-2 text-sm text-neutral-400">{productDef.Description}</p>
-                    <input
-                      type="radio"
-                      name="productDefinitionId"
-                      value={productDef.Id}
-                      class="hidden"
-                    />
-                  </label>
-                {/each}
-              </div>
-            </div>
-            <div class="items-center text-center" class:hidden={!selectingStore}>
-              <div class="flex flex-row">
-                <h2 class="text-lg font-bold">
-                  {m.products_storeSelect({
-                    name: selectedProduct.Name || ''
-                  })}
-                </h2>
-                <button
-                  class="btn btn-ghost"
-                  type="button"
-                  onclick={() => {
-                    selectingStore = false;
-                  }}
-                >
-                  <IconContainer icon="mdi:close" width={36} class="opacity-80" />
-                </button>
-              </div>
-              <hr />
-              <div class="flex flex-col pt-1 space-y-1">
-                {#if availableStores.length}
-                  {@const locale = getLocale()}
-                  {#each availableStores.toSorted((a, b) => byName(a, b, locale)) as store}
-                    <!-- svelte-ignore a11y_click_events_have_key_events -->
-                    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-                    <label
-                      class="flex flex-col border border-secondary rounded-sm text-left cursor-pointer"
-                    >
-                      <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
-                        {store.Name}
-                      </div>
-                      <p class="p-2 text-sm text-neutral-400">{store.Description}</p>
-                      <input
-                        type="submit"
-                        name="storeId"
-                        value={store.Id}
-                        class="hidden"
-                        onclick={() => {
-                          addProductModal.close();
-                          selectingStore = false;
-                        }}
-                      />
-                    </label>
-                  {/each}
-                {:else}
-                  {m.products_noStoresAvailable()}
-                {/if}
-              </div>
-            </div>
-          </form>
-          <form method="dialog" class="modal-backdrop">
-            <button onclick={() => (selectingStore = false)}>{m.common_close()}</button>
-          </form>
-        </dialog>
+        <AddProductModal bind:modal={addProductModal} prodDefs={data.productsToAdd} stores={data.stores}/>
       </div>
       <!-- Products List -->
       <div>

@@ -288,7 +288,6 @@ export const load = (async ({ locals, params }) => {
     deleteAuthorForm: await superValidate(valibot(deleteSchema)),
     deleteReviewerForm: await superValidate(valibot(deleteSchema)),
     productsToAdd: productDefinitions.filter((pd) => !projectProductDefinitionIds.includes(pd.Id)),
-    addProductForm: await superValidate(valibot(addProductSchema)),
     stores: organization?.OrganizationStores.map((os) => os.Store) ?? [],
     actionForm: await superValidate(valibot(projectActionSchema)),
     userGroups: (await userGroupsForOrg(session.user.userId, project.Organization.Id)).map(
