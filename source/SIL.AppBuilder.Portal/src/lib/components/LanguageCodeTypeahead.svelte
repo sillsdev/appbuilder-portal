@@ -49,7 +49,7 @@
   });
 
   function search(searchValue: string) {
-    return fuzzySearch.search(searchValue);
+    return fuzzySearch.search(searchValue, { limit: 5 });
   }
   type FuseResult = ReturnType<typeof search>[number];
 
@@ -154,7 +154,7 @@
 
 <TypeaheadInput
   inputElProps={{ placeholder: m.project_languageCode(), ...inputElProps }}
-  getList={(searchValue) => search(searchValue).slice(0, 5)}
+  getList={(searchValue) => search(searchValue)}
   classes="pr-20 {inputClasses}"
   bind:search={langCode}
   onItemClicked={(res) => {
@@ -175,7 +175,7 @@
       {langtagList.find((l) => l.tag === langCode)?.nameInLocale ?? ''}
     </span>
     {#if validatorHint}
-      <br>
+      <br />
       {@render validatorHint()}
     {/if}
   {/snippet}
