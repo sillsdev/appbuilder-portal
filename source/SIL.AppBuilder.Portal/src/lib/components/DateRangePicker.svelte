@@ -54,6 +54,7 @@
         onclick={() => {
           //@ts-expect-error This is somehow how this is supposed to work according to the docs
           dateElement._flatpickr.clear();
+          chosenDates = null;
         }}
         title={m.common_clear()}
       >
