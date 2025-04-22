@@ -6,7 +6,7 @@
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
-  import type { ActionData } from './$types';
+  import type { ActionData } from '../$types';
 
   interface Props {
     project: {

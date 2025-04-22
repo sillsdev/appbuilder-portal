@@ -1,51 +1,29 @@
 <script lang="ts">
-  import { enhance } from '$app/forms';
   import { page } from '$app/state';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
-  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
-  import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, locales, localizeHref } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails, {
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
-  import { toast } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
   import { ProductType } from 'sil.appbuilder.portal.common/workflow';
-  import { superForm } from 'sveltekit-superforms';
-  import type { ActionData, PageData } from './$types';
-  import AddProductModal from './AddProductModal.svelte';
-  import DeleteProductModal from './DeleteProductModal.svelte';
-  import OwnerGroupSettings from './OwnerGroupSettings.svelte';
-  import PropertiesModal from './PropertiesModal.svelte';
+  import type { PageData } from './$types';
+  import { Authors, OwnerGroup, Reviewers, Settings } from './forms';
+  import { AddProduct, DeleteProduct, Properties } from './modals';
 
   interface Props {
     data: PageData;
   }
 
   let { data }: Props = $props();
-
-  const { form: authorForm, enhance: authorEnhance } = superForm(data.authorForm);
-  const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm, {
-    resetForm: true
-  });
-  const { enhance: authorDeleteEnhance } = superForm(data.deleteAuthorForm, {
-    warnings: {
-      duplicateId: false
-    }
-  });
-  const { enhance: reviewerDeleteEnhance } = superForm(data.deleteReviewerForm, {
-    warnings: {
-      duplicateId: false
-    }
-  });
 
   async function handleProductAction(productId: string, action: string) {
     try {
@@ -169,7 +147,7 @@
         >
           {m.project_products_add()}
         </button>
-        <AddProductModal
+        <AddProduct
           bind:modal={addProductModal}
           prodDefs={data.productsToAdd}
           stores={data.stores}
@@ -289,17 +267,13 @@
                     </ul>
                   {/snippet}
                 </Dropdown>
-                <DeleteProductModal
+                <DeleteProduct
                   bind:modal={deleteProductModal}
                   {product}
                   endpoint="deleteProduct"
                   project={data.project.Name ?? m.tasks_project()}
                 />
-                <PropertiesModal
-                  bind:modal={updateProductModal}
-                  {product}
-                  endpoint="updateProduct"
-                />
+                <Properties bind:modal={updateProductModal} {product} endpoint="updateProduct" />
               </div>
               {#if showTaskWaiting}
                 <div class="p-2 flex gap-1">
@@ -341,212 +315,28 @@
     </div>
     <!-- Settings -->
     <div class="settingsarea my-4">
-      <h2 class="pl-0 pt-0">{m.project_settings_title()}</h2>
-      <div class="space-y-2">
-        <form
-          method="POST"
-          action="?/toggleVisibility"
-          use:enhance={() =>
-            ({ update, result }) => {
-              if (result.type === 'success') {
-                const res = result.data as ActionData;
-                const publicInput = document.querySelector('[name=isPublic]') as HTMLInputElement;
-                if (res?.ok) {
-                  if (publicInput.checked) {
-                    toast('success', m.project_operations_isPublic_on());
-                  } else {
-                    toast('success', m.project_operations_isPublic_off());
-                  }
-                } else {
-                  toast('error', m.errors_generic({ errorMessage: '' }));
-                  publicInput.checked = !publicInput.checked;
-                }
-              }
-              update({ reset: false });
-            }}
-        >
-          <PublicPrivateToggle
-            title={{ key: 'project_settings_visibility_title' }}
-            message={{ key: 'project_settings_visibility_description' }}
-            formName="isPublic"
-            bind:checked={data.project.IsPublic!}
-            onchange={() => {
-              const publicInput = document.querySelector('[name=isPublic]') as HTMLInputElement;
-              publicInput.form?.requestSubmit();
-            }}
-          />
-        </form>
-        <form
-          method="POST"
-          action="?/toggleDownload"
-          use:enhance={() =>
-            ({ update, result }) => {
-              if (result.type === 'success') {
-                const res = result.data as ActionData;
-                const downloadInput = document.querySelector(
-                  '[name=allowDownload]'
-                ) as HTMLInputElement;
-                if (res?.ok) {
-                  if (downloadInput.checked) {
-                    toast('success', m.project_operations_allowDownloads_on());
-                  } else {
-                    toast('success', m.project_operations_allowDownloads_off());
-                  }
-                } else {
-                  toast('error', m.errors_generic({ errorMessage: '' }));
-                  downloadInput.checked = !downloadInput.checked;
-                }
-              }
-              update({ reset: false });
-            }}
-        >
-          <InputWithMessage
-            title={{ key: 'project_settings_organizationDownloads_title' }}
-            message={{ key: 'project_settings_organizationDownloads_description' }}
-          >
-            <input
-              type="checkbox"
-              name="allowDownload"
-              class="toggle toggle-accent ml-4"
-              checked={data.project.AllowDownloads}
-              onchange={(e) => {
-                (e.currentTarget.parentElement?.parentElement as HTMLFormElement).requestSubmit();
-              }}
-            />
-          </InputWithMessage>
-        </form>
-      </div>
+      <Settings project={data.project} />
     </div>
     <!-- Sidebar Settings -->
     <div class="space-y-2 min-w-0 flex-auto sidebararea">
-      <OwnerGroupSettings
+      <OwnerGroup
         project={data.project}
         users={data.possibleProjectOwners}
         groups={data.possibleGroups}
         orgName={data.organizations.find((o) => o.Id === data.project.Organization.Id)?.Name}
       />
-      <!-- Authors -->
-      <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
-        <div class="bg-neutral">
-          <h2>{m.project_side_authors_title()}</h2>
-        </div>
-        <div class="p-2">
-          {#if data.project.Authors.length}
-            {@const locale = getLocale()}
-            {#each data.project.Authors.toSorted( (a, b) => byName(a.Users, b.Users, locale) ) as author}
-              <div class="flex flex-row w-full place-content-between p-2">
-                <span>{author.Users.Name}</span>
-                <form action="?/deleteAuthor" method="post" use:authorDeleteEnhance>
-                  <input type="hidden" name="id" value={author.Id} />
-                  <button type="submit">
-                    <IconContainer icon="mdi:close" width="24" />
-                  </button>
-                </form>
-              </div>
-            {/each}
-          {:else}
-            <p class="p-2">{m.project_side_authors_empty({ group: data.project.Group.Name! })}</p>
-          {/if}
-        </div>
-        <div class="bg-neutral p-2">
-          <form action="?/addAuthor" method="post" use:authorEnhance>
-            <div class="flex place-content-between space-x-2">
-              <select
-                class="grow select select-bordered"
-                name="author"
-                bind:value={$authorForm.author}
-              >
-                {#if data.authorsToAdd.length}
-                  {#each data.authorsToAdd
-                    .filter((author) => !data.project?.Authors.some((au) => au.Users.Id === author.Id))
-                    .sort((a, b) => byName(a, b, getLocale())) as author}
-                    <option value={author.Id}>
-                      {author.Name}
-                    </option>
-                  {/each}
-                {:else}
-                  <option disabled selected value="">
-                    {m.project_side_authors_emptyGroup()}
-                  </option>
-                {/if}
-              </select>
-              <button type="submit" class="btn btn-primary">
-                {m.project_side_authors_form_submit()}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-      <!-- Reviewers -->
-      <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
-        <div class="bg-neutral">
-          <h2>{m.project_side_reviewers_title()}</h2>
-        </div>
-        <div class="p-2">
-          {#if data.project.Reviewers.length}
-            {@const locale = getLocale()}
-            {#each data.project.Reviewers.toSorted((a, b) => byName(a, b, locale)) as reviewer}
-              <div class="flex flex-row w-full place-content-between p-2">
-                <span>{reviewer.Name} ({reviewer.Email})</span>
-                <form action="?/deleteReviewer" method="post" use:reviewerDeleteEnhance>
-                  <input type="hidden" name="id" value={reviewer.Id} />
-                  <button type="submit">
-                    <IconContainer icon="mdi:close" width="24" />
-                  </button>
-                </form>
-              </div>
-            {/each}
-          {:else}
-            <p class="p-2">{m.project_side_reviewers_empty()}</p>
-          {/if}
-        </div>
-        <div class="p-2 bg-neutral">
-          <form action="?/addReviewer" method="post" use:reviewerEnhance>
-            <div class="flex flex-col place-content-between space-y-2">
-              <div class="flex flex-col gap-2 reviewerform">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Name"
-                  class="input input-bordered grow"
-                  bind:value={$reviewerForm.name}
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  class="input input-bordered grow"
-                  bind:value={$reviewerForm.email}
-                />
-              </div>
-              <div class="flex flex-row space-x-2">
-                <select
-                  name="locale"
-                  class="grow select select-bordered"
-                  bind:value={$reviewerForm.language}
-                >
-                  {#each locales as locale}
-                    <option value={locale}>{locale.split('-')[0]}</option>
-                  {/each}
-                </select>
-                <button type="submit" class="btn btn-primary">
-                  {m.project_side_reviewers_form_submit()}
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
+      <Authors
+        group={data.project.Group}
+        projectAuthors={data.project.Authors}
+        availableAuthors={data.authorsToAdd}
+        formData={data.authorForm}
+      />
+      <Reviewers reviewers={data.project.Reviewers} formData={data.reviewerForm} />
     </div>
   </div>
 </div>
 
 <style>
-  @container (width > 450px) {
-    .reviewerform {
-      flex-direction: row;
-    }
-  }
   .gridcont {
     grid-template-columns: repeat(auto-fill, minmax(48%, 1fr));
   }

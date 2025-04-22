@@ -14,15 +14,8 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
 
-const addAuthorSchema = v.object({
-  author: idSchema
-});
-const addReviewerSchema = v.object({
-  name: v.string(),
-  email: v.pipe(v.string(), v.email()),
-  language: v.string()
-});
 const updateOwnerGroupSchema = v.object({
   owner: idSchema,
   group: idSchema
