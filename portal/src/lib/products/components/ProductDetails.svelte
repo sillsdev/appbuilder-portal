@@ -1,3 +1,11 @@
+<script lang="ts" module>
+  /** Shows details modal for product with productId */
+  export function showProductDetails(productId: string) {
+    // optional chaining for if element isn't found or isn't actually a Dialog Element
+    (document.getElementById('modal' + productId) as HTMLDialogElement)?.showModal?.();
+  }
+</script>
+
 <script lang="ts">
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';

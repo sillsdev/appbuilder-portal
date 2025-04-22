@@ -10,7 +10,9 @@
   import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, locales, localizeHref } from '$lib/paraglide/runtime';
-  import ProductDetails from '$lib/products/components/ProductDetails.svelte';
+  import ProductDetails, {
+    showProductDetails
+  } from '$lib/products/components/ProductDetails.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { toast } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
@@ -44,9 +46,6 @@
       duplicateId: false
     }
   });
-  function openModal(id: string) {
-    (window[('modal' + id) as any] as any).showModal();
-  }
 
   async function handleProductAction(productId: string, action: string) {
     try {
@@ -253,7 +252,7 @@
                         </li>
                       {/each}
                       <li class="w-full rounded-none">
-                        <button class="text-nowrap" onclick={() => openModal(product.Id)}>
+                        <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
                           {m.project_products_popup_details()}
                         </button>
                       </li>
