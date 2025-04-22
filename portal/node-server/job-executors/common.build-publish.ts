@@ -30,7 +30,7 @@ export async function addProductPropertiesToEnvironment(productId: string) {
       Properties: true
     }
   });
-  const uiUrl = process.env.UI_URL || 'http://localhost:5173';
+  const uiUrl = process.env.UI_URL || 'http://localhost:6173';
   const projectUrl = uiUrl + '/projects/' + product.Project.Id;
 
   return {

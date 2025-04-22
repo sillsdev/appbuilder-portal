@@ -16,7 +16,7 @@ createBullBoard({
   serverAdapter
 });
 app.use(serverAdapter.getRouter());
-app.listen(3000, () => console.log('Dev server started'));
+app.listen(6100, () => console.log('Dev server started'));
 
 new Workers.Builds();
 new Workers.DefaultRecurring();
