@@ -17,7 +17,8 @@ export default defineConfig({
   server: {
     fs: {
       allow: [searchForWorkspaceRoot(process.cwd()), '/common']
-    }
+    },
+    port: 6173
   },
   plugins: [
     tailwindcss(),

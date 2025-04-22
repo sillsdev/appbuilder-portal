@@ -189,7 +189,7 @@
             <li>
               <a
                 class="rounded-none"
-                href={dev ? 'http://localhost:3000' : '/admin/jobs'}
+                href={dev ? 'http://localhost:6000' : '/admin/jobs'}
                 onclick={closeDrawer}
                 target="_blank"
               >

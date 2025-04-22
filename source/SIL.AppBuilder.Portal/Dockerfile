@@ -45,5 +45,5 @@ COPY --from=builder /build/common /app/common
 # Copy prisma data (npm ci nukes node_modules, so this must be last)
 COPY --from=builder /build/node_modules/.prisma /app/node_modules/.prisma
 
-EXPOSE 3000
+EXPOSE 6000
 CMD ["node", "/app/index.js"]
