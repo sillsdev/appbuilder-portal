@@ -99,4 +99,4 @@ const handler = await import('./build/handler.js');
 // Svelte application handles authentication already, including login and logout
 app.use(handler.handler);
 
-app.listen(6000, () => console.log('Server started!'));
+app.listen(6100, () => console.log('Server started!'));
