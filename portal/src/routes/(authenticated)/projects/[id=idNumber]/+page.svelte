@@ -21,13 +21,14 @@
   import type { ActionData, PageData } from './$types';
   import AddProductModal from './AddProductModal.svelte';
   import DeleteProductModal from './DeleteProductModal.svelte';
+  import OwnerGroupSettings from './OwnerGroupSettings.svelte';
   import PropertiesModal from './PropertiesModal.svelte';
 
   interface Props {
     data: PageData;
   }
 
-  let { data = $bindable() }: Props = $props();
+  let { data }: Props = $props();
 
   const { form: authorForm, enhance: authorEnhance } = superForm(data.authorForm);
   const { form: reviewerForm, enhance: reviewerEnhance } = superForm(data.reviewerForm, {
@@ -45,18 +46,6 @@
   });
   function openModal(id: string) {
     (window[('modal' + id) as any] as any).showModal();
-  }
-  let settingsTimeout: NodeJS.Timeout;
-  let settingsForm: HTMLFormElement;
-  let ownerField: HTMLInputElement;
-  let groupField: HTMLInputElement;
-  function submitOwnerSettingsForm() {
-    if (settingsTimeout) {
-      clearTimeout(settingsTimeout);
-    }
-    settingsTimeout = setTimeout(() => {
-      settingsForm.requestSubmit();
-    }, 2000);
   }
 
   async function handleProductAction(productId: string, action: string) {
@@ -238,85 +227,80 @@
                     {getRelativeTime(product.DatePublished)}
                   </Tooltip>
                 </span>
-                <span class="dropdown-wrapper">
-                  <Dropdown
-                    labelClasses="px-1"
-                    contentClasses="drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto"
-                  >
-                    {#snippet label()}
-                      <IconContainer icon="charm:menu-kebab" width="20" />
-                    {/snippet}
-                    {#snippet content()}
-                      <ul class="menu menu-compact overflow-hidden rounded-md">
-                        {#each product.actions as action}
-                          {@const message =
-                            //@ts-expect-error this is in fact correct
-                            m['products_actions_' + action]()}
-                          <li class="w-full rounded-none">
-                            <button
-                              class="text-nowrap"
-                              onclick={(event) => {
-                                handleProductAction(product.Id, action);
-                                event.currentTarget.blur();
-                              }}
-                            >
-                              {message}
-                            </button>
-                          </li>
-                        {/each}
+                <Dropdown
+                  labelClasses="px-1"
+                  contentClasses="drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto"
+                >
+                  {#snippet label()}
+                    <IconContainer icon="charm:menu-kebab" width="20" />
+                  {/snippet}
+                  {#snippet content()}
+                    <ul class="menu menu-compact overflow-hidden rounded-md">
+                      {#each product.actions as action}
+                        {@const message =
+                          //@ts-expect-error this is in fact correct
+                          m['products_actions_' + action]()}
                         <li class="w-full rounded-none">
-                          <button class="text-nowrap" onclick={() => openModal(product.Id)}>
-                            {m.project_products_popup_details()}
+                          <button
+                            class="text-nowrap"
+                            onclick={(event) => {
+                              handleProductAction(product.Id, action);
+                              event.currentTarget.blur();
+                            }}
+                          >
+                            {message}
                           </button>
                         </li>
+                      {/each}
+                      <li class="w-full rounded-none">
+                        <button class="text-nowrap" onclick={() => openModal(product.Id)}>
+                          {m.project_products_popup_details()}
+                        </button>
+                      </li>
+                      <li class="w-full rounded-none">
+                        <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
+                          {m.project_productFiles()}
+                        </a>
+                      </li>
+                      {#if isAdminForOrg(data.project?.Organization.Id, data.session?.user.roles)}
                         <li class="w-full rounded-none">
-                          <a
-                            href={localizeHref(`/products/${product.Id}/files`)}
+                          <button
                             class="text-nowrap"
+                            onclick={() => updateProductModal?.showModal()}
                           >
-                            {m.project_productFiles()}
+                            {m.project_products_popup_properties()}
+                          </button>
+                        </li>
+                      {/if}
+                      {#if isSuperAdmin(data.session?.user.roles) && !!product.WorkflowInstance}
+                        <li class="w-full rounded-none">
+                          <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
+                            {m.common_workflow()}
                           </a>
                         </li>
-                        {#if isAdminForOrg(data.project?.Organization.Id, data.session?.user.roles)}
-                          <li class="w-full rounded-none">
-                            <button
-                              class="text-nowrap"
-                              onclick={() => updateProductModal?.showModal()}
-                            >
-                              {m.project_products_popup_properties()}
-                            </button>
-                          </li>
-                        {/if}
-                        {#if isSuperAdmin(data.session?.user.roles) && !!product.WorkflowInstance}
-                          <li class="w-full-rounded-none">
-                            <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
-                              {m.common_workflow()}
-                            </a>
-                          </li>
-                        {/if}
-                        <li class=" w-full rounded-none">
-                          <button
-                            class="text-nowrap text-error"
-                            onclick={() => deleteProductModal?.showModal()}
-                          >
-                            {m.models_delete({ name: m.tasks_product() })}
-                          </button>
-                        </li>
-                      </ul>
-                    {/snippet}
-                  </Dropdown>
-                  <DeleteProductModal
-                    bind:modal={deleteProductModal}
-                    {product}
-                    endpoint="deleteProduct"
-                    project={data.project.Name ?? m.tasks_project()}
-                  />
-                  <PropertiesModal
-                    bind:modal={updateProductModal}
-                    {product}
-                    endpoint="updateProduct"
-                  />
-                </span>
+                      {/if}
+                      <li class="w-full rounded-none">
+                        <button
+                          class="text-nowrap text-error"
+                          onclick={() => deleteProductModal?.showModal()}
+                        >
+                          {m.models_delete({ name: m.tasks_product() })}
+                        </button>
+                      </li>
+                    </ul>
+                  {/snippet}
+                </Dropdown>
+                <DeleteProductModal
+                  bind:modal={deleteProductModal}
+                  {product}
+                  endpoint="deleteProduct"
+                  project={data.project.Name ?? m.tasks_project()}
+                />
+                <PropertiesModal
+                  bind:modal={updateProductModal}
+                  {product}
+                  endpoint="updateProduct"
+                />
               </div>
               {#if showTaskWaiting}
                 <div class="p-2 flex gap-1">
@@ -436,116 +420,12 @@
     </div>
     <!-- Sidebar Settings -->
     <div class="space-y-2 min-w-0 flex-auto sidebararea">
-      <div class="bg-neutral card card-bordered border-slate-400 rounded-md max-w-full">
-        <form
-          action="?/editOwnerGroup"
-          bind:this={settingsForm}
-          method="post"
-          use:enhance={() =>
-            ({ update }) =>
-              update({ reset: false })}
-        >
-          <div class="flex flex-col py-4">
-            <div class="flex flex-col place-content-between px-4">
-              <span class="items-center flex gap-x-1">
-                <IconContainer icon="clarity:organization-solid" width="20" />
-                {m.project_side_organization()}
-              </span>
-              <span class="text-right">
-                {data.organizations.find((o) => data.project?.Organization.Id === o.Id)?.Name}
-              </span>
-            </div>
-            <div class="divider my-2"></div>
-            <div class="flex flex-col place-content-between px-4 pr-2">
-              <span>
-                <IconContainer icon="mdi:user" width="20" />
-                {m.project_side_projectOwner()}
-              </span>
-              <span class="text-right flex place-content-end dropdown-wrapper">
-                <Dropdown
-                  labelClasses="p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
-                  contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
-                >
-                  {#snippet label()}
-                    <span class="flex items-center pl-1">
-                      {data.project?.Owner.Name}
-                      <IconContainer icon="gridicons:dropdown" width="20" />
-                    </span>
-                  {/snippet}
-                  {#snippet content()}
-                    <input
-                      type="hidden"
-                      name="owner"
-                      value={data.project.Owner.Id}
-                      bind:this={ownerField}
-                    />
-                    <ul class="menu menu-compact overflow-hidden rounded-md">
-                      {#each data.possibleProjectOwners.toSorted( (a, b) => byName(a, b, getLocale()) ) as owner}
-                        <li class="w-full rounded-none">
-                          <button
-                            class="text-nowrap"
-                            class:font-bold={owner.Id === data.project.Owner.Id}
-                            onclick={() => {
-                              ownerField.value = owner.Id + '';
-                              submitOwnerSettingsForm();
-                            }}
-                          >
-                            {owner.Name}
-                          </button>
-                        </li>
-                      {/each}
-                    </ul>
-                  {/snippet}
-                </Dropdown>
-              </span>
-            </div>
-            <div class="divider my-2"></div>
-            <div class="flex flex-col place-content-between px-4 pr-2">
-              <span class="grow text-nowrap">
-                <IconContainer icon="mdi:account-group" width={20} />
-                {m.project_side_projectGroup()}
-              </span>
-              <span class="shrink text-right flex place-content-end items-center dropdown-wrapper">
-                <Dropdown
-                  labelClasses="p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
-                  contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
-                >
-                  {#snippet label()}
-                    <span class="flex items-center pl-1">
-                      {data.project?.Group.Name}
-                      <IconContainer icon="gridicons:dropdown" width="20" />
-                    </span>
-                  {/snippet}
-                  {#snippet content()}
-                    <input
-                      type="hidden"
-                      name="group"
-                      value={data.project.Group.Id}
-                      bind:this={groupField}
-                    />
-                    <ul class="menu menu-compact overflow-hidden rounded-md">
-                      {#each data.possibleGroups.toSorted( (a, b) => byName(a, b, getLocale()) ) as group}
-                        <li class="w-full rounded-none">
-                          <button
-                            class="text-nowrap"
-                            class:font-bold={group.Id === data.project.Group.Id}
-                            onclick={() => {
-                              groupField.value = group.Id + '';
-                              submitOwnerSettingsForm();
-                            }}
-                          >
-                            {group.Name}
-                          </button>
-                        </li>
-                      {/each}
-                    </ul>
-                  {/snippet}
-                </Dropdown>
-              </span>
-            </div>
-          </div>
-        </form>
-      </div>
+      <OwnerGroupSettings
+        project={data.project}
+        users={data.possibleProjectOwners}
+        groups={data.possibleGroups}
+        orgName={data.organizations.find((o) => o.Id === data.project.Organization.Id)?.Name}
+      />
       <!-- Authors -->
       <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
         <div class="bg-neutral">
@@ -667,20 +547,6 @@
     .reviewerform {
       flex-direction: row;
     }
-  }
-  .dropdown-wrapper :global(.drop-arrow::after) {
-    content: '';
-    width: 10px;
-    height: 10px;
-    transform: rotate(45deg);
-    position: absolute;
-    bottom: -5px;
-    right: 10px;
-    background-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-bg-opacity)));
-  }
-  .dropdown-wrapper :global(.drop-arrow.arrow-top::after) {
-    bottom: auto;
-    top: -5px;
   }
   .gridcont {
     grid-template-columns: repeat(auto-fill, minmax(48%, 1fr));
