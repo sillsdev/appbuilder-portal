@@ -2,8 +2,9 @@ import { error } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import type { PageServerLoad } from './$types';
 
-export const load = (async ({ params }) => {
-  // auth handled by hooks
+export const load = (async ({ params, locals }) => {
+  // need this for org membership check
+  const user = (await locals.auth())!.user;
   if (isNaN(parseInt(params.id))) return error(400);
   const project = await prisma.projects.findUnique({
     where: {
@@ -71,7 +72,7 @@ export const load = (async ({ params }) => {
                     }
                   }
                 }
-              },
+              }
             }
           }
         }
@@ -88,5 +89,10 @@ export const load = (async ({ params }) => {
   // Is this the right error? Should 404 be returned instead?
   if (!project.IsPublic) return error(403);
 
-  return { project };
+  return {
+    project,
+    isMemberOfProjectOrg: !!(await prisma.organizationMemberships.findFirst({
+      where: { OrganizationId: project.Organization.Id, UserId: user.userId }
+    }))
+  };
 }) satisfies PageServerLoad;

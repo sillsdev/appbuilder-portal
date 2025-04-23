@@ -33,9 +33,10 @@
       };
     }>;
     latestBuildId: number | undefined;
+    allowDownloads?: boolean;
   }
 
-  let { build, latestBuildId }: Props = $props();
+  let { build, latestBuildId, allowDownloads = true }: Props = $props();
 
   function versionString(b: typeof build): string {
     let version = b.Version;
@@ -87,11 +88,13 @@
                 </Tooltip>
               </td>
               <td class="text-right">{bytesToHumanSize(artifact.FileSize)}</td>
-              <td class="text-right">
-                <a href={artifact.Url} download>
-                  <IconContainer icon="mdi:download" width="20" />
-                </a>
-              </td>
+              {#if allowDownloads}
+                <td class="text-right">
+                  <a href={artifact.Url} download>
+                    <IconContainer icon="mdi:download" width="20" />
+                  </a>
+                </td>
+              {/if}
             </tr>
           {/each}
         </tbody>
