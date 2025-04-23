@@ -4,6 +4,7 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { importJSONSchema } from '$lib/projects';
+  import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
   import { onMount } from 'svelte';
   import type { FormResult } from 'sveltekit-superforms';
@@ -34,6 +35,11 @@
           }[];
         }>;
         returnedErrors = data.errors;
+      }
+    },
+    onUpdated({ form }) {
+      if (form.valid) {
+        toast('success', m.projectImport_createSuccess());
       }
     }
   });
