@@ -6,25 +6,32 @@
   import { bytesToHumanSize } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
+  import type { Prisma } from '@prisma/client';
 
   interface Props {
-    build: {
-      Version: string | null;
-      Success: boolean | null;
-      BuildId: number;
-      ProductArtifacts: {
-        ArtifactType: string | null;
-        FileSize: bigint | null;
-        Url: string | null;
-        DateUpdated: Date | null;
-      }[];
-      ProductPublications: {
-        Channel: string | null;
-        Success: boolean | null;
-        LogUrl: string | null;
-        DateUpdated: Date | null;
-      }[];
-    };
+    build: Prisma.ProductBuildsGetPayload<{
+      select: {
+        Version: true;
+        Success: true;
+        BuildId: true;
+        ProductArtifacts: {
+          select: {
+            ArtifactType: true;
+            FileSize: true;
+            Url: true;
+            DateUpdated: true;
+          };
+        };
+        ProductPublications: {
+          select: {
+            Channel: true;
+            Success: true;
+            LogUrl: true;
+            DateUpdated: true;
+          };
+        };
+      };
+    }>;
     latestBuildId: number | undefined;
   }
 
@@ -53,7 +60,7 @@
       {versionString(build)}
     </span>
     <span>
-      {m.project_products_numArtifacts({ amount: build.ProductArtifacts.length})}
+      {m.project_products_numArtifacts({ amount: build.ProductArtifacts.length })}
     </span>
   </div>
   <div class="p-2 overflow-x-auto">

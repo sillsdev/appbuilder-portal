@@ -2,16 +2,21 @@
   import { enhance } from '$app/forms';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
+  import type { Prisma } from '@prisma/client';
 
   interface Props {
     modal?: HTMLDialogElement;
-    product: {
-      Id: string;
-      DatePublished: Date | null;
-      ProductDefinition: {
-        Name: string | null;
+    product: Prisma.ProductsGetPayload<{
+      select: {
+        Id: true;
+        DatePublished: true;
+        ProductDefinition: {
+          select: {
+            Name: true;
+          };
+        };
       };
-    };
+    }>;
     endpoint: string;
     project: string;
   }
