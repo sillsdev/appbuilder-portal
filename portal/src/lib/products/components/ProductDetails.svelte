@@ -40,7 +40,7 @@
     if ([2, 3, 4].includes(transitionType)) {
       return m.project_products_transitions_transitionTypes({
         type: transitionType,
-        workflowType: m.workflowDefinitions_workflowTypes({ type: workflowTypeNum })
+        workflowType: m.flowDefs_types({ type: workflowTypeNum })
       });
     }
     return '';

@@ -9,5 +9,5 @@
   let { children }: Props = $props();
 </script>
 
-<h2>{m.workflowDefinitions_title()}</h2>
+<h2>{m.flowDefs_title()}</h2>
 {@render children?.()}

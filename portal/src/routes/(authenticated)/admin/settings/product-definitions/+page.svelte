@@ -31,15 +31,15 @@
           value: pD.ApplicationTypes.Name // ISSUE: #1102 this doesn't actually mean anything for the product definition, so we may want to remove this entirely from the UI.
         },
         {
-          key: 'prodDefs_workflow',
+          key: 'prodDefs_flow',
           value: pD.Workflow.Name
         },
         {
-          key: 'prodDefs_rebuildWorkflow',
+          key: 'prodDefs_rebuildFlow',
           value: pD.RebuildWorkflow?.Name
         },
         {
-          key: 'prodDefs_republishWorkflow',
+          key: 'prodDefs_republishFlow',
           value: pD.RepublishWorkflow?.Name
         },
         {

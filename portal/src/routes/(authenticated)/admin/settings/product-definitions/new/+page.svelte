@@ -67,7 +67,7 @@
     </select>
     <span class="validator-hint">{m.prodDefs_emptyType()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="prodDefs_workflow">
+  <LabeledFormInput name="prodDefs_flow">
     <select
       class="select select-bordered validator"
       name="workflow"
@@ -78,27 +78,27 @@
         <option value={wf.Id}>{wf.Name}</option>
       {/each}
     </select>
-    <span class="validator-hint">{m.prodDefs_emptyWorkflow()}</span>
+    <span class="validator-hint">{m.prodDefs_emptyFlow()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="prodDefs_rebuildWorkflow">
+  <LabeledFormInput name="prodDefs_rebuildFlow">
     <select
       class="select select-bordered"
       name="rebuildWorkflow"
       bind:value={$form.rebuildWorkflow}
     >
-      <option value={null}>{m.prodDefs_noWorkflow()}</option>
+      <option value={null}>{m.prodDefs_noFlow()}</option>
       {#each rebuildWorkflows as wf}
         <option value={wf.Id}>{wf.Name}</option>
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="prodDefs_republishWorkflow">
+  <LabeledFormInput name="prodDefs_republishFlow">
     <select
       class="select select-bordered"
       name="republishWorkflow"
       bind:value={$form.republishWorkflow}
     >
-      <option value={null}>{m.prodDefs_noWorkflow()}</option>
+      <option value={null}>{m.prodDefs_noFlow()}</option>
       {#each republishWorkflows as wf}
         <option value={wf.Id}>{wf.Name}</option>
       {/each}
