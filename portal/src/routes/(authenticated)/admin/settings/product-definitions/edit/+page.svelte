@@ -21,7 +21,7 @@
     onUpdated({ form }) {
       if (form.valid) {
         goto(localizeHref(base));
-        toast('success', m.productDefinitions_editSuccess());
+        toast('success', m.prodDefs_editSuccess());
       }
     }
   });
@@ -41,12 +41,12 @@
   let propsOk = $state(true);
 </script>
 
-<h3>{m.productDefinitions_edit()}</h3>
+<h3>{m.prodDefs_edit()}</h3>
 
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
-  <LabeledFormInput name="productDefinitions_name">
+  <LabeledFormInput name="prodDefs_name">
     <input
       type="text"
       name="name"
@@ -54,9 +54,9 @@
       bind:value={$form.name}
       required
     />
-    <span class="validator-hint">{m.productDefinitions_emptyName()}</span>
+    <span class="validator-hint">{m.prodDefs_emptyName()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="productDefinitions_type">
+  <LabeledFormInput name="prodDefs_type">
     <select
       class="select select-bordered validator"
       name="applicationType"
@@ -67,9 +67,9 @@
         <option value={type.Id}>{type.Name}</option>
       {/each}
     </select>
-    <span class="validator-hint">{m.productDefinitions_emptyType()}</span>
+    <span class="validator-hint">{m.prodDefs_emptyType()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="productDefinitions_workflow">
+  <LabeledFormInput name="prodDefs_workflow">
     <select
       class="select select-bordered validator"
       name="workflow"
@@ -80,40 +80,40 @@
         <option value={wf.Id}>{wf.Name}</option>
       {/each}
     </select>
-    <span class="validator-hint">{m.productDefinitions_emptyWorkflow()}</span>
+    <span class="validator-hint">{m.prodDefs_emptyWorkflow()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="productDefinitions_rebuildWorkflow">
+  <LabeledFormInput name="prodDefs_rebuildWorkflow">
     <select
       class="select select-bordered"
       name="rebuildWorkflow"
       bind:value={$form.rebuildWorkflow}
     >
-      <option value={null}>{m.productDefinitions_noWorkflow()}</option>
+      <option value={null}>{m.prodDefs_noWorkflow()}</option>
       {#each rebuildWorkflows as workflow}
         <option value={workflow.Id}>{workflow.Name}</option>
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="productDefinitions_republishWorkflow">
+  <LabeledFormInput name="prodDefs_republishWorkflow">
     <select
       class="select select-bordered"
       name="republishWorkflow"
       bind:value={$form.republishWorkflow}
     >
-      <option value={null}>{m.productDefinitions_noWorkflow()}</option>
+      <option value={null}>{m.prodDefs_noWorkflow()}</option>
       {#each republishWorkflows as workflow}
         <option value={workflow.Id}>{workflow.Name}</option>
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="productDefinitions_description">
+  <LabeledFormInput name="prodDefs_description">
     <textarea
       name="description"
       class="textarea textarea-bordered h-36 w-full"
       bind:value={$form.description}
     ></textarea>
   </LabeledFormInput>
-  <LabeledFormInput name="productDefinitions_properties">
+  <LabeledFormInput name="prodDefs_properties">
     <PropertiesEditor name="properties" className="w-full" bind:value={$form.properties} bind:ok={propsOk} />
   </LabeledFormInput>
   <div class="my-4">

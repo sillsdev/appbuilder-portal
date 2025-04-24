@@ -45,7 +45,7 @@
       bind:value={$form.name}
       required
     />
-    <span class="validator-hint">{m.productDefinitions_emptyName()}</span>
+    <span class="validator-hint">{m.prodDefs_emptyName()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="workflowDefinitions_storeType">
     <select
