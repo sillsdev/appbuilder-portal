@@ -6,11 +6,11 @@
   import Icon from '@iconify/svelte';
 
   const textsForPaths = new Map([
-    ['all', m.projects_switcher_dropdown_all()],
-    ['own', m.projects_switcher_dropdown_myProjects()],
-    ['organization', m.projects_switcher_dropdown_orgProjects()],
-    ['active', m.projects_switcher_dropdown_activeProjects()],
-    ['archived', m.projects_switcher_dropdown_archived()]
+    ['all', m.projects_filter_all()],
+    ['own', m.projects_filter_own()],
+    ['organization', m.projects_filter_org()],
+    ['active', m.projects_filter_active()],
+    ['archived', m.projects_filter_archived()]
   ]);
   let open = $state(false);
 </script>
