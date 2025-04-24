@@ -36,5 +36,8 @@
 	},
 	"dependencies": {
 		"@inlang/paraglide-js": "^2.0.0"
+	},
+	"volta": {
+		"node": "22.11.0"
 	}
 }
