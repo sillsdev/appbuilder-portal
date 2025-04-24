@@ -48,7 +48,7 @@
           <IconContainer icon="mdi:user" width={20} class="mr-1 shrink-0" />
           {project.OwnerName}
         </span>
-        <span class="flex items-center" title={m.projectTable_columns_organization()}>
+        <span class="flex items-center" title={m.projectTable_columns_org()}>
           <IconContainer icon="clarity:organization-solid" width={20} class="mr-1 shrink-0" />
           {project.OrganizationName}
         </span>

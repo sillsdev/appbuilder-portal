@@ -81,8 +81,8 @@
       }}
   >
     <InputWithMessage
-      title={{ key: 'project_settings_organizationDownloads_title' }}
-      message={{ key: 'project_settings_organizationDownloads_description' }}
+      title={{ key: 'project_settings_orgDownloads_title' }}
+      message={{ key: 'project_settings_orgDownloads_description' }}
     >
       <input
         bind:this={downloadInput}

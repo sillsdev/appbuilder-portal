@@ -24,7 +24,7 @@
 <form action="" class="m-4" method="post" use:enhance>
   <div class="flex flex-row">
     <div class="w-full">
-      <InputWithMessage title={{ key: 'org_useDefaultBuildEngineTitle' }}>
+      <InputWithMessage title={{ key: 'org_useDefaultBuildEngine' }}>
         <input
           name="useDefaultBuildEngine"
           class="toggle toggle-accent"
@@ -33,7 +33,7 @@
         />
       </InputWithMessage>
       {#if !$form.useDefaultBuildEngine}
-        <LabeledFormInput name="org_buildEngineUrl">
+        <LabeledFormInput name="org_buildEngineURL">
           <input
             type="url"
             name="buildEngineUrl"
@@ -41,9 +41,9 @@
             bind:value={$form.buildEngineUrl}
             required={!$form.useDefaultBuildEngine}
           />
-          <span class="validator-hint">{m.organizations_emptyBuildEngineURL()}</span>
+          <span class="validator-hint">{m.org_emptyBuildEngineURL()}</span>
         </LabeledFormInput>
-        <LabeledFormInput name="org_buildEngineApiAccessToken">
+        <LabeledFormInput name="org_accessToken">
           <input
             type="text"
             name="buildEngineApiAccessToken"
@@ -51,7 +51,7 @@
             bind:value={$form.buildEngineApiAccessToken}
             required={!$form.useDefaultBuildEngine}
           />
-          <span class="validator-hint">{m.organizations_emptyAccessToken()}</span>
+          <span class="validator-hint">{m.org_emptyAccessToken()}</span>
         </LabeledFormInput>
       {/if}
     </div>

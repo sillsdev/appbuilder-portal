@@ -2,14 +2,7 @@
   import { base } from '$app/paths';
   import { page } from '$app/state';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
-  import {
-    org_basicTitle,
-    org_groupsTitle,
-    org_infrastructureTitle,
-    org_productsTitle,
-    org_settingsTitle,
-    org_storesTitle
-  } from '$lib/paraglide/messages';
+  import { m } from '$lib/paraglide/messages';
   import type { Snippet } from 'svelte';
   import type { LayoutData } from './$types';
 
@@ -26,23 +19,23 @@
   routeId="/(authenticated)/organizations/[id]/settings"
   menuItems={[
     {
-      text: org_basicTitle(),
+      text: m.org_navBasic(),
       route: 'info'
     },
     {
-      text: org_productsTitle(),
+      text: m.org_navProducts(),
       route: 'products'
     },
     {
-      text: org_storesTitle(),
+      text: m.org_navStores(),
       route: 'stores'
     },
     {
-      text: org_groupsTitle(),
+      text: m.org_navGroups(),
       route: 'groups'
     },
     {
-      text: org_infrastructureTitle(),
+      text: m.org_navInfrastructure(),
       route: 'infrastructure'
     }
   ]}
@@ -50,7 +43,7 @@
   {#snippet title()}
     <div class="w-full">
       <h1 class="p-4 pl-3 pb-0 [text-wrap:nowrap]">
-        {org_settingsTitle()}
+        {m.org_settingsTitle()}
       </h1>
       <h2>{data.organization.Name}</h2>
     </div>

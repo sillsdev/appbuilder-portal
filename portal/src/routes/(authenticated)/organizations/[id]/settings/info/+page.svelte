@@ -23,7 +23,7 @@
 <form action="" class="m-4" method="post" use:enhance>
   <div class="flex flex-row">
     <div>
-      <LabeledFormInput name="org_orgName">
+      <LabeledFormInput name="org_name">
         <input
           type="text"
           name="name"
@@ -33,14 +33,14 @@
         />
         <span class="validator-hint">{m.org_nameError()}</span>
       </LabeledFormInput>
-      <LabeledFormInput name="org_logoUrl">
+      <LabeledFormInput name="org_logoURL">
         <input
           type="url"
           name="logoUrl"
           class="input w-full input-bordered"
           bind:value={$form.logoUrl}
         />
-        <span>{m.org_noteLogUrl()}</span>
+        <span>{m.org_logoURL_note()}</span>
       </LabeledFormInput>
     </div>
     <div class="w-1/3 ml-4">

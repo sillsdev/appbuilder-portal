@@ -16,7 +16,7 @@
   let { children }: Props = $props();
 
   let adminLinks = [
-    { text: m.admin_nav_organizations(), route: 'organizations' },
+    { text: m.admin_nav_orgs(), route: 'organizations' },
     { text: m.admin_nav_workflowdefinitions(), route: 'workflow-definitions' },
     { text: m.admin_nav_productDefinitions(), route: 'product-definitions' },
     { text: m.admin_nav_stores(), route: 'stores' },

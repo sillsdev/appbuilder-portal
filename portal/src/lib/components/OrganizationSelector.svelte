@@ -19,8 +19,8 @@
   <table class="w-full">
     <thead>
       <tr class="text-left">
-        <th>{m.project_side_organization()}</th>
-        <th>{m.organizations_owner()}</th>
+        <th>{m.project_side_org()}</th>
+        <th>{m.org_owner()}</th>
         <!-- <th>Projects</th> -->
       </tr>
     </thead>

@@ -9,5 +9,5 @@
   let { children }: Props = $props();
 </script>
 
-<h2>{m.organizations_title()}</h2>
+<h2>{m.org_title()}</h2>
 {@render children?.()}

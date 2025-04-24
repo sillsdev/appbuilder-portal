@@ -67,7 +67,7 @@
       {#if isAdmin(data.session?.user.roles)}
         <a href={localizeHref('/users/invite')} class="btn btn-outline">
           <IconContainer icon="mdi:user-add" width="20" />
-          <span>{m.organizationMembership_invite_create_inviteUserButtonTitle()}</span>
+          <span>{m.orgMembership_invite_create_inviteUserButtonTitle()}</span>
         </a>
       {/if}
     </div>
@@ -79,7 +79,7 @@
     >
       {#if data.organizations.length > 1}
         <label class="flex flex-row items-center gap-x-2 {mobileSizing}">
-          <span class="whitespace-nowrap">{m.users_organization_filter()}:</span>
+          <span class="whitespace-nowrap">{m.users_org_filter()}:</span>
           <OrganizationDropdown
             organizations={data.organizations}
             bind:value={$form.organizationId}
