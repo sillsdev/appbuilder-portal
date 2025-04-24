@@ -41,7 +41,7 @@
             bind:value={$form.buildEngineUrl}
             required={!$form.useDefaultBuildEngine}
           />
-          <span class="validator-hint">{m.admin_settings_organizations_emptyBuildEngineURL()}</span>
+          <span class="validator-hint">{m.organizations_emptyBuildEngineURL()}</span>
         </LabeledFormInput>
         <LabeledFormInput name="org_buildEngineApiAccessToken">
           <input
@@ -51,7 +51,7 @@
             bind:value={$form.buildEngineApiAccessToken}
             required={!$form.useDefaultBuildEngine}
           />
-          <span class="validator-hint">{m.admin_settings_organizations_emptyAccessToken()}</span>
+          <span class="validator-hint">{m.organizations_emptyAccessToken()}</span>
         </LabeledFormInput>
       {/if}
     </div>

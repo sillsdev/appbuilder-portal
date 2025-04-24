@@ -19,16 +19,16 @@
     onUpdated({ form }) {
       if (form.valid) {
         goto(localizeHref(base));
-        toast('success', m.admin_settings_storeTypes_addSuccess());
+        toast('success', m.storeTypes_addSuccess());
       }
     }
   });
 </script>
 
-<h3>{m.models_add({ name: m.admin_settings_storeTypes_add() })}</h3>
+<h3>{m.models_add({ name: m.storeTypes_add() })}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput name="admin_settings_storeTypes_name">
+  <LabeledFormInput name="storeTypes_name">
     <input
       type="text"
       name="name"
@@ -36,9 +36,9 @@
       bind:value={$form.name}
       required
     />
-    <span class="validator-hint">{m.admin_settings_storeTypes_emptyName()}</span>
+    <span class="validator-hint">{m.storeTypes_emptyName()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_storeTypes_description">
+  <LabeledFormInput name="storeTypes_description">
     <input
       type="text"
       name="description"

@@ -16,7 +16,7 @@
 </script>
 
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
-  {m.admin_settings_workflowDefinitions_add()}
+  {m.workflowDefinitions_add()}
 </a>
 
 <div class="flex flex-col w-full">
@@ -27,20 +27,20 @@
       title={wd.Name}
       fields={[
         {
-          key: 'admin_settings_workflowDefinitions_description',
+          key: 'workflowDefinitions_description',
           value: wd.Description
         },
         {
-          key: 'admin_settings_workflowDefinitions_storeType',
+          key: 'workflowDefinitions_storeType',
           value: wd.StoreType?.Name
         },
         {
-          key: 'admin_settings_workflowDefinitions_productType',
-          value: m.admin_settings_workflowDefinitions_productTypes({ type: wd.ProductType })
+          key: 'workflowDefinitions_productType',
+          value: m.workflowDefinitions_productTypes({ type: wd.ProductType })
         },
         {
-          key: 'admin_settings_workflowDefinitions_workflowType',
-          value: m.admin_settings_workflowDefinitions_workflowTypes({ type: wd.Type })
+          key: 'workflowDefinitions_workflowType',
+          value: m.workflowDefinitions_workflowTypes({ type: wd.Type })
         }
         // ISSUE: #1102 Do we want to show WorkflowOptions here?
       ]}

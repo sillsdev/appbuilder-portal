@@ -26,7 +26,7 @@
     onUpdated({ form }) {
       if (form.valid) {
         goto(localizeHref(base));
-        toast('success', m.admin_settings_workflowDefinitions_workflowAdded());
+        toast('success', m.workflowDefinitions_workflowAdded());
       }
     }
   });
@@ -34,10 +34,10 @@
   let propsOk = $state(true);
 </script>
 
-<h3>{m.admin_settings_workflowDefinitions_add()}</h3>
+<h3>{m.workflowDefinitions_add()}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_name">
+  <LabeledFormInput name="workflowDefinitions_name">
     <input
       type="text"
       name="name"
@@ -45,9 +45,9 @@
       bind:value={$form.name}
       required
     />
-    <span class="validator-hint">{m.admin_settings_productDefinitions_emptyName()}</span>
+    <span class="validator-hint">{m.productDefinitions_emptyName()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_storeType">
+  <LabeledFormInput name="workflowDefinitions_storeType">
     <select
       class="select select-bordered validator"
       name="storeType"
@@ -58,9 +58,9 @@
         <option value={type.Id}>{type.Name}</option>
       {/each}
     </select>
-    <span class="validator-hint">{m.admin_settings_workflowDefinitions_emptyStoreType()}</span>
+    <span class="validator-hint">{m.workflowDefinitions_emptyStoreType()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_productType">
+  <LabeledFormInput name="workflowDefinitions_productType">
     <select
       class="select select-bordered validator"
       name="productType"
@@ -69,13 +69,13 @@
     >
       {#each enumNumVals(ProductType) as type}
         <option value={type}>
-          {m.admin_settings_workflowDefinitions_productTypes({ type })}
+          {m.workflowDefinitions_productTypes({ type })}
         </option>
       {/each}
     </select>
-    <span class="validator-hint">{m.admin_settings_workflowDefinitions_emptyProductType()}</span>
+    <span class="validator-hint">{m.workflowDefinitions_emptyProductType()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_workflowType">
+  <LabeledFormInput name="workflowDefinitions_workflowType">
     <select
       class="select select-bordered validator"
       name="workflowType"
@@ -83,12 +83,12 @@
       required
     >
       {#each enumNumVals(WorkflowType) as type}
-        <option value={type}>{m.admin_settings_workflowDefinitions_workflowTypes({ type })}</option>
+        <option value={type}>{m.workflowDefinitions_workflowTypes({ type })}</option>
       {/each}
     </select>
-    <span class="validator-hint">{m.admin_settings_workflowDefinitions_emptyWorkflowType()}</span>
+    <span class="validator-hint">{m.workflowDefinitions_emptyWorkflowType()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_description">
+  <LabeledFormInput name="workflowDefinitions_description">
     <input
       type="text"
       name="description"
@@ -96,14 +96,14 @@
       bind:value={$form.description}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_workflowScheme">
+  <LabeledFormInput name="workflowDefinitions_workflowScheme">
     <select class="select select-bordered" name="workflowScheme" bind:value={$form.workflowScheme}>
       {#each data.options.schemes.toSorted( (a, b) => byString(a.Code, b.Code, getLocale()) ) as scheme}
         <option value={scheme.Code}>{scheme.Code}</option>
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_workflowBusinessFlow">
+  <LabeledFormInput name="workflowDefinitions_workflowBusinessFlow">
     <select
       class="select select-bordered"
       name="workflowBusinessFlow"
@@ -114,7 +114,7 @@
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_properties">
+  <LabeledFormInput name="workflowDefinitions_properties">
     <PropertiesEditor
       name="properties"
       className="w-full"
@@ -123,12 +123,12 @@
     />
   </LabeledFormInput>
   <LabeledFormInput
-    name="admin_settings_workflowDefinitions_options_title"
+    name="workflowDefinitions_options_title"
     className="border border-warning p-1 my-4 rounded-lg"
   >
     {#each enumNumVals(WorkflowOptions) as option}
       <InputWithMessage
-        message={{ key: 'admin_settings_workflowDefinitions_options', parms: option }}
+        message={{ key: 'workflowDefinitions_options', parms: option }}
         className="my-1"
       >
         <input
@@ -141,8 +141,8 @@
     {/each}
   </LabeledFormInput>
   <InputWithMessage
-    title={{ key: 'admin_settings_workflowDefinitions_enabled' }}
-    message={{ key: 'admin_settings_workflowDefinitions_enabledDescription' }}
+    title={{ key: 'workflowDefinitions_enabled' }}
+    message={{ key: 'workflowDefinitions_enabledDescription' }}
   >
     <input
       name="enabled"

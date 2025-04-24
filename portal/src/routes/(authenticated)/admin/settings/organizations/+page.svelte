@@ -15,7 +15,7 @@
 </script>
 
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
-  {m.admin_settings_organizations_add()}
+  {m.organizations_add()}
 </a>
 
 <div class="flex flex-col w-full">
@@ -25,9 +25,9 @@
       onEdit={() => goto(localizeHref(`${base}/edit?id=${organization.Id}`))}
       title={organization.Name}
       fields={[
-        { key: 'admin_settings_organizations_owner', value: organization.Owner.Name },
+        { key: 'organizations_owner', value: organization.Owner.Name },
         {
-          key: 'admin_settings_organizations_websiteURL',
+          key: 'organizations_websiteURL',
           value: organization.WebsiteUrl
         },
         {
@@ -35,12 +35,12 @@
           value: '' + organization.UseDefaultBuildEngine
         },
         {
-          key: 'admin_settings_organizations_buildEngineURL',
+          key: 'organizations_buildEngineURL',
           value: organization.BuildEngineUrl,
           faint: !!organization.UseDefaultBuildEngine
         },
         {
-          key: 'admin_settings_organizations_accessToken',
+          key: 'organizations_accessToken',
           value: organization.BuildEngineApiAccessToken,
           faint: !!organization.UseDefaultBuildEngine
         }

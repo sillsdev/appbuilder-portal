@@ -29,7 +29,7 @@
 <h3>{m.models_add({ name: m.stores_name() })}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput name="admin_settings_storeTypes_name">
+  <LabeledFormInput name="storeTypes_name">
     <input
       type="text"
       name="name"
@@ -37,7 +37,7 @@
       bind:value={$form.name}
       required
     />
-    <span class="validator-hint">{m.admin_settings_storeTypes_emptyName()}</span>
+    <span class="validator-hint">{m.storeTypes_emptyName()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="stores_attributes_description">
     <input
@@ -58,7 +58,7 @@
         <option value={type.Id}>{type.Name}</option>
       {/each}
     </select>
-    <span class="validator-hint">{m.admin_settings_stores_emptyStoreType()}</span>
+    <span class="validator-hint">{m.stores_emptyStoreType()}</span>
   </LabeledFormInput>
   <div class="my-4">
     <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>

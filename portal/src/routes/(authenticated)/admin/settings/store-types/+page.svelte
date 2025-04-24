@@ -16,7 +16,7 @@
 </script>
 
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
-  {m.admin_settings_storeTypes_add()}
+  {m.storeTypes_add()}
 </a>
 
 <div class="flex flex-col w-full">

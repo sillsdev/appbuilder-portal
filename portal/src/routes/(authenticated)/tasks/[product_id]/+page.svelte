@@ -160,7 +160,7 @@
           value={data.productDescription}
         />
       </LabeledFormInput>
-      <LabeledFormInput name="admin_settings_productDefinitions_type">
+      <LabeledFormInput name="productDefinitions_type">
         <input
           type="text"
           class="input input-bordered w-full"

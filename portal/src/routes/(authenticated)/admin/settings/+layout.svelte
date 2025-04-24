@@ -16,19 +16,19 @@
   let { children }: Props = $props();
 
   let adminLinks = [
-    { text: m.admin_settings_navigation_organizations(), route: 'organizations' },
-    { text: m.admin_settings_navigation_workflowdefinitions(), route: 'workflow-definitions' },
-    { text: m.admin_settings_navigation_productDefinitions(), route: 'product-definitions' },
-    { text: m.admin_settings_navigation_stores(), route: 'stores' },
-    { text: m.admin_settings_navigation_storeTypes(), route: 'store-types' },
-    { text: m.admin_settings_navigation_buildEngines(), route: 'build-engines' }
+    { text: m.admin_nav_organizations(), route: 'organizations' },
+    { text: m.admin_nav_workflowdefinitions(), route: 'workflow-definitions' },
+    { text: m.admin_nav_productDefinitions(), route: 'product-definitions' },
+    { text: m.admin_nav_stores(), route: 'stores' },
+    { text: m.admin_nav_storeTypes(), route: 'store-types' },
+    { text: m.admin_nav_buildEngines(), route: 'build-engines' }
   ];
 </script>
 
 <TabbedMenu
   routeId="/(authenticated)/admin/settings"
   base="{base}/admin/settings"
-  titleString={m.admin_settings_title()}
+  titleString={m.admin_title()}
   menuItems={adminLinks}
 >
   {@render children?.()}
