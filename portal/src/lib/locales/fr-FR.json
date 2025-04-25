@@ -439,7 +439,6 @@
   "stores_listTitle": "Stores",
   "stores_attributes_name": "Name",
   "stores_attributes_description": "Description",
-  "storeTypes_name": "Store Type",
   "storeTypes_listTitle": "Store Types",
   "admin_title": "Admin settings",
   "admin_nav_organizations": "Organizations",
