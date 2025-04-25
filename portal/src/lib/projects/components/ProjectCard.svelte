@@ -31,7 +31,7 @@
         <div class="grow"></div>
         <span
           class="badge badge-primary mb-2 mr-4 [height:1.35rem]"
-          title={m.projectTable_columns_language()}
+          title={m.projectTable_language()}
         >
           <IconContainer icon="ph:globe" width={20} class="mr-1" />
           <!-- <LanguageIconContainer color="lightgray" size="20" /> -->
@@ -44,15 +44,15 @@
     </span>
     <div class="flex flex-wrap justify-between">
       <div class="mr-2">
-        <span class="flex items-center" title={m.projectTable_columns_owner()}>
+        <span class="flex items-center" title={m.projectTable_owner()}>
           <IconContainer icon="mdi:user" width={20} class="mr-1 shrink-0" />
           {project.OwnerName}
         </span>
-        <span class="flex items-center" title={m.projectTable_columns_org()}>
+        <span class="flex items-center" title={m.projectTable_org()}>
           <IconContainer icon="clarity:organization-solid" width={20} class="mr-1 shrink-0" />
           {project.OrganizationName}
         </span>
-        <span class="flex items-center [margin-right:0]" title={m.projectTable_columns_group()}>
+        <span class="flex items-center [margin-right:0]" title={m.projectTable_group()}>
           <IconContainer icon="mdi:account-group" width={20} class="mr-1 shrink-0" />
           <span class=" text-nowrap">
             {project.GroupName}
@@ -60,26 +60,26 @@
         </span>
       </div>
       <div>
-        <span class="flex items-center" title={m.projectTable_columns_updatedOn()}>
+        <span class="flex items-center" title={m.projectTable_updatedOn()}>
           <span class="text-nowrap overflow-hidden text-center mr-1">
-            {m.projectTable_columns_updatedOn()}:
+            {m.projectTable_updatedOn()}:
           </span>
           <span class="w-40 text-center">
             {getTimeDateString(project.DateUpdated)}
           </span>
         </span>
-        <span class="flex items-center" title={m.projectTable_columns_activeSince()}>
+        <span class="flex items-center" title={m.projectTable_activeSince()}>
           <span class="overflow-hidden text-nowrap mr-1">
-            {m.projectTable_columns_activeSince()}:
+            {m.projectTable_activeSince()}:
           </span>
           <span class="text-nowrap w-40 text-center">
             {getTimeDateString(project.DateActive)}
           </span>
         </span>
         {#if project.DateArchived}
-        <span class="flex items-center" title={m.projectTable_columns_activeSince()}>
+        <span class="flex items-center" title={m.projectTable_activeSince()}>
           <span class="overflow-hidden text-nowrap mr-1">
-            {m.projectTable_columns_archivedOn()}:
+            {m.projectTable_archivedOn()}:
           </span>
           <span class="text-nowrap w-40 text-center">
             {getTimeDateString(project.DateArchived)}
@@ -96,8 +96,8 @@
         <thead>
           <tr class="text-left">
             <th>{m.projectTable_products()}</th>
-            <th>{m.projectTable_columns_buildVersion()}</th>
-            <th>{m.projectTable_columns_buildDate()}</th>
+            <th>{m.projectTable_buildVersion()}</th>
+            <th>{m.projectTable_buildDate()}</th>
           </tr>
         </thead>
         <tbody>

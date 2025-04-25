@@ -95,10 +95,10 @@
     <table class="w-full">
       <thead>
         <tr class="border-b-2 text-left">
-          <th>{m.users_table_columns_name()}</th>
-          <th>{m.users_table_columns_role()}</th>
-          <th>{m.users_table_columns_groups()}</th>
-          <th>{m.users_table_columns_active()}</th>
+          <th>{m.users_table_name()}</th>
+          <th>{m.users_table_role()}</th>
+          <th>{m.users_table_groups()}</th>
+          <th>{m.users_table_active()}</th>
         </tr>
       </thead>
       <tbody>

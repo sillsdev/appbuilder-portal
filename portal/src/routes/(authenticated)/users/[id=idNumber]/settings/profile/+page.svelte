@@ -149,7 +149,7 @@
         bind:checked={$form.visible}
       />
     </InputWithMessage>
-    <InputWithMessage className="mt-4" title={{ key: 'users_table_columns_active' }}>
+    <InputWithMessage className="mt-4" title={{ key: 'users_table_active' }}>
       <input
         type="checkbox"
         name="active"

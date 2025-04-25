@@ -68,7 +68,7 @@
   <div>
     {#if data.fields.ownerName && data.fields.ownerEmail}
       <div class="flex flex-col gap-x-3 w-full md:flex-row">
-        <LabeledFormInput name="projectTable_columns_owner" className="md:w-2/4">
+        <LabeledFormInput name="projectTable_owner" className="md:w-2/4">
           <input
             type="text"
             class="input input-bordered w-full"
