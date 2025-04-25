@@ -5,23 +5,30 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
+  import type { Prisma } from '@prisma/client';
 
   interface Props {
     modal?: HTMLDialogElement;
-    prodDefs: {
-      Id: number;
-      Name: string | null;
-      Description: string | null;
-      Workflow: {
-        StoreTypeId: number | null;
+    prodDefs: Prisma.ProductDefinitionsGetPayload<{
+      select: {
+        Id: true;
+        Name: true;
+        Description: true;
+        Workflow: {
+          select: {
+            StoreTypeId: true;
+          };
+        };
       };
-    }[];
-    stores: {
-      Id: number;
-      Name: string | null;
-      Description: string | null;
-      StoreTypeId: number;
-    }[];
+    }>[];
+    stores: Prisma.StoresGetPayload<{
+      select: {
+        Id: true;
+        Name: true;
+        Description: true;
+        StoreTypeId: true;
+      };
+    }>[];
   }
 
   let { modal = $bindable(), prodDefs, stores }: Props = $props();

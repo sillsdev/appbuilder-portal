@@ -4,13 +4,16 @@
   import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
+  import type { Prisma } from '@prisma/client';
   import type { ActionData } from '../$types';
 
   interface Props {
-    project: {
-      IsPublic: boolean | null;
-      AllowDownloads: boolean | null;
-    };
+    project: Prisma.ProjectsGetPayload<{
+      select: {
+        IsPublic: true;
+        AllowDownloads: true;
+      };
+    }>;
   }
 
   let { project }: Props = $props();

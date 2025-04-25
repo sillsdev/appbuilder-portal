@@ -4,15 +4,18 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale, locales } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
+  import type { Prisma } from '@prisma/client';
   import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
   import type { ReviewerSchema } from './valibot';
 
   interface Props {
-    reviewers: {
-      Id: number;
-      Name: string | null;
-      Email: string | null;
-    }[];
+    reviewers: Prisma.ReviewersGetPayload<{
+      select: {
+        Id: true;
+        Name: true;
+        Email: true;
+      };
+    }>[];
     formData: SuperValidated<Infer<ReviewerSchema>>;
   }
 

@@ -6,27 +6,38 @@
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
+  import type { Prisma } from '@prisma/client';
   import type { ActionData } from '../$types';
 
   interface Props {
-    project: {
-      Owner: {
-        Id: number;
-        Name: string | null;
+    project: Prisma.ProjectsGetPayload<{
+      select: {
+        Owner: {
+          select: {
+            Id: true;
+            Name: true;
+          };
+        };
+        Group: {
+          select: {
+            Id: true;
+            Name: true;
+          };
+        };
       };
-      Group: {
-        Id: number;
-        Name: string | null;
+    }>;
+    users: Prisma.UsersGetPayload<{
+      select: {
+        Id: true;
+        Name: true;
       };
-    };
-    users: {
-      Id: number;
-      Name: string | null;
-    }[];
-    groups: {
-      Id: number;
-      Name: string | null;
-    }[];
+    }>[];
+    groups: Prisma.GroupsGetPayload<{
+      select: {
+        Id: true;
+        Name: true;
+      };
+    }>[];
     orgName: string | null | undefined;
   }
 

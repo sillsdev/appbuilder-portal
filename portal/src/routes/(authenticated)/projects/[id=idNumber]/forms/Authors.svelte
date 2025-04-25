@@ -4,22 +4,29 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
+  import type { Prisma } from '@prisma/client';
   import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
   import type { AuthorSchema } from './valibot';
 
   interface Props {
-    group: { Name: string | null };
-    projectAuthors: {
-      Id: number;
-      Users: {
-        Id: number;
-        Name: string | null;
+    group: Prisma.GroupsGetPayload<{ select: { Name: true } }>;
+    projectAuthors: Prisma.AuthorsGetPayload<{
+      select: {
+        Id: true;
+        Users: {
+          select: {
+            Id: true;
+            Name: true;
+          };
+        };
       };
-    }[];
-    availableAuthors: {
-      Id: number;
-      Name: string | null;
-    }[];
+    }>[];
+    availableAuthors: Prisma.UsersGetPayload<{
+      select: {
+        Id: true;
+        Name: true;
+      };
+    }>[];
     formData: SuperValidated<Infer<AuthorSchema>>;
   }
 
@@ -53,7 +60,12 @@
   <div class="bg-neutral p-2">
     <form action="?/addAuthor" method="post" use:enhance>
       <div class="flex place-content-between space-x-2">
-        <select class="grow select select-bordered" name="author" bind:value={$form.author}>
+        <select
+          class="grow select select-bordered"
+          name="author"
+          bind:value={$form.author}
+          required
+        >
           {#if availableAuthors.length}
             {#each availableAuthors.sort((a, b) => byName(a, b, getLocale())) as author}
               <option value={author.Id}>
