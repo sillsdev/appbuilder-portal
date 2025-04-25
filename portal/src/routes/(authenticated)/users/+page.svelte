@@ -49,14 +49,14 @@
   function getUserLockMessage(locked: boolean, success: boolean): string {
     if (success) {
       if (locked) {
-        return m.users_operations_lock_success();
+        return m.users_acts_lock_success();
       }
-      return m.users_operations_unlock_success();
+      return m.users_acts_unlock_success();
     }
     if (locked) {
-      return m.users_operations_lock_error();
+      return m.users_acts_lock_error();
     }
-    return m.users_operations_unlock_error();
+    return m.users_acts_unlock_error();
   }
 </script>
 

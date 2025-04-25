@@ -253,10 +253,10 @@
                         {product.ProductDefinitionName}
                         <div class="basis-full h-0"></div>
                         {#if product.CanRebuild}
-                          <div class="badge badge-info">{m.products_actions_rebuild()}</div>
+                          <div class="badge badge-info">{m.products_acts_rebuild()}</div>
                         {/if}
                         {#if product.CanRepublish}
-                          <div class="badge badge-info">{m.products_actions_republish()}</div>
+                          <div class="badge badge-info">{m.products_acts_republish()}</div>
                         {/if}
                       </div>
                       <p class="p-2 text-sm text-neutral-400">
@@ -286,7 +286,7 @@
               selectedProducts.length && selectedProducts.every((p) => p.CanRebuild)
             )}
           >
-            {m.products_actions_rebuild()}
+            {m.products_acts_rebuild()}
             <input
               type="radio"
               class="hidden"
@@ -301,7 +301,7 @@
               selectedProducts.length && selectedProducts.every((p) => p.CanRepublish)
             )}
           >
-            {m.products_actions_republish()}
+            {m.products_acts_republish()}
             <input
               type="radio"
               class="hidden"
