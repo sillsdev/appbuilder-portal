@@ -23,10 +23,7 @@
     onUpdated(event) {
       if (event.form.valid) {
         goto(localizeHref('/users'));
-        toast(
-          'success',
-          m.orgMembership_success({ email: event.form.data.email })
-        );
+        toast('success', m.orgMembership_success({ email: event.form.data.email }));
       } else {
         toast('error', m.orgMembership_error());
       }
@@ -57,9 +54,11 @@
             bind:value={$form.email}
             required
           />
-          <span class="validator-hint">{m.project_side_reviewers_form_invalidEmailError()}</span>
+          <span class="validator-hint">
+            {$form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty()}
+          </span>
         </LabeledFormInput>
-        <LabeledFormInput name="project_side_org">
+        <LabeledFormInput name="project_org">
           <OrganizationDropdown
             className="w-full"
             name="organizationId"
@@ -106,11 +105,7 @@
     </div>
     <div class="my-4 flex justify-end gap-2">
       <a class="btn btn-secondary" href={localizeHref('/users')}>{m.common_cancel()}</a>
-      <input
-        type="submit"
-        class="btn btn-primary"
-        value={m.orgMembership_send()}
-      />
+      <input type="submit" class="btn btn-primary" value={m.orgMembership_send()} />
     </div>
   </form>
 </div>

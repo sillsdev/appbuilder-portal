@@ -80,7 +80,7 @@
       <div class="flex flex-col place-content-between px-4">
         <span class="items-center flex gap-x-1">
           <IconContainer icon="clarity:organization-solid" width="20" />
-          {m.project_side_org()}
+          {m.project_org()}
         </span>
         <span class="text-right">
           {orgName}
@@ -90,7 +90,7 @@
       <div class="flex flex-col place-content-between px-4 pr-2">
         <span>
           <IconContainer icon="mdi:user" width="20" />
-          {m.project_side_projectOwner()}
+          {m.project_owner()}
         </span>
         <span class="text-right flex place-content-end dropdown-wrapper">
           <Dropdown
@@ -129,7 +129,7 @@
       <div class="flex flex-col place-content-between px-4 pr-2">
         <span class="grow text-nowrap">
           <IconContainer icon="mdi:account-group" width={20} />
-          {m.project_side_projectGroup()}
+          {m.project_group()}
         </span>
         <span class="shrink text-right flex place-content-end items-center dropdown-wrapper">
           <Dropdown

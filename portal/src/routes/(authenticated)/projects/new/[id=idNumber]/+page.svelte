@@ -30,7 +30,7 @@
     <h1 class="pl-2">{m.project_newProject()}</h1>
     <div class="flex flex-col gap-2 items-center">
       <div class="row">
-        <LabeledFormInput name="project_projectName" className="md:max-w-xs grow">
+        <LabeledFormInput name="project_name" className="md:max-w-xs grow">
           <input
             type="text"
             name="Name"
@@ -38,9 +38,9 @@
             bind:value={$form.Name}
             required
           />
-          <span class="validator-hint">{m.project_side_reviewers_form_nameError()}</span>
+          <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
         </LabeledFormInput>
-        <LabeledFormInput name="project_projectGroup" className="md:max-w-xs">
+        <LabeledFormInput name="project_group" className="md:max-w-xs">
           <select name="group" class="select select-bordered" bind:value={$form.group}>
             {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
               <option value={group.Id}>{group.Name}</option>
@@ -70,7 +70,7 @@
         </LabeledFormInput>
       </div>
       <div class="row">
-        <LabeledFormInput name="project_projectDescription" className="md:max-w-xs">
+        <LabeledFormInput name="project_description" className="md:max-w-xs">
           <textarea
             name="Description"
             class="textarea textarea-bordered h-48 w-full"

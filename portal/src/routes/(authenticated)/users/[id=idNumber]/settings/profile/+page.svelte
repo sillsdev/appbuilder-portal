@@ -92,8 +92,8 @@
       />
       <span class="validator-hint">
         {$form.email
-          ? m.project_side_reviewers_form_invalidEmailError()
-          : m.project_side_reviewers_form_emptyEmailError()}
+          ? m.formErrors_emailInvalid()
+          : m.formErrors_emailEmpty()}
       </span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_phone">

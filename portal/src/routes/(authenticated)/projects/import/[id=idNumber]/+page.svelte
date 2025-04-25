@@ -78,7 +78,7 @@
       {m.projectImport_help()}
     </a>
     <div class="flex flex-row gap-4 flex-wrap place-content-center sm:place-content-start p-4">
-      <LabeledFormInput name="project_projectGroup" className="max-w-xs">
+      <LabeledFormInput name="project_group" className="max-w-xs">
         <select name="group" class="select select-bordered" bind:value={$form.group}>
           {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
             <option value={group.Id}>{group.Name}</option>

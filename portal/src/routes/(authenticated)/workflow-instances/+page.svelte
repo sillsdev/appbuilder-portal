@@ -94,7 +94,7 @@
           {
             // This will not sort by locale... need a good solution...
             id: 'organization',
-            header: m.project_side_org(),
+            header: m.project_org(),
             compare: () => 0
           },
           {

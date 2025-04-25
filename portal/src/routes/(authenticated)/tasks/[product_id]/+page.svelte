@@ -87,7 +87,7 @@
       </div>
     {/if}
     <div class="flex flex-col gap-x-3 w-full md:flex-row">
-      <LabeledFormInput name="project_projectName" className="md:w-2/4">
+      <LabeledFormInput name="project_name" className="md:w-2/4">
         <input
           type="text"
           class="input input-bordered w-full"
@@ -95,7 +95,7 @@
           value={data.fields.projectName}
         />
       </LabeledFormInput>
-      <LabeledFormInput name="project_projectDescription" className="md:w-2/4">
+      <LabeledFormInput name="project_description" className="md:w-2/4">
         <input
           type="text"
           class="input input-bordered w-full"
@@ -235,7 +235,7 @@
   {/if}
   {#if data?.reviewers?.length}
     {@const locale = getLocale()}
-    <h3>{m.project_side_reviewers_title()}</h3>
+    <h3>{m.reviewers_title()}</h3>
     <div class="w-full overflow-x-auto">
       <SortTable
         className="max-h-96"

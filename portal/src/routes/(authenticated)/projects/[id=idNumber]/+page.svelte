@@ -94,13 +94,13 @@
           </div>
         </div>
         <div class="my-4">
-          <span>{m.project_projectDescription()}:</span>
+          <span>{m.project_description()}:</span>
           <br />
           <p>{data.project?.Description}</p>
         </div>
         {#if data.project?.WorkflowProjectUrl}
           <div>
-            <span>{m.project_side_repositoryLocation()}:</span>
+            <span>{m.project_location()}:</span>
             <br />
             <p class="rounded-md text-nowrap overflow-x-scroll bg-base-200 p-3 pt-2 mt-2">
               {data.project?.WorkflowProjectUrl}

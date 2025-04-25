@@ -59,11 +59,11 @@
         <div class="pl-4">
           <h2 class="pl-0">{org.Name}</h2>
           <i class="block">
-            {m.project_orgContact()}
+            {m.project_orgContact()}:
             <strong>{org.Owner.Name}</strong>
           </i>
           <i class="block">
-            {m.project_projectOwner()}
+            {m.project_owner()}:
             <strong>{data.project.Owner.Name}</strong>
           </i>
         </div>

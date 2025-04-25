@@ -138,7 +138,7 @@
     </table>
   </div>
   <form method="dialog" class="modal-backdrop">
-    <button>{m.project_side_authors_close()}</button>
+    <button>{m.common_close()}</button>
   </form>
 </dialog>
 
