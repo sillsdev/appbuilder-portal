@@ -111,7 +111,6 @@
     }
   ],
   "directory_searchHelp": "This allows you to search over: <br />• Project Name<br />• Project Language<br />• Owner Name<br />• Organization Name<br />• Group Name",
-  "directory_filters_dateRange": "Project Updated Date Between",
   "header_myProfile": "My Profile",
   "header_community": "Community",
   "header_help": "Help",
@@ -330,7 +329,9 @@
   "projects_filter_archived": "Archived Projects",
   "projects_filter_all": "All Projects",
   "projects_bulk_buildModal_title": "Perform Bulk Rebuild/Republish",
-  "productDefinitions_filterAllProjects": "All projects that contain...",
+  "filters_allProdDefs": "All projects that contain...",
+  "filters_org_label": "Filter organization",
+  "filters_dateRange": "Last Updated Date Between",
   "projectImport_title": "Import Projects",
   "projectImport_help": "Import Projects Help",
   "projectImport_file": "Import JSON File",
@@ -426,7 +427,6 @@
       }
     }
   ],
-  "users_org_filter": "Filter organization",
   "users_title": "Manage Users",
   "users_table_name": "Name",
   "users_table_role": "Role",
@@ -535,7 +535,6 @@
   "workflowInstances_title": "Workflow Instances",
   "workflowInstances_empty": "No workflow instances found",
   "workflowInstances_jump": "Jump State to {state}",
-  "workflowInstances_filters_dateRange": "Last Updated Date Between",
   "orgMembership_expired": "Invitation has expired",
   "orgMembership_redeemed": "Invitation has already been redeemed",
   "orgMembership_notFound": "Invitation was not found",

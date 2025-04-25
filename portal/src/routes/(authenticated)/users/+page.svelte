@@ -79,7 +79,7 @@
     >
       {#if data.organizations.length > 1}
         <label class="flex flex-row items-center gap-x-2 {mobileSizing}">
-          <span class="whitespace-nowrap">{m.users_org_filter()}:</span>
+          <span class="whitespace-nowrap">{m.filters_org_label()}:</span>
           <OrganizationDropdown
             organizations={data.organizations}
             bind:value={$form.organizationId}

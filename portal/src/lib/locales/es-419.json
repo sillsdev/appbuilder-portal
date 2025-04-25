@@ -110,7 +110,6 @@
     }
   ],
   "directory_searchHelp": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name<br />• Group Name",
-  "directory_filters_dateRange": "Rango de Fechas",
   "header_myProfile": "Mi perfil",
   "header_community": "Community",
   "header_help": "Ayuda",
@@ -325,7 +324,9 @@
   "projects_filter_archived": "Proyectos archivados",
   "projects_filter_all": "Todos los proyecto",
   "projects_bulk_buildModal_title": "Perform Bulk Rebuild/Republish",
-  "productDefinitions_filterAllProjects": "Todos los proyectos que contienen...",
+  "filters_allProdDefs": "Todos los proyectos que contienen...",
+  "filters_org_label": "Filter organization",
+  "filters_dateRange": "Rango de Fechas",
   "projectImport_title": "Import Projects",
   "projectImport_help": "Import Projects Help",
   "projectImport_file": "Import JSON File",
