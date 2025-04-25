@@ -25,10 +25,10 @@
         goto(localizeHref('/users'));
         toast(
           'success',
-          m.orgMembership_invite_create_success({ email: event.form.data.email })
+          m.orgMembership_success({ email: event.form.data.email })
         );
       } else {
-        toast('error', m.orgMembership_invite_create_error());
+        toast('error', m.orgMembership_error());
       }
     }
   });
@@ -43,12 +43,12 @@
 </script>
 
 <div class="w-full max-w-6xl mx-auto">
-  <h3>{m.orgMembership_invite_create_inviteUserModalTitle()}</h3>
+  <h3>{m.orgMembership_title()}</h3>
 
   <form class="m-4" method="post" action="?/new" use:enhance>
     <div class="flex flex-row justify-between gap-4 flex-wrap">
       <div class="grow">
-        <LabeledFormInput name="orgMembership_invite_create_emailInputPlaceholder">
+        <LabeledFormInput name="orgMembership_email">
           <input
             type="email"
             name="email"
@@ -70,7 +70,7 @@
       </div>
       <div class="flex flex-col h-full min-w-96">
         <span class="fieldset-label my-2">
-          {m.orgMembership_invite_create_rolesAndGroups()}
+          {m.orgMembership_rolesAndGroups()}
         </span>
         <div class="grow border border-opacity-15 border-gray-50 rounded-lg p-4">
           <div class="flex flex-row space-x-2">
@@ -109,7 +109,7 @@
       <input
         type="submit"
         class="btn btn-primary"
-        value={m.orgMembership_invite_create_sendInviteButton()}
+        value={m.orgMembership_send()}
       />
     </div>
   </form>

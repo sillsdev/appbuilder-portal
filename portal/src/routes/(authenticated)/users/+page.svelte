@@ -67,7 +67,7 @@
       {#if isAdmin(data.session?.user.roles)}
         <a href={localizeHref('/users/invite')} class="btn btn-outline">
           <IconContainer icon="mdi:user-add" width="20" />
-          <span>{m.orgMembership_invite_create_inviteUserButtonTitle()}</span>
+          <span>{m.orgMembership_title()}</span>
         </a>
       {/if}
     </div>

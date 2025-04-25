@@ -13,17 +13,17 @@
 
 <div class="card shadow-xl bg-white border p-4 flex flex-column items-center text-black">
   {#if data.error === 'not found'}
-    <h2>{m.orgMembership_invite_error_notFound()}</h2>
+    <h2>{m.orgMembership_notFound()}</h2>
   {:else if data.error === 'redeemed'}
-    <h2>{m.orgMembership_invite_error_redeemed()}</h2>
+    <h2>{m.orgMembership_redeemed()}</h2>
   {:else if data.error === 'expired'}
-    <h2>{m.orgMembership_invite_error_expired()}</h2>
+    <h2>{m.orgMembership_expired()}</h2>
   {:else}
     <div class="w-full flex justify-center">
       <div class="w-10"></div>
       <ScriptoriaIcon size="128" />
     </div>
-    <h2>{m.orgMembership_invite_redemptionTitle()}</h2>
+    <h2>{m.orgMembership_joined()}</h2>
     <!-- Organization info -->
     <div class="flex flex-row">
       {#if data.joinedOrganization?.logoUrl}
@@ -38,7 +38,7 @@
       </div>
     </div>
     <a href={localizeHref('/tasks')} class="btn btn-primary">
-      {m.orgMembership_invite_returnToDashboard()}
+      {m.orgMembership_returnToDashboard()}
     </a>
   {/if}
 </div>
