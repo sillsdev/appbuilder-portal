@@ -206,7 +206,7 @@
           },
           {
             id: 'url',
-            header: m.tasks_files_link()
+            header: m.tasks_downloadURL()
           }
         ]}
       >
