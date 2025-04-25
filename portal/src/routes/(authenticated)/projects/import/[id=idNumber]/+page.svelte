@@ -39,7 +39,7 @@
     },
     onUpdated({ form }) {
       if (form.valid) {
-        toast('success', m.projectImport_createSuccess());
+        toast('success', m.projectImport_success());
       }
     }
   });
@@ -69,13 +69,13 @@
 
 <div class="w-full max-w-6xl mx-auto relative p-2">
   <form action="" method="post" use:enhance>
-    <h1 class="pl-4">{m.project_importProjects()}</h1>
+    <h1 class="pl-4">{m.projectImport_title()}</h1>
     <a
       href="https://sil-prd-scriptoria-resources.s3.amazonaws.com/Project+Import.pdf"
       target="_blank"
       class="link pl-4"
     >
-      {m.project_importProjectsHelp()}
+      {m.projectImport_help()}
     </a>
     <div class="flex flex-row gap-4 flex-wrap place-content-center sm:place-content-start p-4">
       <LabeledFormInput name="project_projectGroup" className="max-w-xs">
@@ -92,7 +92,7 @@
           {/each}
         </select>
       </LabeledFormInput>
-      <LabeledFormInput name="projectImport_importFile" className="max-w-xs">
+      <LabeledFormInput name="projectImport_file" className="max-w-xs">
         <input
           type="file"
           class="file-input file-input-bordered"

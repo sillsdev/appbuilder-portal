@@ -321,7 +321,7 @@
         class="btn btn-outline {mobileSizing}"
         href={localizeHref(`/projects/import/${$pageForm.organizationId}`)}
       >
-        {m.project_importProjects()}
+        {m.projectImport_title()}
       </a>
       <a
         class="btn btn-outline {mobileSizing}"
