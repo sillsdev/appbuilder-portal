@@ -37,9 +37,9 @@
           const res = result.data as ActionData;
           if (res?.ok) {
             if (isPublic) {
-              toast('success', m.project_operations_isPublic_on());
+              toast('success', m.project_acts_isPublic_on());
             } else {
-              toast('success', m.project_operations_isPublic_off());
+              toast('success', m.project_acts_isPublic_off());
             }
           } else {
             toast('error', m.errors_generic({ errorMessage: '' }));
@@ -50,8 +50,8 @@
       }}
   >
     <PublicPrivateToggle
-      title={{ key: 'project_settings_visibility_title' }}
-      message={{ key: 'project_settings_visibility_description' }}
+      title={{ key: 'project_visibility_title' }}
+      message={{ key: 'project_visibility_description' }}
       formName="isPublic"
       bind:checked={isPublic}
       onchange={() => {
@@ -68,9 +68,9 @@
           const res = result.data as ActionData;
           if (res?.ok) {
             if (downloadInput.checked) {
-              toast('success', m.project_operations_allowDownloads_on());
+              toast('success', m.project_acts_downloads_on());
             } else {
-              toast('success', m.project_operations_allowDownloads_off());
+              toast('success', m.project_acts_downloads_off());
             }
           } else {
             toast('error', m.errors_generic({ errorMessage: '' }));
@@ -81,8 +81,8 @@
       }}
   >
     <InputWithMessage
-      title={{ key: 'project_settings_orgDownloads_title' }}
-      message={{ key: 'project_settings_orgDownloads_description' }}
+      title={{ key: 'project_orgDownloads_title' }}
+      message={{ key: 'project_orgDownloads_description' }}
     >
       <input
         bind:this={downloadInput}
