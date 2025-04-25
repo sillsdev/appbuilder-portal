@@ -137,7 +137,7 @@
           <ul class="menu menu-compact overflow-hidden rounded-md">
             <li class="w-full rounded-none">
               <button class="text-nowrap" onclick={() => showProductDetails(data.product.Id)}>
-                {m.project_products_popup_details()}
+                {m.products_details()}
               </button>
             </li>
             <li class="w-full rounded-none">

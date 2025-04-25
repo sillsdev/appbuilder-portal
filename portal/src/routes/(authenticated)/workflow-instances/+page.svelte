@@ -109,7 +109,7 @@
           },
           {
             id: 'state',
-            header: m.project_products_transitions_state(),
+            header: m.transitions_state(),
             compare: () => 0
           },
           {

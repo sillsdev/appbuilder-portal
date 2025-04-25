@@ -111,7 +111,7 @@
       <!-- Product List Header -->
       <div class="flex flex-row place-content-between items-end">
         <div>
-          <h2 class="pl-0">{m.project_products_title()}</h2>
+          <h2 class="pl-0">{m.products_title()}</h2>
           <div class="mb-2">
             <span class="italic">{m.products_definition()}</span>
           </div>
@@ -121,7 +121,7 @@
           onclick={() => addProductModal?.showModal()}
           disabled={!(data.productsToAdd.length && data.project.WorkflowProjectUrl)}
         >
-          {m.project_products_add()}
+          {m.products_add()}
         </button>
         <AddProduct
           bind:modal={addProductModal}

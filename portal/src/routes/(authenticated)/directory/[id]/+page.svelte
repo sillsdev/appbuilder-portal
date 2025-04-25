@@ -93,8 +93,7 @@
             />
           {:else}
             <div class="p-4">
-              <!-- Is this the correct i18n key? -->
-              {m.project_products_unpublished()}
+              {m.projects_noBuilds()}
             </div>
           {/if}
         {/each}

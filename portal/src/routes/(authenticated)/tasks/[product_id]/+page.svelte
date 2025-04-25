@@ -52,7 +52,7 @@
         {/each}
       </div>
     {/if}
-    <LabeledFormInput name="project_products_transitions_comment">
+    <LabeledFormInput name="transitions_comment">
       <textarea
         class="textarea textarea-bordered h-24 w-full"
         name="comment"
@@ -201,7 +201,7 @@
           },
           {
             id: 'fileSize',
-            header: m.project_products_size(),
+            header: m.products_size(),
             compare: (a, b) => byNumber(a.FileSize, b.FileSize)
           },
           {

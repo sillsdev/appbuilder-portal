@@ -142,14 +142,14 @@
       </span>
     {/if}
     <span class="w-32 inline-block">
-      {m.project_products_updated()}
+      {m.common_updated()}
       <br />
       <Tooltip tip={product.DateUpdated?.toLocaleString(getLocale())}>
         {getRelativeTime(product.DateUpdated)}
       </Tooltip>
     </span>
     <span class="w-32 inline-block">
-      {m.project_products_published()}
+      {m.products_published()}
       <br />
       <Tooltip tip={product.DatePublished?.toLocaleString(getLocale())}>
         {getRelativeTime(product.DatePublished)}
@@ -179,7 +179,7 @@
           {/each}
           <li class="w-full rounded-none">
             <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
-              {m.project_products_popup_details()}
+              {m.products_details()}
             </button>
           </li>
           <li class="w-full rounded-none">
@@ -190,7 +190,7 @@
           {#if isAdminForOrg(project.Organization.Id, page.data.session?.user.roles)}
             <li class="w-full rounded-none">
               <button class="text-nowrap" onclick={() => updateProductModal?.showModal()}>
-                {m.project_products_popup_properties()}
+                {m.products_properties_title()}
               </button>
             </li>
           {/if}

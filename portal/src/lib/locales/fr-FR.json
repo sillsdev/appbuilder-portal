@@ -200,6 +200,63 @@
   "products_actions_dispatched": "The {action} action has been dispatched.",
   "products_actions_properties": "Properties",
   "products_files_title": "Product Files",
+  "products_title": "Products",
+  "products_empty": "You have no products for this project.",
+  "products_add": "Add Products",
+  "products_remove": "Remove Products",
+  "products_addTitle": "Select Product to Add",
+  "products_removeTitle": "Select Product to Remove",
+  "products_details": "Details",
+  "publications_channel": "Channel",
+  "publications_status": "Status",
+  "publications_date": "Publish Date",
+  "publications_url": "Publish Url",
+  "publications_succeeded": "Success",
+  "publications_failed": "Failure",
+  "publications_console": "Console Text",
+  "products_options_update": "update",
+  "products_options_publish": "publish",
+  "transitions_productDetails": "Product Details",
+  "transitions_storeName": "Store Name",
+  "transitions_state": "State",
+  "transitions_user": "User",
+  "transitions_command": "Command",
+  "transitions_comment": "Comment",
+  "transitions_date": "Date",
+  "transitions_types": [
+    {
+      "match": {
+        "type=1": "Activity",
+        "type=2": "{workflowType} Workflow Started",
+        "type=3": "{workflowType} Workflow Completed",
+        "type=4": "{workflowType} Workflow Cancelled",
+        "type=5": "{workflowType} Project Access"
+      }
+    }
+  ],
+  "products_properties_computeType": "Compute Type",
+  "products_properties_selectComputeType": "Select compute type",
+  "products_properties_small": "Small",
+  "products_properties_medium": "Medium",
+  "products_properties_title": "Publishing Properties",
+  "products_updated": "Updated",
+  "products_size": "Size",
+  "products_filename": "Filename",
+  "products_published": "Published",
+  "products_unpublished": "Unpublished",
+  "products_numArtifacts": [
+    {
+      "declarations": ["local countPlural = amount: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "amount=0": "No Product Files",
+        "countPlural=one": "{amount} Product File",
+        "countPlural=other": "{amount} Product Files"
+      }
+    }
+  ],
+  "products_rebuild": "rebuild",
+  "products_creationInProgress": "Pending: You cannot add a product until the project setup has been completed.",
   "profile_title": "Profile",
   "profile_pictureTitle": "Profile Picture",
   "profile_general": "General",
@@ -302,68 +359,6 @@
   "project_details_title": "Details",
   "project_details_language": "Language",
   "project_details_type": "Project Type",
-  "project_products_title": "Products",
-  "project_products_empty": "You have no products for this project.",
-  "project_products_addRemove": "Add or Remove Products",
-  "project_products_add": "Add Products",
-  "project_products_remove": "Remove Products",
-  "project_products_popup_addTitle": "Select Product to Add",
-  "project_products_popup_removeTitle": "Select Product to Remove",
-  "project_products_popup_done": "Done",
-  "project_products_popup_empty": "No products available",
-  "project_products_popup_details": "Details",
-  "project_products_popup_properties": "Publishing Properties",
-  "project_products_publications_channel": "Channel",
-  "project_products_publications_status": "Status",
-  "project_products_publications_date": "Publish Date",
-  "project_products_publications_url": "Publish Url",
-  "project_products_publications_succeeded": "Success",
-  "project_products_publications_failed": "Failure",
-  "project_products_publications_console": "Console Text",
-  "project_products_options_update": "update",
-  "project_products_options_publish": "publish",
-  "project_products_transitions_productDetails": "Product Details",
-  "project_products_transitions_storeName": "Store Name",
-  "project_products_transitions_state": "State",
-  "project_products_transitions_user": "User",
-  "project_products_transitions_command": "Command",
-  "project_products_transitions_comment": "Comment",
-  "project_products_transitions_date": "Date",
-  "project_products_transitions_transitionTypes": [
-    {
-      "match": {
-        "type=1": "Activity",
-        "type=2": "{workflowType} Workflow Started",
-        "type=3": "{workflowType} Workflow Completed",
-        "type=4": "{workflowType} Workflow Cancelled",
-        "type=5": "{workflowType} Project Access"
-      }
-    }
-  ],
-  "project_products_properties_computeType": "Compute Type",
-  "project_products_properties_selectComputeType": "Select compute type",
-  "project_products_properties_small": "Small",
-  "project_products_properties_medium": "Medium",
-  "project_products_properties_title": "Product Publishing Properties",
-  "project_products_updated": "Updated",
-  "project_products_size": "Size",
-  "project_products_filename": "Filename",
-  "project_products_published": "Published",
-  "project_products_unpublished": "Unpublished",
-  "project_products_numArtifacts": [
-    {
-      "declarations": ["local countPlural = amount: plural"],
-      "selectors": ["countPlural"],
-      "match": {
-        "amount=0": "No Product Files",
-        "countPlural=one": "{amount} Product File",
-        "countPlural=other": "{amount} Product Files"
-      }
-    }
-  ],
-  "project_products_noArtifacts": "No Product Files",
-  "project_products_rebuild": "rebuild",
-  "project_products_creationInProgress": "Pending: You cannot add a product until the project setup has been completed.",
   "project_settings_title": "Settings",
   "project_settings_automaticRebuild_title": "Automatic Rebuilds",
   "project_settings_automaticRebuild_description": "When automatic rebuilds are on, Scriptoria will automatically rebuild your products when the input source is updated",
