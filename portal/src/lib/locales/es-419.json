@@ -240,6 +240,7 @@
   "errors_verifyEmailTitle": "Por favor, verifique su dirección de correo electrónico",
   "errors_verifyEmailDescription": "\nPara poder usar Scriptoria, necesitamos que verifiques tu dirección de correo electrónico.\n      <br />\n      Por favor, ingrese a su correo electrónico y haga clic en el enlace de verificación. ",
   "errors_invalidProjectSelection": "Productos no válidos disponibles para el/los proyecto(s) seleccionados",
+  "errors_appUnavailable": "Scriptoria no está disponible actualmente",
   "tasks_title": "Mis tareas",
   "tasks_project": "Proyecto",
   "tasks_product": "Producto",
