@@ -7,6 +7,7 @@ import {
   userGroupsForOrg,
   verifyCanViewAndEdit
 } from '$lib/projects/server';
+import { ServerStatus } from '$lib/utils';
 import { deleteSchema, idSchema, propertiesSchema, stringIdSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
@@ -46,8 +47,9 @@ const productActionSchema = v.object({
 // Maybe? I pared it down a bit with `select` instead of `include` - Aidan
 export const load = (async ({ locals, params }) => {
   const session = (await locals.auth())!;
-  if (!verifyCanViewAndEdit(session, parseInt(params.id))) return error(403);
-  const project = await prisma.projects.findUnique({
+  const status = await verifyCanViewAndEdit(session, parseInt(params.id));
+  if (status !== ServerStatus.Ok) return error(status);
+  const project = await prisma.projects.findUniqueOrThrow({
     where: {
       Id: parseInt(params.id)
     },
@@ -147,7 +149,6 @@ export const load = (async ({ locals, params }) => {
       }
     }
   });
-  if (!project) return error(400);
 
   const organization = await prisma.organizations.findUnique({
     where: {
@@ -301,15 +302,15 @@ export const load = (async ({ locals, params }) => {
 
 export const actions = {
   async deleteProduct(event) {
-    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
-      return fail(403);
+    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
+    if (status !== ServerStatus.Ok) return fail(status);
     const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.products.delete(form.data.productId);
   },
   async deleteAuthor(event) {
-    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
-      return fail(403);
+    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
+    if (status !== ServerStatus.Ok) return fail(status);
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const author = await DatabaseWrites.authors.delete({ where: { Id: form.data.id } });
@@ -326,8 +327,8 @@ export const actions = {
     return { form, ok: true };
   },
   async deleteReviewer(event) {
-    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
-      return fail(403);
+    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
+    if (status !== ServerStatus.Ok) return fail(status);
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.reviewers.delete({
@@ -338,8 +339,8 @@ export const actions = {
     return { form, ok: true };
   },
   async addProduct(event) {
-    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
-      return fail(403);
+    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
+    if (status !== ServerStatus.Ok) return fail(status);
     const form = await superValidate(event.request, valibot(addProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const checkRepository = await prisma.projects.findUnique({
@@ -365,8 +366,8 @@ export const actions = {
     return { form, ok: !!productId };
   },
   async productAction(event) {
-    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
-      return fail(403);
+    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
+    if (status !== ServerStatus.Ok) return fail(status);
     const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const product = await prisma.products.findUnique({
@@ -383,8 +384,8 @@ export const actions = {
     return { form, ok: true };
   },
   async updateProduct(event) {
-    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
-      return fail(403);
+    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
+    if (status !== ServerStatus.Ok) return fail(status);
     const form = await superValidate(event.request, valibot(updateProductPropertiesSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const productId = await DatabaseWrites.products.update(form.data.productId, {
@@ -394,8 +395,8 @@ export const actions = {
     return { form, ok: !!productId };
   },
   async addAuthor(event) {
-    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
-      return fail(403);
+    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
+    if (status !== ServerStatus.Ok) return fail(status);
     const form = await superValidate(event.request, valibot(addAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     // ISSUE: #1101 Appears that CanUpdate is not used
@@ -418,8 +419,8 @@ export const actions = {
     return { form, ok: true };
   },
   async addReviewer(event) {
-    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
-      return fail(403);
+    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
+    if (status !== ServerStatus.Ok) return fail(status);
     const form = await superValidate(event.request, valibot(addReviewerSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.reviewers.create({
@@ -433,8 +434,8 @@ export const actions = {
     return { form, ok: true };
   },
   async editSettings(event) {
-    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
-      return fail(403);
+    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
+    if (status !== ServerStatus.Ok) return fail(status);
     const form = await superValidate(
       event.request,
       valibot(
@@ -452,8 +453,8 @@ export const actions = {
     return { form, ok: true };
   },
   async editOwnerGroup(event) {
-    if (!verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id)))
-      return fail(403);
+    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
+    if (status !== ServerStatus.Ok) return fail(status);
     const form = await superValidate(event.request, valibot(updateOwnerGroupSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const success = await DatabaseWrites.projects.update(parseInt(event.params.id), {

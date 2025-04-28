@@ -1,6 +1,7 @@
 import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { verifyCanViewAndEdit } from '$lib/projects/server';
+import { ServerStatus } from '$lib/utils';
 import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import type { Session } from '@auth/sveltekit';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
@@ -167,8 +168,8 @@ export const localRouteHandle: Handle = async ({ event, resolve }) => {
   ) {
     const session = await event.locals.auth();
     if (!session) return redirect(302, localizeHref('/login'));
-    if (!(await validateRouteForAuthenticatedUser(session, event.route.id, event.params)))
-      return error(403);
+    const status = await validateRouteForAuthenticatedUser(session, event.route.id, event.params);
+    if (status !== ServerStatus.Ok) return error(status);
   }
   return resolve(event);
 };
@@ -177,51 +178,53 @@ async function validateRouteForAuthenticatedUser(
   session: Session,
   route: string,
   params: Partial<Record<string, string>>
-): Promise<boolean> {
+): Promise<ServerStatus> {
   const path = route.split('/').filter((r) => !!r);
   // Only guarding authenticated routes
   if (path[0] === '(authenticated)') {
     if (path[1] === 'admin' || path[1] === 'workflow-instances')
-      return isSuperAdmin(session?.user?.roles);
+      return isSuperAdmin(session?.user?.roles) ? ServerStatus.Ok : ServerStatus.Forbidden;
     else if (path[1] === 'directory' || path[1] === 'open-source')
       // Always allowed. Open pages
-      return true;
+      return ServerStatus.Ok;
     else if (path[1] === 'organizations') {
       // Must be org admin for some organization (or a super admin)
-      if (!isAdmin(session?.user?.roles)) return false;
+      if (!isAdmin(session?.user?.roles)) return ServerStatus.Forbidden;
       if (params.id) {
         // Must be org admin for specified organization (or a super admin)
-        return isAdminForOrg(parseInt(params.id!), session?.user?.roles);
+        return isAdminForOrg(parseInt(params.id!), session?.user?.roles)
+          ? ServerStatus.Ok
+          : ServerStatus.Forbidden;
       }
-      return true;
+      return ServerStatus.Ok;
     } else if (path[1] === 'products') {
       const product = await prisma.products.findFirst({
         where: {
           Id: params.id
         }
       });
-      if (!product) return false;
-      // Must be allowed to view associated project 
+      if (!product) return ServerStatus.NotFound;
+      // Must be allowed to view associated project
       // (this route was originally part of the project page but was moved elsewhere to improve load time)
       return await verifyCanViewAndEdit(session, product.ProjectId);
     } else if (path[1] === 'projects') {
-      if (path[2] === '[filter=projectSelector]') return true;
+      if (path[2] === '[filter=projectSelector]') return ServerStatus.Ok;
       else if (path[2] === '[id=idNumber]') {
         // A project can be viewed if the user owns it, is an org admin for the org, or is a super admin
         return await verifyCanViewAndEdit(session, parseInt(params.id!));
       }
-      return true;
+      return ServerStatus.Ok;
     } else if (path[1] === 'tasks') {
       // Own task list always allowed, and specific products checked manually
-      return true;
+      return ServerStatus.Ok;
     } else if (path[1] === 'users') {
       // Checked manually in the users route
-      return true;
+      return ServerStatus.Ok;
     } else {
       // Unknown route. We'll assume it's a legal route
-      return true;
+      return ServerStatus.Ok;
     }
   } else {
-    return true;
+    return ServerStatus.Ok;
   }
 }

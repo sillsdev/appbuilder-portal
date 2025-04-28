@@ -34,6 +34,12 @@ export function enumNumVals<E extends Record<string, string | number>>(e: E): nu
   return Object.values(e).filter((v) => !(typeof v === 'string'));
 }
 
+export enum ServerStatus {
+  Ok = 200,
+  Forbidden = 403,
+  NotFound = 404,
+};
+
 function pushToast(type: 'info' | 'success' | 'warning' | 'error', message: string) {
   toast.push(message, { pausable: true, classes: [type] });
 }
