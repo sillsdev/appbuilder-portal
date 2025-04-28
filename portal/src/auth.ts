@@ -6,7 +6,7 @@ import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import type { Session } from '@auth/sveltekit';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
-import { error, redirect, type Handle } from '@sveltejs/kit';
+import { redirect, type Handle } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import type { RoleId } from 'sil.appbuilder.portal.common/prisma';
 
@@ -169,7 +169,9 @@ export const localRouteHandle: Handle = async ({ event, resolve }) => {
     const session = await event.locals.auth();
     if (!session) return redirect(302, localizeHref('/login'));
     const status = await validateRouteForAuthenticatedUser(session, event.route.id, event.params);
-    if (status !== ServerStatus.Ok) return error(status);
+    if (status !== ServerStatus.Ok) {
+      return redirect(302, localizeHref(`/error?code=${status}`));
+    }
   }
   return resolve(event);
 };
