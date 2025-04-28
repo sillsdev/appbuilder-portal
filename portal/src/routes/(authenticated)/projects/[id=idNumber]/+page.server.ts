@@ -4,10 +4,8 @@ import { doProductAction } from '$lib/products/server';
 import { canModifyProject, projectActionSchema } from '$lib/projects';
 import {
   doProjectAction,
-  userGroupsForOrg,
-  verifyCanViewAndEdit
+  userGroupsForOrg
 } from '$lib/projects/server';
-import { ServerStatus } from '$lib/utils';
 import { deleteSchema, idSchema, propertiesSchema, stringIdSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
@@ -47,8 +45,7 @@ const productActionSchema = v.object({
 // Maybe? I pared it down a bit with `select` instead of `include` - Aidan
 export const load = (async ({ locals, params }) => {
   const session = (await locals.auth())!;
-  const status = await verifyCanViewAndEdit(session, parseInt(params.id));
-  if (status !== ServerStatus.Ok) return error(status);
+  // permissions checked in auth
   const project = await prisma.projects.findUniqueOrThrow({
     where: {
       Id: parseInt(params.id)
@@ -302,15 +299,13 @@ export const load = (async ({ locals, params }) => {
 
 export const actions = {
   async deleteProduct(event) {
-    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
-    if (status !== ServerStatus.Ok) return fail(status);
+    // permissions checked in auth
     const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.products.delete(form.data.productId);
   },
   async deleteAuthor(event) {
-    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
-    if (status !== ServerStatus.Ok) return fail(status);
+    // permissions checked in auth
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const author = await DatabaseWrites.authors.delete({ where: { Id: form.data.id } });
@@ -327,8 +322,7 @@ export const actions = {
     return { form, ok: true };
   },
   async deleteReviewer(event) {
-    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
-    if (status !== ServerStatus.Ok) return fail(status);
+    // permissions checked in auth
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.reviewers.delete({
@@ -339,8 +333,7 @@ export const actions = {
     return { form, ok: true };
   },
   async addProduct(event) {
-    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
-    if (status !== ServerStatus.Ok) return fail(status);
+    // permissions checked in auth
     const form = await superValidate(event.request, valibot(addProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const checkRepository = await prisma.projects.findUnique({
@@ -366,8 +359,7 @@ export const actions = {
     return { form, ok: !!productId };
   },
   async productAction(event) {
-    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
-    if (status !== ServerStatus.Ok) return fail(status);
+    // permissions checked in auth
     const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const product = await prisma.products.findUnique({
@@ -384,8 +376,7 @@ export const actions = {
     return { form, ok: true };
   },
   async updateProduct(event) {
-    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
-    if (status !== ServerStatus.Ok) return fail(status);
+    // permissions checked in auth
     const form = await superValidate(event.request, valibot(updateProductPropertiesSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const productId = await DatabaseWrites.products.update(form.data.productId, {
@@ -395,8 +386,7 @@ export const actions = {
     return { form, ok: !!productId };
   },
   async addAuthor(event) {
-    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
-    if (status !== ServerStatus.Ok) return fail(status);
+    // permissions checked in auth
     const form = await superValidate(event.request, valibot(addAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     // ISSUE: #1101 Appears that CanUpdate is not used
@@ -419,8 +409,7 @@ export const actions = {
     return { form, ok: true };
   },
   async addReviewer(event) {
-    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
-    if (status !== ServerStatus.Ok) return fail(status);
+    // permissions checked in auth
     const form = await superValidate(event.request, valibot(addReviewerSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.reviewers.create({
@@ -434,8 +423,7 @@ export const actions = {
     return { form, ok: true };
   },
   async editSettings(event) {
-    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
-    if (status !== ServerStatus.Ok) return fail(status);
+    // permissions checked in auth
     const form = await superValidate(
       event.request,
       valibot(
@@ -453,8 +441,7 @@ export const actions = {
     return { form, ok: true };
   },
   async editOwnerGroup(event) {
-    const status = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
-    if (status !== ServerStatus.Ok) return fail(status);
+    // permissions checked in auth
     const form = await superValidate(event.request, valibot(updateOwnerGroupSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const success = await DatabaseWrites.projects.update(parseInt(event.params.id), {
@@ -464,14 +451,13 @@ export const actions = {
     return { form, ok: success };
   },
   async projectAction(event) {
-    const session = await event.locals.auth();
-    if (!session) return fail(403);
+    // permissions checked in auth
 
     const form = await superValidate(event.request, valibot(projectActionSchema));
     if (!form.valid || !form.data.operation || form.data.projectId === null)
       return fail(400, { form, ok: false });
     // prefer single project over array
-    const project = await prisma.projects.findUnique({
+    const project = await prisma.projects.findUniqueOrThrow({
       where: { Id: form.data.projectId! },
       select: {
         Id: true,
@@ -481,7 +467,7 @@ export const actions = {
         GroupId: true
       }
     });
-    if (!project) return fail(404);
+    const session = (await event.locals.auth())!;
     if (!canModifyProject(session, project.OwnerId, form.data.orgId)) {
       return fail(403);
     }

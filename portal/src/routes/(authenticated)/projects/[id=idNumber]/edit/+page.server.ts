@@ -1,7 +1,4 @@
-import { verifyCanViewAndEdit } from '$lib/projects/server';
-import { ServerStatus } from '$lib/utils';
 import { idSchema } from '$lib/valibot';
-import { error } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -16,9 +13,8 @@ const projectPropertyEditSchema = v.object({
   description: v.nullable(v.string())
 });
 
-export const load = (async ({ locals, params }) => {
-  const res = await verifyCanViewAndEdit((await locals.auth())!, parseInt(params.id));
-  if (res !== ServerStatus.Ok) return error(res);
+export const load = (async ({ params }) => {
+  // permissions checked in auth
   // verifyCanViewAndEdit already checks if project exists
   const project = await prisma.projects.findUniqueOrThrow({
     where: {
@@ -54,8 +50,7 @@ export const load = (async ({ locals, params }) => {
 
 export const actions: Actions = {
   default: async function (event) {
-    const res = await verifyCanViewAndEdit((await event.locals.auth())!, parseInt(event.params.id));
-    if (res !== ServerStatus.Ok) return fail(res);
+    // permissions checked in auth
     const form = await superValidate(event.request, valibot(projectPropertyEditSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     if (isNaN(parseInt(event.params.id))) return fail(400, { form, ok: false });
