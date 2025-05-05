@@ -20,12 +20,19 @@ export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unk
       User: true
     }
   });
-  // We have no localization information because the user isn't created yet
-  // Assume English
+  // If there is a user with the same email, we can localize the email
+  // If there is no existing user, we can assume English
+  // User locale is actually never set in the db (always NULL) but might be set in the future
+  const user = await prisma.users.findFirst({
+    where: {
+      Email: job.data.email
+    }
+  });
+  const locale = user?.Locale || 'en';
   return {
     email: await sendEmail(
       [{ email: job.data.email, name: job.data.email }],
-      translate('en', 'organizationMembershipInvites.subject'),
+      translate(locale, 'organizationMembershipInvites.subject'),
       addProperties(OrganizationMembershipInviteTemplate, {
         OrganizationName: inviteInformation.Organization.Name,
         InvitedBy: inviteInformation.User.Name,
