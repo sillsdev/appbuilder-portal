@@ -29,7 +29,7 @@ CREATE TABLE "Emails" (
     "Subject" TEXT,
     "ContentTemplate" TEXT,
     "ContentModelJson" TEXT,
-    "Created" TIMESTAMP NOT NULL,
+    "Created" TIMESTAMP(6) NOT NULL,
 
     CONSTRAINT "PK_Emails" PRIMARY KEY ("Id")
 );
@@ -58,10 +58,10 @@ CREATE TABLE "Notifications" (
     "Id" SERIAL NOT NULL,
     "MessageId" TEXT,
     "UserId" INTEGER NOT NULL,
-    "DateRead" TIMESTAMP,
-    "DateEmailSent" TIMESTAMP,
-    "DateCreated" TIMESTAMP,
-    "DateUpdated" TIMESTAMP,
+    "DateRead" TIMESTAMP(6),
+    "DateEmailSent" TIMESTAMP(6),
+    "DateCreated" TIMESTAMP(6),
+    "DateUpdated" TIMESTAMP(6),
     "Message" TEXT,
     "MessageSubstitutionsJson" TEXT,
     "SendEmail" BOOLEAN NOT NULL,
@@ -76,8 +76,8 @@ CREATE TABLE "OrganizationInviteRequests" (
     "Name" TEXT,
     "OrgAdminEmail" TEXT,
     "WebsiteUrl" TEXT,
-    "DateCreated" TIMESTAMP,
-    "DateUpdated" TIMESTAMP,
+    "DateCreated" TIMESTAMP(6),
+    "DateUpdated" TIMESTAMP(6),
 
     CONSTRAINT "PK_OrganizationInviteRequests" PRIMARY KEY ("Id")
 );
@@ -97,12 +97,12 @@ CREATE TABLE "OrganizationMembershipInvites" (
     "Id" SERIAL NOT NULL,
     "Token" UUID NOT NULL DEFAULT uuid_generate_v4(),
     "Email" TEXT NOT NULL,
-    "Expires" TIMESTAMP NOT NULL DEFAULT (CURRENT_DATE + 7),
+    "Expires" TIMESTAMP(6) NOT NULL DEFAULT (CURRENT_DATE + 7),
     "Redeemed" BOOLEAN NOT NULL DEFAULT false,
     "InvitedById" INTEGER NOT NULL,
     "OrganizationId" INTEGER NOT NULL,
-    "DateCreated" TIMESTAMP,
-    "DateUpdated" TIMESTAMP,
+    "DateCreated" TIMESTAMP(6),
+    "DateUpdated" TIMESTAMP(6),
 
     CONSTRAINT "PK_OrganizationMembershipInvites" PRIMARY KEY ("Id")
 );
@@ -158,8 +158,8 @@ CREATE TABLE "ProductArtifacts" (
     "Url" TEXT,
     "FileSize" BIGINT,
     "ContentType" TEXT,
-    "DateCreated" TIMESTAMP,
-    "DateUpdated" TIMESTAMP,
+    "DateCreated" TIMESTAMP(6),
+    "DateUpdated" TIMESTAMP(6),
 
     CONSTRAINT "PK_ProductArtifacts" PRIMARY KEY ("Id")
 );
@@ -170,8 +170,8 @@ CREATE TABLE "ProductBuilds" (
     "ProductId" UUID NOT NULL,
     "BuildId" INTEGER NOT NULL,
     "Version" TEXT,
-    "DateCreated" TIMESTAMP,
-    "DateUpdated" TIMESTAMP,
+    "DateCreated" TIMESTAMP(6),
+    "DateUpdated" TIMESTAMP(6),
     "Success" BOOLEAN,
 
     CONSTRAINT "PK_ProductBuilds" PRIMARY KEY ("Id")
@@ -200,8 +200,8 @@ CREATE TABLE "ProductPublications" (
     "Channel" TEXT,
     "LogUrl" TEXT,
     "Success" BOOLEAN,
-    "DateCreated" TIMESTAMP,
-    "DateUpdated" TIMESTAMP,
+    "DateCreated" TIMESTAMP(6),
+    "DateUpdated" TIMESTAMP(6),
     "Package" TEXT,
 
     CONSTRAINT "PK_ProductPublications" PRIMARY KEY ("Id")
@@ -216,7 +216,7 @@ CREATE TABLE "ProductTransitions" (
     "InitialState" TEXT,
     "DestinationState" TEXT,
     "Command" TEXT,
-    "DateTransition" TIMESTAMP,
+    "DateTransition" TIMESTAMP(6),
     "Comment" TEXT,
     "TransitionType" INTEGER NOT NULL DEFAULT 1,
     "WorkflowType" INTEGER,
@@ -231,14 +231,14 @@ CREATE TABLE "Products" (
     "ProductDefinitionId" INTEGER NOT NULL,
     "StoreId" INTEGER,
     "StoreLanguageId" INTEGER,
-    "DateCreated" TIMESTAMP,
-    "DateUpdated" TIMESTAMP,
+    "DateCreated" TIMESTAMP(6),
+    "DateUpdated" TIMESTAMP(6),
     "WorkflowJobId" INTEGER NOT NULL,
     "WorkflowBuildId" INTEGER NOT NULL,
-    "DateBuilt" TIMESTAMP,
+    "DateBuilt" TIMESTAMP(6),
     "WorkflowPublishId" INTEGER NOT NULL,
     "WorkflowComment" TEXT,
-    "DatePublished" TIMESTAMP,
+    "DatePublished" TIMESTAMP(6),
     "PublishLink" TEXT,
     "VersionBuilt" TEXT,
     "Properties" TEXT,
@@ -254,8 +254,8 @@ CREATE TABLE "ProjectImports" (
     "OwnerId" INTEGER,
     "GroupId" INTEGER,
     "OrganizationId" INTEGER,
-    "DateCreated" TIMESTAMP,
-    "DateUpdated" TIMESTAMP,
+    "DateCreated" TIMESTAMP(6),
+    "DateUpdated" TIMESTAMP(6),
 
     CONSTRAINT "PK_ProjectImports" PRIMARY KEY ("Id")
 );
@@ -271,15 +271,15 @@ CREATE TABLE "Projects" (
     "OrganizationId" INTEGER NOT NULL,
     "Language" TEXT,
     "IsPublic" BOOLEAN DEFAULT true,
-    "DateCreated" TIMESTAMP,
-    "DateUpdated" TIMESTAMP,
-    "DateArchived" TIMESTAMP,
+    "DateCreated" TIMESTAMP(6),
+    "DateUpdated" TIMESTAMP(6),
+    "DateArchived" TIMESTAMP(6),
     "AllowDownloads" BOOLEAN DEFAULT true,
     "AutomaticBuilds" BOOLEAN DEFAULT true,
     "WorkflowProjectId" INTEGER NOT NULL DEFAULT 0,
     "WorkflowProjectUrl" TEXT,
     "WorkflowAppProjectUrl" TEXT,
-    "DateActive" TIMESTAMP,
+    "DateActive" TIMESTAMP(6),
     "ImportId" INTEGER,
 
     CONSTRAINT "PK_Projects" PRIMARY KEY ("Id")
@@ -339,8 +339,8 @@ CREATE TABLE "SystemStatuses" (
     "BuildEngineUrl" TEXT,
     "BuildEngineApiAccessToken" TEXT,
     "SystemAvailable" BOOLEAN NOT NULL,
-    "DateCreated" TIMESTAMP,
-    "DateUpdated" TIMESTAMP,
+    "DateCreated" TIMESTAMP(6),
+    "DateUpdated" TIMESTAMP(6),
 
     CONSTRAINT "PK_SystemStatuses" PRIMARY KEY ("Id")
 );
@@ -363,8 +363,8 @@ CREATE TABLE "UserTasks" (
     "ActivityName" TEXT,
     "Status" TEXT,
     "Comment" TEXT,
-    "DateCreated" TIMESTAMP,
-    "DateUpdated" TIMESTAMP,
+    "DateCreated" TIMESTAMP(6),
+    "DateUpdated" TIMESTAMP(6),
 
     CONSTRAINT "PK_UserTasks" PRIMARY KEY ("Id")
 );
@@ -384,8 +384,8 @@ CREATE TABLE "Users" (
     "ProfileVisibility" INTEGER NOT NULL DEFAULT 1,
     "EmailNotification" BOOLEAN DEFAULT true,
     "WorkflowUserId" UUID,
-    "DateCreated" TIMESTAMP,
-    "DateUpdated" TIMESTAMP,
+    "DateCreated" TIMESTAMP(6),
+    "DateUpdated" TIMESTAMP(6),
 
     CONSTRAINT "PK_Users" PRIMARY KEY ("Id")
 );
@@ -680,6 +680,19 @@ CREATE TABLE "dwUploadedFiles" (
     "Properties" TEXT,
 
     CONSTRAINT "dwUploadedFiles_pkey" PRIMARY KEY ("Id")
+);
+
+-- CreateTable
+CREATE TABLE "ProductUserChanges" (
+    "Id" SERIAL NOT NULL,
+    "ProductId" UUID NOT NULL,
+    "Email" TEXT,
+    "Change" TEXT,
+    "DateCreated" TIMESTAMP(6),
+    "DateUpdated" TIMESTAMP(6),
+    "DateCompleted" TIMESTAMP(6),
+
+    CONSTRAINT "PK_ProductUserChanges" PRIMARY KEY ("Id")
 );
 
 -- CreateIndex
@@ -1056,4 +1069,7 @@ ALTER TABLE "dwSecurityUserToSecurityRole" ADD CONSTRAINT "dwSecurityUserToSecur
 
 -- AddForeignKey
 ALTER TABLE "dwSecurityUserToSecurityRole" ADD CONSTRAINT "dwSecurityUserToSecurityRole_SecurityUserId_fkey" FOREIGN KEY ("SecurityUserId") REFERENCES "dwSecurityUser"("Id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "ProductUserChanges" ADD CONSTRAINT "FK_ProductUserChanges_Products_ProductId" FOREIGN KEY ("ProductId") REFERENCES "Products"("Id") ON DELETE RESTRICT ON UPDATE NO ACTION;
 
