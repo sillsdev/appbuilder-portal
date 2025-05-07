@@ -75,7 +75,7 @@ export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
     Queues.SystemStartup.add('Refresh LangTags (Startup)', {
       type: BullMQ.JobType.System_RefreshLangTags
     });
-    Queues.SystemStartup.add('Migrate Featueres from S1 to S2 (Startup)', {
+    Queues.SystemStartup.add('Migrate Features from S1 to S2 (Startup)', {
       type: BullMQ.JobType.System_Migrate
     });
   }

@@ -62,8 +62,8 @@ function deleteInstance(productId: string, projectId: number) {
 }
 export { deleteInstance as delete };
 
-async function markProcessFinalized(ProcessId: string) {
-  await prisma.$transaction([
+export function markProcessFinalized(ProcessId: string) {
+  return prisma.$transaction([
     // I am not sure how to go about deleting WorkflowProcessScheme...
     prisma.workflowProcessTransitionHistory.deleteMany({ where: { ProcessId }}),
     prisma.workflowProcessTimer.deleteMany({ where: { ProcessId }}),

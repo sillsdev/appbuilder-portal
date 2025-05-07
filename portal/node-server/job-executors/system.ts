@@ -54,7 +54,6 @@ export async function checkSystemStatuses(
   }
   const uniquePairs = new Set(organizations.map((o) => JSON.stringify(o)))
     .values()
-    //@ts-expect-error the version of NodeJS we are using does in fact support .map on a SetIterator
     .map((e: string) => JSON.parse(e))
     .toArray() as typeof organizations;
   job.updateProgress(10);
@@ -358,17 +357,35 @@ async function processLocalizedNames(
   return update;
 }
 
+enum ProcessStatus {
+  /** Status of a process which was created just now */
+  Initialized = 0,
+  /** Status of a process which is executing at current moment */
+  Running = 1,
+  /** Status of a process which is not executing at current moment and awaiting an external interaction */
+  Idled = 2,
+  /** Status of a process which was finalized */
+  Finalized = 3,
+  /** Status of a process which was terminated with an error */
+  Terminated = 4,
+  /** Status of a process which had an error but not terminated */
+  Error = 5,
+  /** Status of a process which exists in persistence store but its status is not defined */
+  Unknown = 254,
+  /** Status of a process which does not exist in persistence store */
+  NotFound = 255
+}
+
 const uninterestedStatuses = new Map([
-  // ProcessStatus.Finalized = 3 // Status of a process which was finalized
-  [3, 'Finalized'],
-  // ProcessStatus.Terminated = 4 // Status of a process which was terminated with an error
-  [4, 'Terminated'],
-  // ProcessStatus.Error = 5 // Status of a process which had an error but not terminated
-  [5, 'Error'],
-  // ProcessStatus.Unknown = 254 // Status of a process which exists in persistence store but its status is not defined
-  [254, 'Unknown'],
-  // ProcessStatus.NotFound = 255 // Status of a process which does not exist in persistence store
-  [255, 'NotFound']
+  [ProcessStatus.Terminated, 'Terminated'],
+  [ProcessStatus.Unknown, 'Unknown'],
+  [ProcessStatus.NotFound, 'NotFound']
+]);
+
+const usableStatuses = new Map([
+  [ProcessStatus.Idled, 'Idled'],
+  [ProcessStatus.Finalized, 'Finalized'],
+  [ProcessStatus.Error, 'Error']
 ]);
 
 export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
@@ -455,43 +472,38 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
         });
         if (!processInstance) return product;
 
-        // if there is no persistence, we aren't interested
-        const processPersistence = await prisma.workflowProcessInstancePersistence.findMany({
-          where: { ProcessId: product.Id }
-        });
-        if (!processPersistence.length) {
-          job.log(`${product.Id}: Instance found but no Persistence`);
-          return { Id: product.Id, ProcessStatus: uninterestedStatuses.get(255) /*NotFound*/ };
-        }
-
         // if there is no status, we aren't interested
         const processStatus = await prisma.workflowProcessInstanceStatus.findFirst({
           where: { Id: product.Id },
           select: { Status: true }
         });
         if (!processStatus) {
-          job.log(`${product.Id}: Persistence found but no Status`);
-          return { Id: product.Id, ProcessStatus: uninterestedStatuses.get(254) /*Unknown*/ };
+          job.log(`${product.Id}: No status found`);
+          return { Id: product.Id, ProcessStatus: uninterestedStatuses.get(ProcessStatus.Unknown) };
         }
 
-        // we aren't interested in Finalized or error states
+        // we aren't interested in the weird edge cases, none of these show up in the prod dump anyways
         if (uninterestedStatuses.get(processStatus.Status)) {
           return { Id: product.Id, ProcessStatus: uninterestedStatuses.get(processStatus.Status) };
         }
 
-        // ProcessStatus.Idled = 2 // Status of a process which is not executing at current moment and awaiting an external interaction
-        if (processStatus.Status === 2) {
+        // We are interested in the Idled, Error, and Finalized states
+        if (usableStatuses.get(processStatus.Status)) {
           const res = await tryCreateInstance(
             product.Id,
+            processStatus.Status,
             processInstance.ActivityName,
-            processPersistence,
             (s) => job.log(s)
           );
-          return { Id: product.Id, ProcessStatus: 'Idled', WorkflowInstance: res.value };
-        }
-        // ProcessStatus.Initialized = 0 // Status of a process which was created just now
-        // ProcessStatus.Running = 1 // Status of a process which is executing at current moment
-        else if (processStatus.Status === 0 || processStatus.Status === 1) {
+          return {
+            Id: product.Id,
+            ProcessStatus: usableStatuses.get(processStatus.Status),
+            WorkflowInstance: res.value
+          };
+        } else if (
+          processStatus.Status === ProcessStatus.Initialized ||
+          processStatus.Status === ProcessStatus.Running
+        ) {
           // if the process is currently running or just created, we want to check back in a little bit
           // PR #1115: TODO create delayed job to take care of instances that are currently running or initialized???
           return {
@@ -500,24 +512,38 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
           };
         } else {
           job.log(`${product.Id}: Unrecognized status: "${processStatus.Status}"`);
-          return { Id: product.Id, ProcessStatus: uninterestedStatuses.get(254) /*Unknown*/ };
+          return { Id: product.Id, ProcessStatus: uninterestedStatuses.get(ProcessStatus.Unknown) };
         }
       })
     );
+
+  // delete any WorkflowProcessInstances that are no longer associated with a product
+  const orphanedInstances = await Promise.all(
+    (await prisma.workflowProcessInstance.findMany({ select: { Id: true } })).map(
+      async ({ Id }) => {
+        if (!(await prisma.products.findFirst({ where: { Id } }))) {
+          return await DatabaseWrites.workflowInstances.markProcessFinalized(Id);
+        } else {
+          return null;
+        }
+      }
+    )
+  );
 
   job.updateProgress(100);
   return {
     deletedTasks: deletedTasks.count,
     updatedTransitions,
     missingWorkflowUserIDs,
-    products
+    products: products.filter((p) => !!p.ProcessStatus),
+    orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0)
   };
 }
 
 async function tryCreateInstance(
   productId: string,
+  Status: number,
   ActivityName: string,
-  persistence: { ParameterName: string; Value: string }[],
   log: Logger
 ): Promise<{ ok: boolean; value: unknown }> {
   try {
@@ -537,7 +563,19 @@ async function tryCreateInstance(
 
     if (!product) return { ok: false, value: 'Product not found' };
 
-    if (!Object.values(WorkflowState).includes(ActivityName as WorkflowState)) {
+    const persistence = await prisma.workflowProcessInstancePersistence.findMany({
+      where: { ProcessId: productId }
+    });
+
+    if (Status === ProcessStatus.Finalized) {
+      await DatabaseWrites.workflowInstances.markProcessFinalized(productId);
+      return { ok: true, value: usableStatuses.get(Status) };
+    }
+
+    /** If it is at these specific activities, redirect to Synchronize Data */
+    const usableStates = ['Check Product Publish', 'Check Product Build'].includes(ActivityName);
+
+    if (!(Object.values(WorkflowState).includes(ActivityName as WorkflowState) || usableStates)) {
       return {
         ok: false,
         value: `Unrecognized ActivityName "${ActivityName}"`
@@ -611,7 +649,7 @@ async function tryCreateInstance(
       // this is also acceptable if a project is already archived, because no UserTasks will be created if so
       flow?.send({
         type: WorkflowAction.Jump,
-        target: ActivityName as WorkflowState,
+        target: usableStates ? WorkflowState.Synchronize_Data : (ActivityName as WorkflowState),
         userId: null,
         comment: 'Migrate workflow data to new backend'
       });
