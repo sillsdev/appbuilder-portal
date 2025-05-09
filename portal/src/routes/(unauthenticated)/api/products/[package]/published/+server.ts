@@ -94,7 +94,7 @@ async function getPublishedAppDetails(Package: string) {
       }
     },
     orderBy: {
-      Id: 'asc'
+      Id: 'desc'
     }
   });
 
