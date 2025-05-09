@@ -43,7 +43,7 @@
       download
       target="_blank"
       class="btn"
-      style="backgroundColor: {data.manifest.color}"
+      style="background-color: {data.manifest.color}"
     >
       {downloadLinkText(data.manifest, lang)}
     </a>
