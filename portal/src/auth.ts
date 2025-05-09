@@ -7,6 +7,7 @@ import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@a
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import type { RoleId } from 'sil.appbuilder.portal.common/prisma';
 
 // this works, even though TS/eslint are unhappy (no actual errors here, see the expect errors elsewhere)
 declare module '@auth/sveltekit' {
@@ -14,7 +15,7 @@ declare module '@auth/sveltekit' {
     user: {
       userId: number;
       /** [organizationId, RoleId][]*/
-      roles: [number, number][];
+      roles: [number, RoleId][];
     } & DefaultSession['user'];
   }
 }

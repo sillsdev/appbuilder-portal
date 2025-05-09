@@ -1,9 +1,10 @@
 <script
   lang="ts"
-  generics="Group extends { Id: number; Name: string | null } & Record<string, unknown>"
+  generics="Group extends Prisma.GroupsGetPayload<{ select: { Id: true; Name: true }}>"
 >
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
+  import type { Prisma } from '@prisma/client';
   import type { Snippet } from 'svelte';
 
   interface Props {

@@ -2,26 +2,31 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getTimeDateString } from '$lib/utils/time';
+  import type { Prisma } from '@prisma/client';
   import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
 
   interface Props {
-    product: {
-      Id: string;
-      Store: { Description: string | null } | null;
-      Transitions: {
-        TransitionType: number;
-        InitialState: string | null;
-        WorkflowType: number | null;
-        AllowedUserNames: string | null;
-        Command: string | null;
-        Comment: string | null;
-        DateTransition: Date | null;
-        User: { Name: string | null } | null;
-      }[];
-    };
+    product: Prisma.ProductsGetPayload<{
+      select: {
+        Id: true;
+        Store: { select: { Description: true } };
+      };
+    }>;
+    transitions: Prisma.ProductTransitionsGetPayload<{
+      select: {
+        TransitionType: true;
+        InitialState: true;
+        WorkflowType: true;
+        AllowedUserNames: true;
+        Command: true;
+        Comment: true;
+        DateTransition: true;
+        User: { select: { Name: true } };
+      };
+    }>[];
   }
 
-  let { product }: Props = $props();
+  let { product, transitions }: Props = $props();
 
   function stateString(workflowTypeNum: number, transitionType: number) {
     if ([2, 3, 4].includes(transitionType)) {
@@ -75,7 +80,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each product.Transitions as transition}
+        {#each transitions as transition}
           <tr class:font-bold={[2, 3, 4].includes(transition.TransitionType)}>
             <td>
               {#if transition.TransitionType === ProductTransitionType.Activity}

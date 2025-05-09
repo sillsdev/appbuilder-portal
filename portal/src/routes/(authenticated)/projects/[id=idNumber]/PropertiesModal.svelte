@@ -3,13 +3,16 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
+  import type { Prisma } from '@prisma/client';
 
   interface Props {
     modal?: HTMLDialogElement;
-    product: {
-      Id: string;
-      Properties: string | null;
-    };
+    product: Prisma.ProductsGetPayload<{
+      select: {
+        Id: true;
+        Properties: true;
+      };
+    }>;
     endpoint: string;
   }
 

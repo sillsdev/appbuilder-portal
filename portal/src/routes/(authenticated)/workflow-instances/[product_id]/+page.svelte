@@ -157,7 +157,7 @@
       </Dropdown>
     </span>
   </div>
-  <ProductDetails product={data.product} />
+  <ProductDetails product={data.product} transitions={data.transitions} />
   <div id="svelvet-wrapper">
     {#if ready}
       <Svelvet

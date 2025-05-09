@@ -89,9 +89,7 @@
   let selectingStore: boolean = $state(false);
   let selectedProduct = $state(data.productsToAdd[0]);
   let availableStores = $derived(
-    data.stores.filter(
-      (s) => s.StoreTypeId === selectedProduct.Workflow.StoreTypeId
-    )
+    data.stores.filter((s) => s.StoreTypeId === selectedProduct.Workflow.StoreTypeId)
   );
 
   let deleteProductModal: HTMLDialogElement | undefined = $state(undefined);
@@ -456,7 +454,7 @@
                   {/if}
                 </div>
               {/if}
-              <ProductDetails {product} />
+              <ProductDetails {product} transitions={product.Transitions} />
             </div>
           {/each}
         {/if}
