@@ -40,28 +40,6 @@ export const load: PageServerLoad = async ({ params }) => {
         select: {
           Name: true
         }
-      },
-      ProductTransitions: {
-        select: {
-          DateTransition: true,
-          DestinationState: true,
-          InitialState: true,
-          Command: true,
-          TransitionType: true,
-          WorkflowType: true,
-          AllowedUserNames: true,
-          Comment: true,
-          User: {
-            select: {
-              Name: true
-            }
-          }
-        },
-        orderBy: [
-          {
-            DateTransition: 'asc'
-          }
-        ]
       }
     }
   });
@@ -83,11 +61,7 @@ export const load: PageServerLoad = async ({ params }) => {
   });
 
   return {
-    product: {
-      ...product,
-      Transitions: product?.ProductTransitions,
-      ProductTransitions: undefined
-    },
+    product,
     snapshot: snap,
     machine: snap ? flow.serializeForVisualization() : [],
     definition: workflowDefinition,
@@ -96,7 +70,30 @@ export const load: PageServerLoad = async ({ params }) => {
         state: snap?.state
       },
       valibot(jumpStateSchema)
-    )
+    ),
+    transitions: await prisma.productTransitions.findMany({
+      where: { ProductId: params.product_id },
+      select: {
+        DateTransition: true,
+        DestinationState: true,
+        InitialState: true,
+        Command: true,
+        TransitionType: true,
+        WorkflowType: true,
+        AllowedUserNames: true,
+        Comment: true,
+        User: {
+          select: {
+            Name: true
+          }
+        }
+      },
+      orderBy: [
+        {
+          DateTransition: 'asc'
+        }
+      ]
+    })
   };
 };
 

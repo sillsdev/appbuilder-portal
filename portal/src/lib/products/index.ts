@@ -1,4 +1,5 @@
-import { WorkflowType } from "sil.appbuilder.portal.common/prisma";
+import type { Prisma } from '@prisma/client';
+import { WorkflowType } from 'sil.appbuilder.portal.common/prisma';
 
 export enum ProductActionType {
   Rebuild = 'rebuild',
@@ -7,15 +8,21 @@ export enum ProductActionType {
 }
 
 export function getProductActions(
-  product: {
-    WorkflowInstance: {
-      WorkflowDefinition: {
-        Type: WorkflowType;
+  product: Prisma.ProductsGetPayload<{
+    select: {
+      WorkflowInstance: {
+        select: {
+          WorkflowDefinition: {
+            select: {
+              Type: true;
+            };
+          };
+        };
       };
-    } | null;
-    DatePublished: unknown;
-    ProductDefinition: { RebuildWorkflowId: unknown; RepublishWorkflowId: unknown };
-  },
+      DatePublished: true;
+      ProductDefinition: { select: { RebuildWorkflowId: true; RepublishWorkflowId: true } };
+    };
+  }>,
   projectOwnerId: number,
   userId: number
 ) {
@@ -44,6 +51,7 @@ export async function getFileInfo(url: string) {
   return {
     contentType: res.headers.get('Content-Type'),
     lastModified: new Date(res.headers.get('Last-Modified') ?? 0).toISOString(),
-    fileSize: res.headers.get('Content-Type') !== 'text/html'? res.headers.get('Content-Length') : null
-  }
+    fileSize:
+      res.headers.get('Content-Type') !== 'text/html' ? res.headers.get('Content-Length') : null
+  };
 }

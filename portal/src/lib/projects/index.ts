@@ -153,13 +153,15 @@ export const bulkProjectActionSchema = v.object({
 
 export type ProjectActionSchema = typeof projectActionSchema;
 
-export type ProjectForAction = {
-  Id: number;
-  Name: string | null;
-  OwnerId: number;
-  GroupId: number;
-  DateArchived: Date | null;
-};
+export type ProjectForAction = Prisma.ProjectsGetPayload<{
+  select: {
+    Id: true;
+    Name: true;
+    OwnerId: true;
+    GroupId: true;
+    DateArchived: true;
+  };
+}>;
 
 export function canModifyProject(
   user: Session | null | undefined,
