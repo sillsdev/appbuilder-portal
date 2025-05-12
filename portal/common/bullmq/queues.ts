@@ -57,7 +57,7 @@ export const config = { connection: connection.connection() } as const;
 export const Builds = new Queue<BuildJob>(QueueName.Builds, config);
 /** Queue for default recurring jobs such as the BuildEngine status check */
 export const SystemRecurring = new Queue<RecurringJob>(QueueName.SystemRecurring, config);
-/** Queue for default recurring jobs such as the BuildEngine status check */
+/** Queue for system jobs that run on startup, such as prepopulating langtags.json */
 export const SystemStartup = new Queue<StartupJob>(QueueName.SystemStartup, config);
 /** Queue for miscellaneous jobs such as Product and Project Creation */
 export const Miscellaneous = new Queue<MiscJob>(QueueName.Miscellaneous, config);
