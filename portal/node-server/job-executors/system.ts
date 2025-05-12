@@ -597,6 +597,7 @@ async function tryCreateInstance(
 
     let workflowType = typeIndex as WorkflowType;
 
+    // typeIndex could be -1 if not found in array, handled by < WorkflowType.Startup check
     if (typeIndex < WorkflowType.Startup || typeIndex > WorkflowType.Republish) {
       log(
         `${productId}: Invalid WORKFLOW_TYPE (${mergedEnv[ENVKeys.WORKFLOW_TYPE]}) in ProcessPersistence. Assuming Startup`
