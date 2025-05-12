@@ -89,7 +89,7 @@
             <BuildArtifacts
               build={{ ...build, ProductPublications: [release] }}
               latestBuildId={build.BuildId}
-              allowDownloads={!!data.project.AllowDownloads || data.isMemberOfProjectOrg}
+              allowDownloads={data.allowDownloads}
             />
           {:else}
             <div class="p-4">

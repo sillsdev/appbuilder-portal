@@ -20,6 +20,14 @@ export const load = (async ({ params, locals }) => {
   // Is this the right error? Should 404 be returned instead?
   if (!projectCheck.IsPublic) return error(403);
 
+  // This assumes that a null value is meant as false
+  const allowDownloads = !!(
+    projectCheck.AllowDownloads ||
+    (await prisma.organizationMemberships.findFirst({
+      where: { OrganizationId: projectCheck.OrganizationId, UserId: user.userId }
+    }))
+  );
+
   return {
     project: await prisma.projects.findUniqueOrThrow({
       where: {
@@ -81,8 +89,7 @@ export const load = (async ({ params, locals }) => {
                       select: {
                         ArtifactType: true,
                         FileSize: true,
-                        // This assumes that a null value is meant as false
-                        Url: !!projectCheck.AllowDownloads,
+                        Url: allowDownloads,
                         DateUpdated: true
                       }
                     }
@@ -100,8 +107,6 @@ export const load = (async ({ params, locals }) => {
         }
       }
     }),
-    isMemberOfProjectOrg: !!(await prisma.organizationMemberships.findFirst({
-      where: { OrganizationId: projectCheck.OrganizationId, UserId: user.userId }
-    }))
+    allowDownloads
   };
 }) satisfies PageServerLoad;
