@@ -144,9 +144,17 @@ export class EmailTasks extends BullWorker<BullMQ.Job> {
     switch (job.data.type) {
       case BullMQ.JobType.Email_InviteUser:
         return Executor.Email.inviteUser(job as Job<BullMQ.Email.InviteUser>);
+      case BullMQ.JobType.Email_SendNotificationToUser:
+        return Executor.Email.sendNotificationToUser(
+          job as Job<BullMQ.Email.SendNotificationToUser>
+        );
       case BullMQ.JobType.Email_SendNotificationToReviewers:
         return Executor.Email.sendNotificationToReviewers(
           job as Job<BullMQ.Email.SendNotificationToReviewers>
+        );
+      case BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner:
+        return Executor.Email.sendNotificationToOrgAdminsAndOwner(
+          job as Job<BullMQ.Email.SendNotificationToOrgAdminsAndOwner>
         );
       case BullMQ.JobType.Email_SendBatchUserTaskNotifications:
         return Executor.Email.sendBatchUserTaskNotifications(
@@ -160,6 +168,8 @@ export class EmailTasks extends BullWorker<BullMQ.Job> {
         return Executor.Email.notifySuperAdminsOfOfflineSystems(
           job as Job<BullMQ.Email.NotifySuperAdminsOfOfflineSystems>
         );
+      case BullMQ.JobType.Email_ProjectImportReport:
+        return Executor.Email.reportProjectImport(job as Job<BullMQ.Email.ProjectImportReport>);
     }
   }
 }

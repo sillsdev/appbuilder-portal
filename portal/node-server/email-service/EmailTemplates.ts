@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 
-export const NotificationEmailTemplate = readFileSync(
+export const NotificationTemplate = readFileSync(
   path.join(import.meta.dirname, 'templates', 'Notification.html'),
   'utf8'
 );

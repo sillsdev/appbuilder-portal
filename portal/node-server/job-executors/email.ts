@@ -5,7 +5,7 @@ import { JobSchedulerId } from '../../common/bullmq/types.js';
 import { sendEmail } from '../email-service/EmailClient.js';
 import {
   addProperties,
-  NotificationEmailTemplate,
+  NotificationTemplate,
   NotificationWithLinkTemplate,
   OrganizationInviteRequestTemplate,
   OrganizationMembershipInviteTemplate,
@@ -100,7 +100,7 @@ export async function sendNotificationToReviewers(
         sendEmail(
           [{ email: r.Email, name: r.Name }],
           translate('en', 'notifications.subject.' + messageId, properties),
-          addProperties(NotificationEmailTemplate, {
+          addProperties(NotificationTemplate, {
             Message: translate('en', 'notifications.body.' + messageId, {
               ...properties,
               reviewerName: r.Name
@@ -109,7 +109,7 @@ export async function sendNotificationToReviewers(
         )
       )
     ),
-    ownerEmail: sendEmail(
+    ownerEmail: await sendEmail(
       [{ email: product.Project.Owner.Email, name: product.Project.Owner.Name }],
       translate('en', 'notifications.subject.' + messageId, properties),
       addProperties(ReviewProductTemplate, {
@@ -150,7 +150,7 @@ export async function sendBatchUserTaskNotifications(
       sendEmail(
         [{ email, name: user.Name }],
         translate(user.Locale, 'notifications.subject.userTaskAdded', properties),
-        addProperties(NotificationEmailTemplate, {
+        addProperties(NotificationTemplate, {
           Message: message
         })
       )
@@ -177,7 +177,7 @@ export async function notifySuperAdminsOfNewOrganizationRequest(
     OrgAdminEmail: job.data.email
   };
   return {
-    email: sendEmail(
+    email: await sendEmail(
       superAdmins.map((admin) => ({ email: admin.Email, name: admin.Name })),
       translate('en', 'organizationInvites.subject', properties),
       addProperties(OrganizationInviteRequestTemplate, {
@@ -199,7 +199,7 @@ export async function notifySuperAdminsOfOfflineSystems(
     await Queues.EmailTasks.removeJobScheduler(JobSchedulerId.SystemStatusEmail);
     return;
   }
-  return notifySuperAdmins(
+  return await notifySuperAdmins(
     translate('en', 'notifications.subject.buildengineDisconnected', {
       url: statuses.map((s) => s.BuildEngineUrl).join(', ')
     }),
@@ -208,6 +208,29 @@ export async function notifySuperAdminsOfOfflineSystems(
       minutes: statuses
         .map((s) => Math.floor((Date.now() - s.DateUpdated.getTime()) / 1000 / 60))
         .join(', ')
+    })
+  );
+}
+
+export async function sendNotificationToUser(
+  job: Job<BullMQ.Email.SendNotificationToUser>
+): Promise<unknown> {
+  const user = await prisma.users.findUniqueOrThrow({
+    where: {
+      Id: job.data.userId
+    }
+  });
+  return await sendEmail(
+    [{ email: user.Email, name: user.Name }],
+    translate(user.Locale, 'notifications.subject.' + job.data.messageKey),
+    addProperties(job.data.link ? NotificationWithLinkTemplate : NotificationTemplate, {
+      Message: translate(
+        user.Locale,
+        'notifications.body.' + job.data.messageKey,
+        job.data.messageProperties
+      ),
+      LinkUrl: job.data.link,
+      UrlText: translate(user.Locale, 'notifications.body.log')
     })
   );
 }
@@ -244,7 +267,7 @@ export async function notifySuperAdmins(
             LinkUrl: link,
             UrlText: linkText
           })
-        : addProperties(NotificationEmailTemplate, {
+        : addProperties(NotificationTemplate, {
             Message: message
           })
     )
@@ -374,4 +397,69 @@ export async function reportProjectImport(
     translate(projectImport.Users.Locale, 'importProject.subject'),
     body
   );
+}
+
+export async function sendNotificationToOrgAdminsAndOwner(
+  job: Job<BullMQ.Email.SendNotificationToOrgAdminsAndOwner>
+): Promise<unknown> {
+  const project = await prisma.projects.findUniqueOrThrow({
+    where: {
+      Id: job.data.projectId
+    },
+    include: {
+      Organization: true,
+      Owner: true
+    }
+  });
+  const orgAdmins = await prisma.users.findMany({
+    where: {
+      UserRoles: {
+        some: {
+          RoleId: RoleId.OrgAdmin,
+          OrganizationId: project.OrganizationId
+        }
+      }
+    }
+  });
+  const owner = await prisma.users.findUniqueOrThrow({
+    where: {
+      Id: project.OwnerId
+    }
+  });
+  const emails = orgAdmins.map((admin) =>
+    sendEmail(
+      [{ email: admin.Email, name: admin.Name }],
+      translate(admin.Locale, 'notifications.subject.' + job.data.errorKey + 'Admin'),
+      addProperties(job.data.link ? NotificationWithLinkTemplate : NotificationTemplate, {
+        Message: translate(
+          admin.Locale,
+          'notifications.body.' + job.data.errorKey + 'Admin',
+          job.data.errorProperties
+        ),
+        LinkUrl: job.data.link,
+        UrlText: translate(admin.Locale, 'notifications.body.log')
+      })
+    )
+  );
+  // The org admin email contains more information than the owner email
+  // If the owner is also an org admin, we don't need to send them a second email
+  // They receive only the org admin email
+  if (!orgAdmins.some((admin) => admin.Id === owner.Id)) {
+    emails.push(
+      sendEmail(
+        [{ email: owner.Email, name: owner.Name }],
+        translate(owner.Locale, 'notifications.subject.' + job.data.errorKey + 'Owner'),
+        addProperties(job.data.link ? NotificationWithLinkTemplate : NotificationTemplate, {
+          Message: translate(
+            owner.Locale,
+            'notifications.body.' + job.data.errorKey + 'Owner',
+            job.data.errorProperties
+          ),
+          LinkUrl: job.data.link,
+          UrlText: translate(owner.Locale, 'notifications.body.log')
+        })
+      )
+    );
+  }
+  return await Promise.all(emails);
 }

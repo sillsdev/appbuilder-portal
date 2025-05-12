@@ -64,7 +64,9 @@ export enum JobType {
   UserTasks_Modify = 'Modify UserTasks',
   // Email
   Email_InviteUser = 'Invite User',
+  Email_SendNotificationToUser = 'Send Notification to User',
   Email_SendNotificationToReviewers = 'Send Notification to Product Reviewers',
+  Email_SendNotificationToOrgAdminsAndOwner = 'Send Notification to Org Admins and Owners',
   Email_SendBatchUserTaskNotifications = 'Send Batch User Task Notifications',
   Email_NotifySuperAdminsOfNewOrganizationRequest = 'Notify Super Admins of New Organization Request',
   Email_NotifySuperAdminsOfOfflineSystems = 'Notify Super Admins of Offline Systems',
@@ -211,9 +213,27 @@ export namespace Email {
     inviteToken: string;
     inviteLink: string;
   }
+  export interface SendNotificationToUser {
+    type: JobType.Email_SendNotificationToUser;
+    userId: number;
+    messageKey: string;
+    messageProperties: {
+      [key: string]: string;
+    };
+    link?: string;
+  }
   export interface SendNotificationToReviewers {
     type: JobType.Email_SendNotificationToReviewers;
     productId: string;
+  }
+  export interface SendNotificationToOrgAdminsAndOwner {
+    type: JobType.Email_SendNotificationToOrgAdminsAndOwner;
+    projectId: number;
+    errorKey: string;
+    errorProperties: {
+      [key: string]: string;
+    };
+    link?: string;
   }
   export interface SendBatchUserTaskNotifications {
     type: JobType.Email_SendBatchUserTaskNotifications;
@@ -263,7 +283,9 @@ export type JobTypeMap = {
   [JobType.Recurring_RefreshLangTags]: Recurring.RefreshLangTags;
   [JobType.UserTasks_Modify]: UserTasks.Modify;
   [JobType.Email_InviteUser]: Email.InviteUser;
+  [JobType.Email_SendNotificationToUser]: Email.SendNotificationToUser;
   [JobType.Email_SendNotificationToReviewers]: Email.SendNotificationToReviewers;
+  [JobType.Email_SendNotificationToOrgAdminsAndOwner]: Email.SendNotificationToOrgAdminsAndOwner;
   [JobType.Email_SendBatchUserTaskNotifications]: Email.SendBatchUserTaskNotifications;
   [JobType.Email_NotifySuperAdminsOfNewOrganizationRequest]: Email.NotifySuperAdminsOfNewOrganizationRequest;
   [JobType.Email_NotifySuperAdminsOfOfflineSystems]: Email.NotifySuperAdminsOfOfflineSystems;
