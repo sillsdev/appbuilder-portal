@@ -52,10 +52,9 @@ export async function checkSystemStatuses(
       throw new Error('No build engines to check');
     }
   }
-  const uniquePairs = new Set(organizations.map((o) => JSON.stringify(o)))
-    .values()
-    .map((e: string) => JSON.parse(e))
-    .toArray() as typeof organizations;
+  const uniquePairs = Array.from(new Set(organizations.map((o) => JSON.stringify(o)))).map((e) =>
+    JSON.parse(e)
+  ) as typeof organizations;
   job.updateProgress(10);
   // remove statuses that do not correspond to organizations
   const removed = await DatabaseWrites.systemStatuses.deleteMany({
