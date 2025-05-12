@@ -581,19 +581,16 @@ async function tryCreateInstance(
       };
     }
 
-    const mergedEnv = persistence.reduce((p, c) => {
-      try {
-        if (c.ParameterName === 'environment') {
-          const value = JSON.parse(JSON.parse(c.Value));
-          return { ...p, ...value };
-        } else {
-          return p;
+    const mergedEnv: Environment = {};
+    for (const c of persistence) {
+      if (c.ParameterName === 'environment') {
+        try {
+          Object.assign(mergedEnv, mergedEnv, JSON.parse(JSON.parse(c.Value)));
+        } catch (e) {
+          log(`${productId}: ${e instanceof Error ? e.message : String(e)}`);
         }
-      } catch (e) {
-        log(`${productId}: ${e instanceof Error ? e.message : String(e)}`);
-        return p;
       }
-    }, {} as Environment);
+    }
 
     // Pass empty string if key is not defined. empty string is at index 0 of WorkflowTypeString
     const typeIndex = WorkflowTypeString.indexOf(mergedEnv[ENVKeys.WORKFLOW_TYPE] ?? '');
