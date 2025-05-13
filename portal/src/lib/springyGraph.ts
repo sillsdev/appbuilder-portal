@@ -32,6 +32,8 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 // ISSUE: #1105 Using a physics simulation for our graph is overkill and slow. Redoing this would be optimal.
+
+/* eslint-disable @typescript-eslint/no-namespace */
 export namespace Springy {
   export type NodeData = {
     mass?: number;
@@ -46,7 +48,7 @@ export namespace Springy {
 
   export type EdgeData = {
     length?: number;
-    type?: any;
+    type?: unknown;
   };
 
   export type Edge = {
@@ -58,30 +60,30 @@ export namespace Springy {
   };
 
   export class Graph {
-    nodeSet: Record<string, Node>;
+    nodeSet: Map<string, Node>;
     nodes: Node[];
     edges: Edge[];
-    adjacency: Record<string, Record<string, Edge[]>>;
+    adjacency: Map<string, Map<string, Edge[]>>;
 
     nextEdgeId: number;
-    eventListeners: any[];
+    eventListeners: ((g: Graph) => void)[];
 
     constructor() {
-      this.nodeSet = {};
+      this.nodeSet = new Map();
       this.nodes = [];
       this.edges = [];
-      this.adjacency = {};
+      this.adjacency = new Map();
 
       this.nextEdgeId = 0;
       this.eventListeners = [];
     }
 
     addNode(node: Node): Node {
-      if (!(node.id in this.nodeSet)) {
+      if (!this.nodeSet.has(node.id)) {
         this.nodes.push(node);
       }
 
-      this.nodeSet[node.id] = node;
+      this.nodeSet.set(node.id, node);
 
       this.notify();
       return node;
@@ -98,7 +100,10 @@ export namespace Springy {
     }
 
     addNodeData(id: string, data: NodeData) {
-      this.nodeSet[id].data = data;
+      const node = this.nodeSet.get(id);
+      if (node) {
+        node.data = data;
+      }
     }
 
     addEdge(edge: Edge): Edge {
@@ -113,22 +118,25 @@ export namespace Springy {
         this.edges.push(edge);
       }
 
-      if (!(edge.source.id in this.adjacency)) {
-        this.adjacency[edge.source.id] = {};
+      if (!this.adjacency.has(edge.source.id)) {
+        this.adjacency.set(edge.source.id, new Map());
       }
-      if (!(edge.target.id in this.adjacency[edge.source.id])) {
-        this.adjacency[edge.source.id][edge.target.id] = [];
+      if (!this.adjacency.get(edge.source.id)?.has(edge.target.id)) {
+        this.adjacency.get(edge.source.id)?.set(edge.target.id, []);
       }
 
       exists = false;
-      this.adjacency[edge.source.id][edge.target.id].forEach((e) => {
-        if (edge.id === e.id) {
-          exists = true;
-        }
-      });
+      this.adjacency
+        .get(edge.source.id)
+        ?.get(edge.target.id)
+        ?.forEach((e) => {
+          if (edge.id === e.id) {
+            exists = true;
+          }
+        });
 
       if (!exists) {
-        this.adjacency[edge.source.id][edge.target.id].push(edge);
+        this.adjacency.get(edge.source.id)?.get(edge.target.id)?.push(edge);
       }
 
       this.notify();
@@ -136,14 +144,14 @@ export namespace Springy {
     }
 
     addEdges(args: { source: string; target: string; data?: EdgeData }[]) {
-      for (var i = 0; i < args.length; i++) {
+      for (let i = 0; i < args.length; i++) {
         const e = args[i];
-        const node1 = this.nodeSet[e.source];
-        if (node1 == undefined) {
+        const node1 = this.nodeSet.get(e.source);
+        if (!node1) {
           throw new TypeError('invalid node name: "' + e.source + '" (source)');
         }
-        var node2 = this.nodeSet[e.target];
-        if (node2 == undefined) {
+        const node2 = this.nodeSet.get(e.target);
+        if (!node2) {
           throw new TypeError('invalid node name: "' + e.target + '" (target)');
         }
 
@@ -200,16 +208,13 @@ export namespace Springy {
 
     /** find the edges from node1 to node2 */
     getEdges(node1: Node, node2: Node): Edge[] {
-      if (node1.id in this.adjacency && node2.id in this.adjacency[node1.id]) {
-        return this.adjacency[node1.id][node2.id];
-      }
-      return [];
+      return this.adjacency.get(node1.id)?.get(node2.id) ?? [];
     }
 
     /** remove a node and its associated edges from the graph */
     removeNode(node: Node) {
-      if (node.id in this.nodeSet) {
-        delete this.nodeSet[node.id];
+      if (this.nodeSet.has(node.id)) {
+        this.nodeSet.delete(node.id);
       }
 
       for (let i = this.nodes.length - 1; i >= 0; i--) {
@@ -241,42 +246,44 @@ export namespace Springy {
         }
       }
 
-      for (let x in this.adjacency) {
-        for (let y in this.adjacency[x]) {
-          const edges = this.adjacency[x][y];
-
+      this.adjacency.entries().forEach(([x, values]) => {
+        values.keys().forEach((y) => {
+          const edges = this.adjacency.get(x)!.get(y)!;
           for (let j = edges.length - 1; j >= 0; j--) {
-            if (this.adjacency[x][y][j].id === edge.id) {
-              this.adjacency[x][y].splice(j, 1);
+            if (edges[j].id === edge.id) {
+              edges.splice(j, 1);
             }
           }
 
-          // Clean up empty edge arrays
-          if (this.adjacency[x][y].length == 0) {
-            delete this.adjacency[x][y];
+          if (!this.adjacency.get(x)?.get(y)?.length) {
+            this.adjacency.get(x)?.delete(y);
           }
+        });
+        if (!this.adjacency.get(x)?.size) {
+          this.adjacency.delete(x);
         }
-
-        // Clean up empty objects
-        if (isEmpty(this.adjacency[x])) {
-          delete this.adjacency[x];
-        }
-      }
+      });
 
       this.notify();
     }
 
     /** Merge a list of nodes and edges into the current graph. eg. */
     merge(data: { nodes: Node[]; edges: Edge[] }) {
-      const nodes: Record<string, Node> = {};
+      const nodes: Map<string, Node> = new Map();
       data.nodes.forEach((n) => {
-        nodes[n.id] = this.addNode({ id: n.id, data: n.data });
+        nodes.set(n.id, this.addNode({ id: n.id, data: n.data }));
       });
 
       data.edges.forEach((e) => {
-        const from = nodes[e.source.id];
-        const to = nodes[e.target.id];
-        const edge = this.addEdge({
+        const from = nodes.get(e.source.id);
+        const to = nodes.get(e.target.id);
+        if (!from) {
+          throw new TypeError('invalid node name: "' + e.source.id + '" (source)');
+        }
+        if (!to) {
+          throw new TypeError('invalid node name: "' + e.target.id + '" (target)');
+        }
+        this.addEdge({
           id: this.nextEdgeId++,
           source: from,
           target: to,
@@ -401,8 +408,8 @@ export namespace Springy {
       distanceToPoint(point: Point) {
         // hardcore vector arithmetic.. ohh yeah!
         // .. see http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment/865080#865080
-        var n = this.point2.p.subtract(this.point1.p).normalise().normal();
-        var ac = point.p.subtract(this.point1.p);
+        const n = this.point2.p.subtract(this.point1.p).normalise().normal();
+        const ac = point.p.subtract(this.point1.p);
         return Math.abs(ac.x * n.x + ac.y * n.y);
       }
     }
@@ -413,84 +420,87 @@ export namespace Springy {
     _started: boolean = false;
     _stop: boolean = false;
     /** keep track of points associated with nodes */
-    nodePoints: Record<string, Physics.Point>;
+    nodePoints: Map<string, Physics.Point>;
     /** keep track of springs associated with edges */
-    edgeSprings: Record<number, Physics.Spring>;
+    edgeSprings: Map<number, Physics.Spring>;
     /** spring stiffness constant */
     stiffness: number;
 
     constructor(graph: Graph, stiffness: number) {
       this.graph = graph;
 
-      this.nodePoints = {};
-      this.edgeSprings = {};
+      this.nodePoints = new Map();
+      this.edgeSprings = new Map();
       this.stiffness = stiffness;
     }
 
     point(node: Node) {
-      if (!(node.id in this.nodePoints)) {
-        var mass = node.data?.mass !== undefined ? node.data.mass : 1.0;
-        this.nodePoints[node.id] = new Physics.Point(
-          node.data?.static ? node.data.static : Physics.Vector.random(),
-          mass,
-          node.data?.static !== undefined
+      if (!this.nodePoints.has(node.id)) {
+        const mass = node.data?.mass !== undefined ? node.data.mass : 1.0;
+        this.nodePoints.set(
+          node.id,
+          new Physics.Point(
+            node.data?.static ? node.data.static : Physics.Vector.random(),
+            mass,
+            node.data?.static !== undefined
+          )
         );
       }
 
-      return this.nodePoints[node.id];
+      return this.nodePoints.get(node.id)!;
     }
 
     spring(edge: Edge) {
-      if (!(edge.id in this.edgeSprings)) {
+      if (!this.edgeSprings.has(edge.id)) {
         const length = edge.data?.length !== undefined ? edge.data.length : 1.0;
 
         let existingSpring: Physics.Spring | undefined;
 
         const from = this.graph.getEdges(edge.source, edge.target);
         from.forEach((e) => {
-          if (!existingSpring && e.id in this.edgeSprings) {
-            existingSpring = this.edgeSprings[e.id];
+          if (!existingSpring && this.edgeSprings.has(edge.id)) {
+            existingSpring = this.edgeSprings.get(e.id)!;
             return new Physics.Spring(existingSpring.point1, existingSpring.point2, 0.0, 0.0);
           }
         });
 
         const to = this.graph.getEdges(edge.target, edge.source);
         to.forEach((e) => {
-          if (!existingSpring && e.id in this.edgeSprings) {
-            existingSpring = this.edgeSprings[e.id];
+          if (!existingSpring && this.edgeSprings.has(e.id)) {
+            existingSpring = this.edgeSprings.get(e.id)!;
             return new Physics.Spring(existingSpring.point2, existingSpring.point1, 0.0, 0.0);
           }
         });
 
-        this.edgeSprings[edge.id] = new Physics.Spring(
-          this.point(edge.source),
-          this.point(edge.target),
-          length,
-          this.stiffness
+        this.edgeSprings.set(
+          edge.id,
+          new Physics.Spring(
+            this.point(edge.source),
+            this.point(edge.target),
+            length,
+            this.stiffness
+          )
         );
       }
 
-      return this.edgeSprings[edge.id];
+      return this.edgeSprings.get(edge.id)!;
     }
 
     eachNode(callback: (node: Node, point: Physics.Point) => void) {
-      var t = this;
-      this.graph.nodes.forEach(function (n) {
-        callback.call(t, n, t.point(n));
+      this.graph.nodes.forEach((n) => {
+        callback.call(this, n, this.point(n));
       });
     }
 
     eachEdge(callback: (edge: Edge, spring: Physics.Spring) => void) {
-      var t = this;
-      this.graph.edges.forEach(function (e) {
-        callback.call(t, e, t.spring(e));
+      this.graph.edges.forEach((e) => {
+        callback.call(this, e, this.spring(e));
       });
     }
 
     eachSpring(callback: (spring: Physics.Spring) => void) {
-      var t = this;
-      this.graph.edges.forEach(function (e) {
-        callback.call(t, t.spring(e));
+      this.graph.edges.forEach((e) => {
+        callback.call(this, this.spring(e));
       });
     }
 
@@ -505,8 +515,6 @@ export namespace Springy {
       tick?: () => void,
       stopCondition?: () => boolean
     ) {
-      var t = this;
-
       if (this._started) return;
       this._started = true;
       this._stop = false;
@@ -515,6 +523,8 @@ export namespace Springy {
         onRenderStart();
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const t = this;
       requestAnimationFrame(function step() {
         if (tick) {
           tick();
@@ -571,9 +581,9 @@ export namespace Springy {
       this.eachNode((n1, point1) => {
         this.eachNode((n2, point2) => {
           if (point1 !== point2) {
-            var d = point1.p.subtract(point2.p);
-            var distance = d.magnitude() + 0.1; // avoid massive forces at small distances (and divide by zero)
-            var direction = d.normalise();
+            const d = point1.p.subtract(point2.p);
+            const distance = d.magnitude() + 0.1; // avoid massive forces at small distances (and divide by zero)
+            const direction = d.normalise();
 
             // apply force to each end point
             point1.applyForce(direction.multiply(this.repulsion).divide(distance * distance * 0.5));
@@ -587,9 +597,9 @@ export namespace Springy {
 
     applyHookesLaw() {
       this.eachSpring((spring) => {
-        var d = spring.point2.p.subtract(spring.point1.p); // the direction of the spring
-        var displacement = spring.length - d.magnitude();
-        var direction = d.normalise();
+        const d = spring.point2.p.subtract(spring.point1.p); // the direction of the spring
+        const displacement = spring.length - d.magnitude();
+        const direction = d.normalise();
 
         // apply force to each end point
         spring.point1.applyForce(direction.multiply(spring.k * displacement * -0.5));
@@ -599,7 +609,7 @@ export namespace Springy {
 
     attractToCentre() {
       this.eachNode((node, point) => {
-        var direction = point.p.multiply(-1.0);
+        const direction = point.p.multiply(-1.0);
         point.applyForce(direction.multiply(this.repulsion / 50.0));
       });
     }
@@ -622,9 +632,9 @@ export namespace Springy {
 
     // Calculate the total kinetic energy of the system
     totalEnergy() {
-      var energy = 0.0;
+      let energy = 0.0;
       this.eachNode(function (node, point) {
-        var speed = point.v.magnitude();
+        const speed = point.v.magnitude();
         energy += 0.5 * point.m * speed * speed;
       });
 
@@ -635,13 +645,7 @@ export namespace Springy {
      * Start simulation if it's not running already.
      * In case it's running then the call is ignored, and none of the callbacks passed is ever executed.
      */
-    start(
-      render?: () => void,
-      onRenderStop?: () => void,
-      onRenderStart?: () => void,
-      tick?: () => void,
-      stopCondition?: () => boolean
-    ) {
+    start(render?: () => void, onRenderStop?: () => void, onRenderStart?: () => void) {
       super.start(
         render,
         onRenderStop,
@@ -663,11 +667,10 @@ export namespace Springy {
 
     // Find the nearest point to a particular position
     nearest(pos: Physics.Vector) {
-      var min: { node: Node; point: Physics.Point; distance: number } | undefined;
-      var t = this;
-      this.graph.nodes.forEach(function (n) {
-        var point = t.point(n);
-        var distance = point.p.subtract(pos).magnitude();
+      let min: { node: Node; point: Physics.Point; distance: number } | undefined;
+      this.graph.nodes.forEach((n) => {
+        const point = this.point(n);
+        const distance = point.p.subtract(pos).magnitude();
 
         if (min?.distance === undefined || distance < min.distance) {
           min = { node: n, point: point, distance: distance };
@@ -678,8 +681,8 @@ export namespace Springy {
     }
 
     getBoundingBox() {
-      var bottomleft = new Physics.Vector(-2, -2);
-      var topright = new Physics.Vector(2, 2);
+      const bottomleft = new Physics.Vector(-2, -2);
+      const topright = new Physics.Vector(2, 2);
 
       this.eachNode(function (n, point) {
         if (point.p.x < bottomleft.x) {
@@ -696,7 +699,7 @@ export namespace Springy {
         }
       });
 
-      var padding = topright.subtract(bottomleft).multiply(0.07); // ~5% padding
+      const padding = topright.subtract(bottomleft).multiply(0.07); // ~5% padding
 
       return { bottomleft: bottomleft.subtract(padding), topright: topright.add(padding) };
     }
@@ -734,7 +737,7 @@ export namespace Springy {
       this.onRenderStart = onRenderStart;
       this.onRenderFrame = onRenderFrame;
 
-      this.layout.graph.subscribe((e) => {
+      this.layout.graph.subscribe(() => {
         this.graphChanged();
       });
     }
@@ -750,28 +753,25 @@ export namespace Springy {
      * either because it ended or because stop() was called.
      */
     start(done?: () => void) {
-      var t = this;
       this.layout.start(
-        function render() {
-          t.clear();
+        () => {
+          this.clear();
 
-          t.layout.eachEdge(function (edge, spring) {
-            t.drawEdge(edge, spring.point1.p, spring.point2.p);
+          this.layout.eachEdge((edge, spring) => {
+            this.drawEdge(edge, spring.point1.p, spring.point2.p);
           });
 
-          t.layout.eachNode(function (node, point) {
-            t.drawNode(node, point.p);
+          this.layout.eachNode((node, point) => {
+            this.drawNode(node, point.p);
           });
 
-          if (t.onRenderFrame !== undefined) {
-            t.onRenderFrame();
-          }
+          this.onRenderFrame?.();
         },
         done
           ? () => {
-              this.onRenderStop();
-              done();
-            }
+            this.onRenderStop();
+            done();
+          }
           : this.onRenderStop,
         this.onRenderStart
       );
@@ -784,14 +784,5 @@ export namespace Springy {
     graphChanged() {
       this.start();
     }
-  }
-
-  function isEmpty(obj: any) {
-    for (var k in obj) {
-      if (obj.hasOwnProperty(k)) {
-        return false;
-      }
-    }
-    return true;
   }
 }
