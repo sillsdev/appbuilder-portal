@@ -179,6 +179,19 @@ export const actions: Actions = {
     );
 
     if (!errors.length) {
+      const existingProjects = (
+        await prisma.projects.findMany({
+          where: {
+            Name: {
+              in: importJSON.Projects.map((p) => p.Name)
+            },
+            OrganizationId: organizationId
+          },
+          select: {
+            Name: true
+          }
+        })
+      ).map((p) => p.Name);
       const imp = await DatabaseWrites.projectImports.create({
         data: {
           ImportData: JSON.stringify(form.data.json),
@@ -192,7 +205,7 @@ export const actions: Actions = {
         }
       });
       const projects = await DatabaseWrites.projects.createMany(
-        importJSON.Projects.map((pj) => {
+        importJSON.Projects.filter((pj) => !existingProjects.includes(pj.Name)).map((pj) => {
           return {
             OrganizationId: organizationId,
             Name: pj.Name,

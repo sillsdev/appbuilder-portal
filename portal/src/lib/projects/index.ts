@@ -78,7 +78,7 @@ export const projectSearchSchema = v.object({
 });
 
 const projectSchemaBase = v.object({
-  Name: v.pipe(v.string(), v.minLength(1)),
+  Name: v.pipe(v.string(), v.minLength(1), v.trim()),
   Description: v.optional(v.string()),
   Language: v.pipe(
     v.string(),
