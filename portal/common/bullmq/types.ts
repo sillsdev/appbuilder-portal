@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+import { RepeatOptions } from 'bullmq';
 import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-api/types.js';
 import { RoleId } from '../public/prisma.js';
 
@@ -18,16 +19,9 @@ export const Retry5e5: RetryOptions = {
   }
 };
 
-interface RepeatOptions {
-  readonly repeat: {
-    readonly pattern: string;
-  };
-}
 /** Repeat a job every minute */
 export const RepeatEveryMinute: RepeatOptions = {
-  repeat: {
-    pattern: '*/1 * * * *' // every minute
-  }
+  pattern: '*/1 * * * *' // every minute
 };
 
 export enum QueueName {
