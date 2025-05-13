@@ -27,7 +27,7 @@ export default defineConfig({
       project: './project.inlang',
       outdir: './src/lib/paraglide',
       // As best as I can tell, `['url']` corresponds the closest to what we were doing before Paraglide changed the API
-      strategy: ['url'] 
+      strategy: ['url']
     }),
     (() => {
       let executingProcess: ChildProcessWithoutNullStreams;
@@ -51,7 +51,9 @@ export default defineConfig({
                 sys,
                 createEmitAndSemanticDiagnosticsBuilderProgram,
                 () => {},
-                async () => {
+                async (arg) => {
+                  // First event (code 6031) is compilation started. Ignore it
+                  if (arg.code === 6031) return;
                   if (executingProcess) {
                     if (running) return;
                     running = true;
