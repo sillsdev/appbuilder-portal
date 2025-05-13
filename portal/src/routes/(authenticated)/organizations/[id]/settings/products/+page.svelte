@@ -1,8 +1,8 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
+  import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -39,19 +39,14 @@
     }}
   >
     <input type="hidden" name="orgId" value={data.organization.Id} />
-    <InputWithMessage
+    <PublicPrivateToggle
       title={{ key: 'org_makePrivateTitle', classes: 'font-bold' }}
       message={{ key: 'org_makePrivateDescription' }}
       className="pb-2"
-    >
-      <input
-        name="publicByDefault"
-        class="toggle toggle-accent"
-        type="checkbox"
-        checked={data.organization.PublicByDefault}
-        onchange={() => () => trySubmit('togglePublic')}
-      />
-    </InputWithMessage>
+      formName="publicByDefault"
+      checked={!!data.organization.PublicByDefault}
+      onchange={() => trySubmit('togglePublic')}
+    />
   </form>
   <MultiselectBox header={m.org_productSelectTitle()}>
     {#each data.allProductDefs.toSorted((a, b) => byName(a, b, getLocale())) as productDef}
@@ -76,7 +71,7 @@
         <MultiselectBoxElement
           title={productDef.Name ?? ''}
           description={productDef?.Description ?? ''}
-          bind:checked={productDef.enabled}
+          checked={productDef.enabled}
           checkProps={{
             name: 'enabled',
             onchange: () => trySubmit(`def-${productDef.Id}`)
