@@ -219,6 +219,15 @@ export async function notifySuperAdminsOfOfflineSystems(
   );
 }
 
+export async function notifySuperAdminsGeneric(
+  job: Job<BullMQ.Email.NotifySuperAdminsGeneric>
+): Promise<unknown> {
+  return await notifySuperAdmins(
+    translate('en', 'notifications.subject.' + job.data.messageKey, job.data.messageProperties),
+    translate('en', 'notifications.body.' + job.data.messageKey, job.data.messageProperties)
+  );
+}
+
 export async function sendNotificationToUser(
   job: Job<BullMQ.Email.SendNotificationToUser>
 ): Promise<unknown> {
