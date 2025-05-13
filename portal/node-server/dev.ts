@@ -16,6 +16,8 @@ createBullBoard({
   serverAdapter
 });
 app.use(serverAdapter.getRouter());
+
+// Dev server uses port 6100 becuase 6173 is used by vite
 app.listen(6100, () => console.log('Dev server started'));
 
 new Workers.Builds();
