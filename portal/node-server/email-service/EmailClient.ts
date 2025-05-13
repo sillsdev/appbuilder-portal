@@ -1,4 +1,11 @@
+import { prisma } from 'sil.appbuilder.portal.common';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import SparkPost from 'sparkpost';
+import {
+  addProperties,
+  NotificationTemplate,
+  NotificationWithLinkTemplate
+} from './EmailTemplates.js';
 
 if (!process.env.VITE_SPARKPOST_API_KEY) {
   /* eslint-disable @typescript-eslint/ban-ts-comment */
@@ -33,5 +40,44 @@ export async function sendEmail(
       recipients: to.map((email) => ({ address: email }))
     }),
     to: to.map((email) => email.email)
+  };
+}
+
+export async function notifySuperAdmins(subject: string, message: string): Promise<unknown>;
+export async function notifySuperAdmins(
+  subject: string,
+  message: string,
+  link: string,
+  linkText: string
+): Promise<unknown>;
+export async function notifySuperAdmins(
+  subject: string,
+  message: string,
+  link?: string,
+  linkText?: string
+): Promise<unknown> {
+  const superAdmins = await prisma.users.findMany({
+    where: {
+      UserRoles: {
+        some: {
+          RoleId: RoleId.SuperAdmin
+        }
+      }
+    }
+  });
+  return {
+    email: await sendEmail(
+      superAdmins.map((admin) => ({ email: admin.Email, name: admin.Name })),
+      subject,
+      link
+        ? addProperties(NotificationWithLinkTemplate, {
+            Message: message,
+            LinkUrl: link,
+            UrlText: linkText
+          })
+        : addProperties(NotificationTemplate, {
+            Message: message
+          })
+    )
   };
 }

@@ -2,7 +2,7 @@ import { Job } from 'bullmq';
 import { BullMQ, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { JobSchedulerId } from '../../common/bullmq/types.js';
-import { sendEmail } from '../email-service/EmailClient.js';
+import { notifySuperAdmins, sendEmail } from '../email-service/EmailClient.js';
 import {
   addProperties,
   NotificationTemplate,
@@ -240,45 +240,6 @@ export async function sendNotificationToUser(
       UrlText: translate(user.Locale, 'notifications.body.log')
     })
   );
-}
-
-export async function notifySuperAdmins(subject: string, message: string): Promise<unknown>;
-export async function notifySuperAdmins(
-  subject: string,
-  message: string,
-  link: string,
-  linkText: string
-): Promise<unknown>;
-export async function notifySuperAdmins(
-  subject: string,
-  message: string,
-  link?: string,
-  linkText?: string
-): Promise<unknown> {
-  const superAdmins = await prisma.users.findMany({
-    where: {
-      UserRoles: {
-        some: {
-          RoleId: RoleId.SuperAdmin
-        }
-      }
-    }
-  });
-  return {
-    email: await sendEmail(
-      superAdmins.map((admin) => ({ email: admin.Email, name: admin.Name })),
-      subject,
-      link
-        ? addProperties(NotificationWithLinkTemplate, {
-            Message: message,
-            LinkUrl: link,
-            UrlText: linkText
-          })
-        : addProperties(NotificationTemplate, {
-            Message: message
-          })
-    )
-  };
 }
 
 export async function reportProjectImport(
