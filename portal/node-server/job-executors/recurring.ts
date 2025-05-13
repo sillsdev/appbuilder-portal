@@ -122,7 +122,7 @@ export async function checkSystemStatuses(
     });
     const minutesSinceHalfHour = Math.floor((Date.now() / 1000 / 60) % 30);
     if (!(await Queues.Emails.getJobScheduler(JobSchedulerId.SystemStatusEmail))) {
-      Queues.Emails.upsertJobScheduler(
+      await Queues.Emails.upsertJobScheduler(
         JobSchedulerId.SystemStatusEmail,
         {
           // Every 30 minutes from now

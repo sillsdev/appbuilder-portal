@@ -18,7 +18,7 @@ export const actions = {
   async request(event) {
     const form = await superValidate(event.request, valibot(requestSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    Queues.Emails.add('Email SuperAdmins about new org ' + form.data.organizationName, {
+    await Queues.Emails.add('Email SuperAdmins about new org ' + form.data.organizationName, {
       type: BullMQ.JobType.Email_NotifySuperAdminsOfNewOrganizationRequest,
       email: form.data.email,
       organizationName: form.data.organizationName,
