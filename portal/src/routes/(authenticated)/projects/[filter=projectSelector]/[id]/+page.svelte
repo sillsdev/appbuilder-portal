@@ -272,7 +272,11 @@
           </div>
         </div>
         <div class="flex flex-row justify-end gap-2">
-          <button class="btn btn-secondary" type="reset" onclick={() => productSelectModal?.close()}>
+          <button
+            class="btn btn-secondary"
+            type="reset"
+            onclick={() => productSelectModal?.close()}
+          >
             {m.common_cancel()}
           </button>
           <label
@@ -311,22 +315,20 @@
         <button>{m.common_close()}</button>
       </form>
     </dialog>
-    {#if page.params.filter === 'own'}
-      <div class="flex flex-row flex-wrap gap-1 mx-4 {mobileSizing}">
-        <a
-          class="btn btn-outline {mobileSizing}"
-          href={localizeHref(`/projects/import/${$pageForm.organizationId}`)}
-        >
-          {m.project_importProjects()}
-        </a>
-        <a
-          class="btn btn-outline {mobileSizing}"
-          href={localizeHref(`/projects/new/${$pageForm.organizationId}`)}
-        >
-          {m.sidebar_addProject()}
-        </a>
-      </div>
-    {/if}
+    <div class="flex flex-row flex-wrap gap-1 mx-4 {mobileSizing}">
+      <a
+        class="btn btn-outline {mobileSizing}"
+        href={localizeHref(`/projects/import/${$pageForm.organizationId}`)}
+      >
+        {m.project_importProjects()}
+      </a>
+      <a
+        class="btn btn-outline {mobileSizing}"
+        href={localizeHref(`/projects/new/${$pageForm.organizationId}`)}
+      >
+        {m.sidebar_addProject()}
+      </a>
+    </div>
   </div>
   {#if projects.length > 0}
     {@const locale = getLocale()}

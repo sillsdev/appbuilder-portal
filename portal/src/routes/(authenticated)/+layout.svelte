@@ -3,6 +3,7 @@
   import { base } from '$app/paths';
   import { page } from '$app/state';
   import Dropdown from '$lib/components/Dropdown.svelte';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import LocaleSelector from '$lib/components/LocaleSelector.svelte';
   import { HamburgerIcon } from '$lib/icons';
   import { createl10nMapFromEntries, l10nMap } from '$lib/locales.svelte';
@@ -194,6 +195,7 @@
                 target="_blank"
               >
                 {m.sidebar_jobAdministration()}
+                <IconContainer icon="mdi:open-in-new" width="18" />
               </a>
             </li>
             <li>

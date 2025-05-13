@@ -16,6 +16,7 @@
       messageParms?: any;
       value?: string | null;
       snippet?: Snippet<[T | undefined]>;
+      faint?: boolean;
     }[];
     editable?: boolean;
     editTitle?: string;
@@ -39,7 +40,7 @@
       </button>
     {/if}
     {#each fields as field}
-      <p style="padding-left: 1rem; text-indent: -1rem">
+      <p style="padding-left: 1rem; text-indent: -1rem" class:opacity-40={field.faint}>
         <b>{m[field.key](field.messageParms)}:</b>
         {#if field.snippet}
           {@render field.snippet(data)}

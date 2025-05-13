@@ -176,3 +176,8 @@ a.link {
 ._toastBar {
   --toastBarBackground: #ffffffb0;
 }
+
+.toggle {
+  --size: 2rem;
+  --radius-selector: calc(infinity * 1px);
+}

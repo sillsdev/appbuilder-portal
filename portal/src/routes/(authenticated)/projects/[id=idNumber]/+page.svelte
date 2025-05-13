@@ -638,13 +638,19 @@
                 name="author"
                 bind:value={$authorForm.author}
               >
-                {#each data.authorsToAdd
-                  .filter((author) => !data.project?.Authors.some((au) => au.Users.Id === author.Id))
-                  .sort((a, b) => byName(a, b, getLocale())) as author}
-                  <option value={author.Id}>
-                    {author.Name}
+                {#if data.authorsToAdd.length}
+                  {#each data.authorsToAdd
+                    .filter((author) => !data.project?.Authors.some((au) => au.Users.Id === author.Id))
+                    .sort((a, b) => byName(a, b, getLocale())) as author}
+                    <option value={author.Id}>
+                      {author.Name}
+                    </option>
+                  {/each}
+                {:else}
+                  <option disabled value="">
+                    {m.project_side_authors_empty({ group: data.project.Group.Name! })}
                   </option>
-                {/each}
+                {/if}
               </select>
               <button type="submit" class="btn btn-primary">
                 {m.project_side_authors_form_submit()}

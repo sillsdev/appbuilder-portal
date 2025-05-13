@@ -376,6 +376,7 @@
   "project_side_authors_form_user": "user",
   "project_side_authors_form_userError": "User cannot be empty",
   "project_side_authors_form_submit": "Add Author",
+  "project_side_authors_empty": "No authors in group {group}",
   "project_side_reviewers_title": "Reviewers",
   "project_side_reviewers_add": "add reviewer",
   "project_side_reviewers_close": "close",

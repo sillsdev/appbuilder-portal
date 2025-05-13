@@ -31,12 +31,18 @@
           value: organization.WebsiteUrl
         },
         {
+          key: 'admin_settings_organizations_useDefaultBuildEngine',
+          value: '' + organization.UseDefaultBuildEngine
+        },
+        {
           key: 'admin_settings_organizations_buildEngineURL',
-          value: organization.BuildEngineUrl
+          value: organization.BuildEngineUrl,
+          faint: !!organization.UseDefaultBuildEngine
         },
         {
           key: 'admin_settings_organizations_accessToken',
-          value: organization.BuildEngineApiAccessToken
+          value: organization.BuildEngineApiAccessToken,
+          faint: !!organization.UseDefaultBuildEngine
         }
       ]}
     />
