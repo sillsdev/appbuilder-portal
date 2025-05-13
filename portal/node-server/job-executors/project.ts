@@ -7,7 +7,12 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
       Id: job.data.projectId
     },
     select: {
-      OrganizationId: true,
+      Organization: {
+        select: {
+          Id: true,
+          Name: true
+        }
+      },
       ApplicationType: {
         select: {
           Name: true
@@ -17,9 +22,23 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
       Language: true
     }
   });
+  if (!projectData) {
+    await Queues.EmailTasks.add(
+      `Notify SuperAdmins of Failure to Find Project #${job.data.projectId}`,
+      {
+        type: BullMQ.JobType.Email_NotifySuperAdminsGeneric,
+        messageKey: 'projectRecordNotFound',
+        messageProperties: {
+          projectId: '' + job.data.projectId
+        }
+      }
+    );
+
+    return { message: 'Project Not Found' };
+  }
   job.updateProgress(25);
   const response = await BuildEngine.Requests.createProject(
-    { type: 'query', organizationId: projectData.OrganizationId },
+    { type: 'query', organizationId: projectData.Organization.Id },
     {
       app_id: projectData.ApplicationType.Name,
       project_name: projectData.Name,
@@ -30,6 +49,21 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
   job.updateProgress(50);
   if (response.responseType === 'error') {
     job.log(response.message);
+    // if final retry
+    if (job.attemptsMade >= job.opts.attempts) {
+      await Queues.EmailTasks.add(
+        `Notify Admins of Project #${job.data.projectId} Creation Failure`,
+        {
+          type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+          projectId: job.data.projectId,
+          messageKey: 'projectFailedBuildEngine',
+          messageProperties: {
+            projectName: projectData.Name,
+            orgName: projectData.Organization.Name
+          }
+        }
+      );
+    }
     throw new Error(`Creation of Project #${job.data.projectId} failed!`);
   } else {
     await DatabaseWrites.projects.update(job.data.projectId, {
@@ -45,7 +79,7 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
       {
         type: BullMQ.JobType.Project_Check,
         workflowProjectId: response.id,
-        organizationId: projectData.OrganizationId,
+        organizationId: projectData.Organization.Id,
         projectId: job.data.projectId
       },
       BullMQ.RepeatEveryMinute
@@ -64,16 +98,69 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
   job.updateProgress(50);
   if (response.responseType === 'error') {
     job.log(response.message);
+    /*
+    // BuildEngineProjectService.CreateBuildEngineProjectAsync
+    // S2 implementation continues indefinitely, so no real way to implement this
+    if (???) {
+      await Queues.EmailTasks.add(``, {
+        type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+        projectId: job.data.projectId,
+        messageKey: 'projectFailedUnableToCreate',
+        messageProperties: {
+          projectName: project.Name
+        }
+      });
+    }*/
     throw new Error(response.message);
   } else {
     if (response.status === 'completed') {
       await Queues.RemotePolling.removeRepeatableByKey(job.repeatJobKey);
-      if (response.error) {
-        job.log(response.error);
+      const project = await prisma.projects.findUnique({
+        where: { Id: job.data.projectId },
+        select: {
+          Name: true,
+          WorkflowProjectId: true,
+          OwnerId: true
+        }
+      });
+      if (response.result === 'FAILURE') {
+        // BuildEngineProjectService.ProjectCreationFailedAsync
+        const buildEngineUrl =
+          (await BuildEngine.Requests.getURLandToken(job.data.organizationId)).url +
+          '/project-admin/view?id=' +
+          project.WorkflowProjectId;
+        await Queues.EmailTasks.add(
+          `Notify Admins of Project #${job.data.projectId} Creation Failure`,
+          {
+            type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+            projectId: job.data.projectId,
+            // Admin or Owner suffix is added by sender
+            messageKey: 'projectCreationFailed',
+            messageProperties: {
+              projectName: project.Name,
+              projectStatus: response.status,
+              projectError: response.error,
+              buildEngineUrl: buildEngineUrl
+            }
+          }
+        );
       } else {
+        // BuildEngineProjectService.ProjectCompletedAsync
         await DatabaseWrites.projects.update(job.data.projectId, {
           WorkflowProjectUrl: response.url
         });
+
+        await Queues.EmailTasks.add(
+          `Notify User of Successful Creation of Project #${job.data.projectId}`,
+          {
+            type: BullMQ.JobType.Email_SendNotificationToUser,
+            userId: project.OwnerId,
+            messageKey: 'projectCreatedSuccessfully',
+            messageProperties: {
+              projectName: project.Name
+            }
+          }
+        );
 
         const projectImport = (
           await prisma.projects.findUnique({
@@ -157,7 +244,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
     }))
   );
   job.updateProgress(75);
-  Queues.EmailTasks.add(`Notify user about import of Project #${project.Id}`, {
+  await Queues.EmailTasks.add(`Notify user about import of Project #${project.Id}`, {
     type: BullMQ.JobType.Email_ProjectImportReport,
     importId: job.data.importId
   });
