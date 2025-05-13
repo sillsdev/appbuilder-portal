@@ -1,8 +1,8 @@
 <script lang="ts">
   import { page } from '$app/state';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
-  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName, byString } from '$lib/utils/sorting';
@@ -77,21 +77,19 @@
             bind:value={$form.Description}
           ></textarea>
         </LabeledFormInput>
-        <InputWithMessage
-          className="md:max-w-xs"
+        <PublicPrivateToggle
           title={{ key: 'project_public' }}
           message={{ key: 'project_visibilityDescription' }}
-        >
-          <input
-            type="checkbox"
-            name="IsPublic"
-            class="toggle"
-            bind:checked={$form.IsPublic}
-          />
-        </InputWithMessage>
+          className="py-2 md:max-w-xs"
+          formName="IsPublic"
+          bind:checked={$form.IsPublic}
+        />
       </div>
       <div class="flex flex-row flex-wrap place-content-center gap-4 p-4 w-full">
-        <a href={localizeHref(`/projects/own/${page.params.id}`)} class="btn btn-secondary w-full max-w-xs">
+        <a
+          href={localizeHref(`/projects/own/${page.params.id}`)}
+          class="btn btn-secondary w-full max-w-xs"
+        >
           {m.common_cancel()}
         </a>
         <button

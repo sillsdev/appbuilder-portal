@@ -4,6 +4,7 @@
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
+  import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
@@ -472,18 +473,14 @@
             update({ reset: false })}
       >
         <div class="space-y-2">
-          <InputWithMessage
+          <PublicPrivateToggle
             title={{ key: 'project_settings_visibility_title' }}
             message={{ key: 'project_settings_visibility_description' }}
-          >
-            <input
-              type="checkbox"
-              name="isPublic"
-              class="toggle toggle-accent ml-4"
-              bind:checked={data.project.IsPublic}
-              onclick={submitSimpleSettingsForm}
-            />
-          </InputWithMessage>
+            formName="isPublic"
+            bind:checked={data.project.IsPublic!}
+            onchange={submitSimpleSettingsForm}
+          />
+
           <InputWithMessage
             title={{ key: 'project_settings_organizationDownloads_title' }}
             message={{ key: 'project_settings_organizationDownloads_description' }}
