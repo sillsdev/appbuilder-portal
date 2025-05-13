@@ -13,7 +13,9 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.18.0",
-    "bullmq": "^5.12.2",
+    "@types/sparkpost": "^2.1.8",
+    "bullmq": "^5.52.0",
+    "sparkpost": "^2.1.4",
     "xstate": "^5.18.2"
   },
   "devDependencies": {

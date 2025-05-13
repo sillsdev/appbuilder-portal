@@ -99,4 +99,5 @@ const handler = await import('./build/handler.js');
 // Svelte application handles authentication already, including login and logout
 app.use(handler.handler);
 
-app.listen(6100, () => console.log('Server started!'));
+// Port 6173 is used in production to match dev vite server
+app.listen(6173, () => console.log('Server started!'));
