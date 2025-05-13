@@ -44,15 +44,3 @@
     <input type="submit" class="float-right btn btn-primary" value={m.common_save()} />
   </div>
 </form>
-
-<style>
-  :global(span.fieldset-label) {
-    color: var(--color-black);
-  }
-  :global(label input) {
-    --color-base-100: oklch(100% 0 0);
-    --color-base-200: oklch(98.46% 0.0017 247.84);
-    --color-base-300: oklch(86.48% 0.0099 252.82);
-    --color-base-content: oklch(27.02% 0.0275 257.53);
-  }
-</style>

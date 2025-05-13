@@ -217,9 +217,7 @@ export namespace Email {
     type: JobType.Email_SendNotificationToUser;
     userId: number;
     messageKey: string;
-    messageProperties: {
-      [key: string]: string;
-    };
+    messageProperties: Record<string, string>;
     link?: string;
   }
   export interface SendNotificationToReviewers {
@@ -229,8 +227,8 @@ export namespace Email {
   export interface SendNotificationToOrgAdminsAndOwner {
     type: JobType.Email_SendNotificationToOrgAdminsAndOwner;
     projectId: number;
-    errorKey: string;
-    errorProperties: {
+    messageKey: string;
+    messageProperties: {
       [key: string]: string;
     };
     link?: string;

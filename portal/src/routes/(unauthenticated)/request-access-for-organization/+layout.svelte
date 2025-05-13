@@ -6,6 +6,7 @@
 </script>
 
 <div
+  data-theme="light"
   class="grid w-full h-full place-items-center place-content-center [background-color:#0068a6] text-black"
 >
   <div>

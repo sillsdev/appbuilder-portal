@@ -122,7 +122,7 @@ export async function checkSystemStatuses(
     offlineSystems.forEach((s) => {
       brokenUrls.set(s.url, s);
     });
-    const minutesSinceHalfHour = Math.floor((Date.now() % (1000 * 60 * 30)) / (1000 * 60));
+    const minutesSinceHalfHour = Math.floor((Date.now() / 1000 / 60) % 30);
     if (!(await Queues.EmailTasks.getJobScheduler(JobSchedulerId.SystemStatusEmail))) {
       Queues.EmailTasks.upsertJobScheduler(
         JobSchedulerId.SystemStatusEmail,

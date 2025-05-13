@@ -199,6 +199,13 @@ export async function notifySuperAdminsOfOfflineSystems(
     await Queues.EmailTasks.removeJobScheduler(JobSchedulerId.SystemStatusEmail);
     return;
   }
+  if (process.env.NODE_ENV === 'development') {
+    console.log(
+      'Not notifying super admins of offline systems - ',
+      statuses.map((s) => s.BuildEngineUrl).join(', ')
+    );
+    return;
+  }
   return await notifySuperAdmins(
     translate('en', 'notifications.subject.buildengineDisconnected', {
       url: statuses.map((s) => s.BuildEngineUrl).join(', ')
@@ -429,12 +436,12 @@ export async function sendNotificationToOrgAdminsAndOwner(
   const emails = orgAdmins.map((admin) =>
     sendEmail(
       [{ email: admin.Email, name: admin.Name }],
-      translate(admin.Locale, 'notifications.subject.' + job.data.errorKey + 'Admin'),
+      translate(admin.Locale, 'notifications.subject.' + job.data.messageKey + 'Admin'),
       addProperties(job.data.link ? NotificationWithLinkTemplate : NotificationTemplate, {
         Message: translate(
           admin.Locale,
-          'notifications.body.' + job.data.errorKey + 'Admin',
-          job.data.errorProperties
+          'notifications.body.' + job.data.messageKey + 'Admin',
+          job.data.messageProperties
         ),
         LinkUrl: job.data.link,
         UrlText: translate(admin.Locale, 'notifications.body.log')
@@ -448,12 +455,12 @@ export async function sendNotificationToOrgAdminsAndOwner(
     emails.push(
       sendEmail(
         [{ email: owner.Email, name: owner.Name }],
-        translate(owner.Locale, 'notifications.subject.' + job.data.errorKey + 'Owner'),
+        translate(owner.Locale, 'notifications.subject.' + job.data.messageKey + 'Owner'),
         addProperties(job.data.link ? NotificationWithLinkTemplate : NotificationTemplate, {
           Message: translate(
             owner.Locale,
-            'notifications.body.' + job.data.errorKey + 'Owner',
-            job.data.errorProperties
+            'notifications.body.' + job.data.messageKey + 'Owner',
+            job.data.messageProperties
           ),
           LinkUrl: job.data.link,
           UrlText: translate(owner.Locale, 'notifications.body.log')
