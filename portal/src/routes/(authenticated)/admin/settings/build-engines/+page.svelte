@@ -22,6 +22,9 @@
 {/snippet}
 
 <div class="flex flex-col w-full">
+  {#if data.buildEngines.length === 0}
+    <i>No build engine information. Check the "Check System Statuses" recurring BullMQ job</i>
+  {/if}
   {#each data.buildEngines.toSorted( (a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, getLocale()) ) as buildEngine}
     <DataDisplayBox
       title={buildEngine.BuildEngineUrl}
