@@ -10,21 +10,28 @@ if (!process.env.VITE_SPARKPOST_API_KEY) {
 }
 
 const sp = new SparkPost(process.env.VITE_SPARKPOST_API_KEY);
-export async function sendEmail(to: { email: string; name: string }[], subject: string, body: string) {
-  return sp.transmissions.send({
-    options: {
-      transactional: true,
-      click_tracking: false,
-      open_tracking: false
-    },
-    content: {
-      from: {
-        email: process.env.VITE_SPARKPOST_EMAIL,
-        name: 'Scriptoria' + (process.env.NODE_ENV === 'development' ? ' (dev)' : '')
+export async function sendEmail(
+  to: { email: string; name: string }[],
+  subject: string,
+  body: string
+) {
+  return {
+    sparkpostData: await sp.transmissions.send({
+      options: {
+        transactional: true,
+        click_tracking: false,
+        open_tracking: false
       },
-      subject,
-      html: body
-    },
-    recipients: to.map((email) => ({ address: email }))
-  });
+      content: {
+        from: {
+          email: process.env.VITE_SPARKPOST_EMAIL,
+          name: 'Scriptoria' + (process.env.NODE_ENV === 'development' ? ' (dev)' : '')
+        },
+        subject,
+        html: body
+      },
+      recipients: to.map((email) => ({ address: email }))
+    }),
+    to: to.map((email) => email.email)
+  };
 }

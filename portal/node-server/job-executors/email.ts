@@ -1,13 +1,19 @@
 import { Job } from 'bullmq';
-import { BullMQ, prisma } from 'sil.appbuilder.portal.common';
+import { BullMQ, prisma, Queues } from 'sil.appbuilder.portal.common';
+import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import { JobSchedulerId } from '../../common/bullmq/types.js';
 import { sendEmail } from '../email-service/EmailClient.js';
 import {
   addProperties,
   NotificationEmailTemplate,
+  NotificationWithLinkTemplate,
+  OrganizationInviteRequestTemplate,
   OrganizationMembershipInviteTemplate,
+  ProjectImportTemplate,
   ReviewProductTemplate
 } from '../email-service/EmailTemplates.js';
 import { translate } from '../email-service/locales/locale.js';
+
 export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unknown> {
   console.log('Inviting user', job.data.email);
   const inviteInformation = await prisma.organizationMembershipInvites.findFirstOrThrow({
@@ -151,4 +157,221 @@ export async function sendBatchUserTaskNotifications(
     );
   }
   return { emails: await Promise.all(allEmails) };
+}
+
+export async function notifySuperAdminsOfNewOrganizationRequest(
+  job: Job<BullMQ.Email.NotifySuperAdminsOfNewOrganizationRequest>
+): Promise<unknown> {
+  const superAdmins = await prisma.users.findMany({
+    where: {
+      UserRoles: {
+        some: {
+          RoleId: RoleId.SuperAdmin
+        }
+      }
+    }
+  });
+  const properties = {
+    Name: job.data.organizationName,
+    WebsiteUrl: job.data.url,
+    OrgAdminEmail: job.data.email
+  };
+  return {
+    email: sendEmail(
+      superAdmins.map((admin) => ({ email: admin.Email, name: admin.Name })),
+      translate('en', 'organizationInvites.subject', properties),
+      addProperties(OrganizationInviteRequestTemplate, {
+        ...properties
+      })
+    )
+  };
+}
+
+export async function notifySuperAdminsOfOfflineSystems(
+  job: Job<BullMQ.Email.NotifySuperAdminsOfOfflineSystems>
+): Promise<unknown> {
+  const statuses = await prisma.systemStatuses.findMany({
+    where: {
+      SystemAvailable: false
+    }
+  });
+  if (statuses.length === 0) {
+    await Queues.EmailTasks.removeJobScheduler(JobSchedulerId.SystemStatusEmail);
+    return;
+  }
+  return notifySuperAdmins(
+    translate('en', 'notifications.subject.buildengineDisconnected', {
+      url: statuses.map((s) => s.BuildEngineUrl).join(', ')
+    }),
+    translate('en', 'notifications.body.buildengineDisconnected', {
+      url: statuses.map((s) => s.BuildEngineUrl).join(', '),
+      minutes: statuses
+        .map((s) => Math.floor((Date.now() - s.DateUpdated.getTime()) / 1000 / 60))
+        .join(', ')
+    })
+  );
+}
+
+export async function notifySuperAdmins(subject: string, message: string): Promise<unknown>;
+export async function notifySuperAdmins(
+  subject: string,
+  message: string,
+  link: string,
+  linkText: string
+): Promise<unknown>;
+export async function notifySuperAdmins(
+  subject: string,
+  message: string,
+  link?: string,
+  linkText?: string
+): Promise<unknown> {
+  const superAdmins = await prisma.users.findMany({
+    where: {
+      UserRoles: {
+        some: {
+          RoleId: RoleId.SuperAdmin
+        }
+      }
+    }
+  });
+  return {
+    email: await sendEmail(
+      superAdmins.map((admin) => ({ email: admin.Email, name: admin.Name })),
+      subject,
+      link
+        ? addProperties(NotificationWithLinkTemplate, {
+            Message: message,
+            LinkUrl: link,
+            UrlText: linkText
+          })
+        : addProperties(NotificationEmailTemplate, {
+            Message: message
+          })
+    )
+  };
+}
+
+export async function reportProjectImport(
+  job: Job<BullMQ.Email.ProjectImportReport>
+): Promise<unknown> {
+  // At this point the import is done.
+  // We need to match the Projects table to projects listed in the import JSON
+  // Each one is either "existing" or "new"
+  const projectImport = await prisma.projectImports.findUniqueOrThrow({
+    where: {
+      Id: job.data.importId
+    },
+    include: {
+      // Schema mistake; should be Owner or User not Users
+      Users: true,
+      Organizations: true,
+      Groups: true,
+      ApplicationTypes: true
+    }
+  });
+  const dbProjectsFromThisImport = await prisma.projects.findMany({
+    where: {
+      ImportId: job.data.importId
+    }
+  });
+  const importJSON: {
+    Projects: {
+      Name: string;
+      Description: string;
+      Language: string;
+      IsPublic: boolean;
+      AllowDownloads: boolean;
+      AutomaticBuilds: boolean;
+    }[];
+    Products: {
+      Name: string;
+      Store: string;
+    }[];
+  } = JSON.parse(projectImport.ImportData);
+  const [newProjects, existingProjects] = importJSON.Projects.reduce(
+    ([nP, eP], p) => {
+      (dbProjectsFromThisImport.find(
+        (mp) => mp.Name === p.Name && mp.OrganizationId === projectImport.OrganizationId
+      )
+        ? nP
+        : eP
+      ).push(p);
+      return [nP, eP];
+    },
+    [[], []]
+  );
+  const reportLines = [
+    ...newProjects.map((p) =>
+      translate(projectImport.Users.Locale, 'importProject.newProject', {
+        projectName: p.Name,
+        projectId: '' + p.Id
+      })
+    ),
+    ...existingProjects.map((p) =>
+      translate(projectImport.Users.Locale, 'importProject.existingProject', {
+        projectName: p.Name,
+        projectId: '' + p.Id
+      })
+    )
+  ];
+  for (const project of newProjects) {
+    const products = await prisma.products.findMany({
+      where: {
+        ProjectId: project.Id
+      },
+      include: {
+        ProductDefinition: true,
+        Store: true
+      }
+    });
+    // It is not possible to have an imported project with existing products
+    reportLines.push(
+      ...products.map((p) =>
+        translate(projectImport.Users.Locale, 'importProject.newProduct', {
+          projectId: '' + project.Id,
+          projectName: project.Name,
+          productDefinitionName: p.ProductDefinition.Name,
+          storeName: p.Store.Name,
+          storeId: '' + p.StoreId
+        })
+      )
+    );
+    // Shouldn't happen, but just in case
+    if (importJSON.Products.length > products.length) {
+      reportLines.push('Project ' + project.Name + ' did not import all products - please check!');
+    }
+  }
+
+  const properties = [
+    translate(projectImport.Users.Locale, 'importProject.property', {
+      name: translate(projectImport.Users.Locale, 'importProject.Owner'),
+      value: projectImport.Users.Name
+    }),
+    translate(projectImport.Users.Locale, 'importProject.property', {
+      name: translate(projectImport.Users.Locale, 'importProject.Group'),
+      value: projectImport.Groups.Name
+    }),
+    translate(projectImport.Users.Locale, 'importProject.property', {
+      name: translate(projectImport.Users.Locale, 'importProject.Organization'),
+      value: projectImport.Organizations.Name
+    }),
+    translate(projectImport.Users.Locale, 'importProject.property', {
+      name: translate(projectImport.Users.Locale, 'importProject.Application Type'),
+      value: projectImport.ApplicationTypes.Description
+    })
+  ];
+
+  const body = addProperties(ProjectImportTemplate, {
+    Title: translate(projectImport.Users.Locale, 'importProject.title'),
+    PropertiesHeader: translate(projectImport.Users.Locale, 'importProject.propertiesHeader'),
+    Properties: '<li>' + properties.join('</li><li>') + '</li>',
+    OutputHeader: translate(projectImport.Users.Locale, 'importProject.outputHeader'),
+    Output: '<tr><td><p>' + reportLines.join('</p></td></tr><tr><td><p>') + '</p></td></tr>'
+  });
+
+  return await sendEmail(
+    [{ email: projectImport.Users.Email, name: projectImport.Users.Name }],
+    translate(projectImport.Users.Locale, 'importProject.subject'),
+    body
+  );
 }

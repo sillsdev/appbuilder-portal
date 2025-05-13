@@ -65,7 +65,10 @@ export enum JobType {
   // Email
   Email_InviteUser = 'Invite User',
   Email_SendNotificationToReviewers = 'Send Notification to Product Reviewers',
-  Email_SendBatchUserTaskNotifications = 'Send Batch User Task Notifications'
+  Email_SendBatchUserTaskNotifications = 'Send Batch User Task Notifications',
+  Email_NotifySuperAdminsOfNewOrganizationRequest = 'Notify Super Admins of New Organization Request',
+  Email_NotifySuperAdminsOfOfflineSystems = 'Notify Super Admins of Offline Systems',
+  Email_ProjectImportReport = 'Project Import Report'
 }
 
 export namespace Build {
@@ -224,6 +227,21 @@ export namespace Email {
       comment: string;
     }[];
   }
+  export interface NotifySuperAdminsOfNewOrganizationRequest {
+    type: JobType.Email_NotifySuperAdminsOfNewOrganizationRequest;
+    organizationName: string;
+    email: string;
+    url: string;
+  }
+
+  export interface NotifySuperAdminsOfOfflineSystems {
+    type: JobType.Email_NotifySuperAdminsOfOfflineSystems;
+  }
+
+  export interface ProjectImportReport {
+    type: JobType.Email_ProjectImportReport;
+    importId: number;
+  }
 }
 
 export type Job = JobTypeMap[keyof JobTypeMap];
@@ -247,5 +265,14 @@ export type JobTypeMap = {
   [JobType.Email_InviteUser]: Email.InviteUser;
   [JobType.Email_SendNotificationToReviewers]: Email.SendNotificationToReviewers;
   [JobType.Email_SendBatchUserTaskNotifications]: Email.SendBatchUserTaskNotifications;
+  [JobType.Email_NotifySuperAdminsOfNewOrganizationRequest]: Email.NotifySuperAdminsOfNewOrganizationRequest;
+  [JobType.Email_NotifySuperAdminsOfOfflineSystems]: Email.NotifySuperAdminsOfOfflineSystems;
+  [JobType.Email_ProjectImportReport]: Email.ProjectImportReport;
   // Add more mappings here as needed
 };
+
+export enum JobSchedulerId {
+  SystemStatusEmail = 'SystemStatusEmail',
+  RefreshLangTags = 'RefreshLangTags',
+  CheckSystemStatuses = 'CheckSystemStatuses'
+}

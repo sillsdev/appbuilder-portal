@@ -156,6 +156,11 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
       })
     }))
   );
+  job.updateProgress(75);
+  Queues.EmailTasks.add(`Notify user about import of Project #${project.Id}`, {
+    type: BullMQ.JobType.Email_ProjectImportReport,
+    importId: job.data.importId
+  });
   job.updateProgress(100);
   return { products };
 }
