@@ -196,7 +196,7 @@ export async function notifySuperAdminsOfOfflineSystems(
     }
   });
   if (statuses.length === 0) {
-    await Queues.EmailTasks.removeJobScheduler(JobSchedulerId.SystemStatusEmail);
+    await Queues.Emails.removeJobScheduler(JobSchedulerId.SystemStatusEmail);
     return;
   }
   if (process.env.NODE_ENV === 'development') {

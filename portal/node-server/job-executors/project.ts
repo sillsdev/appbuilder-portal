@@ -23,7 +23,7 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
     }
   });
   if (!projectData) {
-    await Queues.EmailTasks.add(
+    await Queues.Emails.add(
       `Notify SuperAdmins of Failure to Find Project #${job.data.projectId}`,
       {
         type: BullMQ.JobType.Email_NotifySuperAdminsGeneric,
@@ -51,7 +51,7 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
     job.log(response.message);
     // if final retry
     if (job.attemptsMade >= job.opts.attempts) {
-      await Queues.EmailTasks.add(
+      await Queues.Emails.add(
         `Notify Admins of Project #${job.data.projectId} Creation Failure`,
         {
           type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
@@ -102,7 +102,7 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
     // BuildEngineProjectService.CreateBuildEngineProjectAsync
     // S2 implementation continues indefinitely, so no real way to implement this
     if (???) {
-      await Queues.EmailTasks.add(``, {
+      await Queues.Emails.add(``, {
         type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
         projectId: job.data.projectId,
         messageKey: 'projectFailedUnableToCreate',
@@ -129,7 +129,7 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
           (await BuildEngine.Requests.getURLandToken(job.data.organizationId)).url +
           '/project-admin/view?id=' +
           project.WorkflowProjectId;
-        await Queues.EmailTasks.add(
+        await Queues.Emails.add(
           `Notify Admins of Project #${job.data.projectId} Creation Failure`,
           {
             type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
@@ -150,7 +150,7 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
           WorkflowProjectUrl: response.url
         });
 
-        await Queues.EmailTasks.add(
+        await Queues.Emails.add(
           `Notify User of Successful Creation of Project #${job.data.projectId}`,
           {
             type: BullMQ.JobType.Email_SendNotificationToUser,
@@ -244,7 +244,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
     }))
   );
   job.updateProgress(75);
-  await Queues.EmailTasks.add(`Notify user about import of Project #${project.Id}`, {
+  await Queues.Emails.add(`Notify user about import of Project #${project.Id}`, {
     type: BullMQ.JobType.Email_ProjectImportReport,
     importId: job.data.importId
   });

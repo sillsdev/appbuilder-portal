@@ -190,7 +190,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     });
   }
   // might be good to use one job type for all notification types
-  await Queues.EmailTasks.add('Email Notifications', {
+  await Queues.Emails.add('Email Notifications', {
     type: BullMQ.JobType.Email_SendBatchUserTaskNotifications,
     notifications
   });

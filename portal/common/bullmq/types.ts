@@ -37,7 +37,7 @@ export enum QueueName {
   Publishing = 'Publishing',
   RemotePolling = 'Remote Polling',
   UserTasks = 'User Tasks',
-  Email = 'Email'
+  Emails = 'Emails'
 }
 
 export enum JobType {

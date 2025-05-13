@@ -136,9 +136,9 @@ export class UserTasks extends BullWorker<BullMQ.Job> {
   }
 }
 
-export class EmailTasks extends BullWorker<BullMQ.Job> {
+export class Emails extends BullWorker<BullMQ.Job> {
   constructor() {
-    super(BullMQ.QueueName.Email);
+    super(BullMQ.QueueName.Emails);
   }
   async run(job: Job<BullMQ.Job>) {
     switch (job.data.type) {

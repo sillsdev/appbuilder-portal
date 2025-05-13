@@ -751,7 +751,7 @@ export const WorkflowStateMachine = setup({
           },
           guard: hasReviewers,
           actions: ({ context }) => {
-            Queues.EmailTasks.add(`Email reviewers for Product #${context.productId}`, {
+            Queues.Emails.add(`Email reviewers for Product #${context.productId}`, {
               type: BullMQ.JobType.Email_SendNotificationToReviewers,
               productId: context.productId
             });

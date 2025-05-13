@@ -19,4 +19,4 @@ export const RemotePolling = new Queue<Job>(QueueName.RemotePolling, { connectio
 /** Queue for operations on UserTasks */
 export const UserTasks = new Queue<Job>(QueueName.UserTasks, { connection });
 /** Queue for Email tasks */
-export const EmailTasks = new Queue<Job>(QueueName.Email, { connection });
+export const Emails = new Queue<Job>(QueueName.Emails, { connection });

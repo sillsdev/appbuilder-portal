@@ -26,4 +26,4 @@ new Workers.Miscellaneous();
 new Workers.Publishing();
 new Workers.RemotePolling();
 new Workers.UserTasks();
-new Workers.EmailTasks();
+new Workers.Emails();

@@ -57,7 +57,7 @@ export const actions = {
       groups
     );
     const inviteLink = `${url.origin}/invitations/organization-membership?t=${inviteToken}`;
-    await Queues.EmailTasks.add('Invite User ' + email, {
+    await Queues.Emails.add('Invite User ' + email, {
       type: BullMQ.JobType.Email_InviteUser,
       email,
       inviteToken,
