@@ -25,7 +25,8 @@ export async function checkSystemStatuses(
     }
   });
   // Add defaults
-  if (process.env.DEFAULT_BUILDENGINE_URL && process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN) {
+  const defaults = BuildEngine.Requests.tryGetDefaultBuildEngineParameters();
+  if (defaults.url) {
     organizations.push({
       BuildEngineUrl: process.env.DEFAULT_BUILDENGINE_URL,
       BuildEngineApiAccessToken: process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
@@ -35,9 +36,6 @@ export async function checkSystemStatuses(
       'No default build engine is set (env.DEFAULT_BUILDENGINE_URL). Continuing with ' +
         organizations.length +
         ' organizations'
-    );
-    console.error(
-      'NO DEFAULT BUILD ENGINE URL SET (ENV.DEFAULT_BUILDENGINE_URL/DEFAULT_BUILDENGINE_API_ACCESS_TOKEN)'
     );
     if (!organizations.length) {
       throw new Error('No build engines to check');

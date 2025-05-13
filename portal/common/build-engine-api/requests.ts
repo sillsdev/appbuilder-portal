@@ -56,6 +56,21 @@ export async function request(resource: string, auth: Types.Auth, opts?: Types.R
     };
   }
 }
+
+export function tryGetDefaultBuildEngineParameters() {
+  if (!(process.env.DEFAULT_BUILDENGINE_URL || process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN)) {
+    console.error('NO DEFAULT BUILD ENGINE URL SET (ENV.DEFAULT_BUILDENGINE_URL/DEFAULT_BUILDENGINE_API_ACCESS_TOKEN)');
+    return {
+      url: '',
+      token: ''
+    };
+  }
+
+  return {
+    url: process.env.EFAULT_BUILDENGINE_URL,
+    token: process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
+  }
+}
 export async function getURLandToken(organizationId: number) {
   const org = await prisma.organizations.findUnique({
     where: {
@@ -73,10 +88,7 @@ export async function getURLandToken(organizationId: number) {
   }
 
   return org.UseDefaultBuildEngine
-    ? {
-        url: process.env.DEFAULT_BUILDENGINE_URL,
-        token: process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
-      }
+    ? tryGetDefaultBuildEngineParameters()
     : {
         url: org.BuildEngineUrl,
         token: org.BuildEngineApiAccessToken
