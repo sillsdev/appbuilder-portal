@@ -18,6 +18,8 @@
       <h2>{m.organizationMembership_invite_error_redeemed()}</h2>
     {:else if data.error === 'expired'}
       <h2>{m.organizationMembership_invite_error_expired()}</h2>
+    {:else if data.error === 'failed'}
+      <h2>Unknown error</h2>
     {:else}
       <h2>{m.organizationMembership_invite_redemptionTitle()}</h2>
       <!-- Organization info -->

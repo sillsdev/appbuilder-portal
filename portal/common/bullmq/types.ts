@@ -36,7 +36,8 @@ export enum QueueName {
   Miscellaneous = 'Miscellaneous',
   Publishing = 'Publishing',
   RemotePolling = 'Remote Polling',
-  UserTasks = 'User Tasks'
+  UserTasks = 'User Tasks',
+  Email = 'Email'
 }
 
 export enum JobType {
@@ -60,7 +61,11 @@ export enum JobType {
   Recurring_CheckSystemStatuses = 'Check System Statuses',
   Recurring_RefreshLangTags = 'Refresh langtags.json',
   // UserTasks
-  UserTasks_Modify = 'Modify UserTasks'
+  UserTasks_Modify = 'Modify UserTasks',
+  // Email
+  Email_InviteUser = 'Invite User',
+  Email_SendNotificationToReviewers = 'Send Notification to Product Reviewers',
+  Email_SendBatchUserTaskNotifications = 'Send Batch User Task Notifications'
 }
 
 export namespace Build {
@@ -196,6 +201,31 @@ export namespace UserTasks {
   };
 }
 
+export namespace Email {
+  export interface InviteUser {
+    type: JobType.Email_InviteUser;
+    email: string;
+    inviteToken: string;
+    inviteLink: string;
+  }
+  export interface SendNotificationToReviewers {
+    type: JobType.Email_SendNotificationToReviewers;
+    productId: string;
+  }
+  export interface SendBatchUserTaskNotifications {
+    type: JobType.Email_SendBatchUserTaskNotifications;
+    notifications: {
+      userId: number;
+      activityName: string;
+      project: string;
+      productName: string;
+      status: string;
+      originator: string;
+      comment: string;
+    }[];
+  }
+}
+
 export type Job = JobTypeMap[keyof JobTypeMap];
 
 export type JobTypeMap = {
@@ -214,5 +244,8 @@ export type JobTypeMap = {
   [JobType.Recurring_CheckSystemStatuses]: Recurring.CheckSystemStatuses;
   [JobType.Recurring_RefreshLangTags]: Recurring.RefreshLangTags;
   [JobType.UserTasks_Modify]: UserTasks.Modify;
+  [JobType.Email_InviteUser]: Email.InviteUser;
+  [JobType.Email_SendNotificationToReviewers]: Email.SendNotificationToReviewers;
+  [JobType.Email_SendBatchUserTaskNotifications]: Email.SendBatchUserTaskNotifications;
   // Add more mappings here as needed
 };

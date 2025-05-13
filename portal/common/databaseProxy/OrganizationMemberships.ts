@@ -15,13 +15,16 @@ export async function acceptOrganizationInvite(userId: number, inviteToken: stri
       OrganizationId: invite.OrganizationId
     }
   });
-  if (existingMembership) return false;
-  await prisma.organizationMemberships.create({
-    data: {
-      UserId: userId,
-      OrganizationId: invite.OrganizationId
-    }
-  });
+  if (!existingMembership) {
+    await prisma.organizationMemberships.create({
+      data: {
+        UserId: userId,
+        OrganizationId: invite.OrganizationId
+      }
+    });
+  }
+  // TODO: When the roles become a composite primary key, it won't be
+  // possible to add the same role or group twice. Currently it will.
   await prisma.userRoles.createMany({
     data: invite.Roles.map((r) => ({
       UserId: userId,

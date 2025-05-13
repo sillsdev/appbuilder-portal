@@ -1,7 +1,7 @@
 import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 import { fail } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -25,11 +25,11 @@ export const load = (async ({ locals }) => {
       UserRoles: isSuperAdmin(user?.user.roles)
         ? undefined
         : {
-            some: {
-              UserId: user?.user.userId,
-              RoleId: RoleId.OrgAdmin
-            }
+          some: {
+            UserId: user?.user.userId,
+            RoleId: RoleId.OrgAdmin
           }
+        }
     },
     select: {
       Id: true,
@@ -48,17 +48,26 @@ export const actions = {
     }
     const user = await locals.auth();
     if (!user || !isAdminForOrg(form.data.organizationId, user.user.roles)) return fail(401);
-    const { email, organizationId, roles, groups } = form.data;
-    const inviteToken = await DatabaseWrites.organizationMemberships.createOrganizationInvite(
-      email,
-      organizationId,
-      user.user.userId,
-      roles,
-      groups
-    );
-    const inviteLink = `${url.origin}/invitations/organization-membership?t=${inviteToken}`;
-    // ISSUE: #1100 send email- log instead
-    console.log(inviteLink, email);
-    return { ok: true, form };
+    try {
+      const { email, organizationId, roles, groups } = form.data;
+      const inviteToken = await DatabaseWrites.organizationMemberships.createOrganizationInvite(
+        email,
+        organizationId,
+        user.user.userId,
+        roles,
+        groups
+      );
+      const inviteLink = `${url.origin}/invitations/organization-membership?t=${inviteToken}`;
+      Queues.EmailTasks.add('Invite User ' + email, {
+        type: BullMQ.JobType.Email_InviteUser,
+        email,
+        inviteToken,
+        inviteLink
+      });
+      return { ok: true, form };
+    } catch (e) {
+      if (e instanceof v.ValiError) return { form, ok: false, errors: e.issues };
+      throw e;
+    }
   }
 } satisfies Actions;

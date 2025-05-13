@@ -103,7 +103,7 @@
   "deletePrompt_label": "To confirm deletion, type <i>{sentinel}</i> in the text input field",
   "auth_title": "Scriptoria",
   "auth_login": "Login",
-  "auth_loginnNewSession": "Login with a different account",
+  "auth_loginNewSession": "Login with a different account",
   "directory_title": [
     {
       "match": {

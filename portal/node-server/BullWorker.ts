@@ -138,3 +138,23 @@ export class UserTasks extends BullWorker<BullMQ.Job> {
     }
   }
 }
+
+export class EmailTasks extends BullWorker<BullMQ.Job> {
+  constructor() {
+    super(BullMQ.QueueName.Email);
+  }
+  async run(job: Job<BullMQ.Job>) {
+    switch (job.data.type) {
+    case BullMQ.JobType.Email_InviteUser:
+      return Executor.Email.inviteUser(job as Job<BullMQ.Email.InviteUser>);
+    case BullMQ.JobType.Email_SendNotificationToReviewers:
+      return Executor.Email.sendNotificationToReviewers(
+          job as Job<BullMQ.Email.SendNotificationToReviewers>
+      );
+    case BullMQ.JobType.Email_SendBatchUserTaskNotifications:
+      return Executor.Email.sendBatchUserTaskNotifications(
+          job as Job<BullMQ.Email.SendBatchUserTaskNotifications>
+      );
+    }
+  }
+}

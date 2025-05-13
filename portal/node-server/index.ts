@@ -81,6 +81,7 @@ new Workers.Miscellaneous();
 new Workers.Publishing();
 new Workers.RemotePolling();
 new Workers.UserTasks();
+new Workers.EmailTasks();
 
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/jobs');
