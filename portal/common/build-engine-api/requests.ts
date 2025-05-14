@@ -67,7 +67,7 @@ export function tryGetDefaultBuildEngineParameters() {
   }
 
   return {
-    url: process.env.EFAULT_BUILDENGINE_URL,
+    url: process.env.DEFAULT_BUILDENGINE_URL,
     token: process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
   }
 }
