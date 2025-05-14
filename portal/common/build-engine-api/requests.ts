@@ -17,12 +17,12 @@ export async function request(resource: string, auth: Types.Auth, opts?: Types.R
     if (!check?.SystemAvailable && checkStatusFirst) {
       return {
         ok: false,
-        status: 500,
+        status: Types.EndpointUnavailable,
         json: {
           responseType: 'error',
           name: '',
-          status: 500,
-          code: 500,
+          status: Types.EndpointUnavailable,
+          code: Types.EndpointUnavailable,
           message: `System ${url} unavailable`,
           type: ''
         } as Types.ErrorResponse

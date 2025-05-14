@@ -40,11 +40,15 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
     job.log(response.message);
     // if final retry
     if (job.attemptsMade >= job.opts.attempts) {
-      await notifyBuildEngineDisconnected(
-        job.data.projectId,
-        projectData.Name,
-        projectData.Organization.Name
-      );
+      if (response.code === BuildEngine.Types.EndpointUnavailable) {
+        await notifyBuildEngineDisconnected(
+          job.data.projectId,
+          projectData.Name,
+          projectData.Organization.Name
+        );
+      } else {
+        await notifyUnableToCreate(job.data.projectId, projectData.Name);
+      }
     }
     throw new Error(`Creation of Project #${job.data.projectId} failed!`);
   } else {

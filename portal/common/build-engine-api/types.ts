@@ -1,3 +1,6 @@
+// HTTP 502 Bad Gateway (should be the right semantics???)
+export const EndpointUnavailable = 502;
+
 export type Auth =
   | {
       type: 'query';
