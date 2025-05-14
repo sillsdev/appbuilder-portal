@@ -71,12 +71,14 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
       if (job.attemptsMade >= job.opts.attempts) {
         if (isError && response.code === BuildEngine.Types.EndpointUnavailable) {
           await notifyConnectionFailed(
+            job.data.productId,
             productData.Project.Id,
             productData.Project.Name,
             productData.ProductDefinition.Name
           );
         } else {
           await notifyUnableToCreate(
+            job.data.productId,
             productData.Project.Id,
             productData.Project.Name,
             productData.ProductDefinition.Name
@@ -330,8 +332,8 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
   };
 }
 
-async function notifyConnectionFailed(projectId: number, projectName: string, productName: string) {
-  return Queues.Emails.add(`Notify Owner/Admins of Project #${projectId} Creation Failure`, {
+async function notifyConnectionFailed(productId: string, projectId: number, projectName: string, productName: string) {
+  return Queues.Emails.add(`Notify Owner/Admins of Failure to Create Build for Product #${productId}`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
     projectId,
     messageKey: 'buildFailedUnableToConnect',
@@ -342,8 +344,8 @@ async function notifyConnectionFailed(projectId: number, projectName: string, pr
   });
 }
 
-async function notifyUnableToCreate(projectId: number, projectName: string, productName: string) {
-  return Queues.Emails.add(`Notify Owner/Admins of Project #${projectId} Creation Failure`, {
+async function notifyUnableToCreate(productId: string, projectId: number, projectName: string, productName: string) {
+  return Queues.Emails.add(`Notify Owner/Admins of Failure to Create Build for Product #${productId}`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
     projectId,
     messageKey: 'buildFailedUnableToCreate',
