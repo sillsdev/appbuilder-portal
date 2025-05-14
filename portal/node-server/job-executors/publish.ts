@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import { Job } from 'bullmq';
 import {
   BuildEngine,
@@ -21,6 +22,8 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     select: {
       Project: {
         select: {
+          Id: true,
+          Name: true,
           OrganizationId: true
         }
       },
@@ -30,9 +33,17 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
         select: {
           Id: true
         }
+      },
+      ProductDefinition: {
+        select: {
+          Name: true
+        }
       }
     }
   });
+  if (!productData) {
+    return await notifyProductNotFound(job.data.productId);
+  }
   job.updateProgress(10);
   const productBuild = await prisma.productBuilds.findFirst({
     where: {
@@ -43,8 +54,9 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     }
   });
   if (!productData.WorkflowBuildId || !productBuild) {
+    // ISSUE: #1100 I don't like this, but it's the most appropriate message currently available
+    await notifyProductNotFound(job.data.productId);
     const flow = await Workflow.restore(job.data.productId);
-    // ISSUE: #1100 Send notification of failure
     flow?.send({
       type: WorkflowAction.Publish_Failed,
       userId: null,
@@ -75,10 +87,35 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
       }
     );
     job.updateProgress(50);
-    if (response.responseType === 'error') {
-      const flow = await Workflow.restore(job.data.productId);
-      // ISSUE: #1100 Send notification of failure
-      flow?.send({ type: WorkflowAction.Publish_Failed, userId: null, comment: response.message });
+    const isError = response.responseType === 'error';
+    if (isError || response.result !== 'SUCCESS') {
+      const message = isError ? response.message : response.error;
+      job.log(message);
+      // if final retry
+      if (job.attemptsMade >= job.opts.attempts) {
+        if (isError && response.code === BuildEngine.Types.EndpointUnavailable) {
+          await notifyConnectionFailed(
+            job.data.productId,
+            productData.Project.Id,
+            productData.Project.Name,
+            productData.ProductDefinition.Name
+          );
+        } else {
+          await notifyUnableToCreate(
+            job.data.productId,
+            productData.Project.Id,
+            productData.Project.Name,
+            productData.ProductDefinition.Name
+          );
+        }
+        const flow = await Workflow.restore(job.data.productId);
+        flow?.send({
+          type: WorkflowAction.Publish_Failed,
+          userId: null,
+          comment: message
+        });
+      }
+      throw new Error(message);
     } else {
       await DatabaseWrites.products.update(job.data.productId, {
         WorkflowPublishId: response.id
@@ -114,10 +151,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     return {
       response: {
         ...response,
-        environment:
-          response.responseType !== 'error'
-            ? JSON.parse(response['environment'] ?? '{}')
-            : undefined
+        environment: JSON.parse(response['environment'] ?? '{}')
       },
       params,
       env
@@ -144,9 +178,12 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
       }
     }
   });
-  if (!product?.WorkflowInstance) {
+  if (!product.WorkflowInstance) {
     await Queues.RemotePolling.removeRepeatableByKey(job.repeatJobKey);
     job.log('No WorkflowInstance found. Workflow cancelled?');
+    if (!product) {
+      return await notifyProductNotFound(job.data.productId);
+    }
     job.updateProgress(100);
     return { product };
   }
@@ -182,6 +219,31 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
 }
 
 export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise<unknown> {
+  const product = await prisma.products.findUnique({
+    where: { Id: job.data.productId },
+    select: {
+      WorkflowJobId: true,
+      WorkflowBuildId: true,
+      WorkflowPublishId: true,
+      ProductDefinition: {
+        select: {
+          Name: true
+        }
+      },
+      Project: {
+        select: {
+          Id: true,
+          Name: true,
+          OwnerId: true,
+          WorkflowAppProjectUrl: true,
+          OrganizationId: true
+        }
+      }
+    }
+  });
+  if (!product) {
+    return await notifyProductNotFound(job.data.productId);
+  }
   if (job.data.release.error) {
     job.log(job.data.release.error);
   }
@@ -194,9 +256,16 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
       await DatabaseWrites.products.update(job.data.productId, {
         DatePublished: new Date(),
         PublishLink: publishUrlFile
-          ? (await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined
+          ? ((await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined)
           : undefined
       });
+      await notifyCompleted(
+        job.data.publicationId,
+        job.data.productId,
+        product.Project.OwnerId,
+        product.Project.Name,
+        product.ProductDefinition.Name
+      );
       flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
       const packageFile = await prisma.productPublications.findUnique({
         where: {
@@ -224,6 +293,13 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
         );
       }
     } else {
+      await notifyFailed(
+        job.data.publicationId,
+        job.data.productId,
+        product.Project,
+        product,
+        job.data.release
+      );
       flow.send({
         type: WorkflowAction.Publish_Failed,
         userId: null,
@@ -244,4 +320,120 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
   });
   job.updateProgress(100);
   return { publication };
+}
+
+async function notifyConnectionFailed(
+  productId: string,
+  projectId: number,
+  projectName: string,
+  productName: string
+) {
+  return Queues.Emails.add(
+    `Notify Owner/Admins of Failure to Create Release for Product #${productId}`,
+    {
+      type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+      projectId,
+      messageKey: 'releaseFailedUnableToConnect',
+      messageProperties: {
+        projectName,
+        productName
+      }
+    }
+  );
+}
+async function notifyUnableToCreate(
+  productId: string,
+  projectId: number,
+  projectName: string,
+  productName: string
+) {
+  return Queues.Emails.add(
+    `Notify Owner/Admins of Failure to Create Release for Product #${productId}`,
+    {
+      type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+      projectId,
+      messageKey: 'releaseFailedUnableToCreate',
+      messageProperties: {
+        projectName,
+        productName
+      }
+    }
+  );
+}
+async function notifyCompleted(
+  publicationId: number,
+  productId: string,
+  userId: number,
+  projectName: string,
+  productName: string
+) {
+  return Queues.Emails.add(
+    `Notify Owner of Successful Completion of Release #${publicationId} for Product #${productId}`,
+    {
+      type: BullMQ.JobType.Email_SendNotificationToUser,
+      userId,
+      messageKey: 'releaseCompletedSuccessfully',
+      messageProperties: {
+        projectName,
+        productName
+      }
+    }
+  );
+}
+async function notifyFailed(
+  publicationId: number,
+  productId: string,
+  project: Prisma.ProjectsGetPayload<{
+    select: {
+      Id: true;
+      Name: true;
+      OrganizationId: true;
+      WorkflowAppProjectUrl: true;
+    };
+  }>,
+  product: Prisma.ProductsGetPayload<{
+    select: {
+      WorkflowBuildId: true;
+      WorkflowJobId: true;
+      WorkflowPublishId: true;
+      ProductDefinition: {
+        select: { Name: true };
+      };
+    };
+  }>,
+  release: BuildEngine.Types.ReleaseResponse
+) {
+  const endpoint = await BuildEngine.Requests.getURLandToken(project.OrganizationId);
+  return Queues.Emails.add(
+    `Notify Owner/Admins of Failure to Create Release #${publicationId} for Product #${productId}`,
+    {
+      type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+      projectId: project.Id,
+      messageKey: 'releaseFailed',
+      messageProperties: {
+        projectName: project.Name,
+        productName: product.ProductDefinition.Name,
+        releaseStatus: release.status,
+        releaseError: release.error,
+        buildEngineUrl: endpoint + '/release-admin/view?id=' + product.WorkflowPublishId,
+        consoleTextUrl: release.artifacts['consoleText'] ?? '',
+        jobId: '' + product.WorkflowJobId,
+        buildId: '' + product.WorkflowBuildId,
+        publishId: '' + product.WorkflowPublishId,
+        projectId: '' + project.Id,
+        projectUrl: project.WorkflowAppProjectUrl
+      },
+      link: release.artifacts['consoleText'] ?? ''
+    }
+  );
+}
+async function notifyProductNotFound(productId: string) {
+  await Queues.Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
+    type: BullMQ.JobType.Email_NotifySuperAdminsGeneric,
+    messageKey: 'releaseProductRecordNotFound',
+    messageProperties: {
+      productId
+    }
+  });
+  return { message: 'Product Not Found' };
 }
