@@ -332,28 +332,44 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
   };
 }
 
-async function notifyConnectionFailed(productId: string, projectId: number, projectName: string, productName: string) {
-  return Queues.Emails.add(`Notify Owner/Admins of Failure to Create Build for Product #${productId}`, {
-    type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
-    projectId,
-    messageKey: 'buildFailedUnableToConnect',
-    messageProperties: {
-      projectName,
-      productName
+async function notifyConnectionFailed(
+  productId: string,
+  projectId: number,
+  projectName: string,
+  productName: string
+) {
+  return Queues.Emails.add(
+    `Notify Owner/Admins of Failure to Create Build for Product #${productId}`,
+    {
+      type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+      projectId,
+      messageKey: 'buildFailedUnableToConnect',
+      messageProperties: {
+        projectName,
+        productName
+      }
     }
-  });
+  );
 }
 
-async function notifyUnableToCreate(productId: string, projectId: number, projectName: string, productName: string) {
-  return Queues.Emails.add(`Notify Owner/Admins of Failure to Create Build for Product #${productId}`, {
-    type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
-    projectId,
-    messageKey: 'buildFailedUnableToCreate',
-    messageProperties: {
-      projectName,
-      productName
+async function notifyUnableToCreate(
+  productId: string,
+  projectId: number,
+  projectName: string,
+  productName: string
+) {
+  return Queues.Emails.add(
+    `Notify Owner/Admins of Failure to Create Build for Product #${productId}`,
+    {
+      type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+      projectId,
+      messageKey: 'buildFailedUnableToCreate',
+      messageProperties: {
+        projectName,
+        productName
+      }
     }
-  });
+  );
 }
 
 async function notifyCompleted(
