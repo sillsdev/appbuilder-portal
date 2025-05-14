@@ -277,15 +277,12 @@ async function notifyCreationFailed(
 }
 
 async function notifyCreated(projectId: number, userId: number, projectName: string) {
-  Queues.Emails.add(
-    `Notify Owner of Successful Creation of Project #${projectId}`,
-    {
-      type: BullMQ.JobType.Email_SendNotificationToUser,
-      userId,
-      messageKey: 'projectCreatedSuccessfully',
-      messageProperties: {
-        projectName
-      }
+  return Queues.Emails.add(`Notify Owner of Successful Creation of Project #${projectId}`, {
+    type: BullMQ.JobType.Email_SendNotificationToUser,
+    userId,
+    messageKey: 'projectCreatedSuccessfully',
+    messageProperties: {
+      projectName
     }
-  );
+  });
 }
