@@ -244,7 +244,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
     }))
   );
   job.updateProgress(75);
-  await Queues.Emails.add(`Notify user about import of Project #${project.Id}`, {
+  await Queues.Emails.add(`Notify Owner about Import of Project #${job.data.projectId}`, {
     type: BullMQ.JobType.Email_ProjectImportReport,
     importId: job.data.importId
   });
