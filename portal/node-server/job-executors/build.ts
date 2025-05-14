@@ -311,13 +311,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
       );
       flow.send({ type: WorkflowAction.Build_Successful, userId: null });
     } else {
-      await notifyFailed(
-        job.data.productBuildId,
-        job.data.productId,
-        product.Project,
-        product,
-        job.data.build
-      );
+      await notifyFailed(job.data.productBuildId, job.data.productId, product, job.data.build);
       flow.send({
         type: WorkflowAction.Build_Failed,
         userId: null,
@@ -351,7 +345,6 @@ async function notifyConnectionFailed(
     }
   );
 }
-
 async function notifyUnableToCreate(
   productId: string,
   projectId: number,
@@ -371,7 +364,6 @@ async function notifyUnableToCreate(
     }
   );
 }
-
 async function notifyCompleted(
   productBuildId: number,
   productId: string,
@@ -380,7 +372,7 @@ async function notifyCompleted(
   productName: string
 ) {
   return Queues.Emails.add(
-    `Notify Owner of Successful Creation of Build #${productBuildId} for Product #${productId}`,
+    `Notify Owner of Successful Completion of Build #${productBuildId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToUser,
       userId,
@@ -392,18 +384,9 @@ async function notifyCompleted(
     }
   );
 }
-
 async function notifyFailed(
   productBuildId: number,
   productId: string,
-  project: Prisma.ProjectsGetPayload<{
-    select: {
-      Id: true;
-      Name: true;
-      OrganizationId: true;
-      WorkflowAppProjectUrl: true;
-    };
-  }>,
   product: Prisma.ProductsGetPayload<{
     select: {
       WorkflowBuildId: true;
@@ -411,34 +394,41 @@ async function notifyFailed(
       ProductDefinition: {
         select: { Name: true };
       };
+      Project: {
+        select: {
+          Id: true;
+          Name: true;
+          OrganizationId: true;
+          WorkflowAppProjectUrl: true;
+        };
+      };
     };
   }>,
   buildResponse: BuildEngine.Types.BuildResponse
 ) {
-  const endpoint = await BuildEngine.Requests.getURLandToken(project.OrganizationId);
+  const endpoint = await BuildEngine.Requests.getURLandToken(product.Project.OrganizationId);
   return Queues.Emails.add(
     `Notify Owner/Admins of Failure to Create Build #${productBuildId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
-      projectId: project.Id,
+      projectId: product.Project.Id,
       messageKey: 'buildFailed',
       messageProperties: {
-        projectName: project.Name,
+        projectName: product.Project.Name,
         productName: product.ProductDefinition.Name,
         buildStatus: buildResponse.status,
         buildError: buildResponse.error,
         buildEngineUrl: endpoint.url + '/build-admin/view?id=' + product.WorkflowBuildId,
         consoleText: buildResponse.artifacts['consoleText'] ?? '',
-        projectId: '' + project.Id,
+        projectId: '' + product.Project.Id,
         jobId: '' + product.WorkflowJobId,
         buildId: '' + product.WorkflowBuildId,
-        projectUrl: project.WorkflowAppProjectUrl
+        projectUrl: product.Project.WorkflowAppProjectUrl
       },
       link: buildResponse.artifacts['consoleText'] ?? ''
     }
   );
 }
-
 async function notifyProductNotFound(productId: string) {
   await Queues.Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
     type: BullMQ.JobType.Email_NotifySuperAdminsGeneric,

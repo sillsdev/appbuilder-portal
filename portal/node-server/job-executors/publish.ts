@@ -293,13 +293,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
         );
       }
     } else {
-      await notifyFailed(
-        job.data.publicationId,
-        job.data.productId,
-        product.Project,
-        product,
-        job.data.release
-      );
+      await notifyFailed(job.data.publicationId, job.data.productId, product, job.data.release);
       flow.send({
         type: WorkflowAction.Publish_Failed,
         userId: null,
@@ -383,14 +377,6 @@ async function notifyCompleted(
 async function notifyFailed(
   publicationId: number,
   productId: string,
-  project: Prisma.ProjectsGetPayload<{
-    select: {
-      Id: true;
-      Name: true;
-      OrganizationId: true;
-      WorkflowAppProjectUrl: true;
-    };
-  }>,
   product: Prisma.ProductsGetPayload<{
     select: {
       WorkflowBuildId: true;
@@ -399,19 +385,27 @@ async function notifyFailed(
       ProductDefinition: {
         select: { Name: true };
       };
+      Project: {
+        select: {
+          Id: true;
+          Name: true;
+          OrganizationId: true;
+          WorkflowAppProjectUrl: true;
+        };
+      };
     };
   }>,
   release: BuildEngine.Types.ReleaseResponse
 ) {
-  const endpoint = await BuildEngine.Requests.getURLandToken(project.OrganizationId);
+  const endpoint = await BuildEngine.Requests.getURLandToken(product.Project.OrganizationId);
   return Queues.Emails.add(
     `Notify Owner/Admins of Failure to Create Release #${publicationId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
-      projectId: project.Id,
+      projectId: product.Project.Id,
       messageKey: 'releaseFailed',
       messageProperties: {
-        projectName: project.Name,
+        projectName: product.Project.Name,
         productName: product.ProductDefinition.Name,
         releaseStatus: release.status,
         releaseError: release.error,
@@ -420,8 +414,8 @@ async function notifyFailed(
         jobId: '' + product.WorkflowJobId,
         buildId: '' + product.WorkflowBuildId,
         publishId: '' + product.WorkflowPublishId,
-        projectId: '' + project.Id,
-        projectUrl: project.WorkflowAppProjectUrl
+        projectId: '' + product.Project.Id,
+        projectUrl: product.Project.WorkflowAppProjectUrl
       },
       link: release.artifacts['consoleText'] ?? ''
     }

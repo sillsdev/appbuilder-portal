@@ -225,7 +225,6 @@ async function notifyNotFound(projectId: number) {
   });
   return { message: 'Project Not Found' };
 }
-
 async function notifyConnectionFailed(
   projectId: number,
   projectName: string,
@@ -241,7 +240,6 @@ async function notifyConnectionFailed(
     }
   });
 }
-
 async function notifyUnableToCreate(projectId: number, projectName: string) {
   // BuildEngineProjectService.CreateBuildEngineProjectAsync
   return Queues.Emails.add(`Notify Owner/Admins of Project #${projectId} Creation Failure`, {
@@ -253,7 +251,6 @@ async function notifyUnableToCreate(projectId: number, projectName: string) {
     }
   });
 }
-
 async function notifyCreationFailed(
   projectId: number,
   projectName: string,
@@ -275,7 +272,6 @@ async function notifyCreationFailed(
     }
   });
 }
-
 async function notifyCreated(projectId: number, userId: number, projectName: string) {
   return Queues.Emails.add(`Notify Owner of Successful Creation of Project #${projectId}`, {
     type: BullMQ.JobType.Email_SendNotificationToUser,
