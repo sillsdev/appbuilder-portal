@@ -18,6 +18,8 @@
       <h2>{m.organizationMembership_invite_error_redeemed()}</h2>
     {:else if data.error === 'expired'}
       <h2>{m.organizationMembership_invite_error_expired()}</h2>
+    {:else if data.error === 'self-invite'}
+      <h2>{m.organizationMembership_invite_error_selfInvite()}</h2>
     {:else if data.error === 'failed'}
       <h2>{m.errors_generic({ errorMessage: '' })}</h2>
     {:else}

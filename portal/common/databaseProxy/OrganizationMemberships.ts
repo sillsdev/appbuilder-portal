@@ -6,7 +6,14 @@ export async function acceptOrganizationInvite(userId: number, inviteToken: stri
       Token: inviteToken
     }
   });
-  if (!invite || invite.Redeemed || !invite.Expires || invite.Expires < new Date()) return false;
+  if (
+    !invite ||
+    invite.Redeemed ||
+    !invite.Expires ||
+    invite.Expires < new Date() ||
+    userId === invite.InvitedById
+  )
+    return false;
   // Check if the user is already a member of the organization
   // This could be done such that they can accept the invite to get the roles and groups
   const existingMembership = await prisma.organizationMemberships.findFirst({

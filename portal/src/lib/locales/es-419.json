@@ -560,6 +560,7 @@
   "organizationMembership_invite_error_expired": "La invitación ha caducado",
   "organizationMembership_invite_error_redeemed": "La invitación ya ha sido canjeada",
   "organizationMembership_invite_error_notFound": "No se encontró la invitación",
+  "organizationMembership_invite_error_selfInvite": "No puedes canjear tu propia invitación",
   "organizationMembership_invite_error_unexpected": "Ocurrió un error inesperado: {response}",
   "organizationMembership_invite_error_invalidResponse": "Hemos recibido una respuesta no válida... por favor, actualiza la página para intentarlo de nuevo.",
   "organizationMembership_invite_create_success": "Invitación enviada a {email}.",
