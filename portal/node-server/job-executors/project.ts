@@ -41,7 +41,7 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
     // if final retry
     if (job.attemptsMade >= job.opts.attempts) {
       if (response.code === BuildEngine.Types.EndpointUnavailable) {
-        await notifyBuildEngineDisconnected(
+        await notifyConnectionFailed(
           job.data.projectId,
           projectData.Name,
           projectData.Organization.Name
@@ -226,7 +226,7 @@ async function notifyNotFound(projectId: number) {
   return { message: 'Project Not Found' };
 }
 
-async function notifyBuildEngineDisconnected(
+async function notifyConnectionFailed(
   projectId: number,
   projectName: string,
   orgName: string
