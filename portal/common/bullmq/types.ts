@@ -119,6 +119,7 @@ export namespace Project {
     type: JobType.Project_ImportProducts;
     organizationId: number;
     importId: number;
+    projectId: number;
   }
 }
 

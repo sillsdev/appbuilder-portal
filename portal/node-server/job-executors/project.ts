@@ -93,7 +93,8 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
           await Queues.Miscellaneous.add(`Import Products for Project #${job.data.projectId}`, {
             type: BullMQ.JobType.Project_ImportProducts,
             organizationId: job.data.organizationId,
-            importId: projectImport.Id
+            importId: projectImport.Id,
+            projectId: job.data.projectId
           });
         }
       }
@@ -109,14 +110,6 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
       Id: job.data.importId
     }
   });
-  const project = await prisma.projects.findFirst({
-    where: {
-      ImportId: job.data.importId
-    },
-    select: {
-      Id: true
-    }
-  });
   job.updateProgress(25);
   const productsToCreate: { Name: string; Store: string }[] = JSON.parse(
     projectImport.ImportData
@@ -126,7 +119,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
     productsToCreate.map(async (p) => ({
       ...p,
       Id: await DatabaseWrites.products.create({
-        ProjectId: project.Id,
+        ProjectId: job.data.projectId,
         ProductDefinitionId: (
           await prisma.productDefinitions.findFirst({
             where: {
