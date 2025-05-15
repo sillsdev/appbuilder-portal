@@ -15,7 +15,6 @@ import {
 import { getOwnerAdminVariantKeys, translate } from '../email-service/locales/locale.js';
 
 export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unknown> {
-  console.log('Inviting user', job.data.email);
   const inviteInformation = await prisma.organizationMembershipInvites.findFirstOrThrow({
     where: {
       Email: job.data.email,
@@ -52,8 +51,6 @@ export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unk
 export async function sendNotificationToReviewers(
   job: Job<BullMQ.Email.SendNotificationToReviewers>
 ): Promise<unknown> {
-  // TODO: This entire process needs testing
-  console.log('Sending review notification for product Id', job.data.productId);
   // Get the artifacts
   const product = await prisma.products.findFirstOrThrow({
     where: {
