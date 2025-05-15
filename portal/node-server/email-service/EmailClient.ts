@@ -29,7 +29,8 @@ export async function sendEmail(
   const template = addProperties(
     EmailLayoutTemplate,
     {
-      INSERT_SUBJECT: subject,
+      // If the subject isn't fairly short, including it is ugly
+      INSERT_SUBJECT: subject.length > 50 && body.length > 100 ? '' : subject,
       INSERT_CONTENT: body
     },
     true
