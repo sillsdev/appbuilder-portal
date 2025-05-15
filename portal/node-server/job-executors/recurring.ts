@@ -28,8 +28,8 @@ export async function checkSystemStatuses(
   const defaults = BuildEngine.Requests.tryGetDefaultBuildEngineParameters();
   if (defaults.url) {
     organizations.push({
-      BuildEngineUrl: process.env.DEFAULT_BUILDENGINE_URL,
-      BuildEngineApiAccessToken: process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
+      BuildEngineUrl: defaults.url,
+      BuildEngineApiAccessToken: defaults.token
     });
   } else {
     job.log(

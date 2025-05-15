@@ -15,6 +15,9 @@ if (!process.env.VITE_SPARKPOST_API_KEY) {
   process.env.VITE_SPARKPOST_EMAIL = import.meta.env.VITE_SPARKPOST_EMAIL;
   /* eslint-enable @typescript-eslint/ban-ts-comment */
 }
+if (!process.env.VITE_SPARKPOST_API_KEY) {
+  console.error('SparkPost API key not set. Emails will not be sent.');
+}
 
 const sp = new SparkPost(process.env.VITE_SPARKPOST_API_KEY);
 export async function sendEmail(

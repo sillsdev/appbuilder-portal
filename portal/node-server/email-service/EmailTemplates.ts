@@ -25,7 +25,7 @@ export const ReviewProductTemplate = readFileSync(
   path.join(import.meta.dirname, 'templates', 'ReviewProduct.html'),
   'utf8'
 );
-export function addProperties(template: string, properties: { [key: string]: string }) {
+export function addProperties(template: string, properties: Record<string, string>): string {
   const ret = Object.entries(properties).reduce(
     (acc, [key, value]) => acc.replace(new RegExp(`{{${key}}}`, 'g'), value),
     template

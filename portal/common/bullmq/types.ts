@@ -229,9 +229,7 @@ export namespace Email {
     type: JobType.Email_SendNotificationToOrgAdminsAndOwner;
     projectId: number;
     messageKey: string;
-    messageProperties: {
-      [key: string]: string;
-    };
+    messageProperties: Record<string, string>;
     link?: string;
   }
   export interface SendBatchUserTaskNotifications {

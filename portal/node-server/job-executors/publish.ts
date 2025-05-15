@@ -409,7 +409,7 @@ async function notifyFailed(
         productName: product.ProductDefinition.Name,
         releaseStatus: release.status,
         releaseError: release.error,
-        buildEngineUrl: endpoint + '/release-admin/view?id=' + product.WorkflowPublishId,
+        buildEngineUrl: endpoint.url + '/release-admin/view?id=' + product.WorkflowPublishId,
         consoleTextUrl: release.artifacts['consoleText'] ?? '',
         jobId: '' + product.WorkflowJobId,
         buildId: '' + product.WorkflowBuildId,

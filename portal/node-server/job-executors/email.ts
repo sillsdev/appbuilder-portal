@@ -99,9 +99,9 @@ export async function sendNotificationToReviewers(
       product.Project.Reviewers.map((r) =>
         sendEmail(
           [{ email: r.Email, name: r.Name }],
-          translate('en', 'notifications.subject.' + messageId, properties),
+          translate(r.Locale, 'notifications.subject.' + messageId, properties),
           addProperties(NotificationTemplate, {
-            Message: translate('en', 'notifications.body.' + messageId, {
+            Message: translate(r.Locale, 'notifications.body.' + messageId, {
               ...properties,
               reviewerName: r.Name
             })
@@ -111,9 +111,9 @@ export async function sendNotificationToReviewers(
     ),
     ownerEmail: await sendEmail(
       [{ email: product.Project.Owner.Email, name: product.Project.Owner.Name }],
-      translate('en', 'notifications.subject.' + messageId, properties),
+      translate(product.Project.Owner.Locale, 'notifications.subject.' + messageId, properties),
       addProperties(ReviewProductTemplate, {
-        Message: translate('en', 'notifications.body.' + messageId, {
+        Message: translate(product.Project.Owner.Locale, 'notifications.body.' + messageId, {
           ...properties,
           ownerName: product.Project.Owner.Name,
           reviewerNames: product.Project.Reviewers.map((r) => r.Name + ' (' + r.Email + ')').join(
@@ -269,7 +269,7 @@ export async function reportProjectImport(
       ApplicationTypes: true
     }
   });
-  const dbProjectsFromThisImport = await prisma.projects.findMany({
+  const newProjects = await prisma.projects.findMany({
     where: {
       ImportId: job.data.importId
     }
@@ -288,18 +288,16 @@ export async function reportProjectImport(
       Store: string;
     }[];
   } = JSON.parse(projectImport.ImportData);
-  const [newProjects, existingProjects] = importJSON.Projects.reduce(
-    ([nP, eP], p) => {
-      (dbProjectsFromThisImport.find(
-        (mp) => mp.Name === p.Name && mp.OrganizationId === projectImport.OrganizationId
-      )
-        ? nP
-        : eP
-      ).push(p);
-      return [nP, eP];
-    },
-    [[], []]
-  );
+  const existingProjects = await prisma.projects.findMany({
+    where: {
+      OrganizationId: projectImport.Organizations.Id,
+      Name: {
+        in: importJSON.Projects.map((p) => p.Name).filter(
+          (p) => !newProjects.find((n) => n.Name === p)
+        )
+      }
+    }
+  });
   const reportLines = [
     ...newProjects.map((p) =>
       translate(projectImport.Users.Locale, 'importProject.newProject', {

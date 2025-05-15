@@ -12,6 +12,7 @@ import {
   WorkflowAction,
   WorkflowInstanceContext
 } from 'sil.appbuilder.portal.common/workflow';
+import { Retry5e5 } from '../../common/bullmq/types.js';
 
 export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> {
   const productData = await prisma.products.findUnique({
@@ -49,7 +50,7 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
     return await notifyNotFound(job.data.productId);
   }
   if (!productData.Project.WorkflowProjectUrl) {
-    if (job.attemptsMade >= job.opts.attempts) {
+    if (job.attemptsMade >= (job.opts.attempts ?? Retry5e5.attempts)) {
       await notifyProjectUrlNotSet(
         job.data.productId,
         productData.Project.Id,
