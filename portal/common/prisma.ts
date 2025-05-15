@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { ReadonlyClient } from './ReadonlyPrisma.js';
 
 // This is the home of all database operations through prisma
@@ -19,5 +19,39 @@ const prisma = new PrismaClient();
 export type PrismaClientExact = PrismaClient;
 
 export const readonlyPrisma = prisma.$extends(ReadonlyClient);
+
+class ConnectionChecker {
+  private connected: boolean;
+  constructor() {
+    this.connected = false;
+    setInterval(async () => {
+      try {
+        await prisma.$queryRaw`SELECT 1`;
+        this.connected = true;
+      } catch (e) {
+        if (
+          e instanceof Prisma.PrismaClientKnownRequestError ||
+          e instanceof Prisma.PrismaClientRustPanicError ||
+          e instanceof Prisma.PrismaClientInitializationError
+        ) {
+          // As best as I can tell, the only types of PrismaClientKnownRequestError that
+          // should be thrown by the above query would involve the database being unreachable.
+          this.connected = false;
+          // ISSUE: #1128 this should probably be logged
+        } else {
+          throw e;
+        }
+      }
+    }, 10000); // Check every 10 seconds
+  }
+  public IsConnected() {
+    return this.connected;
+  }
+}
+
+const conn = new ConnectionChecker();
+
+/** Main database is up */
+export const connected = () => conn.IsConnected();
 
 export default prisma;

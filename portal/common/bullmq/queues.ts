@@ -37,6 +37,7 @@ class Connection {
 
 const conn = new Connection();
 
+/** Redis is up */
 export const connected = () => conn.IsConnected();
 
 /** Queue for Product Builds */
