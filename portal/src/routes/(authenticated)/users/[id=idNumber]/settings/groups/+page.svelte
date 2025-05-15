@@ -41,7 +41,17 @@
                     );
                   }
                 } else {
-                  toast('error', m.errors_generic({ errorMessage: '' }));
+                  if (res?.form.valid) {
+                    toast(
+                      'error',
+                      m.user_ownsProjectsInGroup({
+                        user: data.subject?.Name ?? '',
+                        group: group.Name ?? ''
+                      })
+                    );
+                  } else {
+                    toast('error', m.errors_generic({ errorMessage: '' }));
+                  }
                   // reset toggle
                   toggle.checked = !toggle.checked;
                 }

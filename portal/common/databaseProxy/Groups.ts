@@ -3,6 +3,7 @@ import prisma from '../prisma.js';
 export async function update(): Promise<never> {
   throw new Error('Not implemented');
 }
+/** @returns false if the group is associated with at least one project. */
 export async function deleteGroup(id: number) {
   if (
     await prisma.projects.findFirst({
