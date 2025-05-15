@@ -64,7 +64,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
     );
     job.updateProgress(50);
     const isError = response.responseType === 'error';
-    if (isError || response.result !== 'SUCCESS') {
+    if (isError || response.error) {
       const message = isError ? response.message : response.error;
       job.log(message);
       // if final retry
@@ -90,6 +90,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
           userId: null,
           comment: message
         });
+        return response;
       }
       throw new Error(message);
     } else {
