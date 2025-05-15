@@ -12,7 +12,7 @@ import {
   ProjectImportTemplate,
   ReviewProductTemplate
 } from '../email-service/EmailTemplates.js';
-import { translate } from '../email-service/locales/locale.js';
+import { getOwnerAdminVariantKeys, translate } from '../email-service/locales/locale.js';
 
 export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unknown> {
   console.log('Inviting user', job.data.email);
@@ -407,18 +407,19 @@ export async function sendNotificationToOrgAdminsAndOwner(
       Id: project.OwnerId
     }
   });
+  const messageKey = getOwnerAdminVariantKeys(job.data.messageKey);
   const emails = orgAdmins.map((admin) =>
     sendEmail(
       [{ email: admin.Email, name: admin.Name }],
       translate(
         admin.Locale,
-        'notifications.subject.' + job.data.messageKey + 'Admin',
+        'notifications.subject.' + messageKey.admin,
         job.data.messageProperties
       ),
       addProperties(job.data.link ? NotificationWithLinkTemplate : NotificationTemplate, {
         Message: translate(
           admin.Locale,
-          'notifications.body.' + job.data.messageKey + 'Admin',
+          'notifications.body.' + messageKey.admin,
           job.data.messageProperties
         ),
         LinkUrl: job.data.link,
@@ -435,13 +436,13 @@ export async function sendNotificationToOrgAdminsAndOwner(
         [{ email: owner.Email, name: owner.Name }],
         translate(
           owner.Locale,
-          'notifications.subject.' + job.data.messageKey + 'Owner',
+          'notifications.subject.' + messageKey.owner,
           job.data.messageProperties
         ),
         addProperties(job.data.link ? NotificationWithLinkTemplate : NotificationTemplate, {
           Message: translate(
             owner.Locale,
-            'notifications.body.' + job.data.messageKey + 'Owner',
+            'notifications.body.' + messageKey.owner,
             job.data.messageProperties
           ),
           LinkUrl: job.data.link,
