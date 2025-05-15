@@ -162,7 +162,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
   });
   job.updateProgress(25);
   const productsToCreate: { Name: string; Store: string }[] = JSON.parse(
-    JSON.parse(projectImport.ImportData)
+    projectImport.ImportData
   ).Products;
   job.updateProgress(30);
   const products = await Promise.all(

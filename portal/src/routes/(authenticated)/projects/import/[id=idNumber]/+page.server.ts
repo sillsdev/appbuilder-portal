@@ -194,7 +194,7 @@ export const actions: Actions = {
       ).map((p) => p.Name);
       const imp = await DatabaseWrites.projectImports.create({
         data: {
-          ImportData: JSON.stringify(form.data.json),
+          ImportData: form.data.json,
           TypeId: form.data.type,
           OwnerId: session.user.userId,
           GroupId: form.data.group,
