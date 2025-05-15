@@ -38,7 +38,9 @@ export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unk
   return {
     email: await sendEmail(
       [{ email: job.data.email, name: job.data.email }],
-      translate(locale, 'organizationMembershipInvites.subject'),
+      translate(locale, 'organizationMembershipInvites.subject', {
+        organizationName: inviteInformation.Organization.Name
+      }),
       addProperties(OrganizationMembershipInviteTemplate, {
         OrganizationName: inviteInformation.Organization.Name,
         InvitedBy: inviteInformation.User.Name,
@@ -238,7 +240,11 @@ export async function sendNotificationToUser(
   });
   return await sendEmail(
     [{ email: user.Email, name: user.Name }],
-    translate(user.Locale, 'notifications.subject.' + job.data.messageKey),
+    translate(
+      user.Locale,
+      'notifications.subject.' + job.data.messageKey,
+      job.data.messageProperties
+    ),
     addProperties(job.data.link ? NotificationWithLinkTemplate : NotificationTemplate, {
       Message: translate(
         user.Locale,
@@ -404,7 +410,11 @@ export async function sendNotificationToOrgAdminsAndOwner(
   const emails = orgAdmins.map((admin) =>
     sendEmail(
       [{ email: admin.Email, name: admin.Name }],
-      translate(admin.Locale, 'notifications.subject.' + job.data.messageKey + 'Admin'),
+      translate(
+        admin.Locale,
+        'notifications.subject.' + job.data.messageKey + 'Admin',
+        job.data.messageProperties
+      ),
       addProperties(job.data.link ? NotificationWithLinkTemplate : NotificationTemplate, {
         Message: translate(
           admin.Locale,
@@ -423,7 +433,11 @@ export async function sendNotificationToOrgAdminsAndOwner(
     emails.push(
       sendEmail(
         [{ email: owner.Email, name: owner.Name }],
-        translate(owner.Locale, 'notifications.subject.' + job.data.messageKey + 'Owner'),
+        translate(
+          owner.Locale,
+          'notifications.subject.' + job.data.messageKey + 'Owner',
+          job.data.messageProperties
+        ),
         addProperties(job.data.link ? NotificationWithLinkTemplate : NotificationTemplate, {
           Message: translate(
             owner.Locale,
