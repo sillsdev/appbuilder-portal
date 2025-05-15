@@ -162,7 +162,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
   });
   job.updateProgress(25);
   const productsToCreate: { Name: string; Store: string }[] = JSON.parse(
-    projectImport.ImportData
+    JSON.parse(projectImport.ImportData)
   ).Products;
   job.updateProgress(30);
   const products = await Promise.all(
@@ -225,11 +225,7 @@ async function notifyNotFound(projectId: number) {
   });
   return { message: 'Project Not Found' };
 }
-async function notifyConnectionFailed(
-  projectId: number,
-  projectName: string,
-  orgName: string
-) {
+async function notifyConnectionFailed(projectId: number, projectName: string, orgName: string) {
   return Queues.Emails.add(`Notify Owner/Admins of Project #${projectId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
     projectId,

@@ -287,7 +287,7 @@ export async function reportProjectImport(
       Name: string;
       Store: string;
     }[];
-  } = JSON.parse(projectImport.ImportData);
+  } = JSON.parse(JSON.parse(projectImport.ImportData));
   const existingProjects = await prisma.projects.findMany({
     where: {
       OrganizationId: projectImport.Organizations.Id,
