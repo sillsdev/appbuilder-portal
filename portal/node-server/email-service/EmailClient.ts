@@ -3,6 +3,7 @@ import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import SparkPost from 'sparkpost';
 import {
   addProperties,
+  EmailLayoutTemplate,
   NotificationTemplate,
   NotificationWithLinkTemplate
 } from './EmailTemplates.js';
@@ -21,6 +22,22 @@ if (!process.env.VITE_SPARKPOST_API_KEY) {
 
 const sp = new SparkPost(process.env.VITE_SPARKPOST_API_KEY);
 export async function sendEmail(
+  to: { email: string; name: string }[],
+  subject: string,
+  body: string
+) {
+  const template = addProperties(
+    EmailLayoutTemplate,
+    {
+      INSERT_SUBJECT: subject,
+      INSERT_CONTENT: body
+    },
+    true
+  );
+  return sendEmailInternal(to, subject, template);
+}
+
+export async function sendEmailInternal(
   to: { email: string; name: string }[],
   subject: string,
   body: string

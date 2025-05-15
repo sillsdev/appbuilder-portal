@@ -1,6 +1,10 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 
+export const EmailLayoutTemplate = readFileSync(
+  path.join(import.meta.dirname, 'templates', 'Layout.html'),
+  'utf8'
+);
 export const NotificationTemplate = readFileSync(
   path.join(import.meta.dirname, 'templates', 'Notification.html'),
   'utf8'
@@ -25,12 +29,16 @@ export const ReviewProductTemplate = readFileSync(
   path.join(import.meta.dirname, 'templates', 'ReviewProduct.html'),
   'utf8'
 );
-export function addProperties(template: string, properties: Record<string, string>): string {
+export function addProperties(
+  template: string,
+  properties: Record<string, string>,
+  allowMissing = false
+): string {
   const ret = Object.entries(properties).reduce(
     (acc, [key, value]) => acc.replace(new RegExp(`{{${key}}}`, 'g'), value),
     template
   );
-  if (ret.includes('{{')) {
+  if (ret.includes('{{') && !allowMissing) {
     throw new Error('Missing properties in email template');
   }
   return ret;
