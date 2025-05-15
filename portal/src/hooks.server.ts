@@ -4,7 +4,7 @@ import { paraglideMiddleware } from '$lib/paraglide/server';
 import { Prisma } from '@prisma/client';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { prisma, Queues } from 'sil.appbuilder.portal.common';
 import {
   authRouteHandle,
   checkUserExistsHandle,
@@ -32,7 +32,10 @@ const heartbeat: Handle = async ({ event, resolve }) => {
     )
   ) {
     try {
-      const test = await prisma.userTasks.findFirst({ select: { Id: true } });
+      const dbtest = await prisma.userTasks.findFirst({ select: { Id: true } });
+      if (!Queues.connected()) {
+        return redirect(302, localizeHref(`/error?code=503`));
+      }
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         // As best as I can tell, the only types of PrismaClientKnownRequestError that
