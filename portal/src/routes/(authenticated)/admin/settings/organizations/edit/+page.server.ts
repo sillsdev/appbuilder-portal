@@ -22,11 +22,6 @@ export const load = (async ({ url }) => {
       Id: id
     }
   });
-  const orgStores = await prisma.organizationStores.findMany({
-    where: {
-      OrganizationId: id
-    }
-  });
   if (!data) return redirect(302, localizeHref('/admin/settings/organizations'));
   const users = await prisma.users.findMany();
   const form = await superValidate(
