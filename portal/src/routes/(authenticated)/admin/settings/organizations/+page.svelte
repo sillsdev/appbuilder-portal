@@ -31,7 +31,7 @@
           value: organization.WebsiteUrl
         },
         {
-          key: 'admin_settings_organizations_useDefaultBuildEngine',
+          key: 'org_useDefaultBuildEngineTitle',
           value: '' + organization.UseDefaultBuildEngine
         },
         {
