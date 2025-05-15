@@ -1,11 +1,12 @@
 import { prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import SparkPost from 'sparkpost';
+import SparkPost, { Attachment } from 'sparkpost';
 import {
   addProperties,
   EmailLayoutTemplate,
   NotificationTemplate,
-  NotificationWithLinkTemplate
+  NotificationWithLinkTemplate,
+  ScriptoriaLogoBase64
 } from './EmailTemplates.js';
 
 if (!process.env.VITE_SPARKPOST_API_KEY) {
@@ -30,18 +31,25 @@ export async function sendEmail(
     EmailLayoutTemplate,
     {
       // If the subject isn't fairly short, including it is ugly
-      INSERT_SUBJECT: subject.length > 50 && body.length > 100 ? '' : subject,
+      INSERT_SUBJECT: subject.length > 70 && body.length > 100 ? '' : subject,
       INSERT_CONTENT: body
     },
     true
   );
-  return sendEmailInternal(to, subject, template);
+  return sendEmailInternal(to, subject, template, [
+    {
+      name: 'logo',
+      type: 'image/png',
+      data: ScriptoriaLogoBase64
+    }
+  ]);
 }
 
 export async function sendEmailInternal(
   to: { email: string; name: string }[],
   subject: string,
-  body: string
+  body: string,
+  images?: Attachment[]
 ) {
   return {
     sparkpostData: await sp.transmissions.send({
@@ -56,7 +64,8 @@ export async function sendEmailInternal(
           name: 'Scriptoria' + (process.env.NODE_ENV === 'development' ? ' (dev)' : '')
         },
         subject,
-        html: body
+        html: body,
+        inline_images: images
       },
       recipients: to.map((email) => ({ address: email }))
     }),

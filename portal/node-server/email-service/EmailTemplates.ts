@@ -5,6 +5,10 @@ export const EmailLayoutTemplate = readFileSync(
   path.join(import.meta.dirname, 'templates', 'Layout.html'),
   'utf8'
 );
+export const ScriptoriaLogoBase64 = readFileSync(
+  path.join(import.meta.dirname, 'templates', 'scriptoria-logo.png'),
+  'base64'
+);
 export const NotificationTemplate = readFileSync(
   path.join(import.meta.dirname, 'templates', 'Notification.html'),
   'utf8'
