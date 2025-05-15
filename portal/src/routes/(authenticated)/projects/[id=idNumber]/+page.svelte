@@ -647,8 +647,8 @@
                     </option>
                   {/each}
                 {:else}
-                  <option disabled value="">
-                    {m.project_side_authors_empty({ group: data.project.Group.Name! })}
+                  <option disabled selected value="">
+                    {m.project_side_authors_emptyGroup()}
                   </option>
                 {/if}
               </select>

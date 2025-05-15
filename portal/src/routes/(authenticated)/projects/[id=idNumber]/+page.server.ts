@@ -202,13 +202,18 @@ export const load = (async ({ locals, params }) => {
     where: {
       GroupMemberships: {
         some: {
-          GroupId: project?.Group.Id
+          GroupId: project.Group.Id
         }
       },
       UserRoles: {
         some: {
-          OrganizationId: project?.Organization.Id,
+          OrganizationId: project.Organization.Id,
           RoleId: RoleId.Author
+        }
+      },
+      Authors: {
+        none: {
+          ProjectId: project.Id
         }
       }
     }
