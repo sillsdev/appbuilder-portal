@@ -14,29 +14,29 @@
         Version: true;
         Success: true;
         BuildId: true;
-        ProductArtifacts: {
-          select: {
+      };
+    }>;
+    artifacts: Prisma.ProductArtifactsGetPayload<{
+      select: {
             ArtifactType: true;
             FileSize: true;
             Url: true;
             DateUpdated: true;
-          };
-        };
-        ProductPublications: {
-          select: {
+          }
+    }>[];
+    release?: Prisma.ProductPublicationsGetPayload<{
+      select: {
             Channel: true;
             Success: true;
             LogUrl: true;
             DateUpdated: true;
-          };
-        };
-      };
+          }
     }>;
     latestBuildId: number | undefined;
     allowDownloads?: boolean;
   }
 
-  let { build, latestBuildId, allowDownloads = true }: Props = $props();
+  let { build, artifacts, release, latestBuildId, allowDownloads = true }: Props = $props();
 
   function versionString(b: typeof build): string {
     let version = b.Version;
@@ -61,11 +61,11 @@
       {versionString(build)}
     </span>
     <span>
-      {m.project_products_numArtifacts({ amount: build.ProductArtifacts.length })}
+      {m.project_products_numArtifacts({ amount: artifacts.length })}
     </span>
   </div>
   <div class="p-2 overflow-x-auto">
-    {#if !build.ProductArtifacts.length}
+    {#if !artifacts.length}
       {m.project_products_noArtifacts()}
     {:else}
       {@const locale = getLocale()}
@@ -79,7 +79,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each build.ProductArtifacts.toSorted( (a, b) => byString(a.ArtifactType, b.ArtifactType, locale) ) as artifact}
+          {#each artifacts.toSorted( (a, b) => byString(a.ArtifactType, b.ArtifactType, locale) ) as artifact}
             <tr>
               <td><IconContainer icon="mdi:file" width="20" /> {artifact.ArtifactType}</td>
               <td>
@@ -100,8 +100,7 @@
         </tbody>
       </table>
     {/if}
-    {#if build.ProductPublications.at(0)?.LogUrl}
-      {@const pub = build.ProductPublications[0]}
+    {#if release?.LogUrl}
       <table class="table table-auto bg-base-100">
         <thead>
           <tr>
@@ -114,15 +113,15 @@
         </thead>
         <tbody>
           <tr>
-            <td>{pub.Channel}</td>
+            <td>{release.Channel}</td>
             <td>
-              {pub.Success
+              {release.Success
                 ? m.project_products_publications_succeeded()
                 : m.project_products_publications_failed()}
             </td>
-            <td>{pub.DateUpdated?.toLocaleDateString(getLocale())}</td>
+            <td>{release.DateUpdated?.toLocaleDateString(getLocale())}</td>
             <td>
-              <a href={pub.LogUrl} class="link">{m.project_products_publications_console()}</a>
+              <a href={release.LogUrl} class="link">{m.project_products_publications_console()}</a>
             </td>
           </tr>
         </tbody>

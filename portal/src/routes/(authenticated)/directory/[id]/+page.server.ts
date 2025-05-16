@@ -75,10 +75,6 @@ export const load = (async ({ params, locals }) => {
               },
               take: 1,
               select: {
-                Channel: true,
-                Success: true,
-                DateUpdated: true,
-                LogUrl: true,
                 ProductBuild: {
                   select: {
                     Id: true,
