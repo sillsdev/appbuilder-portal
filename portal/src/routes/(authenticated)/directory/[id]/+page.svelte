@@ -79,16 +79,17 @@
       {:else}
         {@const locale = getLocale()}
         {#each data.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, locale) ) as product}
-          {@const release = product.ProductPublications.at(0)}
-          {@const build = release?.ProductBuild}
+          {@const build = product.ProductPublications.at(0)?.ProductBuild}
           <div>
             <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
             {product.ProductDefinition.Name}
           </div>
           {#if build}
             <BuildArtifacts
-              build={{ ...build, ProductPublications: [release] }}
+              {build}
+              artifacts={build.ProductArtifacts}
               latestBuildId={build.BuildId}
+              allowDownloads={data.allowDownloads}
             />
           {:else}
             <div class="p-4">
