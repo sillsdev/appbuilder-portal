@@ -39,7 +39,7 @@ export const load = (async ({ locals, params }) => {
     {
       group: organization.Groups.at(0)?.Id ?? undefined,
       type: types.at(0)?.Id ?? undefined,
-      IsPublic: organization?.PublicByDefault ?? undefined
+      IsPublic: organization.PublicByDefault ?? undefined
     },
     valibot(projectCreateSchema),
     { errors: false } // prevents form from showing errors on init

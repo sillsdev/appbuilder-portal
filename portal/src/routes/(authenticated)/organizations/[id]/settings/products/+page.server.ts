@@ -45,7 +45,7 @@ export const actions = {
         Id: form.data.orgId
       },
       data: {
-        PublicByDefault: form.data.publicByDefault // TODO: what are we doing with this?
+        PublicByDefault: form.data.publicByDefault // seed for Project.IsPublic when creating a new project
       }
     });
     return { form, ok: true };
