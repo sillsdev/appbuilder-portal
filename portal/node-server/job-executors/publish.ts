@@ -92,7 +92,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
       const message = isError ? response.message : response.error;
       job.log(message);
       // if final retry
-      if (job.attemptsMade >= job.opts.attempts) {
+      if (job.attemptsStarted >= job.opts.attempts) {
         if (isError && response.code === BuildEngine.Types.EndpointUnavailable) {
           await notifyConnectionFailed(
             job.data.productId,

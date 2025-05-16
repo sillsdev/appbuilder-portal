@@ -36,11 +36,13 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
     }
   );
   job.updateProgress(50);
-  if (response.responseType === 'error') {
-    job.log(response.message);
+  const isError = response.responseType === 'error';
+  if (isError || response.error) {
+    const message = isError ? response.message : response.error;
+    job.log(message);
     // if final retry
-    if (job.attemptsMade >= job.opts.attempts) {
-      if (response.code === BuildEngine.Types.EndpointUnavailable) {
+    if (job.attemptsStarted >= job.opts.attempts) {
+      if (isError && response.code === BuildEngine.Types.EndpointUnavailable) {
         await notifyConnectionFailed(
           job.data.projectId,
           projectData.Name,
@@ -50,7 +52,7 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
         await notifyUnableToCreate(job.data.projectId, projectData.Name);
       }
     }
-    throw new Error(`Creation of Project #${job.data.projectId} failed!`);
+    throw new Error(message);
   } else {
     await DatabaseWrites.projects.update(job.data.projectId, {
       WorkflowProjectId: response.id,
