@@ -39,7 +39,7 @@ model Emails {
   Subject          String?
   ContentTemplate  String?
   ContentModelJson String?
-  Created          DateTime @db.Timestamp
+  Created          DateTime @db.Timestamp(6)
 }
 
 model GroupMemberships {
@@ -71,10 +71,10 @@ model Notifications {
   Id                       Int       @id(map: "PK_Notifications") @default(autoincrement())
   MessageId                String?
   UserId                   Int
-  DateRead                 DateTime? @db.Timestamp
-  DateEmailSent            DateTime? @db.Timestamp
-  DateCreated              DateTime? @default(now()) @db.Timestamp
-  DateUpdated              DateTime? @updatedAt @db.Timestamp
+  DateRead                 DateTime? @db.Timestamp(6)
+  DateEmailSent            DateTime? @db.Timestamp(6)
+  DateCreated              DateTime? @default(now()) @db.Timestamp(6)
+  DateUpdated              DateTime? @updatedAt @db.Timestamp(6)
   Message                  String?
   MessageSubstitutionsJson String?
   SendEmail                Boolean
@@ -89,8 +89,8 @@ model OrganizationInviteRequests {
   Name          String?
   OrgAdminEmail String?
   WebsiteUrl    String?
-  DateCreated   DateTime? @default(now()) @db.Timestamp
-  DateUpdated   DateTime? @updatedAt @db.Timestamp
+  DateCreated   DateTime? @default(now()) @db.Timestamp(6)
+  DateUpdated   DateTime? @updatedAt @db.Timestamp(6)
 }
 
 model OrganizationInvites {
@@ -105,14 +105,14 @@ model OrganizationMembershipInvites {
   Id             Int           @id(map: "PK_OrganizationMembershipInvites") @default(autoincrement())
   Token          String        @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   Email          String
-  Expires        DateTime      @default(dbgenerated("(CURRENT_DATE + 7)")) @db.Timestamp
+  Expires        DateTime      @default(dbgenerated("(CURRENT_DATE + 7)")) @db.Timestamp(6)
   Redeemed       Boolean       @default(false)
   InvitedById    Int
   OrganizationId Int
   Roles          Int[]         @default([])
   Groups         Int[]         @default([])
-  DateCreated    DateTime?     @default(now()) @db.Timestamp
-  DateUpdated    DateTime?     @updatedAt @db.Timestamp
+  DateCreated    DateTime?     @default(now()) @db.Timestamp(6)
+  DateUpdated    DateTime?     @updatedAt @db.Timestamp(6)
   Organization   Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationMembershipInvites_Organizations_OrganizationId")
   User           Users         @relation(fields: [InvitedById], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_OrganizationMembershipInvites_Users_InvitedById")
 
@@ -187,8 +187,8 @@ model ProductArtifacts {
   Url            String?
   FileSize       BigInt?
   ContentType    String?
-  DateCreated    DateTime?     @default(now()) @db.Timestamp
-  DateUpdated    DateTime?     @updatedAt @db.Timestamp
+  DateCreated    DateTime?     @default(now()) @db.Timestamp(6)
+  DateUpdated    DateTime?     @updatedAt @db.Timestamp(6)
   ProductBuild   ProductBuilds @relation(fields: [ProductBuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductArtifacts_ProductBuilds_ProductBuildId")
   Product        Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductArtifacts_Products_ProductId")
 
@@ -201,8 +201,8 @@ model ProductBuilds {
   ProductId           String                @db.Uuid
   BuildId             Int
   Version             String?
-  DateCreated         DateTime?             @default(now()) @db.Timestamp
-  DateUpdated         DateTime?             @updatedAt @db.Timestamp
+  DateCreated         DateTime?             @default(now()) @db.Timestamp(6)
+  DateUpdated         DateTime?             @updatedAt @db.Timestamp(6)
   Success             Boolean?
   ProductArtifacts    ProductArtifacts[]
   Product             Products              @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductBuilds_Products_ProductId")
@@ -245,8 +245,8 @@ model ProductPublications {
   Channel        String?
   LogUrl         String?
   Success        Boolean?
-  DateCreated    DateTime?     @default(now()) @db.Timestamp
-  DateUpdated    DateTime?     @updatedAt @db.Timestamp
+  DateCreated    DateTime?     @default(now()) @db.Timestamp(6)
+  DateUpdated    DateTime?     @updatedAt @db.Timestamp(6)
   Package        String?
   ProductBuild   ProductBuilds @relation(fields: [ProductBuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_ProductBuilds_ProductBuildId")
   Product        Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_Products_ProductId")
@@ -266,7 +266,7 @@ model ProductTransitions {
   InitialState     String?
   DestinationState String?
   Command          String?
-  DateTransition   DateTime? @db.Timestamp
+  DateTransition   DateTime? @db.Timestamp(6)
   Comment          String?
   TransitionType   Int       @default(1)
   WorkflowType     Int?
@@ -282,14 +282,14 @@ model Products {
   ProductDefinitionId Int
   StoreId             Int?
   StoreLanguageId     Int?
-  DateCreated         DateTime?             @default(now()) @db.Timestamp
-  DateUpdated         DateTime?             @updatedAt @db.Timestamp
+  DateCreated         DateTime?             @default(now()) @db.Timestamp(6)
+  DateUpdated         DateTime?             @updatedAt @db.Timestamp(6)
   WorkflowJobId       Int
   WorkflowBuildId     Int
-  DateBuilt           DateTime?             @db.Timestamp
+  DateBuilt           DateTime?             @db.Timestamp(6)
   WorkflowPublishId   Int
   WorkflowComment     String?
-  DatePublished       DateTime?             @db.Timestamp
+  DatePublished       DateTime?             @db.Timestamp(6)
   PublishLink         String?
   VersionBuilt        String?
   Properties          String?
@@ -303,6 +303,7 @@ model Products {
   Store               Stores?               @relation(fields: [StoreId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_Stores_StoreId")
   UserTasks           UserTasks[]
   WorkflowInstance    WorkflowInstances?
+  ProductUserChanges  ProductUserChanges[]
 
   @@index([ProductDefinitionId], map: "IX_Products_ProductDefinitionId")
   @@index([ProjectId], map: "IX_Products_ProjectId")
@@ -317,8 +318,8 @@ model ProjectImports {
   OwnerId          Int?
   GroupId          Int?
   OrganizationId   Int?
-  DateCreated      DateTime?         @default(now()) @db.Timestamp
-  DateUpdated      DateTime?         @updatedAt @db.Timestamp
+  DateCreated      DateTime?         @default(now()) @db.Timestamp(6)
+  DateUpdated      DateTime?         @updatedAt @db.Timestamp(6)
   ApplicationTypes ApplicationTypes? @relation(fields: [TypeId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_ApplicationTypes_TypeId")
   Groups           Groups?           @relation(fields: [GroupId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_Groups_GroupId")
   Organizations    Organizations?    @relation(fields: [OrganizationId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_Organizations_OrganizationId")
@@ -341,15 +342,15 @@ model Projects {
   OrganizationId        Int
   Language              String?
   IsPublic              Boolean?         @default(true)
-  DateCreated           DateTime?        @default(now()) @db.Timestamp
-  DateUpdated           DateTime?        @updatedAt @db.Timestamp
-  DateArchived          DateTime?        @db.Timestamp
+  DateCreated           DateTime?        @default(now()) @db.Timestamp(6)
+  DateUpdated           DateTime?        @updatedAt @db.Timestamp(6)
+  DateArchived          DateTime?        @db.Timestamp(6)
   AllowDownloads        Boolean?         @default(true)
   AutomaticBuilds       Boolean?         @default(true)
   WorkflowProjectId     Int              @default(0)
   WorkflowProjectUrl    String?
   WorkflowAppProjectUrl String?
-  DateActive            DateTime?        @db.Timestamp
+  DateActive            DateTime?        @db.Timestamp(6)
   ImportId              Int?
   Authors               Authors[]
   Products              Products[]
@@ -421,8 +422,8 @@ model SystemStatuses {
   BuildEngineUrl            String?
   BuildEngineApiAccessToken String?
   SystemAvailable           Boolean
-  DateCreated               DateTime? @default(now()) @db.Timestamp
-  DateUpdated               DateTime? @updatedAt @db.Timestamp
+  DateCreated               DateTime? @default(now()) @db.Timestamp(6)
+  DateUpdated               DateTime? @updatedAt @db.Timestamp(6)
 }
 
 model UserRoles {
@@ -447,8 +448,8 @@ model UserTasks {
   ActivityName String?
   Status       String?
   Comment      String?
-  DateCreated  DateTime? @default(now()) @db.Timestamp
-  DateUpdated  DateTime? @updatedAt @db.Timestamp
+  DateCreated  DateTime? @default(now()) @db.Timestamp(6)
+  DateUpdated  DateTime? @updatedAt @db.Timestamp(6)
   Role         Int       @default(3) // AppBuilder (i.e. the Project Owner)
   Product      Products  @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserTasks_Products_ProductId")
   User         Users     @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserTasks_Users_UserId")
@@ -471,8 +472,8 @@ model Users {
   ProfileVisibility             Int                             @default(1)
   EmailNotification             Boolean?                        @default(true)
   WorkflowUserId                String?                         @db.Uuid // ISSUE: #1102 remove when DWKit is replaced
-  DateCreated                   DateTime?                       @default(now()) @db.Timestamp
-  DateUpdated                   DateTime?                       @updatedAt @db.Timestamp
+  DateCreated                   DateTime?                       @default(now()) @db.Timestamp(6)
+  DateUpdated                   DateTime?                       @updatedAt @db.Timestamp(6)
   Authors                       Authors[]
   GroupMemberships              GroupMemberships[]
   Notifications                 Notifications[]
@@ -767,6 +768,20 @@ model dwUploadedFiles {
   UpdatedBy        String?   @db.VarChar(1024)
   UpdatedDate      DateTime? @db.Timestamp(6)
   Properties       String?
+}
+
+model ProductUserChanges {
+  Id            Int       @id(map: "PK_ProductUserChanges") @default(autoincrement())
+  ProductId     String    @db.Uuid
+  Email         String?
+  Change        String?
+  DateCreated   DateTime? @default(now()) @db.Timestamp(6)
+  DateUpdated   DateTime? @updatedAt @db.Timestamp(6)
+  DateCompleted DateTime? @db.Timestamp(6)
+  // there isn't a good way to fix this warning without breaking the migration...
+  Product       Products? @relation(fields: [ProductId], references: [Id], onDelete: SetNull, onUpdate: NoAction, map: "FK_ProductUserChanges_Products_ProductId")
+
+  @@index([ProductId], map: "IX_ProductUserChanges_ProductId")
 }
 
 model WorkflowInstances {
