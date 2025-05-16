@@ -17,27 +17,31 @@
   }
 
   let { project }: Props = $props();
+
+  let isPublic = $state(!!project.IsPublic);
+  let publicForm: HTMLFormElement;
+  let downloadInput: HTMLInputElement;
 </script>
 
 <h2 class="pl-0 pt-0">{m.project_settings_title()}</h2>
 <div class="space-y-2">
   <form
+    bind:this={publicForm}
     method="POST"
     action="?/toggleVisibility"
     use:enhance={() =>
       ({ update, result }) => {
         if (result.type === 'success') {
           const res = result.data as ActionData;
-          const publicInput = document.querySelector('[name=isPublic]') as HTMLInputElement;
           if (res?.ok) {
-            if (publicInput.checked) {
+            if (isPublic) {
               toast('success', m.project_operations_isPublic_on());
             } else {
               toast('success', m.project_operations_isPublic_off());
             }
           } else {
             toast('error', m.errors_generic({ errorMessage: '' }));
-            publicInput.checked = !publicInput.checked;
+            isPublic = !isPublic;
           }
         }
         update({ reset: false });
@@ -47,10 +51,9 @@
       title={{ key: 'project_settings_visibility_title' }}
       message={{ key: 'project_settings_visibility_description' }}
       formName="isPublic"
-      bind:checked={project.IsPublic!}
+      bind:checked={isPublic}
       onchange={() => {
-        const publicInput = document.querySelector('[name=isPublic]') as HTMLInputElement;
-        publicInput.form?.requestSubmit();
+        publicForm.requestSubmit();
       }}
     />
   </form>
@@ -61,7 +64,6 @@
       ({ update, result }) => {
         if (result.type === 'success') {
           const res = result.data as ActionData;
-          const downloadInput = document.querySelector('[name=allowDownload]') as HTMLInputElement;
           if (res?.ok) {
             if (downloadInput.checked) {
               toast('success', m.project_operations_allowDownloads_on());
@@ -81,12 +83,13 @@
       message={{ key: 'project_settings_organizationDownloads_description' }}
     >
       <input
+        bind:this={downloadInput}
         type="checkbox"
-        name="allowDownload"
+        name="allowDownloads"
         class="toggle toggle-accent ml-4"
         checked={project.AllowDownloads}
-        onchange={(e) => {
-          (e.currentTarget.parentElement?.parentElement as HTMLFormElement).requestSubmit();
+        onchange={() => {
+          downloadInput.form?.requestSubmit();
         }}
       />
     </InputWithMessage>
