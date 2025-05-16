@@ -843,6 +843,9 @@ CREATE INDEX "IX_Users_WorkflowUserId" ON "Users"("WorkflowUserId");
 CREATE INDEX "IX_WorkflowDefinitions_StoreTypeId" ON "WorkflowDefinitions"("StoreTypeId");
 
 -- CreateIndex
+CREATE INDEX "IX_ProductUserChanges_ProductId" ON "ProductUserChanges"("ProductId");
+
+-- CreateIndex
 CREATE INDEX "WorkflowGlobalParameter_Name_idx" ON "WorkflowGlobalParameter"("Name");
 
 -- CreateIndex
@@ -1071,5 +1074,5 @@ ALTER TABLE "dwSecurityUserToSecurityRole" ADD CONSTRAINT "dwSecurityUserToSecur
 ALTER TABLE "dwSecurityUserToSecurityRole" ADD CONSTRAINT "dwSecurityUserToSecurityRole_SecurityUserId_fkey" FOREIGN KEY ("SecurityUserId") REFERENCES "dwSecurityUser"("Id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "ProductUserChanges" ADD CONSTRAINT "FK_ProductUserChanges_Products_ProductId" FOREIGN KEY ("ProductId") REFERENCES "Products"("Id") ON DELETE RESTRICT ON UPDATE NO ACTION;
+ALTER TABLE "ProductUserChanges" ADD CONSTRAINT "FK_ProductUserChanges_Products_ProductId" FOREIGN KEY ("ProductId") REFERENCES "Products"("Id") ON DELETE SET NULL ON UPDATE NO ACTION;
 

@@ -778,7 +778,10 @@ model ProductUserChanges {
   DateCreated   DateTime? @default(now()) @db.Timestamp(6)
   DateUpdated   DateTime? @updatedAt @db.Timestamp(6)
   DateCompleted DateTime? @db.Timestamp(6)
-  Product       Products? @relation(fields: [ProductId], references: [Id], onUpdate: NoAction, map: "FK_ProductUserChanges_Products_ProductId")
+  // there isn't a good way to fix this warning without breaking the migration...
+  Product       Products? @relation(fields: [ProductId], references: [Id], onDelete: SetNull, onUpdate: NoAction, map: "FK_ProductUserChanges_Products_ProductId")
+
+  @@index([ProductId], map: "IX_ProductUserChanges_ProductId")
 }
 
 model WorkflowInstances {
