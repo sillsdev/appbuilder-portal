@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { invalidateAll } from '$app/navigation';
   import { page } from '$app/state';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
@@ -83,6 +84,9 @@
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
+      }
+      else {
+        invalidateAll();
       }
     } catch (error) {
       console.error('Error performing product action:', error);
