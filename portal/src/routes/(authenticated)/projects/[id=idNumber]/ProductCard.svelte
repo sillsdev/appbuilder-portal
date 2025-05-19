@@ -13,51 +13,71 @@
   } from '$lib/products/components/ProductDetails.svelte';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime } from '$lib/utils/time';
+  import type { Prisma } from '@prisma/client';
   import { ProductType } from 'sil.appbuilder.portal.common/workflow';
   import DeleteProduct from './modals/DeleteProduct.svelte';
   import Properties from './modals/Properties.svelte';
 
-  type Transition = {
-    TransitionType: number;
-    InitialState: string | null;
-    WorkflowType: number | null;
-    AllowedUserNames: string | null;
-    Command: string | null;
-    Comment: string | null;
-    DateTransition: Date | null;
-    User: {
-      Name: string | null;
-    } | null;
-  };
-
-  interface Props {
-    project: {
-      Name: string | null;
-      DateArchived: Date | null;
-      Organization: {
-        Id: number;
-      };
-    };
-    product: {
-      Id: string;
-      DatePublished: Date | null;
-      DateUpdated: Date | null;
-      Properties: string | null;
-      PublishLink: string | null;
-      ProductDefinition: {
-        Name: string | null;
-        Workflow: {
-          ProductType: ProductType;
+  type Transition = Prisma.ProductTransitionsGetPayload<{
+    select: {
+      TransitionType: true;
+      InitialState: true;
+      WorkflowType: true;
+      AllowedUserNames: true;
+      Command: true;
+      Comment: true;
+      DateTransition: true;
+      User: {
+        select: {
+          Name: true;
         };
       };
-      Store: {
-        Description: string | null;
-      } | null;
+    };
+  }>;
+
+  interface Props {
+    project: Prisma.ProjectsGetPayload<{
+      select: {
+        Name: true;
+        DateArchived: true;
+        Organization: {
+          select: {
+            Id: true;
+          };
+        };
+      };
+    }>;
+    product: Prisma.ProductsGetPayload<{
+      select: {
+        Id: true;
+        DatePublished: true;
+        DateUpdated: true;
+        Properties: true;
+        PublishLink: true;
+        ProductDefinition: {
+          select: {
+            Name: true;
+            Workflow: {
+              select: {
+                ProductType: true;
+              };
+            };
+          };
+        };
+        Store: {
+          select: {
+            Description: true;
+          };
+        };
+        UserTasks: {
+          select: {
+            UserId: true;
+            DateCreated: true;
+          };
+        };
+      };
+    }> & {
       Transitions: Transition[];
-      UserTasks: {
-        UserId: number;
-        DateCreated: Date | null;
-      }[];
       WorkflowInstance: unknown;
       actions: ProductActionType[];
       ActiveTransition?: Transition;
