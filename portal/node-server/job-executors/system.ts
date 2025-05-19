@@ -647,7 +647,7 @@ async function tryCreateInstance(
       update: {}
     });
 
-    // instance already existed, date created will be less than the timestamp
+    // If DateCreated is less than the timestamp (i.e. NOT >=) it already existed and we don't want to send the jump command
     if (instance.DateCreated && instance.DateCreated.valueOf() >= timestamp.valueOf()) {
       const flow = await Workflow.restore(productId);
       // this will make sure all fields are correct and UserTasks are created if needed
