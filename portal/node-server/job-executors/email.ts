@@ -131,9 +131,11 @@ export async function sendBatchUserTaskNotifications(
   for (const notification of job.data.notifications) {
     const user = await prisma.users.findUniqueOrThrow({
       where: {
-        Id: notification.userId
+        Id: notification.userId,
+        EmailNotification: true
       }
     });
+    if (!user) continue;
     const email = user.Email;
     const properties = {
       ...notification,
@@ -221,10 +223,33 @@ export async function notifySuperAdminsOfOfflineSystems(
 export async function notifySuperAdminsGeneric(
   job: Job<BullMQ.Email.NotifySuperAdminsGeneric>
 ): Promise<unknown> {
-  return await notifySuperAdmins(
-    translate('en', 'notifications.subject.' + job.data.messageKey, job.data.messageProperties),
-    translate('en', 'notifications.body.' + job.data.messageKey, job.data.messageProperties)
-  );
+  const superAdmins = await prisma.users.findMany({
+    where: {
+      UserRoles: {
+        some: {
+          RoleId: RoleId.SuperAdmin
+        }
+      },
+      EmailNotification: true
+    }
+  });
+  if (superAdmins.length) {
+    return {
+      email: await sendEmail(
+        superAdmins.map((admin) => ({ email: admin.Email, name: admin.Name })),
+        translate('en', 'notifications.subject.' + job.data.messageKey, job.data.messageProperties),
+        addProperties(NotificationTemplate, {
+          Message: translate(
+            'en',
+            'notifications.body.' + job.data.messageKey,
+            job.data.messageProperties
+          )
+        })
+      )
+    };
+  } else {
+    return 'No SuperAdmins with notification emails allowed';
+  }
 }
 
 export async function sendNotificationToUser(
@@ -232,9 +257,11 @@ export async function sendNotificationToUser(
 ): Promise<unknown> {
   const user = await prisma.users.findUniqueOrThrow({
     where: {
-      Id: job.data.userId
+      Id: job.data.userId,
+      EmailNotification: true
     }
   });
+  if (!user) return `User ${job.data.userId} has disabled Email Notifications`;
   return await sendEmail(
     [{ email: user.Email, name: user.Name }],
     translate(
@@ -427,7 +454,10 @@ export async function sendNotificationToOrgAdminsAndOwner(
   // The org admin email contains more information than the owner email
   // If the owner is also an org admin, we don't need to send them a second email
   // They receive only the org admin email
-  if (!orgAdmins.some((admin) => admin.Id === owner.Id)) {
+  if (
+    !orgAdmins.some((admin) => admin.Id === owner.Id) &&
+    (owner.EmailNotification || owner.EmailNotification === null)
+  ) {
     emails.push(
       sendEmail(
         [{ email: owner.Email, name: owner.Name }],
