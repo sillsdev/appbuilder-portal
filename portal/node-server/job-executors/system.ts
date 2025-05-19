@@ -458,61 +458,68 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     Id: string;
   };
 
-  const products: { Id: string; WorkflowInstance?: unknown; ProcessStatus?: string }[] =
-    await Promise.all(
-      // If the database had properly defined relationships between these tables, this raw query wouldn't be necessary...
-      (
-        await prisma.$queryRaw<ProductId[]>`
+  const products: { Id: string; migrated: boolean; error?: string }[] = await Promise.all(
+    // If the database had properly defined relationships between these tables, this raw query wouldn't be necessary...
+    (
+      await prisma.$queryRaw<ProductId[]>`
           SELECT p."Id" from "Products" p
           WHERE NOT EXISTS (SELECT "ProductId" FROM "WorkflowInstances" wi WHERE p."Id" = wi."ProductId") 
           AND EXISTS (SELECT wpi."Id" FROM "WorkflowProcessInstance" wpi WHERE p."Id" = wpi."Id") 
           AND EXISTS (SELECT wpis."Id" FROM "WorkflowProcessInstanceStatus" wpis WHERE p."Id" = wpis."Id")`
-      ).map(async (product) => {
-        const processInstance = await prisma.workflowProcessInstance.findUniqueOrThrow({
-          // all of the WorkflowProcessInstance* models use Product.Id effectively as a primary/foreign key
-          // why the database doesn't have any relations (i.e. actual primary/foreign keys) based on this is beyond me
-          where: { Id: product.Id },
-          select: { ActivityName: true }
-        });
-        const processStatus = await prisma.workflowProcessInstanceStatus.findUniqueOrThrow({
-          where: { Id: product.Id },
-          select: { Status: true }
-        });
+    ).map(async (product) => {
+      const processInstance = await prisma.workflowProcessInstance.findUniqueOrThrow({
+        // all of the WorkflowProcessInstance* models use Product.Id effectively as a primary/foreign key
+        // why the database doesn't have any relations (i.e. actual primary/foreign keys) based on this is beyond me
+        where: { Id: product.Id },
+        select: { ActivityName: true }
+      });
+      const processStatus = await prisma.workflowProcessInstanceStatus.findUniqueOrThrow({
+        where: { Id: product.Id },
+        select: { Status: true }
+      });
 
-        // we aren't interested in the weird edge cases, none of these show up in the prod dump anyways
-        if (uninterestedStatuses.get(processStatus.Status)) {
-          return { Id: product.Id, ProcessStatus: uninterestedStatuses.get(processStatus.Status) };
-        }
+      // we aren't interested in the weird edge cases, none of these show up in the prod dump anyways
+      if (uninterestedStatuses.get(processStatus.Status)) {
+        return {
+          Id: product.Id,
+          migrated: false,
+          error: uninterestedStatuses.get(processStatus.Status)
+        };
+      }
 
-        // We are interested in the Idled, Error, and Finalized states
-        if (usableStatuses.get(processStatus.Status)) {
-          const res = await tryCreateInstance(
-            product.Id,
-            processStatus.Status,
-            processInstance.ActivityName,
-            (s) => job.log(s)
-          );
-          return {
-            Id: product.Id,
-            ProcessStatus: usableStatuses.get(processStatus.Status),
-            WorkflowInstance: res.value
-          };
-        } else if (
-          processStatus.Status === ProcessStatus.Initialized ||
-          processStatus.Status === ProcessStatus.Running
-        ) {
-          // if the process is currently running or just created, we want to check back in a little bit
-          // PR #1115: TODO create delayed job to take care of instances that are currently running or initialized???
-          return {
-            Id: product.Id,
-            ProcessStatus: processStatus.Status ? 'Running' : 'Initialized'
-          };
-        } else {
-          job.log(`${product.Id}: Unrecognized status: "${processStatus.Status}"`);
-          return { Id: product.Id, ProcessStatus: uninterestedStatuses.get(ProcessStatus.Unknown) };
-        }
-      })
-    );
+      // We are interested in the Idled, Error, and Finalized states
+      if (usableStatuses.get(processStatus.Status)) {
+        const res = await tryCreateInstance(
+          product.Id,
+          processStatus.Status,
+          processInstance.ActivityName,
+          (s) => job.log(s)
+        );
+        return {
+          Id: product.Id,
+          migrated: res.ok,
+          error: res.value
+        };
+      } else if (
+        processStatus.Status === ProcessStatus.Initialized ||
+        processStatus.Status === ProcessStatus.Running
+      ) {
+        // if the process is currently running or just created, we want to check back in a little bit
+        // PR #1115: TODO create delayed job to take care of instances that are currently running or initialized???
+        return {
+          Id: product.Id,
+          migrated: false,
+          error: processStatus.Status ? 'Running' : 'Initialized'
+        };
+      } else {
+        return {
+          Id: product.Id,
+          migrated: false,
+          error: `Unrecognized status: '${processStatus.Status}'`
+        };
+      }
+    })
+  );
 
   // delete any WorkflowProcessInstances that are no longer associated with a product
   const orphanedInstances = await Promise.all(
@@ -529,7 +536,8 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     deletedTasks: deletedTasks.count,
     updatedTransitions,
     missingWorkflowUserIDs,
-    products,
+    migratedProducts: products.reduce((p, c) => (c.migrated ? p + 1 : p), 0),
+    migrationErrors: products.filter((p) => !p.migrated),
     orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0)
   };
 }
@@ -539,7 +547,7 @@ async function tryCreateInstance(
   Status: number,
   ActivityName: string,
   log: Logger
-): Promise<{ ok: boolean; value: unknown }> {
+): Promise<{ ok: boolean; value: string }> {
   try {
     const product = await prisma.products.findUnique({
       where: { Id: productId },
@@ -576,7 +584,7 @@ async function tryCreateInstance(
     ) {
       return {
         ok: false,
-        value: `Unrecognized ActivityName "${ActivityName}"`
+        value: `Unrecognized ActivityName '${ActivityName}'`
       };
     }
 
@@ -623,7 +631,7 @@ async function tryCreateInstance(
 
     const timestamp = new Date();
 
-    const value = await DatabaseWrites.workflowInstances.upsert(productId, {
+    const instance = await DatabaseWrites.workflowInstances.upsert(productId, {
       create: {
         State: WorkflowState.Start,
         Context: JSON.stringify({
@@ -640,7 +648,7 @@ async function tryCreateInstance(
     });
 
     // instance already existed, date created will be less than the timestamp
-    if (value.DateCreated && value.DateCreated.valueOf() >= timestamp.valueOf()) {
+    if (instance.DateCreated && instance.DateCreated.valueOf() >= timestamp.valueOf()) {
       const flow = await Workflow.restore(productId);
       // this will make sure all fields are correct and UserTasks are created if needed
       flow?.send({
@@ -654,10 +662,8 @@ async function tryCreateInstance(
         migration: !redirectableStates
       });
     }
-    return { ok: true, value };
+    return { ok: true, value: '' };
   } catch (e) {
-    const value = e instanceof Error ? e.message : String(e);
-    log(value);
-    return { ok: false, value };
+    return { ok: false, value: e instanceof Error ? e.message : String(e) };
   }
 }
