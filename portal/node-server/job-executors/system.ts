@@ -166,7 +166,7 @@ export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): 
       ? join(import.meta.dirname, '../../static/languages')
       : '/app/build/client/languages';
   if (!existsSync(localDir)) {
-    await mkdir(localDir);
+    await mkdir(localDir, { recursive: true });
   }
   const ret = {};
 
@@ -298,7 +298,7 @@ async function processLocalizedNames(
 
   const finalDir = join(localDir, fileName);
   if (!existsSync(finalDir)) {
-    await mkdir(finalDir);
+    await mkdir(finalDir, { recursive: true });
   }
   const finalName = join(finalDir, 'ldml.json');
   const revIdFileName = join(finalDir, 'revid');
