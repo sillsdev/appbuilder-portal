@@ -454,32 +454,30 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   // - lacks a WorkflowInstance
   // - has an associated WorkflowProcessInstance
 
+  type ProductId = {
+    Id: string;
+  };
+
   const products: { Id: string; WorkflowInstance?: unknown; ProcessStatus?: string }[] =
     await Promise.all(
+      // If the database had properly defined relationships between these tables, this raw query wouldn't be necessary...
       (
-        await prisma.products.findMany({
-          where: { WorkflowInstance: null },
-          select: { Id: true }
-        })
+        await prisma.$queryRaw<ProductId[]>`
+          SELECT p."Id" from "Products" p
+          WHERE NOT EXISTS (SELECT "ProductId" FROM "WorkflowInstances" wi WHERE p."Id" = wi."ProductId") 
+          AND EXISTS (SELECT wpi."Id" FROM "WorkflowProcessInstance" wpi WHERE p."Id" = wpi."Id") 
+          AND EXISTS (SELECT wpis."Id" FROM "WorkflowProcessInstanceStatus" wpis WHERE p."Id" = wpis."Id")`
       ).map(async (product) => {
-        // if there is no process instance, we aren't interested
-        const processInstance = await prisma.workflowProcessInstance.findFirst({
+        const processInstance = await prisma.workflowProcessInstance.findUniqueOrThrow({
           // all of the WorkflowProcessInstance* models use Product.Id effectively as a primary/foreign key
           // why the database doesn't have any relations (i.e. actual primary/foreign keys) based on this is beyond me
           where: { Id: product.Id },
           select: { ActivityName: true }
         });
-        if (!processInstance) return product;
-
-        // if there is no status, we aren't interested
-        const processStatus = await prisma.workflowProcessInstanceStatus.findFirst({
+        const processStatus = await prisma.workflowProcessInstanceStatus.findUniqueOrThrow({
           where: { Id: product.Id },
           select: { Status: true }
         });
-        if (!processStatus) {
-          job.log(`${product.Id}: No status found`);
-          return { Id: product.Id, ProcessStatus: uninterestedStatuses.get(ProcessStatus.Unknown) };
-        }
 
         // we aren't interested in the weird edge cases, none of these show up in the prod dump anyways
         if (uninterestedStatuses.get(processStatus.Status)) {
@@ -518,15 +516,12 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
 
   // delete any WorkflowProcessInstances that are no longer associated with a product
   const orphanedInstances = await Promise.all(
-    (await prisma.workflowProcessInstance.findMany({ select: { Id: true } })).map(
-      async ({ Id }) => {
-        if (!(await prisma.products.findFirst({ where: { Id } }))) {
-          return await DatabaseWrites.workflowInstances.markProcessFinalized(Id);
-        } else {
-          return null;
-        }
-      }
-    )
+    // If the database had properly defined relationships between these tables, this raw query wouldn't be necessary...
+    (
+      await prisma.$queryRaw<ProductId[]>`
+        SELECT wpi."Id" FROM "WorkflowProcessInstance" wpi 
+        WHERE NOT EXISTS (SELECT p."Id" from "Products" p WHERE p."Id" = wpi."Id")`
+    ).map(({ Id }) => DatabaseWrites.workflowInstances.markProcessFinalized(Id))
   );
 
   job.updateProgress(100);
@@ -534,7 +529,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     deletedTasks: deletedTasks.count,
     updatedTransitions,
     missingWorkflowUserIDs,
-    products: products.filter((p) => !!p.ProcessStatus),
+    products,
     orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0)
   };
 }
