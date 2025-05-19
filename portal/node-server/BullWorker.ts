@@ -5,9 +5,7 @@ import * as Executor from './job-executors/index.js';
 export abstract class BullWorker<T> {
   public worker: Worker;
   constructor(public queue: BullMQ.QueueName) {
-    this.worker = new Worker<T>(queue, this.run, {
-      connection: Queues.connection
-    });
+    this.worker = new Worker<T>(queue, this.run, Queues.config);
   }
   abstract run(job: Job<T>): Promise<unknown>;
 }
