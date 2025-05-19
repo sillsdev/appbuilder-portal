@@ -635,7 +635,8 @@ async function tryCreateInstance(
       update: {}
     });
 
-    if (value.DateCreated && value.DateCreated > timestamp) {
+    // instance already existed, date created will be less than the timestamp
+    if (value.DateCreated && value.DateCreated.valueOf() >= timestamp.valueOf()) {
       const flow = await Workflow.restore(productId);
       // this will make sure all fields are correct and UserTasks are created
       // this is also acceptable if a project is already archived, because no UserTasks will be created if so
@@ -649,6 +650,8 @@ async function tryCreateInstance(
     }
     return { ok: true, value };
   } catch (e) {
-    return { ok: false, value: e instanceof Error ? e.message : String(e) };
+    const value = e instanceof Error ? e.message : String(e);
+    log(value);
+    return { ok: false, value };
   }
 }
