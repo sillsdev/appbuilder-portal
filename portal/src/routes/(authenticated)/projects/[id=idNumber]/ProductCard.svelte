@@ -83,9 +83,12 @@
       ActiveTransition?: Transition;
       PreviousTransition?: Transition;
     };
+    actionEndpoint: string;
+    deleteEndpoint: string;
+    updateEndpoint: string;
   }
 
-  let { product, project }: Props = $props();
+  let { product, project, actionEndpoint, deleteEndpoint, updateEndpoint }: Props = $props();
 
   let deleteProductModal: HTMLDialogElement | undefined = $state(undefined);
   let updateProductModal: HTMLDialogElement | undefined = $state(undefined);
@@ -97,15 +100,14 @@
       formData.append('productId', productId);
       formData.append('productAction', action);
 
-      const response = await fetch(`${page.url.pathname}?/productAction`, {
+      const response = await fetch(`${page.url.pathname}?/${actionEndpoint}`, {
         method: 'POST',
         body: formData
       });
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
-      }
-      else {
+      } else {
         invalidateAll();
       }
     } catch (error) {
@@ -210,10 +212,10 @@
     <DeleteProduct
       bind:modal={deleteProductModal}
       {product}
-      endpoint="deleteProduct"
+      endpoint={deleteEndpoint}
       project={project.Name ?? m.tasks_project()}
     />
-    <Properties bind:modal={updateProductModal} {product} endpoint="updateProduct" />
+    <Properties bind:modal={updateProductModal} {product} endpoint={updateEndpoint} />
   </div>
   {#if showTaskWaiting}
     <div class="p-2 flex gap-1">

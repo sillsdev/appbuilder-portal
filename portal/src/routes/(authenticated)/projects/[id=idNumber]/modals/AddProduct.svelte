@@ -29,9 +29,10 @@
         StoreTypeId: true;
       };
     }>[];
+    endpoint: string;
   }
 
-  let { modal = $bindable(), prodDefs, stores }: Props = $props();
+  let { modal = $bindable(), prodDefs, stores, endpoint }: Props = $props();
 
   let selectingStore = $state(false);
   let selectedProduct = $state(prodDefs[0]);
@@ -41,7 +42,7 @@
 </script>
 
 <dialog bind:this={modal} class="modal">
-  <form class="modal-box" action="?/addProduct" method="POST" use:enhance>
+  <form class="modal-box" action="?/{endpoint}" method="POST" use:enhance>
     <div class="items-center text-center" class:hidden={selectingStore}>
       <div class="flex flex-row">
         <h2 class="text-lg font-bold grow">{m.project_products_popup_addTitle()}</h2>

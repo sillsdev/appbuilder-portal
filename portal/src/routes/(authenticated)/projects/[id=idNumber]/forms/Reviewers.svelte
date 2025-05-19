@@ -17,9 +17,11 @@
       };
     }>[];
     formData: SuperValidated<Infer<ReviewerSchema>>;
+    createEndpoint: string;
+    deleteEndpoint: string;
   }
 
-  let { reviewers, formData }: Props = $props();
+  let { reviewers, formData, createEndpoint, deleteEndpoint }: Props = $props();
 
   const { form, enhance } = superForm(formData, {
     resetForm: true
@@ -36,7 +38,7 @@
       {#each reviewers.toSorted((a, b) => byName(a, b, locale)) as reviewer}
         <div class="flex flex-row w-full place-content-between p-2">
           <span>{reviewer.Name} ({reviewer.Email})</span>
-          <form action="?/deleteReviewer" method="post" use:svk_enhance>
+          <form action="?/{deleteEndpoint}" method="post" use:svk_enhance>
             <input type="hidden" name="id" value={reviewer.Id} />
             <button type="submit" class="cursor-pointer">
               <IconContainer icon="mdi:close" width="24" />
@@ -49,7 +51,7 @@
     {/if}
   </div>
   <div class="p-2 bg-neutral">
-    <form action="?/addReviewer" method="post" use:enhance>
+    <form action="?/{createEndpoint}" method="post" use:enhance>
       <div class="flex flex-col place-content-between space-y-2">
         <div class="flex flex-col gap-2 reviewerform">
           <input

@@ -14,9 +14,11 @@
         AllowDownloads: true;
       };
     }>;
+    publicEndpoint: string;
+    downloadEndpoint: string;
   }
 
-  let { project }: Props = $props();
+  let { project, publicEndpoint, downloadEndpoint }: Props = $props();
 
   let isPublic = $state(!!project.IsPublic);
   let publicForm: HTMLFormElement;
@@ -28,7 +30,7 @@
   <form
     bind:this={publicForm}
     method="POST"
-    action="?/toggleVisibility"
+    action="?/{publicEndpoint}"
     use:enhance={() =>
       ({ update, result }) => {
         if (result.type === 'success') {
@@ -59,7 +61,7 @@
   </form>
   <form
     method="POST"
-    action="?/toggleDownload"
+    action="?/{downloadEndpoint}"
     use:enhance={() =>
       ({ update, result }) => {
         if (result.type === 'success') {

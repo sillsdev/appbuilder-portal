@@ -39,9 +39,10 @@
       };
     }>[];
     orgName: string | null | undefined;
+    endpoint: string;
   }
 
-  let { project, users, groups, orgName }: Props = $props();
+  let { project, users, groups, orgName, endpoint }: Props = $props();
 
   let timeout: NodeJS.Timeout;
   let form: HTMLFormElement;
@@ -59,7 +60,7 @@
 
 <div class="bg-neutral card card-bordered border-slate-400 rounded-md max-w-full">
   <form
-    action="?/editOwnerGroup"
+    action="?/{endpoint}"
     bind:this={form}
     method="post"
     use:enhance={() =>

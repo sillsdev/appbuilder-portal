@@ -127,6 +127,7 @@
           bind:modal={addProductModal}
           prodDefs={data.productsToAdd}
           stores={data.stores}
+          endpoint="addProduct"
         />
       </div>
       <!-- Products List -->
@@ -135,7 +136,13 @@
           {m.projectTable_noProducts()}
         {:else}
           {#each data.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, getLocale()) ) as product}
-            <ProductCard {product} project={data.project} />
+            <ProductCard
+              {product}
+              project={data.project}
+              actionEndpoint="productAction"
+              deleteEndpoint="deleteProduct"
+              updateEndpoint="updateProduct"
+            />
           {/each}
         {/if}
         <div class="divider"></div>
@@ -143,7 +150,11 @@
     </div>
     <!-- Settings -->
     <div class="settingsarea my-4">
-      <Settings project={data.project} />
+      <Settings
+        project={data.project}
+        publicEndpoint="toggleVisibility"
+        downloadEndpoint="toggleDownload"
+      />
     </div>
     <!-- Sidebar Settings -->
     <div class="space-y-2 min-w-0 flex-auto sidebararea">
@@ -152,14 +163,22 @@
         users={data.possibleProjectOwners}
         groups={data.possibleGroups}
         orgName={data.organizations.find((o) => o.Id === data.project.Organization.Id)?.Name}
+        endpoint="editOwnerGroup"
       />
       <Authors
         group={data.project.Group}
         projectAuthors={data.project.Authors}
         availableAuthors={data.authorsToAdd}
         formData={data.authorForm}
+        createEndpoint="addAuthor"
+        deleteEndpoint="deleteAuthor"
       />
-      <Reviewers reviewers={data.project.Reviewers} formData={data.reviewerForm} />
+      <Reviewers
+        reviewers={data.project.Reviewers}
+        formData={data.reviewerForm}
+        createEndpoint="addReviewer"
+        deleteEndpoint="deleteReviewer"
+      />
     </div>
   </div>
 </div>
