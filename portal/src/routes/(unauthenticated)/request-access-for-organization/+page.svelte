@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { toast } from '$lib/utils';
 </script>
 
 <form
@@ -16,7 +17,7 @@
           goto('/request-access-for-organization/success');
         }
       } else {
-        alert(m.errors_generic({ errorMessage: '' }));
+        toast('error', m.errors_generic({ errorMessage: '' }));
       }
     };
   }}
@@ -37,7 +38,7 @@
     </LabeledFormInput>
     <br />
     <LabeledFormInput name="invitations_orgUrl">
-      <input class="input w-full input-bordered validator" type="text" name="url" required />
+      <input class="input w-full input-bordered validator" type="url" name="url" required />
     </LabeledFormInput>
   </div>
   <div class="mt-4">
