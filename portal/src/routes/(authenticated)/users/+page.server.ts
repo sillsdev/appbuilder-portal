@@ -109,7 +109,7 @@ export const load = (async (event) => {
 
   const users = await prisma.users.findMany({
     orderBy: {
-      FamilyName: 'asc'
+      GivenName: 'asc'
     },
     select: select(isSuper ? undefined : orgIds),
     where: adminOrDefaultWhere(isSuper, orgIds),
@@ -226,7 +226,7 @@ export const actions: Actions = {
 
     const users = await prisma.users.findMany({
       orderBy: {
-        FamilyName: 'asc'
+        GivenName: 'asc'
       },
       select: select(isSuper ? undefined : orgIds),
       where: where,
