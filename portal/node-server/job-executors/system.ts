@@ -567,9 +567,13 @@ async function tryCreateInstance(
     }
 
     /** If it is at these specific activities, redirect to Synchronize Data */
-    const usableStates = ['Check Product Publish', 'Check Product Build'].includes(ActivityName);
+    const redirectableStates = ['Check Product Publish', 'Check Product Build'].includes(
+      ActivityName
+    );
 
-    if (!(Object.values(WorkflowState).includes(ActivityName as WorkflowState) || usableStates)) {
+    if (
+      !(Object.values(WorkflowState).includes(ActivityName as WorkflowState) || redirectableStates)
+    ) {
       return {
         ok: false,
         value: `Unrecognized ActivityName "${ActivityName}"`
@@ -638,14 +642,16 @@ async function tryCreateInstance(
     // instance already existed, date created will be less than the timestamp
     if (value.DateCreated && value.DateCreated.valueOf() >= timestamp.valueOf()) {
       const flow = await Workflow.restore(productId);
-      // this will make sure all fields are correct and UserTasks are created
-      // this is also acceptable if a project is already archived, because no UserTasks will be created if so
+      // this will make sure all fields are correct and UserTasks are created if needed
       flow?.send({
         type: WorkflowAction.Jump,
-        target: usableStates ? WorkflowState.Synchronize_Data : (ActivityName as WorkflowState),
+        target: redirectableStates
+          ? WorkflowState.Synchronize_Data
+          : (ActivityName as WorkflowState),
         userId: null,
         comment: 'Migrate workflow data to new backend',
-        migration: true
+        // we still want to create UserTasks if we are in one of the states that is redirected to Synchronize Data
+        migration: !redirectableStates
       });
     }
     return { ok: true, value };
