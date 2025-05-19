@@ -1,4 +1,4 @@
-if (!Array.prototype.toSorted) {
+if (typeof Array.prototype.toSorted !== 'function') {
   Object.defineProperty(Array.prototype, 'toSorted', {
     configurable: true,
     writable: true,
