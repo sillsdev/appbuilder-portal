@@ -1,4 +1,4 @@
-if (!Array.prototype.toSorted)
+if (!Array.prototype.toSorted) {
   Array.prototype.toSorted = function (
     /** @type {((a: any, b: any) => number) | undefined} */ compareFn
   ) {
@@ -7,3 +7,4 @@ if (!Array.prototype.toSorted)
     }
     return this.slice(0).sort(compareFn);
   };
+}
