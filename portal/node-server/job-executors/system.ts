@@ -643,7 +643,8 @@ async function tryCreateInstance(
         type: WorkflowAction.Jump,
         target: usableStates ? WorkflowState.Synchronize_Data : (ActivityName as WorkflowState),
         userId: null,
-        comment: 'Migrate workflow data to new backend'
+        comment: 'Migrate workflow data to new backend',
+        migration: true
       });
     }
     return { ok: true, value };

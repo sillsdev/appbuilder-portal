@@ -275,7 +275,7 @@ export class Workflow {
       `#${WorkflowStateMachine.id}.${xSnap.value}`
     );
 
-    if (old && Workflow.stateName(old) !== xSnap.value) {
+    if (old && Workflow.stateName(old) !== xSnap.value && !event.event.migration) {
       await this.updateProductTransitions(
         event.event.userId,
         Workflow.stateName(old),
@@ -312,6 +312,9 @@ export class Workflow {
           }
         });
       }
+    }
+    else if (event.event.migration) {
+      await this.createSnapshot(xSnap.context);
     }
   }
 
