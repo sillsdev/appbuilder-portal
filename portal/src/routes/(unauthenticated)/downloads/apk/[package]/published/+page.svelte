@@ -24,6 +24,17 @@
     const strings = manifest['download-apk-strings'];
     return strings[langOnlyNoVariant] || strings['en'];
   }
+
+  /**
+   * This will return NaN if there are any issues.
+   * Since we are just checking whether greater or less than 0.5, should be fine.
+   */
+  function lightness(rgb: string): number {
+    const r = parseInt(rgb.substring(0, 2), 16) / 255;
+    const g = parseInt(rgb.substring(2, 4), 16) / 255;
+    const b = parseInt(rgb.substring(4, 6), 16) / 255;
+    return (Math.max(r, g, b) + Math.min(r, g, b)) / 2;
+  }
 </script>
 
 <div class="flex flex-col h-full items-center justify-center">
@@ -42,7 +53,9 @@
       href={data.manifest.link}
       download
       target="_blank"
-      class="btn"
+      class="btn {lightness(data.manifest.color.substring(1 /*ignore #*/)) < 0.5
+        ? 'text-white'
+        : 'text-black'}"
       style="background-color: {data.manifest.color}"
     >
       {downloadLinkText(data.manifest, lang)}
