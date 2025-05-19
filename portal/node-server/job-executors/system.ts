@@ -458,68 +458,63 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     Id: string;
   };
 
-  const products: { Id: string; migrated: boolean; error?: string }[] = await Promise.all(
-    // If the database had properly defined relationships between these tables, this raw query wouldn't be necessary...
-    (
-      await prisma.$queryRaw<ProductId[]>`
-          SELECT p."Id" from "Products" p
-          WHERE NOT EXISTS (SELECT "ProductId" FROM "WorkflowInstances" wi WHERE p."Id" = wi."ProductId") 
-          AND EXISTS (SELECT wpi."Id" FROM "WorkflowProcessInstance" wpi WHERE p."Id" = wpi."Id") 
-          AND EXISTS (SELECT wpis."Id" FROM "WorkflowProcessInstanceStatus" wpis WHERE p."Id" = wpis."Id")`
-    ).map(async (product) => {
-      const processInstance = await prisma.workflowProcessInstance.findUniqueOrThrow({
-        // all of the WorkflowProcessInstance* models use Product.Id effectively as a primary/foreign key
-        // why the database doesn't have any relations (i.e. actual primary/foreign keys) based on this is beyond me
-        where: { Id: product.Id },
-        select: { ActivityName: true }
-      });
-      const processStatus = await prisma.workflowProcessInstanceStatus.findUniqueOrThrow({
-        where: { Id: product.Id },
-        select: { Status: true }
-      });
+  type InstanceData = ProductId & { ActivityName: string; Status: number };
 
-      // we aren't interested in the weird edge cases, none of these show up in the prod dump anyways
-      if (uninterestedStatuses.get(processStatus.Status)) {
-        return {
-          Id: product.Id,
-          migrated: false,
-          error: uninterestedStatuses.get(processStatus.Status)
-        };
-      }
+  let migratedProducts = 0;
+  const migrationErrors: { Id: string; error: string }[] = [];
+  const products = await prisma.$queryRaw<InstanceData[]>`
+    SELECT p."Id", wpi."ActivityName", wpis."Status" from "Products" p
+    LEFT JOIN "WorkflowProcessInstance" wpi on wpi."Id" = p."Id"
+    LEFT JOIN "WorkflowProcessInstanceStatus" wpis on wpis."Id" = p."Id"
+    WHERE wpi."ActivityName" IS NOT NULL AND wpis."Status" IS NOT NULL AND
+    NOT EXISTS (SELECT "ProductId" FROM "WorkflowInstances" wi WHERE p."Id" = wi."ProductId")`;
 
-      // We are interested in the Idled, Error, and Finalized states
-      if (usableStatuses.get(processStatus.Status)) {
-        const res = await tryCreateInstance(
-          product.Id,
-          processStatus.Status,
-          processInstance.ActivityName,
-          (s) => job.log(s)
-        );
-        return {
-          Id: product.Id,
-          migrated: res.ok,
-          error: res.value
-        };
-      } else if (
-        processStatus.Status === ProcessStatus.Initialized ||
-        processStatus.Status === ProcessStatus.Running
-      ) {
-        // if the process is currently running or just created, we want to check back in a little bit
-        // PR #1115: TODO create delayed job to take care of instances that are currently running or initialized???
-        return {
-          Id: product.Id,
-          migrated: false,
-          error: processStatus.Status ? 'Running' : 'Initialized'
-        };
+  for (const product of products) {
+    // we aren't interested in the weird edge cases, none of these show up in the prod dump anyways
+    if (uninterestedStatuses.get(product.Status)) {
+      migrationErrors.push({
+        Id: product.Id,
+        error: uninterestedStatuses.get(product.Status)
+      });
+      continue;
+    }
+
+    // We are interested in the Idled, Error, and Finalized states
+    if (usableStatuses.get(product.Status)) {
+      const res = await tryCreateInstance(
+        product.Id,
+        product.Status,
+        product.ActivityName,
+        (s) => job.log(s)
+      );
+      if (res.ok) {
+        migratedProducts++;
       } else {
-        return {
+        migrationErrors.push({
           Id: product.Id,
-          migrated: false,
-          error: `Unrecognized status: '${processStatus.Status}'`
-        };
+          error: res.value
+        });
+        continue;
       }
-    })
-  );
+    } else if (
+      product.Status === ProcessStatus.Initialized ||
+      product.Status === ProcessStatus.Running
+    ) {
+      // if the process is currently running or just created, we want to check back in a little bit
+      // PR #1115: TODO create delayed job to take care of instances that are currently running or initialized???
+      migrationErrors.push({
+        Id: product.Id,
+        error: product.Status ? 'Running' : 'Initialized'
+      });
+      continue;
+    } else {
+      migrationErrors.push({
+        Id: product.Id,
+        error: `Unrecognized status: '${product.Status}'`
+      });
+      continue;
+    }
+  }
 
   // delete any WorkflowProcessInstances that are no longer associated with a product
   const orphanedInstances = await Promise.all(
@@ -536,8 +531,8 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     deletedTasks: deletedTasks.count,
     updatedTransitions,
     missingWorkflowUserIDs,
-    migratedProducts: products.reduce((p, c) => (c.migrated ? p + 1 : p), 0),
-    migrationErrors: products.filter((p) => !p.migrated),
+    migratedProducts,
+    migrationErrors,
     orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0)
   };
 }
