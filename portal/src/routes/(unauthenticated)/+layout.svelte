@@ -8,6 +8,9 @@
   let { children }: Props = $props();
 </script>
 
-<div>
+<div
+  data-theme="light"
+  class="grid w-full h-full place-items-center place-content-center [background-color:#0068a6]"
+>
   {@render children?.()}
 </div>
