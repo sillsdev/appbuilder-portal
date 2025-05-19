@@ -10,11 +10,8 @@ export async function checkSystemStatuses(
 ): Promise<unknown> {
   const organizations = await prisma.organizations.findMany({
     where: {
-      OR: [
-        {
-          UseDefaultBuildEngine: false
-        }
-      ],
+      // treat null same as false
+      NOT: { UseDefaultBuildEngine: true },
       BuildEngineUrl: { not: null },
       BuildEngineApiAccessToken: { not: null }
     },
