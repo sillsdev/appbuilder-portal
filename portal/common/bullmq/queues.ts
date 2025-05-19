@@ -3,13 +3,14 @@ import { Redis } from 'ioredis';
 import type { Job } from './types.js';
 import { QueueName } from './types.js';
 
-export const REDIS_URL = process.env.NODE_ENV === 'development' ? 'localhost' : 'redis';
-
 class Connection {
   private conn: Redis;
   private connected: boolean;
   constructor() {
-    this.conn = new Redis({ host: REDIS_URL, maxRetriesPerRequest: null });
+    this.conn = new Redis({
+      host: process.env.NODE_ENV === 'development' ? 'localhost' : 'redis',
+      maxRetriesPerRequest: null
+    });
     this.connected = false;
     this.conn.on('close', () => (this.connected = false));
     this.conn.on('connect', () => (this.connected = true));
