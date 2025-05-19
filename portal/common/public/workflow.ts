@@ -199,6 +199,8 @@ export type WorkflowEvent = {
   comment?: string;
   target?: WorkflowState;
   userId: number | null;
+  // if this is a migration, we don't want to create user tasks
+  migration?: boolean
 };
 
 export type JumpParams = {
