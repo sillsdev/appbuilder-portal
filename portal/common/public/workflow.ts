@@ -52,6 +52,16 @@ export function isWorkflowState(state: string): state is WorkflowState {
   return Object.values(WorkflowState).includes(state as WorkflowState);
 }
 
+const AuthorStates = [
+  WorkflowState.Author_Configuration,
+  WorkflowState.Author_Download,
+  WorkflowState.Author_Upload
+] as const;
+type AuthorState = typeof AuthorStates[number];
+export function isAuthorState(state: string): state is AuthorState {
+  return AuthorStates.includes(state as AuthorState);
+}
+
 export type TerminalState = WorkflowState.Terminated | WorkflowState.Published;
 export function isTerminal(state: WorkflowState): state is TerminalState {
   return state === WorkflowState.Terminated || state === WorkflowState.Published;
