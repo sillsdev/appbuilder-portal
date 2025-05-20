@@ -15,6 +15,8 @@ import { WorkflowType, WorkflowTypeString } from 'sil.appbuilder.portal.common/p
 import {
   Environment,
   ENVKeys,
+  isDeprecated,
+  isWorkflowState,
   WorkflowAction,
   WorkflowInstanceContext,
   WorkflowState
@@ -569,13 +571,8 @@ async function tryCreateInstance(
       return { ok: true, value: usableStatuses.get(Status) };
     }
 
-    /** If it is at these specific activities, redirect to Synchronize Data */
-    const redirectableStates = ['Check Product Publish', 'Check Product Build'].includes(
-      ActivityName
-    );
-
     if (
-      !(Object.values(WorkflowState).includes(ActivityName as WorkflowState) || redirectableStates)
+      !(isWorkflowState(ActivityName) || isDeprecated(ActivityName))
     ) {
       return {
         ok: false,
@@ -647,14 +644,8 @@ async function tryCreateInstance(
       const flow = await Workflow.restore(productId);
       // this will make sure all fields are correct and UserTasks are created if needed
       flow?.send({
-        type: WorkflowAction.Jump,
-        target: redirectableStates
-          ? WorkflowState.Synchronize_Data
-          : (ActivityName as WorkflowState),
-        userId: null,
-        comment: 'Migrate workflow data to new backend',
-        // we still want to create UserTasks if we are in one of the states that is redirected to Synchronize Data
-        migration: !redirectableStates
+        type: WorkflowAction.Migrate,
+        target: ActivityName
       });
     }
     return { ok: true, value: '' };

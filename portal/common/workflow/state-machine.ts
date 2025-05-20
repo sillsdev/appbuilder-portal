@@ -17,6 +17,7 @@ import {
   WorkflowState,
   hasAuthors,
   hasReviewers,
+  isDeprecated,
   jump
 } from '../public/workflow.js';
 
@@ -885,6 +886,20 @@ export const WorkflowStateMachine = setup({
       actions: [
         assign({
           start: ({ event }) => event.target
+        })
+      ],
+      target: `.${WorkflowState.Start}`
+    },
+    [WorkflowAction.Migrate]: {
+      actions: [
+        assign({
+          start: ({ event, context }) => {
+            if (isDeprecated(event.target)) {
+              return WorkflowState.Synchronize_Data;
+            } else {
+              return event.target as WorkflowState;
+            }
+          },
         })
       ],
       target: `.${WorkflowState.Start}`

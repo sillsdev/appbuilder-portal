@@ -23,7 +23,8 @@ import type {
 import {
   ActionType,
   includeStateOrTransition,
-  TerminalStates,
+  isTerminal,
+  WorkflowAction,
   WorkflowState
 } from '../public/workflow.js';
 import { WorkflowStateMachine } from './state-machine.js';
@@ -268,21 +269,53 @@ export class Workflow {
   }
 
   /* PRIVATE METHODS */
-  private async inspect(event: InspectedSnapshotEvent): Promise<void> {
+  private async inspect(iEvent: InspectedSnapshotEvent): Promise<void> {
+    const event = iEvent.event as WorkflowEvent;
     const old = this.currentState;
     const xSnap = this.flow!.getSnapshot();
     this.currentState = WorkflowStateMachine.getStateNodeById(
       `#${WorkflowStateMachine.id}.${xSnap.value}`
     );
 
-    if (old && Workflow.stateName(old) !== xSnap.value && !event.event.migration) {
+    const stateChange = !!old && Workflow.stateName(old) !== xSnap.value;
+    const migration = event.type === WorkflowAction.Migrate;
+    const jump = event.type === WorkflowAction.Jump;
+
+    if (stateChange && !migration) {
       await this.updateProductTransitions(
-        event.event.userId,
+        jump ? null : event.userId,
         Workflow.stateName(old),
         Workflow.stateName(this.currentState),
-        event.event.type,
-        event.event.comment || undefined
+        event.type,
+        jump ? undefined : event.comment
       );
+    } else if (migration) {
+      await DatabaseWrites.productTransitions.create({
+        data: {
+          ProductId: this.productId,
+          DateTransition: new Date(),
+          TransitionType: ProductTransitionType.Migration,
+          WorkflowType: this.config.workflowType
+        }
+      });
+      if (event.target !== xSnap.value) {
+        await DatabaseWrites.productTransitions.create({
+          data: {
+            ProductId: this.productId,
+            InitialState: event.target,
+            DestinationState: xSnap.value,
+            Command: 'Migrate',
+            Comment: `${event.target} => ${xSnap.value}`,
+            DateTransition: new Date(),
+            TransitionType: ProductTransitionType.Activity,
+            WorkflowType: this.config.workflowType,
+          }
+        });
+      }
+      await this.createSnapshot(xSnap.context);
+    }
+
+    if ((stateChange && !migration) || (migration && event.target !== xSnap.value)) {
       await DatabaseWrites.productTransitions.deleteMany({
         where: {
           ProductId: this.productId,
@@ -297,7 +330,7 @@ export class Workflow {
           ProductId: this.productId
         }
       });
-      if (!TerminalStates.includes(xSnap.value))  {
+      if (!isTerminal(xSnap.value)) {
         // only create snapshot if not in a terminal state
         // deletion handled in state machine definition instead
         await this.createSnapshot(xSnap.context);
@@ -306,15 +339,12 @@ export class Workflow {
           type: BullMQ.JobType.UserTasks_Modify,
           scope: 'Product',
           productId: this.productId,
-          comment: event.event.comment || undefined,
+          comment: jump ? undefined : migration ? '' : event.comment,
           operation: {
             type: BullMQ.UserTasks.OpType.Update
           }
         });
       }
-    }
-    else if (event.event.migration) {
-      await this.createSnapshot(xSnap.context);
     }
   }
 

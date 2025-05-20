@@ -48,8 +48,23 @@ export enum WorkflowState {
   Make_It_Live = 'Make It Live',
   Published = 'Published'
 }
+export function isWorkflowState(state: string): state is WorkflowState {
+  return Object.values(WorkflowState).includes(state as WorkflowState);
+}
 
-export const TerminalStates = [WorkflowState.Terminated, WorkflowState.Published];
+export type TerminalState = WorkflowState.Terminated | WorkflowState.Published;
+export function isTerminal(state: WorkflowState): state is TerminalState {
+  return state === WorkflowState.Terminated || state === WorkflowState.Published;
+}
+const DeprecatedStates = [
+  /* Redirect to Synchronize Data */
+  'Check Product Build',
+  'Check Product Publish',
+] as const;
+export type DeprecatedState = (typeof DeprecatedStates)[number];
+export function isDeprecated(state: string): state is DeprecatedState {
+  return DeprecatedStates.includes(state as DeprecatedState);
+}
 
 export enum WorkflowAction {
   Default = 'Default',
@@ -58,6 +73,7 @@ export enum WorkflowAction {
   Hold = 'Hold',
   Reject = 'Reject',
   Jump = 'Jump',
+  Migrate = 'Migrate',
   Product_Created = 'Product Created',
   New_App = 'New App',
   Existing_App = 'Existing App',
@@ -194,14 +210,17 @@ export function includeStateOrTransition(config: WorkflowConfig, filter?: MetaFi
   return include;
 }
 
-export type WorkflowEvent = {
-  type: WorkflowAction;
-  comment?: string;
-  target?: WorkflowState;
-  userId: number | null;
-  // if this is a migration, we don't want to create user tasks
-  migration?: boolean
-};
+export type WorkflowEvent =
+  | {
+      type: Exclude<WorkflowAction, WorkflowAction.Jump | WorkflowAction.Migrate>;
+      userId: number;
+      comment?: string;
+    }
+  | {
+      type: WorkflowAction.Jump;
+      target: WorkflowState;
+    }
+  | { type: WorkflowAction.Migrate; target: string };
 
 export type JumpParams = {
   target: WorkflowState | string;
