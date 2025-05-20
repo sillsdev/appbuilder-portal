@@ -9,6 +9,7 @@ import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 export async function verifyCanViewAndEdit(user: Session, projectId: number): Promise<ServerStatus> {
   // Editing is allowed if the user owns the project, or if the user is an organization
   // admin for the project's organization, or if the user is a super admin
+  if (isNaN(projectId)) return ServerStatus.NotFound;
   const project = await prisma.projects.findUnique({
     where: {
       Id: projectId
