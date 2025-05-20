@@ -160,10 +160,14 @@ export const actions: Actions = {
     if (!form.valid || session.user.userId === form.data.user) return { form, ok: false };
     // if user modified hidden values
     if (
+      !isSuperAdmin(session.user.roles) ||
       !isAdminForOrgs(
-        (await prisma.organizationMemberships.findMany({ where: { UserId: form.data.user } })).map(
-          ({ OrganizationId }) => OrganizationId
-        ),
+        (
+          await prisma.organizationMemberships.findMany({
+            where: { UserId: form.data.user },
+            distinct: 'OrganizationId'
+          })
+        ).map(({ OrganizationId }) => OrganizationId),
         session.user.roles
       )
     ) {
