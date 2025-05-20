@@ -113,15 +113,19 @@ export const load = (async ({ params, locals }) => {
 
 export const actions: Actions = {
   page: async function ({ params, request, locals }) {
-    const userId = (await locals.auth())?.user.userId;
-    if (!userId) return error(400);
+    const user = (await locals.auth())?.user;
+    if (!user) return error(401);
+
+    const orgId = parseInt(params.id!);
 
     const form = await superValidate(request, valibot(projectSearchSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    // if user modified hidden values
+    if (orgId !== form.data.organizationId) return fail(403, { form, ok: false });
 
     const where: Prisma.ProjectsWhereInput = {
       ...projectFilter(form.data),
-      ...whereStatements(params.filter!, parseInt(params.id!), userId)
+      ...whereStatements(params.filter!, parseInt(params.id!), user.userId)
     };
 
     const projects = await prisma.projects.findMany({
@@ -161,10 +165,12 @@ export const actions: Actions = {
     if (
       !form.valid ||
       !form.data.operation ||
-      (!form.data.projects?.length && form.data.projectId === null) ||
-      orgId !== form.data.orgId
-    )
+      (!form.data.projects?.length && form.data.projectId === null)
+    ) {
       return fail(400, { form, ok: false });
+    }
+    // if user modified hidden values
+    if (orgId !== form.data.orgId) return fail(403, { form, ok: false });
     // prefer single project over array
     const projects = await prisma.projects.findMany({
       where: {
@@ -201,6 +207,24 @@ export const actions: Actions = {
 
     const form = await superValidate(event.request, valibot(bulkProductActionSchema));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
+    if (// if user modified hidden values
+      !(
+        await prisma.projects.findMany({
+          where: {
+            Products: {
+              some: {
+                Id: { in: form.data.products }
+              }
+            }
+          },
+          select: {
+            OwnerId: true
+          }
+        })
+      ).every((p) => canModifyProject(session, p.OwnerId, orgId))
+    ) {
+      return fail(403);
+    }
 
     await Promise.all(form.data.products.map((p) => doProductAction(p, form.data.operation!)));
 
