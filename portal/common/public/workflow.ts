@@ -60,6 +60,10 @@ const DeprecatedStates = [
   /* Redirect to Synchronize Data */
   'Check Product Build',
   'Check Product Publish',
+  /* Set context.environment.GOOGLE_PLAY_EXISTING to '1', redirect to Product Build */
+  'Set Google Play Existing',
+  /* Enqueue GetVersionCode, redirect to Verify and Publish */
+  'Set Google Play Uploaded'
 ] as const;
 export type DeprecatedState = (typeof DeprecatedStates)[number];
 export function isDeprecated(state: string): state is DeprecatedState {
