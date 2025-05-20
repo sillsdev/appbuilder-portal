@@ -17,6 +17,7 @@ import {
   WorkflowState,
   hasAuthors,
   hasReviewers,
+  isAuthorState,
   isDeprecated,
   jump
 } from '../public/workflow.js';
@@ -903,6 +904,17 @@ export const WorkflowStateMachine = setup({
                   return WorkflowState.Product_Build;
                 case 'Set Google Play Uploaded':
                   return WorkflowState.Verify_and_Publish;
+              }
+            } else if (
+              isAuthorState(event.target) &&
+              !(context.options.has(WorkflowOptions.AllowTransferToAuthors) && context.hasAuthors)
+            ) {
+              switch (event.target) {
+                case WorkflowState.Author_Configuration:
+                  return WorkflowState.App_Builder_Configuration;
+                case WorkflowState.Author_Download:
+                case WorkflowState.Author_Upload:
+                  return WorkflowState.Synchronize_Data;
               }
             } else {
               return event.target as WorkflowState;
