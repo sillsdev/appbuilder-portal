@@ -478,18 +478,15 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     if (uninterestedStatuses.get(product.Status)) {
       migrationErrors.push({
         Id: product.Id,
-        error: uninterestedStatuses.get(product.Status)
+        error: uninterestedStatuses.get(product.Status)!
       });
       continue;
     }
 
     // We are interested in the Idled, Error, and Finalized states
     if (usableStatuses.get(product.Status)) {
-      const res = await tryCreateInstance(
-        product.Id,
-        product.Status,
-        product.ActivityName,
-        (s) => job.log(s)
+      const res = await tryCreateInstance(product.Id, product.Status, product.ActivityName, (s) =>
+        job.log(s)
       );
       if (res.ok) {
         migratedProducts++;
@@ -570,12 +567,10 @@ async function tryCreateInstance(
 
     if (Status === ProcessStatus.Finalized) {
       await DatabaseWrites.workflowInstances.markProcessFinalized(productId);
-      return { ok: true, value: usableStatuses.get(Status) };
+      return { ok: true, value: '' };
     }
 
-    if (
-      !(isWorkflowState(ActivityName) || isDeprecated(ActivityName))
-    ) {
+    if (!(isWorkflowState(ActivityName) || isDeprecated(ActivityName))) {
       return {
         ok: false,
         value: `Unrecognized ActivityName '${ActivityName}'`
