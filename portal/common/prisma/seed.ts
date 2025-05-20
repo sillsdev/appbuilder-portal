@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Command, Option } from 'commander';
+import { ProductType, WorkflowOptions } from '../public/workflow.js';
 
 const program = new Command();
 program
@@ -145,7 +146,8 @@ async function main() {
       Description: 'SIL Default Workflow for Publishing to Google Play',
       WorkflowScheme: 'SIL_Default_AppBuilders_Android_GooglePlay',
       WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_GooglePlay_Flow',
-      StoreTypeId: 1
+      StoreTypeId: 1,
+      WorkflowOptions: [WorkflowOptions.AdminStoreAccess, WorkflowOptions.ApprovalProcess]
     },
     {
       Id: 2,
@@ -162,7 +164,7 @@ async function main() {
       Name: 'sil_android_google_play_republish',
       Type: 3,
       Enabled: true,
-      Description: 'SIL Default Workflow for Republish to Google Play',
+      Description: 'SIL Default Workflow for Republishing to Google Play',
       WorkflowScheme: 'SIL_Default_AppBuilders_Android_GooglePlay_Republish',
       WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_GooglePlay_Flow',
       StoreTypeId: 1
@@ -172,10 +174,12 @@ async function main() {
       Name: 'sil_android_s3',
       Type: 1,
       Enabled: true,
-      Description: 'SIL Default Workflow for Publish to Amazon S3 Bucket',
+      Description: 'SIL Default Workflow for Publishing to Amazon S3 Bucket',
       WorkflowScheme: 'SIL_Default_AppBuilders_Android_S3',
       WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_S3_Flow',
-      StoreTypeId: 2
+      StoreTypeId: 2,
+      ProductType: ProductType.Android_S3,
+      WorkflowOptions: [WorkflowOptions.ApprovalProcess]
     },
     {
       Id: 5,
@@ -185,7 +189,8 @@ async function main() {
       Description: 'SIL Default Workflow for Rebuilding to Amazon S3 Bucket',
       WorkflowScheme: 'SIL_Default_AppBuilders_Android_S3_Rebuild',
       WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_S3_Flow',
-      StoreTypeId: 2
+      StoreTypeId: 2,
+      ProductType: ProductType.Android_S3
     },
     {
       Id: 6,
@@ -195,7 +200,8 @@ async function main() {
       Description: 'Low Admin Workflow for Publishing to Google Play',
       WorkflowScheme: 'SIL_LowAdmin_AppBuilders_Android_GooglePlay',
       WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_GooglePlay_Flow',
-      StoreTypeId: 1
+      StoreTypeId: 1,
+      WorkflowOptions: [WorkflowOptions.AdminStoreAccess]
     },
     {
       Id: 7,
@@ -215,7 +221,8 @@ async function main() {
       Description: 'No Admin Workflow for Publishing to S3',
       WorkflowScheme: 'SIL_NoAdmin_AppBuilders_Android_S3',
       WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_S3_Flow',
-      StoreTypeId: 2
+      StoreTypeId: 2,
+      ProductType: ProductType.Android_S3
     },
     {
       Id: 9,
@@ -225,7 +232,9 @@ async function main() {
       Description: 'SIL Default Workflow for Publishing PWA to Cloud',
       WorkflowScheme: 'SIL_Default_AppBuilders_Pwa_Cloud',
       WorkflowBusinessFlow: 'SIL_AppBuilders_Web_Flow',
-      StoreTypeId: 3
+      StoreTypeId: 3,
+      Properties: '{ "build:targets" : "pwa" }',
+      ProductType: ProductType.Web
     },
     {
       Id: 10,
@@ -235,7 +244,9 @@ async function main() {
       Description: 'SIL Default Workflow for Rebuilding PWA to Cloud',
       WorkflowScheme: 'SIL_Default_AppBuilders_Pwa_Cloud_Rebuild',
       WorkflowBusinessFlow: 'SIL_AppBuilders_Web_Flow',
-      StoreTypeId: 3
+      StoreTypeId: 3,
+      Properties: '{ "build:targets" : "pwa" }',
+      ProductType: ProductType.Web
     },
     {
       Id: 11,
@@ -245,7 +256,8 @@ async function main() {
       Description: 'SIL Default Workflow for Publishing HTML to Cloud',
       WorkflowScheme: 'SIL_Default_AppBuilders_Html_Cloud',
       WorkflowBusinessFlow: 'SIL_AppBuilders_Web_Flow',
-      StoreTypeId: 3
+      StoreTypeId: 3,
+      ProductType: ProductType.Web
     },
     {
       Id: 12,
@@ -255,7 +267,8 @@ async function main() {
       Description: 'SIL Default Workflow for Rebuilding HTML to Cloud',
       WorkflowScheme: 'SIL_Default_AppBuilders_Html_Cloud_Rebuild',
       WorkflowBusinessFlow: 'SIL_AppBuilders_Web_Flow',
-      StoreTypeId: 3
+      StoreTypeId: 3,
+      ProductType: ProductType.Web
     },
     {
       Id: 13,
@@ -266,7 +279,7 @@ async function main() {
       WorkflowScheme: 'SIL_NoAdmin_AppBuilders_Android_S3',
       WorkflowBusinessFlow: 'SIL_AppBuilders_AssetPackage_Flow',
       StoreTypeId: 2,
-      Properties: '{ "build:targets" : "asset-package" }'
+      ProductType: ProductType.AssetPackage
     },
     {
       Id: 14,
@@ -277,7 +290,7 @@ async function main() {
       WorkflowScheme: 'SIL_Default_AppBuilders_Android_S3_Rebuild',
       WorkflowBusinessFlow: 'SIL_AppBuilders_AssetPackage_Flow',
       StoreTypeId: 2,
-      Properties: '{ "build:targets" : "asset-package" }'
+      ProductType: ProductType.AssetPackage
     }
   ];
 
