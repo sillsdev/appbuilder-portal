@@ -300,6 +300,7 @@ export const actions = {
       return fail(403, { form, ok: false });
     }
     await DatabaseWrites.products.delete(form.data.productId);
+    return { form, ok: true };
   },
   async deleteAuthor(event) {
     // permissions checked in auth
@@ -414,6 +415,7 @@ export const actions = {
         }
       }))
     ) {
+      return fail(403, { form, ok: false });
     }
     // ISSUE: #1101 Appears that CanUpdate is not used
     const author = await DatabaseWrites.authors.create({
