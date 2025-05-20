@@ -54,6 +54,7 @@ export const actions = {
     if (form.data.id !== parseInt(event.params.id)) return error(404);
 
     const user = (await event.locals.auth())!.user;
+    // if user modified hidden values
     if (
       !(
         user.userId === form.data.id ||

@@ -43,14 +43,16 @@ export const actions = {
     const form = await superValidate(event, valibot(toggleRoleSchema));
 
     if (!form.valid) return fail(400, { form, ok: false });
-    if (form.data.userId !== parseInt(event.params.id)) return error(404);
 
     const user = (await event.locals.auth())!.user;
-
+    // if user modified hidden values
     if (
-      !(await prisma.organizations.findFirst({
-        where: where(form.data.userId, user.userId, isSuperAdmin(user.roles), form.data.orgId)
-      }))
+      !(
+        form.data.userId === parseInt(event.params.id) ||
+        (await prisma.organizations.findFirst({
+          where: where(form.data.userId, user.userId, isSuperAdmin(user.roles), form.data.orgId)
+        }))
+      )
     ) {
       return error(403);
     }
