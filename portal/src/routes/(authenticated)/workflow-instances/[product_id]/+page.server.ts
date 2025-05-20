@@ -91,6 +91,9 @@ export const load: PageServerLoad = async ({ params }) => {
       orderBy: [
         {
           DateTransition: 'asc'
+        },
+        {
+          Id: 'asc'
         }
       ]
     })
@@ -112,8 +115,7 @@ export const actions = {
 
     flow.send({
       type: WorkflowAction.Jump,
-      target: form.data.state as WorkflowState,
-      userId: null
+      target: form.data.state as WorkflowState
     });
 
     return { form, ok: true };
