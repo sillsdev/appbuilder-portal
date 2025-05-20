@@ -39,7 +39,8 @@ export const actions = {
   async togglePublic(event) {
     const form = await superValidate(event.request, valibot(togglePublicSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    if (form.data.orgId !== parseInt(event.params.id)) return fail(404, { form, ok: false });
+    // if user modified hidden values
+    if (form.data.orgId !== parseInt(event.params.id)) return fail(403, { form, ok: false });
     await DatabaseWrites.organizations.update({
       where: {
         Id: form.data.orgId
@@ -53,7 +54,8 @@ export const actions = {
   async toggleProduct(event) {
     const form = await superValidate(event.request, valibot(toggleProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    if (form.data.orgId !== parseInt(event.params.id)) return fail(404, { form, ok: false });
+    // if user modified hidden values
+    if (form.data.orgId !== parseInt(event.params.id)) return fail(403, { form, ok: false });
     await DatabaseWrites.organizationProductDefinitions.toggleForOrg(
       form.data.orgId,
       form.data.prodDefId,

@@ -28,6 +28,8 @@ export const actions = {
   async default(event) {
     const form = await superValidate(event.request, valibot(editInfoSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    // if user modified hidden values
+    if (form.data.id !== parseInt(event.params.id)) return fail(403, { form, ok: false });
     await DatabaseWrites.organizations.update({
       where: {
         Id: form.data.id
