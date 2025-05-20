@@ -36,8 +36,14 @@
 
   let { product, transitions }: Props = $props();
 
+  const landmarks = [2, 3, 4, 6] as const;
+  type Landmark = typeof landmarks[number];
+  function isLandmark(t: number): t is Landmark {
+    return landmarks.includes(t as Landmark);
+  }
+
   function stateString(workflowTypeNum: number, transitionType: number) {
-    if ([2, 3, 4].includes(transitionType)) {
+    if (isLandmark(transitionType)) {
       return m.transitions_types({
         type: transitionType,
         workflowType: m.flowDefs_types({ type: workflowTypeNum })
@@ -89,21 +95,19 @@
       </thead>
       <tbody>
         {#each transitions as transition}
-          <tr class:font-bold={[2, 3, 4, 6].includes(transition.TransitionType)}>
+          <tr class:font-bold={isLandmark(transition.TransitionType)}>
             <td>
               {#if transition.TransitionType === ProductTransitionType.Activity}
                 {transition.InitialState}
               {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
                 * {transition.InitialState}
-              {:else if transition.TransitionType === ProductTransitionType.Migration}
-                {m.project_products_transitions_transitionTypes({ type: 6, workflowType: '' })}
               {:else}
                 {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
               {/if}
             </td>
             <td>
               <!-- Does not include WorkflowUserId mapping. Might be needed but didn't seem like it to me -->
-              {#if ![2, 3, 4, 6].includes(transition.TransitionType)}
+              {#if !isLandmark(transition.TransitionType)}
                 {transition.User?.Name || transition.AllowedUserNames || m.appName()}
               {/if}
             </td>
