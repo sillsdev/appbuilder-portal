@@ -214,7 +214,7 @@ export const load = (async ({ locals, params }) => {
   ).map((pd) => pd.ProductDefinition);
 
   const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
-
+  const userId = (await locals.auth())!.user.userId;
   return {
     project: {
       ...project,
@@ -229,7 +229,7 @@ export const load = (async ({ locals, params }) => {
         ActiveTransition: strippedTransitions.find(
           (t) => (t[0] ?? t[1])?.ProductId === product.Id
         )?.[1],
-        actions: getProductActions(product, project.Owner.Id, session.user.userId)
+        actions: getProductActions(product, project.Owner.Id, userId)
       }))
     },
     productsToAdd: productDefinitions.filter((pd) => !projectProductDefinitionIds.includes(pd.Id)),
@@ -278,7 +278,7 @@ export const load = (async ({ locals, params }) => {
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
-    userGroups: (await userGroupsForOrg(session.user.userId, project.Organization.Id)).map(
+    userGroups: (await userGroupsForOrg(userId, project.Organization.Id)).map(
       (g) => g.GroupId
     )
   };

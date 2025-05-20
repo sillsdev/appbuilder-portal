@@ -1,4 +1,3 @@
-import { verifyCanViewAndEdit } from '$lib/projects/server';
 import { idSchema } from '$lib/valibot';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
@@ -51,10 +50,7 @@ export const load = (async ({ params }) => {
 
 export const actions: Actions = {
   default: async function (event) {
-<<<<<<< HEAD
     // permissions checked in auth
-=======
->>>>>>> cc56cfa97 (Lockdown /projects/id)
     const form = await superValidate(event.request, valibot(projectPropertyEditSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const success = await DatabaseWrites.projects.update(parseInt(event.params.id), {
