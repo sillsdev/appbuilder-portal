@@ -89,19 +89,21 @@
       </thead>
       <tbody>
         {#each transitions as transition}
-          <tr class:font-bold={[2, 3, 4].includes(transition.TransitionType)}>
+          <tr class:font-bold={[2, 3, 4, 6].includes(transition.TransitionType)}>
             <td>
               {#if transition.TransitionType === ProductTransitionType.Activity}
                 {transition.InitialState}
               {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
                 * {transition.InitialState}
+              {:else if transition.TransitionType === ProductTransitionType.Migration}
+                {m.project_products_transitions_transitionTypes({ type: 6, workflowType: '' })}
               {:else}
                 {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
               {/if}
             </td>
             <td>
               <!-- Does not include WorkflowUserId mapping. Might be needed but didn't seem like it to me -->
-              {#if ![2, 3, 4].includes(transition.TransitionType)}
+              {#if ![2, 3, 4, 6].includes(transition.TransitionType)}
                 {transition.User?.Name || transition.AllowedUserNames || m.appName()}
               {/if}
             </td>
