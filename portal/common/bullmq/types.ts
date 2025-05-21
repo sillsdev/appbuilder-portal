@@ -70,7 +70,7 @@ export enum JobType {
   Email_SendBatchUserTaskNotifications = 'Send Batch User Task Notifications',
   Email_NotifySuperAdminsOfNewOrganizationRequest = 'Notify Super Admins of New Organization Request',
   Email_NotifySuperAdminsOfOfflineSystems = 'Notify Super Admins of Offline Systems',
-  Email_NotifySuperAdminsGeneric = 'Notify Super Admins (Generic)',
+  Email_NotifySuperAdminsLowPriority = 'Notify Super Admins (Low Priority)',
   Email_ProjectImportReport = 'Project Import Report'
 }
 
@@ -255,12 +255,10 @@ export namespace Email {
     type: JobType.Email_NotifySuperAdminsOfOfflineSystems;
   }
 
-  export interface NotifySuperAdminsGeneric {
-    type: JobType.Email_NotifySuperAdminsGeneric;
+  export interface NotifySuperAdminsLowPriority {
+    type: JobType.Email_NotifySuperAdminsLowPriority;
     messageKey: string;
-    messageProperties: {
-      [key: string]: string;
-    };
+    messageProperties: Record<string, string>;
     link?: string;
   }
   export interface ProjectImportReport {
@@ -294,7 +292,7 @@ export type JobTypeMap = {
   [JobType.Email_SendBatchUserTaskNotifications]: Email.SendBatchUserTaskNotifications;
   [JobType.Email_NotifySuperAdminsOfNewOrganizationRequest]: Email.NotifySuperAdminsOfNewOrganizationRequest;
   [JobType.Email_NotifySuperAdminsOfOfflineSystems]: Email.NotifySuperAdminsOfOfflineSystems;
-  [JobType.Email_NotifySuperAdminsGeneric]: Email.NotifySuperAdminsGeneric;
+  [JobType.Email_NotifySuperAdminsLowPriority]: Email.NotifySuperAdminsLowPriority;
   [JobType.Email_ProjectImportReport]: Email.ProjectImportReport;
   // Add more mappings here as needed
 };

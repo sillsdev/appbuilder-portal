@@ -168,9 +168,9 @@ export class Emails extends BullWorker<BullMQ.Job> {
         return Executor.Email.notifySuperAdminsOfOfflineSystems(
           job as Job<BullMQ.Email.NotifySuperAdminsOfOfflineSystems>
         );
-      case BullMQ.JobType.Email_NotifySuperAdminsGeneric:
-        return Executor.Email.notifySuperAdminsGeneric(
-          job as Job<BullMQ.Email.NotifySuperAdminsGeneric>
+      case BullMQ.JobType.Email_NotifySuperAdminsLowPriority:
+        return Executor.Email.notifySuperAdminsLowPriority(
+          job as Job<BullMQ.Email.NotifySuperAdminsLowPriority>
         );
       case BullMQ.JobType.Email_ProjectImportReport:
         return Executor.Email.reportProjectImport(job as Job<BullMQ.Email.ProjectImportReport>);

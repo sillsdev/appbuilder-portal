@@ -220,8 +220,8 @@ export async function notifySuperAdminsOfOfflineSystems(
   );
 }
 
-export async function notifySuperAdminsGeneric(
-  job: Job<BullMQ.Email.NotifySuperAdminsGeneric>
+export async function notifySuperAdminsLowPriority(
+  job: Job<BullMQ.Email.NotifySuperAdminsLowPriority>
 ): Promise<unknown> {
   const superAdmins = await prisma.users.findMany({
     where: {

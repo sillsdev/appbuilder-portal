@@ -219,7 +219,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
 
 async function notifyNotFound(projectId: number) {
   await Queues.Emails.add(`Notify SuperAdmins of Failure to Find Project #${projectId}`, {
-    type: BullMQ.JobType.Email_NotifySuperAdminsGeneric,
+    type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
     messageKey: 'projectRecordNotFound',
     messageProperties: {
       projectId: '' + projectId

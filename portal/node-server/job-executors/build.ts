@@ -431,7 +431,7 @@ async function notifyFailed(
 }
 async function notifyProductNotFound(productId: string) {
   await Queues.Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
-    type: BullMQ.JobType.Email_NotifySuperAdminsGeneric,
+    type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
     messageKey: 'buildProductRecordNotFound',
     messageProperties: {
       productId
