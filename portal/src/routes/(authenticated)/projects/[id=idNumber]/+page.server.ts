@@ -2,11 +2,9 @@ import { baseLocale } from '$lib/paraglide/runtime';
 import { getProductActions, ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { projectActionSchema } from '$lib/projects';
-import {
-  doProjectAction,
-  userGroupsForOrg
-} from '$lib/projects/server';
+import { doProjectAction, userGroupsForOrg } from '$lib/projects/server';
 import { deleteSchema, idSchema, propertiesSchema, stringIdSchema } from '$lib/valibot';
+import { trace, type Span } from '@opentelemetry/api';
 import { error } from '@sveltejs/kit';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
@@ -15,6 +13,8 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
+
+const tracer = trace.getTracer('projects-id');
 
 const updateOwnerGroupSchema = v.object({
   owner: idSchema,
@@ -37,251 +37,249 @@ const productActionSchema = v.object({
 // Are we sending too much data?
 // Maybe? I pared it down a bit with `select` instead of `include` - Aidan
 export const load = (async ({ locals, params }) => {
-  const session = (await locals.auth())!;
-  // permissions checked in auth
-  const project = await prisma.projects.findUniqueOrThrow({
-    where: {
-      Id: parseInt(params.id)
-    },
-    select: {
-      Id: true,
-      Name: true,
-      Description: true,
-      WorkflowProjectUrl: true,
-      IsPublic: true,
-      AllowDownloads: true,
-      DateCreated: true,
-      DateArchived: true,
-      Language: true,
-      ApplicationType: {
-        select: {
-          Description: true
-        }
-      },
-      Organization: {
-        select: {
-          Id: true
-        }
-      },
-      Products: {
-        select: {
-          Id: true,
-          DateUpdated: true,
-          DatePublished: true,
-          PublishLink: true,
-          Properties: true,
-          ProductDefinition: {
-            select: {
-              Id: true,
-              Name: true,
-              RebuildWorkflowId: true,
-              RepublishWorkflowId: true,
-              Workflow: {
-                select: {
-                  ProductType: true
-                }
-              }
-            }
-          },
-          // Probably don't need to optimize this. Unless it's a really large org, there probably won't be very many of these records for an individual product. In most cases, there will only be zero or one. The only times there will be more is if it's an admin task or an author task.
-          UserTasks: {
-            select: {
-              DateCreated: true,
-              UserId: true
-            }
-          },
-          Store: {
-            select: {
-              Description: true
-            }
-          },
-          WorkflowInstance: {
-            select: {
-              Id: true,
-              WorkflowDefinition: {
-                select: {
-                  Type: true
-                }
-              }
-            }
-          }
-        }
-      },
-      Owner: {
-        select: {
-          Id: true,
-          Name: true
-        }
-      },
-      Group: {
-        select: {
-          Id: true,
-          Name: true
-        }
-      },
-      Authors: {
-        select: {
-          Id: true,
-          Users: {
-            select: {
-              Id: true,
-              Name: true
-            }
-          }
-        }
-      },
-      Reviewers: {
-        select: {
-          Id: true,
-          Name: true,
-          Email: true
-        }
-      }
-    }
-  });
-
-  const organization = await prisma.organizations.findUnique({
-    where: {
-      Id: project.Organization.Id
-    },
-    select: {
-      OrganizationStores: {
-        select: {
-          Store: {
-            select: {
-              Id: true,
-              Name: true,
-              Description: true,
-              StoreTypeId: true
-            }
-          }
-        }
-      }
-    }
-  });
-
-  const transitions = await prisma.productTransitions.findMany({
-    where: {
-      ProductId: {
-        in: project.Products.map((p) => p.Id)
-      }
-      // DateTransition: null
-    },
-    orderBy: [
-      {
-        DateTransition: 'asc'
-      },
-      {
-        Id: 'asc'
-      }
-    ],
-    include: {
-      User: {
-        select: {
-          Name: true
-        }
-      }
-    }
-  });
-  const strippedTransitions = project.Products.map((p) => [
-    transitions.findLast((tr) => tr.ProductId === p.Id && tr.DateTransition !== null)!,
-    transitions.find((tr) => tr.ProductId === p.Id && tr.DateTransition === null)!
-  ]);
-
-  const productDefinitions = (
-    await prisma.organizationProductDefinitions.findMany({
+  return tracer.startActiveSpan('load', async (span: Span) => {
+    const session = (await locals.auth())!;
+    // permissions checked in auth
+    const project = await prisma.projects.findUniqueOrThrow({
       where: {
-        OrganizationId: project.Organization.Id,
-        ProductDefinition: {
-          ApplicationTypes: project.ApplicationType
-        }
+        Id: parseInt(params.id)
       },
       select: {
-        ProductDefinition: {
+        Id: true,
+        Name: true,
+        Description: true,
+        WorkflowProjectUrl: true,
+        IsPublic: true,
+        AllowDownloads: true,
+        DateCreated: true,
+        DateArchived: true,
+        Language: true,
+        ApplicationType: {
+          select: {
+            Description: true
+          }
+        },
+        Organization: {
+          select: {
+            Id: true
+          }
+        },
+        Products: {
+          select: {
+            Id: true,
+            DateUpdated: true,
+            DatePublished: true,
+            PublishLink: true,
+            Properties: true,
+            ProductDefinition: {
+              select: {
+                Id: true,
+                Name: true,
+                RebuildWorkflowId: true,
+                RepublishWorkflowId: true,
+                Workflow: {
+                  select: {
+                    ProductType: true
+                  }
+                }
+              }
+            },
+            // Probably don't need to optimize this. Unless it's a really large org, there probably won't be very many of these records for an individual product. In most cases, there will only be zero or one. The only times there will be more is if it's an admin task or an author task.
+            UserTasks: {
+              select: {
+                DateCreated: true,
+                UserId: true
+              }
+            },
+            Store: {
+              select: {
+                Description: true
+              }
+            },
+            WorkflowInstance: {
+              select: {
+                Id: true,
+                WorkflowDefinition: {
+                  select: {
+                    Type: true
+                  }
+                }
+              }
+            }
+          }
+        },
+        Owner: {
+          select: {
+            Id: true,
+            Name: true
+          }
+        },
+        Group: {
+          select: {
+            Id: true,
+            Name: true
+          }
+        },
+        Authors: {
+          select: {
+            Id: true,
+            Users: {
+              select: {
+                Id: true,
+                Name: true
+              }
+            }
+          }
+        },
+        Reviewers: {
           select: {
             Id: true,
             Name: true,
-            Description: true,
-            Workflow: {
+            Email: true
+          }
+        }
+      }
+    });
+
+    const organization = await prisma.organizations.findUnique({
+      where: {
+        Id: project.Organization.Id
+      },
+      select: {
+        OrganizationStores: {
+          select: {
+            Store: {
               select: {
+                Id: true,
+                Name: true,
+                Description: true,
                 StoreTypeId: true
               }
             }
           }
         }
       }
-    })
-  ).map((pd) => pd.ProductDefinition);
+    });
 
-  const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
-  const userId = (await locals.auth())!.user.userId;
-  return {
-    project: {
-      ...project,
-      OwnerId: project.Owner.Id,
-      GroupId: project.Group.Id,
-      Products: project.Products.map((product) => ({
-        ...product,
-        Transitions: transitions.filter((t) => t.ProductId === product.Id),
-        PreviousTransition: strippedTransitions.find(
-          (t) => (t[0] ?? t[1])?.ProductId === product.Id
-        )?.[0],
-        ActiveTransition: strippedTransitions.find(
-          (t) => (t[0] ?? t[1])?.ProductId === product.Id
-        )?.[1],
-        actions: getProductActions(product, project.Owner.Id, userId)
-      }))
-    },
-    productsToAdd: productDefinitions.filter((pd) => !projectProductDefinitionIds.includes(pd.Id)),
-    stores: organization?.OrganizationStores.map((os) => os.Store) ?? [],
-    possibleProjectOwners: await prisma.users.findMany({
+    const transitions = await prisma.productTransitions.findMany({
       where: {
-        OrganizationMemberships: {
-          some: {
-            OrganizationId: project.Organization.Id
-          }
+        ProductId: {
+          in: project.Products.map((p) => p.Id)
+        }
+        // DateTransition: null
+      },
+      orderBy: [
+        {
+          DateTransition: 'asc'
         },
-        GroupMemberships: {
-          some: {
-            GroupId: project.Group.Id
+        {
+          Id: 'asc'
+        }
+      ],
+      include: {
+        User: {
+          select: {
+            Name: true
           }
         }
       }
-    }),
-    possibleGroups: await prisma.groups.findMany({
-      where: {
-        OwnerId: project.Organization.Id
-      }
-    }),
-    // All users who are members of the group and have the author role in the project's organization
-    // May be a more efficient way to search this, by referencing group memberships instead of users
-    authorsToAdd: await prisma.users.findMany({
-      where: {
-        GroupMemberships: {
-          some: {
-            GroupId: project?.Group.Id
+    });
+    const strippedTransitions = project.Products.map((p) => [
+      transitions.findLast((tr) => tr.ProductId === p.Id && tr.DateTransition !== null)!,
+      transitions.find((tr) => tr.ProductId === p.Id && tr.DateTransition === null)!
+    ]);
+
+    const productDefinitions = (
+      await prisma.organizationProductDefinitions.findMany({
+        where: {
+          OrganizationId: project.Organization.Id,
+          ProductDefinition: {
+            ApplicationTypes: project.ApplicationType
           }
         },
-        UserRoles: {
-          some: {
-            OrganizationId: project?.Organization.Id,
-            RoleId: RoleId.Author
-          }
-        },
-        Authors: {
-          none: {
-            ProjectId: project.Id
+        select: {
+          ProductDefinition: {
+            select: {
+              Id: true,
+              Name: true,
+              Description: true,
+              Workflow: {
+                select: {
+                  StoreTypeId: true
+                }
+              }
+            }
           }
         }
-      }
-    }),
-    authorForm: await superValidate(valibot(addAuthorSchema)),
-    reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
-    actionForm: await superValidate(valibot(projectActionSchema)),
-    userGroups: (await userGroupsForOrg(userId, project.Organization.Id)).map(
-      (g) => g.GroupId
-    )
-  };
+      })
+    ).map((pd) => pd.ProductDefinition);
+
+    const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
+    const userId = (await locals.auth())!.user.userId;
+    return {
+      project: {
+        ...project,
+        OwnerId: project.Owner.Id,
+        GroupId: project.Group.Id,
+        Products: project.Products.map((product) => ({
+          ...product,
+          Transitions: transitions.filter((t) => t.ProductId === product.Id),
+          PreviousTransition: strippedTransitions.find(
+            (t) => (t[0] ?? t[1])?.ProductId === product.Id
+          )?.[0],
+          ActiveTransition: strippedTransitions.find(
+            (t) => (t[0] ?? t[1])?.ProductId === product.Id
+          )?.[1],
+          actions: getProductActions(product, project.Owner.Id, userId)
+        }))
+      },
+      productsToAdd: productDefinitions.filter(
+        (pd) => !projectProductDefinitionIds.includes(pd.Id)
+      ),
+      stores: organization?.OrganizationStores.map((os) => os.Store) ?? [],
+      possibleProjectOwners: await prisma.users.findMany({
+        where: {
+          OrganizationMemberships: {
+            some: {
+              OrganizationId: project.Organization.Id
+            }
+          }
+        }
+      }),
+      possibleGroups: await prisma.groups.findMany({
+        where: {
+          OwnerId: project.Organization.Id
+        }
+      }),
+      // All users who are members of the group and have the author role in the project's organization
+      // May be a more efficient way to search this, by referencing group memberships instead of users
+      authorsToAdd: await prisma.users.findMany({
+        where: {
+          GroupMemberships: {
+            some: {
+              GroupId: project?.Group.Id
+            }
+          },
+          UserRoles: {
+            some: {
+              OrganizationId: project?.Organization.Id,
+              RoleId: RoleId.Author
+            }
+          },
+          Authors: {
+            none: {
+              ProjectId: project.Id
+            }
+          }
+        }
+      }),
+      authorForm: await superValidate(valibot(addAuthorSchema)),
+      reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
+      actionForm: await superValidate(valibot(projectActionSchema)),
+      userGroups: (await userGroupsForOrg(userId, project.Organization.Id)).map((g) => g.GroupId),
+      trace: span.end()
+    };
+  });
 }) satisfies PageServerLoad;
 
 async function verifyProduct(event: RequestEvent, Id: string) {
@@ -403,7 +401,8 @@ export const actions = {
     const form = await superValidate(event.request, valibot(addAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const projectId = parseInt(event.params.id);
-    if (// if user modified hidden values
+    if (
+      // if user modified hidden values
       !(await prisma.organizationMemberships.findFirst({
         where: {
           UserId: form.data.author,
@@ -496,8 +495,7 @@ export const actions = {
     // permissions checked in auth
 
     const form = await superValidate(event.request, valibot(projectActionSchema));
-    if (!form.valid || !form.data.operation)
-      return fail(400, { form, ok: false });
+    if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
     // prefer single project over array
     const project = await prisma.projects.findUniqueOrThrow({
       where: { Id: parseInt(event.params.id) },
