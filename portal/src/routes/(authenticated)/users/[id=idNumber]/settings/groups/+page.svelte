@@ -61,7 +61,6 @@
           }}
         >
           <input type="hidden" name="orgId" value={org.Id} />
-          <input type="hidden" name="userId" value={data.subject?.Id} />
           <input type="hidden" name="groupId" value={group.Id} />
           <input
             type="checkbox"

@@ -10,7 +10,6 @@ import type { Actions, PageServerLoad } from './$types';
 
 const toggleGroupSchema = v.object({
   orgId: idSchema,
-  userId: idSchema,
   groupId: idSchema,
   enabled: v.boolean()
 });
@@ -56,21 +55,24 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false });
 
     const user = (await event.locals.auth())!.user;
+    const subjectId = parseInt(event.params.id);
     // if user modified hidden values
     if (
-      !(
-        form.data.userId === parseInt(event.params.id) ||
-        (await prisma.organizations.findFirst({
-          where: where(form.data.userId, user.userId, isSuperAdmin(user.roles), form.data.orgId)
-        }))
-      )
+      !(await prisma.organizations.findFirst({
+        where: {
+          AND: [
+            where(subjectId, user.userId, isSuperAdmin(user.roles), form.data.orgId),
+            { Groups: { some: { Id: form.data.groupId } } }
+          ]
+        }
+      }))
     ) {
       return error(403);
     }
 
     const ok = await DatabaseWrites.groupMemberships.toggleForOrg(
       form.data.orgId,
-      form.data.userId,
+      subjectId,
       form.data.groupId,
       form.data.enabled
     );
