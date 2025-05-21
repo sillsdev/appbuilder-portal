@@ -197,7 +197,6 @@ export const actions: Actions = {
   },
   productAction: async (event) => {
     const session = await event.locals.auth();
-    if (!session) return fail(403);
     const orgId = parseInt(event.params.id!);
     if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
 
