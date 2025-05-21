@@ -194,9 +194,11 @@ async function validateRouteForAuthenticatedUser(
       if (!isAdmin(session?.user?.roles)) return ServerStatus.Forbidden;
       if (params.id) {
         // Must be org admin for specified organization (or a super admin)
-        return isAdminForOrg(parseInt(params.id!), session?.user?.roles)
-          ? ServerStatus.Ok
-          : ServerStatus.Forbidden;
+        const Id = parseInt(params.id);
+        if (isNaN(Id) || !(await prisma.organizations.findFirst({ where: { Id } }))) {
+          return ServerStatus.NotFound;
+        }
+        return isAdminForOrg(Id, session?.user?.roles) ? ServerStatus.Ok : ServerStatus.Forbidden;
       }
       return ServerStatus.Ok;
     } else if (path[1] === 'products') {
