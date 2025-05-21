@@ -33,7 +33,6 @@
           };
         }}
       >
-        <input type="hidden" name="orgId" value={data.organization.Id} />
         <input type="hidden" name="storeId" value={store.Id} />
         <MultiselectBoxElement
           title={store.Name ?? ''}

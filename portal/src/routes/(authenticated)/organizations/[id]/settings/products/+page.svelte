@@ -33,7 +33,6 @@
       };
     }}
   >
-    <input type="hidden" name="orgId" value={data.organization.Id} />
     <PublicPrivateToggle
       title={{ key: 'org_makePrivateTitle', classes: 'font-bold' }}
       message={{ key: 'org_makePrivateDescription' }}
@@ -60,7 +59,6 @@
           };
         }}
       >
-        <input type="hidden" name="orgId" value={data.organization.Id} />
         <input type="hidden" name="prodDefId" value={productDef.Id} />
         <MultiselectBoxElement
           title={productDef.Name ?? ''}
