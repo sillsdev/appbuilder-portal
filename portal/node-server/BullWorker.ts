@@ -1,7 +1,10 @@
+import { Span, trace } from '@opentelemetry/api';
 import { Job, Worker } from 'bullmq';
 import { BullMQ, Queues } from 'sil.appbuilder.portal.common';
 import { JobSchedulerId } from '../common/bullmq/types.js';
 import * as Executor from './job-executors/index.js';
+
+const tracer = trace.getTracer('workers');
 
 export abstract class BullWorker<T> {
   public worker: Worker;
@@ -56,14 +59,22 @@ export class DefaultRecurring extends BullWorker<BullMQ.Job> {
     );
   }
   async run(job: Job<BullMQ.Job>) {
-    switch (job.data.type) {
+    return tracer.startActiveSpan('system-recurring-runner', async (span: Span) => {
+      span.setAttribute('jobType', job.data.type);
+      let res: unknown;
+      switch (job.data.type) {
       case BullMQ.JobType.Recurring_CheckSystemStatuses:
-        return Executor.Recurring.checkSystemStatuses(
+        res = await Executor.Recurring.checkSystemStatuses(
           job as Job<BullMQ.Recurring.CheckSystemStatuses>
         );
+        break;
       case BullMQ.JobType.Recurring_RefreshLangTags:
-        return Executor.Recurring.refreshLangTags(job as Job<BullMQ.Recurring.RefreshLangTags>);
-    }
+        res = await Executor.Recurring.refreshLangTags(job as Job<BullMQ.Recurring.RefreshLangTags>);
+        break;
+      }
+      span.end();
+      return res;
+    });
   }
 }
 
