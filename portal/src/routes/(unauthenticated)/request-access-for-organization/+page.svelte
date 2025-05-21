@@ -38,7 +38,7 @@
     </LabeledFormInput>
     <br />
     <LabeledFormInput name="invitations_orgUrl">
-      <input class="input w-full input-bordered validator" type="url" name="url" required />
+      <input class="input w-full input-bordered validator" type="text" name="url" required />
     </LabeledFormInput>
   </div>
   <div class="mt-4">

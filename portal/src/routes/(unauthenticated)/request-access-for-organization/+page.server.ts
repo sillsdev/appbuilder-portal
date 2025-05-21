@@ -7,7 +7,7 @@ import type { Actions, PageServerLoad } from './$types';
 const requestSchema = v.object({
   organizationName: v.pipe(v.string(), v.nonEmpty()),
   email: v.pipe(v.string(), v.nonEmpty(), v.email()),
-  url: v.pipe(v.string(), v.nonEmpty(), v.url())
+  url: v.pipe(v.string(), v.nonEmpty())
 });
 
 export const load = (async () => {
