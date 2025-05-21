@@ -10,7 +10,7 @@ import {
 import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/server';
 import { stringIdSchema } from '$lib/valibot';
 import type { Prisma } from '@prisma/client';
-import { error, redirect, type Actions } from '@sveltejs/kit';
+import { redirect, type Actions } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -95,8 +95,7 @@ export const load = (async ({ params, locals }) => {
         page: {
           page: 0,
           size: 10
-        },
-        organizationId: orgId
+        }
       },
       valibot(projectSearchSchema)
     ),
@@ -113,23 +112,20 @@ export const load = (async ({ params, locals }) => {
 
 export const actions: Actions = {
   page: async function ({ params, request, locals }) {
-    const user = (await locals.auth())?.user;
-    if (!user) return error(401);
-
-    const orgId = parseInt(params.id!);
+    const user = (await locals.auth())!.user;
 
     const form = await superValidate(request, valibot(projectSearchSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    // if user modified hidden values
-    if (orgId !== form.data.organizationId) return fail(403, { form, ok: false });
+
+    const organizationId = parseInt(params.id!);
 
     const where: Prisma.ProjectsWhereInput = {
-      ...projectFilter(form.data),
-      ...whereStatements(params.filter!, parseInt(params.id!), user.userId)
+      ...projectFilter({ ...form.data, organizationId }),
+      ...whereStatements(params.filter!, organizationId, user.userId)
     };
 
     const projects = await prisma.projects.findMany({
-      where: where,
+      where,
       include: {
         Products: {
           include: {
