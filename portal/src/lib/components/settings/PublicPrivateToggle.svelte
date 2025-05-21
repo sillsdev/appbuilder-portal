@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { ValidI13nKey } from '$lib/locales.svelte';
+  import type { HTMLInputAttributes } from 'svelte/elements';
   import IconContainer from '../IconContainer.svelte';
   import InputWithMessage from './InputWithMessage.svelte';
 
@@ -9,7 +10,7 @@
     className?: string;
     formName?: string;
     checked: boolean;
-    onchange?: () => void;
+    onchange?: HTMLInputAttributes['onchange'];
   }
   let {
     title,
