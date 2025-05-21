@@ -496,15 +496,11 @@ export const actions = {
     // permissions checked in auth
 
     const form = await superValidate(event.request, valibot(projectActionSchema));
-    if (!form.valid || !form.data.operation || form.data.projectId === null)
+    if (!form.valid || !form.data.operation)
       return fail(400, { form, ok: false });
-    // if user modified hidden values
-    if (form.data.projectId !== parseInt(event.params.id)) {
-      return fail(403, { form, ok: false });
-    }
     // prefer single project over array
     const project = await prisma.projects.findUniqueOrThrow({
-      where: { Id: form.data.projectId! },
+      where: { Id: parseInt(event.params.id) },
       select: {
         Id: true,
         Name: true,
