@@ -1,32 +1,32 @@
+import { adminOrgs } from '$lib/users/server';
 import { isSuperAdmin } from '$lib/utils/roles';
-import { error } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import type { LayoutServerLoad } from './$types';
-import { where } from './common.server';
 
 export const load = (async ({ params, locals }) => {
-  const subject = await prisma.users.findUnique({
+  const subject = await prisma.users.findUniqueOrThrow({
     where: {
-      Id: parseInt(params.id ?? '')
+      Id: parseInt(params.id!)
     },
     select: {
       Id: true,
       Name: true
     }
   });
-  if (!subject) return error(404);
 
   const user = (await locals.auth())!.user;
 
   // return only orgs containing the subject that the current user is also an admin for
-  const filter = where(subject.Id, user.userId, isSuperAdmin(user.roles));
+  const filter = adminOrgs(subject.Id, user.userId, isSuperAdmin(user.roles));
+
+  const canEdit = !!(await prisma.organizations.findFirst({ where: filter }));
 
   return {
     subject,
-    canEdit: !!(await prisma.organizations.findFirst({ where: filter })),
-    subjectOrgs: await prisma.organizations.findMany({
+    canEdit,
+    subjectOrgs: canEdit ? await prisma.organizations.findMany({
       where: filter,
       select: { Id: true, Name: true }
-    }),
+    }) : [],
   };
 }) satisfies LayoutServerLoad;

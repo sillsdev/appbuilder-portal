@@ -9,7 +9,7 @@ import { RoleId } from 'sil.appbuilder.portal.common/prisma';
  * @param orgId Included if you want to check for a specific org
  * @returns A filter for orgs that the subject user is in and the current user is an admin for
  */
-export function where(subjectId: number, userId: number, isSuper: boolean, orgId?: number) {
+export function adminOrgs(subjectId: number, userId: number, isSuper: boolean, orgId?: number) {
   return {
     Id: orgId,
     OrganizationMemberships: {

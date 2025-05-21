@@ -1,3 +1,4 @@
+import { adminOrgs } from '$lib/users/server';
 import { isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
@@ -5,7 +6,6 @@ import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import { where } from '../common.server';
 import type { Actions, PageServerLoad } from './$types';
 
 const toggleGroupSchema = v.object({
@@ -20,7 +20,7 @@ export const load = (async ({ params, locals }) => {
 
   return {
     groupsByOrg: await prisma.organizations.findMany({
-      where: where(subjectId, user.userId, isSuperAdmin(user.roles)),
+      where: adminOrgs(subjectId, user.userId, isSuperAdmin(user.roles)),
       select: {
         Id: true,
         Groups: {
@@ -61,7 +61,7 @@ export const actions = {
       !(await prisma.organizations.findFirst({
         where: {
           AND: [
-            where(subjectId, user.userId, isSuperAdmin(user.roles), form.data.orgId),
+            adminOrgs(subjectId, user.userId, isSuperAdmin(user.roles), form.data.orgId),
             { Groups: { some: { Id: form.data.groupId } } }
           ]
         }

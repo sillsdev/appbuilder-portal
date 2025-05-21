@@ -1,3 +1,4 @@
+import { adminOrgs } from '$lib/users/server';
 import { isSuperAdmin } from '$lib/utils/roles';
 import { phoneRegex } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
@@ -5,7 +6,6 @@ import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import { where } from '../common.server';
 import type { Actions, PageServerLoad } from './$types';
 
 const profileSchema = v.object({
@@ -20,29 +20,26 @@ const profileSchema = v.object({
   active: v.boolean()
 });
 
-export const load = (async ({ locals, parent }) => {
-  const { subject, canEdit } = await parent();
-  const user = (await locals.auth())!.user;
-  if (!(user.userId === subject.Id || canEdit)) return error(403);
-
+export const load = (async (event) => {
   const subData = await prisma.users.findUniqueOrThrow({
-    where: { Id: subject.Id }
+    where: { Id: parseInt(event.params.id) }
   });
-  const form = await superValidate(
-    {
-      firstName: subData.GivenName,
-      lastName: subData.FamilyName,
-      displayName: subData.Name,
-      email: subData.Email,
-      phone: subData.Phone,
-      timezone: subData.Timezone,
-      notifications: subData.EmailNotification ?? false,
-      visible: !!subData.ProfileVisibility,
-      active: !subData.IsLocked
-    },
-    valibot(profileSchema)
-  );
-  return { form };
+  return {
+    form: await superValidate(
+      {
+        firstName: subData.GivenName,
+        lastName: subData.FamilyName,
+        displayName: subData.Name,
+        email: subData.Email,
+        phone: subData.Phone,
+        timezone: subData.Timezone,
+        notifications: subData.EmailNotification ?? false,
+        visible: !!subData.ProfileVisibility,
+        active: !subData.IsLocked
+      },
+      valibot(profileSchema)
+    )
+  };
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -55,7 +52,7 @@ export const actions = {
     // if user modified hidden values
     if (
       !(await prisma.organizations.findFirst({
-        where: where(subjectId, user.userId, isSuperAdmin(user.roles))
+        where: adminOrgs(subjectId, user.userId, isSuperAdmin(user.roles))
       }))
     ) {
       return error(403);

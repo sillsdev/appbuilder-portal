@@ -1,6 +1,7 @@
 import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { verifyCanViewAndEdit } from '$lib/projects/server';
+import { adminOrgs } from '$lib/users/server';
 import { ServerStatus } from '$lib/utils';
 import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import type { Session } from '@auth/sveltekit';
@@ -222,7 +223,30 @@ async function validateRouteForAuthenticatedUser(
       // Own task list always allowed, and specific products checked manually
       return ServerStatus.Ok;
     } else if (path[1] === 'users') {
-      // Checked manually in the users route
+      // /(invite): admin
+      if (path.length === 2 || path[2] === 'invite') {
+        return isAdmin(session?.user?.roles) ? ServerStatus.Ok : ServerStatus.Forbidden;
+      } else if (path[2] === '[id=idNumber]') {
+        // /id: not implemented yet (ISSUE #1142)
+        const subjectId = parseInt(params.id!);
+        if (!(await prisma.users.findFirst({ where: { Id: subjectId } })))
+          return ServerStatus.NotFound;
+        const admin = !!(await prisma.organizations.findFirst({
+          where: adminOrgs(subjectId, session.user.userId, isSuperAdmin(session.user.roles)),
+          select: {
+            Id: true
+          }
+        }));
+        // /id/settings/(profile): self and admin
+        if (!path.at(4) || path[4] === 'profile') {
+          return subjectId === session.user.userId || admin
+            ? ServerStatus.Ok
+            : ServerStatus.Forbidden;
+        } else {
+          // /id/settings/*: admin
+          return admin ? ServerStatus.Ok : ServerStatus.Forbidden;
+        }
+      }
       return ServerStatus.Ok;
     } else {
       // Unknown route. We'll assume it's a legal route
