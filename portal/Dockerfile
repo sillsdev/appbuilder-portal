@@ -48,4 +48,4 @@ COPY --from=builder /build/common /app/common
 COPY --from=builder /build/node_modules/.prisma /app/node_modules/.prisma
 
 EXPOSE 6173
-CMD ["node", "/app/index.js"]
+CMD ["node", "--import=/app/otel.js", "/app/index.js"]

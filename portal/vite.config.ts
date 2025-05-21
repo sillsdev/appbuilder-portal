@@ -61,7 +61,7 @@ export default defineConfig({
                     executingProcess.kill();
                     await prom;
                   }
-                  executingProcess = spawn('node', ['dev.js'], {
+                  executingProcess = spawn('node', ['--import=./otel.js', 'dev.js'], {
                     cwd: 'node-server',
                     stdio: 'pipe',
                     shell: true,
