@@ -8,7 +8,7 @@ import * as Workers from './BullWorker.js';
 
 process.env.NODE_ENV = 'development';
 
-OTEL.getInstance().start();
+OTEL.instance.start();
 
 const app = express();
 
