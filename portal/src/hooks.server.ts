@@ -65,7 +65,7 @@ const sequenced: Handle = sequence(
 );
 
 export const handle: Handle = (event) => {
-  OTEL.getInstance().start();
+  OTEL.instance.start();
   return tracer.startActiveSpan('handle', (span: Span) => {
     const res = sequenced(event);
     span.end();
