@@ -12,7 +12,7 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [debug]
+      exporters: [debug] # ISSUE: #1128 export to honeycomb in prod
     metrics:
       receivers: [otlp]
       exporters: [debug]
