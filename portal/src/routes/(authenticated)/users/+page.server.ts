@@ -1,6 +1,7 @@
 import { localizeHref } from '$lib/paraglide/runtime';
 import { isAdminForOrgs, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema, paginateSchema } from '$lib/valibot';
+import { trace, type Span } from '@opentelemetry/api';
 import type { Prisma } from '@prisma/client';
 import { error, redirect } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
@@ -10,6 +11,8 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { minifyUser } from './common';
+
+const tracer = trace.getTracer('users');
 
 const lockSchema = v.object({
   user: idSchema,
@@ -82,74 +85,77 @@ function adminOrDefaultWhere(isSuper: boolean, orgIds: number[]) {
 }
 
 export const load = (async (event) => {
-  const userInfo = (await event.locals.auth())?.user;
-  const userId = userInfo?.userId;
-  if (!userId) return redirect(302, localizeHref('/'));
+  return tracer.startActiveSpan('load', async (span: Span) => {
+    const userInfo = (await event.locals.auth())?.user;
+    const userId = userInfo?.userId;
+    if (!userId) return redirect(302, localizeHref('/'));
 
-  const isSuper = isSuperAdmin(userInfo.roles);
+    const isSuper = isSuperAdmin(userInfo.roles);
 
-  const organizations = await prisma.organizations.findMany({
-    where: isSuper
-      ? undefined
-      : {
-          UserRoles: {
-            some: {
-              RoleId: RoleId.OrgAdmin,
-              UserId: userId
+    const organizations = await prisma.organizations.findMany({
+      where: isSuper
+        ? undefined
+        : {
+            UserRoles: {
+              some: {
+                RoleId: RoleId.OrgAdmin,
+                UserId: userId
+              }
             }
+          },
+      select: {
+        Id: true,
+        Name: true
+      }
+    });
+
+    const orgIds = organizations.map((o) => o.Id);
+
+    const users = await prisma.users.findMany({
+      orderBy: {
+        Name: 'asc'
+      },
+      select: select(isSuper ? undefined : orgIds),
+      where: adminOrDefaultWhere(isSuper, orgIds),
+      // More significantly, could paginate results to around 50 users/page = 10 KB
+      // Done - Aidan
+      take: 50
+    });
+
+    return {
+      // Only pass essential information to the client.
+      // About 120 bytes per small user (with one organization and one group), and 240 for a larger user in several organizations.
+      // On average about 175 bytes per user. If PROD has 200 active users, that's 35 KB of data to send all of them. 620 total users = 110 KB
+      // The whole page is about 670 KB without this data.
+      // Only superadmins would see this larger size, most users have organizations with much fewer users where it does not matter
+
+      users: users.map(minifyUser),
+      userCount: users.length,
+      organizations,
+      // Could be improved by putting group names into a referenced palette
+      // (minimal returns if most users are in different organizations and groups)
+      // I went ahead and did this too. My assumption is that there will generally be multiple users in each organization and group, so I think this should be a justifiable change. - Aidan
+      groups: await prisma.groups.findMany({
+        where: {
+          OwnerId: { in: orgIds },
+          GroupMemberships: {
+            some: {}
+          }
+        }
+      }),
+      form: await superValidate(
+        {
+          organizationId: organizations.length !== 1 ? null : organizations[0].Id,
+          page: {
+            page: 0,
+            size: 50
           }
         },
-    select: {
-      Id: true,
-      Name: true
-    }
+        valibot(searchFilterSchema)
+      ),
+      trace: span.end()
+    };
   });
-
-  const orgIds = organizations.map((o) => o.Id);
-
-  const users = await prisma.users.findMany({
-    orderBy: {
-      Name: 'asc'
-    },
-    select: select(isSuper ? undefined : orgIds),
-    where: adminOrDefaultWhere(isSuper, orgIds),
-    // More significantly, could paginate results to around 50 users/page = 10 KB
-    // Done - Aidan
-    take: 50
-  });
-
-  return {
-    // Only pass essential information to the client.
-    // About 120 bytes per small user (with one organization and one group), and 240 for a larger user in several organizations.
-    // On average about 175 bytes per user. If PROD has 200 active users, that's 35 KB of data to send all of them. 620 total users = 110 KB
-    // The whole page is about 670 KB without this data.
-    // Only superadmins would see this larger size, most users have organizations with much fewer users where it does not matter
-
-    users: users.map(minifyUser),
-    userCount: users.length,
-    organizations,
-    // Could be improved by putting group names into a referenced palette
-    // (minimal returns if most users are in different organizations and groups)
-    // I went ahead and did this too. My assumption is that there will generally be multiple users in each organization and group, so I think this should be a justifiable change. - Aidan
-    groups: await prisma.groups.findMany({
-      where: {
-        OwnerId: { in: orgIds },
-        GroupMemberships: {
-          some: {}
-        }
-      }
-    }),
-    form: await superValidate(
-      {
-        organizationId: organizations.length !== 1 ? null : organizations[0].Id,
-        page: {
-          page: 0,
-          size: 50
-        }
-      },
-      valibot(searchFilterSchema)
-    )
-  };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
