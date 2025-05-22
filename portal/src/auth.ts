@@ -2,14 +2,13 @@ import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { verifyCanViewAndEdit } from '$lib/projects/server';
 import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
-import type { Session } from '@auth/express';
+import type { Session } from '@auth/sveltekit';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import type { RoleId } from 'sil.appbuilder.portal.common/prisma';
 
-// this works, even though TS/eslint are unhappy (no actual errors here, see the expect errors elsewhere)
 declare module '@auth/sveltekit' {
   interface Session {
     user: {
@@ -183,18 +182,15 @@ async function validateRouteForAuthenticatedUser(
   // Only guarding authenticated routes
   if (path[0] === '(authenticated)') {
     if (path[1] === 'admin' || path[1] === 'workflow-instances')
-      //@ts-expect-error this is the correct type, see comment on the extended Session type
       return isSuperAdmin(session?.user?.roles);
     else if (path[1] === 'directory' || path[1] === 'open-source')
       // Always allowed. Open pages
       return true;
     else if (path[1] === 'organizations') {
       // Must be org admin for some organization (or a super admin)
-      //@ts-expect-error this is the correct type, see comment on the extended Session type
       if (!isAdmin(session?.user?.roles)) return false;
       if (params.id) {
         // Must be org admin for specified organization (or a super admin)
-        //@ts-expect-error this is the correct type, see comment on the extended Session type
         return isAdminForOrg(parseInt(params.id!), session?.user?.roles);
       }
       return true;
@@ -207,13 +203,11 @@ async function validateRouteForAuthenticatedUser(
       if (!product) return false;
       // Must be allowed to view associated project 
       // (this route was originally part of the project page but was moved elsewhere to improve load time)
-      //@ts-expect-error this is the correct type, see comment on the extended Session type
-      return verifyCanViewAndEdit(session, product.ProjectId);
+      return await verifyCanViewAndEdit(session, product.ProjectId);
     } else if (path[1] === 'projects') {
       if (path[2] === '[filter=projectSelector]') return true;
       else if (path[2] === '[id=idNumber]') {
         // A project can be viewed if the user owns it, is an org admin for the org, or is a super admin
-        //@ts-expect-error this is the correct type, see comment on the extended Session type
         return await verifyCanViewAndEdit(session, parseInt(params.id!));
       }
       return true;
