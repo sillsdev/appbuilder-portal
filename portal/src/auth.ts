@@ -7,9 +7,12 @@ import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import type { Session } from '@auth/sveltekit';
 import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
+import { trace, type Span } from '@opentelemetry/api';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import type { RoleId } from 'sil.appbuilder.portal.common/prisma';
+
+export const tracer = trace.getTracer('server-hooks');
 
 declare module '@auth/sveltekit' {
   interface Session {
@@ -50,56 +53,91 @@ const config: SvelteKitAuthConfig = {
   },
   callbacks: {
     async signIn({ profile }) {
-      // The user must exist. Users can only be created initially through an organization invite.
-      // This means all users must have an organization.
+      return tracer.startActiveSpan('auth-signin', async (span: Span) => {
+        // The user must exist. Users can only be created initially through an organization invite.
+        // This means all users must have an organization.
 
-      // 1. The user exists
-      //   - There is an invite -> login, then redirect to /invitations/organization-membership
-      //   - There is no invite -> login normally
-      // 2. The user does not exist and there is an invite
-      //   - invite is invalid -> redirect to /invitations/organization-membership
-      //   - invite is valid -> login, then redirect to /invitations/organization-membership
-      // 3. The user does not exist and there is no invite -> redirect to /login/no-organization
+        // 1. The user exists
+        //   - There is an invite -> login, then redirect to /invitations/organization-membership
+        //   - There is no invite -> login normally
+        // 2. The user does not exist and there is an invite
+        //   - invite is invalid -> redirect to /invitations/organization-membership
+        //   - invite is valid -> login, then redirect to /invitations/organization-membership
+        // 3. The user does not exist and there is no invite -> redirect to /login/no-organization
 
-      if (!profile || !profile.sub) return false;
-      const user = await DatabaseWrites.utility.getUserIfExists(profile.sub);
-      if (user) {
-        return true;
-      } else {
-        if (tokenStatus === TokenStatus.Absent) return '/login/no-organization';
-        if (tokenStatus === TokenStatus.Invalid)
-          return '/invitations/organization-membership?t=' + currentInviteToken;
-        // If there is a pending invitation, allow the login anyway and create the user account
-        if (tokenStatus === TokenStatus.Valid) {
-          await DatabaseWrites.utility.createUser(profile);
-          return true;
+        if (!profile || !profile.sub) {
+          span.end();
+          return false;
         }
-      }
-      throw new Error('Invalid state');
+        const user = await DatabaseWrites.utility.getUserIfExists(profile.sub);
+        if (user) {
+          span.end();
+          return true;
+        } else {
+          if (tokenStatus === TokenStatus.Absent) {
+            span.setAttribute('token-absent', true);
+            span.end();
+            return '/login/no-organization';
+          }
+          if (tokenStatus === TokenStatus.Invalid) {
+            span.setAttribute('token-valid', false);
+            span.end();
+            return '/invitations/organization-membership?t=' + currentInviteToken;
+          }
+          // If there is a pending invitation, allow the login anyway and create the user account
+          if (tokenStatus === TokenStatus.Valid) {
+            span.setAttribute('token-valid', true);
+            const user = await DatabaseWrites.utility.createUser(profile);
+            span.setAttribute('user-created', user.DateCreated!.toISOString());
+            span.end();
+            return true;
+          }
+        }
+        span.setAttribute('state-invalid', true);
+        span.end();
+        throw new Error('Invalid state');
+      });
     },
     async jwt({ profile, token }) {
-      // Called in two cases:
-      // a: client just logged in (new session): profile is passed and token is not (trigger == 'signIn')
-      // b: subsequent calls (during an existing session), token is passed and profile is not (trigger == 'update')
+      return tracer.startActiveSpan('auth-jwt', async (span: Span) => {
+        // Called in two cases:
+        // a: client just logged in (new session): profile is passed and token is not (trigger == 'signIn')
+        // b: subsequent calls (during an existing session), token is passed and profile is not (trigger == 'update')
 
-      // make sure to handle values that could change mid-session in both cases
-      // safest method is just handle such values in session below (see user.roles)
-      if (!profile) return token;
-      if (!profile.sub) throw new Error('No sub in profile');
-      const dbUser = await DatabaseWrites.utility.getUserIfExists(profile.sub);
-      if (!dbUser) throw new Error('User not found');
-      token.userId = dbUser.Id;
-      return token;
+        // make sure to handle values that could change mid-session in both cases
+        // safest method is just handle such values in session below (see user.roles)
+        if (!profile) {
+          span.end();
+          return token;
+        }
+        if (!profile.sub) {
+          span.addEvent('no-sub-in-profile');
+          span.end();
+          throw new Error('No sub in profile');
+        }
+        const dbUser = await DatabaseWrites.utility.getUserIfExists(profile.sub);
+        if (!dbUser) {
+          span.addEvent('no-user');
+          span.end();
+          throw new Error('User not found');
+        }
+        token.userId = dbUser.Id;
+        span.end();
+        return token;
+      });
     },
     async session({ session, token }) {
-      session.user.userId = token.userId as number;
-      const userRoles = await prisma.userRoles.findMany({
-        where: {
-          UserId: token.userId as number
-        }
+      return tracer.startActiveSpan('auth-session', async (span: Span) => {
+        session.user.userId = token.userId as number;
+        const userRoles = await prisma.userRoles.findMany({
+          where: {
+            UserId: token.userId as number
+          }
+        });
+        session.user.roles = userRoles.map((role) => [role.OrganizationId, role.RoleId]);
+        span.end();
+        return session;
       });
-      session.user.roles = userRoles.map((role) => [role.OrganizationId, role.RoleId]);
-      return session;
     }
   }
 };
@@ -107,74 +145,103 @@ const config: SvelteKitAuthConfig = {
 export const { handle: authRouteHandle, signIn, signOut } = SvelteKitAuth(config);
 
 export const checkUserExistsHandle: Handle = async ({ event, resolve }) => {
-  // If the user does not exist in the database, invalidate the login and redirect to prevent unauthorized access
-  // This can happen when the user is deleted from the database but still has a valid session.
-  // This should only happen when a superadmin manually deletes a user but is particularly annoying in development
-  // The user should also be redirected if they are not a member of any organizations
-  // Finally, the user should be redirected if they are locked
-  const userId = (await event.locals.auth())?.user.userId;
-  if (!userId) {
-    // User has no session at all; allow normal events
-    return resolve(event);
-  }
-  const user = await prisma.users.findUnique({
-    where: {
-      Id: userId
-    },
-    include: {
-      OrganizationMemberships: true
+  return tracer.startActiveSpan('check-user', async (span: Span) => {
+    // If the user does not exist in the database, invalidate the login and redirect to prevent unauthorized access
+    // This can happen when the user is deleted from the database but still has a valid session.
+    // This should only happen when a superadmin manually deletes a user but is particularly annoying in development
+    // The user should also be redirected if they are not a member of any organizations
+    // Finally, the user should be redirected if they are locked
+    const userId = (await event.locals.auth())?.user.userId;
+    if (!userId) {
+      // User has no session at all; allow normal events
+      span.setAttribute('session', false);
+      const res = resolve(event);
+      span.end();
+      return res;
     }
+    const user = await prisma.users.findUnique({
+      where: {
+        Id: userId
+      },
+      include: {
+        OrganizationMemberships: true
+      }
+    });
+    span.setAttribute('user', user?.Id ?? false);
+    if (user) {
+      span.setAttribute('orgs', user.OrganizationMemberships.length);
+      span.setAttribute('invite', !!event.cookies.get('inviteToken'));
+    }
+    if (!user || (user.OrganizationMemberships.length === 0 && !event.cookies.get('inviteToken'))) {
+      event.cookies.set('authjs.session-token', '', { path: '/' });
+      span.end();
+      return redirect(302, localizeHref('/login/no-organization'));
+    }
+    span.setAttribute('active', !user.IsLocked);
+    if (user.IsLocked) {
+      event.cookies.set('authjs.session-token', '', { path: '/' });
+      span.end();
+      return redirect(302, localizeHref('/login/locked'));
+    }
+    return resolve(event);
   });
-  if (!user || (user.OrganizationMemberships.length === 0 && !event.cookies.get('inviteToken'))) {
-    event.cookies.set('authjs.session-token', '', { path: '/' });
-    return redirect(302, localizeHref('/login/no-organization'));
-  }
-  if (user.IsLocked) {
-    event.cookies.set('authjs.session-token', '', { path: '/' });
-    return redirect(302, localizeHref('/login/locked'));
-  }
-  return resolve(event);
 };
 
 // Handle organization invites
 export const organizationInviteHandle: Handle = async ({ event, resolve }) => {
-  // Hacky solution to get the request object in the auth callbacks
-  // while making sure it only exists
-  currentInviteToken = event.cookies.get('inviteToken') ?? '';
+  return tracer.startActiveSpan('invite', async (span: Span) => {
+    // Hacky solution to get the request object in the auth callbacks
+    // while making sure it only exists
+    currentInviteToken = event.cookies.get('inviteToken') ?? '';
+    span.setAttribute('token', currentInviteToken);
+    // verify the token
+    if (currentInviteToken) {
+      const errors = await checkInviteErrors(currentInviteToken);
+      if (errors.error) {
+        span.setAttribute('error', errors.error);
+        tokenStatus = TokenStatus.Invalid;
+      } else tokenStatus = TokenStatus.Valid;
+    } else {
+      tokenStatus = TokenStatus.Absent;
+    }
 
-  // verify the token
-  if (currentInviteToken) {
-    const errors = await checkInviteErrors(currentInviteToken);
-    if (errors.error) tokenStatus = TokenStatus.Invalid;
-    else tokenStatus = TokenStatus.Valid;
-  } else {
-    tokenStatus = TokenStatus.Absent;
-  }
+    const result = await resolve(event);
 
-  const result = await resolve(event);
-
-  currentInviteToken = null;
-  tokenStatus = null;
-  return result;
+    currentInviteToken = null;
+    tokenStatus = null;
+    span.end();
+    return result;
+  });
 };
 
 // Locks down the authenticated routes by redirecting to /login
 // This guarantees a logged in user under (authenticated) but does not guarantee
 // authorization to the route. Each page must manually check in +page.server.ts or here
 export const localRouteHandle: Handle = async ({ event, resolve }) => {
-  if (
-    !event.route.id?.startsWith('/(unauthenticated)') &&
-    event.route.id !== '/' &&
-    event.route.id !== null
-  ) {
-    const session = await event.locals.auth();
-    if (!session) return redirect(302, localizeHref('/login'));
-    const status = await validateRouteForAuthenticatedUser(session, event.route.id, event.params);
-    if (status !== ServerStatus.Ok) {
-      return redirect(302, localizeHref(`/error?code=${status}`));
+  return tracer.startActiveSpan('local-route', async (span: Span) => {
+    span.setAttribute('route', event.route.id ?? '');
+    if (
+      !event.route.id?.startsWith('/(unauthenticated)') &&
+      event.route.id !== '/' &&
+      event.route.id !== null
+    ) {
+      const session = await event.locals.auth();
+      span.setAttribute('authenticated', !!session);
+      if (!session) {
+        span.end();
+        return redirect(302, localizeHref('/login'));
+      }
+      const status = await validateRouteForAuthenticatedUser(session, event.route.id, event.params);
+      span.setAttribute('status', status);
+      if (status !== ServerStatus.Ok) {
+        span.end();
+        return redirect(302, localizeHref(`/error?code=${status}`));
+      }
     }
-  }
-  return resolve(event);
+    const res = resolve(event);
+    span.end();
+    return res;
+  });
 };
 
 async function validateRouteForAuthenticatedUser(
@@ -182,6 +249,8 @@ async function validateRouteForAuthenticatedUser(
   route: string,
   params: Partial<Record<string, string>>
 ): Promise<ServerStatus> {
+  // This function has so many returns.
+  // I don't want to try to trace this for now.
   const path = route.split('/').filter((r) => !!r);
   // Only guarding authenticated routes
   if (path[0] === '(authenticated)') {
