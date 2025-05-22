@@ -1,15 +1,18 @@
 // hooks.server.ts
 import { localizeHref } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
+import { trace, type Span } from '@opentelemetry/api';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { connected, Queues } from 'sil.appbuilder.portal.common';
+import { connected, OTEL, Queues } from 'sil.appbuilder.portal.common';
 import {
   authRouteHandle,
   checkUserExistsHandle,
   localRouteHandle,
   organizationInviteHandle
 } from './auth';
+
+const tracer = trace.getTracer('server-hooks');
 
 // creating a handle to use the paraglide middleware
 const paraglideHandle: Handle = ({ event, resolve }) =>
@@ -22,7 +25,7 @@ const paraglideHandle: Handle = ({ event, resolve }) =>
     });
   });
 
-const heartbeat: Handle = async ({ event, resolve }) => {
+const heartbeat: Handle = ({ event, resolve }) => {
   // this check is important to prevent infinite redirects...
   if (
     !(
@@ -38,7 +41,7 @@ const heartbeat: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
-export const handle: Handle = sequence(
+const sequenced: Handle = sequence(
   paraglideHandle,
   heartbeat,
   organizationInviteHandle,
@@ -46,3 +49,12 @@ export const handle: Handle = sequence(
   checkUserExistsHandle,
   localRouteHandle
 );
+
+export const handle: Handle = (event) => {
+  OTEL.getInstance().start();
+  return tracer.startActiveSpan('handle', (span: Span) => {
+    const res = sequenced(event);
+    span.end();
+    return res;
+  });
+};
