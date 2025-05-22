@@ -16,16 +16,17 @@ export async function request(resource: string, auth: Types.Auth, opts?: Types.R
     try {
       const { url, token } =
         auth.type === 'query' ? await getURLandToken(auth.organizationId) : auth;
-      const check = await prisma.systemStatuses.findFirst({
-        where: {
-          BuildEngineUrl: url,
-          BuildEngineApiAccessToken: token
-        },
-        select: {
-          SystemAvailable: true
-        }
-      });
+      span.setAttribute('endpoint', url ?? '');
       if (checkStatusFirst) {
+        const check = await prisma.systemStatuses.findFirst({
+          where: {
+            BuildEngineUrl: url,
+            BuildEngineApiAccessToken: token
+          },
+          select: {
+            SystemAvailable: true
+          }
+        });
         span.setAttribute('system-available', !!check?.SystemAvailable);
         if (!check?.SystemAvailable) {
           return {
