@@ -9,6 +9,7 @@ import {
   ScriptoriaLogoBase64
 } from './EmailTemplates.js';
 
+// ISSUE #1144: Integrate into AWS SES, use provider model?
 if (!process.env.VITE_SPARKPOST_API_KEY) {
   /* eslint-disable @typescript-eslint/ban-ts-comment */
   // @ts-ignore This is necessary for sveltekit, where import.meta.env will in fact exist
