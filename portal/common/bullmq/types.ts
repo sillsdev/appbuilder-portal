@@ -1,28 +1,21 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { RepeatOptions } from 'bullmq';
+import type { RepeatOptions } from 'bullmq';
 import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-api/types.js';
 import { RoleId } from '../public/prisma.js';
 
-interface RetryOptions {
-  readonly attempts: number;
-  readonly backoff: {
-    readonly type: string;
-    readonly delay: number;
-  };
-}
 /** Maximum 5 attempts with a 5 second exponential backoff */
-export const Retry5e5: RetryOptions = {
+export const Retry5e5 = {
   attempts: 5,
   backoff: {
     type: 'exponential',
     delay: 5000 // 5 seconds
   }
-};
+} as const;
 
 /** Repeat a job every minute */
 export const RepeatEveryMinute: RepeatOptions = {
   pattern: '*/1 * * * *' // every minute
-};
+} as const;
 
 export enum QueueName {
   Builds = 'Builds',
