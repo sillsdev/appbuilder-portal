@@ -54,7 +54,6 @@
   contentClasses="p-1 min-w-36 w-auto"
   onclick={() => {
     $form.projectId = project.Id;
-    $form.orgId = orgId;
   }}
 >
   {#snippet label()}
@@ -63,7 +62,6 @@
   {#snippet content()}
     <form method="POST" action="?/{endpoint}" use:enhance>
       <input type="hidden" name="projectId" value={project.Id} />
-      <input type="hidden" name="orgId" value={orgId} />
       <ul class="menu menu-compact overflow-hidden rounded-md">
         {#if allowActions && canArchive(project, page.data.session, parseInt(page.params.id))}
           <li class="w-full rounded-none">
