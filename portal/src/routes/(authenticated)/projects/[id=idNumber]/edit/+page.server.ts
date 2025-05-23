@@ -53,7 +53,6 @@ export const actions: Actions = {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(projectPropertyEditSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    if (isNaN(parseInt(event.params.id))) return fail(400, { form, ok: false });
     const success = await DatabaseWrites.projects.update(parseInt(event.params.id), {
       Name: form.data.name,
       GroupId: form.data.group,

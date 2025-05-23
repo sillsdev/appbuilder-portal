@@ -1,6 +1,6 @@
-import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
+import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
-import { fail } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { superValidate } from 'sveltekit-superforms';
@@ -19,6 +19,7 @@ export const load = (async ({ locals }) => {
   const form = await superValidate(valibot(createSchema));
 
   const user = await locals.auth();
+  if (!isAdmin(user?.user.roles)) return error(403);
   const groupsByOrg = await prisma.organizations.findMany({
     where: {
       // Only send a list of groups for orgs that the current user has access to
@@ -46,13 +47,14 @@ export const actions = {
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
-    const user = await locals.auth();
-    if (!user || !isAdminForOrg(form.data.organizationId, user.user.roles)) return fail(401);
+    const user = (await locals.auth())!.user;
+    // if user modified hidden values
+    if (!isAdminForOrg(form.data.organizationId, user.roles)) return fail(403);
     const { email, organizationId, roles, groups } = form.data;
     const inviteToken = await DatabaseWrites.organizationMemberships.createOrganizationInvite(
       email,
       organizationId,
-      user.user.userId,
+      user.userId,
       roles,
       groups
     );

@@ -115,6 +115,7 @@
   } = superForm(data.productForm, {
     resetForm: false,
     invalidateAll: false,
+    dataType: 'json',
     onChange(event) {
       if (event.paths.includes('operation')) {
         productSubmit();

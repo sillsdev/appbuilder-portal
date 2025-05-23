@@ -1,3 +1,4 @@
+import { adminOrgs } from '$lib/users/server';
 import { isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
@@ -5,12 +6,10 @@ import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import { where } from '../common.server';
 import type { Actions, PageServerLoad } from './$types';
 
 const toggleGroupSchema = v.object({
   orgId: idSchema,
-  userId: idSchema,
   groupId: idSchema,
   enabled: v.boolean()
 });
@@ -21,7 +20,7 @@ export const load = (async ({ params, locals }) => {
 
   return {
     groupsByOrg: await prisma.organizations.findMany({
-      where: where(subjectId, user.userId, isSuperAdmin(user.roles)),
+      where: adminOrgs(subjectId, user.userId, isSuperAdmin(user.roles)),
       select: {
         Id: true,
         Groups: {
@@ -54,13 +53,18 @@ export const actions = {
     const form = await superValidate(event, valibot(toggleGroupSchema));
 
     if (!form.valid) return fail(400, { form, ok: false });
-    if (form.data.userId !== parseInt(event.params.id)) return error(404);
 
     const user = (await event.locals.auth())!.user;
-
+    const subjectId = parseInt(event.params.id);
+    // if user modified hidden values
     if (
       !(await prisma.organizations.findFirst({
-        where: where(form.data.userId, user.userId, isSuperAdmin(user.roles), form.data.orgId)
+        where: {
+          AND: [
+            adminOrgs(subjectId, user.userId, isSuperAdmin(user.roles), form.data.orgId),
+            { Groups: { some: { Id: form.data.groupId } } }
+          ]
+        }
       }))
     ) {
       return error(403);
@@ -68,7 +72,7 @@ export const actions = {
 
     const ok = await DatabaseWrites.groupMemberships.toggleForOrg(
       form.data.orgId,
-      form.data.userId,
+      subjectId,
       form.data.groupId,
       form.data.enabled
     );

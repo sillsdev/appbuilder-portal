@@ -142,8 +142,7 @@ export const importJSONSchema = v.pipe(
 export const projectActionSchema = v.object({
   operation: v.nullable(v.picklist(['archive', 'reactivate', 'claim'])),
   // used to distinguish between single and bulk. will be null if bulk
-  projectId: v.nullable(idSchema),
-  orgId: idSchema
+  projectId: v.nullable(idSchema)
 });
 
 export const bulkProjectActionSchema = v.object({
@@ -167,8 +166,11 @@ export function canModifyProject(
   user: Session | null | undefined,
   projectOwnerId: number,
   organizationId: number
-): boolean {
-  return projectOwnerId === user?.user.userId || isAdminForOrg(organizationId, user?.user.roles);
+): boolean  {
+  return (
+    !!user &&
+    (projectOwnerId === user?.user.userId || isAdminForOrg(organizationId, user?.user.roles))
+  );
 }
 
 export function canClaimProject(

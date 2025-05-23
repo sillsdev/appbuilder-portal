@@ -154,7 +154,7 @@
         type="checkbox"
         name="active"
         class="toggle toggle-accent ml-4"
-        disabled={page.data.session?.user.userId === data.form.data.id}
+        disabled={page.data.session?.user.userId === data.subject.Id}
         bind:checked={$form.active}
       />
     </InputWithMessage>

@@ -1,7 +1,7 @@
 import { baseLocale } from '$lib/paraglide/runtime';
 import { getProductActions, ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
-import { canModifyProject, projectActionSchema } from '$lib/projects';
+import { projectActionSchema } from '$lib/projects';
 import {
   doProjectAction,
   userGroupsForOrg
@@ -13,7 +13,7 @@ import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import type { Actions, PageServerLoad } from './$types';
+import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
 
 const updateOwnerGroupSchema = v.object({
@@ -214,7 +214,7 @@ export const load = (async ({ locals, params }) => {
   ).map((pd) => pd.ProductDefinition);
 
   const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
-
+  const userId = (await locals.auth())!.user.userId;
   return {
     project: {
       ...project,
@@ -229,7 +229,7 @@ export const load = (async ({ locals, params }) => {
         ActiveTransition: strippedTransitions.find(
           (t) => (t[0] ?? t[1])?.ProductId === product.Id
         )?.[1],
-        actions: getProductActions(product, project.Owner.Id, session.user.userId)
+        actions: getProductActions(product, project.Owner.Id, userId)
       }))
     },
     productsToAdd: productDefinitions.filter((pd) => !projectProductDefinitionIds.includes(pd.Id)),
@@ -278,23 +278,42 @@ export const load = (async ({ locals, params }) => {
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
-    userGroups: (await userGroupsForOrg(session.user.userId, project.Organization.Id)).map(
+    userGroups: (await userGroupsForOrg(userId, project.Organization.Id)).map(
       (g) => g.GroupId
     )
   };
 }) satisfies PageServerLoad;
+
+async function verifyProduct(event: RequestEvent, Id: string) {
+  return !!(await prisma.products.findFirst({
+    where: { Id, ProjectId: parseInt(event.params.id) }
+  }));
+}
 
 export const actions = {
   async deleteProduct(event) {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    // if user modified hidden values
+    if (!(await verifyProduct(event, form.data.productId))) {
+      return fail(403, { form, ok: false });
+    }
     await DatabaseWrites.products.delete(form.data.productId);
+    return { form, ok: true };
   },
   async deleteAuthor(event) {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    if (
+      // if user modified hidden values
+      !(await prisma.authors.findFirst({
+        where: { Id: form.data.id, ProjectId: parseInt(event.params.id) }
+      }))
+    ) {
+      return fail(403, { form, ok: false });
+    }
     const author = await DatabaseWrites.authors.delete({ where: { Id: form.data.id } });
     await Queues.UserTasks.add(`Remove UserTasks for Author #${form.data.id}`, {
       type: BullMQ.JobType.UserTasks_Modify,
@@ -312,6 +331,14 @@ export const actions = {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    if (
+      // if user modified hidden values
+      !(await prisma.reviewers.findFirst({
+        where: { Id: form.data.id, ProjectId: parseInt(event.params.id) }
+      }))
+    ) {
+      return fail(403, { form, ok: false });
+    }
     await DatabaseWrites.reviewers.delete({
       where: {
         Id: form.data.id
@@ -349,15 +376,10 @@ export const actions = {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    const product = await prisma.products.findUnique({
-      where: {
-        Id: form.data.productId
-      },
-      select: {
-        ProjectId: true
-      }
-    });
-    if (!product || product.ProjectId !== parseInt(event.params.id)) return fail(404);
+    // if user modified hidden values
+    if (!(await verifyProduct(event, form.data.productId))) {
+      return fail(403, { form, ok: false });
+    }
     await doProductAction(form.data.productId, form.data.productAction);
 
     return { form, ok: true };
@@ -366,6 +388,10 @@ export const actions = {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(updateProductPropertiesSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    // if user modified hidden values
+    if (!(await verifyProduct(event, form.data.productId))) {
+      return fail(403, { form, ok: false });
+    }
     const productId = await DatabaseWrites.products.update(form.data.productId, {
       Properties: form.data.properties
     });
@@ -376,17 +402,32 @@ export const actions = {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(addAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    const projectId = parseInt(event.params.id);
+    if (// if user modified hidden values
+      !(await prisma.organizationMemberships.findFirst({
+        where: {
+          UserId: form.data.author,
+          Organization: {
+            Projects: {
+              some: { Id: projectId }
+            }
+          }
+        }
+      }))
+    ) {
+      return fail(403, { form, ok: false });
+    }
     // ISSUE: #1101 Appears that CanUpdate is not used
     const author = await DatabaseWrites.authors.create({
       data: {
-        ProjectId: parseInt(event.params.id),
+        ProjectId: projectId,
         UserId: form.data.author
       }
     });
     await Queues.UserTasks.add(`Add UserTasks for Author #${author.Id}`, {
       type: BullMQ.JobType.UserTasks_Modify,
       scope: 'Project',
-      projectId: parseInt(event.params.id),
+      projectId,
       operation: {
         type: BullMQ.UserTasks.OpType.Create,
         users: [form.data.author],
@@ -455,31 +496,32 @@ export const actions = {
     // permissions checked in auth
 
     const form = await superValidate(event.request, valibot(projectActionSchema));
-    if (!form.valid || !form.data.operation || form.data.projectId === null)
+    if (!form.valid || !form.data.operation)
       return fail(400, { form, ok: false });
     // prefer single project over array
     const project = await prisma.projects.findUniqueOrThrow({
-      where: { Id: form.data.projectId! },
+      where: { Id: parseInt(event.params.id) },
       select: {
         Id: true,
         Name: true,
         DateArchived: true,
         OwnerId: true,
-        GroupId: true
+        GroupId: true,
+        OrganizationId: true
       }
     });
+
     const session = (await event.locals.auth())!;
-    if (!canModifyProject(session, project.OwnerId, form.data.orgId)) {
-      return fail(403);
-    }
 
     await doProjectAction(
       form.data.operation,
       project,
       session,
-      form.data.orgId,
+      project.OrganizationId,
       form.data.operation === 'claim'
-        ? (await userGroupsForOrg(session.user.userId, form.data.orgId)).map((g) => g.GroupId)
+        ? (await userGroupsForOrg(session.user.userId, project.OrganizationId)).map(
+            (g) => g.GroupId
+          )
         : []
     );
 

@@ -19,7 +19,6 @@
   <MultiselectBox header={m.org_storeSelectTitle()}>
     {#each data.stores.toSorted((a, b) => byName(a, b, getLocale())) as store}
       <form
-        id="store-{store.Id}"
         method="POST"
         action=""
         use:enhance={() => {
@@ -34,7 +33,6 @@
           };
         }}
       >
-        <input type="hidden" name="orgId" value={data.organization.Id} />
         <input type="hidden" name="storeId" value={store.Id} />
         <MultiselectBoxElement
           title={store.Name ?? ''}
@@ -42,7 +40,7 @@
           bind:checked={store.enabled}
           checkProps={{
             name: 'enabled',
-            onchange: () => (document.getElementById(`store-${store.Id}`) as HTMLFormElement).requestSubmit()
+            onchange: (e) => e.currentTarget.form?.requestSubmit()
           }}
         />
       </form>
