@@ -3,15 +3,14 @@ import { Redis } from 'ioredis';
 import type { Job } from './types.js';
 import { QueueName } from './types.js';
 
-export const connection = {
-  host: process.env.NODE_ENV === 'development' ? 'localhost' : 'redis'
-} as const;
-
 class Connection {
   private conn: Redis;
   private connected: boolean;
   constructor() {
-    this.conn = new Redis(connection);
+    this.conn = new Redis({
+      host: process.env.NODE_ENV === 'development' ? 'localhost' : 'redis',
+      maxRetriesPerRequest: null
+    });
     this.connected = false;
     this.conn.on('close', () => (this.connected = false));
     this.conn.on('connect', () => (this.connected = true));
@@ -33,24 +32,29 @@ class Connection {
   public IsConnected() {
     return this.connected;
   }
+
+  public connection() {
+    return this.conn;
+  }
 }
 
-const conn = new Connection();
+const connection = new Connection();
 
-/** Redis is up */
-export const connected = () => conn.IsConnected();
+export const connected = () => connection.IsConnected();
+
+export const config = { connection: connection.connection() } as const;
 
 /** Queue for Product Builds */
-export const Builds = new Queue<Job>(QueueName.Builds, { connection });
+export const Builds = new Queue<Job>(QueueName.Builds, config);
 /** Queue for default recurring jobs such as the BuildEngine status check */
-export const DefaultRecurring = new Queue<Job>(QueueName.DefaultRecurring, { connection });
+export const DefaultRecurring = new Queue<Job>(QueueName.DefaultRecurring, config);
 /** Queue for miscellaneous jobs such as Product and Project Creation */
-export const Miscellaneous = new Queue<Job>(QueueName.Miscellaneous, { connection });
+export const Miscellaneous = new Queue<Job>(QueueName.Miscellaneous, config);
 /** Queue for Product Publishing  */
-export const Publishing = new Queue<Job>(QueueName.Publishing, { connection });
+export const Publishing = new Queue<Job>(QueueName.Publishing, config);
 /** Queue for jobs that poll BuildEngine, such as checking the status of a build */
-export const RemotePolling = new Queue<Job>(QueueName.RemotePolling, { connection });
+export const RemotePolling = new Queue<Job>(QueueName.RemotePolling, config);
 /** Queue for operations on UserTasks */
-export const UserTasks = new Queue<Job>(QueueName.UserTasks, { connection });
+export const UserTasks = new Queue<Job>(QueueName.UserTasks, config);
 /** Queue for Email tasks */
-export const Emails = new Queue<Job>(QueueName.Emails, { connection });
+export const Emails = new Queue<Job>(QueueName.Emails, config);
