@@ -77,14 +77,14 @@
           </span>
         </span>
         {#if project.DateArchived}
-        <span class="flex items-center" title={m.projectTable_activeSince()}>
-          <span class="overflow-hidden text-nowrap mr-1">
-            {m.projectTable_archivedOn()}:
+          <span class="flex items-center" title={m.projectTable_archivedOn()}>
+            <span class="overflow-hidden text-nowrap mr-1">
+              {m.projectTable_archivedOn()}:
+            </span>
+            <span class="text-nowrap w-40 text-center">
+              {getTimeDateString(project.DateArchived)}
+            </span>
           </span>
-          <span class="text-nowrap w-40 text-center">
-            {getTimeDateString(project.DateArchived)}
-          </span>
-        </span>
         {/if}
       </div>
     </div>
