@@ -46,7 +46,7 @@
       bind:value={$form.name}
       required
     />
-    <span class="validator-hint">{m.prodDefs_emptyName()}</span>
+    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="flowDefs_storeType">
     <select

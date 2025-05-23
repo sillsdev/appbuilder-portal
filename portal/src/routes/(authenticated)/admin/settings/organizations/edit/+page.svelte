@@ -42,7 +42,7 @@
       bind:value={$form.name}
       required
     />
-    <span class="validator-hint">{m.org_nameError()}</span>
+    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
   <LabeledFormInput name="org_owner">
     <select class="select select-bordered validator" name="owner" bind:value={$form.owner} required>

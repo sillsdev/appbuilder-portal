@@ -60,7 +60,7 @@
         bind:value={$form.firstName}
         required
       />
-      <span class="validator-hint">{m.org_nameError()}</span>
+      <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_lastName">
       <input
@@ -70,7 +70,7 @@
         bind:value={$form.lastName}
         required
       />
-      <span class="validator-hint">{m.org_nameError()}</span>
+      <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_name">
       <input
@@ -80,7 +80,7 @@
         bind:value={$form.displayName}
         required
       />
-      <span class="validator-hint">{m.org_nameError()}</span>
+      <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_email">
       <input
