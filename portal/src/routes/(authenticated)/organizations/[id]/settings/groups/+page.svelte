@@ -16,19 +16,25 @@
 </script>
 
 {#each data.groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
-  <form action="?/deleteGroup" class="m-2" method="post" use:enhance={() => {
-    return async({ result }) => {
-      if (result.type === 'success') {
-        const data = result.data as ActionData;
-        if (data?.ok) {
-          toast('success', m.org_groupDeleted())
+  <form
+    action="?/deleteGroup"
+    class="m-2"
+    method="post"
+    use:enhance={() => {
+      return async ({ result }) => {
+        if (result.type === 'success') {
+          const data = result.data as ActionData;
+          if (data?.ok) {
+            toast('success', m.org_groupDeleted());
+          } else if (data?.form.valid) {
+            toast('error', m.org_groupHasProjects({ group: group.Name ?? '' }));
+          } else {
+            toast('error', m.errors_generic({ errorMessage: '' }));
+          }
         }
-        else {
-          toast('error', m.errors_generic({ errorMessage: '' }))
-        }
-      }
-    }
-  }}>
+      };
+    }}
+  >
     <input type="hidden" name="id" value={group.Id} />
     <div class="border w-full flex flex-row p-2 rounded-md items-center place-content-between">
       <div>
@@ -41,26 +47,26 @@
     </div>
   </form>
 {/each}
-<form action="?/addGroup" class="m-2" method="post" use:enhance={() => {
-  return async({ result }) => {
-    if (result.type === 'success') {
-      const data = result.data as ActionData;
-      if (data?.ok) {
-        toast('success', m.org_groupCreated())
+<form
+  action="?/addGroup"
+  class="m-2"
+  method="post"
+  use:enhance={() => {
+    return async ({ result }) => {
+      if (result.type === 'success') {
+        const data = result.data as ActionData;
+        if (data?.ok) {
+          toast('success', m.org_groupCreated());
+        }
       }
-    }
-  }
-}}>
+    };
+  }}
+>
   {m.org_addGroupButton()}
   <input type="hidden" name="orgId" value={data.organization.Id} />
   <div class="my-4 flex flex-row w-full space-x-2 items-center">
     <LabeledFormInput name="common_name">
-      <input
-        class="w-full input input-bordered validator"
-        type="text"
-        name="name"
-        required
-      />
+      <input class="w-full input input-bordered validator" type="text" name="name" required />
       <span class="validator-hint">{m.org_nameError()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="common_abbreviation">

@@ -27,6 +27,7 @@ export async function toggleForOrg(
     }
   } else {
     // check if user owns a project in this group
+    // this is the only check not precluded by the UI
     if (await prisma.projects.findFirst({ where: { OwnerId: UserId, GroupId } })) return false;
     await prisma.groupMemberships.deleteMany({
       where: { UserId, GroupId }

@@ -167,7 +167,7 @@ export function canModifyProject(
   user: Session | null | undefined,
   projectOwnerId: number,
   organizationId: number
-) {
+): boolean {
   return projectOwnerId === user?.user.userId || isAdminForOrg(organizationId, user?.user.roles);
 }
 

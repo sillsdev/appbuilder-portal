@@ -1,10 +1,44 @@
 import { Queue } from 'bullmq';
+import { Redis } from 'ioredis';
 import type { Job } from './types.js';
 import { QueueName } from './types.js';
 
-const connection = {
+export const connection = {
   host: process.env.NODE_ENV === 'development' ? 'localhost' : 'redis'
-};
+} as const;
+
+class Connection {
+  private conn: Redis;
+  private connected: boolean;
+  constructor() {
+    this.conn = new Redis(connection);
+    this.connected = false;
+    this.conn.on('close', () => (this.connected = false));
+    this.conn.on('connect', () => (this.connected = true));
+    setInterval(() => {
+      if (this.connected) {
+        this.conn
+          .ping()
+          .then(() => {
+            this.connected = true;
+          })
+          .catch((err) => {
+            console.error(err);
+            console.log('Redis disconnected');
+            this.connected = false;
+          });
+      }
+    }, 10000); // Check every 10 seconds
+  }
+  public IsConnected() {
+    return this.connected;
+  }
+}
+
+const conn = new Connection();
+
+/** Redis is up */
+export const connected = () => conn.IsConnected();
 
 /** Queue for Product Builds */
 export const Builds = new Queue<Job>(QueueName.Builds, { connection });
