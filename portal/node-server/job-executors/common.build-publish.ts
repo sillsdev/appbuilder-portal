@@ -77,19 +77,19 @@ export async function getWorkflowParameters(
     }
   });
   let environment: Environment = {
-    WORKFLOW_TYPE: WorkflowTypeString[instance.WorkflowDefinition.Type],
-    WORKFLOW_PRODUCT_NAME: instance.Product.ProductDefinition.Name
+    [ENVKeys.WORKFLOW_TYPE]: WorkflowTypeString[instance.WorkflowDefinition.Type],
+    [ENVKeys.WORKFLOW_PRODUCT_NAME]: instance.Product.ProductDefinition.Name
   };
 
   if (instance.WorkflowDefinition.ProductType !== ProductType.Web) {
-    environment['BUILD_MANAGE_VERSION_CODE'] = '1';
-    environment['BUILD_MANAGE_VERSION_NAME'] = '1';
+    environment[ENVKeys.BUILD_MANAGE_VERSION_CODE] = '1';
+    environment[ENVKeys.BUILD_MANAGE_VERSION_NAME] = '1';
     if (
       instance.WorkflowDefinition.Type === WorkflowType.Rebuild ||
       (instance.WorkflowDefinition.ProductType === ProductType.Android_GooglePlay &&
         instance.WorkflowDefinition.Type !== WorkflowType.Republish)
     ) {
-      environment['BUILD_SHARE_APP_LINK'] = '1';
+      environment[ENVKeys.BUILD_SHARE_APP_LINK] = '1';
     }
   }
   

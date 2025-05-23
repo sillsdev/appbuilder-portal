@@ -10,7 +10,8 @@ export enum ProductTransitionType {
   StartWorkflow,
   EndWorkflow,
   CancelWorkflow,
-  ProjectAccess
+  ProjectAccess,
+  Migration
 }
 
 export enum WorkflowType {
