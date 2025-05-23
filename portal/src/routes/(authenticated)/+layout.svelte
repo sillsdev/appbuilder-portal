@@ -140,7 +140,7 @@
               href={localizeHref('/projects/organization')}
               onclick={closeDrawer}
             >
-              {m.sidebar_organizationProjects()}
+              {m.sidebar_orgProjects()}
             </a>
           </li>
           {#if isAdmin(page.data.session?.user.roles)}
@@ -171,7 +171,7 @@
                 href={localizeHref('/organizations')}
                 onclick={closeDrawer}
               >
-                {m.sidebar_organizationSettings()}
+                {m.sidebar_orgSettings()}
               </a>
             </li>
           {/if}

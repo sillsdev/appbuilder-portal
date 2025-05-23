@@ -31,16 +31,16 @@
       data={buildEngine}
       fields={[
         {
-          key: 'admin_settings_buildEngines_accessToken',
+          key: 'buildEngines_accessToken',
           value: buildEngine.BuildEngineApiAccessToken
         },
         {
-          key: 'admin_settings_buildEngines_status',
+          key: 'buildEngines_status',
           value: buildEngine.SystemAvailable
-            ? m.admin_settings_buildEngines_connected()
-            : m.admin_settings_buildEngines_disconnected()
+            ? m.buildEngines_connected()
+            : m.buildEngines_disconnected()
         },
-        { key: 'admin_settings_buildEngines_lastUpdated', snippet: date }
+        { key: 'buildEngines_lastUpdated', snippet: date }
       ]}
     />
   {/each}

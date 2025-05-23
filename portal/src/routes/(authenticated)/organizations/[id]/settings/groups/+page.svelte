@@ -67,7 +67,7 @@
   <div class="my-4 flex flex-row w-full space-x-2 items-center">
     <LabeledFormInput name="common_name">
       <input class="w-full input input-bordered validator" type="text" name="name" required />
-      <span class="validator-hint">{m.org_nameError()}</span>
+      <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="common_abbreviation">
       <input

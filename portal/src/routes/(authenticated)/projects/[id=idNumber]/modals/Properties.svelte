@@ -67,22 +67,22 @@
   >
     <div class="items-center text-center">
       <h2 class="text-lg font-bold grow">
-        {m.project_products_properties_title()}
+        {m.products_properties_title()}
       </h2>
       <hr />
       <div class="flex flex-col gap-2 items-center w-full pt-2 text-left">
         <input type="hidden" name="productId" value={product.Id} />
-        <LabeledFormInput name="project_products_properties_computeType" className="w-full">
+        <LabeledFormInput name="products_properties_computeType" className="w-full">
           <select
             class="select select-bordered w-full"
-            placeholder={m.project_products_properties_selectComputeType()}
+            placeholder={m.products_properties_selectComputeType()}
             onchange={(e) => {
               updateComputeType(e.currentTarget.value as ComputeType);
             }}
             bind:value={computeType}
           >
             <option selected disabled hidden value={null}>
-              {m.project_products_properties_selectComputeType()}
+              {m.products_properties_selectComputeType()}
             </option>
             {#each computeTypes as type}
               {@const msg =
@@ -92,7 +92,7 @@
             {/each}
           </select>
         </LabeledFormInput>
-        <LabeledFormInput name="project_products_popup_properties">
+        <LabeledFormInput name="products_properties_title">
           <PropertiesEditor name="properties" className="w-full" bind:value bind:ok />
         </LabeledFormInput>
         <div class="flex flex-row gap-2">

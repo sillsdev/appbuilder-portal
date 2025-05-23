@@ -9,5 +9,5 @@
   let { children }: Props = $props();
 </script>
 
-<h2>{m.admin_settings_navigation_stores()}</h2>
+<h2>{m.admin_nav_stores()}</h2>
 {@render children?.()}

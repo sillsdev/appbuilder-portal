@@ -80,7 +80,7 @@
                       href={task.Comment.replace(/system\.(build|publish)-failed,/, '')}
                       target="_blank"
                     >
-                      {m.project_products_publications_console()}
+                      {m.publications_console()}
                     </a>
                   {:else}
                     {task.Comment}

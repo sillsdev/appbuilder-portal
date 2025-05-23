@@ -74,14 +74,14 @@
     </div>
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}">
       <select class="select select-bordered {mobileSizing}" bind:value={$form.productDefinitionId}>
-        <option value={null} selected>{m.productDefinitions_filterAllProjects()}</option>
+        <option value={null} selected>{m.filters_allProdDefs()}</option>
         {#each data.productDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as pD}
           <option value={pD.Id}>{pD.Name}</option>
         {/each}
       </select>
       <DateRangePicker
         bind:chosenDates={$form.dateUpdatedRange}
-        placeholder={m.workflowInstances_filters_dateRange()}
+        placeholder={m.filters_dateRange()}
       />
     </div>
   </form>
@@ -94,7 +94,7 @@
           {
             // This will not sort by locale... need a good solution...
             id: 'organization',
-            header: m.project_side_organization(),
+            header: m.project_org(),
             compare: () => 0
           },
           {
@@ -109,7 +109,7 @@
           },
           {
             id: 'state',
-            header: m.project_products_transitions_state(),
+            header: m.transitions_state(),
             compare: () => 0
           },
           {

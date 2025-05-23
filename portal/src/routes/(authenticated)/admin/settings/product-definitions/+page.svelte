@@ -16,7 +16,7 @@
 </script>
 
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
-  {m.admin_settings_productDefinitions_add()}
+  {m.prodDefs_add()}
 </a>
 
 <div class="flex flex-col w-full">
@@ -27,23 +27,23 @@
       title={pD.Name}
       fields={[
         {
-          key: 'admin_settings_productDefinitions_type',
+          key: 'prodDefs_type',
           value: pD.ApplicationTypes.Name // ISSUE: #1102 this doesn't actually mean anything for the product definition, so we may want to remove this entirely from the UI.
         },
         {
-          key: 'admin_settings_productDefinitions_workflow',
+          key: 'prodDefs_flow',
           value: pD.Workflow.Name
         },
         {
-          key: 'admin_settings_productDefinitions_rebuildWorkflow',
+          key: 'prodDefs_rebuildFlow',
           value: pD.RebuildWorkflow?.Name
         },
         {
-          key: 'admin_settings_productDefinitions_republishWorkflow',
+          key: 'prodDefs_republishFlow',
           value: pD.RepublishWorkflow?.Name
         },
         {
-          key: 'admin_settings_productDefinitions_description',
+          key: 'prodDefs_description',
           value: pD.Description
         }
       ]}

@@ -45,7 +45,7 @@
   <form class="modal-box" action="?/{endpoint}" method="POST" use:enhance>
     <div class="items-center text-center" class:hidden={selectingStore}>
       <div class="flex flex-row">
-        <h2 class="text-lg font-bold grow">{m.project_products_popup_addTitle()}</h2>
+        <h2 class="text-lg font-bold grow">{m.products_details()}</h2>
         <button
           class="btn btn-ghost"
           type="button"

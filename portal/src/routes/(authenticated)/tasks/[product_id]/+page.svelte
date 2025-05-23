@@ -52,7 +52,7 @@
         {/each}
       </div>
     {/if}
-    <LabeledFormInput name="project_products_transitions_comment">
+    <LabeledFormInput name="transitions_comment">
       <textarea
         class="textarea textarea-bordered h-24 w-full"
         name="comment"
@@ -68,7 +68,7 @@
   <div>
     {#if data.fields.ownerName && data.fields.ownerEmail}
       <div class="flex flex-col gap-x-3 w-full md:flex-row">
-        <LabeledFormInput name="projectTable_columns_owner" className="md:w-2/4">
+        <LabeledFormInput name="projectTable_owner" className="md:w-2/4">
           <input
             type="text"
             class="input input-bordered w-full"
@@ -87,7 +87,7 @@
       </div>
     {/if}
     <div class="flex flex-col gap-x-3 w-full md:flex-row">
-      <LabeledFormInput name="project_projectName" className="md:w-2/4">
+      <LabeledFormInput name="project_name" className="md:w-2/4">
         <input
           type="text"
           class="input input-bordered w-full"
@@ -95,7 +95,7 @@
           value={data.fields.projectName}
         />
       </LabeledFormInput>
-      <LabeledFormInput name="project_projectDescription" className="md:w-2/4">
+      <LabeledFormInput name="project_description" className="md:w-2/4">
         <input
           type="text"
           class="input input-bordered w-full"
@@ -160,7 +160,7 @@
           value={data.productDescription}
         />
       </LabeledFormInput>
-      <LabeledFormInput name="admin_settings_productDefinitions_type">
+      <LabeledFormInput name="prodDefs_type">
         <input
           type="text"
           class="input input-bordered w-full"
@@ -201,12 +201,12 @@
           },
           {
             id: 'fileSize',
-            header: m.project_products_size(),
+            header: m.products_size(),
             compare: (a, b) => byNumber(a.FileSize, b.FileSize)
           },
           {
             id: 'url',
-            header: m.tasks_files_link()
+            header: m.tasks_downloadURL()
           }
         ]}
       >
@@ -235,7 +235,7 @@
   {/if}
   {#if data?.reviewers?.length}
     {@const locale = getLocale()}
-    <h3>{m.project_side_reviewers_title()}</h3>
+    <h3>{m.reviewers_title()}</h3>
     <div class="w-full overflow-x-auto">
       <SortTable
         className="max-h-96"

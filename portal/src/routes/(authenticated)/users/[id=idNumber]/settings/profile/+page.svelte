@@ -60,7 +60,7 @@
         bind:value={$form.firstName}
         required
       />
-      <span class="validator-hint">{m.org_nameError()}</span>
+      <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_lastName">
       <input
@@ -70,7 +70,7 @@
         bind:value={$form.lastName}
         required
       />
-      <span class="validator-hint">{m.org_nameError()}</span>
+      <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_name">
       <input
@@ -80,7 +80,7 @@
         bind:value={$form.displayName}
         required
       />
-      <span class="validator-hint">{m.org_nameError()}</span>
+      <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_email">
       <input
@@ -92,8 +92,8 @@
       />
       <span class="validator-hint">
         {$form.email
-          ? m.project_side_reviewers_form_invalidEmailError()
-          : m.project_side_reviewers_form_emptyEmailError()}
+          ? m.formErrors_emailInvalid()
+          : m.formErrors_emailEmpty()}
       </span>
     </LabeledFormInput>
     <LabeledFormInput name="profile_phone">
@@ -149,7 +149,7 @@
         bind:checked={$form.visible}
       />
     </InputWithMessage>
-    <InputWithMessage className="mt-4" title={{ key: 'users_table_columns_active' }}>
+    <InputWithMessage className="mt-4" title={{ key: 'users_table_active' }}>
       <input
         type="checkbox"
         name="active"
