@@ -3,6 +3,7 @@ import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { ExpressAdapter } from '@bull-board/express';
+import { Queue } from 'bullmq';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import path from 'path';
 import { prisma, Queues } from 'sil.appbuilder.portal.common';
@@ -86,7 +87,9 @@ new Workers.Emails();
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/jobs');
 createBullBoard({
-  queues: Object.values(Queues).map((q) => new BullMQAdapter(q)),
+  queues: Object.values(Queues)
+    .filter((q) => q instanceof Queue)
+    .map((q) => new BullMQAdapter(q)),
   serverAdapter
 });
 

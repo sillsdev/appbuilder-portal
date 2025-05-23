@@ -1,11 +1,12 @@
 import { canClaimProject, canModifyProject, type ProjectForAction } from '$lib/projects';
+import { ServerStatus } from '$lib/utils';
 import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
 import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 
-export async function verifyCanViewAndEdit(user: Session, projectId: number) {
+export async function verifyCanViewAndEdit(user: Session, projectId: number): Promise<ServerStatus> {
   // Editing is allowed if the user owns the project, or if the user is an organization
   // admin for the project's organization, or if the user is a super admin
   const project = await prisma.projects.findUnique({
@@ -18,8 +19,8 @@ export async function verifyCanViewAndEdit(user: Session, projectId: number) {
       OrganizationId: true
     }
   });
-  if (!project) return false;
-  return canModifyProject(user, project.OwnerId, project.OrganizationId);
+  if (!project) return ServerStatus.NotFound;
+  return canModifyProject(user, project.OwnerId, project.OrganizationId) ? ServerStatus.Ok : ServerStatus.Forbidden;
 }
 
 export function projectFilter(args: {
@@ -105,7 +106,7 @@ export function projectFilter(args: {
     ]
   };
 }
-export async function verifyCanCreateProject(user: Session, orgId: number) {
+export function verifyCanCreateProject(user: Session, orgId: number): boolean {
   // Creating a project is allowed if the user is an OrgAdmin or AppBuilder for the organization or a SuperAdmin
   return (
     isAdminForOrg(orgId, user.user.roles) ||

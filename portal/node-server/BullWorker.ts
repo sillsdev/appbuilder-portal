@@ -6,9 +6,7 @@ export abstract class BullWorker<T> {
   public worker: Worker;
   constructor(public queue: BullMQ.QueueName) {
     this.worker = new Worker<T>(queue, this.run, {
-      connection: {
-        host: process.env.NODE_ENV === 'development' ? 'localhost' : 'redis'
-      }
+      connection: Queues.connection
     });
   }
   abstract run(job: Job<T>): Promise<unknown>;
