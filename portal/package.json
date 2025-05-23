@@ -1,0 +1,72 @@
+{
+  "name": "sil.appbuilder.portal",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "npm run test:integration && npm run test:unit",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint": "prettier --plugin-search-dir . --check . && eslint .",
+    "format": "prettier --plugin-search-dir . --write .",
+    "test:integration": "playwright test",
+    "test:unit": "vitest",
+    "prepare": "svelte-kit sync"
+  },
+  "prisma": {
+    "seed": "ts-node --esm prisma/seed.ts",
+    "schema": "common/prisma/schema.prisma"
+  },
+  "devDependencies": {
+    "@auth/core": "^0.37.4",
+    "@iconify/svelte": "^4.2.0",
+    "@inlang/paraglide-js": "^2.0.4",
+    "@playwright/test": "^1.50.0",
+    "@sveltejs/adapter-node": "^5.2.12",
+    "@sveltejs/kit": "^2.16.1",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@tailwindcss/vite": "^4.0.6",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.10",
+    "@typescript-eslint/eslint-plugin": "^8.21.0",
+    "@typescript-eslint/parser": "^8.21.0",
+    "@vvo/tzdb": "^6.159.0",
+    "@zerodevx/svelte-toast": "^0.9.6",
+    "commander": "^13.1.0",
+    "daisyui": "^5.0.0",
+    "eslint": "^9.19.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-svelte": "^2.46.1",
+    "fuse.js": "^7.0.0",
+    "prettier": "^3.4.2",
+    "prettier-plugin-prisma": "^5.0.0",
+    "prettier-plugin-svelte": "^3.3.3",
+    "svelte": "^5.19.2",
+    "svelte-check": "^4.1.4",
+    "svelte-flatpickr-plus": "^2.0.6",
+    "sveltekit-superforms": "^2.23.1",
+    "svelvet": "^10.0.2",
+    "tailwindcss": "^4.0.6",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.8.1",
+    "typescript": "^5.7.3",
+    "valibot": "^1.0.0-beta.14",
+    "vite": "^6.0.11",
+    "vitest": "^3.0.4"
+  },
+  "type": "module",
+  "volta": {
+    "node": "22.11.0"
+  },
+  "dependencies": {
+    "@auth/express": "^0.8.4",
+    "@auth/sveltekit": "^1.7.4",
+    "@bull-board/express": "^6.9.0",
+    "bullmq": "^5.52.0",
+    "express": "^4.21.2",
+    "fast-xml-parser": "^5.0.9",
+    "sil.appbuilder.portal.common": "file:common"
+  }
+}

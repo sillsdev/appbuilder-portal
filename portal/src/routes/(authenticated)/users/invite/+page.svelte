@@ -1,0 +1,116 @@
+<script lang="ts">
+  import { goto } from '$app/navigation';
+  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
+  import { onMount } from 'svelte';
+  import { superForm } from 'sveltekit-superforms';
+  import GroupsSelector from '../GroupsSelector.svelte';
+  import RolesSelector from '../RolesSelector.svelte';
+  import type { PageData } from './$types';
+
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
+
+  const { form, enhance } = superForm(data.form, {
+    dataType: 'json',
+    resetForm: false,
+    onUpdated(event) {
+      if (event.form.valid) {
+        goto(localizeHref('/users'));
+        toast(
+          'success',
+          m.organizationMembership_invite_create_success({ email: event.form.data.email })
+        );
+      } else {
+        toast('error', m.organizationMembership_invite_create_error());
+      }
+    }
+  });
+
+  let currentGroups = $derived(
+    data.groupsByOrg.find((o) => o.Id === $form.organizationId)?.Groups ?? []
+  );
+
+  onMount(() => {
+    $form.organizationId = data.groupsByOrg[0].Id;
+  });
+</script>
+
+<div class="w-full max-w-6xl mx-auto">
+  <h3>{m.organizationMembership_invite_create_inviteUserModalTitle()}</h3>
+
+  <form class="m-4" method="post" action="?/new" use:enhance>
+    <div class="flex flex-row justify-between gap-4 flex-wrap">
+      <div class="grow">
+        <LabeledFormInput name="organizationMembership_invite_create_emailInputPlaceholder">
+          <input
+            type="email"
+            name="email"
+            placeholder="user@example.com"
+            class="input input-bordered w-full validator"
+            bind:value={$form.email}
+            required
+          />
+          <span class="validator-hint">{m.project_side_reviewers_form_invalidEmailError()}</span>
+        </LabeledFormInput>
+        <LabeledFormInput name="project_side_organization">
+          <OrganizationDropdown
+            className="w-full"
+            name="organizationId"
+            bind:value={$form.organizationId}
+            organizations={data.groupsByOrg}
+          />
+        </LabeledFormInput>
+      </div>
+      <div class="flex flex-col h-full min-w-96">
+        <span class="fieldset-label my-2">
+          {m.organizationMembership_invite_create_rolesAndGroups()}
+        </span>
+        <div class="grow border border-opacity-15 border-gray-50 rounded-lg p-4">
+          <div class="flex flex-row space-x-2">
+            <div>
+              {m.users_userRoles()}
+              <RolesSelector>
+                {#snippet selector(role)}
+                  <input
+                    type="checkbox"
+                    class="toggle toggle-accent"
+                    value={role}
+                    bind:group={$form.roles}
+                  />
+                {/snippet}
+              </RolesSelector>
+            </div>
+            <div>
+              {m.users_userGroups()}
+              <GroupsSelector groups={currentGroups}>
+                {#snippet selector(group)}
+                  <input
+                    type="checkbox"
+                    class="toggle toggle-accent"
+                    value={group.Id}
+                    bind:group={$form.groups}
+                  />
+                {/snippet}
+              </GroupsSelector>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="my-4 flex justify-end gap-2">
+      <a class="btn btn-secondary" href={localizeHref('/users')}>{m.common_cancel()}</a>
+      <input
+        type="submit"
+        class="btn btn-primary"
+        value={m.organizationMembership_invite_create_sendInviteButton()}
+      />
+    </div>
+  </form>
+</div>
