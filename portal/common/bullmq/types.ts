@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+import { Link } from '@opentelemetry/api';
 import type { RepeatOptions } from 'bullmq';
 import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-api/types.js';
 import { RoleId } from '../public/prisma.js';
@@ -61,14 +62,19 @@ export enum JobType {
   Email_ProjectImportReport = 'Project Import Report'
 }
 
+export interface JobBase {
+  type: JobType;
+  links?: Link[];
+}
+
 export namespace Build {
-  export interface Product {
+  export interface Product extends JobBase {
     type: JobType.Build_Product;
     productId: string;
     defaultTargets: string;
     environment: Record<string, string>;
   }
-  export interface Check {
+  export interface Check extends JobBase {
     type: JobType.Build_Check;
     organizationId: number;
     productId: string;
@@ -76,7 +82,7 @@ export namespace Build {
     buildId: number;
     productBuildId: number;
   }
-  export interface PostProcess {
+  export interface PostProcess extends JobBase {
     type: JobType.Build_PostProcess;
     productId: string;
     productBuildId: number;
@@ -85,35 +91,35 @@ export namespace Build {
 }
 
 export namespace Product {
-  export interface Create {
+  export interface Create extends JobBase {
     type: JobType.Product_Create;
     productId: string;
   }
-  export interface Delete {
+  export interface Delete extends JobBase {
     type: JobType.Product_Delete;
     organizationId: number;
     workflowJobId: number;
   }
-  export interface GetVersionCode {
+  export interface GetVersionCode extends JobBase {
     type: JobType.Product_GetVersionCode;
     productId: string;
   }
 }
 
 export namespace Project {
-  export interface Create {
+  export interface Create extends JobBase {
     type: JobType.Project_Create;
     projectId: number;
   }
 
-  export interface Check {
+  export interface Check extends JobBase {
     type: JobType.Project_Check;
     workflowProjectId: number;
     organizationId: number;
     projectId: number;
   }
 
-  export interface ImportProducts {
+  export interface ImportProducts extends JobBase {
     type: JobType.Project_ImportProducts;
     organizationId: number;
     importId: number;
@@ -122,7 +128,7 @@ export namespace Project {
 }
 
 export namespace Publish {
-  export interface Product {
+  export interface Product extends JobBase {
     type: JobType.Publish_Product;
     productId: string;
     defaultChannel: Channels;
@@ -130,7 +136,7 @@ export namespace Publish {
     environment: Record<string, string>;
   }
 
-  export interface Check {
+  export interface Check extends JobBase {
     type: JobType.Publish_Check;
     organizationId: number;
     productId: string;
@@ -140,7 +146,7 @@ export namespace Publish {
     publicationId: number;
   }
 
-  export interface PostProcess {
+  export interface PostProcess extends JobBase {
     type: JobType.Publish_PostProcess;
     productId: string;
     publicationId: number;
@@ -149,10 +155,10 @@ export namespace Publish {
 }
 
 export namespace Recurring {
-  export interface CheckSystemStatuses {
+  export interface CheckSystemStatuses extends JobBase {
     type: JobType.Recurring_CheckSystemStatuses;
   }
-  export interface RefreshLangTags {
+  export interface RefreshLangTags extends JobBase {
     type: JobType.Recurring_RefreshLangTags;
   }
 }
@@ -178,7 +184,7 @@ export namespace UserTasks {
       };
 
   // Using type here instead of interface for easier composition
-  export type Modify = (
+  export type Modify = JobBase & (
     | {
         scope: 'Project';
         projectId: number;
@@ -195,31 +201,31 @@ export namespace UserTasks {
 }
 
 export namespace Email {
-  export interface InviteUser {
+  export interface InviteUser extends JobBase {
     type: JobType.Email_InviteUser;
     email: string;
     inviteToken: string;
     inviteLink: string;
   }
-  export interface SendNotificationToUser {
+  export interface SendNotificationToUser extends JobBase {
     type: JobType.Email_SendNotificationToUser;
     userId: number;
     messageKey: string;
     messageProperties: Record<string, string>;
     link?: string;
   }
-  export interface SendNotificationToReviewers {
+  export interface SendNotificationToReviewers extends JobBase {
     type: JobType.Email_SendNotificationToReviewers;
     productId: string;
   }
-  export interface SendNotificationToOrgAdminsAndOwner {
+  export interface SendNotificationToOrgAdminsAndOwner extends JobBase {
     type: JobType.Email_SendNotificationToOrgAdminsAndOwner;
     projectId: number;
     messageKey: string;
     messageProperties: Record<string, string>;
     link?: string;
   }
-  export interface SendBatchUserTaskNotifications {
+  export interface SendBatchUserTaskNotifications extends JobBase {
     type: JobType.Email_SendBatchUserTaskNotifications;
     notifications: {
       userId: number;
@@ -231,24 +237,24 @@ export namespace Email {
       comment: string;
     }[];
   }
-  export interface NotifySuperAdminsOfNewOrganizationRequest {
+  export interface NotifySuperAdminsOfNewOrganizationRequest extends JobBase {
     type: JobType.Email_NotifySuperAdminsOfNewOrganizationRequest;
     organizationName: string;
     email: string;
     url: string;
   }
 
-  export interface NotifySuperAdminsOfOfflineSystems {
+  export interface NotifySuperAdminsOfOfflineSystems extends JobBase {
     type: JobType.Email_NotifySuperAdminsOfOfflineSystems;
   }
 
-  export interface NotifySuperAdminsLowPriority {
+  export interface NotifySuperAdminsLowPriority extends JobBase {
     type: JobType.Email_NotifySuperAdminsLowPriority;
     messageKey: string;
     messageProperties: Record<string, string>;
     link?: string;
   }
-  export interface ProjectImportReport {
+  export interface ProjectImportReport extends JobBase {
     type: JobType.Email_ProjectImportReport;
     importId: number;
   }

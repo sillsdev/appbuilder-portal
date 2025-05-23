@@ -1,5 +1,6 @@
 import { Queue } from 'bullmq';
 import { Redis } from 'ioredis';
+import OTEL from '../otel.js';
 import type { Job } from './types.js';
 import { QueueName } from './types.js';
 
@@ -12,8 +13,14 @@ class Connection {
       maxRetriesPerRequest: null
     });
     this.connected = false;
-    this.conn.on('close', () => (this.connected = false));
-    this.conn.on('connect', () => (this.connected = true));
+    this.conn.on('close', () => {
+      OTEL.instance.logger.info('redis connection closed');
+      this.connected = false;
+    });
+    this.conn.on('connect', () => {
+      OTEL.instance.logger.info('redis connection opened');
+      this.connected = true;
+    });
     setInterval(() => {
       if (this.connected) {
         this.conn
@@ -21,10 +28,14 @@ class Connection {
           .then(() => {
             this.connected = true;
           })
-          .catch((err) => {
-            console.error(err);
-            console.log('Redis disconnected');
-            this.connected = false;
+          .catch((e) => {
+            if (this.connected) {
+              OTEL.instance.logger.info('redis could not be reached');
+              OTEL.instance.logger.error(
+                `RedisConnection: ${typeof e === 'string' ? e.toUpperCase() : e instanceof Error ? e.message : e}`
+              );
+              this.connected = false;
+            }
           });
       }
     }, 10000); // Check every 10 seconds
