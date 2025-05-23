@@ -18,62 +18,85 @@ export class Builds extends BullWorker<BullMQ.Job> {
     super(BullMQ.QueueName.Builds);
   }
   async run(job: Job<BullMQ.Job>) {
-    switch (job.data.type) {
-      case BullMQ.JobType.Build_Product:
-        return Executor.Build.product(job as Job<BullMQ.Build.Product>);
-      case BullMQ.JobType.Build_PostProcess:
-        return Executor.Build.postProcess(job as Job<BullMQ.Build.PostProcess>);
-    }
+    return tracer.startActiveSpan(
+      'builds-runner',
+      { links: job.data.links },
+      async (span: Span) => {
+        span.setAttribute('jobType', job.data.type);
+        let res: unknown;
+        switch (job.data.type) {
+          case BullMQ.JobType.Build_Product:
+            res = await Executor.Build.product(job as Job<BullMQ.Build.Product>);
+            break;
+          case BullMQ.JobType.Build_PostProcess:
+            res = await Executor.Build.postProcess(job as Job<BullMQ.Build.PostProcess>);
+            break;
+        }
+        span.end();
+        return res;
+      }
+    );
   }
 }
 
 export class DefaultRecurring extends BullWorker<BullMQ.Job> {
   constructor() {
     super(BullMQ.QueueName.DefaultRecurring);
-    Queues.DefaultRecurring.upsertJobScheduler(
-      BullMQ.JobSchedulerId.CheckSystemStatuses,
-      {
-        pattern: '*/5 * * * *', // every 5 minutes
-        immediately: true
-      },
-      {
-        name: 'Check System Statuses',
-        data: {
-          type: BullMQ.JobType.Recurring_CheckSystemStatuses
+    tracer.startActiveSpan('system-recurring-init', (span: Span) => {
+      Queues.DefaultRecurring.upsertJobScheduler(
+        BullMQ.JobSchedulerId.CheckSystemStatuses,
+        {
+          pattern: '*/5 * * * *', // every 5 minutes
+          immediately: true
+        },
+        {
+          name: 'Check System Statuses',
+          data: {
+            type: BullMQ.JobType.Recurring_CheckSystemStatuses,
+            links: [{ context: span.spanContext()}]
+          }
         }
-      }
-    );
-    Queues.DefaultRecurring.upsertJobScheduler(
-      BullMQ.JobSchedulerId.RefreshLangTags,
-      {
-        pattern: '@daily', // every day at midnight
-        immediately: true
-      },
-      {
-        name: 'Refresh LangTags',
-        data: {
-          type: BullMQ.JobType.Recurring_RefreshLangTags
+      );
+      Queues.DefaultRecurring.upsertJobScheduler(
+        BullMQ.JobSchedulerId.RefreshLangTags,
+        {
+          pattern: '@daily', // every day at midnight
+          immediately: true
+        },
+        {
+          name: 'Refresh LangTags',
+          data: {
+            type: BullMQ.JobType.Recurring_RefreshLangTags,
+            links: [{ context: span.spanContext()}]
+          }
         }
-      }
-    );
+      );
+      span.end();
+    });
   }
   async run(job: Job<BullMQ.Job>) {
-    return tracer.startActiveSpan('system-recurring-runner', async (span: Span) => {
-      span.setAttribute('jobType', job.data.type);
-      let res: unknown;
-      switch (job.data.type) {
-      case BullMQ.JobType.Recurring_CheckSystemStatuses:
-        res = await Executor.Recurring.checkSystemStatuses(
-          job as Job<BullMQ.Recurring.CheckSystemStatuses>
-        );
-        break;
-      case BullMQ.JobType.Recurring_RefreshLangTags:
-        res = await Executor.Recurring.refreshLangTags(job as Job<BullMQ.Recurring.RefreshLangTags>);
-        break;
+    return tracer.startActiveSpan(
+      'system-recurring-runner',
+      { links: job.data.links },
+      async (span: Span) => {
+        span.setAttribute('jobType', job.data.type);
+        let res: unknown;
+        switch (job.data.type) {
+          case BullMQ.JobType.Recurring_CheckSystemStatuses:
+            res = await Executor.Recurring.checkSystemStatuses(
+              job as Job<BullMQ.Recurring.CheckSystemStatuses>
+            );
+            break;
+          case BullMQ.JobType.Recurring_RefreshLangTags:
+            res = await Executor.Recurring.refreshLangTags(
+              job as Job<BullMQ.Recurring.RefreshLangTags>
+            );
+            break;
+        }
+        span.end();
+        return res;
       }
-      span.end();
-      return res;
-    });
+    );
   }
 }
 
@@ -82,18 +105,33 @@ export class Miscellaneous extends BullWorker<BullMQ.Job> {
     super(BullMQ.QueueName.Miscellaneous);
   }
   async run(job: Job<BullMQ.Job>) {
-    switch (job.data.type) {
-      case BullMQ.JobType.Product_Create:
-        return Executor.Product.create(job as Job<BullMQ.Product.Create>);
-      case BullMQ.JobType.Product_Delete:
-        return Executor.Product.deleteProduct(job as Job<BullMQ.Product.Delete>);
-      case BullMQ.JobType.Product_GetVersionCode:
-        return Executor.Product.getVersionCode(job as Job<BullMQ.Product.GetVersionCode>);
-      case BullMQ.JobType.Project_Create:
-        return Executor.Project.create(job as Job<BullMQ.Project.Create>);
-      case BullMQ.JobType.Project_ImportProducts:
-        return Executor.Project.importProducts(job as Job<BullMQ.Project.ImportProducts>);
-    }
+    return tracer.startActiveSpan(
+      'miscellaneous-runner',
+      { links: job.data.links },
+      async (span: Span) => {
+        span.setAttribute('jobType', job.data.type);
+        let res: unknown;
+        switch (job.data.type) {
+          case BullMQ.JobType.Product_Create:
+            res = Executor.Product.create(job as Job<BullMQ.Product.Create>);
+            break;
+          case BullMQ.JobType.Product_Delete:
+            res = Executor.Product.deleteProduct(job as Job<BullMQ.Product.Delete>);
+            break;
+          case BullMQ.JobType.Product_GetVersionCode:
+            res = Executor.Product.getVersionCode(job as Job<BullMQ.Product.GetVersionCode>);
+            break;
+          case BullMQ.JobType.Project_Create:
+            res = Executor.Project.create(job as Job<BullMQ.Project.Create>);
+            break;
+          case BullMQ.JobType.Project_ImportProducts:
+            res = Executor.Project.importProducts(job as Job<BullMQ.Project.ImportProducts>);
+            break;
+        }
+        span.end();
+        return res;
+      }
+    );
   }
 }
 
@@ -102,12 +140,24 @@ export class Publishing extends BullWorker<BullMQ.Job> {
     super(BullMQ.QueueName.Publishing);
   }
   async run(job: Job<BullMQ.Job>) {
-    switch (job.data.type) {
-      case BullMQ.JobType.Publish_Product:
-        return Executor.Publish.product(job as Job<BullMQ.Publish.Product>);
-      case BullMQ.JobType.Publish_PostProcess:
-        return Executor.Publish.postProcess(job as Job<BullMQ.Publish.PostProcess>);
-    }
+    return tracer.startActiveSpan(
+      'publishing-runner',
+      { links: job.data.links },
+      async (span: Span) => {
+        span.setAttribute('jobType', job.data.type);
+        let res: unknown;
+        switch (job.data.type) {
+          case BullMQ.JobType.Publish_Product:
+            res = Executor.Publish.product(job as Job<BullMQ.Publish.Product>);
+            break;
+          case BullMQ.JobType.Publish_PostProcess:
+            res = Executor.Publish.postProcess(job as Job<BullMQ.Publish.PostProcess>);
+            break;
+        }
+        span.end();
+        return res;
+      }
+    );
   }
 }
 
@@ -116,14 +166,27 @@ export class RemotePolling extends BullWorker<BullMQ.Job> {
     super(BullMQ.QueueName.RemotePolling);
   }
   async run(job: Job<BullMQ.Job>) {
-    switch (job.data.type) {
-      case BullMQ.JobType.Build_Check:
-        return Executor.Build.check(job as Job<BullMQ.Build.Check>);
-      case BullMQ.JobType.Publish_Check:
-        return Executor.Publish.check(job as Job<BullMQ.Publish.Check>);
-      case BullMQ.JobType.Project_Check:
-        return Executor.Project.check(job as Job<BullMQ.Project.Check>);
-    }
+    return tracer.startActiveSpan(
+      'polling-runner',
+      { links: job.data.links },
+      async (span: Span) => {
+        span.setAttribute('jobType', job.data.type);
+        let res: unknown;
+        switch (job.data.type) {
+          case BullMQ.JobType.Build_Check:
+            res = Executor.Build.check(job as Job<BullMQ.Build.Check>);
+            break;
+          case BullMQ.JobType.Publish_Check:
+            res = Executor.Publish.check(job as Job<BullMQ.Publish.Check>);
+            break;
+          case BullMQ.JobType.Project_Check:
+            res = Executor.Project.check(job as Job<BullMQ.Project.Check>);
+            break;
+        }
+        span.end();
+        return res;
+      }
+    );
   }
 }
 
@@ -132,10 +195,21 @@ export class UserTasks extends BullWorker<BullMQ.Job> {
     super(BullMQ.QueueName.UserTasks);
   }
   async run(job: Job<BullMQ.Job>) {
-    switch (job.data.type) {
-      case BullMQ.JobType.UserTasks_Modify:
-        return Executor.UserTasks.modify(job as Job<BullMQ.UserTasks.Modify>);
-    }
+    return tracer.startActiveSpan(
+      'usertasks-runner',
+      { links: job.data.links },
+      async (span: Span) => {
+        span.setAttribute('jobType', job.data.type);
+        let res: unknown;
+        switch (job.data.type) {
+          case BullMQ.JobType.UserTasks_Modify:
+            res = Executor.UserTasks.modify(job as Job<BullMQ.UserTasks.Modify>);
+            break;
+        }
+        span.end();
+        return res;
+      }
+    );
   }
 }
 
@@ -144,39 +218,60 @@ export class Emails extends BullWorker<BullMQ.Job> {
     super(BullMQ.QueueName.Emails);
   }
   async run(job: Job<BullMQ.Job>) {
-    switch (job.data.type) {
-      case BullMQ.JobType.Email_InviteUser:
-        return Executor.Email.inviteUser(job as Job<BullMQ.Email.InviteUser>);
-      case BullMQ.JobType.Email_SendNotificationToUser:
-        return Executor.Email.sendNotificationToUser(
-          job as Job<BullMQ.Email.SendNotificationToUser>
-        );
-      case BullMQ.JobType.Email_SendNotificationToReviewers:
-        return Executor.Email.sendNotificationToReviewers(
-          job as Job<BullMQ.Email.SendNotificationToReviewers>
-        );
-      case BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner:
-        return Executor.Email.sendNotificationToOrgAdminsAndOwner(
-          job as Job<BullMQ.Email.SendNotificationToOrgAdminsAndOwner>
-        );
-      case BullMQ.JobType.Email_SendBatchUserTaskNotifications:
-        return Executor.Email.sendBatchUserTaskNotifications(
-          job as Job<BullMQ.Email.SendBatchUserTaskNotifications>
-        );
-      case BullMQ.JobType.Email_NotifySuperAdminsOfNewOrganizationRequest:
-        return Executor.Email.notifySuperAdminsOfNewOrganizationRequest(
-          job as Job<BullMQ.Email.NotifySuperAdminsOfNewOrganizationRequest>
-        );
-      case BullMQ.JobType.Email_NotifySuperAdminsOfOfflineSystems:
-        return Executor.Email.notifySuperAdminsOfOfflineSystems(
-          job as Job<BullMQ.Email.NotifySuperAdminsOfOfflineSystems>
-        );
-      case BullMQ.JobType.Email_NotifySuperAdminsLowPriority:
-        return Executor.Email.notifySuperAdminsLowPriority(
-          job as Job<BullMQ.Email.NotifySuperAdminsLowPriority>
-        );
-      case BullMQ.JobType.Email_ProjectImportReport:
-        return Executor.Email.reportProjectImport(job as Job<BullMQ.Email.ProjectImportReport>);
-    }
+    return tracer.startActiveSpan(
+      'emails-runner',
+      { links: job.data.links },
+      async (span: Span) => {
+        span.setAttribute('jobType', job.data.type);
+        let res: unknown;
+        switch (job.data.type) {
+          case BullMQ.JobType.Email_InviteUser:
+            res = await Executor.Email.inviteUser(job as Job<BullMQ.Email.InviteUser>);
+            break;
+          case BullMQ.JobType.Email_SendNotificationToUser:
+            res = await Executor.Email.sendNotificationToUser(
+              job as Job<BullMQ.Email.SendNotificationToUser>
+            );
+            break;
+          case BullMQ.JobType.Email_SendNotificationToReviewers:
+            res = await Executor.Email.sendNotificationToReviewers(
+              job as Job<BullMQ.Email.SendNotificationToReviewers>
+            );
+            break;
+          case BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner:
+            res = await Executor.Email.sendNotificationToOrgAdminsAndOwner(
+              job as Job<BullMQ.Email.SendNotificationToOrgAdminsAndOwner>
+            );
+            break;
+          case BullMQ.JobType.Email_SendBatchUserTaskNotifications:
+            res = await Executor.Email.sendBatchUserTaskNotifications(
+              job as Job<BullMQ.Email.SendBatchUserTaskNotifications>
+            );
+            break;
+          case BullMQ.JobType.Email_NotifySuperAdminsOfNewOrganizationRequest:
+            res = await Executor.Email.notifySuperAdminsOfNewOrganizationRequest(
+              job as Job<BullMQ.Email.NotifySuperAdminsOfNewOrganizationRequest>
+            );
+            break;
+          case BullMQ.JobType.Email_NotifySuperAdminsOfOfflineSystems:
+            res = await Executor.Email.notifySuperAdminsOfOfflineSystems(
+              job as Job<BullMQ.Email.NotifySuperAdminsOfOfflineSystems>
+            );
+            break;
+          case BullMQ.JobType.Email_NotifySuperAdminsLowPriority:
+            res = await Executor.Email.notifySuperAdminsLowPriority(
+              job as Job<BullMQ.Email.NotifySuperAdminsLowPriority>
+            );
+            break;
+          case BullMQ.JobType.Email_ProjectImportReport:
+            res = await Executor.Email.reportProjectImport(
+              job as Job<BullMQ.Email.ProjectImportReport>
+            );
+            break;
+        }
+        span.end();
+        return res;
+      }
+    );
   }
 }
