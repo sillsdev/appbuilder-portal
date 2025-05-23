@@ -202,21 +202,28 @@ export const actions: Actions = {
 
     const form = await superValidate(event.request, valibot(bulkProductActionSchema));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
-    if (// if user modified hidden values
+    // if any productId doesn't exist, 403
+    // if any associated project is inaccessible, 403
+    // if user modified hidden values
+    if (
       !(
-        await prisma.projects.findMany({
-          where: {
-            Products: {
-              some: {
-                Id: { in: form.data.products }
+        (await prisma.products.count({ where: { Id: { in: form.data.products } } })) ===
+          form.data.products.length &&
+        (
+          await prisma.projects.findMany({
+            where: {
+              Products: {
+                some: {
+                  Id: { in: form.data.products }
+                }
               }
+            },
+            select: {
+              OwnerId: true
             }
-          },
-          select: {
-            OwnerId: true
-          }
-        })
-      ).every((p) => canModifyProject(session, p.OwnerId, orgId))
+          })
+        ).every((p) => canModifyProject(session, p.OwnerId, orgId))
+      )
     ) {
       return fail(403);
     }
