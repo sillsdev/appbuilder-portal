@@ -62,16 +62,16 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
     });
     job.updateProgress(75);
 
-    await Queues.RemotePolling.add(
-      `Check status of Project #${response.id}`,
-      {
+    const name = `Check status of Project #${response.id}`;
+    await Queues.RemotePolling.upsertJobScheduler(name, BullMQ.RepeatEveryMinute, {
+      name,
+      data: {
         type: BullMQ.JobType.Project_Check,
         workflowProjectId: response.id,
         organizationId: projectData.Organization.Id,
         projectId: job.data.projectId
-      },
-      BullMQ.RepeatEveryMinute
-    );
+      }
+    });
 
     job.updateProgress(100);
     return response;
@@ -106,7 +106,15 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
     throw new Error(response.message);
   } else {
     if (response.status === 'completed') {
-      await Queues.RemotePolling.removeRepeatableByKey(job.repeatJobKey);
+      await Queues.RemotePolling.removeJobScheduler(job.name);
+      const project = await prisma.projects.findUnique({
+        where: { Id: job.data.projectId },
+        select: {
+          Name: true,
+          WorkflowProjectId: true,
+          OwnerId: true
+        }
+      });
       if (response.result === 'FAILURE') {
         const buildEngineUrl =
           (await BuildEngine.Requests.getURLandToken(job.data.organizationId)).url +
