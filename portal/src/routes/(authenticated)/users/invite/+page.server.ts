@@ -1,7 +1,7 @@
 import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 import { fail } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -57,8 +57,12 @@ export const actions = {
       groups
     );
     const inviteLink = `${url.origin}/invitations/organization-membership?t=${inviteToken}`;
-    // ISSUE: #1100 send email- log instead
-    console.log(inviteLink, email);
+    await Queues.Emails.add('Invite User ' + email, {
+      type: BullMQ.JobType.Email_InviteUser,
+      email,
+      inviteToken,
+      inviteLink
+    });
     return { ok: true, form };
   }
 } satisfies Actions;

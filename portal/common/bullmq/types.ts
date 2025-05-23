@@ -36,7 +36,8 @@ export enum QueueName {
   Miscellaneous = 'Miscellaneous',
   Publishing = 'Publishing',
   RemotePolling = 'Remote Polling',
-  UserTasks = 'User Tasks'
+  UserTasks = 'User Tasks',
+  Emails = 'Emails'
 }
 
 export enum JobType {
@@ -60,7 +61,17 @@ export enum JobType {
   Recurring_CheckSystemStatuses = 'Check System Statuses',
   Recurring_RefreshLangTags = 'Refresh langtags.json',
   // UserTasks
-  UserTasks_Modify = 'Modify UserTasks'
+  UserTasks_Modify = 'Modify UserTasks',
+  // Email
+  Email_InviteUser = 'Invite User',
+  Email_SendNotificationToUser = 'Send Notification to User',
+  Email_SendNotificationToReviewers = 'Send Notification to Product Reviewers',
+  Email_SendNotificationToOrgAdminsAndOwner = 'Send Notification to Org Admins and Owners',
+  Email_SendBatchUserTaskNotifications = 'Send Batch User Task Notifications',
+  Email_NotifySuperAdminsOfNewOrganizationRequest = 'Notify Super Admins of New Organization Request',
+  Email_NotifySuperAdminsOfOfflineSystems = 'Notify Super Admins of Offline Systems',
+  Email_NotifySuperAdminsLowPriority = 'Notify Super Admins (Low Priority)',
+  Email_ProjectImportReport = 'Project Import Report'
 }
 
 export namespace Build {
@@ -196,6 +207,66 @@ export namespace UserTasks {
   };
 }
 
+export namespace Email {
+  export interface InviteUser {
+    type: JobType.Email_InviteUser;
+    email: string;
+    inviteToken: string;
+    inviteLink: string;
+  }
+  export interface SendNotificationToUser {
+    type: JobType.Email_SendNotificationToUser;
+    userId: number;
+    messageKey: string;
+    messageProperties: Record<string, string>;
+    link?: string;
+  }
+  export interface SendNotificationToReviewers {
+    type: JobType.Email_SendNotificationToReviewers;
+    productId: string;
+  }
+  export interface SendNotificationToOrgAdminsAndOwner {
+    type: JobType.Email_SendNotificationToOrgAdminsAndOwner;
+    projectId: number;
+    messageKey: string;
+    messageProperties: Record<string, string>;
+    link?: string;
+  }
+  export interface SendBatchUserTaskNotifications {
+    type: JobType.Email_SendBatchUserTaskNotifications;
+    notifications: {
+      userId: number;
+      activityName: string;
+      project: string;
+      productName: string;
+      status: string;
+      originator: string;
+      comment: string;
+    }[];
+  }
+  export interface NotifySuperAdminsOfNewOrganizationRequest {
+    type: JobType.Email_NotifySuperAdminsOfNewOrganizationRequest;
+    organizationName: string;
+    email: string;
+    url: string;
+  }
+
+  export interface NotifySuperAdminsOfOfflineSystems {
+    type: JobType.Email_NotifySuperAdminsOfOfflineSystems;
+  }
+
+  export interface NotifySuperAdminsLowPriority {
+    type: JobType.Email_NotifySuperAdminsLowPriority;
+    messageKey: string;
+    messageProperties: Record<string, string>;
+    link?: string;
+  }
+  export interface ProjectImportReport {
+    type: JobType.Email_ProjectImportReport;
+    importId: number;
+  }
+}
+
 export type Job = JobTypeMap[keyof JobTypeMap];
 
 export type JobTypeMap = {
@@ -214,5 +285,20 @@ export type JobTypeMap = {
   [JobType.Recurring_CheckSystemStatuses]: Recurring.CheckSystemStatuses;
   [JobType.Recurring_RefreshLangTags]: Recurring.RefreshLangTags;
   [JobType.UserTasks_Modify]: UserTasks.Modify;
+  [JobType.Email_InviteUser]: Email.InviteUser;
+  [JobType.Email_SendNotificationToUser]: Email.SendNotificationToUser;
+  [JobType.Email_SendNotificationToReviewers]: Email.SendNotificationToReviewers;
+  [JobType.Email_SendNotificationToOrgAdminsAndOwner]: Email.SendNotificationToOrgAdminsAndOwner;
+  [JobType.Email_SendBatchUserTaskNotifications]: Email.SendBatchUserTaskNotifications;
+  [JobType.Email_NotifySuperAdminsOfNewOrganizationRequest]: Email.NotifySuperAdminsOfNewOrganizationRequest;
+  [JobType.Email_NotifySuperAdminsOfOfflineSystems]: Email.NotifySuperAdminsOfOfflineSystems;
+  [JobType.Email_NotifySuperAdminsLowPriority]: Email.NotifySuperAdminsLowPriority;
+  [JobType.Email_ProjectImportReport]: Email.ProjectImportReport;
   // Add more mappings here as needed
 };
+
+export enum JobSchedulerId {
+  SystemStatusEmail = 'SystemStatusEmail',
+  RefreshLangTags = 'RefreshLangTags',
+  CheckSystemStatuses = 'CheckSystemStatuses'
+}
