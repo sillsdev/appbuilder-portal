@@ -98,7 +98,7 @@
     // this way worked much better for our use case
     projects = data.projects;
     count = data.count;
-    $pageForm.organizationId = data.pageForm.data.organizationId;
+    $pageForm.organizationId = parseInt(navigation.to!.params!.id);
   });
 
   let canArchiveSelected = $derived(
