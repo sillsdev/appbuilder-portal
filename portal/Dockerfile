@@ -22,6 +22,8 @@ RUN npm run build
 # Build the node-server code (output goes into /build/out as defined in tsconfig.json)
 RUN (cd /build/common/; npx tsc)
 RUN (cd /build/node-server/; npx tsc)
+# Static template files are not compiled, so we need to copy them over
+RUN (cd /build/node-server/; cp -r email-service/templates/ /build/out/email-service/templates)
 
 
 # Real container that will run

@@ -4,7 +4,8 @@
     "skipLibCheck": true,
     "moduleResolution": "NodeNext",
     "module": "NodeNext",
-    "outDir": "../out"
+    "outDir": "../out",
+    "resolveJsonModule": true
   },
   "exclude": ["dev.ts"]
 }

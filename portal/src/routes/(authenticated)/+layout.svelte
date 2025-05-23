@@ -11,7 +11,6 @@
   import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
   import { signOut } from '@auth/sveltekit/client';
-  import { SvelteToast } from '@zerodevx/svelte-toast';
   import type { Snippet } from 'svelte';
   import type { LayoutData } from './$types';
 
@@ -234,9 +233,6 @@
     </div>
     <div class="drawer-content grow items-start justify-start">
       {@render children?.()}
-      <div class="toast toast-top toast-end">
-        <SvelteToast />
-      </div>
     </div>
   </div>
 </div>

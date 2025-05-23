@@ -750,9 +750,11 @@ export const WorkflowStateMachine = setup({
             user: RoleId.AppBuilder
           },
           guard: hasReviewers,
-          actions: () => {
-            // ISSUE: #1100 connect to backend to email reviewers
-            console.log('Emailing Reviewers');
+          actions: ({ context }) => {
+            Queues.Emails.add(`Email reviewers for Product #${context.productId}`, {
+              type: BullMQ.JobType.Email_SendNotificationToReviewers,
+              productId: context.productId
+            });
           }
         }
       }

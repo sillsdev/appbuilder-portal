@@ -3,7 +3,8 @@ import { XMLParser } from 'fast-xml-parser';
 import { existsSync } from 'fs';
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { BuildEngine, BullMQ, DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { BuildEngine, BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
+import { JobSchedulerId } from '../../common/bullmq/types.js';
 
 export async function checkSystemStatuses(
   job: Job<BullMQ.Recurring.CheckSystemStatuses>
@@ -21,11 +22,21 @@ export async function checkSystemStatuses(
     }
   });
   // Add defaults
-  if (process.env.DEFAULT_BUILDENGINE_URL && process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN) {
+  const defaults = BuildEngine.Requests.tryGetDefaultBuildEngineParameters();
+  if (defaults.url) {
     organizations.push({
-      BuildEngineUrl: process.env.DEFAULT_BUILDENGINE_URL,
-      BuildEngineApiAccessToken: process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
+      BuildEngineUrl: defaults.url,
+      BuildEngineApiAccessToken: defaults.token
     });
+  } else {
+    job.log(
+      'No default build engine is set (env.DEFAULT_BUILDENGINE_URL). Continuing with ' +
+        organizations.length +
+        ' organizations'
+    );
+    if (!organizations.length) {
+      throw new Error('No build engines to check');
+    }
   }
   const uniquePairs = new Set(organizations.map((o) => JSON.stringify(o)))
     .values()
@@ -93,10 +104,39 @@ export async function checkSystemStatuses(
         // return first 4 characters of token for differentiation purposes
         partialToken: s.BuildEngineApiAccessToken.substring(0, 4),
         status: res.status,
-        error: res.responseType === 'error' ? res : undefined
+        error: res.responseType === 'error' ? res : undefined,
+        minutes: Math.floor((Date.now() - new Date(s.DateUpdated).valueOf()) / 60000)
       };
     })
   );
+  job.updateProgress(80);
+  // If there are offline systems, send an email to the super admins
+  const offlineSystems = statuses.filter((s) => s.status !== 200);
+  if (offlineSystems.length) {
+    const brokenUrls = new Map();
+    offlineSystems.forEach((s) => {
+      brokenUrls.set(s.url, s);
+    });
+    const minutesSinceHalfHour = Math.floor((Date.now() / 1000 / 60) % 30);
+    if (!(await Queues.Emails.getJobScheduler(JobSchedulerId.SystemStatusEmail))) {
+      await Queues.Emails.upsertJobScheduler(
+        JobSchedulerId.SystemStatusEmail,
+        {
+          // Every 30 minutes from now
+          // BullMQ does not have a good way to schedule repeating jobs at non-standard intervals
+          // so we have to do this to calculate the in-hour offset manually
+          pattern: `${minutesSinceHalfHour},${minutesSinceHalfHour + 30} * * * *`,
+          immediately: true
+        },
+        {
+          name: 'Email SuperAdmins about offline systems',
+          data: {
+            type: BullMQ.JobType.Email_NotifySuperAdminsOfOfflineSystems
+          }
+        }
+      );
+    }
+  }
   job.updateProgress(100);
   return {
     removed: removed.count,

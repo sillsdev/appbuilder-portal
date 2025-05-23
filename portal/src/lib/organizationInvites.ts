@@ -1,12 +1,14 @@
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 
-export async function checkInviteErrors(inviteToken?: string | null) {
+export async function checkInviteErrors(inviteToken?: string | null, userId?: number) {
   try {
     const invite = await prisma.organizationMembershipInvites.findFirst({
       where: {
         Token: inviteToken + ''
       }
     });
+    // This is really just for devs since most people don't have two accounts
+    if (invite?.InvitedById === userId) return { error: 'self-invite' };
     if (!invite || !inviteToken) return { error: 'not found' };
     if (invite.Redeemed) return { error: 'redeemed' };
     if (!invite.Expires || invite.Expires < new Date()) return { error: 'expired' };
@@ -25,7 +27,13 @@ export async function acceptOrganizationInvite(userId: number, inviteToken: stri
     }
   });
   // Redundant check for invite validity in case checkInviteErrors was not called
-  if (!invite || invite.Redeemed || !invite.Expires || invite.Expires < new Date())
+  if (
+    !invite ||
+    invite.Redeemed ||
+    !invite.Expires ||
+    invite.Expires < new Date() ||
+    invite.InvitedById === userId
+  )
     return { error: 'failed' };
   if (await DatabaseWrites.organizationMemberships.acceptOrganizationInvite(userId, inviteToken))
     return {

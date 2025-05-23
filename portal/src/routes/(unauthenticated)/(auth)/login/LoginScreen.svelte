@@ -31,6 +31,15 @@
   </div>
 </div>
 
+<div class="my-4 text-center">
+  <span>
+    {m.invitations_orgPrompt()}
+  </span>
+  <a class="font-bold" href="/request-access-for-organization">
+    {m.contactUs()}
+  </a>
+</div>
+
 <style>
   :global(form.signin-button button) {
     width: 100%;

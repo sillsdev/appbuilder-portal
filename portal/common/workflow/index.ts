@@ -57,8 +57,8 @@ export class Workflow {
       },
       input: {
         productId,
-        hasAuthors: check._count.Authors > 0,
-        hasReviewers: check._count.Authors > 0,
+        hasAuthors: !!check && check.Project._count.Authors > 0,
+        hasReviewers: !!check && check.Project._count.Reviewers > 0,
         ...config
       }
     });
@@ -100,8 +100,8 @@ export class Workflow {
               ...snap.context,
               ...snap.config,
               productId: productId,
-              hasAuthors: check._count.Authors > 0,
-              hasReviewers: check._count.Authors > 0
+              hasAuthors: !!check && check.Project._count.Authors > 0,
+              hasReviewers: !!check && check.Project._count.Reviewers > 0
             }
           })
         : undefined,
@@ -111,8 +111,8 @@ export class Workflow {
       input: {
         ...snap.config,
         productId: productId,
-        hasAuthors: check._count.Authors > 0,
-        hasReviewers: check._count.Authors > 0
+        hasAuthors: !!check && check.Project._count.Authors > 0,
+        hasReviewers: !!check && check.Project._count.Reviewers > 0
       }
     });
 
@@ -348,8 +348,8 @@ export class Workflow {
           context.workflowType === WorkflowType.Rebuild
             ? prodDefinition.RebuildWorkflowId!
             : context.workflowType === WorkflowType.Republish
-            ? prodDefinition.RepublishWorkflowId!
-            : prodDefinition.WorkflowId!
+              ? prodDefinition.RepublishWorkflowId!
+              : prodDefinition.WorkflowId!
       },
       update: {
         State: Workflow.stateName(this.currentState!),
@@ -537,24 +537,22 @@ export class Workflow {
   }
 
   private async checkAuthorsAndReviewers() {
-    return (
-      await prisma.projects.findMany({
-        where: {
-          Products: {
-            some: {
-              Id: this.productId
-            }
-          }
-        },
-        select: {
-          _count: {
-            select: {
-              Authors: true,
-              Reviewers: true
+    return await prisma.products.findFirst({
+      where: {
+        Id: this.productId
+      },
+      select: {
+        Project: {
+          select: {
+            _count: {
+              select: {
+                Authors: true,
+                Reviewers: true
+              }
             }
           }
         }
-      })
-    )[0];
+      }
+    });
   }
 }

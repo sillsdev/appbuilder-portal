@@ -4,6 +4,7 @@ import {
   BullMQ,
   DatabaseWrites,
   prisma,
+  Queues,
   Workflow
 } from 'sil.appbuilder.portal.common';
 import {
@@ -20,6 +21,9 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
     select: {
       Project: {
         select: {
+          Id: true,
+          Name: true,
+          OwnerId: true,
           ApplicationType: {
             select: {
               Name: true
@@ -33,9 +37,28 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
         select: {
           Name: true
         }
+      },
+      ProductDefinition: {
+        select: {
+          Name: true
+        }
       }
     }
   });
+  if (!productData) {
+    return await notifyNotFound(job.data.productId);
+  }
+  if (!productData.Project.WorkflowProjectUrl) {
+    if (job.attemptsStarted >= job.opts.attempts) {
+      await notifyProjectUrlNotSet(
+        job.data.productId,
+        productData.Project.Id,
+        productData.Project.Name,
+        productData.ProductDefinition.Name
+      );
+    }
+    throw new Error('Project.WorkflowProjectUrl not set!');
+  }
   job.updateProgress(25);
   const response = await BuildEngine.Requests.createJob(
     { type: 'query', organizationId: productData.Project.OrganizationId },
@@ -48,14 +71,38 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
   );
   job.updateProgress(50);
   if (response.responseType === 'error') {
-    // ISSUE: #1100 What do I do here? Wait some period of time and retry? Send a notification on the final attempt?
     job.log(response.message);
+    if (job.attemptsStarted >= job.opts.attempts) {
+      if (response.code === BuildEngine.Types.EndpointUnavailable) {
+        await notifyConnectionFailed(
+          job.data.productId,
+          productData.Project.Id,
+          productData.Project.Name,
+          productData.ProductDefinition.Name
+        );
+      } else {
+        await notifyFailed(
+          job.data.productId,
+          productData.Project.Id,
+          productData.Project.OrganizationId,
+          productData.Project.Name,
+          productData.ProductDefinition.Name
+        );
+      }
+    }
     throw new Error(response.message);
   } else {
     await DatabaseWrites.products.update(job.data.productId, {
       WorkflowJobId: response.id
     });
     job.updateProgress(75);
+
+    await notifyCreated(
+      job.data.productId,
+      productData.Project.OwnerId,
+      productData.Project.Name,
+      productData.ProductDefinition.Name
+    );
     const flow = await Workflow.restore(job.data.productId);
 
     flow?.send({ type: WorkflowAction.Product_Created, userId: null });
@@ -65,6 +112,7 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
   }
 }
 
+// This shouldn't need any notifications
 export async function deleteProduct(job: Job<BullMQ.Product.Delete>): Promise<unknown> {
   const response = await BuildEngine.Requests.deleteJob(
     { type: 'query', organizationId: job.data.organizationId },
@@ -80,6 +128,7 @@ export async function deleteProduct(job: Job<BullMQ.Product.Delete>): Promise<un
   }
 }
 
+// This shouldn't need any notifications
 export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): Promise<unknown> {
   let versionCode = 0;
   const product = await prisma.products.findUnique({
@@ -161,4 +210,84 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
   }
   job.updateProgress(100);
   return versionCode;
+}
+
+async function notifyConnectionFailed(
+  productId: string,
+  projectId: number,
+  projectName: string,
+  productName: string
+) {
+  return Queues.Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
+    type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+    projectId,
+    messageKey: 'productFailedUnableToConnect',
+    messageProperties: {
+      projectName,
+      productName
+    }
+  });
+}
+async function notifyProjectUrlNotSet(
+  productId: string,
+  projectId: number,
+  projectName: string,
+  productName: string
+) {
+  return Queues.Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
+    type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+    projectId,
+    messageKey: 'productProjectUrlNotSet',
+    messageProperties: {
+      projectName,
+      productName
+    }
+  });
+}
+async function notifyCreated(
+  productId: string,
+  userId: number,
+  projectName: string,
+  productName: string
+) {
+  return Queues.Emails.add(`Notify Owner of Product #${productId} Creation Success`, {
+    type: BullMQ.JobType.Email_SendNotificationToUser,
+    userId,
+    messageKey: 'productCreatedSuccessfully',
+    messageProperties: {
+      projectName,
+      productName
+    }
+  });
+}
+async function notifyFailed(
+  productId: string,
+  projectId: number,
+  organizationId: number,
+  projectName: string,
+  productName: string
+) {
+  const endpoint = await BuildEngine.Requests.getURLandToken(organizationId);
+  const buildEngineUrl = endpoint + '/job-admin';
+  return Queues.Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
+    type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+    projectId,
+    messageKey: 'productCreationFailed',
+    messageProperties: {
+      projectName,
+      productName,
+      buildEngineUrl
+    },
+    link: buildEngineUrl
+  });
+}
+async function notifyNotFound(productId: string) {
+  await Queues.Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
+    type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
+    messageKey: 'productRecordNotFound',
+    messageProperties: {
+      productId
+    }
+  });
+  return { message: 'Product Not Found' };
 }
