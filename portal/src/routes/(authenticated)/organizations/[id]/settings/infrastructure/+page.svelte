@@ -22,7 +22,6 @@
 </script>
 
 <form action="" class="m-4" method="post" use:enhance>
-  <input type="hidden" name="id" value={$form.id} />
   <div class="flex flex-row">
     <div class="w-full">
       <InputWithMessage title={{ key: 'org_useDefaultBuildEngineTitle' }}>

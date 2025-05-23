@@ -10,7 +10,7 @@ import {
 import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/server';
 import { stringIdSchema } from '$lib/valibot';
 import type { Prisma } from '@prisma/client';
-import { error, redirect, type Actions } from '@sveltejs/kit';
+import { redirect, type Actions } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -95,8 +95,7 @@ export const load = (async ({ params, locals }) => {
         page: {
           page: 0,
           size: 10
-        },
-        organizationId: orgId
+        }
       },
       valibot(projectSearchSchema)
     ),
@@ -113,19 +112,20 @@ export const load = (async ({ params, locals }) => {
 
 export const actions: Actions = {
   page: async function ({ params, request, locals }) {
-    const userId = (await locals.auth())?.user.userId;
-    if (!userId) return error(400);
+    const user = (await locals.auth())!.user;
 
     const form = await superValidate(request, valibot(projectSearchSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
+    const organizationId = parseInt(params.id!);
+
     const where: Prisma.ProjectsWhereInput = {
-      ...projectFilter(form.data),
-      ...whereStatements(params.filter!, parseInt(params.id!), userId)
+      ...projectFilter({ ...form.data, organizationId }),
+      ...whereStatements(params.filter!, organizationId, user.userId)
     };
 
     const projects = await prisma.projects.findMany({
-      where: where,
+      where,
       include: {
         Products: {
           include: {
@@ -161,10 +161,10 @@ export const actions: Actions = {
     if (
       !form.valid ||
       !form.data.operation ||
-      (!form.data.projects?.length && form.data.projectId === null) ||
-      orgId !== form.data.orgId
-    )
+      (!form.data.projects?.length && form.data.projectId === null)
+    ) {
       return fail(400, { form, ok: false });
+    }
     // prefer single project over array
     const projects = await prisma.projects.findMany({
       where: {
@@ -195,12 +195,36 @@ export const actions: Actions = {
   },
   productAction: async (event) => {
     const session = await event.locals.auth();
-    if (!session) return fail(403);
     const orgId = parseInt(event.params.id!);
     if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
 
     const form = await superValidate(event.request, valibot(bulkProductActionSchema));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
+    // if any productId doesn't exist, 403
+    // if any associated project is inaccessible, 403
+    // if user modified hidden values
+    if (
+      !(
+        (await prisma.products.count({ where: { Id: { in: form.data.products } } })) ===
+          form.data.products.length &&
+        (
+          await prisma.projects.findMany({
+            where: {
+              Products: {
+                some: {
+                  Id: { in: form.data.products }
+                }
+              }
+            },
+            select: {
+              OwnerId: true
+            }
+          })
+        ).every((p) => canModifyProject(session, p.OwnerId, orgId))
+      )
+    ) {
+      return fail(403);
+    }
 
     await Promise.all(form.data.products.map((p) => doProductAction(p, form.data.operation!)));
 
