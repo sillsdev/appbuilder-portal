@@ -13,16 +13,20 @@ type ManifestResponse = {
 };
 
 export async function GET({ params }) {
+  const res = await _getManifest(params.package);
+  return res
+    ? new Response(JSON.stringify(res), { status: 200 })
+    : new Response(null, { status: 404 });
+}
+
+export async function _getManifest(packageName: string) {
   // Get the play-listing/manifest.json artifact
-  const manifestArtifact = await getPublishedAppDetails(params.package);
-  if (!manifestArtifact?.Url) {
-    return new Response(null, { status: 404 });
-  }
+  const manifestArtifact = await getPublishedAppDetails(packageName);
+  if (!manifestArtifact?.Url) return null;
+
   // Get the size of the apk
   const apkArtifact = await getPublishedFile(manifestArtifact.ProductId, 'apk');
-  if (!apkArtifact?.Url) {
-    return new Response(null, { status: 404 });
-  }
+  if (!apkArtifact?.Url) return null;
   const { fileSize } = await getFileInfo(apkArtifact.Url);
 
   // Get the contents of the manifest.json
@@ -57,7 +61,7 @@ export async function GET({ params }) {
     descriptions[language] = description;
   }
 
-  const details = {
+  return {
     ...manifest,
     id: manifestArtifact.ProductId,
     link: `/api/products/${manifestArtifact.ProductId}/files/published/apk`,
@@ -68,8 +72,6 @@ export async function GET({ params }) {
     url: undefined,
     files: undefined
   };
-
-  return new Response(JSON.stringify(details), { status: 200 });
 }
 
 async function getPublishedAppDetails(Package: string) {
@@ -92,7 +94,7 @@ async function getPublishedAppDetails(Package: string) {
       }
     },
     orderBy: {
-      Id: 'asc'
+      Id: 'desc'
     }
   });
 
