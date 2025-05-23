@@ -14,15 +14,8 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
 
-const addAuthorSchema = v.object({
-  author: idSchema
-});
-const addReviewerSchema = v.object({
-  name: v.string(),
-  email: v.pipe(v.string(), v.email()),
-  language: v.string()
-});
 const updateOwnerGroupSchema = v.object({
   owner: idSchema,
   group: idSchema
@@ -194,28 +187,6 @@ export const load = (async ({ locals, params }) => {
     transitions.findLast((tr) => tr.ProductId === p.Id && tr.DateTransition !== null)!,
     transitions.find((tr) => tr.ProductId === p.Id && tr.DateTransition === null)!
   ]);
-  // All users who are members of the group and have the author role in the project's organization
-  // May be a more efficient way to search this, by referencing group memberships instead of users
-  const authorsToAdd = await prisma.users.findMany({
-    where: {
-      GroupMemberships: {
-        some: {
-          GroupId: project.Group.Id
-        }
-      },
-      UserRoles: {
-        some: {
-          OrganizationId: project.Organization.Id,
-          RoleId: RoleId.Author
-        }
-      },
-      Authors: {
-        none: {
-          ProjectId: project.Id
-        }
-      }
-    }
-  });
 
   const productDefinitions = (
     await prisma.organizationProductDefinitions.findMany({
@@ -244,8 +215,6 @@ export const load = (async ({ locals, params }) => {
 
   const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
 
-  const authorForm = await superValidate(valibot(addAuthorSchema));
-  const reviewerForm = await superValidate({ language: baseLocale }, valibot(addReviewerSchema));
   return {
     project: {
       ...project,
@@ -263,6 +232,8 @@ export const load = (async ({ locals, params }) => {
         actions: getProductActions(product, project.Owner.Id, session.user.userId)
       }))
     },
+    productsToAdd: productDefinitions.filter((pd) => !projectProductDefinitionIds.includes(pd.Id)),
+    stores: organization?.OrganizationStores.map((os) => os.Store) ?? [],
     possibleProjectOwners: await prisma.users.findMany({
       where: {
         OrganizationMemberships: {
@@ -282,14 +253,30 @@ export const load = (async ({ locals, params }) => {
         OwnerId: project.Organization.Id
       }
     }),
-    authorsToAdd,
-    authorForm,
-    reviewerForm,
-    deleteAuthorForm: await superValidate(valibot(deleteSchema)),
-    deleteReviewerForm: await superValidate(valibot(deleteSchema)),
-    productsToAdd: productDefinitions.filter((pd) => !projectProductDefinitionIds.includes(pd.Id)),
-    addProductForm: await superValidate(valibot(addProductSchema)),
-    stores: organization?.OrganizationStores.map((os) => os.Store) ?? [],
+    // All users who are members of the group and have the author role in the project's organization
+    // May be a more efficient way to search this, by referencing group memberships instead of users
+    authorsToAdd: await prisma.users.findMany({
+      where: {
+        GroupMemberships: {
+          some: {
+            GroupId: project?.Group.Id
+          }
+        },
+        UserRoles: {
+          some: {
+            OrganizationId: project?.Organization.Id,
+            RoleId: RoleId.Author
+          }
+        },
+        Authors: {
+          none: {
+            ProjectId: project.Id
+          }
+        }
+      }
+    }),
+    authorForm: await superValidate(valibot(addAuthorSchema)),
+    reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
     userGroups: (await userGroupsForOrg(session.user.userId, project.Organization.Id)).map(
       (g) => g.GroupId
@@ -422,21 +409,35 @@ export const actions = {
     });
     return { form, ok: true };
   },
-  async editSettings(event) {
+  async toggleVisibility(event) {
     // permissions checked in auth
     const form = await superValidate(
       event.request,
       valibot(
         v.object({
-          isPublic: v.boolean(),
-          allowDownload: v.boolean()
+          isPublic: v.boolean()
         })
       )
     );
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.projects.update(parseInt(event.params.id), {
-      IsPublic: form.data.isPublic,
-      AllowDownloads: form.data.allowDownload
+      IsPublic: form.data.isPublic
+    });
+    return { form, ok: true };
+  },
+  async toggleDownload(event) {
+    // permissions checked in auth
+    const form = await superValidate(
+      event.request,
+      valibot(
+        v.object({
+          allowDownloads: v.boolean()
+        })
+      )
+    );
+    if (!form.valid) return fail(400, { form, ok: false });
+    await DatabaseWrites.projects.update(parseInt(event.params.id), {
+      AllowDownloads: form.data.allowDownloads
     });
     return { form, ok: true };
   },
