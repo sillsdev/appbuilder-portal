@@ -165,8 +165,6 @@ export const actions: Actions = {
     ) {
       return fail(400, { form, ok: false });
     }
-    // if user modified hidden values
-    if (orgId !== form.data.orgId) return fail(403, { form, ok: false });
     // prefer single project over array
     const projects = await prisma.projects.findMany({
       where: {

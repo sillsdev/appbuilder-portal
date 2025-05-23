@@ -506,7 +506,8 @@ export const actions = {
         Name: true,
         DateArchived: true,
         OwnerId: true,
-        GroupId: true
+        GroupId: true,
+        OrganizationId: true
       }
     });
 
@@ -516,9 +517,11 @@ export const actions = {
       form.data.operation,
       project,
       session,
-      form.data.orgId,
+      project.OrganizationId,
       form.data.operation === 'claim'
-        ? (await userGroupsForOrg(session.user.userId, form.data.orgId)).map((g) => g.GroupId)
+        ? (await userGroupsForOrg(session.user.userId, project.OrganizationId)).map(
+            (g) => g.GroupId
+          )
         : []
     );
 
