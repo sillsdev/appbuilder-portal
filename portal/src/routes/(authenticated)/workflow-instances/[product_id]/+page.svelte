@@ -4,7 +4,9 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
-  import ProductDetails from '$lib/products/components/ProductDetails.svelte';
+  import ProductDetails, {
+    showProductDetails
+  } from '$lib/products/components/ProductDetails.svelte';
   import { Springy } from '$lib/springyGraph.js';
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
@@ -88,10 +90,6 @@
     renderer.start();
   });
 
-  function openModal(id: string) {
-    (window[('modal' + id) as any] as any).showModal();
-  }
-
   // Note: At the moment, the site always follows prefered color scheme
   // If at some point in the future a manual toggle is added, this will need to be changed
   let isDarkMode: boolean = $state(
@@ -138,7 +136,7 @@
         {#snippet content()}
           <ul class="menu menu-compact overflow-hidden rounded-md">
             <li class="w-full rounded-none">
-              <button class="text-nowrap" onclick={() => openModal(data.product.Id)}>
+              <button class="text-nowrap" onclick={() => showProductDetails(data.product.Id)}>
                 {m.project_products_popup_details()}
               </button>
             </li>

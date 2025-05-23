@@ -27,7 +27,7 @@
 
 <div class="w-full max-w-6xl mx-auto relative p-2">
   <form action="" method="post" use:enhance>
-    <h1>{m.project_settings_title()}</h1>
+    <h1>{m.project_editProject()}</h1>
     <div class="flex flex-col gap-2 items-center">
       <div class="row">
         <LabeledFormInput name="project_projectName" className="md:max-w-xs grow">
