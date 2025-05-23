@@ -155,11 +155,11 @@ export class UserTasks<J extends BullMQ.UserTasksJob> extends BullWorker<J>  {
   }
 }
 
-export class Emails extends BullWorker<BullMQ.Job> {
+export class Emails<J extends BullMQ.EmailJob> extends BullWorker<BullMQ.Job> {
   constructor() {
     super(BullMQ.QueueName.Emails);
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.Email_InviteUser:
         return Executor.Email.inviteUser(job as Job<BullMQ.Email.InviteUser>);
