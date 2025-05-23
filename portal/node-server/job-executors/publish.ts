@@ -134,9 +134,10 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
 
       job.updateProgress(85);
 
-      await Queues.RemotePolling.add(
-        `Check status of Publish #${response.id}`,
-        {
+      const name = `Check status of Publish #${response.id}`;
+      await Queues.RemotePolling.upsertJobScheduler(name, BullMQ.RepeatEveryMinute, {
+        name,
+        data: {
           type: BullMQ.JobType.Publish_Check,
           productId: job.data.productId,
           organizationId: productData.Project.OrganizationId,
@@ -144,9 +145,8 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
           buildId: productData.WorkflowBuildId,
           releaseId: response.id,
           publicationId: pub.Id
-        },
-        BullMQ.RepeatEveryMinute
-      );
+        }
+      });
     }
     job.updateProgress(100);
     return {
@@ -179,8 +179,8 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
       }
     }
   });
-  if (!product.WorkflowInstance) {
-    await Queues.RemotePolling.removeRepeatableByKey(job.repeatJobKey);
+  if (!product?.WorkflowInstance) {
+    await Queues.RemotePolling.removeJobScheduler(job.name);
     job.log('No WorkflowInstance found. Workflow cancelled?');
     if (!product) {
       return await notifyProductNotFound(job.data.productId);
@@ -200,7 +200,7 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
     throw new Error(response.message);
   } else {
     if (response.status === 'completed') {
-      await Queues.RemotePolling.removeRepeatableByKey(job.repeatJobKey);
+      await Queues.RemotePolling.removeJobScheduler(job.name);
       await Queues.Publishing.add(
         `PostProcess Release #${job.data.releaseId} for Product #${job.data.productId}`,
         {

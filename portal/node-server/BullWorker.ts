@@ -1,5 +1,6 @@
 import { Job, Worker } from 'bullmq';
 import { BullMQ, Queues } from 'sil.appbuilder.portal.common';
+import { JobSchedulerId } from '../common/bullmq/types.js';
 import * as Executor from './job-executors/index.js';
 
 export abstract class BullWorker<T> {
@@ -27,36 +28,32 @@ export class Builds extends BullWorker<BullMQ.Job> {
 export class DefaultRecurring extends BullWorker<BullMQ.Job> {
   constructor() {
     super(BullMQ.QueueName.DefaultRecurring);
-    Queues.DefaultRecurring.add(
-      'Check System Statuses (Recurring)',
+    Queues.DefaultRecurring.upsertJobScheduler(
+      JobSchedulerId.CheckSystemStatuses,
       {
-        type: BullMQ.JobType.Recurring_CheckSystemStatuses
+        pattern: '*/5 * * * *', // every 5 minutes
+        immediately: true
       },
       {
-        repeat: {
-          pattern: '*/5 * * * *', // every 5 minutes
-          key: 'defaultCheckSystemStatuses'
+        name: 'Check System Statuses',
+        data: {
+          type: BullMQ.JobType.Recurring_CheckSystemStatuses
         }
       }
     );
-    Queues.DefaultRecurring.add('Check System Statuses (Startup)', {
-      type: BullMQ.JobType.Recurring_CheckSystemStatuses
-    });
-    Queues.DefaultRecurring.add(
-      'Refresh LangTags (Recurring)',
+    Queues.DefaultRecurring.upsertJobScheduler(
+      JobSchedulerId.RefreshLangTags,
       {
-        type: BullMQ.JobType.Recurring_RefreshLangTags
+        pattern: '@daily', // every day at midnight
+        immediately: true
       },
       {
-        repeat: {
-          pattern: '@daily', // Runs at midnight UTC each day
-          key: 'defaultRefreshLangTags'
+        name: 'Refresh LangTags',
+        data: {
+          type: BullMQ.JobType.Recurring_RefreshLangTags
         }
       }
     );
-    Queues.DefaultRecurring.add('Refresh LangTags (Startup)', {
-      type: BullMQ.JobType.Recurring_RefreshLangTags
-    });
   }
   async run(job: Job<BullMQ.Job>) {
     switch (job.data.type) {
