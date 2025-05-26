@@ -12,6 +12,7 @@
   import { createl10nMapFromEntries, l10nMap } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
 
   interface Props {
@@ -186,11 +187,21 @@
                 {m.sidebar_adminSettings()}
               </a>
             </li>
-            <li>
-              <a class="rounded-none" href="/admin/jobs" onclick={closeDrawer} target="_blank">
-                {m.sidebar_jobAdministration()}
-                <IconContainer icon="mdi:open-in-new" width="18" />
-              </a>
+            <li class:opacity-30={!data.jobsAvailable}>
+              {#if data.jobsAvailable}
+                <a class="rounded-none" href="/admin/jobs" onclick={closeDrawer} target="_blank">
+                  {m.sidebar_jobAdministration()}
+                  <IconContainer icon="mdi:open-in-new" width="18" />
+                </a>
+              {:else}
+                <button
+                  class="rounded-none cursor-not-allowed"
+                  onclick={() => toast('warning', m.system_unavailable())}
+                >
+                  {m.sidebar_jobAdministration()}
+                  <IconContainer icon="mdi:open-in-new" width="18" />
+                </button>
+              {/if}
             </li>
             <li>
               <a
