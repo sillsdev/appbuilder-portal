@@ -7,6 +7,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { minifyUser } from './common';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
+import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { isAdminForOrgs, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema, paginateSchema } from '$lib/valibot';
@@ -148,7 +149,8 @@ export const load = (async (event) => {
         }
       },
       valibot(searchFilterSchema)
-    )
+    ),
+    jobsAvailable: QueueConnected()
   };
 }) satisfies PageServerLoad;
 

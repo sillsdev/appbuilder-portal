@@ -4,7 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { RoleId } from '$lib/prisma';
-import { BullMQ, getQueues } from '$lib/server/bullmq';
+import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
@@ -39,7 +39,7 @@ export const load = (async ({ locals }) => {
       Groups: true
     }
   });
-  return { form, groupsByOrg };
+  return { form, groupsByOrg, jobsAvailable: QueueConnected() };
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -48,6 +48,9 @@ export const actions = {
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
+
+    if (!QueueConnected()) return error(503);
+
     const user = (await locals.auth())!.user;
     // if user modified hidden values
     if (!isAdminForOrg(form.data.organizationId, user.roles)) return fail(403);
