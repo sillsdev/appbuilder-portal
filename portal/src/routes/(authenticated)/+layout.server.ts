@@ -5,7 +5,7 @@ import { isSuperAdmin } from '$lib/utils/roles';
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { prisma, Queues } from 'sil.appbuilder.portal.common';
 import { safeParse } from 'valibot';
 import type { LayoutServerLoad } from './$types';
 
@@ -73,6 +73,7 @@ export const load: LayoutServerLoad = async (event) => {
         }
         return [locale, ret] as [Locale, typeof ret];
       })
-    ) as L10NEntries
+    ) as L10NEntries,
+    jobsAvailable: Queues.connected()
   };
 };
