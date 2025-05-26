@@ -14,6 +14,7 @@ import {
   pruneProjects
 } from '$lib/projects';
 import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/server';
+import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
 import { stringIdSchema } from '$lib/valibot';
 
@@ -108,7 +109,8 @@ export const load = (async ({ params, locals }) => {
     /** allow actions other than reactivation */
     allowActions: params.filter !== 'archived',
     allowReactivate: params.filter === 'all' || params.filter === 'archived',
-    userGroups: (await userGroupsForOrg(userId!, orgId)).map((g) => g.GroupId)
+    userGroups: (await userGroupsForOrg(userId!, orgId)).map((g) => g.GroupId),
+    jobsAvailable: QueueConnected()
   };
 }) satisfies PageServerLoad;
 

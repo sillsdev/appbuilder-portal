@@ -5,12 +5,13 @@ import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { projectCreateSchema } from '$lib/projects';
 import { verifyCanCreateProject } from '$lib/projects/server';
-import { BullMQ, getQueues } from '$lib/server/bullmq';
+import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 
 export const load = (async ({ locals, params }) => {
   if (!verifyCanCreateProject((await locals.auth())!, parseInt(params.id))) return error(403);
 
+  if (!QueueConnected()) error(503);
   const organization = await DatabaseReads.organizations.findUnique({
     where: {
       Id: parseInt(params.id)

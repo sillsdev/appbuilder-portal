@@ -6,7 +6,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { importJSONSchema } from '$lib/projects';
 import { verifyCanCreateProject } from '$lib/projects/server';
-import { BullMQ, getQueues } from '$lib/server/bullmq';
+import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { idSchema } from '$lib/valibot';
 
@@ -69,7 +69,7 @@ export const load = (async ({ locals, params }) => {
     valibot(projectsImportSchema),
     { errors: false } // prevents form from showing errors on init
   );
-  return { form, organization, types };
+  return { form, organization, types, jobsAvailable: QueueConnected() };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
@@ -81,6 +81,8 @@ export const actions: Actions = {
     if (isNaN(organizationId)) return error(404);
 
     if (!verifyCanCreateProject(session, organizationId)) return error(403);
+
+    if (!QueueConnected()) return error(503);
 
     const form = await superValidate(event.request, valibot(projectsImportSchema));
     if (!form.valid) {
