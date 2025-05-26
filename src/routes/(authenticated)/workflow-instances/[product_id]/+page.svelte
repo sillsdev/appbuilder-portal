@@ -12,6 +12,7 @@
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
   import { Springy } from '$lib/springyGraph';
+  import { toast } from '$lib/utils';
 
   interface Props {
     data: PageData;
@@ -24,6 +25,11 @@
   const { form, enhance } = superForm(data.form, {
     onUpdate: ({ form }) => {
       active = form.data.state;
+    },
+    onError: ({ result }) => {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
+      }
     },
     invalidateAll: false,
     resetForm: false
@@ -140,14 +146,24 @@
                 {m.products_details()}
               </button>
             </li>
-            <li class="w-full rounded-none">
+            <li class="w-full rounded-none" class:opacity-30={!data.jobsAvailable}>
               <form method="POST" use:enhance>
                 <input type="hidden" name="state" bind:value={$form.state} />
                 <input
                   type="submit"
                   class="text-nowrap"
+                  class:hidden={!data.jobsAvailable}
                   value={m.workflowInstances_jump({ state: $form.state })}
                 />
+                {#if !data.jobsAvailable}
+                  <button
+                    type="button"
+                    class="text-nowrap cursor-not-allowed"
+                    onclick={() => toast('warning', m.system_unavailable())}
+                  >
+                    {m.workflowInstances_jump({ state: $form.state })}
+                  </button>
+                {/if}
               </form>
             </li>
           </ul>
