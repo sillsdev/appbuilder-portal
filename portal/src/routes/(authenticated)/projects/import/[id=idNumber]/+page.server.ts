@@ -68,7 +68,7 @@ export const load = (async ({ locals, params }) => {
     valibot(projectsImportSchema),
     { errors: false } // prevents form from showing errors on init
   );
-  return { form, organization, types };
+  return { form, organization, types, jobsAvailable: Queues.connected() };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
@@ -80,6 +80,8 @@ export const actions: Actions = {
     if (isNaN(organizationId)) return error(404);
 
     if (!verifyCanCreateProject(session, organizationId)) return error(403);
+
+    if (!Queues.connected()) return error(503);
 
     const form = await superValidate(event.request, valibot(projectsImportSchema));
     if (!form.valid) {

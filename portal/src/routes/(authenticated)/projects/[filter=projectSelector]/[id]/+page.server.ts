@@ -11,7 +11,7 @@ import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/
 import { stringIdSchema } from '$lib/valibot';
 import type { Prisma } from '@prisma/client';
 import { redirect, type Actions } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
+import { prisma, Queues } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -106,7 +106,8 @@ export const load = (async ({ params, locals }) => {
     /** allow actions other than reactivation */
     allowActions: params.filter !== 'archived',
     allowReactivate: params.filter === 'all' || params.filter === 'archived',
-    userGroups: (await userGroupsForOrg(userId!, orgId)).map((g) => g.GroupId)
+    userGroups: (await userGroupsForOrg(userId!, orgId)).map((g) => g.GroupId),
+    jobsAvailable: Queues.connected()
   };
 }) satisfies PageServerLoad;
 
