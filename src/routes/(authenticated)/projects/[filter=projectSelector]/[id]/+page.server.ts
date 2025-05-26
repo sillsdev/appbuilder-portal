@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client';
-import { type Actions, redirect } from '@sveltejs/kit';
+import { type Actions, error, redirect } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -161,6 +161,8 @@ export const actions: Actions = {
       return fail(404);
     }
 
+    if (!QueueConnected()) return error(503);
+
     const form = await superValidate(event.request, valibot(bulkProjectActionSchema));
     if (
       !form.valid ||
@@ -201,6 +203,8 @@ export const actions: Actions = {
     const session = await event.locals.auth();
     const orgId = parseInt(event.params.id!);
     if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
+
+    if (!QueueConnected()) return error(503);
 
     const form = await superValidate(event.request, valibot(bulkProductActionSchema));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });

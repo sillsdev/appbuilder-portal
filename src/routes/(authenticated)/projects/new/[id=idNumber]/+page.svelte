@@ -2,6 +2,7 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { page } from '$app/state';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
@@ -98,23 +99,18 @@
         >
           {m.common_cancel()}
         </a>
-        {#if data.jobsAvailable}
+        <BlockIfJobsUnavailable className="btn btn-primary w-full max-w-xs">
+          {#snippet altContent()}
+            {m.common_save()}
+          {/snippet}
           <button
             class="btn btn-primary w-full max-w-xs"
             disabled={!($form.Name.length && $form.Language.length)}
             type="submit"
           >
-            {m.common_save()}
+            {@render altContent()}
           </button>
-        {:else}
-          <button
-            class="btn btn-primary w-full max-w-xs opacity-30 cursor-not-allowed"
-            onclick={() => toast('warning', m.system_unavailable())}
-            type="button"
-          >
-            {m.common_save()}
-          </button>
-        {/if}
+        </BlockIfJobsUnavailable>
       </div>
     </div>
   </form>

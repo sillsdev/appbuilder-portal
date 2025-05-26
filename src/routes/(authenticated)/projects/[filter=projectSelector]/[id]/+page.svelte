@@ -4,6 +4,7 @@
   import type { PageData } from './$types';
   import { afterNavigate, goto } from '$app/navigation';
   import { page } from '$app/state';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
@@ -17,7 +18,6 @@
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
-  import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
@@ -317,33 +317,28 @@
       </form>
     </dialog>
     <div class="flex flex-row flex-wrap gap-1 mx-4 {mobileSizing}">
-      {#if data.jobsAvailable}
+      <BlockIfJobsUnavailable className="btn btn-outline {mobileSizing}">
+        {#snippet altContent()}
+          {m.projectImport_title()}
+        {/snippet}
         <a
           class="btn btn-outline {mobileSizing}"
           href={localizeHref(`/projects/import/${$pageForm.organizationId}`)}
         >
-          {m.projectImport_title()}
+          {@render altContent()}
         </a>
+      </BlockIfJobsUnavailable>
+      <BlockIfJobsUnavailable className="btn btn-outline {mobileSizing}">
+        {#snippet altContent()}
+          {m.sidebar_addProject()}
+        {/snippet}
         <a
           class="btn btn-outline {mobileSizing}"
           href={localizeHref(`/projects/new/${$pageForm.organizationId}`)}
         >
-          {m.sidebar_addProject()}
+          {@render altContent()}
         </a>
-      {:else}
-        <button
-          class="btn btn-outline {mobileSizing} opacity-30 cursor-not-allowed"
-          onclick={() => toast('warning', m.system_unavailable())}
-        >
-          {m.projectImport_title()}
-        </button>
-        <button
-          class="btn btn-outline {mobileSizing} opacity-30 cursor-not-allowed"
-          onclick={() => toast('warning', m.system_unavailable())}
-        >
-          {m.sidebar_addProject()}
-        </button>
-      {/if}
+      </BlockIfJobsUnavailable>
     </div>
   </div>
   {#if projects.length > 0}
