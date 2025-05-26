@@ -18,6 +18,7 @@
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
+  import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
@@ -77,6 +78,11 @@
       if (event.paths.includes('projects')) {
         $actionForm.projectId = null;
       }
+    },
+    onError: ({ result }) => {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
+      }
     }
   });
 
@@ -121,6 +127,11 @@
       if (event.paths.includes('operation')) {
         productSubmit();
         productSelectModal?.close();
+      }
+    },
+    onError: ({ result }) => {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
       }
     }
   });
@@ -173,44 +184,59 @@
     >
       <input type="hidden" name="projectId" value={null} />
       {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
-        <label
-          class="btn btn-outline {mobileSizing}"
-          class:btn-disabled={!(canArchiveSelected && selectedProjects.length)}
-        >
-          {m.common_archive()}
-          <input
-            class="hidden"
-            type="radio"
-            bind:group={$actionForm.operation}
-            value="archive"
-            disabled={!(canArchiveSelected && selectedProjects.length)}
-          />
-        </label>
+        <BlockIfJobsUnavailable className="btn btn-outline {mobileSizing}">
+          {#snippet altContent()}
+            {m.common_archive()}
+          {/snippet}
+          <label
+            class="btn btn-outline {mobileSizing}"
+            class:btn-disabled={!(canArchiveSelected && selectedProjects.length)}
+          >
+            {@render altContent()}
+            <input
+              class="hidden"
+              type="radio"
+              bind:group={$actionForm.operation}
+              value="archive"
+              disabled={!(canArchiveSelected && selectedProjects.length)}
+            />
+          </label>
+        </BlockIfJobsUnavailable>
       {/if}
       {#if data.allowReactivate && (canReactivateSelected || !selectedProjects.length)}
-        <label
-          class="btn btn-outline {mobileSizing}"
-          class:btn-disabled={!(canReactivateSelected && selectedProjects.length)}
-        >
-          {m.common_reactivate()}
-          <input
-            class="hidden"
-            type="radio"
-            bind:group={$actionForm.operation}
-            value="reactivate"
-            disabled={!(canReactivateSelected && selectedProjects.length)}
-          />
-        </label>
+        <BlockIfJobsUnavailable className="btn btn-outline {mobileSizing}">
+          {#snippet altContent()}
+            {m.common_reactivate()}
+          {/snippet}
+          <label
+            class="btn btn-outline {mobileSizing}"
+            class:btn-disabled={!(canReactivateSelected && selectedProjects.length)}
+          >
+            {@render altContent()}
+            <input
+              class="hidden"
+              type="radio"
+              bind:group={$actionForm.operation}
+              value="reactivate"
+              disabled={!(canReactivateSelected && selectedProjects.length)}
+            />
+          </label>
+        </BlockIfJobsUnavailable>
       {/if}
       {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
-        <button
-          type="button"
-          class="btn btn-outline {mobileSizing}"
-          disabled={!(canArchiveSelected && selectedProjects.length)}
-          onclick={() => productSelectModal?.showModal()}
-        >
-          {m.common_rebuild()}
-        </button>
+        <BlockIfJobsUnavailable className="btn btn-outline {mobileSizing}">
+          {#snippet altContent()}
+            {m.common_rebuild()}
+          {/snippet}
+          <button
+            type="button"
+            class="btn btn-outline {mobileSizing}"
+            disabled={!(canArchiveSelected && selectedProjects.length)}
+            onclick={() => productSelectModal?.showModal()}
+          >
+            {@render altContent()}
+          </button>
+        </BlockIfJobsUnavailable>
       {/if}
     </form>
     <dialog bind:this={productSelectModal} class="modal">
@@ -280,36 +306,48 @@
           >
             {m.common_cancel()}
           </button>
-          <label
-            class="btn btn-primary"
-            class:btn-disabled={!(
-              selectedProducts.length && selectedProducts.every((p) => p.CanRebuild)
-            )}
-          >
-            {m.products_acts_rebuild()}
-            <input
-              type="radio"
-              class="hidden"
-              bind:group={$productForm.operation}
-              value="rebuild"
-              disabled={!(selectedProducts.length && selectedProducts.every((p) => p.CanRebuild))}
-            />
-          </label>
-          <label
-            class="btn btn-primary"
-            class:btn-disabled={!(
-              selectedProducts.length && selectedProducts.every((p) => p.CanRepublish)
-            )}
-          >
-            {m.products_acts_republish()}
-            <input
-              type="radio"
-              class="hidden"
-              bind:group={$productForm.operation}
-              value="republish"
-              disabled={!(selectedProducts.length && selectedProducts.every((p) => p.CanRepublish))}
-            />
-          </label>
+          <BlockIfJobsUnavailable className="btn btn-primary">
+            {#snippet altContent()}
+              {m.products_acts_rebuild()}
+            {/snippet}
+            <label
+              class="btn btn-primary"
+              class:btn-disabled={!(
+                selectedProducts.length && selectedProducts.every((p) => p.CanRebuild)
+              )}
+            >
+              {@render altContent()}
+              <input
+                type="radio"
+                class="hidden"
+                bind:group={$productForm.operation}
+                value="rebuild"
+                disabled={!(selectedProducts.length && selectedProducts.every((p) => p.CanRebuild))}
+              />
+            </label>
+          </BlockIfJobsUnavailable>
+          <BlockIfJobsUnavailable className="btn btn-primary">
+            {#snippet altContent()}
+              {m.products_acts_republish()}
+            {/snippet}
+            <label
+              class="btn btn-primary"
+              class:btn-disabled={!(
+                selectedProducts.length && selectedProducts.every((p) => p.CanRepublish)
+              )}
+            >
+              {@render altContent()}
+              <input
+                type="radio"
+                class="hidden"
+                bind:group={$productForm.operation}
+                value="republish"
+                disabled={!(
+                  selectedProducts.length && selectedProducts.every((p) => p.CanRepublish)
+                )}
+              />
+            </label>
+          </BlockIfJobsUnavailable>
         </div>
       </form>
       <form method="dialog" class="modal-backdrop">
