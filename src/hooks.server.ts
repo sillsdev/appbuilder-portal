@@ -43,9 +43,9 @@ const heartbeat: Handle = async ({ event, resolve }) => {
       event.route.id === '/'
     )
   ) {
-    if (!(DatabaseConnected() && QueueConnected())) {
+    if (!DatabaseConnected()) {
       console.log(
-        'Services connection error! Connected to Database:',
+        'Database connection error! Connected to Database:',
         DatabaseConnected(),
         'Connected to Valkey:',
         QueueConnected()
