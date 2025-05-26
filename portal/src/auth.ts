@@ -183,7 +183,9 @@ export const checkUserExistsHandle: Handle = async ({ event, resolve }) => {
       span.end();
       return redirect(302, localizeHref('/login/locked'));
     }
-    return resolve(event);
+    const res = resolve(event);
+    span.end();
+    return res;
   });
 };
 
