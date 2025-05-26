@@ -3,6 +3,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
 import { isSuperAdmin } from '$lib/utils/roles';
@@ -97,7 +98,8 @@ export const load: PageServerLoad = async ({ params }) => {
           Id: 'asc'
         }
       ]
-    })
+    }),
+    jobsAvailable: QueueConnected()
   };
 };
 
@@ -109,6 +111,8 @@ export const actions = {
 
     const form = await superValidate(request, valibot(jumpStateSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+
+    if (!QueueConnected()) return error(503);
 
     const flow = await Workflow.restore(params.product_id);
 
