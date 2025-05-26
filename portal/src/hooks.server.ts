@@ -3,7 +3,7 @@ import { localizeHref } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { connected, Queues } from 'sil.appbuilder.portal.common';
+import { connected } from 'sil.appbuilder.portal.common';
 import {
   authRouteHandle,
   checkUserExistsHandle,
@@ -30,7 +30,7 @@ const heartbeat: Handle = async ({ event, resolve }) => {
       event.route.id === '/(unauthenticated)/(auth)/login'
     )
   ) {
-    if (!(connected() && Queues.connected())) {
+    if (!connected()) {
       // HTTP 503 *should* be the correct semantics here?
       return redirect(302, localizeHref(`/error?code=503`));
     }
