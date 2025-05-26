@@ -7,6 +7,7 @@
   import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
   import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
 
@@ -20,6 +21,11 @@
     onSubmit(event) {
       if (!($form.Name.length && $form.Language.length)) {
         event.cancel();
+      }
+    },
+    onError({ result }) {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
       }
     }
   });
@@ -92,13 +98,23 @@
         >
           {m.common_cancel()}
         </a>
-        <button
-          class="btn btn-primary w-full max-w-xs"
-          class:btn-disabled={!($form.Name.length && $form.Language.length)}
-          type="submit"
-        >
-          {m.common_save()}
-        </button>
+        {#if data.jobsAvailable}
+          <button
+            class="btn btn-primary w-full max-w-xs"
+            disabled={!($form.Name.length && $form.Language.length)}
+            type="submit"
+          >
+            {m.common_save()}
+          </button>
+        {:else}
+          <button
+            class="btn btn-primary w-full max-w-xs opacity-30 cursor-not-allowed"
+            onclick={() => toast('warning', m.system_unavailable())}
+            type="button"
+          >
+            {m.common_save()}
+          </button>
+        {/if}
       </div>
     </div>
   </form>
