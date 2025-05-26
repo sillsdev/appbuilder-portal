@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -158,19 +159,18 @@
       >
         {m.common_cancel()}
       </a>
-      {#if data.jobsAvailable}
-        <button class="btn btn-primary w-full max-w-xs" disabled={!canSubmit} type="submit">
+      <BlockIfJobsUnavailable className="btn btn-primary w-full max-w-xs">
+        {#snippet altContent()}
           {m.common_save()}
-        </button>
-      {:else}
+        {/snippet}
         <button
-          class="btn btn-primary w-full max-w-xs opacity-30 cursor-not-allowed"
-          onclick={() => toast('warning', m.system_unavailable())}
-          type="button"
+          class="btn btn-primary w-full max-w-xs"
+          disabled={!canSubmit}
+          type="submit"
         >
-          {m.common_save()}
+          {@render altContent()}
         </button>
-      {/if}
+      </BlockIfJobsUnavailable>
     </div>
   </form>
 </div>

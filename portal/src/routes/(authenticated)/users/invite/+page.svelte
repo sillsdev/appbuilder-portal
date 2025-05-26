@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -110,21 +111,16 @@
     </div>
     <div class="my-4 flex justify-end gap-2">
       <a class="btn btn-secondary" href={localizeHref('/users')}>{m.common_cancel()}</a>
-      {#if data.jobsAvailable}
+      <BlockIfJobsUnavailable className="btn btn-primary">
+        {#snippet altContent()}
+          {m.orgMembership_send()}
+        {/snippet}
         <input
           type="submit"
           class="btn btn-primary"
           value={m.orgMembership_send()}
         />
-      {:else}
-        <button
-          type="button"
-          class="btn btn-primary opacity-30 cursor-not-allowed"
-          onclick={() => toast('warning', m.system_unavailable())}
-        >
-          {m.orgMembership_send()}
-        </button>
-      {/if}
+      </BlockIfJobsUnavailable>
     </div>
   </form>
 </div>

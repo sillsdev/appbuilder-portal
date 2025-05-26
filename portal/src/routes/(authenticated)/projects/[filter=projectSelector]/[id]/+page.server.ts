@@ -10,7 +10,7 @@ import {
 import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/server';
 import { stringIdSchema } from '$lib/valibot';
 import type { Prisma } from '@prisma/client';
-import { redirect, type Actions } from '@sveltejs/kit';
+import { error, redirect, type Actions } from '@sveltejs/kit';
 import { prisma, Queues } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -158,6 +158,8 @@ export const actions: Actions = {
       return fail(404);
     }
 
+    if (!Queues.connected()) return error(503);
+
     const form = await superValidate(event.request, valibot(bulkProjectActionSchema));
     if (
       !form.valid ||
@@ -198,6 +200,8 @@ export const actions: Actions = {
     const session = await event.locals.auth();
     const orgId = parseInt(event.params.id!);
     if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
+
+    if (!Queues.connected()) return error(503);
 
     const form = await superValidate(event.request, valibot(bulkProductActionSchema));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
