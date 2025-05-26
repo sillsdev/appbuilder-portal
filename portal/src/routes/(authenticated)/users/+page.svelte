@@ -65,10 +65,20 @@
     <div class="flex flex-row items-center">
       <h1>{m.users_title()}</h1>
       {#if isAdmin(data.session?.user.roles)}
-        <a href={localizeHref('/users/invite')} class="btn btn-outline">
-          <IconContainer icon="mdi:user-add" width="20" />
-          <span>{m.orgMembership_title()}</span>
-        </a>
+        {#if data.jobsAvailable}
+          <a href={localizeHref('/users/invite')} class="btn btn-outline">
+            <IconContainer icon="mdi:user-add" width="20" />
+            <span>{m.orgMembership_title()}</span>
+          </a>
+        {:else}
+          <button
+            class="btn btn-outline opacity-30 cursor-not-allowed"
+            onclick={() => toast('warning', m.system_unavailable())}
+          >
+            <IconContainer icon="mdi:user-add" width="20" />
+            <span>{m.orgMembership_title()}</span>
+          </button>
+        {/if}
       {/if}
     </div>
     <form
