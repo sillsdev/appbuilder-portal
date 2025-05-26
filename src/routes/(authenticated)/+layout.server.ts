@@ -8,6 +8,7 @@ import { type Locale, locales } from '$lib/paraglide/runtime';
 import { DatabaseReads } from '$lib/server/database';
 import type { Entries } from '$lib/utils';
 import { isSuperAdmin } from '$lib/utils/roles';
+import { QueueConnected } from '../../lib/server/bullmq/queues';
 
 export const load: LayoutServerLoad = async (event) => {
   const user = (await event.locals.auth())!.user;
@@ -70,6 +71,7 @@ export const load: LayoutServerLoad = async (event) => {
         }
         return [locale, ret] as [Locale, typeof ret];
       })
-    )) as L10NEntries
+    )) as L10NEntries,
+    jobsAvailable: QueueConnected()
   };
 };
