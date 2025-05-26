@@ -4,6 +4,7 @@
   import { Anchor, Node, Svelvet } from 'svelvet';
   import type { PageData } from './$types';
   import { browser } from '$app/environment';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -146,25 +147,20 @@
                 {m.products_details()}
               </button>
             </li>
-            <li class="w-full rounded-none" class:opacity-30={!data.jobsAvailable}>
-              <form method="POST" use:enhance>
-                <input type="hidden" name="state" bind:value={$form.state} />
-                <input
-                  type="submit"
-                  class="text-nowrap"
-                  class:hidden={!data.jobsAvailable}
-                  value={m.workflowInstances_jump({ state: $form.state })}
-                />
-                {#if !data.jobsAvailable}
-                  <button
-                    type="button"
-                    class="text-nowrap cursor-not-allowed"
-                    onclick={() => toast('warning', m.system_unavailable())}
-                  >
-                    {m.workflowInstances_jump({ state: $form.state })}
-                  </button>
-                {/if}
-              </form>
+            <li class="w-full rounded-none">
+              <BlockIfJobsUnavailable className="text-nowrap">
+                {#snippet altContent()}
+                  {m.workflowInstances_jump({ state: $form.state })}
+                {/snippet}
+                <form method="POST" use:enhance>
+                  <input type="hidden" name="state" bind:value={$form.state} />
+                  <input
+                    type="submit"
+                    class="text-nowrap"
+                    value={m.workflowInstances_jump({ state: $form.state })}
+                  />
+                </form>
+              </BlockIfJobsUnavailable>
             </li>
           </ul>
         {/snippet}
