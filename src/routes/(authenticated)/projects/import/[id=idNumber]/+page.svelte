@@ -41,6 +41,11 @@
       if (form.valid) {
         toast('success', m.projectImport_success());
       }
+    },
+    onError({ result }) {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
+      }
     }
   });
 
@@ -153,9 +158,19 @@
       >
         {m.common_cancel()}
       </a>
-      <button class="btn btn-primary w-full max-w-xs" disabled={!canSubmit} type="submit">
-        {m.common_save()}
-      </button>
+      {#if data.jobsAvailable}
+        <button class="btn btn-primary w-full max-w-xs" disabled={!canSubmit} type="submit">
+          {m.common_save()}
+        </button>
+      {:else}
+        <button
+          class="btn btn-primary w-full max-w-xs opacity-30 cursor-not-allowed"
+          onclick={() => toast('warning', m.system_unavailable())}
+          type="button"
+        >
+          {m.common_save()}
+        </button>
+      {/if}
     </div>
   </form>
 </div>

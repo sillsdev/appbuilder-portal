@@ -17,6 +17,7 @@
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
+  import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
@@ -316,18 +317,33 @@
       </form>
     </dialog>
     <div class="flex flex-row flex-wrap gap-1 mx-4 {mobileSizing}">
-      <a
-        class="btn btn-outline {mobileSizing}"
-        href={localizeHref(`/projects/import/${$pageForm.organizationId}`)}
-      >
-        {m.projectImport_title()}
-      </a>
-      <a
-        class="btn btn-outline {mobileSizing}"
-        href={localizeHref(`/projects/new/${$pageForm.organizationId}`)}
-      >
-        {m.sidebar_addProject()}
-      </a>
+      {#if data.jobsAvailable}
+        <a
+          class="btn btn-outline {mobileSizing}"
+          href={localizeHref(`/projects/import/${$pageForm.organizationId}`)}
+        >
+          {m.projectImport_title()}
+        </a>
+        <a
+          class="btn btn-outline {mobileSizing}"
+          href={localizeHref(`/projects/new/${$pageForm.organizationId}`)}
+        >
+          {m.sidebar_addProject()}
+        </a>
+      {:else}
+        <button
+          class="btn btn-outline {mobileSizing} opacity-30 cursor-not-allowed"
+          onclick={() => toast('warning', m.system_unavailable())}
+        >
+          {m.projectImport_title()}
+        </button>
+        <button
+          class="btn btn-outline {mobileSizing} opacity-30 cursor-not-allowed"
+          onclick={() => toast('warning', m.system_unavailable())}
+        >
+          {m.sidebar_addProject()}
+        </button>
+      {/if}
     </div>
   </div>
   {#if projects.length > 0}
