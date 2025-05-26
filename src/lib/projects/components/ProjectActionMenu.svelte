@@ -2,11 +2,13 @@
   import type { Infer, SuperValidated } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import { page } from '$app/state';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import type { ProjectActionSchema, ProjectForAction } from '$lib/projects';
   import { canArchive, canClaimProject, canReactivate } from '$lib/projects';
+  import { toast } from '$lib/utils';
 
   interface Props {
     data: SuperValidated<Infer<ProjectActionSchema>>;
@@ -37,6 +39,11 @@
       if (event.paths.includes('operation') && $form.operation) {
         submit();
       }
+    },
+    onError: ({ result }) => {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
+      }
     }
   });
 
@@ -65,26 +72,46 @@
       <ul class="menu menu-compact overflow-hidden rounded-md">
         {#if allowActions && canArchive(project, page.data.session, parseInt(page.params.id))}
           <li class="w-full rounded-none">
-            <label class="text-nowrap">
-              {m.common_archive()}
-              <input class="hidden" type="radio" bind:group={$form.operation} value="archive" />
-            </label>
+            <BlockIfJobsUnavailable className="text-nowrap">
+              {#snippet altContent()}
+                {m.common_archive()}
+              {/snippet}
+              <label class="text-nowrap">
+                {@render altContent()}
+                <input class="hidden" type="radio" bind:group={$form.operation} value="archive" />
+              </label>
+            </BlockIfJobsUnavailable>
           </li>
         {/if}
         {#if allowReactivate && canReactivate(project, page.data.session, parseInt(page.params.id))}
           <li class="w-full rounded-none">
-            <label class="text-nowrap">
-              {m.common_reactivate()}
-              <input class="hidden" type="radio" bind:group={$form.operation} value="reactivate" />
-            </label>
+            <BlockIfJobsUnavailable className="text-nowrap">
+              {#snippet altContent()}
+                {m.common_reactivate()}
+              {/snippet}
+              <label class="text-nowrap">
+                {@render altContent()}
+                <input
+                  class="hidden"
+                  type="radio"
+                  bind:group={$form.operation}
+                  value="reactivate"
+                />
+              </label>
+            </BlockIfJobsUnavailable>
           </li>
         {/if}
         {#if canClaimOwnership(project)}
           <li class="w-full rounded-none">
-            <label class="text-nowrap">
-              {m.project_claimOwnership()}
-              <input class="hidden" type="radio" bind:group={$form.operation} value="claim" />
-            </label>
+            <BlockIfJobsUnavailable className="text-nowrap">
+              {#snippet altContent()}
+                {m.project_claimOwnership()}
+              {/snippet}
+              <label class="text-nowrap">
+                {@render altContent()}
+                <input class="hidden" type="radio" bind:group={$form.operation} value="claim" />
+              </label>
+            </BlockIfJobsUnavailable>
           </li>
         {/if}
       </ul>
