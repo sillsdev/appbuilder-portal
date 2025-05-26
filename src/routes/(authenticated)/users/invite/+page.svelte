@@ -27,6 +27,11 @@
       } else {
         toast('error', m.orgMembership_error());
       }
+    },
+    onError({ result }) {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
+      }
     }
   });
 
@@ -105,7 +110,17 @@
     </div>
     <div class="my-4 flex justify-end gap-2">
       <a class="btn btn-secondary" href={localizeHref('/users')}>{m.common_cancel()}</a>
-      <input type="submit" class="btn btn-primary" value={m.orgMembership_send()} />
+      {#if data.jobsAvailable}
+        <input type="submit" class="btn btn-primary" value={m.orgMembership_send()} />
+      {:else}
+        <button
+          type="button"
+          class="btn btn-primary opacity-30 cursor-not-allowed"
+          onclick={() => toast('warning', m.system_unavailable())}
+        >
+          {m.orgMembership_send()}
+        </button>
+      {/if}
     </div>
   </form>
 </div>
