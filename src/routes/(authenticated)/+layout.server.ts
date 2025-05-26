@@ -5,10 +5,10 @@ import { safeParse } from 'valibot';
 import type { LayoutServerLoad } from './$types';
 import { type L10NEntries, type L10NKeys, langtagsSchema } from '$lib/locales.svelte';
 import { type Locale, locales } from '$lib/paraglide/runtime';
+import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
 import type { Entries } from '$lib/utils';
 import { isSuperAdmin } from '$lib/utils/roles';
-import { QueueConnected } from '../../lib/server/bullmq/queues';
 
 export const load: LayoutServerLoad = async (event) => {
   const user = (await event.locals.auth())!.user;
