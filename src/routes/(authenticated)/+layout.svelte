@@ -5,6 +5,7 @@
   import { dev } from '$app/environment';
   import { base } from '$app/paths';
   import { page } from '$app/state';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import LocaleSelector from '$lib/components/LocaleSelector.svelte';
@@ -12,7 +13,6 @@
   import { createl10nMapFromEntries, l10nMap } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
-  import { toast } from '$lib/utils';
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
 
   interface Props {
@@ -187,21 +187,16 @@
                 {m.sidebar_adminSettings()}
               </a>
             </li>
-            <li class:opacity-30={!data.jobsAvailable}>
-              {#if data.jobsAvailable}
+            <li>
+              <BlockIfJobsUnavailable className="rounded-none">
+                {#snippet altContent()}
+                  {m.sidebar_jobAdministration()}
+                  <IconContainer icon="mdi:open-in-new" width="18" />
+                {/snippet}
                 <a class="rounded-none" href="/admin/jobs" onclick={closeDrawer} target="_blank">
-                  {m.sidebar_jobAdministration()}
-                  <IconContainer icon="mdi:open-in-new" width="18" />
+                  {@render altContent?.()}
                 </a>
-              {:else}
-                <button
-                  class="rounded-none cursor-not-allowed"
-                  onclick={() => toast('warning', m.system_unavailable())}
-                >
-                  {m.sidebar_jobAdministration()}
-                  <IconContainer icon="mdi:open-in-new" width="18" />
-                </button>
-              {/if}
+              </BlockIfJobsUnavailable>
             </li>
             <li>
               <a
