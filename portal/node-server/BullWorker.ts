@@ -1,6 +1,5 @@
 import { Job, Worker } from 'bullmq';
 import { BullMQ, Queues } from 'sil.appbuilder.portal.common';
-import { JobSchedulerId } from '../common/bullmq/types.js';
 import * as Executor from './job-executors/index.js';
 
 export abstract class BullWorker<T> {
@@ -29,7 +28,7 @@ export class DefaultRecurring extends BullWorker<BullMQ.Job> {
   constructor() {
     super(BullMQ.QueueName.DefaultRecurring);
     Queues.DefaultRecurring.upsertJobScheduler(
-      JobSchedulerId.CheckSystemStatuses,
+      BullMQ.JobSchedulerId.CheckSystemStatuses,
       {
         pattern: '*/5 * * * *', // every 5 minutes
         immediately: true
@@ -42,7 +41,7 @@ export class DefaultRecurring extends BullWorker<BullMQ.Job> {
       }
     );
     Queues.DefaultRecurring.upsertJobScheduler(
-      JobSchedulerId.RefreshLangTags,
+      BullMQ.JobSchedulerId.RefreshLangTags,
       {
         pattern: '@daily', // every day at midnight
         immediately: true

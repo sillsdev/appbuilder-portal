@@ -4,7 +4,6 @@ import { existsSync } from 'fs';
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { BuildEngine, BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
-import { JobSchedulerId } from '../../common/bullmq/types.js';
 
 export async function checkSystemStatuses(
   job: Job<BullMQ.Recurring.CheckSystemStatuses>
@@ -118,9 +117,9 @@ export async function checkSystemStatuses(
       brokenUrls.set(s.url, s);
     });
     const minutesSinceHalfHour = Math.floor((Date.now() / 1000 / 60) % 30);
-    if (!(await Queues.Emails.getJobScheduler(JobSchedulerId.SystemStatusEmail))) {
+    if (!(await Queues.Emails.getJobScheduler(BullMQ.JobSchedulerId.SystemStatusEmail))) {
       await Queues.Emails.upsertJobScheduler(
-        JobSchedulerId.SystemStatusEmail,
+        BullMQ.JobSchedulerId.SystemStatusEmail,
         {
           // Every 30 minutes from now
           // BullMQ does not have a good way to schedule repeating jobs at non-standard intervals
