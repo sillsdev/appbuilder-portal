@@ -8,7 +8,7 @@ class Connection {
   private connected: boolean;
   constructor() {
     this.conn = new Redis({
-      host: process.env.NODE_ENV === 'development' ? 'localhost' : 'redis',
+      host: process.env.NODE_ENV === 'development' ? 'localhost' : 'valkey',
       maxRetriesPerRequest: null
     });
     this.connected = false;
@@ -23,7 +23,7 @@ class Connection {
           })
           .catch((err) => {
             console.error(err);
-            console.log('Redis disconnected');
+            console.log('Valkey disconnected');
             this.connected = false;
           });
       }
