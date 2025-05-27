@@ -227,10 +227,11 @@ async function validateRouteForAuthenticatedUser(
       if (path.length === 2 || path[2] === 'invite') {
         return isAdmin(session?.user?.roles) ? ServerStatus.Ok : ServerStatus.Forbidden;
       } else if (path[2] === '[id=idNumber]') {
-        // /id: not implemented yet (ISSUE #1142)
+        // /id: allowed for all
         const subjectId = parseInt(params.id!);
         if (!(await prisma.users.findFirst({ where: { Id: subjectId } })))
           return ServerStatus.NotFound;
+        if (path.length <= 3) return ServerStatus.Ok;
         const admin = !!(await prisma.organizations.findFirst({
           where: adminOrgs(subjectId, session.user.userId, isSuperAdmin(session.user.roles)),
           select: {
