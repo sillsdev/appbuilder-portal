@@ -1,5 +1,9 @@
 <script lang="ts">
+  import { page } from '$app/state';
+  import IconContainer from '$lib/components/IconContainer.svelte';
+  import Tooltip from '$lib/components/Tooltip.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import type { PageData } from './$types';
 
   interface Props {
@@ -11,7 +15,7 @@
 
 {#snippet pfp(size: number, className?: string)}
   <img
-    class="{className}"
+    class={className}
     src={`https://www.gravatar.com/avatar/${data.gravatarHash ?? ''}?s=${size}&d=identicon`}
     alt={m.profile_pictureTitle()}
   />
@@ -29,6 +33,13 @@
           {@render pfp(50, 'pr-1')}
         </div>
         <h3 class="pl-0">{data.DisplayName}</h3>
+        {#if data.canEdit}
+          <Tooltip className="tooltip-bottom" tip={m.common_clickToEdit()}>
+            <a href={localizeHref(`/users/${page.params.id}/settings/profile`)}>
+              <IconContainer width="24" icon="mdi:pencil" />
+            </a>
+          </Tooltip>
+        {/if}
       </div>
       {#if data.user}
         <p>{data.user.Email}</p>
