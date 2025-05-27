@@ -7,6 +7,8 @@
   interface Props {
     title?: { key: ValidI13nKey; parms?: any; classes?: string };
     message?: { key: ValidI13nKey; parms?: any; classes?: string };
+    /** optional alternate message when checked is false */
+    altMessage?: { key: ValidI13nKey; parms?: any; classes?: string };
     className?: string;
     formName?: string;
     checked: boolean;
@@ -15,6 +17,7 @@
   let {
     title,
     message,
+    altMessage,
     className = '',
     formName,
     checked = $bindable(),
@@ -22,7 +25,7 @@
   }: Props = $props();
 </script>
 
-<InputWithMessage {title} {message} {className}>
+<InputWithMessage {title} message={checked ? message : (altMessage ?? message)} {className}>
   <label class="group">
     <div class="relative">
       <input name={formName} type="checkbox" class="sr-only group" bind:checked {onchange} />

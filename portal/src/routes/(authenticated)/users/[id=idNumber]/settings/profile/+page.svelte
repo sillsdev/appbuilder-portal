@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
   import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
@@ -137,18 +138,14 @@
         bind:checked={$form.notifications}
       />
     </InputWithMessage>
-    <InputWithMessage
+    <PublicPrivateToggle
       className="mt-4"
       title={{ key: 'profile_visibleProfile' }}
       message={{ key: 'profile_visibility_visible' }}
-    >
-      <input
-        type="checkbox"
-        name="visible"
-        class="toggle toggle-accent ml-4"
-        bind:checked={$form.visible}
-      />
-    </InputWithMessage>
+      altMessage={{ key: 'profile_visibility_restricted' }}
+      formName="visible"
+      bind:checked={$form.visible}
+    />
     <InputWithMessage className="mt-4" title={{ key: 'users_table_columns_active' }}>
       <input
         type="checkbox"
