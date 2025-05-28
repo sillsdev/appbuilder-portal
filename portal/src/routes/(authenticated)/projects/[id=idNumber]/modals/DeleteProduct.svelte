@@ -1,7 +1,9 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
   import type { Prisma } from '@prisma/client';
 
   interface Props {
@@ -30,7 +32,20 @@
 </script>
 
 <dialog bind:this={modal} class="modal" onclose={() => (value = '')}>
-  <form class="modal-box" action="?/{endpoint}" method="POST" use:enhance>
+  <form
+    class="modal-box"
+    action="?/{endpoint}"
+    method="POST"
+    use:enhance={() =>
+      ({ update, result }) => {
+        if (result.type === 'error') {
+          if (result.status === 503) {
+            toast('error', m.system_unavailable());
+          }
+        }
+        update({ reset: false });
+      }}
+  >
     <div class="items-center text-center">
       <h2 class="text-lg font-bold grow">
         {m.models_delete({
@@ -78,15 +93,20 @@
           >
             {m.common_cancel()}
           </button>
-          <input
-            class="btn btn-error"
-            type="submit"
-            value={m.common_delete()}
-            {disabled}
-            onclick={() => {
-              modal?.close();
-            }}
-          />
+          <BlockIfJobsUnavailable className="btn btn-error">
+            {#snippet altContent()}
+              {m.common_delete()}
+            {/snippet}
+            <input
+              class="btn btn-error"
+              type="submit"
+              value={m.common_delete()}
+              {disabled}
+              onclick={() => {
+                modal?.close();
+              }}
+            />
+          </BlockIfJobsUnavailable>
         </div>
       </div>
     </div>
