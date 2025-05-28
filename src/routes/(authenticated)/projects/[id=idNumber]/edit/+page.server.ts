@@ -1,7 +1,9 @@
+import { error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { idSchema } from '$lib/valibot';
 
@@ -62,7 +64,8 @@ export const load = (async ({ params }) => {
         Id: true,
         Name: true
       }
-    })
+    }),
+    jobsAvailable: QueueConnected()
   };
 }) satisfies PageServerLoad;
 
@@ -71,6 +74,13 @@ export const actions: Actions = {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(projectPropertyEditSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    const projectId = parseInt(event.params.id);
+    const project = await DatabaseReads.projects.findUniqueOrThrow({
+      where: { Id: projectId },
+      select: { OwnerId: true }
+    });
+    // block if changing owner
+    if (project.OwnerId !== form.data.owner && !QueueConnected()) return error(503);
     const success = await DatabaseWrites.projects.update(parseInt(event.params.id), {
       Name: form.data.name,
       GroupId: form.data.group,
