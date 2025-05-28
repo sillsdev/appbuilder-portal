@@ -284,6 +284,7 @@ export const load = (async ({ locals, params }) => {
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
     userGroups: (await userGroupsForOrg(userId, project.Organization.Id)).map((g) => g.GroupId),
+    jobsAvailable: Queues.connected()
   };
 }) satisfies PageServerLoad;
 
@@ -489,7 +490,14 @@ export const actions = {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(updateOwnerGroupSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    const success = await DatabaseWrites.projects.update(parseInt(event.params.id), {
+    const projectId = parseInt(event.params.id);
+    const project = await prisma.projects.findUniqueOrThrow({
+      where: { Id: projectId },
+      select: { OwnerId: true }
+    });
+    // block if changing owner
+    if (project.OwnerId !== form.data.owner && !Queues.connected()) return error(503);
+    const success = await DatabaseWrites.projects.update(projectId, {
       GroupId: form.data.group,
       OwnerId: form.data.owner
     });

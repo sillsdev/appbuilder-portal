@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -72,6 +73,10 @@
           } else {
             toast('error', m.errors_generic({ errorMessage: '' }));
           }
+        } else if (result.type === 'error') {
+          if (result.status === 503) {
+            toast('error', m.system_unavailable());
+          }
         }
         update({ reset: false });
       }}
@@ -98,10 +103,15 @@
             contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
           >
             {#snippet label()}
-              <span class="flex items-center pl-1">
-                {project?.Owner.Name}
-                <IconContainer icon="gridicons:dropdown" width="20" />
-              </span>
+              <BlockIfJobsUnavailable>
+                {#snippet altContent()}
+                  <span class="flex items-center pl-1">
+                    {project?.Owner.Name}
+                    <IconContainer icon="gridicons:dropdown" width="20" />
+                  </span>
+                {/snippet}
+                {@render altContent()}
+              </BlockIfJobsUnavailable>
             {/snippet}
             {#snippet content()}
               <input type="hidden" name="owner" value={project.Owner.Id} bind:this={ownerField} />
