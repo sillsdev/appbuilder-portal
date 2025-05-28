@@ -5,6 +5,7 @@
   import Properties from './modals/Properties.svelte';
   import { invalidateAll } from '$app/navigation';
   import { page } from '$app/state';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
@@ -15,7 +16,7 @@
   import ProductDetails, {
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
-  import { sanitizeInput } from '$lib/utils';
+  import { sanitizeInput, toast } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime } from '$lib/utils/time';
   import { ProductType } from '$lib/workflowTypes';
@@ -107,7 +108,9 @@
         body: formData
       });
 
-      if (!response.ok) {
+      if (response.status === 503) {
+        toast('error', m.system_unavailable());
+      } else if (!response.ok) {
         throw new Error('Network response was not ok');
       } else {
         invalidateAll();
@@ -177,15 +180,20 @@
               //@ts-expect-error this is in fact correct
               m['products_acts_' + action]()}
             <li class="w-full rounded-none">
-              <button
-                class="text-nowrap"
-                onclick={(event) => {
-                  handleProductAction(product.Id, action);
-                  event.currentTarget.blur();
-                }}
-              >
-                {message}
-              </button>
+              <BlockIfJobsUnavailable className="text-nowrap">
+                {#snippet altContent()}
+                  {message}
+                {/snippet}
+                <button
+                  class="text-nowrap"
+                  onclick={(event) => {
+                    handleProductAction(product.Id, action);
+                    event.currentTarget.blur();
+                  }}
+                >
+                  {message}
+                </button>
+              </BlockIfJobsUnavailable>
             </li>
           {/each}
           <li class="w-full rounded-none">
