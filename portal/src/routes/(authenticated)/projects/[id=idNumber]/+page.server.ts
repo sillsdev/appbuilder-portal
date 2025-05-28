@@ -378,6 +378,7 @@ export const actions = {
   },
   async productAction(event) {
     // permissions checked in auth
+    if (!Queues.connected()) return error(503);
     const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     // if user modified hidden values
@@ -505,7 +506,7 @@ export const actions = {
   },
   async projectAction(event) {
     // permissions checked in auth
-
+    if (!Queues.connected()) return error(503);
     const form = await superValidate(event.request, valibot(projectActionSchema));
     if (!form.valid || !form.data.operation)
       return fail(400, { form, ok: false });
