@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import type { Actions, RequestEvent } from './$types';
+import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
 import { baseLocale } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
@@ -32,13 +32,16 @@ const productActionSchema = v.object({
   productAction: v.enum(ProductActionType)
 });
 
-export const load = async (event: RequestEvent) => {
+// Are we sending too much data?
+// Maybe? I pared it down a bit with `select` instead of `include` - Aidan
+export const load = (async ({ locals, params }) => {
+  // permissions checked in auth
   return {
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema))
   };
-};
+}) satisfies PageServerLoad;
 
 async function verifyProduct(event: RequestEvent, Id: string) {
   return !!(await DatabaseReads.products.findFirst({
@@ -71,29 +74,27 @@ export const actions = {
       return fail(403, { form, ok: false });
     }
     const author = await DatabaseWrites.authors.delete(form.data.id);
-    if (author) {
-      await getQueues().UserTasks.add(`Remove UserTasks for Author #${form.data.id}`, {
-        type: BullMQ.JobType.UserTasks_Modify,
-        scope: 'Project',
-        projectId: parseInt(event.params.id),
-        operation: {
-          type: BullMQ.UserTasks.OpType.Delete,
-          users: [author.UserId],
-          roles: [RoleId.Author]
-        }
-      });
-    }
+    if (!author) return fail(404, { form, ok: false });
+    await getQueues().UserTasks.add(`Remove UserTasks for Author #${form.data.id}`, {
+      type: BullMQ.JobType.UserTasks_Modify,
+      scope: 'Project',
+      projectId: parseInt(event.params.id),
+      operation: {
+        type: BullMQ.UserTasks.OpType.Delete,
+        users: [author.UserId],
+        roles: [RoleId.Author]
+      }
+    });
     return { form, ok: true };
   },
   async deleteReviewer(event) {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    const ProjectId = parseInt(event.params.id);
     if (
       // if user modified hidden values
       !(await DatabaseReads.reviewers.findFirst({
-        where: { Id: form.data.id, ProjectId }
+        where: { Id: form.data.id, ProjectId: parseInt(event.params.id) }
       }))
     ) {
       return fail(403, { form, ok: false });
@@ -116,14 +117,16 @@ export const actions = {
     if (!checkRepository?.WorkflowProjectUrl) {
       return error(400, 'Project Repository not Yet Initialized');
     }
-    getQueues().Miscellaneous.add(`Create Product for Project #${event.params.id}`, {
-      type: BullMQ.JobType.Product_CreateLocal,
-      projectId: parseInt(event.params.id),
-      productDefinitionId: form.data.productDefinitionId,
-      storeId: form.data.storeId
+    const productId = await DatabaseWrites.products.create({
+      ProjectId: parseInt(event.params.id),
+      ProductDefinitionId: form.data.productDefinitionId,
+      StoreId: form.data.storeId,
+      WorkflowJobId: 0,
+      WorkflowBuildId: 0,
+      WorkflowPublishId: 0
     });
 
-    return { form, ok: true };
+    return { form, ok: !!productId };
   },
   async productAction(event) {
     // permissions checked in auth
@@ -192,12 +195,11 @@ export const actions = {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(addReviewerSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    const ProjectId = parseInt(event.params.id);
     await DatabaseWrites.reviewers.create({
       Email: form.data.email,
       Name: form.data.name,
       Locale: form.data.language,
-      ProjectId
+      ProjectId: parseInt(event.params.id)
     });
     return { form, ok: true };
   },
