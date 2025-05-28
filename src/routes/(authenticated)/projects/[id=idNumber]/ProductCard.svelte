@@ -221,9 +221,17 @@
             </li>
           {/if}
           <li class="w-full rounded-none">
-            <button class="text-nowrap text-error" onclick={() => deleteProductModal?.showModal()}>
-              {m.models_delete({ name: m.tasks_product() })}
-            </button>
+            <BlockIfJobsUnavailable className="text-nowrap text-error">
+              {#snippet altContent()}
+                {m.models_delete({ name: m.tasks_product() })}
+              {/snippet}
+              <button
+                class="text-nowrap text-error"
+                onclick={() => deleteProductModal?.showModal()}
+              >
+                {m.models_delete({ name: m.tasks_product() })}
+              </button>
+            </BlockIfJobsUnavailable>
           </li>
         </ul>
       {/snippet}
