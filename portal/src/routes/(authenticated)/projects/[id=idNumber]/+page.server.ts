@@ -2,10 +2,7 @@ import { baseLocale } from '$lib/paraglide/runtime';
 import { getProductActions, ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { projectActionSchema } from '$lib/projects';
-import {
-  doProjectAction,
-  userGroupsForOrg
-} from '$lib/projects/server';
+import { doProjectAction, userGroupsForOrg } from '$lib/projects/server';
 import { deleteSchema, idSchema, propertiesSchema, stringIdSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
@@ -246,6 +243,10 @@ export const load = (async ({ locals, params }) => {
             GroupId: project.Group.Id
           }
         }
+      },
+      select: {
+        Id: true,
+        Name: true
       }
     }),
     possibleGroups: await prisma.groups.findMany({
@@ -273,14 +274,16 @@ export const load = (async ({ locals, params }) => {
             ProjectId: project.Id
           }
         }
+      },
+      select: {
+        Id: true,
+        Name: true
       }
     }),
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
-    userGroups: (await userGroupsForOrg(userId, project.Organization.Id)).map(
-      (g) => g.GroupId
-    )
+    userGroups: (await userGroupsForOrg(userId, project.Organization.Id)).map((g) => g.GroupId),
   };
 }) satisfies PageServerLoad;
 
