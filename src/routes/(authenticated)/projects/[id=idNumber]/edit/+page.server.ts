@@ -19,33 +19,51 @@ export const load = (async ({ params }) => {
   const project = await DatabaseReads.projects.findUniqueOrThrow({
     where: {
       Id: parseInt(params.id)
-    }
-  });
-  const owners = await DatabaseReads.users.findMany({
-    where: {
-      OrganizationMemberships: {
-        some: {
-          OrganizationId: project.OrganizationId
-        }
-      }
-    }
-  });
-  const groups = await DatabaseReads.groups.findMany({
-    where: {
-      OwnerId: project.OrganizationId
-    }
-  });
-  const form = await superValidate(
-    {
-      name: project.Name!,
-      group: project.GroupId,
-      owner: project.OwnerId,
-      language: project.Language!,
-      description: project.Description
     },
-    valibot(projectPropertyEditSchema)
-  );
-  return { project, form, owners, groups };
+    select: {
+      Name: true,
+      GroupId: true,
+      OwnerId: true,
+      Language: true,
+      Description: true,
+      OrganizationId: true
+    }
+  });
+  return {
+    project,
+    form: await superValidate(
+      {
+        name: project.Name!,
+        group: project.GroupId,
+        owner: project.OwnerId,
+        language: project.Language!,
+        description: project.Description
+      },
+      valibot(projectPropertyEditSchema)
+    ),
+    owners: await DatabaseReads.users.findMany({
+      where: {
+        OrganizationMemberships: {
+          some: {
+            OrganizationId: project.OrganizationId
+          }
+        }
+      },
+      select: {
+        Id: true,
+        Name: true
+      }
+    }),
+    groups: await DatabaseReads.groups.findMany({
+      where: {
+        OwnerId: project.OrganizationId
+      },
+      select: {
+        Id: true,
+        Name: true
+      }
+    })
+  };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
