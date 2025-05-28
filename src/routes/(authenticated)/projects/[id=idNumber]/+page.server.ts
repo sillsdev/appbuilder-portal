@@ -53,6 +53,7 @@ async function verifyProduct(event: RequestEvent, Id: string) {
 export const actions = {
   async deleteProduct(event) {
     // permissions checked in auth
+    if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     // if user modified hidden values
@@ -106,6 +107,7 @@ export const actions = {
   },
   async addProduct(event) {
     // permissions checked in auth
+    if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(addProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const checkRepository = await DatabaseReads.projects.findUnique({
