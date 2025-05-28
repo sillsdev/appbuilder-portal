@@ -10,7 +10,7 @@ import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { projectActionSchema } from '$lib/projects';
 import { doProjectAction, userGroupsForOrg } from '$lib/projects/server';
-import { BullMQ, getQueues } from '$lib/server/bullmq';
+import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { deleteSchema, idSchema, propertiesSchema, stringIdSchema } from '$lib/valibot';
 
@@ -39,7 +39,8 @@ export const load = (async ({ locals, params }) => {
   return {
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
-    actionForm: await superValidate(valibot(projectActionSchema))
+    actionForm: await superValidate(valibot(projectActionSchema)),
+    jobsAvailable: QueueConnected()
   };
 }) satisfies PageServerLoad;
 
@@ -239,7 +240,14 @@ export const actions = {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(updateOwnerGroupSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    const success = await DatabaseWrites.projects.update(parseInt(event.params.id), {
+    const projectId = parseInt(event.params.id);
+    const project = await DatabaseReads.projects.findUniqueOrThrow({
+      where: { Id: projectId },
+      select: { OwnerId: true }
+    });
+    // block if changing owner
+    if (project.OwnerId !== form.data.owner && !QueueConnected()) return error(503);
+    const success = await DatabaseWrites.projects.update(projectId, {
       GroupId: form.data.group,
       OwnerId: form.data.owner
     });

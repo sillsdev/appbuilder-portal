@@ -3,10 +3,12 @@
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
   import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
 
@@ -20,6 +22,11 @@
     onUpdated(event) {
       if (event.form.valid) {
         goto(localizeHref(`/projects/${page.params.id}`));
+      }
+    },
+    onError: ({ result }) => {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
       }
     }
   });
@@ -41,11 +48,16 @@
           <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
         </LabeledFormInput>
         <LabeledFormInput key="project_owner" classes="md:max-w-xs">
-          <select name="owner" class="select select-bordered" bind:value={$form.owner}>
-            {#each data.owners.toSorted((a, b) => byName(a, b, getLocale())) as owner}
-              <option value={owner.Id}>{owner.Name}</option>
-            {/each}
-          </select>
+          <BlockIfJobsUnavailable className="select select-bordered">
+            {#snippet altContent()}
+              {data.owners.find((o) => o.Id === $form.owner)?.Name}
+            {/snippet}
+            <select name="owner" class="select select-bordered" bind:value={$form.owner}>
+              {#each data.owners.toSorted((a, b) => byName(a, b, getLocale())) as owner}
+                <option value={owner.Id}>{owner.Name}</option>
+              {/each}
+            </select>
+          </BlockIfJobsUnavailable>
         </LabeledFormInput>
       </div>
       <div class="row">
