@@ -64,6 +64,7 @@ export const actions = {
   },
   async deleteAuthor(event) {
     // permissions checked in auth
+    if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     if (
@@ -158,6 +159,7 @@ export const actions = {
   },
   async addAuthor(event) {
     // permissions checked in auth
+    if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(addAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const projectId = parseInt(event.params.id);
