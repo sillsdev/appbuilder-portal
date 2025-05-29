@@ -19,18 +19,18 @@
     onUpdated({ form }) {
       if (form.valid) {
         goto(localizeHref(base));
-        toast('success', m.admin_settings_storeTypes_editSuccess());
+        toast('success', m.storeTypes_editSuccess());
       }
     }
   });
 </script>
 
-<h3>{m.admin_settings_storeTypes_edit()}</h3>
+<h3>{m.storeTypes_edit()}</h3>
 
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
-  <LabeledFormInput name="admin_settings_storeTypes_name">
+  <LabeledFormInput name="storeTypes_name">
     <input
       type="text"
       name="name"
@@ -38,9 +38,9 @@
       bind:value={$form.name}
       required
     />
-    <span class="validator-hint">{m.admin_settings_storeTypes_emptyName()}</span>
+    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_storeTypes_description">
+  <LabeledFormInput name="storeTypes_description">
     <input
       type="text"
       name="description"

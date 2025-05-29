@@ -61,20 +61,20 @@
       {versionString(build)}
     </span>
     <span>
-      {m.project_products_numArtifacts({ amount: artifacts.length })}
+      {m.products_numArtifacts({ amount: artifacts.length})}
     </span>
   </div>
   <div class="p-2 overflow-x-auto">
     {#if !artifacts.length}
-      {m.project_products_noArtifacts()}
+      {m.products_numArtifacts({ amount: 0 })}
     {:else}
       {@const locale = getLocale()}
       <table class="table table-auto bg-base-100">
         <thead>
           <tr>
-            <th>{m.project_products_filename()}</th>
-            <th>{m.project_products_updated()}</th>
-            <th class="text-right">{m.project_products_size()}</th>
+            <th>{m.products_filename()}</th>
+            <th>{m.products_updated()}</th>
+            <th class="text-right">{m.products_size()}</th>
             <th></th>
           </tr>
         </thead>
@@ -104,11 +104,11 @@
       <table class="table table-auto bg-base-100">
         <thead>
           <tr>
-            <th>{m.project_products_publications_channel()}</th>
-            <th>{m.project_products_publications_status()}</th>
-            <th>{m.project_products_publications_date()}</th>
+            <th>{m.publications_channel()}</th>
+            <th>{m.publications_status()}</th>
+            <th>{m.publications_date()}</th>
             <!-- Are we sure this is the i18n we want??? -->
-            <th>{m.project_products_publications_url()}</th>
+            <th>{m.publications_url()}</th>
           </tr>
         </thead>
         <tbody>
@@ -116,12 +116,12 @@
             <td>{release.Channel}</td>
             <td>
               {release.Success
-                ? m.project_products_publications_succeeded()
-                : m.project_products_publications_failed()}
+                ? m.publications_succeeded()
+                : m.publications_failed()}
             </td>
             <td>{release.DateUpdated?.toLocaleDateString(getLocale())}</td>
             <td>
-              <a href={release.LogUrl} class="link">{m.project_products_publications_console()}</a>
+              <a href={release.LogUrl} class="link">{m.publications_console()}</a>
             </td>
           </tr>
         </tbody>

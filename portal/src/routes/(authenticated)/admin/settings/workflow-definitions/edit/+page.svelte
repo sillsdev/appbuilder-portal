@@ -25,7 +25,7 @@
     onUpdated({ form }) {
       if (form.valid) {
         goto(localizeHref(base));
-        toast('success', m.admin_settings_workflowDefinitions_workflowUpdated());
+        toast('success', m.flowDefs_updated());
       }
     }
   });
@@ -33,12 +33,12 @@
   let propsOk = $state(true);
 </script>
 
-<h3>{m.admin_settings_workflowDefinitions_edit()}</h3>
+<h3>{m.flowDefs_edit()}</h3>
 
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
-  <LabeledFormInput name="admin_settings_workflowDefinitions_name">
+  <LabeledFormInput name="flowDefs_name">
     <input
       type="text"
       name="name"
@@ -46,9 +46,9 @@
       bind:value={$form.name}
       required
     />
-    <span class="validator-hint">{m.admin_settings_productDefinitions_emptyName()}</span>
+    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_storeType">
+  <LabeledFormInput name="flowDefs_storeType">
     <select
       class="select select-bordered validator"
       name="storeType"
@@ -59,9 +59,9 @@
         <option value={type.Id}>{type.Name}</option>
       {/each}
     </select>
-    <span class="validator-hint">{m.admin_settings_workflowDefinitions_emptyStoreType()}</span>
+    <span class="validator-hint">{m.flowDefs_emptyStoreType()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_productType">
+  <LabeledFormInput name="flowDefs_productType">
     <select
       class="select select-bordered validator"
       name="productType"
@@ -70,13 +70,13 @@
     >
       {#each enumNumVals(ProductType) as type}
         <option value={type}>
-          {m.admin_settings_workflowDefinitions_productTypes({ type })}
+          {m.flowDefs_productTypes({ type })}
         </option>
       {/each}
     </select>
-    <span class="validator-hint">{m.admin_settings_workflowDefinitions_emptyProductType()}</span>
+    <span class="validator-hint">{m.flowDefs_emptyProductType()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_description">
+  <LabeledFormInput name="flowDefs_description">
     <input
       type="text"
       name="description"
@@ -84,14 +84,14 @@
       bind:value={$form.description}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_workflowScheme">
+  <LabeledFormInput name="flowDefs_scheme">
     <select class="select select-bordered" name="workflowScheme" bind:value={$form.workflowScheme}>
       {#each data.schemes.toSorted((a, b) => byString(a.Code, b.Code, getLocale())) as scheme}
         <option value={scheme.Code}>{scheme.Code}</option>
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_workflowBusinessFlow">
+  <LabeledFormInput name="flowDefs_businessFlow">
     <select
       class="select select-bordered"
       name="workflowBusinessFlow"
@@ -102,7 +102,7 @@
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_workflowDefinitions_properties">
+  <LabeledFormInput name="flowDefs_properties">
     <PropertiesEditor
       name="properties"
       className="w-full"
@@ -111,12 +111,12 @@
     />
   </LabeledFormInput>
   <LabeledFormInput
-    name="admin_settings_workflowDefinitions_options_title"
+    name="flowDefs_options_title"
     className="border border-warning p-1 my-4 rounded-lg"
   >
     {#each enumNumVals(WorkflowOptions) as option}
       <InputWithMessage
-        message={{ key: 'admin_settings_workflowDefinitions_options', parms: option }}
+        message={{ key: 'flowDefs_options', parms: option }}
         className="my-1"
       >
         <input
@@ -129,8 +129,8 @@
     {/each}
   </LabeledFormInput>
   <InputWithMessage
-    title={{ key: 'admin_settings_workflowDefinitions_enabled' }}
-    message={{ key: 'admin_settings_workflowDefinitions_enabledDescription' }}
+    title={{ key: 'flowDefs_enabled' }}
+    message={{ key: 'flowDefs_enabledDescription' }}
   >
     <input
       name="enabled"
