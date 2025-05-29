@@ -87,14 +87,14 @@
         />
       </div>
       <select class="select select-bordered max-w-full" bind:value={$form.productDefinitionId}>
-        <option value={null} selected>{m.productDefinitions_filterAllProjects()}</option>
+        <option value={null} selected>{m.filters_allProdDefs()}</option>
         {#each data.productDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as pD}
           <option value={pD.Id}>{pD.Name}</option>
         {/each}
       </select>
       <DateRangePicker
         bind:chosenDates={$form.dateUpdatedRange}
-        placeholder={m.directory_filters_dateRange()}
+        placeholder={m.filters_dateRange()}
       />
     </div>
   </form>

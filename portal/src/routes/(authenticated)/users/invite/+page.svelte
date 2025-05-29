@@ -23,12 +23,9 @@
     onUpdated(event) {
       if (event.form.valid) {
         goto(localizeHref('/users'));
-        toast(
-          'success',
-          m.organizationMembership_invite_create_success({ email: event.form.data.email })
-        );
+        toast('success', m.orgMembership_success({ email: event.form.data.email }));
       } else {
-        toast('error', m.organizationMembership_invite_create_error());
+        toast('error', m.orgMembership_error());
       }
     }
   });
@@ -43,12 +40,12 @@
 </script>
 
 <div class="w-full max-w-6xl mx-auto">
-  <h3>{m.organizationMembership_invite_create_inviteUserModalTitle()}</h3>
+  <h3>{m.orgMembership_title()}</h3>
 
   <form class="m-4" method="post" action="?/new" use:enhance>
     <div class="flex flex-row justify-between gap-4 flex-wrap">
       <div class="grow">
-        <LabeledFormInput name="organizationMembership_invite_create_emailInputPlaceholder">
+        <LabeledFormInput name="orgMembership_email">
           <input
             type="email"
             name="email"
@@ -57,9 +54,11 @@
             bind:value={$form.email}
             required
           />
-          <span class="validator-hint">{m.project_side_reviewers_form_invalidEmailError()}</span>
+          <span class="validator-hint">
+            {$form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty()}
+          </span>
         </LabeledFormInput>
-        <LabeledFormInput name="project_side_organization">
+        <LabeledFormInput name="project_org">
           <OrganizationDropdown
             className="w-full"
             name="organizationId"
@@ -70,7 +69,7 @@
       </div>
       <div class="flex flex-col h-full min-w-96">
         <span class="fieldset-label my-2">
-          {m.organizationMembership_invite_create_rolesAndGroups()}
+          {m.orgMembership_rolesAndGroups()}
         </span>
         <div class="grow border border-opacity-15 border-gray-50 rounded-lg p-4">
           <div class="flex flex-row space-x-2">
@@ -106,11 +105,7 @@
     </div>
     <div class="my-4 flex justify-end gap-2">
       <a class="btn btn-secondary" href={localizeHref('/users')}>{m.common_cancel()}</a>
-      <input
-        type="submit"
-        class="btn btn-primary"
-        value={m.organizationMembership_invite_create_sendInviteButton()}
-      />
+      <input type="submit" class="btn btn-primary" value={m.orgMembership_send()} />
     </div>
   </form>
 </div>

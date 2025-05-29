@@ -38,9 +38,9 @@
 
   function stateString(workflowTypeNum: number, transitionType: number) {
     if ([2, 3, 4].includes(transitionType)) {
-      return m.project_products_transitions_transitionTypes({
+      return m.transitions_types({
         type: transitionType,
-        workflowType: m.admin_settings_workflowDefinitions_workflowTypes({ type: workflowTypeNum })
+        workflowType: m.flowDefs_types({ type: workflowTypeNum })
       });
     }
     return '';
@@ -52,7 +52,7 @@
 <dialog bind:this={detailsModal} id="modal{product.Id}" class="modal">
   <div class="modal-box w-11/12 max-w-6xl">
     <div class="flex flex-row">
-      <h2 class="grow">{m.project_products_transitions_productDetails()}</h2>
+      <h2 class="grow">{m.transitions_productDetails()}</h2>
       <button
         class="btn btn-ghost"
         type="button"
@@ -66,7 +66,7 @@
     <table class="table">
       <thead>
         <tr>
-          <th>{m.project_products_transitions_storeName()}</th>
+          <th>{m.transitions_storeName()}</th>
         </tr>
       </thead>
       <tbody>
@@ -80,11 +80,11 @@
     <table class="table">
       <thead>
         <tr>
-          <th>{m.project_products_transitions_state()}</th>
-          <th>{m.project_products_transitions_user()}</th>
-          <th>{m.project_products_transitions_command()}</th>
-          <th>{m.project_products_transitions_comment()}</th>
-          <th>{m.project_products_transitions_date()}</th>
+          <th>{m.transitions_state()}</th>
+          <th>{m.transitions_user()}</th>
+          <th>{m.transitions_command()}</th>
+          <th>{m.transitions_comment()}</th>
+          <th>{m.transitions_date()}</th>
         </tr>
       </thead>
       <tbody>
@@ -123,7 +123,7 @@
                   href={transition.Comment.replace(/system\.(build|publish)-failed,/, '')}
                   target="_blank"
                 >
-                  {m.project_products_publications_console()}
+                  {m.publications_console()}
                 </a>
               {:else}
                 {transition.Comment ?? ''}
@@ -138,7 +138,7 @@
     </table>
   </div>
   <form method="dialog" class="modal-backdrop">
-    <button>{m.project_side_authors_close()}</button>
+    <button>{m.common_close()}</button>
   </form>
 </dialog>
 

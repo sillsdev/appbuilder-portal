@@ -21,7 +21,7 @@
     onUpdated({ form }) {
       if (form.valid) {
         goto(localizeHref(base));
-        toast('success', m.admin_settings_organizations_addSuccess());
+        toast('success', m.org_addSuccess());
       }
     }
   });
@@ -30,7 +30,7 @@
 <h3>{m.newOrganization_title()}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput name="admin_settings_organizations_name">
+  <LabeledFormInput name="org_name">
     <input
       class="input w-full input-bordered validator"
       type="text"
@@ -38,17 +38,17 @@
       bind:value={$form.name}
       required
     />
-    <span class="validator-hint">{m.org_nameError()}</span>
+    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_organizations_owner">
+  <LabeledFormInput name="org_owner">
     <select class="select select-bordered validator" name="owner" bind:value={$form.owner} required>
       {#each data.options.users.toSorted((a, b) => byName(a, b, getLocale())) as user}
         <option value={user.Id}>{user.Name}</option>
       {/each}
     </select>
-    <span class="validator-hint">{m.admin_settings_organizations_emptyOwner()}</span>
+    <span class="validator-hint">{m.org_emptyOwner()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="admin_settings_organizations_websiteURL">
+  <LabeledFormInput name="org_websiteURL">
     <input
       type="url"
       name="websiteUrl"
@@ -56,7 +56,7 @@
       bind:value={$form.websiteUrl}
     />
   </LabeledFormInput>
-  <InputWithMessage title={{ key: 'org_useDefaultBuildEngineTitle' }} className="py-2">
+  <InputWithMessage title={{ key: 'org_useDefaultBuildEngine' }} className="py-2">
     <input
       name="useDefaultBuildEngine"
       class="toggle toggle-accent"
@@ -65,7 +65,7 @@
     />
   </InputWithMessage>
   {#if !$form.useDefaultBuildEngine}
-    <LabeledFormInput name="admin_settings_organizations_buildEngineURL">
+    <LabeledFormInput name="org_buildEngineURL">
       <input
         type="url"
         name="buildEngineUrl"
@@ -73,9 +73,9 @@
         bind:value={$form.buildEngineUrl}
         required={!$form.useDefaultBuildEngine}
       />
-      <span class="validator-hint">{m.admin_settings_organizations_emptyBuildEngineURL()}</span>
+      <span class="validator-hint">{m.org_emptyBuildEngineURL()}</span>
     </LabeledFormInput>
-    <LabeledFormInput name="admin_settings_organizations_accessToken">
+    <LabeledFormInput name="org_accessToken">
       <input
         type="text"
         name="buildEngineApiAccessToken"
@@ -83,10 +83,10 @@
         bind:value={$form.buildEngineApiAccessToken}
         required={!$form.useDefaultBuildEngine}
       />
-      <span class="validator-hint">{m.admin_settings_organizations_emptyAccessToken()}</span>
+      <span class="validator-hint">{m.org_emptyAccessToken()}</span>
     </LabeledFormInput>
   {/if}
-  <LabeledFormInput name="admin_settings_organizations_logoURL">
+  <LabeledFormInput name="org_logoURL">
     <input
       type="url"
       name="logoUrl"
@@ -95,8 +95,8 @@
     />
   </LabeledFormInput>
   <InputWithMessage
-    title={{ key: 'admin_settings_organizations_publicByDefault' }}
-    message={{ key: 'admin_settings_organizations_publicByDefaultDescription' }}
+    title={{ key: 'org_publicByDefault' }}
+    message={{ key: 'org_publicByDefaultDescription' }}
     className="py-1"
   >
     <input

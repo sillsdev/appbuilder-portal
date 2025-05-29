@@ -30,7 +30,7 @@
 
 <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
   <div class="bg-neutral">
-    <h2>{m.project_side_reviewers_title()}</h2>
+    <h2>{m.reviewers_title()}</h2>
   </div>
   <div class="p-2">
     {#if reviewers.length}
@@ -47,7 +47,7 @@
         </div>
       {/each}
     {:else}
-      <p class="p-2">{m.project_side_reviewers_empty()}</p>
+      <p class="p-2">{m.reviewers_empty()}</p>
     {/if}
   </div>
   <div class="p-2 bg-neutral">
@@ -78,7 +78,7 @@
             {/each}
           </select>
           <button type="submit" class="btn btn-primary">
-            {m.project_side_reviewers_form_submit()}
+            {m.reviewers_submit()}
           </button>
         </div>
       </div>

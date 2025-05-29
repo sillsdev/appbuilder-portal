@@ -40,7 +40,7 @@
 
 <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
   <div class="bg-neutral">
-    <h2>{m.project_side_authors_title()}</h2>
+    <h2>{m.authors_title()}</h2>
   </div>
   <div class="p-2">
     {#if projectAuthors.length}
@@ -57,7 +57,7 @@
         </div>
       {/each}
     {:else}
-      <p class="p-2">{m.project_side_authors_empty()}</p>
+      <p class="p-2">{m.authors_empty()}</p>
     {/if}
   </div>
   <div class="bg-neutral p-2">
@@ -77,12 +77,12 @@
             {/each}
           {:else}
             <option disabled selected value="">
-              {m.project_side_authors_emptyGroup()}
+              {m.authors_emptyGroup()}
             </option>
           {/if}
         </select>
         <button type="submit" class="btn btn-primary">
-          {m.project_side_authors_form_submit()}
+          {m.authors_submit()}
         </button>
       </div>
     </form>
