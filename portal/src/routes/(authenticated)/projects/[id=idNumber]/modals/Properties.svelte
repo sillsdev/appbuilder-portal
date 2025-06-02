@@ -87,7 +87,7 @@
             {#each computeTypes as type}
               {@const msg =
                 //@ts-expect-error the typing is correct
-                m['project_products_properties_' + type]()}
+                m['products_properties_' + type]()}
               <option value={type}>{msg}</option>
             {/each}
           </select>
