@@ -164,7 +164,7 @@
           {#each product.actions as action}
             {@const message =
               //@ts-expect-error this is in fact correct
-              m['products_actions_' + action]()}
+              m['products_acts_' + action]()}
             <li class="w-full rounded-none">
               <button
                 class="text-nowrap"
