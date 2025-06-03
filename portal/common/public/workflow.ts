@@ -48,8 +48,37 @@ export enum WorkflowState {
   Make_It_Live = 'Make It Live',
   Published = 'Published'
 }
+export function isWorkflowState(state: string): state is WorkflowState {
+  return Object.values(WorkflowState).includes(state as WorkflowState);
+}
 
-export const TerminalStates = [WorkflowState.Terminated, WorkflowState.Published];
+const AuthorStates = [
+  WorkflowState.Author_Configuration,
+  WorkflowState.Author_Download,
+  WorkflowState.Author_Upload
+] as const;
+type AuthorState = typeof AuthorStates[number];
+export function isAuthorState(state: string): state is AuthorState {
+  return AuthorStates.includes(state as AuthorState);
+}
+
+export type TerminalState = WorkflowState.Terminated | WorkflowState.Published;
+export function isTerminal(state: WorkflowState): state is TerminalState {
+  return state === WorkflowState.Terminated || state === WorkflowState.Published;
+}
+const DeprecatedStates = [
+  /* Redirect to Synchronize Data */
+  'Check Product Build',
+  'Check Product Publish',
+  /* Set context.environment.GOOGLE_PLAY_EXISTING to '1', redirect to Product Build */
+  'Set Google Play Existing',
+  /* Enqueue GetVersionCode, redirect to Verify and Publish */
+  'Set Google Play Uploaded'
+] as const;
+export type DeprecatedState = (typeof DeprecatedStates)[number];
+export function isDeprecated(state: string): state is DeprecatedState {
+  return DeprecatedStates.includes(state as DeprecatedState);
+}
 
 export enum WorkflowAction {
   Default = 'Default',
@@ -58,6 +87,7 @@ export enum WorkflowAction {
   Hold = 'Hold',
   Reject = 'Reject',
   Jump = 'Jump',
+  Migrate = 'Migrate',
   Product_Created = 'Product Created',
   New_App = 'New App',
   Existing_App = 'Existing App',
@@ -134,7 +164,13 @@ export enum ENVKeys {
   PROJECT_LANGUAGE = 'PROJECT_LANGUAGE',
   PROJECT_ORGANIZATION = 'PROJECT_ORGANIZATION',
   PROJECT_OWNER_NAME = 'PROJECT_OWNER_NAME',
-  PROJECT_OWNER_EMAIL = 'PROJECT_OWNER_EMAIL'
+  PROJECT_OWNER_EMAIL = 'PROJECT_OWNER_EMAIL',
+  // Set by Parameters
+  WORKFLOW_TYPE = 'WORKFLOW_TYPE',
+  WORKFLOW_PRODUCT_NAME = 'WORKFLOW_PRODUCT_NAME',
+  BUILD_MANAGE_VERSION_CODE = 'BUILD_MANAGE_VERSION_CODE',
+  BUILD_MANAGE_VERSION_NAME = 'BUILD_MANAGE_VERSION_NAME',
+  BUILD_SHARE_APP_LINK = 'BUILD_SHARE_APP_LINK'
 }
 
 export type WorkflowContext = WorkflowInstanceContext & WorkflowInput;
@@ -188,12 +224,17 @@ export function includeStateOrTransition(config: WorkflowConfig, filter?: MetaFi
   return include;
 }
 
-export type WorkflowEvent = {
-  type: WorkflowAction;
-  comment?: string;
-  target?: WorkflowState;
-  userId: number | null;
-};
+export type WorkflowEvent =
+  | {
+      type: Exclude<WorkflowAction, WorkflowAction.Jump | WorkflowAction.Migrate>;
+      userId: number;
+      comment?: string;
+    }
+  | {
+      type: WorkflowAction.Jump;
+      target: WorkflowState;
+    }
+  | { type: WorkflowAction.Migrate; target: string };
 
 export type JumpParams = {
   target: WorkflowState | string;
