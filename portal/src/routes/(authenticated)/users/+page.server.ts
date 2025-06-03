@@ -3,7 +3,7 @@ import { isAdminForOrgs, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema, paginateSchema } from '$lib/valibot';
 import type { Prisma } from '@prisma/client';
 import { error, redirect } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -148,7 +148,8 @@ export const load = (async (event) => {
         }
       },
       valibot(searchFilterSchema)
-    )
+    ),
+    jobsAvailable: Queues.connected()
   };
 }) satisfies PageServerLoad;
 

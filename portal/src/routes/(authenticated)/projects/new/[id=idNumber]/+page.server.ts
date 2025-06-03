@@ -10,6 +10,8 @@ import type { Actions, PageServerLoad } from './$types';
 export const load = (async ({ locals, params }) => {
   if (!verifyCanCreateProject((await locals.auth())!, parseInt(params.id))) return error(403);
 
+  if (!Queues.connected()) error(503);
+
   const organization = await prisma.organizations.findUnique({
     where: {
       Id: parseInt(params.id)

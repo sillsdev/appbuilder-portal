@@ -1,10 +1,11 @@
 <script lang="ts">
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-  import { bytesToHumanSize } from '$lib/utils';
+  import { bytesToHumanSize, toast } from '$lib/utils';
   import { byName, byNumber, byString } from '$lib/utils/sorting';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
@@ -19,6 +20,11 @@
     onChange: ({ paths }) => {
       if (paths.includes('flowAction')) {
         submit();
+      }
+    },
+    onError: ({ result }) => {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
       }
     }
   });
@@ -39,16 +45,21 @@
     {#if data.actions?.length}
       <div class="flex flex-row gap-x-3">
         {#each data.actions as action}
-          <label class="btn btn-primary">
-            {action}<!-- ISSUE: #1104 i18n (after MVP) -->
-            <input
-              type="radio"
-              name="flowAction"
-              bind:group={$form.flowAction}
-              class="hidden"
-              value={action}
-            />
-          </label>
+          <BlockIfJobsUnavailable className="btn btn-primary">
+            {#snippet altContent()}
+              {action}
+            {/snippet}
+            <label class="btn btn-primary">
+              {action}<!-- ISSUE: #1104 i18n (after MVP) -->
+              <input
+                type="radio"
+                name="flowAction"
+                bind:group={$form.flowAction}
+                class="hidden"
+                value={action}
+              />
+            </label>
+          </BlockIfJobsUnavailable>
         {/each}
       </div>
     {/if}

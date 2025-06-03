@@ -1,5 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -8,6 +9,7 @@
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
   import { Springy } from '$lib/springyGraph.js';
+  import { toast } from '$lib/utils';
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import { Anchor, Node, Svelvet } from 'svelvet';
@@ -24,6 +26,11 @@
   const { form, enhance } = superForm(data.form, {
     onUpdate: ({ form }) => {
       active = form.data.state;
+    },
+    onError: ({ result }) => {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
+      }
     },
     invalidateAll: false,
     resetForm: false
@@ -141,14 +148,19 @@
               </button>
             </li>
             <li class="w-full rounded-none">
-              <form method="POST" use:enhance>
-                <input type="hidden" name="state" bind:value={$form.state} />
-                <input
-                  type="submit"
-                  class="text-nowrap"
-                  value={m.workflowInstances_jump({ state: $form.state })}
-                />
-              </form>
+              <BlockIfJobsUnavailable className="text-nowrap">
+                {#snippet altContent()}
+                  {m.workflowInstances_jump({ state: $form.state })}
+                {/snippet}
+                <form method="POST" use:enhance>
+                  <input type="hidden" name="state" bind:value={$form.state} />
+                  <input
+                    type="submit"
+                    class="text-nowrap"
+                    value={m.workflowInstances_jump({ state: $form.state })}
+                  />
+                </form>
+              </BlockIfJobsUnavailable>
             </li>
           </ul>
         {/snippet}

@@ -1,10 +1,12 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
   import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
   import { superForm } from 'sveltekit-superforms';
@@ -20,6 +22,11 @@
     onSubmit(event) {
       if (!($form.Name.length && $form.Language.length)) {
         event.cancel();
+      }
+    },
+    onError({ result }) {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
       }
     }
   });
@@ -92,13 +99,18 @@
         >
           {m.common_cancel()}
         </a>
-        <button
-          class="btn btn-primary w-full max-w-xs"
-          class:btn-disabled={!($form.Name.length && $form.Language.length)}
-          type="submit"
-        >
-          {m.common_save()}
-        </button>
+        <BlockIfJobsUnavailable className="btn btn-primary w-full max-w-xs">
+          {#snippet altContent()}
+            {m.common_save()}
+          {/snippet}
+          <button
+            class="btn btn-primary w-full max-w-xs"
+            disabled={!($form.Name.length && $form.Language.length)}
+            type="submit"
+          >
+            {@render altContent()}
+          </button>
+        </BlockIfJobsUnavailable>
       </div>
     </div>
   </form>

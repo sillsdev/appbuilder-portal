@@ -1,6 +1,6 @@
 import { isSuperAdmin } from '$lib/utils/roles';
 import { error } from '@sveltejs/kit';
-import { prisma, Workflow } from 'sil.appbuilder.portal.common';
+import { prisma, Queues, Workflow } from 'sil.appbuilder.portal.common';
 import { WorkflowAction, type WorkflowState } from 'sil.appbuilder.portal.common/workflow';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -93,7 +93,8 @@ export const load: PageServerLoad = async ({ params }) => {
           DateTransition: 'asc'
         }
       ]
-    })
+    }),
+    jobsAvailable: Queues.connected()
   };
 };
 
@@ -105,6 +106,8 @@ export const actions = {
 
     const form = await superValidate(request, valibot(jumpStateSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+
+    if (!Queues.connected()) return error(503);
 
     const flow = await Workflow.restore(params.product_id);
 

@@ -2,6 +2,7 @@
   import { dev } from '$app/environment';
   import { base } from '$app/paths';
   import { page } from '$app/state';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import LocaleSelector from '$lib/components/LocaleSelector.svelte';
@@ -187,15 +188,20 @@
               </a>
             </li>
             <li>
-              <a
-                class="rounded-none"
-                href={dev ? 'http://localhost:6100' : '/admin/jobs'}
-                onclick={closeDrawer}
-                target="_blank"
-              >
-                {m.sidebar_jobAdministration()}
-                <IconContainer icon="mdi:open-in-new" width="18" />
-              </a>
+              <BlockIfJobsUnavailable className="rounded-none">
+                {#snippet altContent()}
+                  {m.sidebar_jobAdministration()}
+                  <IconContainer icon="mdi:open-in-new" width="18" />
+                {/snippet}
+                <a
+                  class="rounded-none"
+                  href={dev ? 'http://localhost:6100' : '/admin/jobs'}
+                  onclick={closeDrawer}
+                  target="_blank"
+                >
+                  {@render altContent?.()}
+                </a>
+              </BlockIfJobsUnavailable>
             </li>
             <li>
               <a

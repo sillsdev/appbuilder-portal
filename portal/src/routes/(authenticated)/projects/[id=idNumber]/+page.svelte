@@ -1,4 +1,5 @@
 <script lang="ts">
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
@@ -116,13 +117,18 @@
             <span class="italic">{m.products_definition()}</span>
           </div>
         </div>
-        <button
-          class="btn btn-outline"
-          onclick={() => addProductModal?.showModal()}
-          disabled={!(data.productsToAdd.length && data.project.WorkflowProjectUrl)}
-        >
-          {m.products_add()}
-        </button>
+        <BlockIfJobsUnavailable className="btn btn-outline">
+          {#snippet altContent()}
+            {m.products_add()}
+          {/snippet}
+          <button
+            class="btn btn-outline"
+            onclick={() => addProductModal?.showModal()}
+            disabled={!(data.productsToAdd.length && data.project.WorkflowProjectUrl)}
+          >
+            {m.products_add()}
+          </button>
+        </BlockIfJobsUnavailable>
         <AddProduct
           bind:modal={addProductModal}
           prodDefs={data.productsToAdd}

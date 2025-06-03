@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance as svk_enhance } from '$app/forms';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
@@ -65,10 +66,15 @@
     <div class="flex flex-row items-center">
       <h1>{m.users_title()}</h1>
       {#if isAdmin(data.session?.user.roles)}
-        <a href={localizeHref('/users/invite')} class="btn btn-outline">
-          <IconContainer icon="mdi:user-add" width="20" />
-          <span>{m.orgMembership_title()}</span>
-        </a>
+        <BlockIfJobsUnavailable className="btn btn-outline">
+          {#snippet altContent()}
+            <IconContainer icon="mdi:user-add" width="20" />
+            <span>{m.orgMembership_title()}</span>
+          {/snippet}
+          <a href={localizeHref('/users/invite')} class="btn btn-outline">
+            {@render altContent()}
+          </a>
+        </BlockIfJobsUnavailable>
       {/if}
     </div>
     <form

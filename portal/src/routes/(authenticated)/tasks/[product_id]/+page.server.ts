@@ -2,7 +2,7 @@ import { localizeHref } from '$lib/paraglide/runtime';
 import { isSuperAdmin } from '$lib/utils/roles';
 import type { Session } from '@auth/sveltekit';
 import { error, redirect } from '@sveltejs/kit';
-import { prisma, Workflow } from 'sil.appbuilder.portal.common';
+import { prisma, Queues, Workflow } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import {
   artifactLists,
@@ -178,7 +178,8 @@ export const load = (async ({ params, locals }) => {
         state: snap.state as WorkflowState
       },
       valibot(sendActionSchema)
-    )
+    ),
+    jobsAvailable: Queues.connected()
   };
 }) satisfies PageServerLoad;
 
@@ -186,6 +187,7 @@ export const actions = {
   default: async ({ request, params, locals }) => {
     const session = await locals.auth();
     if (!(await verifyCanViewTask(session, params.product_id))) return error(403);
+    if (!Queues.connected()) return error(503);
     const form = await superValidate(request, valibot(sendActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 

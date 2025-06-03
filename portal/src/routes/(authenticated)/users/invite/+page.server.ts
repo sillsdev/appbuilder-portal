@@ -38,7 +38,7 @@ export const load = (async ({ locals }) => {
       Groups: true
     }
   });
-  return { form, groupsByOrg };
+  return { form, groupsByOrg, jobsAvailable: Queues.connected() };
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -47,6 +47,9 @@ export const actions = {
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
+
+    if (!Queues.connected()) return error(503);
+    
     const user = (await locals.auth())!.user;
     // if user modified hidden values
     if (!isAdminForOrg(form.data.organizationId, user.roles)) return fail(403);

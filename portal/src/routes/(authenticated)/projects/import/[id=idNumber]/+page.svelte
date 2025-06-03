@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -40,6 +41,11 @@
     onUpdated({ form }) {
       if (form.valid) {
         toast('success', m.projectImport_success());
+      }
+    },
+    onError({ result }) {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
       }
     }
   });
@@ -147,12 +153,24 @@
       </ul>
     {/if}
     <div class="flex flex-wrap place-content-center gap-4 p-4">
-      <a href={localizeHref(`/projects/own/${page.params.id}`)} class="btn btn-secondary w-full max-w-xs">
+      <a
+        href={localizeHref(`/projects/own/${page.params.id}`)}
+        class="btn btn-secondary w-full max-w-xs"
+      >
         {m.common_cancel()}
       </a>
-      <button class="btn btn-primary w-full max-w-xs" disabled={!canSubmit} type="submit">
-        {m.common_save()}
-      </button>
+      <BlockIfJobsUnavailable className="btn btn-primary w-full max-w-xs">
+        {#snippet altContent()}
+          {m.common_save()}
+        {/snippet}
+        <button
+          class="btn btn-primary w-full max-w-xs"
+          disabled={!canSubmit}
+          type="submit"
+        >
+          {@render altContent()}
+        </button>
+      </BlockIfJobsUnavailable>
     </div>
   </form>
 </div>

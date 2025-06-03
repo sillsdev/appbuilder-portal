@@ -2,10 +2,7 @@ import { baseLocale } from '$lib/paraglide/runtime';
 import { getProductActions, ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { projectActionSchema } from '$lib/projects';
-import {
-  doProjectAction,
-  userGroupsForOrg
-} from '$lib/projects/server';
+import { doProjectAction, userGroupsForOrg } from '$lib/projects/server';
 import { deleteSchema, idSchema, propertiesSchema, stringIdSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
 import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
@@ -246,6 +243,10 @@ export const load = (async ({ locals, params }) => {
             GroupId: project.Group.Id
           }
         }
+      },
+      select: {
+        Id: true,
+        Name: true
       }
     }),
     possibleGroups: await prisma.groups.findMany({
@@ -273,14 +274,17 @@ export const load = (async ({ locals, params }) => {
             ProjectId: project.Id
           }
         }
+      },
+      select: {
+        Id: true,
+        Name: true
       }
     }),
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
-    userGroups: (await userGroupsForOrg(userId, project.Organization.Id)).map(
-      (g) => g.GroupId
-    )
+    userGroups: (await userGroupsForOrg(userId, project.Organization.Id)).map((g) => g.GroupId),
+    jobsAvailable: Queues.connected()
   };
 }) satisfies PageServerLoad;
 
@@ -293,6 +297,7 @@ async function verifyProduct(event: RequestEvent, Id: string) {
 export const actions = {
   async deleteProduct(event) {
     // permissions checked in auth
+    if (!Queues.connected()) return error(503);
     const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     // if user modified hidden values
@@ -304,6 +309,7 @@ export const actions = {
   },
   async deleteAuthor(event) {
     // permissions checked in auth
+    if (!Queues.connected()) return error(503);
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     if (
@@ -348,6 +354,7 @@ export const actions = {
   },
   async addProduct(event) {
     // permissions checked in auth
+    if (!Queues.connected()) return error(503);
     const form = await superValidate(event.request, valibot(addProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const checkRepository = await prisma.projects.findUnique({
@@ -374,6 +381,7 @@ export const actions = {
   },
   async productAction(event) {
     // permissions checked in auth
+    if (!Queues.connected()) return error(503);
     const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     // if user modified hidden values
@@ -400,10 +408,12 @@ export const actions = {
   },
   async addAuthor(event) {
     // permissions checked in auth
+    if (!Queues.connected()) return error(503);
     const form = await superValidate(event.request, valibot(addAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const projectId = parseInt(event.params.id);
-    if (// if user modified hidden values
+    if (
+      // if user modified hidden values
       !(await prisma.organizationMemberships.findFirst({
         where: {
           UserId: form.data.author,
@@ -486,7 +496,14 @@ export const actions = {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(updateOwnerGroupSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    const success = await DatabaseWrites.projects.update(parseInt(event.params.id), {
+    const projectId = parseInt(event.params.id);
+    const project = await prisma.projects.findUniqueOrThrow({
+      where: { Id: projectId },
+      select: { OwnerId: true }
+    });
+    // block if changing owner
+    if (project.OwnerId !== form.data.owner && !Queues.connected()) return error(503);
+    const success = await DatabaseWrites.projects.update(projectId, {
       GroupId: form.data.group,
       OwnerId: form.data.owner
     });
@@ -494,7 +511,7 @@ export const actions = {
   },
   async projectAction(event) {
     // permissions checked in auth
-
+    if (!Queues.connected()) return error(503);
     const form = await superValidate(event.request, valibot(projectActionSchema));
     if (!form.valid || !form.data.operation)
       return fail(400, { form, ok: false });

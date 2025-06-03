@@ -1,5 +1,6 @@
 import { idSchema } from '$lib/valibot';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { error } from '@sveltejs/kit';
+import { DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -19,33 +20,52 @@ export const load = (async ({ params }) => {
   const project = await prisma.projects.findUniqueOrThrow({
     where: {
       Id: parseInt(params.id)
-    }
-  });
-  const owners = await prisma.users.findMany({
-    where: {
-      OrganizationMemberships: {
-        some: {
-          OrganizationId: project.OrganizationId
-        }
-      }
-    }
-  });
-  const groups = await prisma.groups.findMany({
-    where: {
-      OwnerId: project.OrganizationId
-    }
-  });
-  const form = await superValidate(
-    {
-      name: project.Name!,
-      group: project.GroupId,
-      owner: project.OwnerId,
-      language: project.Language!,
-      description: project.Description
     },
-    valibot(projectPropertyEditSchema)
-  );
-  return { project, form, owners, groups };
+    select: {
+      Name: true,
+      GroupId: true,
+      OwnerId: true,
+      Language: true,
+      Description: true,
+      OrganizationId: true
+    }
+  });
+  return {
+    project,
+    form: await superValidate(
+      {
+        name: project.Name!,
+        group: project.GroupId,
+        owner: project.OwnerId,
+        language: project.Language!,
+        description: project.Description
+      },
+      valibot(projectPropertyEditSchema)
+    ),
+    owners: await prisma.users.findMany({
+      where: {
+        OrganizationMemberships: {
+          some: {
+            OrganizationId: project.OrganizationId
+          }
+        }
+      },
+      select: {
+        Id: true,
+        Name: true
+      }
+    }),
+    groups: await prisma.groups.findMany({
+      where: {
+        OwnerId: project.OrganizationId
+      },
+      select: {
+        Id: true,
+        Name: true
+      }
+    }),
+    jobsAvailable: Queues.connected()
+  };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
@@ -53,6 +73,13 @@ export const actions: Actions = {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(projectPropertyEditSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    const projectId = parseInt(event.params.id);
+    const project = await prisma.projects.findUniqueOrThrow({
+      where: { Id: projectId },
+      select: { OwnerId: true }
+    });
+    // block if changing owner
+    if (project.OwnerId !== form.data.owner && !Queues.connected()) return error(503);
     const success = await DatabaseWrites.projects.update(parseInt(event.params.id), {
       Name: form.data.name,
       GroupId: form.data.group,
