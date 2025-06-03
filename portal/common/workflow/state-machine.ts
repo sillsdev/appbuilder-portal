@@ -523,18 +523,21 @@ export const WorkflowStateMachine = setup({
                 workflowType: { is: WorkflowType.Startup }
               }
             },
+            /*
+            * This transition is valid iff:
+            * The product type is google play AND
+            * The workflow type is startup AND
+            * The project has NOT been uploaded to google play
+            */
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
-              !context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID] &&
-              context.workflowType === WorkflowType.Startup,
+              context.workflowType === WorkflowType.Startup &&
+              !context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID],
             target: WorkflowState.App_Store_Preview
           },
           {
+            // this is the normal transition for a successful build
             meta: { type: ActionType.Auto },
-            guard: ({ context }) =>
-              context.productType !== ProductType.Android_GooglePlay ||
-              context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] === '1' ||
-              !!context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID],
             target: WorkflowState.Verify_and_Publish
           }
         ],
