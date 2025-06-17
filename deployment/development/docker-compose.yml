@@ -121,3 +121,11 @@ services:
     command: bash -c "cp -r /root/ssh /root/.ssh; chmod -R 600 /root/.ssh; ssh -N -L \*:8443:localhost:\$(ssh aps-stg \"docker ps --format '{{.Names}} {{.Ports}}' | grep -E 'buildengine.*web' | awk -F '->' '{print \\$1}' | awk -F ':' '{print \\$2}'\") aps-stg"
     volumes:
       - ~/.ssh:/root/ssh
+  otel-collector:
+    image: otel/opentelemetry-collector:0.126.0
+    command: [ "--config=/etc/config.yml" ]
+    volumes:
+      - ./portal/otel-collector/config.yml:/etc/config.yml
+    ports:
+      - "6317:6317" # GRPC port
+      - "6318:6318" # HTTP port
