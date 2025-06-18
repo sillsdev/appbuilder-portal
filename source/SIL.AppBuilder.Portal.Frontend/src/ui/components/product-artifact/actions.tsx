@@ -12,7 +12,7 @@ import { RequireRole } from '@ui/components/authorization';
 
 import { useLiveData } from '~/data/live';
 import { handleResponse } from '~/data/containers/with-current-user/fetcher';
-import { put, get } from '~/lib/fetch';
+import { post, get } from '~/lib/fetch';
 import * as toast from '~/lib/toast';
 import { preventDefault } from '~/lib/dom';
 
@@ -53,7 +53,7 @@ export default function ItemActions({ product }) {
 
   const invokeAction = useCallback(
     async (actionName: string) => {
-      let response = await put(`/api/products/${productRemoteId}/actions/${actionName}`);
+      let response = await post(`/api/products/${productRemoteId}/actions/${actionName}`);
 
       if (response.status >= 400) {
         try {
