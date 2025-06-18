@@ -1,4 +1,4 @@
-version: '3.4'
+version: "3.4"
 
 # NOTE: that --project-directory ./source
 # must be passed to every docker-compose command
@@ -13,7 +13,9 @@ volumes:
   ui-node_modules:
   ui-yarn-cache:
   postgres-data:
+  valkey-data:
   outdir:
+
 
 services:
   db:
@@ -91,3 +93,31 @@ services:
       - ui-dist:/app/dist
       - ui-node_modules:/app/node_modules
       - ui-yarn-cache:/.yarn-cache
+  svelte-ui:
+    build:
+      context: ./portal/
+      dockerfile: Dockerfile
+    ports:
+      - "6173:6173"
+    env_file: portal/.env
+    environment:
+      VITE_DATABASE_URL: "postgresql://db-user:1234@db:5432/development?schema=public"
+      # MUST be included (the path the application will be accessed on) and MUST NOT have a trailing slash
+      ORIGIN: "http://localhost:6173"
+  valkey:
+    image: valkey/valkey:latest
+    ports:
+      - "6379:6379"
+    command: valkey-server --appendonly yes --appendfilename appendonly.aof --maxmemory-policy noeviction
+    volumes:
+      - valkey-data:/data
+  stg-tunnel:
+    build:
+      context: ./deployment/development
+      dockerfile: Dockerfile.stg-tunnel
+    ports:
+      - "8443:8443"
+    # yikes
+    command: bash -c "cp -r /root/ssh /root/.ssh; chmod -R 600 /root/.ssh; ssh -N -L \*:8443:localhost:\$(ssh aps-stg \"docker ps --format '{{.Names}} {{.Ports}}' | grep -E 'buildengine.*web' | awk -F '->' '{print \\$1}' | awk -F ':' '{print \\$2}'\") aps-stg"
+    volumes:
+      - ~/.ssh:/root/ssh

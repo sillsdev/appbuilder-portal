@@ -1,0 +1,288 @@
+<script lang="ts">
+  import IconContainer from '$lib/components/IconContainer.svelte';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SortTable from '$lib/components/SortTable.svelte';
+  import { m } from '$lib/paraglide/messages';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { bytesToHumanSize } from '$lib/utils';
+  import { byName, byNumber, byString } from '$lib/utils/sorting';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
+  import { instructions } from './instructions';
+
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
+  const { form, enhance, submit } = superForm(data.taskForm, {
+    onChange: ({ paths }) => {
+      if (paths.includes('flowAction')) {
+        submit();
+      }
+    }
+  });
+  let urlCopied = $state(false);
+</script>
+
+<div class="p-5">
+  <div class="flex flex-row gap-x-3 p-2 flex-wrap">
+    <div class="breadcrumbs">
+      <ul>
+        <li><a class="link" href={localizeHref("/tasks")}>{m.sidebar_myTasks({ count: 0 })}</a></li>
+        <li><a class="link" href={localizeHref(`/projects/${data.projectId}`)}>{data.fields.projectName}</a></li>
+        <li>{data.productDescription}</li>
+      </ul>
+    </div>
+  </div>
+  <form method="POST" use:enhance>
+    {#if data.actions?.length}
+      <div class="flex flex-row gap-x-3">
+        {#each data.actions as action}
+          <label class="btn btn-primary">
+            {action}<!-- ISSUE: #1104 i18n (after MVP) -->
+            <input
+              type="radio"
+              name="flowAction"
+              bind:group={$form.flowAction}
+              class="hidden"
+              value={action}
+            />
+          </label>
+        {/each}
+      </div>
+    {/if}
+    <LabeledFormInput name="transitions_comment">
+      <textarea
+        class="textarea textarea-bordered h-24 w-full"
+        name="comment"
+        bind:value={$form.comment}
+      ></textarea>
+    </LabeledFormInput>
+    <input type="hidden" name="state" bind:value={$form.state} />
+  </form>
+  <hr class="border-t-4 my-2" />
+  <h2>
+    {data.taskTitle}
+  </h2>
+  <div>
+    {#if data.fields.ownerName && data.fields.ownerEmail}
+      <div class="flex flex-col gap-x-3 w-full md:flex-row">
+        <LabeledFormInput name="projectTable_owner" className="md:w-2/4">
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            readonly
+            value={data.fields.ownerName}
+          />
+        </LabeledFormInput>
+        <LabeledFormInput name="profile_email" className="md:w-2/4">
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            readonly
+            value={data.fields.ownerEmail}
+          />
+        </LabeledFormInput>
+      </div>
+    {/if}
+    <div class="flex flex-col gap-x-3 w-full md:flex-row">
+      <LabeledFormInput name="project_name" className="md:w-2/4">
+        <input
+          type="text"
+          class="input input-bordered w-full"
+          readonly
+          value={data.fields.projectName}
+        />
+      </LabeledFormInput>
+      <LabeledFormInput name="project_description" className="md:w-2/4">
+        <input
+          type="text"
+          class="input input-bordered w-full"
+          readonly
+          value={data.fields.projectDescription}
+        />
+      </LabeledFormInput>
+    </div>
+    {#if data.fields.storeDescription}
+      <div class="flex flex-col gap-x-3 md:flex-row">
+        <LabeledFormInput name="stores_name" className="md:w-2/4">
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            readonly
+            value={data.fields.storeDescription}
+          />
+        </LabeledFormInput>
+        {#if data.fields.listingLanguageCode}
+          <LabeledFormInput name="tasks_storeLanguage" className="md:w-2/4">
+            <input
+              type="text"
+              class="input input-bordered w-full"
+              readonly
+              value={data.fields.listingLanguageCode}
+            />
+          </LabeledFormInput>
+        {/if}
+      </div>
+    {/if}
+    {#if data.fields.projectURL}
+      <LabeledFormInput name="tasks_appProjectURL">
+        <span class="input input-bordered w-full flex flex-row gap-2 items-center">
+          <input type="text" class="grow" readonly value={data.fields.projectURL} />
+          <button
+            class="cursor-copy"
+            onclick={() => {
+              if (data.fields.projectURL) {
+                navigator.clipboard.writeText(data.fields.projectURL);
+                urlCopied = true;
+                setTimeout(() => {
+                  urlCopied = false;
+                }, 5000);
+              }
+            }}
+          >
+            {#if urlCopied}
+              <IconContainer icon="mdi:check" width={24} class="text-success" />
+            {:else}
+              <IconContainer icon="mdi:content-copy" width={24} />
+            {/if}
+          </button>
+        </span>
+      </LabeledFormInput>
+    {/if}
+    {#if data.fields.displayProductDescription && data.fields.appType && data.fields.projectLanguageCode}
+      <LabeledFormInput name="tasks_product">
+        <input
+          type="text"
+          class="input input-bordered w-full"
+          readonly
+          value={data.productDescription}
+        />
+      </LabeledFormInput>
+      <LabeledFormInput name="prodDefs_type">
+        <input
+          type="text"
+          class="input input-bordered w-full"
+          readonly
+          value={data.fields.appType}
+        />
+      </LabeledFormInput>
+      <LabeledFormInput name="project_languageCode">
+        <input
+          type="text"
+          class="input input-bordered w-full"
+          readonly
+          value={data.fields.projectLanguageCode}
+        />
+      </LabeledFormInput>
+    {/if}
+  </div>
+  {#if data.instructions}
+    <!-- svelte:component is dynamic now. Since this won't change, using @const. 
+     The below was generated by the migration script -->
+    {@const SvelteComponent = instructions[data.instructions]}
+    <div class="py-2" id="instructions">
+      <SvelteComponent />
+    </div>
+  {/if}
+  {#if data?.files?.length}
+    {@const locale = getLocale()}
+    <h3>{m.products_files_title()}</h3>
+    <div class="w-full overflow-x-auto">
+      <SortTable
+        className="max-h-96"
+        data={data.files}
+        columns={[
+          {
+            id: 'artifactType',
+            header: m.project_type(),
+            compare: (a, b) => byString(a.ArtifactType, b.ArtifactType, locale)
+          },
+          {
+            id: 'fileSize',
+            header: m.products_size(),
+            compare: (a, b) => byNumber(a.FileSize, b.FileSize)
+          },
+          {
+            id: 'url',
+            header: m.tasks_downloadURL()
+          }
+        ]}
+      >
+        {#snippet row(file)}
+          <tr
+            class="cursor-pointer hover:bg-neutral"
+            onclick={() => {
+              if (file.Url) {
+                window.open(file.Url, '_blank')?.focus();
+              }
+            }}
+          >
+            <td class="border">
+              {file.ArtifactType}
+            </td>
+            <td class="border">
+              {bytesToHumanSize(file.FileSize)}
+            </td>
+            <td class="border">
+              <a class="link" href={file.Url} target="_blank">{file.Url}</a>
+            </td>
+          </tr>
+        {/snippet}
+      </SortTable>
+    </div>
+  {/if}
+  {#if data?.reviewers?.length}
+    {@const locale = getLocale()}
+    <h3>{m.reviewers_title()}</h3>
+    <div class="w-full overflow-x-auto">
+      <SortTable
+        className="max-h-96"
+        data={data.reviewers}
+        columns={[
+          {
+            id: 'name',
+            header: m.common_name(),
+            compare: (a, b) => byName(a, b, locale)
+          },
+          {
+            id: 'email',
+            header: m.profile_email(),
+            compare: (a, b) => byString(a.Email, b.Email, locale)
+          }
+        ]}
+      >
+        {#snippet row(reviewer)}
+          <tr class="cursor-pointer hover:bg-neutral">
+            <td class="border">
+              {reviewer.Name}
+            </td>
+            <td class="border">
+              {reviewer.Email}
+            </td>
+          </tr>
+        {/snippet}
+      </SortTable>
+    </div>
+  {/if}
+</div>
+
+<style>
+  /*this VVV technique allows css rules to break svelte scoping downwards*/
+  #instructions :global(ul) {
+    padding-left: calc(var(--spacing) * 10);
+    list-style-type: disc;
+  }
+  #instructions :global(ol) {
+    padding-left: calc(var(--spacing) * 10);
+    list-style-type: decimal;
+  }
+  #instructions :global(h3) {
+    color: var(--color-accent);
+  }
+  #instructions :global(a) {
+    cursor: pointer;
+    text-decoration-line: underline;
+  }
+</style>

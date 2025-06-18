@@ -1,0 +1,13 @@
+<script lang="ts">
+  import { m } from '$lib/paraglide/messages';
+  import type { Snippet } from 'svelte';
+
+  interface Props {
+    children?: Snippet;
+  }
+  
+  let { children }: Props = $props();
+</script>
+
+<h2>{m.flowDefs_title()}</h2>
+{@render children?.()}

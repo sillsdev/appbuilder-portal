@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "module": "nodenext",
+    "skipLibCheck": true,
+    "strict": true
+  },
+  "exclude": ["prisma"]
+}
