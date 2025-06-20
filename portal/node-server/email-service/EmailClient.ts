@@ -1,33 +1,34 @@
 import { prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import SparkPost, { Attachment } from 'sparkpost';
 import {
   addProperties,
   EmailLayoutTemplate,
   NotificationTemplate,
-  NotificationWithLinkTemplate,
-  ScriptoriaLogoBase64
+  NotificationWithLinkTemplate
 } from './EmailTemplates.js';
+import { AmazonSESProvider } from './providers/AmazonSESProvider.js';
+import { EmailProvider } from './providers/EmailProvider.js';
+import { LogProvider } from './providers/LogProvider.js';
+import { SparkpostProvider } from './providers/SparkpostProvider.js';
 
-// ISSUE #1144: Integrate into AWS SES, use provider model?
-if (!process.env.VITE_SPARKPOST_API_KEY) {
-  /* eslint-disable @typescript-eslint/ban-ts-comment */
-  // @ts-ignore This is necessary for sveltekit, where import.meta.env will in fact exist
-  process.env.VITE_SPARKPOST_API_KEY = import.meta.env.VITE_SPARKPOST_API_KEY;
-  // @ts-ignore This is necessary for sveltekit, where import.meta.env will in fact exist
-  process.env.VITE_SPARKPOST_EMAIL = import.meta.env.VITE_SPARKPOST_EMAIL;
-  /* eslint-enable @typescript-eslint/ban-ts-comment */
-}
-if (!process.env.VITE_SPARKPOST_API_KEY) {
-  console.error('SparkPost API key not set. Emails will not be sent.');
+let emailProvider: EmailProvider = new LogProvider();
+
+if (process.env.VITE_MAIL_SENDER === 'SparkPost') {
+  emailProvider = new SparkpostProvider(process.env.VITE_SPARKPOST_API_KEY);
+} else if (process.env.VITE_MAIL_SENDER === 'AmazonSES') {
+  emailProvider = new AmazonSESProvider();
+} else if (process.env.VITE_MAIL_SENDER !== 'LogEmail') {
+  console.warn(
+    `Unknown MAIL_SENDER: ${process.env.VITE_MAIL_SENDER}. Emails will be logged instead of sent.`
+  );
 }
 
-const sp = new SparkPost(process.env.VITE_SPARKPOST_API_KEY);
 export async function sendEmail(
   to: { email: string; name: string }[],
   subject: string,
   body: string
 ) {
+  console.log('Sending email');
   const template = addProperties(
     EmailLayoutTemplate,
     {
@@ -37,41 +38,7 @@ export async function sendEmail(
     },
     true
   );
-  return sendEmailInternal(to, subject, template, [
-    {
-      name: 'logo',
-      type: 'image/png',
-      data: ScriptoriaLogoBase64
-    }
-  ]);
-}
-
-export async function sendEmailInternal(
-  to: { email: string; name: string }[],
-  subject: string,
-  body: string,
-  images?: Attachment[]
-) {
-  return {
-    sparkpostData: await sp.transmissions.send({
-      options: {
-        transactional: true,
-        click_tracking: false,
-        open_tracking: false
-      },
-      content: {
-        from: {
-          email: process.env.VITE_SPARKPOST_EMAIL,
-          name: 'Scriptoria' + (process.env.NODE_ENV === 'development' ? ' (dev)' : '')
-        },
-        subject,
-        html: body,
-        inline_images: images
-      },
-      recipients: to.map((email) => ({ address: email }))
-    }),
-    to: to.map((email) => email.email)
-  };
+  return emailProvider.sendEmail(to, subject, template);
 }
 
 export async function notifySuperAdmins(subject: string, message: string): Promise<unknown>;
