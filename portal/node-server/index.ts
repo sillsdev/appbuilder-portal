@@ -1,3 +1,5 @@
+import './handleEnvVars.js';
+
 import { getSession, type ExpressAuthConfig } from '@auth/express';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { createBullBoard } from '@bull-board/api';
