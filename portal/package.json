@@ -63,6 +63,7 @@
   "dependencies": {
     "@auth/express": "^0.8.4",
     "@auth/sveltekit": "^1.7.4",
+    "@aws-sdk/client-ses": "^3.830.0",
     "@bull-board/express": "^6.9.0",
     "bullmq": "^5.52.0",
     "express": "^4.21.2",

@@ -29,6 +29,9 @@ module.exports = {
   ],
   rules: {
     '@typescript-eslint/no-unused-vars': 1,
-    indent: ['warn', 2]
+    indent: ['warn', 2],
+    'sort-imports': ["warn", {
+      allowSeparatedGroups: true,
+    }]
   }
 };
