@@ -1,5 +1,4 @@
 import type { Prisma } from '@prisma/client';
-import EventEmitter from 'events';
 import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
 import { RoleId } from '../public/prisma.js';
@@ -82,6 +81,7 @@ export async function update(
   } catch (e) {
     return false;
   }
+  await Queues.SvelteProjectSSE.add(`Update Project #${id} in Svelte`, id);
   return true;
 }
 
@@ -134,7 +134,3 @@ async function validateProjectBase(orgId: number, groupId: number, ownerId: numb
     )
   );
 }
-
-export const ProjectPageUpdate = new EventEmitter<{
-  update: [number];
-}>();
