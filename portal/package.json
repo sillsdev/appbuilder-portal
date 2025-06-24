@@ -67,6 +67,7 @@
     "bullmq": "^5.52.0",
     "express": "^4.21.2",
     "fast-xml-parser": "^5.0.9",
-    "sil.appbuilder.portal.common": "file:common"
+    "sil.appbuilder.portal.common": "file:common",
+    "sveltekit-sse": "^0.13.19"
   }
 }
