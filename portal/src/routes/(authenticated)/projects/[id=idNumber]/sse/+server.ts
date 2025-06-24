@@ -1,6 +1,7 @@
 import { getProductActions } from '$lib/products';
+import { ProjectPageUpdate } from '$lib/projects/listener.js';
 import { userGroupsForOrg } from '$lib/projects/server';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { produce } from 'sveltekit-sse';
 
@@ -11,19 +12,18 @@ export async function POST(request) {
     const id = parseInt(strId);
     // User will be allowed to see project updates until they reload
     // even if their permission is revoked during the SSE connection.
-
     const { error } = emit('projectData', JSON.stringify(await getProjectDetails(id, userId)));
     if (error) {
       return;
     }
-    DatabaseWrites.projects.ProjectPageUpdate.on('update', async function updateCb(updateId) {
+    ProjectPageUpdate.on('update', async function updateCb(updateId) {
       // This is a little wasteful because it will emit much of the same data
       // if multiple users are connected to the same project page.
       if (updateId === id) {
         const projectData = await getProjectDetails(id, userId);
         const { error } = emit('projectData', JSON.stringify(projectData));
         if (error) {
-          DatabaseWrites.projects.ProjectPageUpdate.off('update', updateCb);
+          ProjectPageUpdate.off('update', updateCb);
         }
       }
     });
