@@ -308,7 +308,7 @@ export class Workflow {
             Comment: `${event.target} => ${xSnap.value}`,
             DateTransition: new Date(),
             TransitionType: ProductTransitionType.Activity,
-            WorkflowType: this.config.workflowType,
+            WorkflowType: this.config.workflowType
           }
         });
       }
@@ -316,14 +316,20 @@ export class Workflow {
     }
 
     if ((stateChange && !migration) || (migration && event.target !== xSnap.value)) {
-      await DatabaseWrites.productTransitions.deleteMany({
-        where: {
-          ProductId: this.productId,
-          DateTransition: null,
-          WorkflowUserId: null,
-          UserId: null
-        }
-      });
+      await DatabaseWrites.productTransitions.deleteMany(
+        {
+          where: {
+            ProductId: this.productId,
+            DateTransition: null,
+            WorkflowUserId: null,
+            UserId: null
+          }
+        },
+        (await prisma.products.findUnique({
+          where: { Id: this.productId },
+          select: { ProjectId: true }
+        }))!.ProjectId
+      );
       // Yes, the ModifyUserTasks will also delete tasks. I just have this here so the tasks are cleared immediately, and so that the tasks are also cleared when the instance is deleted.
       await DatabaseWrites.userTasks.deleteMany({
         where: {
