@@ -24,7 +24,7 @@ async function main() {
 
   type ApplicationType = [number, string, string];
   const applicationTypes: ApplicationType[] = [
-    [1, 'scriptureappBuilder', 'Scripture App Builder'],
+    [1, 'scriptureappbuilder', 'Scripture App Builder'],
     [2, 'readingappbuilder', 'Reading App Builder'],
     [3, 'dictionaryappbuilder', 'Dictionary App Builder'],
     [4, 'keyboardappbuilder', 'Keyboard App Builder']
