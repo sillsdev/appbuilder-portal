@@ -2,6 +2,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 
 import prisma from '../prisma.js';
 import { WRITE_METHODS } from '../ReadonlyPrisma.js';
+import * as authors from './Authors.js';
 import * as groupMemberships from './GroupMemberships.js';
 import * as groups from './Groups.js';
 import * as organizationMemberships from './OrganizationMemberships.js';
@@ -34,6 +35,7 @@ type DataType = {
 };
 
 const handlers = {
+  authors,
   products,
   projects,
   groups,
