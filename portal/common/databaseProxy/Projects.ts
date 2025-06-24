@@ -1,4 +1,5 @@
 import type { Prisma } from '@prisma/client';
+import EventEmitter from 'events';
 import { BullMQ, Queues } from '../index.js';
 import prisma from '../prisma.js';
 import { RoleId } from '../public/prisma.js';
@@ -133,3 +134,7 @@ async function validateProjectBase(orgId: number, groupId: number, ownerId: numb
     )
   );
 }
+
+export const ProjectPageUpdate = new EventEmitter<{
+  update: [number];
+}>();
