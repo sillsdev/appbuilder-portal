@@ -4,11 +4,11 @@ import EventEmitter from 'events';
 import { BullMQ, Queues } from 'sil.appbuilder.portal.common';
 
 export const ProjectPageUpdate = new EventEmitter<{
-  update: [number];
+  update: [number[]];
 }>();
 
 // Create a worker to listen for project updates
-new Worker(
+new Worker<number[]>(
   BullMQ.QueueName.SvelteProjectSSE,
   async (job) => {
     // Trigger an event for the project id

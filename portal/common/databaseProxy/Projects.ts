@@ -81,7 +81,7 @@ export async function update(
   } catch (e) {
     return false;
   }
-  await Queues.SvelteProjectSSE.add(`Update Project #${id} in Svelte`, id);
+  Queues.SvelteProjectSSE.add(`Update Project #${id} in Svelte`, [id]);
   return true;
 }
 

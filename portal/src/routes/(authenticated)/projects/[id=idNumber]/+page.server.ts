@@ -69,27 +69,30 @@ export const actions = {
     ) {
       return fail(403, { form, ok: false });
     }
-    const author = await DatabaseWrites.authors.delete({ where: { Id: form.data.id } });
-    await Queues.UserTasks.add(`Remove UserTasks for Author #${form.data.id}`, {
-      type: BullMQ.JobType.UserTasks_Modify,
-      scope: 'Project',
-      projectId: parseInt(event.params.id),
-      operation: {
-        type: BullMQ.UserTasks.OpType.Delete,
-        users: [author.UserId],
-        roles: [RoleId.Author]
-      }
-    });
+    const author = await DatabaseWrites.authors.delete(form.data.id);
+    if (author) {
+      await Queues.UserTasks.add(`Remove UserTasks for Author #${form.data.id}`, {
+        type: BullMQ.JobType.UserTasks_Modify,
+        scope: 'Project',
+        projectId: parseInt(event.params.id),
+        operation: {
+          type: BullMQ.UserTasks.OpType.Delete,
+          users: [author.UserId],
+          roles: [RoleId.Author]
+        }
+      });
+    }
     return { form, ok: true };
   },
   async deleteReviewer(event) {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    const ProjectId = parseInt(event.params.id);
     if (
       // if user modified hidden values
       !(await prisma.reviewers.findFirst({
-        where: { Id: form.data.id, ProjectId: parseInt(event.params.id) }
+        where: { Id: form.data.id, ProjectId }
       }))
     ) {
       return fail(403, { form, ok: false });
@@ -99,6 +102,7 @@ export const actions = {
         Id: form.data.id
       }
     });
+    Queues.SvelteProjectSSE.add(`Update Project #${ProjectId} in Svelte`, [ProjectId]);
     return { form, ok: true };
   },
   async addProduct(event) {
@@ -175,10 +179,8 @@ export const actions = {
     }
     // ISSUE: #1101 Appears that CanUpdate is not used
     const author = await DatabaseWrites.authors.create({
-      data: {
-        ProjectId: projectId,
-        UserId: form.data.author
-      }
+      ProjectId: projectId,
+      UserId: form.data.author
     });
     await Queues.UserTasks.add(`Add UserTasks for Author #${author.Id}`, {
       type: BullMQ.JobType.UserTasks_Modify,
@@ -196,14 +198,16 @@ export const actions = {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(addReviewerSchema));
     if (!form.valid) return fail(400, { form, ok: false });
+    const ProjectId = parseInt(event.params.id);
     await DatabaseWrites.reviewers.create({
       data: {
         Email: form.data.email,
         Name: form.data.name,
         Locale: form.data.language,
-        ProjectId: parseInt(event.params.id)
+        ProjectId
       }
     });
+    Queues.SvelteProjectSSE.add(`Update Project #${ProjectId} in Svelte`, [ProjectId]);
     return { form, ok: true };
   },
   async toggleVisibility(event) {
