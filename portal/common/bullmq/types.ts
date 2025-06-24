@@ -25,7 +25,8 @@ export enum QueueName {
   Publishing = 'Publishing',
   RemotePolling = 'Remote Polling',
   UserTasks = 'User Tasks',
-  Emails = 'Emails'
+  Emails = 'Emails',
+  SvelteProjectSSE = 'Svelte Project SSE'
 }
 
 export enum JobType {
