@@ -202,17 +202,20 @@ export async function POST({ params, request, fetch }) {
     select: { Id: true }
   });
 
-  await DatabaseWrites.productTransitions.createMany({
-    data: products.map((p) => ({
-      ProductId: p.Id,
-      AllowedUserNames: user[0].Name,
-      TransitionType: ProductTransitionType.ProjectAccess,
-      InitialState: 'Project ' + use,
-      WorkflowUserId: user[0].WorkflowUserId,
-      UserId: user[0].Id,
-      DateTransition: new Date()
-    }))
-  });
+  await DatabaseWrites.productTransitions.createMany(
+    {
+      data: products.map((p) => ({
+        ProductId: p.Id,
+        AllowedUserNames: user[0].Name,
+        TransitionType: ProductTransitionType.ProjectAccess,
+        InitialState: 'Project ' + use,
+        WorkflowUserId: user[0].WorkflowUserId,
+        UserId: user[0].Id,
+        DateTransition: new Date()
+      }))
+    },
+    projectId
+  );
 
   return json({ data: projectToken });
 }

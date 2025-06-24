@@ -33,14 +33,17 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
 
   // Clear PreExecuteEntries
   if (!project.DateArchived) {
-    await DatabaseWrites.productTransitions.deleteMany({
-      where: {
-        WorkflowUserId: null,
-        UserId: null,
-        ProductId: { in: productIds },
-        DateTransition: null
-      }
-    });
+    await DatabaseWrites.productTransitions.deleteMany(
+      {
+        where: {
+          WorkflowUserId: null,
+          UserId: null,
+          ProductId: { in: productIds },
+          DateTransition: null
+        }
+      },
+      projectId
+    );
   }
   job.updateProgress(20);
 
@@ -75,9 +78,12 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     for (let i = 0; i < products.length; i++) {
       const snap = await Workflow.getSnapshot(products[i].Id);
       job.updateProgress(40 + ((i + 0.2) * 40) / products.length);
-      await DatabaseWrites.productTransitions.createMany({
-        data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, snap.config)
-      });
+      await DatabaseWrites.productTransitions.createMany(
+        {
+          data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, snap.config)
+        },
+        products[i].ProjectId
+      );
       job.updateProgress(40 + ((i + 1) * 40) / products.length);
     }
     job.updateProgress(80);
@@ -155,9 +161,12 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
           data: createdTasks
         });
         job.updateProgress(40 + ((i + 0.67) * 40) / products.length);
-        await DatabaseWrites.productTransitions.createMany({
-          data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, snap.config)
-        });
+        await DatabaseWrites.productTransitions.createMany(
+          {
+            data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, snap.config)
+          },
+          products[i].ProjectId
+        );
       }
       job.updateProgress(40 + ((i + 1) * 40) / products.length);
     }
