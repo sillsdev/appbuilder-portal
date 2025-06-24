@@ -19,7 +19,7 @@ export async function POST(request) {
     ProjectPageUpdate.on('update', async function updateCb(updateId) {
       // This is a little wasteful because it will emit much of the same data
       // if multiple users are connected to the same project page.
-      if (updateId === id) {
+      if (updateId.includes(id)) {
         const projectData = await getProjectDetails(id, userId);
         const { error } = emit('projectData', JSON.stringify(projectData));
         if (error) {

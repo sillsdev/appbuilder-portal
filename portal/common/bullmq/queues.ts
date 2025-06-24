@@ -70,4 +70,4 @@ export const UserTasks = new Queue<UserTasksJob>(QueueName.UserTasks, config);
 /** Queue for Email tasks */
 export const Emails = new Queue<EmailJob>(QueueName.Emails, config);
 /** Queue for Svelte SSE Project events */
-export const SvelteProjectSSE = new Queue<number>(QueueName.SvelteProjectSSE, config);
+export const SvelteProjectSSE = new Queue<number[]>(QueueName.SvelteProjectSSE, config);
