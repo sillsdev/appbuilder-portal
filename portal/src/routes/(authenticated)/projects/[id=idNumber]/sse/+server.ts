@@ -1,5 +1,5 @@
 import { getProductActions } from '$lib/products';
-import { ProjectPageUpdate } from '$lib/projects/listener.js';
+import { SSEPageUpdates } from '$lib/projects/listener.js';
 import { userGroupsForOrg } from '$lib/projects/server';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
@@ -24,16 +24,16 @@ export async function POST(request) {
         const projectData = await getProjectDetails(id, userId);
         const { error } = emit('projectData', JSON.stringify(projectData));
         if (error) {
-          ProjectPageUpdate.off('update', updateCb);
+          SSEPageUpdates.off('projectPage', updateCb);
           clearInterval(pingInterval);
         }
       }
     }
-    ProjectPageUpdate.on('update', updateCb);
+    SSEPageUpdates.on('projectPage', updateCb);
     const pingInterval = setInterval(function onDisconnect() {
       const { error } = emit('ping', '');
       if (!error) return;
-      ProjectPageUpdate.off('update', updateCb);
+      SSEPageUpdates.off('projectPage', updateCb);
       clearInterval(pingInterval);
     }, 10000);
   });

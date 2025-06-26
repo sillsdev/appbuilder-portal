@@ -26,9 +26,10 @@ export async function create(
     });
 
     if (res) {
-      Queues.SvelteProjectSSE.add(`Update Project #${productData.ProjectId} in Svelte`, [
-        productData.ProjectId
-      ]);
+      Queues.SvelteProjectSSE.add(`Update Project #${productData.ProjectId} (product created)`, {
+        type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
+        projectIds: [productData.ProjectId]
+      });
       const flowDefinition = (
         await prisma.productDefinitions.findUnique({
           where: {
@@ -90,7 +91,10 @@ export async function update(
       },
       data: productData
     });
-    Queues.SvelteProjectSSE.add(`Update Project #${projectId} in Svelte`, [projectId]);
+    Queues.SvelteProjectSSE.add(`Update Project #${projectId} (product updated)`, {
+      type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
+      projectIds: [projectId]
+    });
   } catch (e) {
     return false;
   }
@@ -135,9 +139,10 @@ async function deleteProduct(productId: string) {
       }
     })
   ]);
-  Queues.SvelteProjectSSE.add(`Update #${product?.Project.Id} (product delete)`, [
-    product!.Project.Id
-  ]);
+  Queues.SvelteProjectSSE.add(`Update #${product?.Project.Id} (product delete)`, {
+    type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
+    projectIds: [product!.Project.Id]
+  });
 }
 export { deleteProduct as delete };
 

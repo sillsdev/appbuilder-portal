@@ -61,7 +61,10 @@ export enum JobType {
   Email_NotifySuperAdminsOfNewOrganizationRequest = 'Notify Super Admins of New Organization Request',
   Email_NotifySuperAdminsOfOfflineSystems = 'Notify Super Admins of Offline Systems',
   Email_NotifySuperAdminsLowPriority = 'Notify Super Admins (Low Priority)',
-  Email_ProjectImportReport = 'Project Import Report'
+  Email_ProjectImportReport = 'Project Import Report',
+  // Svelte Project SSE
+  SvelteProjectSSE_UpdateProject = 'Update Project',
+  SvelteProjectSSE_UpdateUserTasks = 'Update UserTasks'
 }
 
 export namespace Build {
@@ -260,6 +263,18 @@ export namespace Email {
   }
 }
 
+export namespace SvelteProjectSSE {
+  export interface UpdateProject {
+    type: JobType.SvelteProjectSSE_UpdateProject;
+    projectIds: number[];
+  }
+
+  export interface UpdateUserTasks {
+    type: JobType.SvelteProjectSSE_UpdateUserTasks;
+    userIds: number[];
+  }
+}
+
 export type Job = JobTypeMap[keyof JobTypeMap];
 
 export type BuildJob = JobTypeMap[JobType.Build_Product | JobType.Build_PostProcess];
@@ -314,6 +329,8 @@ export type JobTypeMap = {
   [JobType.Email_NotifySuperAdminsOfOfflineSystems]: Email.NotifySuperAdminsOfOfflineSystems;
   [JobType.Email_NotifySuperAdminsLowPriority]: Email.NotifySuperAdminsLowPriority;
   [JobType.Email_ProjectImportReport]: Email.ProjectImportReport;
+  [JobType.SvelteProjectSSE_UpdateProject]: SvelteProjectSSE.UpdateProject;
+  [JobType.SvelteProjectSSE_UpdateUserTasks]: SvelteProjectSSE.UpdateUserTasks;
   // Add more mappings here as needed
 };
 

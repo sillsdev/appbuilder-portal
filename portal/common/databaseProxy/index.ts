@@ -12,6 +12,7 @@ import * as products from './Products.js';
 import * as productTransitions from './ProductTransitions.js';
 import * as projects from './Projects.js';
 import * as userRoles from './UserRoles.js';
+import * as userTasks from './UserTasks.js';
 import * as utility from './utility.js';
 import * as workflowInstances from './WorkflowInstances.js';
 
@@ -40,6 +41,7 @@ const handlers = {
   products,
   projects,
   groups,
+  userTasks,
   groupMemberships,
   organizationStores,
   organizationProductDefinitions,

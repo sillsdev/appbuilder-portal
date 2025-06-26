@@ -2,7 +2,7 @@
 import { building } from '$app/environment';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
-import { ProjectPageUpdate } from '$lib/projects/listener';
+import { SSEPageUpdates } from '$lib/projects/listener';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { Worker } from 'bullmq';
@@ -16,11 +16,19 @@ import {
 
 if (!building) {
   // Create a worker to listen for project updates
-  new Worker<number[]>(
+  new Worker<BullMQ.Job>(
     BullMQ.QueueName.SvelteProjectSSE,
     async (job) => {
-      // Trigger an event for the project id
-      ProjectPageUpdate.emit('update', job.data);
+      switch (job.data.type) {
+        case BullMQ.JobType.SvelteProjectSSE_UpdateProject:
+          // Trigger an event for the project id
+          SSEPageUpdates.emit('projectPage', job.data.projectIds);
+          break;
+        case BullMQ.JobType.SvelteProjectSSE_UpdateUserTasks:
+          // Trigger an event for the user ids
+          SSEPageUpdates.emit('userTasksPage', job.data.userIds);
+          break;
+      }
     },
     Queues.config
   );
