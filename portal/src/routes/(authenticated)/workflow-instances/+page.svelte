@@ -20,6 +20,7 @@
   let { data }: Props = $props();
 
   let instances = $state(data.instances);
+  const instanceUpdated = $derived(getRelativeTime(instances.map((i) => i.DateUpdated)));
   let count = $state(data.count);
 
   const { form, enhance, submit } = superForm(data.form, {
@@ -89,7 +90,7 @@
     {#if instances.length > 0}
       {@const locale = getLocale()}
       <SortTable
-        data={instances}
+        data={instances.map((instance, index) => ({ ...instance, i: index }))}
         columns={[
           {
             // This will not sort by locale... need a good solution...
@@ -144,7 +145,7 @@
             <td class="border">{instance.State}</td>
             <td class="border">
               <Tooltip className="text-left" tip={instance.DateUpdated?.toLocaleString(locale)}>
-                {getRelativeTime(instance.DateUpdated)}
+                {$instanceUpdated[instance.i]}
               </Tooltip>
             </td>
           </tr>

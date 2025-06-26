@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
@@ -10,14 +11,25 @@
   import { source } from 'sveltekit-sse';
   import type { UserTaskDataSSE } from './sse/+server';
 
+  const currentPageUrl = page.url.pathname;
+  let reconnectDelay = 1000; // Initial delay for reconnection
   const userTasks: Readable<UserTaskDataSSE> = source(`tasks/sse`, {
     close({ connect }) {
-      console.log('Disconnected. Reconnecting...');
-      connect();
+      setTimeout(() => {
+        if (currentPageUrl !== page.url.pathname) {
+          // If the current page has changed, we don't want to reconnect.
+          return;
+        }
+        console.log('Disconnected. Reconnecting...');
+        connect();
+        reconnectDelay = Math.min(reconnectDelay * 2, 30000); // Exponential backoff, max 30 seconds
+      }, reconnectDelay);
     }
   })
     .select('userTasks')
     .json();
+
+  const dateUpdated = $derived(getRelativeTime($userTasks?.map((task) => task.DateUpdated)));
 </script>
 
 <div class="w-full">
@@ -34,7 +46,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each $userTasks as task}
+          {#each $userTasks as task, i}
             <tr
               class="cursor-pointer"
               onclick={() => goto(localizeHref(`/tasks/${task.ProductId}`))}
@@ -62,7 +74,7 @@
               </td>
               <td>
                 <Tooltip tip={task.DateUpdated?.toLocaleString(locale)}>
-                  {task.DateUpdated ? getRelativeTime(task.DateUpdated) : 'null'}
+                  {$dateUpdated[i]}
                 </Tooltip>
               </td>
             </tr>

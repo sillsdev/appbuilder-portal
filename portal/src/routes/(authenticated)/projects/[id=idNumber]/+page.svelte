@@ -19,14 +19,26 @@
 
   let addProductModal: HTMLDialogElement | undefined = $state(undefined);
 
+  const currentPageUrl = page.url.pathname;
+  let reconnectDelay = 1000;
   const projectData: Readable<ProjectDataSSE> = source(`${page.params.id}/sse`, {
     close({ connect }) {
-      console.log('Disconnected. Reconnecting...');
-      connect();
+      setTimeout(() => {
+        if (currentPageUrl !== page.url.pathname) {
+          // If the current page has changed, we don't want to reconnect.
+          return;
+        }
+        console.log('Disconnected. Reconnecting...');
+        connect();
+        reconnectDelay = Math.min(reconnectDelay * 2, 30000); // Exponential backoff, max 30 seconds
+      }, reconnectDelay);
     }
   })
     .select('projectData')
     .json();
+
+  const dateCreated = $derived(getRelativeTime($projectData?.project?.DateCreated));
+  const dateArchived = $derived(getRelativeTime($projectData?.project?.DateArchived));
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
@@ -49,9 +61,7 @@
           <span>
             {m.project_createdOn()}
             <Tooltip tip={$projectData?.project?.DateCreated?.toLocaleString(getLocale())}>
-              {$projectData?.project?.DateCreated
-                ? getRelativeTime($projectData?.project?.DateCreated)
-                : 'null'}
+              {$dateCreated}
             </Tooltip>
           </span>
         </div>
@@ -59,9 +69,7 @@
           <span>
             {m.project_archivedOn()}
             <Tooltip tip={$projectData?.project?.DateArchived?.toLocaleString(getLocale())}>
-              {$projectData?.project?.DateArchived
-                ? getRelativeTime($projectData?.project?.DateArchived)
-                : 'null'}
+              {$dateArchived}
             </Tooltip>
           </span>
         {/if}
