@@ -12,12 +12,13 @@
   }
 
   let { data }: Props = $props();
+  let dates = $derived(getRelativeTime(data.buildEngines.map((engine) => engine.DateUpdated)));
   let locale = getLocale();
 </script>
 
-{#snippet date(engine?: (typeof data.buildEngines)[0])}
+{#snippet date(engine?: (typeof data.buildEngines)[0] & { i: number })}
   <Tooltip className="indent-0" tip={engine?.DateUpdated?.toLocaleString(locale)}>
-    {engine?.DateUpdated ? getRelativeTime(engine.DateUpdated) : '-'}
+    {engine ? $dates[engine.i] : '-'}
   </Tooltip>
 {/snippet}
 
@@ -25,10 +26,10 @@
   {#if data.buildEngines.length === 0}
     <i>No build engine information. Check the "Check System Statuses" recurring BullMQ job</i>
   {/if}
-  {#each data.buildEngines.toSorted( (a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, getLocale()) ) as buildEngine}
+  {#each data.buildEngines.toSorted( (a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, getLocale()) ) as buildEngine, i}
     <DataDisplayBox
       title={buildEngine.BuildEngineUrl}
-      data={buildEngine}
+      data={{ ...buildEngine, i }}
       fields={[
         {
           key: 'buildEngines_accessToken',
