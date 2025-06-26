@@ -14,7 +14,7 @@ async function deleteReviewer(id: number) {
     where: { Id: id }
   });
 
-  Queues.SvelteProjectSSE.add(`Update Project #${reviewer?.ProjectId} (reviewer removed)`, {
+  Queues.SvelteProjectSSE.add(`Update Project #${reviewer.ProjectId} (reviewer removed)`, {
     type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
     projectIds: [reviewer.ProjectId]
   });
