@@ -1,9 +1,10 @@
 // Create a new bullmq listener for project updates
 import EventEmitter from 'events';
 
-export const ProjectPageUpdate = new EventEmitter<{
-  update: [number[]];
+export const SSEPageUpdates = new EventEmitter<{
+  projectPage: [number[]];
+  userTasksPage: [number[]];
 }>().setMaxListeners(400);
 // Allow 400 listeners (in the last 10 seconds)
-// More than 200 people viewing a project page at the same time seems unlikely
-// If it does happen, we can increase this limit
+// >400 instances viewing a project page or the user tasks page simultaneously
+// seems unlikely. If it does happen, we can increase this limit
