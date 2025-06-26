@@ -97,16 +97,7 @@ export const actions = {
     ) {
       return fail(403, { form, ok: false });
     }
-    await DatabaseWrites.reviewers.delete({
-      where: {
-        Id: form.data.id
-      }
-    });
-    // TODO add to db writes
-    Queues.SvelteProjectSSE.add(`Update Project #${ProjectId} (reviewer removed)`, {
-      type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
-      projectIds: [ProjectId]
-    });
+    await DatabaseWrites.reviewers.delete(form.data.id);
     return { form, ok: true };
   },
   async addProduct(event) {
@@ -204,16 +195,10 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false });
     const ProjectId = parseInt(event.params.id);
     await DatabaseWrites.reviewers.create({
-      data: {
-        Email: form.data.email,
-        Name: form.data.name,
-        Locale: form.data.language,
-        ProjectId
-      }
-    });
-    Queues.SvelteProjectSSE.add(`Update Project #${ProjectId} (reviewer added)`, {
-      type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
-      projectIds: [ProjectId]
+      Email: form.data.email,
+      Name: form.data.name,
+      Locale: form.data.language,
+      ProjectId
     });
     return { form, ok: true };
   },
