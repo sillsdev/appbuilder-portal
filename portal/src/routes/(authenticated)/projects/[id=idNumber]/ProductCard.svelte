@@ -114,6 +114,15 @@
       console.error('Error performing product action:', error);
     }
   }
+  const waitTime = $derived(
+    getRelativeTime(
+      product.UserTasks.slice(-1)[0]?.DateCreated ??
+        product.PreviousTransition?.DateTransition ??
+        null
+    )
+  );
+  const updatedTime = $derived(getRelativeTime(product.DateUpdated));
+  const publishedTime = $derived(getRelativeTime(product.DatePublished));
 </script>
 
 <div class="rounded-md border border-slate-400 w-full my-2">
@@ -145,14 +154,14 @@
       {m.common_updated()}
       <br />
       <Tooltip tip={product.DateUpdated?.toLocaleString(getLocale())}>
-        {getRelativeTime(product.DateUpdated)}
+        {$updatedTime}
       </Tooltip>
     </span>
     <span class="w-32 inline-block">
       {m.products_published()}
       <br />
       <Tooltip tip={product.DatePublished?.toLocaleString(getLocale())}>
-        {getRelativeTime(product.DatePublished)}
+        {$publishedTime}
       </Tooltip>
     </span>
     <Dropdown labelClasses="px-1" contentClasses="drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto">
@@ -228,11 +237,7 @@
           {m.tasks_waiting({
             // waiting since EITHER (the last task exists) -> that task's creation time
             // OR (there are no tasks for this product) -> the last completed transition's completion time
-            waitTime: getRelativeTime(
-              product.UserTasks.slice(-1)[0]?.DateCreated ??
-                product.PreviousTransition?.DateTransition ??
-                null
-            )
+            waitTime: $waitTime
           })}
         </span>
         {@html m.tasks_forNames({

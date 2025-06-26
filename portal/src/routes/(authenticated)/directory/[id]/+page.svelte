@@ -16,6 +16,7 @@
   }
 
   let { data }: Props = $props();
+  const time = $derived(getRelativeTime(data.project.DateCreated));
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
@@ -40,7 +41,7 @@
       <span>
         {m.project_createdOn()}
         <Tooltip tip={data.project?.DateCreated?.toLocaleString(getLocale())}>
-          {data.project?.DateCreated ? getRelativeTime(data.project?.DateCreated) : 'null'}
+          {data.project?.DateCreated ? $time : 'null'}
         </Tooltip>
       </span>
     </div>

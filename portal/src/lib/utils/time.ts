@@ -3,7 +3,20 @@ import { readable } from 'svelte/store';
 
 let locale = getLocale();
 let relativeTimeFormatter = new Intl.RelativeTimeFormat(locale);
-export function getRelativeTime(date: Date | string | null) {
+export function getRelativeTime<T extends Date | string | null, P extends T | T[]>(
+  date: P
+): Readable<P extends T ? string : string[]> {
+  if (Array.isArray(date)) {
+    return readable(
+      date.map((d) => getRelativeTimeValue(d)),
+      (set) => {
+        const interval = setInterval(() => {
+          set(date.map((d) => getRelativeTimeValue(d)));
+        }, 1000);
+        return () => clearInterval(interval);
+      }
+    );
+  }
   return readable(getRelativeTimeValue(date), (set) => {
     const interval = setInterval(() => {
       set(getRelativeTimeValue(date));

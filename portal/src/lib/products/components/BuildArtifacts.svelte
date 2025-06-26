@@ -18,25 +18,26 @@
     }>;
     artifacts: Prisma.ProductArtifactsGetPayload<{
       select: {
-            ArtifactType: true;
-            FileSize: true;
-            Url: true;
-            DateUpdated: true;
-          }
+        ArtifactType: true;
+        FileSize: true;
+        Url: true;
+        DateUpdated: true;
+      };
     }>[];
     release?: Prisma.ProductPublicationsGetPayload<{
       select: {
-            Channel: true;
-            Success: true;
-            LogUrl: true;
-            DateUpdated: true;
-          }
+        Channel: true;
+        Success: true;
+        LogUrl: true;
+        DateUpdated: true;
+      };
     }>;
     latestBuildId: number | undefined;
     allowDownloads?: boolean;
   }
 
   let { build, artifacts, release, latestBuildId, allowDownloads = true }: Props = $props();
+  const artifactUpdated = $derived(getRelativeTime(artifacts.map((a) => a.DateUpdated)));
 
   function versionString(b: typeof build): string {
     let version = b.Version;
@@ -61,7 +62,7 @@
       {versionString(build)}
     </span>
     <span>
-      {m.products_numArtifacts({ amount: artifacts.length})}
+      {m.products_numArtifacts({ amount: artifacts.length })}
     </span>
   </div>
   <div class="p-2 overflow-x-auto">
@@ -79,12 +80,12 @@
           </tr>
         </thead>
         <tbody>
-          {#each artifacts.toSorted( (a, b) => byString(a.ArtifactType, b.ArtifactType, locale) ) as artifact}
+          {#each artifacts.toSorted( (a, b) => byString(a.ArtifactType, b.ArtifactType, locale) ) as artifact, i}
             <tr>
               <td><IconContainer icon="mdi:file" width="20" /> {artifact.ArtifactType}</td>
               <td>
                 <Tooltip tip={artifact.DateUpdated?.toLocaleString(locale)}>
-                  {getRelativeTime(artifact.DateUpdated)}
+                  {$artifactUpdated[i]}
                 </Tooltip>
               </td>
               <td class="text-right">{bytesToHumanSize(artifact.FileSize)}</td>
@@ -115,9 +116,7 @@
           <tr>
             <td>{release.Channel}</td>
             <td>
-              {release.Success
-                ? m.publications_succeeded()
-                : m.publications_failed()}
+              {release.Success ? m.publications_succeeded() : m.publications_failed()}
             </td>
             <td>{release.DateUpdated?.toLocaleDateString(getLocale())}</td>
             <td>
