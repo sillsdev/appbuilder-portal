@@ -19,7 +19,12 @@
 
   let addProductModal: HTMLDialogElement | undefined = $state(undefined);
 
-  const projectData: Readable<ProjectDataSSE> = source(`${page.params.id}/sse`)
+  const projectData: Readable<ProjectDataSSE> = source(`${page.params.id}/sse`, {
+    close({ connect }) {
+      console.log('Disconnected. Reconnecting...');
+      connect();
+    }
+  })
     .select('projectData')
     .json();
 </script>
