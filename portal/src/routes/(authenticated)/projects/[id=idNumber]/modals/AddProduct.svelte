@@ -35,28 +35,29 @@
   let { modal = $bindable(), prodDefs, stores, endpoint }: Props = $props();
 
   let selectingStore = $state(false);
-  let selectedProduct = $state(prodDefs[0]);
+  let selectedProduct: Props['prodDefs'][0] | undefined = $state(prodDefs[0]);
   let availableStores = $derived(
-    stores.filter((s) => s.StoreTypeId === selectedProduct.Workflow.StoreTypeId)
+    stores.filter((s) => s.StoreTypeId === selectedProduct?.Workflow.StoreTypeId)
   );
 </script>
 
 <dialog bind:this={modal} class="modal">
-  <form class="modal-box" action="?/{endpoint}" method="POST" use:enhance>
+  <form class="modal-box relative" action="?/{endpoint}" method="POST" use:enhance>
     <div class="items-center text-center" class:hidden={selectingStore}>
       <div class="flex flex-row">
-        <h2 class="text-lg font-bold grow">{m.products_details()}</h2>
-        <button
-          class="btn btn-ghost"
-          type="button"
-          onclick={() => {
-            modal?.close();
-          }}
-        >
-          <IconContainer icon="mdi:close" width={36} class="opacity-80" />
-        </button>
+        <h2 class="text-lg font-bold grow pt-0">
+          {m.products_details()}
+          <button
+            class="btn btn-ghost absolute top-4 right-4 px-0"
+            type="button"
+            onclick={() => {
+              modal?.close();
+            }}
+          >
+            <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+          </button>
+        </h2>
       </div>
-      <hr />
       <div class="flex flex-col pt-1 space-y-1">
         {#each prodDefs.toSorted((a, b) => byName(a, b, getLocale())) as productDef}
           <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -80,13 +81,13 @@
     </div>
     <div class="items-center text-center" class:hidden={!selectingStore}>
       <div class="flex flex-row">
-        <h2 class="text-lg font-bold">
+        <h2 class="text-lg font-bold grow pt-0">
           {m.products_storeSelect({
-            name: selectedProduct.Name || ''
+            name: selectedProduct?.Name || ''
           })}
         </h2>
         <button
-          class="btn btn-ghost"
+          class="btn btn-ghost absolute top-4 right-4 px-0"
           type="button"
           onclick={() => {
             selectingStore = false;
@@ -95,7 +96,6 @@
           <IconContainer icon="mdi:close" width={36} class="opacity-80" />
         </button>
       </div>
-      <hr />
       <div class="flex flex-col pt-1 space-y-1">
         {#if availableStores.length}
           {@const locale = getLocale()}

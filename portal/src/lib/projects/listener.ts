@@ -1,18 +1,9 @@
 // Create a new bullmq listener for project updates
-import { Worker } from 'bullmq';
 import EventEmitter from 'events';
-import { BullMQ, Queues } from 'sil.appbuilder.portal.common';
 
 export const ProjectPageUpdate = new EventEmitter<{
   update: [number[]];
-}>();
-
-// Create a worker to listen for project updates
-new Worker<number[]>(
-  BullMQ.QueueName.SvelteProjectSSE,
-  async (job) => {
-    // Trigger an event for the project id
-    ProjectPageUpdate.emit('update', job.data);
-  },
-  Queues.config
-);
+}>().setMaxListeners(400);
+// Allow 400 listeners (in the last 10 seconds)
+// More than 200 people viewing a project page at the same time seems unlikely
+// If it does happen, we can increase this limit

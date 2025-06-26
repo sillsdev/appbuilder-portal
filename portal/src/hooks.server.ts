@@ -1,15 +1,30 @@
 // hooks.server.ts
+import { building } from '$app/environment';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
+import { ProjectPageUpdate } from '$lib/projects/listener';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { connected, Queues } from 'sil.appbuilder.portal.common';
+import { Worker } from 'bullmq';
+import { BullMQ, connected, Queues } from 'sil.appbuilder.portal.common';
 import {
   authRouteHandle,
   checkUserExistsHandle,
   localRouteHandle,
   organizationInviteHandle
 } from './auth';
+
+if (!building) {
+  // Create a worker to listen for project updates
+  new Worker<number[]>(
+    BullMQ.QueueName.SvelteProjectSSE,
+    async (job) => {
+      // Trigger an event for the project id
+      ProjectPageUpdate.emit('update', job.data);
+    },
+    Queues.config
+  );
+}
 
 // creating a handle to use the paraglide middleware
 const paraglideHandle: Handle = ({ event, resolve }) =>

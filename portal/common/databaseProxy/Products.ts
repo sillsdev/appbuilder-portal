@@ -135,7 +135,7 @@ async function deleteProduct(productId: string) {
       }
     })
   ]);
-  Queues.SvelteProjectSSE.add(`Update Project #${product?.Project.Id} in Svelte`, [
+  Queues.SvelteProjectSSE.add(`Update #${product?.Project.Id} (product delete)`, [
     product!.Project.Id
   ]);
 }
