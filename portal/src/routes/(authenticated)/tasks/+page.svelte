@@ -6,19 +6,17 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/utils/time';
-  import type { PageData } from './$types';
+  import type { Readable } from 'svelte/store';
+  import { source } from 'sveltekit-sse';
+  import type { UserTaskDataSSE } from './sse/+server';
 
-  interface Props {
-    data: PageData;
-  }
-
-  let { data }: Props = $props();
+  const userTasks: Readable<UserTaskDataSSE> = source(`tasks/sse`).select('userTasks').json();
 </script>
 
 <div class="w-full">
   <h1>{m.tasks_title()}</h1>
   <div class="m-4 relative mt-0">
-    {#if data.tasks.length > 0}
+    {#if $userTasks?.length > 0}
       {@const locale = getLocale()}
       <table class="w-full">
         <thead>
@@ -29,7 +27,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.tasks as task}
+          {#each $userTasks as task}
             <tr
               class="cursor-pointer"
               onclick={() => goto(localizeHref(`/tasks/${task.ProductId}`))}

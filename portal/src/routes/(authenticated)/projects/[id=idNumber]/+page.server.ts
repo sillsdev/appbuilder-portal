@@ -102,7 +102,11 @@ export const actions = {
         Id: form.data.id
       }
     });
-    Queues.SvelteProjectSSE.add(`Update Project #${ProjectId} in Svelte`, [ProjectId]);
+    // TODO add to db writes
+    Queues.SvelteProjectSSE.add(`Update Project #${ProjectId} (reviewer removed)`, {
+      type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
+      projectIds: [ProjectId]
+    });
     return { form, ok: true };
   },
   async addProduct(event) {
@@ -207,7 +211,10 @@ export const actions = {
         ProjectId
       }
     });
-    Queues.SvelteProjectSSE.add(`Update Project #${ProjectId} in Svelte`, [ProjectId]);
+    Queues.SvelteProjectSSE.add(`Update Project #${ProjectId} (reviewer added)`, {
+      type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
+      projectIds: [ProjectId]
+    });
     return { form, ok: true };
   },
   async toggleVisibility(event) {
