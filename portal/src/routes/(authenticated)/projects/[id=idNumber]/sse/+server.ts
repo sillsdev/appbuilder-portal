@@ -8,7 +8,7 @@ import { produce } from 'sveltekit-sse';
 export async function POST(request) {
   const userId = (await request.locals.auth())!.user.userId;
   const { id: strId } = request.params;
-  return produce(async function ({ emit, lock }) {
+  return produce(async function start({ emit, lock }) {
     const id = parseInt(strId);
     // User will be allowed to see project updates until they reload
     // even if their permission is revoked during the SSE connection.
@@ -16,17 +16,26 @@ export async function POST(request) {
     if (error) {
       return;
     }
-    ProjectPageUpdate.on('update', async function updateCb(updateId) {
-      // This is a little wasteful because it will emit much of the same data
-      // if multiple users are connected to the same project page.
+    async function updateCb(updateId: number[]) {
+      // This is a little wasteful because it will calculate much of the same data
+      // multiple times if multiple users are connected to the same project page.
       if (updateId.includes(id)) {
+        // console.log(`Project page SSE update for project ${id}`);
         const projectData = await getProjectDetails(id, userId);
         const { error } = emit('projectData', JSON.stringify(projectData));
         if (error) {
           ProjectPageUpdate.off('update', updateCb);
+          clearInterval(pingInterval);
         }
       }
-    });
+    }
+    ProjectPageUpdate.on('update', updateCb);
+    const pingInterval = setInterval(function onDisconnect() {
+      const { error } = emit('ping', '');
+      if (!error) return;
+      ProjectPageUpdate.off('update', updateCb);
+      clearInterval(pingInterval);
+    }, 10000);
   });
 }
 export type ProjectDataSSE = Awaited<ReturnType<typeof getProjectDetails>>;

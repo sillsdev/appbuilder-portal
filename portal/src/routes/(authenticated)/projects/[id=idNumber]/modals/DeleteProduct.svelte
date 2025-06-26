@@ -37,10 +37,9 @@
           name: m.tasks_product()
         })}
       </h2>
-      <hr />
       <div class="flex flex-col gap-2 items-center w-full pt-2 text-left">
         <input type="hidden" name="productId" value={product.Id} />
-        {#if true || product.DatePublished}
+        {#if product.DatePublished}
           <div class="border-2 border-error p-2 w-full rounded-md">
             {@html m.deletePrompt_warningIfPublished()}
           </div>
