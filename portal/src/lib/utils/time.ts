@@ -42,7 +42,10 @@ export function getRelativeTimeValue(date: Date | string | null) {
   }
   return 'ERROR';
 }
-export function getTimeDateString(date: Date | null) {
+export function getTimeDateString(date: Date | string | null) {
+  if (typeof date === 'string') {
+    date = new Date(date);
+  }
   return `${date?.toLocaleDateString(getLocale()) ?? '-'} ${
     date
       ?.toLocaleTimeString(getLocale(), {
