@@ -10,7 +10,14 @@
   import { source } from 'sveltekit-sse';
   import type { UserTaskDataSSE } from './sse/+server';
 
-  const userTasks: Readable<UserTaskDataSSE> = source(`tasks/sse`).select('userTasks').json();
+  const userTasks: Readable<UserTaskDataSSE> = source(`tasks/sse`, {
+    close({ connect }) {
+      console.log('Disconnected. Reconnecting...');
+      connect();
+    }
+  })
+    .select('userTasks')
+    .json();
 </script>
 
 <div class="w-full">
