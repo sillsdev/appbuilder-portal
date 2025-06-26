@@ -1,8 +1,17 @@
 import { getLocale } from '../paraglide/runtime';
+import { readable } from 'svelte/store';
 
 let locale = getLocale();
 let relativeTimeFormatter = new Intl.RelativeTimeFormat(locale);
 export function getRelativeTime(date: Date | null) {
+  return readable(getRelativeTimeValue(date), (set) => {
+    const interval = setInterval(() => {
+      set(getRelativeTimeValue(date));
+    }, 1000);
+    return () => clearInterval(interval);
+  });
+}
+export function getRelativeTimeValue(date: Date | null) {
   if (!date) return '-';
   if (locale !== getLocale()) {
     locale = getLocale();
