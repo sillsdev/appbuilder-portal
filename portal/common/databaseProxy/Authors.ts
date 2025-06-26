@@ -14,7 +14,7 @@ async function deleteAuthor(id: number) {
     where: { Id: id }
   });
 
-  Queues.SvelteProjectSSE.add(`Update Project #${author?.ProjectId} (author removed)`, {
+  Queues.SvelteProjectSSE.add(`Update Project #${author.ProjectId} (author removed)`, {
     type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
     projectIds: [author.ProjectId]
   });
