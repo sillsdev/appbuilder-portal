@@ -8,8 +8,8 @@ export async function checkInviteErrors(inviteToken?: string | null, userId?: nu
       }
     });
     // This is really just for devs since most people don't have two accounts
-    if (invite?.InvitedById === userId) return { error: 'self-invite' };
     if (!invite || !inviteToken) return { error: 'not found' };
+    if (invite.InvitedById === userId) return { error: 'self-invite' };
     if (invite.Redeemed) return { error: 'redeemed' };
     if (!invite.Expires || invite.Expires < new Date()) return { error: 'expired' };
     return {};

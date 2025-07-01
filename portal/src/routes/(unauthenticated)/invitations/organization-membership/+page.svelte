@@ -12,17 +12,17 @@
 </script>
 
 <div class="card shadow-xl bg-white border p-4 flex flex-column items-center text-black">
+  <div class="w-full flex justify-center">
+    <div class="w-10"></div>
+    <ScriptoriaIcon size="128" />
+  </div>
   {#if data.error === 'not found'}
     <h2>{m.orgMembership_notFound()}</h2>
   {:else if data.error === 'redeemed'}
     <h2>{m.orgMembership_redeemed()}</h2>
   {:else if data.error === 'expired'}
     <h2>{m.orgMembership_expired()}</h2>
-  {:else}
-    <div class="w-full flex justify-center">
-      <div class="w-10"></div>
-      <ScriptoriaIcon size="128" />
-    </div>
+  {:else if !data.error}
     <h2>{m.orgMembership_joined()}</h2>
     <!-- Organization info -->
     <div class="flex flex-row">
@@ -40,5 +40,7 @@
     <a href={localizeHref('/tasks')} class="btn btn-primary">
       {m.orgMembership_returnToDashboard()}
     </a>
+  {:else}
+    <h2>Unknown error {data.error}</h2>
   {/if}
 </div>
