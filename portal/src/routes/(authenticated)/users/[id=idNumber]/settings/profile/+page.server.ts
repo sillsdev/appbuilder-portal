@@ -1,7 +1,4 @@
-import { adminOrgs } from '$lib/users/server';
-import { isSuperAdmin } from '$lib/utils/roles';
 import { phoneRegex } from '$lib/valibot';
-import { error } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -49,15 +46,6 @@ export const actions = {
 
     const user = (await event.locals.auth())!.user;
     const subjectId = parseInt(event.params.id);
-    // if user modified hidden values
-    if (
-      user.userId !== subjectId &&
-      !(await prisma.organizations.findFirst({
-        where: adminOrgs(subjectId, user.userId, isSuperAdmin(user.roles))
-      }))
-    ) {
-      return error(403);
-    }
 
     await DatabaseWrites.users.update({
       where: {
