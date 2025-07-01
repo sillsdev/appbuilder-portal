@@ -1,11 +1,13 @@
+import { readable, type Readable } from 'svelte/store';
 import { getLocale } from '../paraglide/runtime';
-import { readable } from 'svelte/store';
 
 let locale = getLocale();
 let relativeTimeFormatter = new Intl.RelativeTimeFormat(locale);
-export function getRelativeTime<T extends Date | string | null, P extends T | T[]>(
-  date: P
-): Readable<P extends T ? string : string[]> {
+
+type DateType = Date | string | null;
+export function getRelativeTime(date: DateType): Readable<string>;
+export function getRelativeTime(date: DateType[]): Readable<string[]>;
+export function getRelativeTime(date: DateType | DateType[]): Readable<string | string[]> {
   if (Array.isArray(date)) {
     return readable(
       date.map((d) => getRelativeTimeValue(d)),
@@ -24,7 +26,7 @@ export function getRelativeTime<T extends Date | string | null, P extends T | T[
     return () => clearInterval(interval);
   });
 }
-export function getRelativeTimeValue(date: Date | string | null) {
+export function getRelativeTimeValue(date: DateType): string {
   if (typeof date === 'string') {
     date = new Date(date);
   }
@@ -55,7 +57,7 @@ export function getRelativeTimeValue(date: Date | string | null) {
   }
   return 'ERROR';
 }
-export function getTimeDateString(date: Date | string | null) {
+export function getTimeDateString(date: DateType): string {
   if (typeof date === 'string') {
     date = new Date(date);
   }
