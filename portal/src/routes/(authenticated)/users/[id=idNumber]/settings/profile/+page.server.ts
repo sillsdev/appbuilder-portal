@@ -51,6 +51,7 @@ export const actions = {
     const subjectId = parseInt(event.params.id);
     // if user modified hidden values
     if (
+      user.userId !== subjectId &&
       !(await prisma.organizations.findFirst({
         where: adminOrgs(subjectId, user.userId, isSuperAdmin(user.roles))
       }))
