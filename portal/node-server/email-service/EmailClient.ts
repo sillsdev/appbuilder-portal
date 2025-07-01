@@ -6,16 +6,24 @@ import {
   NotificationTemplate,
   NotificationWithLinkTemplate
 } from './EmailTemplates.js';
-import { AmazonSESProvider } from './providers/AmazonSESProvider.js';
 import { EmailProvider } from './providers/EmailProvider.js';
 import { LogProvider } from './providers/LogProvider.js';
-import { SparkpostProvider } from './providers/SparkpostProvider.js';
 
 let emailProvider: EmailProvider = new LogProvider();
 
 if (process.env.VITE_MAIL_SENDER === 'SparkPost') {
+  const { SparkpostProvider } = await import('./providers/SparkpostProvider.js');
+  if (!process.env.VITE_SPARKPOST_API_KEY) {
+    throw new Error('VITE_SPARKPOST_API_KEY must be set to use SparkPost for email sending.');
+  }
   emailProvider = new SparkpostProvider(process.env.VITE_SPARKPOST_API_KEY);
 } else if (process.env.VITE_MAIL_SENDER === 'AmazonSES') {
+  const { AmazonSESProvider } = await import('./providers/AmazonSESProvider.js');
+  if (!process.env.AWS_EMAIL_ACCESS_KEY_ID || !process.env.AWS_EMAIL_SECRET_ACCESS_KEY) {
+    throw new Error(
+      'AWS_EMAIL_ACCESS_KEY_ID and AWS_EMAIL_SECRET_ACCESS_KEY must be set to use Amazon SES for email sending.'
+    );
+  }
   emailProvider = new AmazonSESProvider();
 } else if (process.env.VITE_MAIL_SENDER !== 'LogEmail') {
   console.warn(
@@ -28,7 +36,6 @@ export async function sendEmail(
   subject: string,
   body: string
 ) {
-  console.log('Sending email');
   const template = addProperties(
     EmailLayoutTemplate,
     {
