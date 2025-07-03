@@ -131,3 +131,10 @@
     <button onclick={() => (selectingStore = false)}>{m.common_close()}</button>
   </form>
 </dialog>
+
+<style>
+  /* source: https://github.com/saadeghi/daisyui/issues/3040#issuecomment-2250530354 */
+  :root:has(:is(.modal-open, .modal:target, .modal-toggle:checked + .modal, .modal[open])) {
+    scrollbar-gutter: unset;
+  }
+</style>
