@@ -249,10 +249,4 @@
     /* grid-template-rows: min-content min-content min-content; */
     column-gap: 0.75rem;
   }
-  /* source: https://github.com/saadeghi/daisyui/issues/3040#issuecomment-2250530354 */
-  :root:has(
-      :global(:is(.modal-open, .modal:target, .modal-toggle:checked + .modal, .modal[open]))
-    ) {
-    scrollbar-gutter: unset;
-  }
 </style>
