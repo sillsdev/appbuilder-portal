@@ -16,7 +16,7 @@
     "prepare": "svelte-kit sync"
   },
   "prisma": {
-    "seed": "ts-node --esm prisma/seed.ts",
+    "seed": "node --experimental-strip-types common/prisma/seed.ts",
     "schema": "common/prisma/schema.prisma"
   },
   "devDependencies": {

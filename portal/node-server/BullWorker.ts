@@ -10,11 +10,11 @@ export abstract class BullWorker<T> {
   abstract run(job: Job<T>): Promise<unknown>;
 }
 
-export class Builds extends BullWorker<BullMQ.Job> {
+export class Builds<J extends BullMQ.BuildJob> extends BullWorker<J> {
   constructor() {
     super(BullMQ.QueueName.Builds);
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.Build_Product:
         return Executor.Build.product(job as Job<BullMQ.Build.Product>);
@@ -24,53 +24,80 @@ export class Builds extends BullWorker<BullMQ.Job> {
   }
 }
 
-export class DefaultRecurring extends BullWorker<BullMQ.Job> {
+export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J> {
   constructor() {
-    super(BullMQ.QueueName.DefaultRecurring);
-    Queues.DefaultRecurring.upsertJobScheduler(
+    super(BullMQ.QueueName.SystemRecurring);
+    Queues.SystemRecurring.upsertJobScheduler(
       BullMQ.JobSchedulerId.CheckSystemStatuses,
       {
         pattern: '*/5 * * * *', // every 5 minutes
-        immediately: true
+        immediately: false
       },
       {
         name: 'Check System Statuses',
         data: {
-          type: BullMQ.JobType.Recurring_CheckSystemStatuses
+          type: BullMQ.JobType.System_CheckEngineStatuses
         }
       }
     );
-    Queues.DefaultRecurring.upsertJobScheduler(
+    Queues.SystemRecurring.upsertJobScheduler(
       BullMQ.JobSchedulerId.RefreshLangTags,
       {
         pattern: '@daily', // every day at midnight
-        immediately: true
+        immediately: false
       },
       {
         name: 'Refresh LangTags',
         data: {
-          type: BullMQ.JobType.Recurring_RefreshLangTags
+          type: BullMQ.JobType.System_RefreshLangTags
         }
       }
     );
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
-      case BullMQ.JobType.Recurring_CheckSystemStatuses:
-        return Executor.Recurring.checkSystemStatuses(
-          job as Job<BullMQ.Recurring.CheckSystemStatuses>
+      case BullMQ.JobType.System_CheckEngineStatuses:
+        return Executor.System.checkSystemStatuses(
+          job as Job<BullMQ.System.CheckEngineStatuses>
         );
-      case BullMQ.JobType.Recurring_RefreshLangTags:
-        return Executor.Recurring.refreshLangTags(job as Job<BullMQ.Recurring.RefreshLangTags>);
+      case BullMQ.JobType.System_RefreshLangTags:
+        return Executor.System.refreshLangTags(job as Job<BullMQ.System.RefreshLangTags>);
     }
   }
 }
 
-export class Miscellaneous extends BullWorker<BullMQ.Job> {
+export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
+  constructor() {
+    super(BullMQ.QueueName.SystemStartup);
+    Queues.SystemStartup.add('Check System Statuses (Startup)', {
+      type: BullMQ.JobType.System_CheckEngineStatuses
+    });
+    Queues.SystemStartup.add('Refresh LangTags (Startup)', {
+      type: BullMQ.JobType.System_RefreshLangTags
+    });
+    Queues.SystemStartup.add('Migrate Features from S1 to S2 (Startup)', {
+      type: BullMQ.JobType.System_Migrate
+    });
+  }
+  async run(job: Job<J>) {
+    switch (job.data.type) {
+      case BullMQ.JobType.System_CheckEngineStatuses:
+        return Executor.System.checkSystemStatuses(
+          job as Job<BullMQ.System.CheckEngineStatuses>
+        );
+      case BullMQ.JobType.System_RefreshLangTags:
+        return Executor.System.refreshLangTags(job as Job<BullMQ.System.RefreshLangTags>);
+      case BullMQ.JobType.System_Migrate:
+        return Executor.System.migrate(job as Job<BullMQ.System.Migrate>);
+    }
+  }
+}
+
+export class Miscellaneous<J extends BullMQ.MiscJob> extends BullWorker<J>  {
   constructor() {
     super(BullMQ.QueueName.Miscellaneous);
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.Product_Create:
         return Executor.Product.create(job as Job<BullMQ.Product.Create>);
@@ -86,11 +113,11 @@ export class Miscellaneous extends BullWorker<BullMQ.Job> {
   }
 }
 
-export class Publishing extends BullWorker<BullMQ.Job> {
+export class Publishing<J extends BullMQ.PublishJob> extends BullWorker<J>  {
   constructor() {
     super(BullMQ.QueueName.Publishing);
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.Publish_Product:
         return Executor.Publish.product(job as Job<BullMQ.Publish.Product>);
@@ -100,11 +127,11 @@ export class Publishing extends BullWorker<BullMQ.Job> {
   }
 }
 
-export class RemotePolling extends BullWorker<BullMQ.Job> {
+export class RemotePolling<J extends BullMQ.PollJob> extends BullWorker<J>  {
   constructor() {
     super(BullMQ.QueueName.RemotePolling);
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.Build_Check:
         return Executor.Build.check(job as Job<BullMQ.Build.Check>);
@@ -116,11 +143,11 @@ export class RemotePolling extends BullWorker<BullMQ.Job> {
   }
 }
 
-export class UserTasks extends BullWorker<BullMQ.Job> {
+export class UserTasks<J extends BullMQ.UserTasksJob> extends BullWorker<J>  {
   constructor() {
     super(BullMQ.QueueName.UserTasks);
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.UserTasks_Modify:
         return Executor.UserTasks.modify(job as Job<BullMQ.UserTasks.Modify>);
@@ -128,11 +155,11 @@ export class UserTasks extends BullWorker<BullMQ.Job> {
   }
 }
 
-export class Emails extends BullWorker<BullMQ.Job> {
+export class Emails<J extends BullMQ.EmailJob> extends BullWorker<BullMQ.Job> {
   constructor() {
     super(BullMQ.QueueName.Emails);
   }
-  async run(job: Job<BullMQ.Job>) {
+  async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.Email_InviteUser:
         return Executor.Email.inviteUser(job as Job<BullMQ.Email.InviteUser>);
