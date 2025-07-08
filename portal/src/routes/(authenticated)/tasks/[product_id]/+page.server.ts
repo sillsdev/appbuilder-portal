@@ -184,7 +184,7 @@ export const load = (async ({ params, locals }) => {
 
 export const actions = {
   default: async ({ request, params, locals }) => {
-    const session = await locals.auth();
+    const session = (await locals.auth())!;
     if (!(await verifyCanViewTask(session, params.product_id))) return error(403);
     const form = await superValidate(request, valibot(sendActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
@@ -198,7 +198,7 @@ export const actions = {
       flow.send({
         type: form.data.flowAction,
         comment: form.data.comment,
-        userId: session?.user.userId ?? null
+        userId: session.user.userId
       });
     }
 

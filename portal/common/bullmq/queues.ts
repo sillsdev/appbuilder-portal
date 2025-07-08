@@ -1,6 +1,15 @@
 import { Queue } from 'bullmq';
 import { Redis } from 'ioredis';
-import type { Job } from './types.js';
+import type {
+  BuildJob,
+  EmailJob,
+  MiscJob,
+  PollJob,
+  PublishJob,
+  RecurringJob,
+  StartupJob,
+  UserTasksJob
+} from './types.js';
 import { QueueName } from './types.js';
 
 class Connection {
@@ -45,16 +54,18 @@ export const connected = () => connection.IsConnected();
 export const config = { connection: connection.connection() } as const;
 
 /** Queue for Product Builds */
-export const Builds = new Queue<Job>(QueueName.Builds, config);
+export const Builds = new Queue<BuildJob>(QueueName.Builds, config);
 /** Queue for default recurring jobs such as the BuildEngine status check */
-export const DefaultRecurring = new Queue<Job>(QueueName.DefaultRecurring, config);
+export const SystemRecurring = new Queue<RecurringJob>(QueueName.SystemRecurring, config);
+/** Queue for system jobs that run on startup, such as prepopulating langtags.json */
+export const SystemStartup = new Queue<StartupJob>(QueueName.SystemStartup, config);
 /** Queue for miscellaneous jobs such as Product and Project Creation */
-export const Miscellaneous = new Queue<Job>(QueueName.Miscellaneous, config);
+export const Miscellaneous = new Queue<MiscJob>(QueueName.Miscellaneous, config);
 /** Queue for Product Publishing  */
-export const Publishing = new Queue<Job>(QueueName.Publishing, config);
+export const Publishing = new Queue<PublishJob>(QueueName.Publishing, config);
 /** Queue for jobs that poll BuildEngine, such as checking the status of a build */
-export const RemotePolling = new Queue<Job>(QueueName.RemotePolling, config);
+export const RemotePolling = new Queue<PollJob>(QueueName.RemotePolling, config);
 /** Queue for operations on UserTasks */
-export const UserTasks = new Queue<Job>(QueueName.UserTasks, config);
+export const UserTasks = new Queue<UserTasksJob>(QueueName.UserTasks, config);
 /** Queue for Email tasks */
-export const Emails = new Queue<Job>(QueueName.Emails, config);
+export const Emails = new Queue<EmailJob>(QueueName.Emails, config);
