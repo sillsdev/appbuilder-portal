@@ -82,7 +82,7 @@ export async function update(
     return false;
   }
   Queues.SvelteProjectSSE.add(`Update Project #${id} (update details)`, {
-    type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
+    type: BullMQ.JobType.SvelteSSE_UpdateProject,
     projectIds: [id]
   });
   return true;

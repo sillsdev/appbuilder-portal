@@ -8,6 +8,7 @@ import type {
   PublishJob,
   RecurringJob,
   StartupJob,
+  SvelteSSEJob,
   UserTasksJob
 } from './types.js';
 import { QueueName } from './types.js';
@@ -70,4 +71,4 @@ export const UserTasks = new Queue<UserTasksJob>(QueueName.UserTasks, config);
 /** Queue for Email tasks */
 export const Emails = new Queue<EmailJob>(QueueName.Emails, config);
 /** Queue for Svelte SSE Project events */
-export const SvelteProjectSSE = new Queue<Job>(QueueName.SvelteProjectSSE, config);
+export const SvelteProjectSSE = new Queue<SvelteSSEJob>(QueueName.SvelteProjectSSE, config);

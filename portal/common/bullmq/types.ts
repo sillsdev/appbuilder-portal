@@ -63,8 +63,8 @@ export enum JobType {
   Email_NotifySuperAdminsLowPriority = 'Notify Super Admins (Low Priority)',
   Email_ProjectImportReport = 'Project Import Report',
   // Svelte Project SSE
-  SvelteProjectSSE_UpdateProject = 'Update Project',
-  SvelteProjectSSE_UpdateUserTasks = 'Update UserTasks'
+  SvelteSSE_UpdateProject = 'Update Project',
+  SvelteSSE_UpdateUserTasks = 'Update UserTasks'
 }
 
 export namespace Build {
@@ -265,12 +265,12 @@ export namespace Email {
 
 export namespace SvelteProjectSSE {
   export interface UpdateProject {
-    type: JobType.SvelteProjectSSE_UpdateProject;
+    type: JobType.SvelteSSE_UpdateProject;
     projectIds: number[];
   }
 
   export interface UpdateUserTasks {
-    type: JobType.SvelteProjectSSE_UpdateUserTasks;
+    type: JobType.SvelteSSE_UpdateUserTasks;
     userIds: number[];
   }
 }
@@ -301,7 +301,13 @@ export type EmailJob = JobTypeMap[
   | JobType.Email_NotifySuperAdminsOfOfflineSystems
   | JobType.Email_NotifySuperAdminsLowPriority
   | JobType.Email_ProjectImportReport];
-export type MiscJob = Exclude<Job, BuildJob | RecurringJob | PublishJob | PollJob | UserTasksJob | EmailJob>;
+export type SvelteSSEJob = JobTypeMap[
+  | JobType.SvelteSSE_UpdateProject
+  | JobType.SvelteSSE_UpdateUserTasks];
+export type MiscJob = Exclude<
+  Job,
+  BuildJob | RecurringJob | PublishJob | PollJob | UserTasksJob | EmailJob | SvelteSSEJob
+>;
 
 export type JobTypeMap = {
   [JobType.Build_Product]: Build.Product;
@@ -329,8 +335,8 @@ export type JobTypeMap = {
   [JobType.Email_NotifySuperAdminsOfOfflineSystems]: Email.NotifySuperAdminsOfOfflineSystems;
   [JobType.Email_NotifySuperAdminsLowPriority]: Email.NotifySuperAdminsLowPriority;
   [JobType.Email_ProjectImportReport]: Email.ProjectImportReport;
-  [JobType.SvelteProjectSSE_UpdateProject]: SvelteProjectSSE.UpdateProject;
-  [JobType.SvelteProjectSSE_UpdateUserTasks]: SvelteProjectSSE.UpdateUserTasks;
+  [JobType.SvelteSSE_UpdateProject]: SvelteProjectSSE.UpdateProject;
+  [JobType.SvelteSSE_UpdateUserTasks]: SvelteProjectSSE.UpdateUserTasks;
   // Add more mappings here as needed
 };
 
