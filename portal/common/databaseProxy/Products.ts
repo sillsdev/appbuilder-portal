@@ -27,7 +27,7 @@ export async function create(
 
     if (res) {
       Queues.SvelteProjectSSE.add(`Update Project #${productData.ProjectId} (product created)`, {
-        type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
+        type: BullMQ.JobType.SvelteSSE_UpdateProject,
         projectIds: [productData.ProjectId]
       });
       const flowDefinition = (
@@ -92,7 +92,7 @@ export async function update(
       data: productData
     });
     Queues.SvelteProjectSSE.add(`Update Project #${projectId} (product updated)`, {
-      type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
+      type: BullMQ.JobType.SvelteSSE_UpdateProject,
       projectIds: [projectId]
     });
   } catch (e) {
@@ -140,7 +140,7 @@ async function deleteProduct(productId: string) {
     })
   ]);
   Queues.SvelteProjectSSE.add(`Update #${product?.Project.Id} (product delete)`, {
-    type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
+    type: BullMQ.JobType.SvelteSSE_UpdateProject,
     projectIds: [product!.Project.Id]
   });
 }
