@@ -20,11 +20,11 @@ if (!building) {
     BullMQ.QueueName.SvelteProjectSSE,
     async (job) => {
       switch (job.data.type) {
-        case BullMQ.JobType.SvelteProjectSSE_UpdateProject:
+        case BullMQ.JobType.SvelteSSE_UpdateProject:
           // Trigger an event for the project id
           SSEPageUpdates.emit('projectPage', job.data.projectIds);
           break;
-        case BullMQ.JobType.SvelteProjectSSE_UpdateUserTasks:
+        case BullMQ.JobType.SvelteSSE_UpdateUserTasks:
           // Trigger an event for the user ids
           SSEPageUpdates.emit('userTasksPage', job.data.userIds);
           break;
