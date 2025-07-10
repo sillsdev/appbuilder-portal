@@ -7,10 +7,10 @@ import type {
   StateNode as XStateNode
 } from 'xstate';
 import { createActor } from 'xstate';
-import DatabaseWrites from '../databaseProxy/index.js';
+import { BullMQ, Queues } from '../bullmq/index.js';
+import { DatabaseWrites } from '../databaseProxy/index.js';
+import prisma from '../databaseProxy/prisma.js';
 import { allUsersByRole } from '../databaseProxy/UserRoles.js';
-import { BullMQ, Queues } from '../index.js';
-import prisma from '../prisma.js';
 import { ProductTransitionType, RoleId, WorkflowType } from '../public/prisma.js';
 import type {
   Snapshot,
@@ -120,29 +120,6 @@ export class Workflow {
     flow.flow.start();
 
     return flow;
-  }
-
-  public static async delete(productId: string) {
-    const product = await prisma.products.findUnique({
-      where: { Id: productId },
-      select: {
-        ProjectId: true,
-        WorkflowInstance: { select: { WorkflowDefinition: { select: { Type: true } } } }
-      }
-    });
-    if (product?.WorkflowInstance) {
-      await DatabaseWrites.workflowInstances.delete(productId, product.ProjectId);
-      await DatabaseWrites.productTransitions.create({
-        data: {
-          ProductId: productId,
-          // This is how S1 does it. May want to change later
-          AllowedUserNames: '',
-          DateTransition: new Date(),
-          TransitionType: ProductTransitionType.EndWorkflow,
-          WorkflowType: product.WorkflowInstance.WorkflowDefinition.Type
-        }
-      });
-    }
   }
 
   /** Send a transition event to the workflow. */

@@ -18,8 +18,7 @@ class Connection {
   private connected: boolean;
   constructor() {
     this.conn = new Redis({
-      host: process.env.NODE_ENV === 'development' ? 'localhost' : 'valkey',
-      maxRetriesPerRequest: null
+      host: process.env.NODE_ENV === 'development' ? 'localhost' : 'valkey'
     });
     this.connected = false;
     this.conn.on('close', () => (this.connected = false));

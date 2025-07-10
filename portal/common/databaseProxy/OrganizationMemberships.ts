@@ -1,4 +1,4 @@
-import prisma from '../prisma.js';
+import prisma from './prisma.js';
 
 export async function acceptOrganizationInvite(userId: number, inviteToken: string) {
   const invite = await prisma.organizationMembershipInvites.findFirst({

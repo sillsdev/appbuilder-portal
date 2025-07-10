@@ -35,9 +35,10 @@ export enum JobType {
   Build_Check = 'Check Product Build',
   Build_PostProcess = 'Postprocess Build',
   // Product Tasks
-  Product_Create = 'Create Product',
-  Product_Delete = 'Delete Product',
+  Product_Create = 'Create Product - BuildEngine',
+  Product_Delete = 'Delete Product - BuildEngine',
   Product_GetVersionCode = 'Get VersionCode for Uploaded Product',
+  Product_CreateLocal = 'Create Local Product',
   // Project Tasks
   Project_Create = 'Create Project',
   Project_Check = 'Check Project Creation',
@@ -103,6 +104,12 @@ export namespace Product {
   export interface GetVersionCode {
     type: JobType.Product_GetVersionCode;
     productId: string;
+  }
+  export interface CreateLocal {
+    type: JobType.Product_CreateLocal;
+    projectId: number;
+    productDefinitionId: number;
+    storeId: number;
   }
 }
 
@@ -316,6 +323,7 @@ export type JobTypeMap = {
   [JobType.Product_Create]: Product.Create;
   [JobType.Product_Delete]: Product.Delete;
   [JobType.Product_GetVersionCode]: Product.GetVersionCode;
+  [JobType.Product_CreateLocal]: Product.CreateLocal;
   [JobType.Project_Create]: Project.Create;
   [JobType.Project_Check]: Project.Check;
   [JobType.Project_ImportProducts]: Project.ImportProducts;

@@ -1,4 +1,4 @@
-import prisma from '../prisma.js';
+import prisma from './prisma.js';
 
 // Make sure that group belongs to organization the user is in
 // and removed group is not linked to projects this user owns

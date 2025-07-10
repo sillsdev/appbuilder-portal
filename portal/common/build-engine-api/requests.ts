@@ -1,4 +1,4 @@
-import prisma from '../prisma.js';
+import prisma from '../databaseProxy/prisma.js';
 import * as Types from './types.js';
 
 export async function request(resource: string, auth: Types.Auth, opts?: Types.RequestOpts) {

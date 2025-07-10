@@ -1,4 +1,4 @@
-import prisma from '../prisma.js';
+import prisma from './prisma.js';
 
 export async function update(): Promise<never> {
   throw new Error('Not implemented');

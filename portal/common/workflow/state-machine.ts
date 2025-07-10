@@ -1,5 +1,5 @@
 import { assign, setup } from 'xstate';
-import { BullMQ, Queues, Workflow } from '../index.js';
+import { BullMQ, Queues } from '../bullmq/index.js';
 import { RoleId, WorkflowType } from '../public/prisma.js';
 import type {
   WorkflowContext,
@@ -21,6 +21,7 @@ import {
   isDeprecated,
   jump
 } from '../public/workflow.js';
+import { deleteWorkflow } from './dbProcedures.js';
 
 /**
  * IMPORTANT: READ THIS BEFORE EDITING A STATE MACHINE!
@@ -285,7 +286,7 @@ export const WorkflowStateMachine = setup({
           workflowType: { is: WorkflowType.Startup }
         }
       },
-      entry: ({ context }) => Workflow.delete(context.productId),
+      entry: ({ context }) => deleteWorkflow(context.productId),
       type: 'final'
     },
     [WorkflowState.Product_Creation]: {
@@ -506,8 +507,8 @@ export const WorkflowStateMachine = setup({
                       : context.productType === ProductType.Web
                         ? 'html'
                         : //ProductType.Android_GooglePlay
-                      //default
-                        'apk play-listing',
+                          //default
+                          'apk play-listing',
               // extra env handled in getWorkflowParameters
               environment: context.environment
             },
@@ -526,11 +527,11 @@ export const WorkflowStateMachine = setup({
               }
             },
             /*
-            * This transition is valid iff:
-            * The product type is google play AND
-            * The workflow type is startup AND
-            * The project has NOT been uploaded to google play
-            */
+             * This transition is valid iff:
+             * The product type is google play AND
+             * The workflow type is startup AND
+             * The project has NOT been uploaded to google play
+             */
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
               context.workflowType === WorkflowType.Startup &&
@@ -700,33 +701,33 @@ export const WorkflowStateMachine = setup({
       entry: assign({
         instructions: ({ context }) => {
           switch (context.productType) {
-          case ProductType.Android_GooglePlay:
-            return 'googleplay_verify_and_publish';
-          case ProductType.Android_S3:
-            return 'verify_and_publish';
-          case ProductType.AssetPackage:
-            return 'asset_package_verify_and_publish';
-          case ProductType.Web:
-            return 'web_verify';
+            case ProductType.Android_GooglePlay:
+              return 'googleplay_verify_and_publish';
+            case ProductType.Android_S3:
+              return 'verify_and_publish';
+            case ProductType.AssetPackage:
+              return 'asset_package_verify_and_publish';
+            case ProductType.Web:
+              return 'web_verify';
           }
         },
         includeFields: ({ context }) => {
           switch (context.productType) {
-          case ProductType.Android_GooglePlay:
-          case ProductType.Android_S3:
-            return ['storeDescription', 'listingLanguageCode'];
-          case ProductType.AssetPackage:
-          case ProductType.Web:
-            return ['storeDescription'];
+            case ProductType.Android_GooglePlay:
+            case ProductType.Android_S3:
+              return ['storeDescription', 'listingLanguageCode'];
+            case ProductType.AssetPackage:
+            case ProductType.Web:
+              return ['storeDescription'];
           }
         },
         includeReviewers: true,
         includeArtifacts: ({ context }) => {
           switch (context.productType) {
-          case ProductType.AssetPackage:
-            return 'latestAssetPackage';
-          default:
-            return 'all';
+            case ProductType.AssetPackage:
+              return 'latestAssetPackage';
+            default:
+              return 'all';
           }
         }
       }),
@@ -780,9 +781,9 @@ export const WorkflowStateMachine = setup({
                   : context.productType === ProductType.Web
                     ? 'rclone'
                     : //ProductType.Android_S3
-                    //ProductType.AssetPackage
-                    //default
-                    's3-bucket',
+                      //ProductType.AssetPackage
+                      //default
+                      's3-bucket',
               environment: context.environment
             },
             BullMQ.Retry5e5
@@ -878,7 +879,7 @@ export const WorkflowStateMachine = setup({
       }
     },
     [WorkflowState.Published]: {
-      entry: ({ context }) => Workflow.delete(context.productId),
+      entry: ({ context }) => deleteWorkflow(context.productId),
       type: 'final'
     }
   },

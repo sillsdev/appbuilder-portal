@@ -1,13 +1,12 @@
 import type { Prisma } from '@prisma/client';
-import { Workflow } from 'sil.appbuilder.portal.common';
-import { BullMQ, Queues } from '../index.js';
-import prisma from '../prisma.js';
+import { BullMQ, Queues } from '../bullmq/index.js';
+import prisma from './prisma.js';
 import type { RequirePrimitive } from './utility.js';
 import { delete as deleteInstance } from './WorkflowInstances.js';
 
 export async function create(
   productData: RequirePrimitive<Prisma.ProductsUncheckedCreateInput>
-): Promise<boolean | string> {
+): Promise<false | string> {
   if (
     !(await validateProductBase(
       productData.ProjectId,
@@ -30,31 +29,6 @@ export async function create(
         type: BullMQ.JobType.SvelteSSE_UpdateProject,
         projectIds: [productData.ProjectId]
       });
-      const flowDefinition = (
-        await prisma.productDefinitions.findUnique({
-          where: {
-            Id: productData.ProductDefinitionId
-          },
-          select: {
-            Workflow: {
-              select: {
-                Id: true,
-                Type: true,
-                ProductType: true,
-                WorkflowOptions: true
-              }
-            }
-          }
-        })
-      )?.Workflow;
-
-      if (flowDefinition) {
-        await Workflow.create(res.Id, {
-          productType: flowDefinition.ProductType,
-          options: new Set(flowDefinition.WorkflowOptions),
-          workflowType: flowDefinition.Type
-        });
-      }
     }
 
     return res.Id;

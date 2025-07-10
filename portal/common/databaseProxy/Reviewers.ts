@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
-import { BullMQ, Queues } from '../index.js';
-import prisma from '../prisma.js';
+import { BullMQ, Queues } from '../bullmq/index.js';
+import prisma from './prisma.js';
 
 async function deleteReviewer(id: number) {
   // Get the reviewer's project
