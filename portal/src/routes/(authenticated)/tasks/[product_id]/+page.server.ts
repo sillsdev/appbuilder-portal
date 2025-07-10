@@ -192,7 +192,15 @@ export const actions = {
     const flow = await Workflow.restore(params.product_id);
 
     if (!flow) return fail(404, { form, ok: false });
-
+    if (
+      form.data.flowAction === WorkflowAction.Jump ||
+      form.data.flowAction === WorkflowAction.Migrate
+    ) {
+      return fail(400, {
+        form,
+        ok: false
+      });
+    }
     //double check that state matches current snapshot
     if (form.data.state === flow.state()) {
       flow.send({
