@@ -1,7 +1,5 @@
 export * as BuildEngine from './build-engine-api/index.js';
-export * as Queues from './bullmq/queues.js';
-export * as BullMQ from './bullmq/types.js';
-export { default as DatabaseWrites } from './databaseProxy/index.js';
-export { connected, readonlyPrisma as prisma } from './prisma.js';
+export { BullMQ, Queues } from './bullmq/index.js';
+export { connected, DatabaseWrites, readonlyPrisma as prisma } from './databaseProxy/index.js';
 export { Workflow } from './workflow/index.js';
 

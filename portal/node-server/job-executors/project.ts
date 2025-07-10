@@ -1,5 +1,12 @@
 import { Job } from 'bullmq';
-import { BuildEngine, BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
+import {
+  BuildEngine,
+  BullMQ,
+  DatabaseWrites,
+  prisma,
+  Queues,
+  Workflow
+} from 'sil.appbuilder.portal.common';
 
 export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> {
   const projectData = await prisma.projects.findUnique({
@@ -176,45 +183,73 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
   ).Products;
   job.updateProgress(30);
   const products = await Promise.all(
-    productsToCreate.map(async (p) => ({
-      ...p,
-      Id: await DatabaseWrites.products.create({
+    productsToCreate.map(async (p) => {
+      const productDefinitionId = await prisma.productDefinitions.findFirst({
+        where: {
+          Name: p.Name,
+          OrganizationProductDefinitions: {
+            some: {
+              OrganizationId: job.data.organizationId
+            }
+          }
+        },
+        select: {
+          Id: true
+        }
+      });
+      if (!productDefinitionId) return null;
+      const storeId = await prisma.stores.findFirst({
+        where: {
+          Name: p.Store,
+          OrganizationStores: {
+            some: {
+              OrganizationId: job.data.organizationId
+            }
+          }
+        },
+        select: {
+          Id: true
+        }
+      });
+      if (!storeId) return null;
+      const productId = await DatabaseWrites.products.create({
         ProjectId: job.data.projectId,
-        ProductDefinitionId: (
-          await prisma.productDefinitions.findFirst({
-            where: {
-              Name: p.Name,
-              OrganizationProductDefinitions: {
-                some: {
-                  OrganizationId: job.data.organizationId
-                }
-              }
-            },
-            select: {
-              Id: true
-            }
-          })
-        )?.Id,
-        StoreId: (
-          await prisma.stores.findFirst({
-            where: {
-              Name: p.Store,
-              OrganizationStores: {
-                some: {
-                  OrganizationId: job.data.organizationId
-                }
-              }
-            },
-            select: {
-              Id: true
-            }
-          })
-        )?.Id,
+        ProductDefinitionId: productDefinitionId.Id,
+        StoreId: storeId.Id,
         WorkflowJobId: 0,
         WorkflowBuildId: 0,
         WorkflowPublishId: 0
-      })
-    }))
+      });
+      if (!productId) return null;
+      const flowDefinition = (
+        await prisma.productDefinitions.findUnique({
+          where: {
+            Id: productDefinitionId.Id
+          },
+          select: {
+            Workflow: {
+              select: {
+                Id: true,
+                Type: true,
+                ProductType: true,
+                WorkflowOptions: true
+              }
+            }
+          }
+        })
+      )?.Workflow;
+      if (flowDefinition) {
+        await Workflow.create(productId, {
+          productType: flowDefinition.ProductType,
+          options: new Set(flowDefinition.WorkflowOptions),
+          workflowType: flowDefinition.Type
+        });
+      }
+      return {
+        ...p,
+        Id: productId
+      };
+    })
   );
   job.updateProgress(75);
   await Queues.Emails.add(`Notify Owner about Import of Project #${job.data.projectId}`, {

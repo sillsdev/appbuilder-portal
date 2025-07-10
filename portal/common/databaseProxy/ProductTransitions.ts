@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
-import { BullMQ, Queues } from '../index.js';
-import prisma from '../prisma.js';
+import { BullMQ, Queues } from '../bullmq/index.js';
+import prisma from './prisma.js';
 
 export async function create(createData: Prisma.ProductTransitionsCreateArgs) {
   try {

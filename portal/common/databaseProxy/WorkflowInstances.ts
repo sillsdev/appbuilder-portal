@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client';
-import prisma from '../prisma.js';
+import prisma from './prisma.js';
 import { update as projectUpdate } from './Projects.js';
 import type { RequirePrimitive } from './utility.js';
 

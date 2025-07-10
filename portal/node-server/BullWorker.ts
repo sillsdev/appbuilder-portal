@@ -105,6 +105,8 @@ export class Miscellaneous<J extends BullMQ.MiscJob> extends BullWorker<J>  {
         return Executor.Product.deleteProduct(job as Job<BullMQ.Product.Delete>);
       case BullMQ.JobType.Product_GetVersionCode:
         return Executor.Product.getVersionCode(job as Job<BullMQ.Product.GetVersionCode>);
+      case BullMQ.JobType.Product_CreateLocal:
+        return Executor.Product.createLocal(job as Job<BullMQ.Product.CreateLocal>);
       case BullMQ.JobType.Project_Create:
         return Executor.Project.create(job as Job<BullMQ.Project.Create>);
       case BullMQ.JobType.Project_ImportProducts:
