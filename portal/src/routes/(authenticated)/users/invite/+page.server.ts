@@ -1,7 +1,7 @@
 import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 import { error, fail } from '@sveltejs/kit';
-import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseWrites, getQueues, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -59,7 +59,7 @@ export const actions = {
       groups
     );
     const inviteLink = `${url.origin}/invitations/organization-membership?t=${inviteToken}`;
-    await Queues.Emails.add('Invite User ' + email, {
+    await getQueues().Emails.add('Invite User ' + email, {
       type: BullMQ.JobType.Email_InviteUser,
       email,
       inviteToken,

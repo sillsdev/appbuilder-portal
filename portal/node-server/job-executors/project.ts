@@ -3,8 +3,8 @@ import {
   BuildEngine,
   BullMQ,
   DatabaseWrites,
+  getQueues,
   prisma,
-  Queues,
   Workflow
 } from 'sil.appbuilder.portal.common';
 
@@ -70,7 +70,7 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
     job.updateProgress(75);
 
     const name = `Check status of Project #${response.id}`;
-    await Queues.RemotePolling.upsertJobScheduler(name, BullMQ.RepeatEveryMinute, {
+    await getQueues().RemotePolling.upsertJobScheduler(name, BullMQ.RepeatEveryMinute, {
       name,
       data: {
         type: BullMQ.JobType.Project_Check,
@@ -113,7 +113,7 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
     throw new Error(response.message);
   } else {
     if (response.status === 'completed') {
-      await Queues.RemotePolling.removeJobScheduler(job.name);
+      await getQueues().RemotePolling.removeJobScheduler(job.name);
       const project = await prisma.projects.findUnique({
         where: { Id: job.data.projectId },
         select: {
@@ -157,12 +157,15 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
           })
         )?.ProjectImport;
         if (projectImport) {
-          await Queues.Miscellaneous.add(`Import Products for Project #${job.data.projectId}`, {
-            type: BullMQ.JobType.Project_ImportProducts,
-            organizationId: job.data.organizationId,
-            importId: projectImport.Id,
-            projectId: job.data.projectId
-          });
+          await getQueues().Miscellaneous.add(
+            `Import Products for Project #${job.data.projectId}`,
+            {
+              type: BullMQ.JobType.Project_ImportProducts,
+              organizationId: job.data.organizationId,
+              importId: projectImport.Id,
+              projectId: job.data.projectId
+            }
+          );
         }
       }
     }
@@ -252,7 +255,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
     })
   );
   job.updateProgress(75);
-  await Queues.Emails.add(`Notify Owner about Import of Project #${job.data.projectId}`, {
+  await getQueues().Emails.add(`Notify Owner about Import of Project #${job.data.projectId}`, {
     type: BullMQ.JobType.Email_ProjectImportReport,
     importId: job.data.importId
   });
@@ -261,7 +264,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
 }
 
 async function notifyNotFound(projectId: number) {
-  await Queues.Emails.add(`Notify SuperAdmins of Failure to Find Project #${projectId}`, {
+  await getQueues().Emails.add(`Notify SuperAdmins of Failure to Find Project #${projectId}`, {
     type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
     messageKey: 'projectRecordNotFound',
     messageProperties: {
@@ -271,7 +274,7 @@ async function notifyNotFound(projectId: number) {
   return { message: 'Project Not Found' };
 }
 async function notifyConnectionFailed(projectId: number, projectName: string, orgName: string) {
-  return Queues.Emails.add(`Notify Owner/Admins of Project #${projectId} Creation Failure`, {
+  return getQueues().Emails.add(`Notify Owner/Admins of Project #${projectId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
     projectId,
     messageKey: 'projectFailedBuildEngine',
@@ -283,7 +286,7 @@ async function notifyConnectionFailed(projectId: number, projectName: string, or
 }
 async function notifyUnableToCreate(projectId: number, projectName: string) {
   // BuildEngineProjectService.CreateBuildEngineProjectAsync
-  return Queues.Emails.add(`Notify Owner/Admins of Project #${projectId} Creation Failure`, {
+  return getQueues().Emails.add(`Notify Owner/Admins of Project #${projectId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
     projectId,
     messageKey: 'projectFailedUnableToCreate',
@@ -300,7 +303,7 @@ async function notifyCreationFailed(
   buildEngineUrl: string
 ) {
   // BuildEngineProjectService.ProjectCreationFailedAsync
-  return Queues.Emails.add(`Notify Owner/Admins of Project #${projectId} Creation Failure`, {
+  return getQueues().Emails.add(`Notify Owner/Admins of Project #${projectId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
     projectId,
     // Admin or Owner suffix is added by sender
@@ -314,7 +317,7 @@ async function notifyCreationFailed(
   });
 }
 async function notifyCreated(projectId: number, userId: number, projectName: string) {
-  return Queues.Emails.add(`Notify Owner of Successful Creation of Project #${projectId}`, {
+  return getQueues().Emails.add(`Notify Owner of Successful Creation of Project #${projectId}`, {
     type: BullMQ.JobType.Email_SendNotificationToUser,
     userId,
     messageKey: 'projectCreatedSuccessfully',

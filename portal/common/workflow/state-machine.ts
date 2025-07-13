@@ -1,5 +1,5 @@
 import { assign, setup } from 'xstate';
-import { BullMQ, Queues } from '../bullmq/index.js';
+import { BullMQ, getQueues } from '../bullmq/index.js';
 import { RoleId, WorkflowType } from '../public/prisma.js';
 import type {
   WorkflowContext,
@@ -298,7 +298,7 @@ export const WorkflowStateMachine = setup({
       entry: [
         assign({ instructions: 'waiting' }),
         ({ context }) => {
-          Queues.Miscellaneous.add(
+          getQueues().Miscellaneous.add(
             `Create Product #${context.productId}`,
             {
               type: BullMQ.JobType.Product_Create,
@@ -492,7 +492,7 @@ export const WorkflowStateMachine = setup({
           instructions: 'waiting'
         }),
         ({ context }) => {
-          Queues.Builds.add(
+          getQueues().Builds.add(
             `Build Product #${context.productId}`,
             {
               type: BullMQ.JobType.Build_Product,
@@ -649,7 +649,7 @@ export const WorkflowStateMachine = setup({
             },
             actions: ({ context }) => {
               // Given that the Set Google Play Uploaded action in S1 require DB and BuildEngine queries, this is probably the best way to do this
-              Queues.Miscellaneous.add(`Get VersionCode for Product #${context.productId}`, {
+              getQueues().Miscellaneous.add(`Get VersionCode for Product #${context.productId}`, {
                 type: BullMQ.JobType.Product_GetVersionCode,
                 productId: context.productId
               });
@@ -665,7 +665,7 @@ export const WorkflowStateMachine = setup({
               }
             },
             actions: ({ context }) => {
-              Queues.Miscellaneous.add(`Get VersionCode for Product #${context.productId}`, {
+              getQueues().Miscellaneous.add(`Get VersionCode for Product #${context.productId}`, {
                 type: BullMQ.JobType.Product_GetVersionCode,
                 productId: context.productId
               });
@@ -757,7 +757,7 @@ export const WorkflowStateMachine = setup({
           },
           guard: hasReviewers,
           actions: ({ context }) => {
-            Queues.Emails.add(`Email reviewers for Product #${context.productId}`, {
+            getQueues().Emails.add(`Email reviewers for Product #${context.productId}`, {
               type: BullMQ.JobType.Email_SendNotificationToReviewers,
               productId: context.productId
             });
@@ -769,7 +769,7 @@ export const WorkflowStateMachine = setup({
       entry: [
         assign({ instructions: 'waiting' }),
         ({ context }) => {
-          Queues.Publishing.add(
+          getQueues().Publishing.add(
             `Publish Product #${context.productId}`,
             {
               type: BullMQ.JobType.Publish_Product,
@@ -928,10 +928,13 @@ export const WorkflowStateMachine = setup({
         }),
         ({ event, context }) => {
           if (isDeprecated(event.target) && event.target === 'Set Google Play Uploaded') {
-            Queues.Miscellaneous.add(`Get VersionCode for Migrated Product #${context.productId}`, {
-              type: BullMQ.JobType.Product_GetVersionCode,
-              productId: context.productId
-            });
+            getQueues().Miscellaneous.add(
+              `Get VersionCode for Migrated Product #${context.productId}`,
+              {
+                type: BullMQ.JobType.Product_GetVersionCode,
+                productId: context.productId
+              }
+            );
           }
         }
       ],

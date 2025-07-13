@@ -4,8 +4,8 @@ import {
   BuildEngine,
   BullMQ,
   DatabaseWrites,
+  getQueues,
   prisma,
-  Queues,
   Workflow
 } from 'sil.appbuilder.portal.common';
 import { WorkflowAction } from 'sil.appbuilder.portal.common/workflow';
@@ -108,7 +108,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
       job.updateProgress(85);
 
       const name = `Check status of Build #${response.id}`;
-      await Queues.RemotePolling.upsertJobScheduler(name, BullMQ.RepeatEveryMinute, {
+      await getQueues().RemotePolling.upsertJobScheduler(name, BullMQ.RepeatEveryMinute, {
         name,
         data: {
           type: BullMQ.JobType.Build_Check,
@@ -151,7 +151,7 @@ export async function check(job: Job<BullMQ.Build.Check>): Promise<unknown> {
     }
   });
   if (!product?.WorkflowInstance) {
-    await Queues.RemotePolling.removeJobScheduler(job.name);
+    await getQueues().RemotePolling.removeJobScheduler(job.name);
     job.log('No WorkflowInstance found. Workflow cancelled?');
     if (!product) {
       return await notifyProductNotFound(job.data.productId);
@@ -170,8 +170,8 @@ export async function check(job: Job<BullMQ.Build.Check>): Promise<unknown> {
     throw new Error(response.message);
   } else {
     if (response.status === 'completed') {
-      await Queues.RemotePolling.removeJobScheduler(job.name);
-      await Queues.Builds.add(
+      await getQueues().RemotePolling.removeJobScheduler(job.name);
+      await getQueues().Builds.add(
         `PostProcess Build #${job.data.buildId} for Product #${job.data.productId}`,
         {
           type: BullMQ.JobType.Build_PostProcess,
@@ -332,7 +332,7 @@ async function notifyConnectionFailed(
   projectName: string,
   productName: string
 ) {
-  return Queues.Emails.add(
+  return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Build for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
@@ -351,7 +351,7 @@ async function notifyUnableToCreate(
   projectName: string,
   productName: string
 ) {
-  return Queues.Emails.add(
+  return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Build for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
@@ -371,7 +371,7 @@ async function notifyCompleted(
   projectName: string,
   productName: string
 ) {
-  return Queues.Emails.add(
+  return getQueues().Emails.add(
     `Notify Owner of Successful Completion of Build #${productBuildId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToUser,
@@ -407,7 +407,7 @@ async function notifyFailed(
   buildResponse: BuildEngine.Types.BuildResponse
 ) {
   const endpoint = await BuildEngine.Requests.getURLandToken(product.Project.OrganizationId);
-  return Queues.Emails.add(
+  return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Build #${productBuildId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
@@ -430,7 +430,7 @@ async function notifyFailed(
   );
 }
 async function notifyProductNotFound(productId: string) {
-  await Queues.Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
+  await getQueues().Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
     type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
     messageKey: 'buildProductRecordNotFound',
     messageProperties: {

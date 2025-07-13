@@ -7,7 +7,7 @@ import type {
   StateNode as XStateNode
 } from 'xstate';
 import { createActor } from 'xstate';
-import { BullMQ, Queues } from '../bullmq/index.js';
+import { BullMQ, getQueues } from '../bullmq/index.js';
 import { DatabaseWrites } from '../databaseProxy/index.js';
 import prisma from '../databaseProxy/prisma.js';
 import { allUsersByRole } from '../databaseProxy/UserRoles.js';
@@ -74,7 +74,7 @@ export class Workflow {
         WorkflowType: config.workflowType
       }
     });
-    await Queues.UserTasks.add(`Create UserTasks for Product #${productId}`, {
+    await getQueues().UserTasks.add(`Create UserTasks for Product #${productId}`, {
       type: BullMQ.JobType.UserTasks_Modify,
       scope: 'Product',
       productId: productId,
@@ -318,7 +318,7 @@ export class Workflow {
         // deletion handled in state machine definition instead
         await this.createSnapshot(xSnap.context);
         // This will also create the dummy entries in the ProductTransitions table
-        await Queues.UserTasks.add(`Update UserTasks for Product #${this.productId}`, {
+        await getQueues().UserTasks.add(`Update UserTasks for Product #${this.productId}`, {
           type: BullMQ.JobType.UserTasks_Modify,
           scope: 'Product',
           productId: this.productId,
