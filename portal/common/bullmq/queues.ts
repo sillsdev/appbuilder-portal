@@ -16,9 +16,10 @@ import { QueueName } from './types.js';
 class Connection {
   private conn: Redis;
   private connected: boolean;
-  constructor() {
+  constructor(isQueueConnection = false) {
     this.conn = new Redis({
-      host: process.env.NODE_ENV === 'development' ? 'localhost' : 'valkey'
+      host: process.env.NODE_ENV === 'development' ? 'localhost' : 'valkey',
+      maxRetriesPerRequest: isQueueConnection ? undefined : null
     });
     this.connected = false;
     this.conn.on('close', () => (this.connected = false));
@@ -47,39 +48,44 @@ class Connection {
   }
 }
 
-let _connection: Connection | undefined = undefined;
+let _workerConnection: Connection | undefined = undefined;
+let _queueConnection: Connection | undefined = undefined;
 
-export const connected = () => _connection?.IsConnected() ?? false;
+export const QueueConnected = () => _queueConnection?.IsConnected() ?? false;
 
-export const getConfig = () => {
-  if (!_connection) _queues = createQueues();
-  return { connection: _connection!.connection() } as const;
+export const getWorkerConfig = () => {
+  if (!_workerConnection) _workerConnection = new Connection(false);
+  return { connection: _workerConnection!.connection() } as const;
+};
+
+export const getQueueConfig = () => {
+  if (!_queueConnection) _queues = createQueues();
+  return { connection: _queueConnection!.connection() } as const;
 };
 let _queues: ReturnType<typeof createQueues> | undefined = undefined;
 
 function createQueues() {
-  console.log('CREATING QUEUES');
-  if (!_connection) {
-    _connection = new Connection();
+  if (!_queueConnection) {
+    _queueConnection = new Connection(true);
   }
   /** Queue for Product Builds */
-  const Builds = new Queue<BuildJob>(QueueName.Builds, getConfig());
+  const Builds = new Queue<BuildJob>(QueueName.Builds, getQueueConfig());
   /** Queue for default recurring jobs such as the BuildEngine status check */
-  const SystemRecurring = new Queue<RecurringJob>(QueueName.SystemRecurring, getConfig());
+  const SystemRecurring = new Queue<RecurringJob>(QueueName.SystemRecurring, getQueueConfig());
   /** Queue for system jobs that run on startup, such as prepopulating langtags.json */
-  const SystemStartup = new Queue<StartupJob>(QueueName.SystemStartup, getConfig());
+  const SystemStartup = new Queue<StartupJob>(QueueName.SystemStartup, getQueueConfig());
   /** Queue for miscellaneous jobs such as Product and Project Creation */
-  const Miscellaneous = new Queue<MiscJob>(QueueName.Miscellaneous, getConfig());
+  const Miscellaneous = new Queue<MiscJob>(QueueName.Miscellaneous, getQueueConfig());
   /** Queue for Product Publishing  */
-  const Publishing = new Queue<PublishJob>(QueueName.Publishing, getConfig());
+  const Publishing = new Queue<PublishJob>(QueueName.Publishing, getQueueConfig());
   /** Queue for jobs that poll BuildEngine, such as checking the status of a build */
-  const RemotePolling = new Queue<PollJob>(QueueName.RemotePolling, getConfig());
+  const RemotePolling = new Queue<PollJob>(QueueName.RemotePolling, getQueueConfig());
   /** Queue for operations on UserTasks */
-  const UserTasks = new Queue<UserTasksJob>(QueueName.UserTasks, getConfig());
+  const UserTasks = new Queue<UserTasksJob>(QueueName.UserTasks, getQueueConfig());
   /** Queue for Email tasks */
-  const Emails = new Queue<EmailJob>(QueueName.Emails, getConfig());
+  const Emails = new Queue<EmailJob>(QueueName.Emails, getQueueConfig());
   /** Queue for Svelte SSE Project events */
-  const SvelteSSE = new Queue<SvelteSSEJob>(QueueName.SvelteSSE, getConfig());
+  const SvelteSSE = new Queue<SvelteSSEJob>(QueueName.SvelteSSE, getQueueConfig());
   return {
     Builds,
     SystemRecurring,

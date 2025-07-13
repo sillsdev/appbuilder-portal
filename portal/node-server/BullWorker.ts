@@ -1,11 +1,11 @@
 import { Job, Worker } from 'bullmq';
-import { BullMQ, getQueues, QueueConfig } from 'sil.appbuilder.portal.common';
+import { BullMQ, getQueues, getWorkerConfig } from 'sil.appbuilder.portal.common';
 import * as Executor from './job-executors/index.js';
 
 export abstract class BullWorker<T> {
   public worker: Worker;
   constructor(public queue: BullMQ.QueueName) {
-    this.worker = new Worker<T>(queue, this.run, QueueConfig());
+    this.worker = new Worker<T>(queue, this.run, getWorkerConfig());
   }
   abstract run(job: Job<T>): Promise<unknown>;
 }

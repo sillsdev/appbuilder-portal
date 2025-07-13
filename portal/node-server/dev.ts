@@ -9,11 +9,11 @@ process.env.NODE_ENV = 'development';
 
 const app = express();
 
-import { Queues } from 'sil.appbuilder.portal.common';
+import { getQueues } from 'sil.appbuilder.portal.common';
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/');
 createBullBoard({
-  queues: Object.values(Queues)
+  queues: Object.values(getQueues())
     .filter((q) => q instanceof Queue)
     .map((q) => new BullMQAdapter(q)),
   serverAdapter
