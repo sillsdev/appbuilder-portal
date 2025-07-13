@@ -15,7 +15,7 @@ async function deleteAuthor(id: number) {
     where: { Id: id }
   });
 
-  getQueues().SvelteProjectSSE.add(`Update Project #${author.ProjectId} (author removed)`, {
+  getQueues().SvelteSSE.add(`Update Project #${author.ProjectId} (author removed)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
     projectIds: [author.ProjectId]
   });
@@ -26,7 +26,7 @@ export async function create(authorData: Prisma.AuthorsUncheckedCreateInput) {
   const ret = await prisma.authors.create({
     data: authorData
   });
-  getQueues().SvelteProjectSSE.add(`Update Project #${authorData.ProjectId} (author added)`, {
+  getQueues().SvelteSSE.add(`Update Project #${authorData.ProjectId} (author added)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
     projectIds: [authorData.ProjectId]
   });

@@ -79,7 +79,7 @@ function createQueues() {
   /** Queue for Email tasks */
   const Emails = new Queue<EmailJob>(QueueName.Emails, getConfig());
   /** Queue for Svelte SSE Project events */
-  const SvelteProjectSSE = new Queue<SvelteSSEJob>(QueueName.SvelteProjectSSE, getConfig());
+  const SvelteSSE = new Queue<SvelteSSEJob>(QueueName.SvelteSSE, getConfig());
   return {
     Builds,
     SystemRecurring,
@@ -89,7 +89,7 @@ function createQueues() {
     RemotePolling,
     UserTasks,
     Emails,
-    SvelteProjectSSE
+    SvelteSSE
   };
 }
 export function getQueues() {
