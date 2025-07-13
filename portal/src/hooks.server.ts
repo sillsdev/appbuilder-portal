@@ -17,7 +17,7 @@ import {
 if (!building) {
   // Create a worker to listen for project updates
   new Worker<BullMQ.Job>(
-    BullMQ.QueueName.SvelteProjectSSE,
+    BullMQ.QueueName.SvelteSSE,
     async (job) => {
       switch (job.data.type) {
         case BullMQ.JobType.SvelteSSE_UpdateProject:
