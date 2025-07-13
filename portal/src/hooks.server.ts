@@ -6,7 +6,13 @@ import { SSEPageUpdates } from '$lib/projects/listener';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { Worker } from 'bullmq';
-import { BullMQ, connected, QueueConfig, QueueConnected } from 'sil.appbuilder.portal.common';
+import {
+  BullMQ,
+  connected,
+  getQueueConfig,
+  getWorkerConfig,
+  QueueConnected
+} from 'sil.appbuilder.portal.common';
 import {
   authRouteHandle,
   checkUserExistsHandle,
@@ -30,8 +36,9 @@ if (!building) {
           break;
       }
     },
-    QueueConfig()
+    getWorkerConfig()
   );
+  getQueueConfig();
 }
 
 // creating a handle to use the paraglide middleware
@@ -55,7 +62,7 @@ const heartbeat: Handle = async ({ event, resolve }) => {
   ) {
     if (!(connected() && QueueConnected())) {
       // HTTP 503 *should* be the correct semantics here?
-      return redirect(302, localizeHref(`/error?code=503`));
+      return redirect(302, localizeHref(`/error?code=503&dbg=${connected()}${QueueConnected()}`));
     }
   }
   return resolve(event);
