@@ -428,10 +428,17 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
         });
         if (!user) return { count: 0 };
 
-        return await DatabaseWrites.productTransitions.updateMany({
-          where: { UserId: null, WorkflowUserId },
-          data: { UserId: user.Id }
-        });
+        return (
+          (await DatabaseWrites.productTransitions.updateMany(
+            {
+              where: { UserId: null, WorkflowUserId },
+              data: { UserId: user.Id }
+            },
+            // System startup; no need to update SvelteSSE projects
+            // Also this is a migration that should not change any UI
+            0
+          )) || { count: 0 }
+        );
       })
     )
   ).reduce((p, c) => p + c.count, 0);

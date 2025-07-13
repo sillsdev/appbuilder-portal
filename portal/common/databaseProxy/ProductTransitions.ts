@@ -52,6 +52,23 @@ export async function update(updateData: Prisma.ProductTransitionsUpdateArgs) {
   }
 }
 
+export async function updateMany(
+  updateData: Prisma.ProductTransitionsUpdateManyArgs,
+  projectId: number | false
+) {
+  try {
+    const res = await prisma.productTransitions.updateMany(updateData);
+    if (projectId !== false)
+      getQueues().SvelteProjectSSE.add(`Update Project #${projectId} (transitions updated)`, {
+        type: BullMQ.JobType.SvelteProjectSSE_UpdateProject,
+        projectIds: [projectId]
+      });
+    return res;
+  } catch (e) {
+    return false;
+  }
+}
+
 export async function deleteMany(
   deleteWhere: Prisma.ProductTransitionsDeleteManyArgs,
   projectId: number
