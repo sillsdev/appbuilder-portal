@@ -7,8 +7,8 @@ import {
   BuildEngine,
   BullMQ,
   DatabaseWrites,
+  getQueues,
   prisma,
-  Queues,
   Workflow
 } from 'sil.appbuilder.portal.common';
 import { WorkflowType, WorkflowTypeString } from 'sil.appbuilder.portal.common/prisma';
@@ -132,8 +132,8 @@ export async function checkSystemStatuses(
       brokenUrls.set(s.url, s);
     });
     const minutesSinceHalfHour = Math.floor((Date.now() / 1000 / 60) % 30);
-    if (!(await Queues.Emails.getJobScheduler(BullMQ.JobSchedulerId.SystemStatusEmail))) {
-      await Queues.Emails.upsertJobScheduler(
+    if (!(await getQueues().Emails.getJobScheduler(BullMQ.JobSchedulerId.SystemStatusEmail))) {
+      await getQueues().Emails.upsertJobScheduler(
         BullMQ.JobSchedulerId.SystemStatusEmail,
         {
           // Every 30 minutes from now

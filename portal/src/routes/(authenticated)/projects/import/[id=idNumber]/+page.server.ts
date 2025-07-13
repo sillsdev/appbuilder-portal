@@ -3,7 +3,7 @@ import { importJSONSchema } from '$lib/projects';
 import { verifyCanCreateProject } from '$lib/projects/server';
 import { idSchema } from '$lib/valibot';
 import { error, redirect } from '@sveltejs/kit';
-import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseWrites, getQueues, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -222,7 +222,7 @@ export const actions: Actions = {
 
       if (projects) {
         // Create products
-        await Queues.Miscellaneous.addBulk(
+        await getQueues().Miscellaneous.addBulk(
           projects.map((p) => ({
             name: `Create Project #${p}`,
             data: {

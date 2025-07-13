@@ -2,7 +2,7 @@ import { localizeHref } from '$lib/paraglide/runtime';
 import { projectCreateSchema } from '$lib/projects';
 import { verifyCanCreateProject } from '$lib/projects/server';
 import { error, redirect } from '@sveltejs/kit';
-import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseWrites, getQueues, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
@@ -69,7 +69,7 @@ export const actions: Actions = {
     });
 
     if (project !== false) {
-      await Queues.Miscellaneous.add(
+      await getQueues().Miscellaneous.add(
         `Create Project #${project}`,
         {
           type: BullMQ.JobType.Project_Create,

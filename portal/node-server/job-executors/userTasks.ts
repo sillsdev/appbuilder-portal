@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { Job } from 'bullmq';
-import { BullMQ, DatabaseWrites, prisma, Queues, Workflow } from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseWrites, getQueues, prisma, Workflow } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { ActionType } from 'sil.appbuilder.portal.common/workflow';
 
@@ -200,7 +200,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     });
   }
   // might be good to use one job type for all notification types
-  await Queues.Emails.add('Email Notifications', {
+  await getQueues().Emails.add('Email Notifications', {
     type: BullMQ.JobType.Email_SendBatchUserTaskNotifications,
     notifications
   });

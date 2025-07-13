@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { BullMQ, Queues } from '../bullmq/index.js';
+import { BullMQ, getQueues } from '../bullmq/index.js';
 import prisma from './prisma.js';
 
 async function deleteReviewer(id: number) {
@@ -14,7 +14,7 @@ async function deleteReviewer(id: number) {
     where: { Id: id }
   });
 
-  Queues.SvelteProjectSSE.add(`Update Project #${reviewer.ProjectId} (reviewer removed)`, {
+  getQueues().SvelteProjectSSE.add(`Update Project #${reviewer.ProjectId} (reviewer removed)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
     projectIds: [reviewer.ProjectId]
   });
@@ -27,7 +27,7 @@ export async function create(reviewerData: Prisma.ReviewersUncheckedCreateInput)
   const ret = await prisma.reviewers.create({
     data: reviewerData
   });
-  Queues.SvelteProjectSSE.add(`Update Project #${reviewerData.ProjectId} (reviewer added)`, {
+  getQueues().SvelteProjectSSE.add(`Update Project #${reviewerData.ProjectId} (reviewer added)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
     projectIds: [reviewerData.ProjectId]
   });

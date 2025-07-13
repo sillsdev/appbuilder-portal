@@ -5,7 +5,7 @@ import { projectActionSchema } from '$lib/projects';
 import { doProjectAction, userGroupsForOrg } from '$lib/projects/server';
 import { deleteSchema, idSchema, propertiesSchema, stringIdSchema } from '$lib/valibot';
 import { error } from '@sveltejs/kit';
-import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseWrites, getQueues, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -71,7 +71,7 @@ export const actions = {
     }
     const author = await DatabaseWrites.authors.delete(form.data.id);
     if (author) {
-      await Queues.UserTasks.add(`Remove UserTasks for Author #${form.data.id}`, {
+      await getQueues().UserTasks.add(`Remove UserTasks for Author #${form.data.id}`, {
         type: BullMQ.JobType.UserTasks_Modify,
         scope: 'Project',
         projectId: parseInt(event.params.id),
@@ -115,7 +115,7 @@ export const actions = {
     if (!checkRepository?.WorkflowProjectUrl) {
       return error(400, 'Project Repository not Yet Initialized');
     }
-    Queues.Miscellaneous.add(`Create Product for Project #${event.params.id}`, {
+    getQueues().Miscellaneous.add(`Create Product for Project #${event.params.id}`, {
       type: BullMQ.JobType.Product_CreateLocal,
       projectId: parseInt(event.params.id),
       productDefinitionId: form.data.productDefinitionId,
@@ -175,7 +175,7 @@ export const actions = {
       ProjectId: projectId,
       UserId: form.data.author
     });
-    await Queues.UserTasks.add(`Add UserTasks for Author #${author.Id}`, {
+    await getQueues().UserTasks.add(`Add UserTasks for Author #${author.Id}`, {
       type: BullMQ.JobType.UserTasks_Modify,
       scope: 'Project',
       projectId,
