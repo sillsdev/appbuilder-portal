@@ -25,7 +25,7 @@ export async function create(
     });
 
     if (res) {
-      getQueues().SvelteProjectSSE.add(
+      getQueues().SvelteSSE.add(
         `Update Project #${productData.ProjectId} (product created)`,
         {
           type: BullMQ.JobType.SvelteSSE_UpdateProject,
@@ -68,7 +68,7 @@ export async function update(
       },
       data: productData
     });
-    getQueues().SvelteProjectSSE.add(`Update Project #${projectId} (product updated)`, {
+    getQueues().SvelteSSE.add(`Update Project #${projectId} (product updated)`, {
       type: BullMQ.JobType.SvelteSSE_UpdateProject,
       projectIds: [projectId]
     });
@@ -116,7 +116,7 @@ async function deleteProduct(productId: string) {
       }
     })
   ]);
-  getQueues().SvelteProjectSSE.add(`Update #${product?.Project.Id} (product delete)`, {
+  getQueues().SvelteSSE.add(`Update #${product?.Project.Id} (product delete)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
     projectIds: [product!.Project.Id]
   });
