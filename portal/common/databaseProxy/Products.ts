@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client';
-import { BullMQ, Queues } from '../bullmq/index.js';
+import { BullMQ, getQueues } from '../bullmq/index.js';
 import prisma from './prisma.js';
 import type { RequirePrimitive } from './utility.js';
 import { delete as deleteInstance } from './WorkflowInstances.js';
@@ -25,10 +25,13 @@ export async function create(
     });
 
     if (res) {
-      Queues.SvelteProjectSSE.add(`Update Project #${productData.ProjectId} (product created)`, {
-        type: BullMQ.JobType.SvelteSSE_UpdateProject,
-        projectIds: [productData.ProjectId]
-      });
+      getQueues().SvelteProjectSSE.add(
+        `Update Project #${productData.ProjectId} (product created)`,
+        {
+          type: BullMQ.JobType.SvelteSSE_UpdateProject,
+          projectIds: [productData.ProjectId]
+        }
+      );
     }
 
     return res.Id;
@@ -65,7 +68,7 @@ export async function update(
       },
       data: productData
     });
-    Queues.SvelteProjectSSE.add(`Update Project #${projectId} (product updated)`, {
+    getQueues().SvelteProjectSSE.add(`Update Project #${projectId} (product updated)`, {
       type: BullMQ.JobType.SvelteSSE_UpdateProject,
       projectIds: [projectId]
     });
@@ -91,7 +94,7 @@ async function deleteProduct(productId: string) {
       WorkflowJobId: true
     }
   });
-  await Queues.Miscellaneous.add(
+  await getQueues().Miscellaneous.add(
     `Delete Product #${productId} from BuildEngine`,
     {
       type: BullMQ.JobType.Product_Delete,
@@ -113,7 +116,7 @@ async function deleteProduct(productId: string) {
       }
     })
   ]);
-  Queues.SvelteProjectSSE.add(`Update #${product?.Project.Id} (product delete)`, {
+  getQueues().SvelteProjectSSE.add(`Update #${product?.Project.Id} (product delete)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
     projectIds: [product!.Project.Id]
   });

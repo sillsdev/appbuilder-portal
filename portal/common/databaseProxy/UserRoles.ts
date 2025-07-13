@@ -1,4 +1,4 @@
-import { BullMQ, Queues } from '../bullmq/index.js';
+import { BullMQ, getQueues } from '../bullmq/index.js';
 import { RoleId } from '../public/prisma.js';
 import prisma from './prisma.js';
 
@@ -35,7 +35,7 @@ export async function toggleForOrg(
    * This prevents duplicate task enqueuing when adding an already-added role
    */
   if (role === RoleId.OrgAdmin && !(enabled && existing)) {
-    await Queues.UserTasks.addBulk(
+    await getQueues().UserTasks.addBulk(
       (
         await prisma.projects.findMany({
           where: { OrganizationId },

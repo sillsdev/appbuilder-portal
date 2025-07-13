@@ -6,7 +6,7 @@ import { SSEPageUpdates } from '$lib/projects/listener';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { Worker } from 'bullmq';
-import { BullMQ, connected, Queues } from 'sil.appbuilder.portal.common';
+import { BullMQ, connected, QueueConfig, QueueConnected } from 'sil.appbuilder.portal.common';
 import {
   authRouteHandle,
   checkUserExistsHandle,
@@ -30,7 +30,7 @@ if (!building) {
           break;
       }
     },
-    Queues.config
+    QueueConfig()
   );
 }
 
@@ -53,7 +53,7 @@ const heartbeat: Handle = async ({ event, resolve }) => {
       event.route.id === '/(unauthenticated)/(auth)/login'
     )
   ) {
-    if (!(connected() && Queues.connected())) {
+    if (!(connected() && QueueConnected())) {
       // HTTP 503 *should* be the correct semantics here?
       return redirect(302, localizeHref(`/error?code=503`));
     }

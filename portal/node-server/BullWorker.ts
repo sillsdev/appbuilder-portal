@@ -1,11 +1,11 @@
 import { Job, Worker } from 'bullmq';
-import { BullMQ, Queues } from 'sil.appbuilder.portal.common';
+import { BullMQ, getQueues, QueueConfig } from 'sil.appbuilder.portal.common';
 import * as Executor from './job-executors/index.js';
 
 export abstract class BullWorker<T> {
   public worker: Worker;
   constructor(public queue: BullMQ.QueueName) {
-    this.worker = new Worker<T>(queue, this.run, Queues.config);
+    this.worker = new Worker<T>(queue, this.run, QueueConfig());
   }
   abstract run(job: Job<T>): Promise<unknown>;
 }
@@ -27,7 +27,7 @@ export class Builds<J extends BullMQ.BuildJob> extends BullWorker<J> {
 export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J> {
   constructor() {
     super(BullMQ.QueueName.SystemRecurring);
-    Queues.SystemRecurring.upsertJobScheduler(
+    getQueues().SystemRecurring.upsertJobScheduler(
       BullMQ.JobSchedulerId.CheckSystemStatuses,
       {
         pattern: '*/5 * * * *', // every 5 minutes
@@ -40,7 +40,7 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         }
       }
     );
-    Queues.SystemRecurring.upsertJobScheduler(
+    getQueues().SystemRecurring.upsertJobScheduler(
       BullMQ.JobSchedulerId.RefreshLangTags,
       {
         pattern: '@daily', // every day at midnight
@@ -57,9 +57,7 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
   async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.System_CheckEngineStatuses:
-        return Executor.System.checkSystemStatuses(
-          job as Job<BullMQ.System.CheckEngineStatuses>
-        );
+        return Executor.System.checkSystemStatuses(job as Job<BullMQ.System.CheckEngineStatuses>);
       case BullMQ.JobType.System_RefreshLangTags:
         return Executor.System.refreshLangTags(job as Job<BullMQ.System.RefreshLangTags>);
     }
@@ -69,22 +67,20 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
 export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
   constructor() {
     super(BullMQ.QueueName.SystemStartup);
-    Queues.SystemStartup.add('Check System Statuses (Startup)', {
+    getQueues().SystemStartup.add('Check System Statuses (Startup)', {
       type: BullMQ.JobType.System_CheckEngineStatuses
     });
-    Queues.SystemStartup.add('Refresh LangTags (Startup)', {
+    getQueues().SystemStartup.add('Refresh LangTags (Startup)', {
       type: BullMQ.JobType.System_RefreshLangTags
     });
-    Queues.SystemStartup.add('Migrate Features from S1 to S2 (Startup)', {
+    getQueues().SystemStartup.add('Migrate Features from S1 to S2 (Startup)', {
       type: BullMQ.JobType.System_Migrate
     });
   }
   async run(job: Job<J>) {
     switch (job.data.type) {
       case BullMQ.JobType.System_CheckEngineStatuses:
-        return Executor.System.checkSystemStatuses(
-          job as Job<BullMQ.System.CheckEngineStatuses>
-        );
+        return Executor.System.checkSystemStatuses(job as Job<BullMQ.System.CheckEngineStatuses>);
       case BullMQ.JobType.System_RefreshLangTags:
         return Executor.System.refreshLangTags(job as Job<BullMQ.System.RefreshLangTags>);
       case BullMQ.JobType.System_Migrate:
@@ -93,7 +89,7 @@ export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
   }
 }
 
-export class Miscellaneous<J extends BullMQ.MiscJob> extends BullWorker<J>  {
+export class Miscellaneous<J extends BullMQ.MiscJob> extends BullWorker<J> {
   constructor() {
     super(BullMQ.QueueName.Miscellaneous);
   }
@@ -115,7 +111,7 @@ export class Miscellaneous<J extends BullMQ.MiscJob> extends BullWorker<J>  {
   }
 }
 
-export class Publishing<J extends BullMQ.PublishJob> extends BullWorker<J>  {
+export class Publishing<J extends BullMQ.PublishJob> extends BullWorker<J> {
   constructor() {
     super(BullMQ.QueueName.Publishing);
   }
@@ -129,7 +125,7 @@ export class Publishing<J extends BullMQ.PublishJob> extends BullWorker<J>  {
   }
 }
 
-export class RemotePolling<J extends BullMQ.PollJob> extends BullWorker<J>  {
+export class RemotePolling<J extends BullMQ.PollJob> extends BullWorker<J> {
   constructor() {
     super(BullMQ.QueueName.RemotePolling);
   }
@@ -145,7 +141,7 @@ export class RemotePolling<J extends BullMQ.PollJob> extends BullWorker<J>  {
   }
 }
 
-export class UserTasks<J extends BullMQ.UserTasksJob> extends BullWorker<J>  {
+export class UserTasks<J extends BullMQ.UserTasksJob> extends BullWorker<J> {
   constructor() {
     super(BullMQ.QueueName.UserTasks);
   }

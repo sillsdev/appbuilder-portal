@@ -4,8 +4,8 @@ import {
   BuildEngine,
   BullMQ,
   DatabaseWrites,
+  getQueues,
   prisma,
-  Queues,
   Workflow
 } from 'sil.appbuilder.portal.common';
 import { WorkflowAction } from 'sil.appbuilder.portal.common/workflow';
@@ -135,7 +135,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
       job.updateProgress(85);
 
       const name = `Check status of Publish #${response.id}`;
-      await Queues.RemotePolling.upsertJobScheduler(name, BullMQ.RepeatEveryMinute, {
+      await getQueues().RemotePolling.upsertJobScheduler(name, BullMQ.RepeatEveryMinute, {
         name,
         data: {
           type: BullMQ.JobType.Publish_Check,
@@ -180,7 +180,7 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
     }
   });
   if (!product?.WorkflowInstance) {
-    await Queues.RemotePolling.removeJobScheduler(job.name);
+    await getQueues().RemotePolling.removeJobScheduler(job.name);
     job.log('No WorkflowInstance found. Workflow cancelled?');
     if (!product) {
       return await notifyProductNotFound(job.data.productId);
@@ -200,8 +200,8 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
     throw new Error(response.message);
   } else {
     if (response.status === 'completed') {
-      await Queues.RemotePolling.removeJobScheduler(job.name);
-      await Queues.Publishing.add(
+      await getQueues().RemotePolling.removeJobScheduler(job.name);
+      await getQueues().Publishing.add(
         `PostProcess Release #${job.data.releaseId} for Product #${job.data.productId}`,
         {
           type: BullMQ.JobType.Publish_PostProcess,
@@ -323,7 +323,7 @@ async function notifyConnectionFailed(
   projectName: string,
   productName: string
 ) {
-  return Queues.Emails.add(
+  return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Release for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
@@ -342,7 +342,7 @@ async function notifyUnableToCreate(
   projectName: string,
   productName: string
 ) {
-  return Queues.Emails.add(
+  return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Release for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
@@ -362,7 +362,7 @@ async function notifyCompleted(
   projectName: string,
   productName: string
 ) {
-  return Queues.Emails.add(
+  return getQueues().Emails.add(
     `Notify Owner of Successful Completion of Release #${publicationId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToUser,
@@ -399,7 +399,7 @@ async function notifyFailed(
   release: BuildEngine.Types.ReleaseResponse
 ) {
   const endpoint = await BuildEngine.Requests.getURLandToken(product.Project.OrganizationId);
-  return Queues.Emails.add(
+  return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Release #${publicationId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
@@ -423,7 +423,7 @@ async function notifyFailed(
   );
 }
 async function notifyProductNotFound(productId: string) {
-  await Queues.Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
+  await getQueues().Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
     type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
     messageKey: 'releaseProductRecordNotFound',
     messageProperties: {

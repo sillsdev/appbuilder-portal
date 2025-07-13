@@ -3,10 +3,13 @@ import { ServerStatus } from '$lib/utils';
 import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
 import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
-import { BullMQ, DatabaseWrites, prisma, Queues } from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseWrites, getQueues, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 
-export async function verifyCanViewAndEdit(user: Session, projectId: number): Promise<ServerStatus> {
+export async function verifyCanViewAndEdit(
+  user: Session,
+  projectId: number
+): Promise<ServerStatus> {
   // Editing is allowed if the user owns the project, or if the user is an organization
   // admin for the project's organization, or if the user is a super admin
   if (isNaN(projectId)) return ServerStatus.NotFound;
@@ -21,7 +24,9 @@ export async function verifyCanViewAndEdit(user: Session, projectId: number): Pr
     }
   });
   if (!project) return ServerStatus.NotFound;
-  return canModifyProject(user, project.OwnerId, project.OrganizationId) ? ServerStatus.Ok : ServerStatus.Forbidden;
+  return canModifyProject(user, project.OwnerId, project.OrganizationId)
+    ? ServerStatus.Ok
+    : ServerStatus.Forbidden;
 }
 
 export function projectFilter(args: {
@@ -142,7 +147,7 @@ export async function doProjectAction(
     await DatabaseWrites.projects.update(project.Id, {
       DateArchived: new Date()
     });
-    await Queues.UserTasks.add(`Delete UserTasks for Archived Project #${project.Id}`, {
+    await getQueues().UserTasks.add(`Delete UserTasks for Archived Project #${project.Id}`, {
       type: BullMQ.JobType.UserTasks_Modify,
       scope: 'Project',
       projectId: project.Id,
@@ -154,7 +159,7 @@ export async function doProjectAction(
     await DatabaseWrites.projects.update(project.Id, {
       DateArchived: null
     });
-    await Queues.UserTasks.add(`Create UserTasks for Reactivated Project #${project.Id}`, {
+    await getQueues().UserTasks.add(`Create UserTasks for Reactivated Project #${project.Id}`, {
       type: BullMQ.JobType.UserTasks_Modify,
       scope: 'Project',
       projectId: project.Id,

@@ -1,5 +1,5 @@
 import { Job } from 'bullmq';
-import { BullMQ, prisma, Queues } from 'sil.appbuilder.portal.common';
+import { BullMQ, getQueues, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { notifySuperAdmins, sendEmail } from '../email-service/EmailClient.js';
 import {
@@ -196,7 +196,7 @@ export async function notifySuperAdminsOfOfflineSystems(
     }
   });
   if (statuses.length === 0) {
-    await Queues.Emails.removeJobScheduler(BullMQ.JobSchedulerId.SystemStatusEmail);
+    await getQueues().Emails.removeJobScheduler(BullMQ.JobSchedulerId.SystemStatusEmail);
     return;
   }
   if (process.env.NODE_ENV === 'development') {

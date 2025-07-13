@@ -47,27 +47,54 @@ class Connection {
   }
 }
 
-const connection = new Connection();
+let _connection: Connection | undefined = undefined;
 
-export const connected = () => connection.IsConnected();
+export const connected = () => _connection?.IsConnected() ?? false;
 
-export const config = { connection: connection.connection() } as const;
+export const getConfig = () => {
+  if (!_connection) _queues = createQueues();
+  return { connection: _connection!.connection() } as const;
+};
+let _queues: ReturnType<typeof createQueues> | undefined = undefined;
 
-/** Queue for Product Builds */
-export const Builds = new Queue<BuildJob>(QueueName.Builds, config);
-/** Queue for default recurring jobs such as the BuildEngine status check */
-export const SystemRecurring = new Queue<RecurringJob>(QueueName.SystemRecurring, config);
-/** Queue for system jobs that run on startup, such as prepopulating langtags.json */
-export const SystemStartup = new Queue<StartupJob>(QueueName.SystemStartup, config);
-/** Queue for miscellaneous jobs such as Product and Project Creation */
-export const Miscellaneous = new Queue<MiscJob>(QueueName.Miscellaneous, config);
-/** Queue for Product Publishing  */
-export const Publishing = new Queue<PublishJob>(QueueName.Publishing, config);
-/** Queue for jobs that poll BuildEngine, such as checking the status of a build */
-export const RemotePolling = new Queue<PollJob>(QueueName.RemotePolling, config);
-/** Queue for operations on UserTasks */
-export const UserTasks = new Queue<UserTasksJob>(QueueName.UserTasks, config);
-/** Queue for Email tasks */
-export const Emails = new Queue<EmailJob>(QueueName.Emails, config);
-/** Queue for Svelte SSE Project events */
-export const SvelteProjectSSE = new Queue<SvelteSSEJob>(QueueName.SvelteProjectSSE, config);
+function createQueues() {
+  console.log('CREATING QUEUES');
+  if (!_connection) {
+    _connection = new Connection();
+  }
+  /** Queue for Product Builds */
+  const Builds = new Queue<BuildJob>(QueueName.Builds, getConfig());
+  /** Queue for default recurring jobs such as the BuildEngine status check */
+  const SystemRecurring = new Queue<RecurringJob>(QueueName.SystemRecurring, getConfig());
+  /** Queue for system jobs that run on startup, such as prepopulating langtags.json */
+  const SystemStartup = new Queue<StartupJob>(QueueName.SystemStartup, getConfig());
+  /** Queue for miscellaneous jobs such as Product and Project Creation */
+  const Miscellaneous = new Queue<MiscJob>(QueueName.Miscellaneous, getConfig());
+  /** Queue for Product Publishing  */
+  const Publishing = new Queue<PublishJob>(QueueName.Publishing, getConfig());
+  /** Queue for jobs that poll BuildEngine, such as checking the status of a build */
+  const RemotePolling = new Queue<PollJob>(QueueName.RemotePolling, getConfig());
+  /** Queue for operations on UserTasks */
+  const UserTasks = new Queue<UserTasksJob>(QueueName.UserTasks, getConfig());
+  /** Queue for Email tasks */
+  const Emails = new Queue<EmailJob>(QueueName.Emails, getConfig());
+  /** Queue for Svelte SSE Project events */
+  const SvelteProjectSSE = new Queue<SvelteSSEJob>(QueueName.SvelteProjectSSE, getConfig());
+  return {
+    Builds,
+    SystemRecurring,
+    SystemStartup,
+    Miscellaneous,
+    Publishing,
+    RemotePolling,
+    UserTasks,
+    Emails,
+    SvelteProjectSSE
+  };
+}
+export function getQueues() {
+  if (!_queues) {
+    _queues = createQueues();
+  }
+  return _queues;
+}

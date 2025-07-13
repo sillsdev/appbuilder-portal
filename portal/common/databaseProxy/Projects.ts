@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client';
-import { BullMQ, Queues } from '../bullmq/index.js';
+import { BullMQ, getQueues } from '../bullmq/index.js';
 import { RoleId } from '../public/prisma.js';
 import prisma from './prisma.js';
 import type { RequirePrimitive } from './utility.js';
@@ -68,7 +68,7 @@ export async function update(
     });
     // If the owner has changed, we need to reassign all the user tasks related to this project
     if (ownerId && ownerId !== existing?.OwnerId) {
-      await Queues.UserTasks.add(`Reassign tasks for Project #${id} (New Owner)`, {
+      await getQueues().UserTasks.add(`Reassign tasks for Project #${id} (New Owner)`, {
         type: BullMQ.JobType.UserTasks_Modify,
         scope: 'Project',
         projectId: id,
@@ -81,7 +81,7 @@ export async function update(
   } catch (e) {
     return false;
   }
-  Queues.SvelteProjectSSE.add(`Update Project #${id} (update details)`, {
+  getQueues().SvelteProjectSSE.add(`Update Project #${id} (update details)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
     projectIds: [id]
   });

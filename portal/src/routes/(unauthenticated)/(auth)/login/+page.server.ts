@@ -1,11 +1,11 @@
 import { localizeHref } from '$lib/paraglide/runtime';
 import { redirect } from '@sveltejs/kit';
-import { Queues } from 'sil.appbuilder.portal.common';
+import { QueueConnected } from 'sil.appbuilder.portal.common';
 import { signIn } from '../../../../auth';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
-  if ((await event.locals.auth())?.user && Queues.connected()) {
+  if ((await event.locals.auth())?.user && QueueConnected()) {
     if (event.cookies.get('inviteToken')) {
       const inviteToken = event.cookies.get('inviteToken')!;
       return redirect(302, localizeHref('/invitations/organization-membership?t=' + inviteToken));

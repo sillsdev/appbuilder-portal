@@ -3,8 +3,8 @@ import {
   BuildEngine,
   BullMQ,
   DatabaseWrites,
+  getQueues,
   prisma,
-  Queues,
   Workflow
 } from 'sil.appbuilder.portal.common';
 import {
@@ -218,7 +218,7 @@ async function notifyConnectionFailed(
   projectName: string,
   productName: string
 ) {
-  return Queues.Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
+  return getQueues().Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
     projectId,
     messageKey: 'productFailedUnableToConnect',
@@ -234,7 +234,7 @@ async function notifyProjectUrlNotSet(
   projectName: string,
   productName: string
 ) {
-  return Queues.Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
+  return getQueues().Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
     projectId,
     messageKey: 'productProjectUrlNotSet',
@@ -250,7 +250,7 @@ async function notifyCreated(
   projectName: string,
   productName: string
 ) {
-  return Queues.Emails.add(`Notify Owner of Product #${productId} Creation Success`, {
+  return getQueues().Emails.add(`Notify Owner of Product #${productId} Creation Success`, {
     type: BullMQ.JobType.Email_SendNotificationToUser,
     userId,
     messageKey: 'productCreatedSuccessfully',
@@ -269,7 +269,7 @@ async function notifyFailed(
 ) {
   const endpoint = await BuildEngine.Requests.getURLandToken(organizationId);
   const buildEngineUrl = endpoint + '/job-admin';
-  return Queues.Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
+  return getQueues().Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
     projectId,
     messageKey: 'productCreationFailed',
@@ -282,7 +282,7 @@ async function notifyFailed(
   });
 }
 async function notifyNotFound(productId: string) {
-  await Queues.Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
+  await getQueues().Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
     type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
     messageKey: 'productRecordNotFound',
     messageProperties: {
