@@ -10,3 +10,4 @@ vite.config.ts.timestamp-*
 static/languages/*
 node-server/**/*.js
 common/**/*.js
+test-results
