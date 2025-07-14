@@ -9,7 +9,7 @@ import { Worker } from 'bullmq';
 import {
   BullMQ,
   connected,
-  getQueueConfig,
+  getQueues,
   getWorkerConfig,
   QueueConnected
 } from 'sil.appbuilder.portal.common';
@@ -38,7 +38,9 @@ if (!building) {
     },
     getWorkerConfig()
   );
-  getQueueConfig();
+  // Call getQueues to ensure the queues are initialized
+  // Otherwise valkey will never connect and the server will always 503
+  getQueues();
 }
 
 // creating a handle to use the paraglide middleware
@@ -54,15 +56,17 @@ const paraglideHandle: Handle = ({ event, resolve }) =>
 
 const heartbeat: Handle = async ({ event, resolve }) => {
   // this check is important to prevent infinite redirects...
+  // Also, the homepage should always be accessible
   if (
     !(
       event.route.id === '/(unauthenticated)/error' ||
-      event.route.id === '/(unauthenticated)/(auth)/login'
+      event.route.id === '/(unauthenticated)/(auth)/login' ||
+      event.route.id === '/'
     )
   ) {
     if (!(connected() && QueueConnected())) {
       // HTTP 503 *should* be the correct semantics here?
-      return redirect(302, localizeHref(`/error?code=503&dbg=${connected()}${QueueConnected()}`));
+      return redirect(302, localizeHref(`/error?code=503`));
     }
   }
   return resolve(event);

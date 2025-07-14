@@ -20,6 +20,9 @@ export default defineConfig({
     },
     port: 6173
   },
+  preview: {
+    port: 6173
+  },
   plugins: [
     tailwindcss(),
     sveltekit(),
