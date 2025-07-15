@@ -1,8 +1,8 @@
-import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
-import { idSchema, langtagRegex, paginateSchema } from '$lib/valibot';
 import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
 import * as v from 'valibot';
+import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
+import { idSchema, langtagRegex, paginateSchema } from '$lib/valibot';
 
 export function pruneProjects(
   projects: Prisma.ProjectsGetPayload<{
@@ -166,7 +166,7 @@ export function canModifyProject(
   user: Session | null | undefined,
   projectOwnerId: number,
   organizationId: number
-): boolean  {
+): boolean {
   return (
     !!user &&
     (projectOwnerId === user?.user.userId || isAdminForOrg(organizationId, user?.user.roles))

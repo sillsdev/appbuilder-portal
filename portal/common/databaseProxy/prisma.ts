@@ -9,10 +9,10 @@ import { ReadonlyClient } from './ReadonlyPrisma.js';
 // these writes should be successful anyway, but we want to guarantee that at runtime.
 // Therefore, we create a read-only version of the prisma client that can be passed out to
 // other packages, but we keep the writable client behind the abstraction layer.
-if (!process.env.VITE_DATABASE_URL)
+if (!process.env.DATABASE_URL)
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore This is necessary for sveltekit, where import.meta.env will in fact exist
-  process.env.VITE_DATABASE_URL = import.meta.env.VITE_DATABASE_URL;
+  process.env.DATABASE_URL = import.meta.env ? import.meta.env.DATABASE_URL : undefined;
 
 const prisma = new PrismaClient();
 
@@ -40,6 +40,7 @@ class ConnectionChecker {
         // As best as I can tell, the only types of PrismaClientKnownRequestError that
         // should be thrown by the above query would involve the database being unreachable.
         this.connected = false;
+        console.log('Error checking database connection:', e);
         // ISSUE: #1128 this should probably be logged
       } else {
         throw e;
@@ -51,9 +52,16 @@ class ConnectionChecker {
   }
 }
 
-const conn = new ConnectionChecker();
+let conn: ConnectionChecker | null = null;
 
 /** Main database is up */
-export const connected = () => conn.IsConnected();
+export const connected = () => {
+  if (!conn) {
+    // If conn is not initialized, we create a new one
+    // This is to ensure that the connection checker is only created once
+    conn = new ConnectionChecker();
+  }
+  return conn.IsConnected();
+};
 
 export default prisma;

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { m } from '$lib/paraglide/messages';
   import { SignOut } from '@auth/sveltekit/components';
+  import { m } from '$lib/paraglide/messages';
 </script>
 
 <div class="card bg-white border p-4">

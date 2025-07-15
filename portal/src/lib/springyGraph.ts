@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-namespace */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-this-alias */
 /**
  * Heavily based on: https://github.com/dhotson/springy/
  *
@@ -136,13 +139,13 @@ export namespace Springy {
     }
 
     addEdges(args: { source: string; target: string; data?: EdgeData }[]) {
-      for (var i = 0; i < args.length; i++) {
+      for (let i = 0; i < args.length; i++) {
         const e = args[i];
         const node1 = this.nodeSet[e.source];
         if (node1 == undefined) {
           throw new TypeError('invalid node name: "' + e.source + '" (source)');
         }
-        var node2 = this.nodeSet[e.target];
+        const node2 = this.nodeSet[e.target];
         if (node2 == undefined) {
           throw new TypeError('invalid node name: "' + e.target + '" (target)');
         }
@@ -241,8 +244,8 @@ export namespace Springy {
         }
       }
 
-      for (let x in this.adjacency) {
-        for (let y in this.adjacency[x]) {
+      for (const x in this.adjacency) {
+        for (const y in this.adjacency[x]) {
           const edges = this.adjacency[x][y];
 
           for (let j = edges.length - 1; j >= 0; j--) {
@@ -401,8 +404,8 @@ export namespace Springy {
       distanceToPoint(point: Point) {
         // hardcore vector arithmetic.. ohh yeah!
         // .. see http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment/865080#865080
-        var n = this.point2.p.subtract(this.point1.p).normalise().normal();
-        var ac = point.p.subtract(this.point1.p);
+        const n = this.point2.p.subtract(this.point1.p).normalise().normal();
+        const ac = point.p.subtract(this.point1.p);
         return Math.abs(ac.x * n.x + ac.y * n.y);
       }
     }
@@ -429,7 +432,7 @@ export namespace Springy {
 
     point(node: Node) {
       if (!(node.id in this.nodePoints)) {
-        var mass = node.data?.mass !== undefined ? node.data.mass : 1.0;
+        const mass = node.data?.mass !== undefined ? node.data.mass : 1.0;
         this.nodePoints[node.id] = new Physics.Point(
           node.data?.static ? node.data.static : Physics.Vector.random(),
           mass,
@@ -474,21 +477,21 @@ export namespace Springy {
     }
 
     eachNode(callback: (node: Node, point: Physics.Point) => void) {
-      var t = this;
+      const t = this;
       this.graph.nodes.forEach(function (n) {
         callback.call(t, n, t.point(n));
       });
     }
 
     eachEdge(callback: (edge: Edge, spring: Physics.Spring) => void) {
-      var t = this;
+      const t = this;
       this.graph.edges.forEach(function (e) {
         callback.call(t, e, t.spring(e));
       });
     }
 
     eachSpring(callback: (spring: Physics.Spring) => void) {
-      var t = this;
+      const t = this;
       this.graph.edges.forEach(function (e) {
         callback.call(t, t.spring(e));
       });
@@ -505,7 +508,7 @@ export namespace Springy {
       tick?: () => void,
       stopCondition?: () => boolean
     ) {
-      var t = this;
+      const t = this;
 
       if (this._started) return;
       this._started = true;
@@ -571,9 +574,9 @@ export namespace Springy {
       this.eachNode((n1, point1) => {
         this.eachNode((n2, point2) => {
           if (point1 !== point2) {
-            var d = point1.p.subtract(point2.p);
-            var distance = d.magnitude() + 0.1; // avoid massive forces at small distances (and divide by zero)
-            var direction = d.normalise();
+            const d = point1.p.subtract(point2.p);
+            const distance = d.magnitude() + 0.1; // avoid massive forces at small distances (and divide by zero)
+            const direction = d.normalise();
 
             // apply force to each end point
             point1.applyForce(direction.multiply(this.repulsion).divide(distance * distance * 0.5));
@@ -587,9 +590,9 @@ export namespace Springy {
 
     applyHookesLaw() {
       this.eachSpring((spring) => {
-        var d = spring.point2.p.subtract(spring.point1.p); // the direction of the spring
-        var displacement = spring.length - d.magnitude();
-        var direction = d.normalise();
+        const d = spring.point2.p.subtract(spring.point1.p); // the direction of the spring
+        const displacement = spring.length - d.magnitude();
+        const direction = d.normalise();
 
         // apply force to each end point
         spring.point1.applyForce(direction.multiply(spring.k * displacement * -0.5));
@@ -599,7 +602,7 @@ export namespace Springy {
 
     attractToCentre() {
       this.eachNode((node, point) => {
-        var direction = point.p.multiply(-1.0);
+        const direction = point.p.multiply(-1.0);
         point.applyForce(direction.multiply(this.repulsion / 50.0));
       });
     }
@@ -622,9 +625,9 @@ export namespace Springy {
 
     // Calculate the total kinetic energy of the system
     totalEnergy() {
-      var energy = 0.0;
+      let energy = 0.0;
       this.eachNode(function (node, point) {
-        var speed = point.v.magnitude();
+        const speed = point.v.magnitude();
         energy += 0.5 * point.m * speed * speed;
       });
 
@@ -663,11 +666,11 @@ export namespace Springy {
 
     // Find the nearest point to a particular position
     nearest(pos: Physics.Vector) {
-      var min: { node: Node; point: Physics.Point; distance: number } | undefined;
-      var t = this;
+      let min: { node: Node; point: Physics.Point; distance: number } | undefined;
+      const t = this;
       this.graph.nodes.forEach(function (n) {
-        var point = t.point(n);
-        var distance = point.p.subtract(pos).magnitude();
+        const point = t.point(n);
+        const distance = point.p.subtract(pos).magnitude();
 
         if (min?.distance === undefined || distance < min.distance) {
           min = { node: n, point: point, distance: distance };
@@ -678,8 +681,8 @@ export namespace Springy {
     }
 
     getBoundingBox() {
-      var bottomleft = new Physics.Vector(-2, -2);
-      var topright = new Physics.Vector(2, 2);
+      const bottomleft = new Physics.Vector(-2, -2);
+      const topright = new Physics.Vector(2, 2);
 
       this.eachNode(function (n, point) {
         if (point.p.x < bottomleft.x) {
@@ -696,7 +699,7 @@ export namespace Springy {
         }
       });
 
-      var padding = topright.subtract(bottomleft).multiply(0.07); // ~5% padding
+      const padding = topright.subtract(bottomleft).multiply(0.07); // ~5% padding
 
       return { bottomleft: bottomleft.subtract(padding), topright: topright.add(padding) };
     }
@@ -750,7 +753,7 @@ export namespace Springy {
      * either because it ended or because stop() was called.
      */
     start(done?: () => void) {
-      var t = this;
+      const t = this;
       this.layout.start(
         function render() {
           t.clear();
@@ -787,8 +790,8 @@ export namespace Springy {
   }
 
   function isEmpty(obj: any) {
-    for (var k in obj) {
-      if (obj.hasOwnProperty(k)) {
+    for (const k in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, k)) {
         return false;
       }
     }

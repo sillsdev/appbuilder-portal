@@ -101,7 +101,7 @@ services:
       - "6173:6173"
     env_file: portal/.env
     environment:
-      VITE_DATABASE_URL: "postgresql://db-user:1234@db:5432/development?schema=public"
+      DATABASE_URL: "postgresql://db-user:1234@db:5432/development?schema=public"
       # MUST be included (the path the application will be accessed on) and MUST NOT have a trailing slash
       ORIGIN: "http://localhost:6173"
   valkey:

@@ -1,4 +1,9 @@
 <script lang="ts">
+  /* eslint-disable svelte/no-at-html-tags */
+  import type { Prisma } from '@prisma/client';
+  import { ProductType } from 'sil.appbuilder.portal.common/workflow';
+  import DeleteProduct from './modals/DeleteProduct.svelte';
+  import Properties from './modals/Properties.svelte';
   import { invalidateAll } from '$app/navigation';
   import { page } from '$app/state';
   import Dropdown from '$lib/components/Dropdown.svelte';
@@ -11,12 +16,9 @@
   import ProductDetails, {
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
+  import { sanitizeInput } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime } from '$lib/utils/time';
-  import type { Prisma } from '@prisma/client';
-  import { ProductType } from 'sil.appbuilder.portal.common/workflow';
-  import DeleteProduct from './modals/DeleteProduct.svelte';
-  import Properties from './modals/Properties.svelte';
 
   type Transition = Prisma.ProductTransitionsGetPayload<{
     select: {
@@ -230,7 +232,7 @@
     <div class="p-2 flex gap-1">
       {#if project.DateArchived}
         {@html m.tasks_archivedAt({
-          activityName: product.ActiveTransition?.InitialState ?? ''
+          activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
         })}
       {:else}
         <span class="text-red-500">
@@ -241,8 +243,8 @@
           })}
         </span>
         {@html m.tasks_forNames({
-          allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName(),
-          activityName: product.ActiveTransition?.InitialState ?? ''
+          allowedNames: sanitizeInput(product.ActiveTransition?.AllowedUserNames || m.appName()),
+          activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
           // activityName appears to show up blank primarily at the very startup of a new product?
         })}
         {#if product.UserTasks.find((ut) => ut.UserId === page.data.session?.user.userId)}

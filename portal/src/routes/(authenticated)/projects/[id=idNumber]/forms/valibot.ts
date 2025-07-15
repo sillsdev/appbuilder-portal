@@ -1,5 +1,5 @@
-import { idSchema } from '$lib/valibot';
 import * as v from 'valibot';
+import { idSchema } from '$lib/valibot';
 
 export const addReviewerSchema = v.object({
   name: v.string(),

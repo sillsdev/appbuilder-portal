@@ -1,17 +1,13 @@
 // hooks.server.ts
-import { building } from '$app/environment';
-import { localizeHref } from '$lib/paraglide/runtime';
-import { paraglideMiddleware } from '$lib/paraglide/server';
-import { SSEPageUpdates } from '$lib/projects/listener';
-import { redirect, type Handle } from '@sveltejs/kit';
+import { type Handle, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { Worker } from 'bullmq';
 import {
   BullMQ,
-  connected,
+  DatabaseConnected,
+  QueueConnected,
   getQueues,
-  getWorkerConfig,
-  QueueConnected
+  getWorkerConfig
 } from 'sil.appbuilder.portal.common';
 import {
   authRouteHandle,
@@ -19,6 +15,10 @@ import {
   localRouteHandle,
   organizationInviteHandle
 } from './auth';
+import { building } from '$app/environment';
+import { localizeHref } from '$lib/paraglide/runtime';
+import { paraglideMiddleware } from '$lib/paraglide/server';
+import { SSEPageUpdates } from '$lib/projects/listener';
 
 if (!building) {
   // Create a worker to listen for project updates
@@ -41,6 +41,8 @@ if (!building) {
   // Call getQueues to ensure the queues are initialized
   // Otherwise valkey will never connect and the server will always 503
   getQueues();
+  // Likewise, initialize the Prisma connection heartbeat
+  DatabaseConnected();
 }
 
 // creating a handle to use the paraglide middleware
@@ -64,7 +66,13 @@ const heartbeat: Handle = async ({ event, resolve }) => {
       event.route.id === '/'
     )
   ) {
-    if (!(connected() && QueueConnected())) {
+    if (!(DatabaseConnected() && QueueConnected())) {
+      console.log(
+        'Services connection error! Connected to Database:',
+        DatabaseConnected(),
+        'Connected to Valkey:',
+        QueueConnected()
+      );
       // HTTP 503 *should* be the correct semantics here?
       return redirect(302, localizeHref(`/error?code=503`));
     }

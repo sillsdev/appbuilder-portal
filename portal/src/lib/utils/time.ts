@@ -1,4 +1,4 @@
-import { readable, type Readable } from 'svelte/store';
+import { type Readable, readable } from 'svelte/store';
 import { getLocale } from '../paraglide/runtime';
 
 let locale = getLocale();

@@ -4,5 +4,6 @@
 
 <div class="card shadow-xl bg-base-100 border p-4 flex flex-column items-center">
   <h2>{m.errors_orgMembershipRequired()}</h2>
+  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   <p>{@html m.errors_orgMembershipRequiredText()}</p>
 </div>

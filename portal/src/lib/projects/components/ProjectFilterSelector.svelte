@@ -1,9 +1,9 @@
 <script lang="ts">
+  import Icon from '@iconify/svelte';
   import { page } from '$app/state';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
-  import Icon from '@iconify/svelte';
 
   const textsForPaths = new Map([
     ['all', m.projects_filter_all()],

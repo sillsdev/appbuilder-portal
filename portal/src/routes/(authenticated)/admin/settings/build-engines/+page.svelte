@@ -1,11 +1,11 @@
 <script lang="ts">
-  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import type { PageData } from './$types';
   import Tooltip from '$lib/components/Tooltip.svelte';
+  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byString } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;

@@ -1,8 +1,9 @@
-name: Scriptoria CI
+name: Scriptoria v1 CI
 
+# This is outdated. Reference for AWS deployment
 on:
-  push:
-  pull_request:
+  # push:
+  # pull_request:
   workflow_dispatch:
     inputs:
       logLevel:
@@ -11,8 +12,6 @@ on:
         default: "warning"
       tags:
         description: "Tags"
-  schedule:
-    - cron: "0 0 * * 0" # weekly
 
 jobs:
   build:

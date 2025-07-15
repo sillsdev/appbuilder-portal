@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { LanguageIcon } from '$lib/icons';
-  import { l10nMap } from '$lib/locales.svelte';
-  import { getLocale, locales, setLocale, type Locale } from '$lib/paraglide/runtime';
   import Dropdown from './Dropdown.svelte';
   import IconContainer from './IconContainer.svelte';
+  import { LanguageIcon } from '$lib/icons';
+  import { l10nMap } from '$lib/locales.svelte';
+  import { type Locale, getLocale, locales, setLocale } from '$lib/paraglide/runtime';
 
   function getFlag(locale: Locale) {
     switch (locale) {

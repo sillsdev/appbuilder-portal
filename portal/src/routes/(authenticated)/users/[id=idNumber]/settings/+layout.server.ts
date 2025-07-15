@@ -1,7 +1,7 @@
-import { adminOrgs } from '$lib/users/server';
-import { isSuperAdmin } from '$lib/utils/roles';
 import { prisma } from 'sil.appbuilder.portal.common';
 import type { LayoutServerLoad } from './$types';
+import { adminOrgs } from '$lib/users/server';
+import { isSuperAdmin } from '$lib/utils/roles';
 
 export const load = (async ({ params, locals }) => {
   const subject = await prisma.users.findUniqueOrThrow({
@@ -24,9 +24,11 @@ export const load = (async ({ params, locals }) => {
   return {
     subject,
     canEdit,
-    subjectOrgs: canEdit ? await prisma.organizations.findMany({
-      where: filter,
-      select: { Id: true, Name: true }
-    }) : [],
+    subjectOrgs: canEdit
+      ? await prisma.organizations.findMany({
+          where: filter,
+          select: { Id: true, Name: true }
+        })
+      : []
   };
 }) satisfies LayoutServerLoad;

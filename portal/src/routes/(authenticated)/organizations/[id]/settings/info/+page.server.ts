@@ -1,8 +1,8 @@
-import { infoSchema } from '$lib/organizations';
 import { DatabaseWrites } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
+import { infoSchema } from '$lib/organizations';
 
 export const load = (async (event) => {
   const { organization } = await event.parent();

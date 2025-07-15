@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { page } from '$app/state';
-  import { localizeHref } from '$lib/paraglide/runtime';
   import type { Snippet } from 'svelte';
   import IconContainer from '../IconContainer.svelte';
+  import { page } from '$app/state';
+  import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Props {
     menuItems: {

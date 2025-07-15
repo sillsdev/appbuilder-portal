@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { superForm } from 'sveltekit-superforms';
+  import { Anchor, Node, Svelvet } from 'svelvet';
+  import type { PageData } from './$types';
   import { browser } from '$app/environment';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
@@ -8,10 +12,6 @@
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
   import { Springy } from '$lib/springyGraph.js';
-  import { onMount } from 'svelte';
-  import { superForm } from 'sveltekit-superforms';
-  import { Anchor, Node, Svelvet } from 'svelvet';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -95,7 +95,7 @@
   let isDarkMode: boolean = $state(
     browser ? window.matchMedia('(prefers-color-scheme: dark)').matches : false
   );
-  browser &&
+  if (browser)
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
       isDarkMode = event.matches;
     });

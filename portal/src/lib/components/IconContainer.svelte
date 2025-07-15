@@ -8,14 +8,7 @@
     class?: string;
   }
 
-  let {
-    icon,
-    width,
-    tooltip = '',
-    class: classes = ''
-  }: Props = $props();
-
-  
+  let { icon, width, tooltip = '', class: classes = '' }: Props = $props();
 </script>
 
 <div

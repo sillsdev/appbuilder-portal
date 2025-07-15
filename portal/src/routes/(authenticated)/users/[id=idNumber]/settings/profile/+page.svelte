@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { page } from '$app/state';
-  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
-  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
-  import { m } from '$lib/paraglide/messages';
-  import { toast } from '$lib/utils';
-  import { phoneRegex, regExpToInputPattern } from '$lib/valibot';
   import { getTimeZones } from '@vvo/tzdb';
   import Fuse from 'fuse.js';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import { page } from '$app/state';
+  import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
+  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import { m } from '$lib/paraglide/messages';
+  import { toast } from '$lib/utils';
+  import { phoneRegex, regExpToInputPattern } from '$lib/valibot';
 
   interface Props {
     data: PageData;
@@ -52,7 +52,7 @@
 
 <form action="" method="post" use:enhance>
   <div class="flex flex-col px-4">
-    <LabeledFormInput name="profile_firstName">
+    <LabeledFormInput key="profile_firstName">
       <input
         type="text"
         name="firstName"
@@ -62,7 +62,7 @@
       />
       <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
-    <LabeledFormInput name="profile_lastName">
+    <LabeledFormInput key="profile_lastName">
       <input
         type="text"
         name="lastName"
@@ -72,7 +72,7 @@
       />
       <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
-    <LabeledFormInput name="profile_name">
+    <LabeledFormInput key="profile_name">
       <input
         type="text"
         name="displayName"
@@ -82,7 +82,7 @@
       />
       <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
-    <LabeledFormInput name="profile_email">
+    <LabeledFormInput key="profile_email">
       <input
         type="email"
         name="email"
@@ -91,12 +91,10 @@
         required
       />
       <span class="validator-hint">
-        {$form.email
-          ? m.formErrors_emailInvalid()
-          : m.formErrors_emailEmpty()}
+        {$form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty()}
       </span>
     </LabeledFormInput>
-    <LabeledFormInput name="profile_phone">
+    <LabeledFormInput key="profile_phone">
       <input
         type="tel"
         name="phone"
@@ -105,7 +103,7 @@
         pattern={regExpToInputPattern(phoneRegex)}
       />
     </LabeledFormInput>
-    <LabeledFormInput name="profile_timezone">
+    <LabeledFormInput key="profile_timezone">
       <TypeaheadInput
         inputElProps={{ placeholder: m.profile_timezonePlaceholder() }}
         getList={(search) => fuzzySearch.search(search).slice(0, 7)}

@@ -1,12 +1,12 @@
 <script lang="ts">
+  import { type FormResult, superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
-  import { superForm, type FormResult } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -24,7 +24,7 @@
     },
     onUpdate(event) {
       const data = event.result.data as FormResult<{
-        query: { data: any[]; count: number };
+        query: { data: PageData['builds']; count: number };
       }>;
       if (event.form.valid && data.query) {
         builds = data.query.data;

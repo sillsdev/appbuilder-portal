@@ -1,7 +1,7 @@
 <script>
+  import { SignIn } from '@auth/sveltekit/components';
   import ScriptoriaIcon from '$lib/icons/ScriptoriaIcon.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { SignIn } from '@auth/sveltekit/components';
 </script>
 
 <div class="card shadow-xl bg-white border p-4">

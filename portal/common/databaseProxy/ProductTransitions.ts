@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index.js';
 import prisma from './prisma.js';
 
@@ -8,13 +8,10 @@ export async function create(createData: Prisma.ProductTransitionsCreateArgs) {
       ...createData,
       include: { Product: { select: { ProjectId: true } } }
     });
-    getQueues().SvelteSSE.add(
-      `Update Project #${res.Product.ProjectId} (transition created)`,
-      {
-        type: BullMQ.JobType.SvelteSSE_UpdateProject,
-        projectIds: [res.Product.ProjectId]
-      }
-    );
+    getQueues().SvelteSSE.add(`Update Project #${res.Product.ProjectId} (transition created)`, {
+      type: BullMQ.JobType.SvelteSSE_UpdateProject,
+      projectIds: [res.Product.ProjectId]
+    });
     return res;
   } catch (e) {
     return false;
@@ -45,13 +42,10 @@ export async function update(updateData: Prisma.ProductTransitionsUpdateArgs) {
       ...updateData,
       include: { Product: { select: { ProjectId: true } } }
     });
-    getQueues().SvelteSSE.add(
-      `Update Project #${res.Product.ProjectId} (transition updated)`,
-      {
-        type: BullMQ.JobType.SvelteSSE_UpdateProject,
-        projectIds: [res.Product.ProjectId]
-      }
-    );
+    getQueues().SvelteSSE.add(`Update Project #${res.Product.ProjectId} (transition updated)`, {
+      type: BullMQ.JobType.SvelteSSE_UpdateProject,
+      projectIds: [res.Product.ProjectId]
+    });
     return res;
   } catch (e) {
     return false;

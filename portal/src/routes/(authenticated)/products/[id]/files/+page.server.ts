@@ -1,9 +1,9 @@
-import { paginateSchema } from '$lib/valibot';
 import { fail } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
+import { paginateSchema } from '$lib/valibot';
 
 export const load = (async ({ params }) => {
   // auth handled by hooks

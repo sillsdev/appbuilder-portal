@@ -7,11 +7,11 @@
 </script>
 
 <script lang="ts">
+  import type { Prisma } from '@prisma/client';
+  import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getTimeDateString } from '$lib/utils/time';
-  import type { Prisma } from '@prisma/client';
-  import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
 
   interface Props {
     product: Prisma.ProductsGetPayload<{
@@ -37,7 +37,7 @@
   let { product, transitions }: Props = $props();
 
   const landmarks = [2, 3, 4, 6] as const;
-  type Landmark = typeof landmarks[number];
+  type Landmark = (typeof landmarks)[number];
   function isLandmark(t: number): t is Landmark {
     return landmarks.includes(t as Landmark);
   }

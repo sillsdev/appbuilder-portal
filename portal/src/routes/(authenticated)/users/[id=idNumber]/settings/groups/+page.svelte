@@ -1,11 +1,11 @@
 <script lang="ts">
+  import GroupsSelector from '../../../GroupsSelector.svelte';
+  import type { ActionData, PageData } from './$types';
   import { enhance } from '$app/forms';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
-  import GroupsSelector from '../../../GroupsSelector.svelte';
-  import type { ActionData, PageData } from './$types';
 
   interface Props {
     data: PageData;

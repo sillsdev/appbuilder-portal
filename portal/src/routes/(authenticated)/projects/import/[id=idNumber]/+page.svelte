@@ -1,4 +1,9 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import type { FormResult } from 'sveltekit-superforms';
+  import { superForm } from 'sveltekit-superforms';
+  import { flatten, safeParse } from 'valibot';
+  import type { PageData } from './$types';
   import { page } from '$app/state';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -6,11 +11,6 @@
   import { importJSONSchema } from '$lib/projects';
   import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
-  import { onMount } from 'svelte';
-  import type { FormResult } from 'sveltekit-superforms';
-  import { superForm } from 'sveltekit-superforms';
-  import { flatten, safeParse } from 'valibot';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -78,21 +78,21 @@
       {m.projectImport_help()}
     </a>
     <div class="flex flex-row gap-4 flex-wrap place-content-center sm:place-content-start p-4">
-      <LabeledFormInput name="project_group" className="max-w-xs">
+      <LabeledFormInput key="project_group" classes="max-w-xs">
         <select name="group" class="select select-bordered" bind:value={$form.group}>
           {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
             <option value={group.Id}>{group.Name}</option>
           {/each}
         </select>
       </LabeledFormInput>
-      <LabeledFormInput name="project_type" className="max-w-xs">
+      <LabeledFormInput key="project_type" classes="max-w-xs">
         <select name="type" class="select select-bordered" bind:value={$form.type}>
           {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
             <option value={type.Id}>{type.Description}</option>
           {/each}
         </select>
       </LabeledFormInput>
-      <LabeledFormInput name="projectImport_file" className="max-w-xs">
+      <LabeledFormInput key="projectImport_file" classes="max-w-xs">
         <input
           type="file"
           class="file-input file-input-bordered"
@@ -147,7 +147,10 @@
       </ul>
     {/if}
     <div class="flex flex-wrap place-content-center gap-4 p-4">
-      <a href={localizeHref(`/projects/own/${page.params.id}`)} class="btn btn-secondary w-full max-w-xs">
+      <a
+        href={localizeHref(`/projects/own/${page.params.id}`)}
+        class="btn btn-secondary w-full max-w-xs"
+      >
         {m.common_cancel()}
       </a>
       <button class="btn btn-primary w-full max-w-xs" disabled={!canSubmit} type="submit">

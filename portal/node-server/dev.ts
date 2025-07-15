@@ -3,13 +3,13 @@ import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { ExpressAdapter } from '@bull-board/express';
 import { Queue } from 'bullmq';
 import express from 'express';
+import { getQueues } from 'sil.appbuilder.portal.common';
 import * as Workers from './BullWorker.js';
 
 process.env.NODE_ENV = 'development';
 
 const app = express();
 
-import { getQueues } from 'sil.appbuilder.portal.common';
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/');
 createBullBoard({

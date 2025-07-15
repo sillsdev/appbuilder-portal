@@ -4,21 +4,14 @@
     
 -->
 <script lang="ts">
-  import type { ValidI13nKey } from '$lib/locales.svelte';
-  import * as m from '$lib/paraglide/messages';
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   import type { Snippet } from 'svelte';
+  import type { ValidI13nKey, ValueKey } from '$lib/locales.svelte';
+  import * as m from '$lib/paraglide/messages';
 
   interface Props {
-    title?: {
-      key: ValidI13nKey;
-      parms?: any;
-      classes?: string;
-    };
-    message?: {
-      key: ValidI13nKey;
-      parms?: any;
-      classes?: string;
-    };
+    title?: ValueKey;
+    message?: ValueKey;
     className?: string;
     children?: Snippet;
   }
@@ -30,12 +23,12 @@
   <div class="fieldset-label flex-col items-start grow">
     {#if title}
       <span class={title.classes ?? ''}>
-        {m[title.key](title.parms)}
+        {m[title.key](title.params as any)}
       </span>
     {/if}
     {#if message}
       <span class="text-sm {message.classes ?? ''}">
-        {m[message.key](message.parms)}
+        {m[message.key](message.params as any)}
       </span>
     {/if}
   </div>

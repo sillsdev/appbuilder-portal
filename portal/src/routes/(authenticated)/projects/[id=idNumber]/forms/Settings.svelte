@@ -1,11 +1,11 @@
 <script lang="ts">
+  import type { Prisma } from '@prisma/client';
+  import type { ActionData } from '../$types';
   import { enhance } from '$app/forms';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
-  import type { Prisma } from '@prisma/client';
-  import type { ActionData } from '../$types';
 
   interface Props {
     project: Prisma.ProjectsGetPayload<{

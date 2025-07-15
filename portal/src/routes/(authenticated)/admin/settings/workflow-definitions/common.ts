@@ -1,6 +1,6 @@
-import { idSchema, propertiesSchema } from '$lib/valibot';
 import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
 import * as v from 'valibot';
+import { idSchema, propertiesSchema } from '$lib/valibot';
 
 export const businessFlows = [
   'SIL_AppBuilders_AssetPackage_Flow',

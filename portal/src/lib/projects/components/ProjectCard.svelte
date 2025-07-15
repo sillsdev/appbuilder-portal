@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
@@ -6,7 +7,6 @@
   import type { PrunedProject } from '$lib/projects';
   import { byString } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
-  import type { Snippet } from 'svelte';
 
   interface Props {
     project: PrunedProject;

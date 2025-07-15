@@ -4,11 +4,13 @@
     Download the AAB file by clicking on the entry with type <em>aab</em>
     in the
     <em>Product Files</em>
-     grid view at the bottom of this page.
+    grid view at the bottom of this page.
   </li>
   <li>
-    Go to <a href="https://play.google.com/apps/publish/" target="_blank">Google Play Developer Console</a>
-     and sign in.
+    Go to <a href="https://play.google.com/apps/publish/" target="_blank">
+      Google Play Developer Console
+    </a>
+    and sign in.
   </li>
   <li>
     Click <strong>Create app</strong>
@@ -16,39 +18,44 @@
     <ul>
       <li>
         Set <strong>App name</strong>
-         to Project Name shown above.
+        to Project Name shown above.
       </li>
       <li>
         Set <strong>Default language</strong>
         to
         <em>Store Listing Language</em>
-         shown above.
+        shown above.
       </li>
       <li>
         Set <strong>App or game</strong>
-         to App.
+        to App.
       </li>
       <li>
         Set <strong>Free or paid</strong>
-         to Free.
+        to Free.
       </li>
       <li>
         Check <strong>Confirm app meets the Developer Program Policies</strong>
         checkbox.
         <ul>
           <li>
-            Please review the <a href="https://play.google.com/about/developer-content-policy/" target="_blank">policies</a>
+            Please review the <a
+              href="https://play.google.com/about/developer-content-policy/"
+              target="_blank"
+            >
+              policies
+            </a>
             .
           </li>
         </ul>
       </li>
       <li>
         Check <strong>Accept US export laws</strong>
-         checkbox.
+        checkbox.
       </li>
       <li>
         Click the <strong>Create app</strong>
-         button at the bottom of the page.
+        button at the bottom of the page.
       </li>
     </ul>
   </li>
@@ -68,15 +75,17 @@
         <ul>
           <li>Fill in the URL for your app's privacy policy.</li>
           <li>
-            For an example, see the <a href="https://www.wycliffe.org/scripture-app-privacy">Wycliffe Scripture App Privacy Policy</a>
+            For an example, see the <a href="https://www.wycliffe.org/scripture-app-privacy">
+              Wycliffe Scripture App Privacy Policy
+            </a>
           </li>
           <li>
             Click the <strong>Save</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
             Click the <strong>App content</strong>
-             link at the top of the page to go back.
+            link at the top of the page to go back.
           </li>
         </ul>
       </li>
@@ -92,7 +101,7 @@
           </li>
           <li>
             Click the <strong>Save</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
             Click the <strong>App content</strong>
@@ -109,15 +118,15 @@
           <li>
             Click the appropriate
             <sup>1</sup>
-             radio button based on features used in the app.
+            radio button based on features used in the app.
           </li>
           <li>
             Click the <strong>Save</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
             Click the <strong>App</strong>
-             content link at the top of the page to go back.
+            content link at the top of the page to go back.
           </li>
         </ul>
       </li>
@@ -129,23 +138,23 @@
         <ul>
           <li>
             Click the <strong>Start questionnaire</strong>
-             button and complete the questionnaire. There will be multiple pages.
+            button and complete the questionnaire. There will be multiple pages.
           </li>
           <li>
             Click the <strong>Save</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
             Click the <strong>Next</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
             Review the ratings applied and then click the <strong>Save</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
             Click the <strong>App content</strong>
-             link at the top of the page to go back.
+            link at the top of the page to go back.
           </li>
         </ul>
       </li>
@@ -168,15 +177,15 @@
           </li>
           <li>
             Click the <strong>Next</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
             Click the <strong>Save</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
             Click the <strong>App content</strong>
-             link at the top of the page to go back.
+            link at the top of the page to go back.
           </li>
         </ul>
       </li>
@@ -191,33 +200,35 @@
             Download the Data Safety CSV by clicking on the entry with type <em>data-safety-csv</em>
             in the
             <em>Product Files</em>
-             grid view at the bottom of the page.
+            grid view at the bottom of the page.
           </li>
           <li>
             Click the <strong>Import from CSV</strong>
-             button at the top of the page.
+            button at the top of the page.
           </li>
           <li>
             In the <strong>Import from CSV</strong>
             dialog, click on the
             <strong>Upload</strong>
-             link and select the downloaded Data Safety CSV (or drag and drop the file into the file upload area).
+            link and select the downloaded Data Safety CSV (or drag and drop the file into the file upload
+            area).
           </li>
           <li>
             Click the <strong>Import</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
-            The Data Safey section changes frequently, so you may need to answer addition questions until the <strong>Next</strong>
-             button is enabled.
+            The Data Safey section changes frequently, so you may need to answer addition questions
+            until the <strong>Next</strong>
+            button is enabled.
           </li>
           <li>
             Review each section and click the <strong>Next</strong>
-             button at the bottom of the page until you have completed the Data Safety section.
+            button at the bottom of the page until you have completed the Data Safety section.
           </li>
           <li>
             Click the <strong>Save</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
             Click the <strong>App content</strong>
@@ -236,17 +247,17 @@
             For the <strong>Does your app use advertising ID?</strong>
             question, click the
             <strong>No</strong>
-             radio button.
+            radio button.
           </li>
           <li>
             If your app uses the <strong>Deferred Deep Linking - using Branch</strong>
             feature, click the
             <strong>Yes</strong>
-             radio button instead.
+            radio button instead.
           </li>
           <li>
             Click the <strong>Save</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
             Click the <strong>App content</strong>
@@ -263,11 +274,11 @@
         <ul>
           <li>
             Click on <strong>No</strong>
-             radio button.
+            radio button.
           </li>
           <li>
             Click the <strong>Save</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
             Click the <strong>App content</strong>
@@ -284,11 +295,11 @@
         <ul>
           <li>
             Click on <strong>My app doesn't provide any financial features</strong>
-             checkbox.
+            checkbox.
           </li>
           <li>
             Click the <strong>Save</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
             Click the <strong>App content</strong>
@@ -305,11 +316,11 @@
         <ul>
           <li>
             Click on <strong>My app does not have any health features</strong>
-             checkbox.
+            checkbox.
           </li>
           <li>
             Click the <strong>Save</strong>
-             button at the bottom of the page.
+            button at the bottom of the page.
           </li>
           <li>
             Click the <strong>App content</strong>
@@ -324,7 +335,7 @@
     Select <strong>Test and release</strong>
     &gt;
     <strong>Production</strong>
-     section in the menu on the left.
+    section in the menu on the left.
   </li>
   <ul>
     <li>
@@ -333,15 +344,18 @@
       <ul>
         <li>
           Click the <strong>Add countries / regions</strong>
-           link.
+          link.
         </li>
         <li>
-          Select the countries where the app will be available. You can click the checkbox next to <strong>Country / region</strong>
-           to select all countries.
+          Select the countries where the app will be available. You can click the checkbox next to <strong
+          >
+            Country / region
+          </strong>
+          to select all countries.
         </li>
         <li>
           Click the <strong>Save</strong>
-           button at the bottom of the page.
+          button at the bottom of the page.
         </li>
       </ul>
     </li>
@@ -353,18 +367,18 @@
           In the <strong>App bundles</strong>
           section, click the
           <strong>Upload</strong>
-           link and select the downloaded AAB (or drag and drop the file into the file upload area).
+          link and select the downloaded AAB (or drag and drop the file into the file upload area).
         </li>
         <li>
           Click the <strong>Next</strong>
-           button at the bottom of the page.
+          button at the bottom of the page.
         </li>
         <li>
           There will be a list of Errors
           <sup>2</sup>
           and Warnings
           <sup>3</sup>
-           that can be ignored for now.
+          that can be ignored for now.
         </li>
       </ul>
     </li>
@@ -372,7 +386,15 @@
 </ul>
 <h4>Notes</h4>
 <ol>
-  <li>If parts of your app require an access code or registration, then you need to provide instructions to Google Play so that they can test all of your app.</li>
-  <li>The errors are due to missing store listing information which will be uploaded later by Scriptoria.</li>
-  <li>The warning is related to the upload containing native code and not uploading debug symbols.</li>
+  <li>
+    If parts of your app require an access code or registration, then you need to provide
+    instructions to Google Play so that they can test all of your app.
+  </li>
+  <li>
+    The errors are due to missing store listing information which will be uploaded later by
+    Scriptoria.
+  </li>
+  <li>
+    The warning is related to the upload containing native code and not uploading debug symbols.
+  </li>
 </ol>

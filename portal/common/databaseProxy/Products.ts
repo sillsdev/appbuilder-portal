@@ -1,8 +1,8 @@
 import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index.js';
+import { delete as deleteInstance } from './WorkflowInstances.js';
 import prisma from './prisma.js';
 import type { RequirePrimitive } from './utility.js';
-import { delete as deleteInstance } from './WorkflowInstances.js';
 
 export async function create(
   productData: RequirePrimitive<Prisma.ProductsUncheckedCreateInput>
@@ -25,13 +25,10 @@ export async function create(
     });
 
     if (res) {
-      getQueues().SvelteSSE.add(
-        `Update Project #${productData.ProjectId} (product created)`,
-        {
-          type: BullMQ.JobType.SvelteSSE_UpdateProject,
-          projectIds: [productData.ProjectId]
-        }
-      );
+      getQueues().SvelteSSE.add(`Update Project #${productData.ProjectId} (product created)`, {
+        type: BullMQ.JobType.SvelteSSE_UpdateProject,
+        projectIds: [productData.ProjectId]
+      });
     }
 
     return res.Id;

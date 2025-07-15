@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  
+
   interface Props {
     tip?: string | null | undefined;
     className?: string;
@@ -19,7 +19,8 @@
 </span>
 
 <style>
-  .tooltip::before, .tooltip :global(.tooltip-content) {
+  .tooltip::before,
+  .tooltip :global(.tooltip-content) {
     box-shadow: var(--shadow-md);
   }
 </style>

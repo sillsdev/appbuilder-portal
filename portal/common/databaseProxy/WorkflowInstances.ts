@@ -1,6 +1,6 @@
 import type { Prisma } from '@prisma/client';
-import prisma from './prisma.js';
 import { update as projectUpdate } from './Projects.js';
+import prisma from './prisma.js';
 import type { RequirePrimitive } from './utility.js';
 
 export async function upsert(
@@ -65,11 +65,11 @@ export { deleteInstance as delete };
 export function markProcessFinalized(ProcessId: string) {
   return prisma.$transaction([
     // I am not sure how to go about deleting WorkflowProcessScheme...
-    prisma.workflowProcessTransitionHistory.deleteMany({ where: { ProcessId }}),
-    prisma.workflowProcessTimer.deleteMany({ where: { ProcessId }}),
-    prisma.workflowProcessInstanceStatus.deleteMany({ where: { Id: ProcessId }}),
-    prisma.workflowProcessInstancePersistence.deleteMany({ where: { ProcessId }}),
-    prisma.workflowProcessInstance.deleteMany({ where: { Id: ProcessId }})
+    prisma.workflowProcessTransitionHistory.deleteMany({ where: { ProcessId } }),
+    prisma.workflowProcessTimer.deleteMany({ where: { ProcessId } }),
+    prisma.workflowProcessInstanceStatus.deleteMany({ where: { Id: ProcessId } }),
+    prisma.workflowProcessInstancePersistence.deleteMany({ where: { ProcessId } }),
+    prisma.workflowProcessInstance.deleteMany({ where: { Id: ProcessId } })
   ]);
 }
 
