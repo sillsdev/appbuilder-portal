@@ -1,5 +1,13 @@
 import { toast } from '@zerodevx/svelte-toast';
 
+export function sanitizeInput(unsafe: string): string {
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 export function bytesToHumanSize(bytes: bigint | null) {
   if (bytes === null) {
     return '--';
@@ -19,6 +27,7 @@ export function bytesToHumanSize(bytes: bigint | null) {
 export type Entries<K, V> = [K, V][];
 
 export type ValidKey<T extends object> = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [K in keyof T]: T[K] extends (...args: any[]) => void ? K : never;
 }[keyof T];
 
@@ -37,8 +46,8 @@ export function enumNumVals<E extends Record<string, string | number>>(e: E): nu
 export enum ServerStatus {
   Ok = 200,
   Forbidden = 403,
-  NotFound = 404,
-};
+  NotFound = 404
+}
 
 function pushToast(type: 'info' | 'success' | 'warning' | 'error', message: string) {
   toast.push(message, { pausable: true, classes: [type] });

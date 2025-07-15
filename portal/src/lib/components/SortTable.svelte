@@ -3,8 +3,8 @@
   @component
 -->
 <script lang="ts" generics="RowItem extends Record<string, unknown>">
-  import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
   import type { Snippet } from 'svelte';
+  import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
 
   interface Props {
     data: RowItem[];
@@ -85,7 +85,6 @@
               }
             }}
           >
-            <!-- svelte-ignore a11y_label_has_associated_control -->
             <label class="flex flex-row">
               <span>{c.header}</span>
               <span class="direction-arrow">

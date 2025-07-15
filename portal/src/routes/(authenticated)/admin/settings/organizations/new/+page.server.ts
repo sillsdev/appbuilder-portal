@@ -1,9 +1,9 @@
-import { organizationBaseSchema } from '$lib/organizations';
 import { fail } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
+import { organizationBaseSchema } from '$lib/organizations';
 
 const createSchema = organizationBaseSchema;
 

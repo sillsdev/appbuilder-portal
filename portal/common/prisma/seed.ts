@@ -1,6 +1,21 @@
 import { PrismaClient } from '@prisma/client';
 import { Command, Option } from 'commander';
-import { ProductType, WorkflowOptions } from '../public/workflow.js';
+
+const ProductType = {
+  Android_GooglePlay: 0,
+  Android_S3: 1,
+  AssetPackage: 2,
+  Web: 3
+}
+
+export const WorkflowOptions = {
+  /** Require an OrgAdmin to access the GooglePlay Developer Console */
+  AdminStoreAccess: 1,
+  /** Require approval from an OrgAdmin before product can be created */
+  ApprovalProcess: 2,
+  /** Allow Owner to delegate actions to Authors */
+  AllowTransferToAuthors: 3
+}
 
 const program = new Command();
 program
@@ -407,6 +422,15 @@ async function main() {
         FamilyName: 'Hubbard',
         GivenName: 'Chris',
         IsLocked: false
+      },
+      {
+        Id: 6,
+        Name: 'Scriptoria CI',
+        Email: 'ci@scriptoria.io',
+        ExternalId: 'auth0|687519a365a66ae37f53f27a',
+        FamilyName: 'CI',
+        GivenName: 'Scriptoria',
+        IsLocked: false
       }
     ];
 
@@ -556,7 +580,8 @@ async function main() {
       { Id: 5, UserId: 3, OrganizationId: 1 }, // bill_dyck@sil.org - SIL
       { Id: 6, UserId: 3, OrganizationId: 4 }, // bill_dyck@sil.org - SE
       { Id: 7, UserId: 4, OrganizationId: 1 }, // loren_hawthorne@sil.org - SIL
-      { Id: 8, UserId: 5, OrganizationId: 2 } // chris.kalaam@gmail.com - Kalaam
+      { Id: 8, UserId: 5, OrganizationId: 2 }, // chris.kalaam@gmail.com - Kalaam
+      { Id: 9, UserId: 6, OrganizationId: 1 } // Scriptoria CI - SIL
     ];
 
     for (const data of organizationMembershipsData) {
@@ -576,7 +601,8 @@ async function main() {
       { Id: 6, UserId: 3, GroupId: 12 },
       { Id: 7, UserId: 3, GroupId: 16 },
       { Id: 8, UserId: 4, GroupId: 3 },
-      { Id: 9, UserId: 5, GroupId: 14 }
+      { Id: 9, UserId: 5, GroupId: 14 },
+      { Id: 10, UserId: 6, GroupId: 1 }
     ];
 
     for (const data of groupMembershipsData) {

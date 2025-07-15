@@ -1,14 +1,14 @@
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
-import { spawn, type ChildProcessWithoutNullStreams } from 'child_process';
+import { type ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import {
+  type BuilderProgram,
+  type Watch,
   createEmitAndSemanticDiagnosticsBuilderProgram,
   createWatchCompilerHost,
   createWatchProgram,
-  sys,
-  type BuilderProgram,
-  type Watch
+  sys
 } from 'typescript';
 import { loadEnv, searchForWorkspaceRoot } from 'vite';
 import { defineConfig } from 'vitest/config';
@@ -46,7 +46,7 @@ export default defineConfig({
               stdio: 'pipe',
               shell: true
             });
-            const env = Object.assign(loadEnv(server.config.mode, process.cwd()), process.env);
+            const env = Object.assign(loadEnv(server.config.mode, process.cwd(), ''), process.env);
             watchProgram = createWatchProgram(
               createWatchCompilerHost(
                 'node-server/tsconfig.dev.json',

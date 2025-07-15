@@ -1,12 +1,12 @@
 <script lang="ts">
+  import type { Prisma } from '@prisma/client';
+  import { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
+  import type { ReviewerSchema } from './valibot';
   import { enhance as svk_enhance } from '$app/forms';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, locales } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
-  import type { Prisma } from '@prisma/client';
-  import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
-  import type { ReviewerSchema } from './valibot';
 
   interface Props {
     reviewers: Prisma.ReviewersGetPayload<{

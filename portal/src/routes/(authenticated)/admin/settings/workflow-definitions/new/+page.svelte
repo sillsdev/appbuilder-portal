@@ -1,4 +1,9 @@
 <script lang="ts">
+  import { WorkflowType } from 'sil.appbuilder.portal.common/prisma';
+  import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
+  import { superForm } from 'sveltekit-superforms';
+  import { businessFlows } from '../common';
+  import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
@@ -7,11 +12,6 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { enumNumVals, toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
-  import { WorkflowType } from 'sil.appbuilder.portal.common/prisma';
-  import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
-  import { superForm } from 'sveltekit-superforms';
-  import { businessFlows } from '../common';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -37,7 +37,7 @@
 <h3>{m.flowDefs_add()}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput name="flowDefs_name">
+  <LabeledFormInput key="flowDefs_name">
     <input
       type="text"
       name="name"
@@ -47,7 +47,7 @@
     />
     <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="flowDefs_storeType">
+  <LabeledFormInput key="flowDefs_storeType">
     <select
       class="select select-bordered validator"
       name="storeType"
@@ -60,7 +60,7 @@
     </select>
     <span class="validator-hint">{m.flowDefs_emptyStoreType()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="flowDefs_productType">
+  <LabeledFormInput key="flowDefs_productType">
     <select
       class="select select-bordered validator"
       name="productType"
@@ -75,7 +75,7 @@
     </select>
     <span class="validator-hint">{m.flowDefs_emptyProductType()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="flowDefs_type">
+  <LabeledFormInput key="flowDefs_type">
     <select
       class="select select-bordered validator"
       name="workflowType"
@@ -88,7 +88,7 @@
     </select>
     <span class="validator-hint">{m.flowDefs_emptyType()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="flowDefs_description">
+  <LabeledFormInput key="flowDefs_description">
     <input
       type="text"
       name="description"
@@ -96,14 +96,14 @@
       bind:value={$form.description}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="flowDefs_scheme">
+  <LabeledFormInput key="flowDefs_scheme">
     <select class="select select-bordered" name="workflowScheme" bind:value={$form.workflowScheme}>
       {#each data.options.schemes.toSorted( (a, b) => byString(a.Code, b.Code, getLocale()) ) as scheme}
         <option value={scheme.Code}>{scheme.Code}</option>
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="flowDefs_businessFlow">
+  <LabeledFormInput key="flowDefs_businessFlow">
     <select
       class="select select-bordered"
       name="workflowBusinessFlow"
@@ -114,7 +114,7 @@
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="flowDefs_properties">
+  <LabeledFormInput key="flowDefs_properties">
     <PropertiesEditor
       name="properties"
       className="w-full"
@@ -123,14 +123,11 @@
     />
   </LabeledFormInput>
   <LabeledFormInput
-    name="flowDefs_options_title"
-    className="border border-warning p-1 my-4 rounded-lg"
+    key="flowDefs_options_title"
+    classes="border border-warning p-1 my-4 rounded-lg"
   >
     {#each enumNumVals(WorkflowOptions) as option}
-      <InputWithMessage
-        message={{ key: 'flowDefs_options', parms: option }}
-        className="my-1"
-      >
+      <InputWithMessage message={{ key: 'flowDefs_options', params: option }} className="my-1">
         <input
           class="toggle toggle-warning border-warning"
           type="checkbox"

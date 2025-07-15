@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { m } from '$lib/paraglide/messages';
   import IconContainer from './IconContainer.svelte';
+  import { m } from '$lib/paraglide/messages';
 
   interface Props {
     className?: string;

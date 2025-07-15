@@ -4,11 +4,11 @@
     
 -->
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { base } from '$app/paths';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
   import { m } from '$lib/paraglide/messages';
-  import type { Snippet } from 'svelte';
-  
+
   interface Props {
     children?: Snippet;
   }

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
   import { page } from '$app/state';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
@@ -7,8 +9,6 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName, byString } from '$lib/utils/sorting';
   import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
-  import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -30,7 +30,7 @@
     <h1 class="pl-2">{m.project_newProject()}</h1>
     <div class="flex flex-col gap-2 items-center">
       <div class="row">
-        <LabeledFormInput name="project_name" className="md:max-w-xs grow">
+        <LabeledFormInput key="project_name" classes="md:max-w-xs grow">
           <input
             type="text"
             name="Name"
@@ -40,7 +40,7 @@
           />
           <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
         </LabeledFormInput>
-        <LabeledFormInput name="project_group" className="md:max-w-xs">
+        <LabeledFormInput key="project_group" classes="md:max-w-xs">
           <select name="group" class="select select-bordered" bind:value={$form.group}>
             {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
               <option value={group.Id}>{group.Name}</option>
@@ -49,7 +49,7 @@
         </LabeledFormInput>
       </div>
       <div class="row">
-        <LabeledFormInput name="project_languageCode" className="md:max-w-xs">
+        <LabeledFormInput key="project_languageCode" classes="md:max-w-xs">
           <LanguageCodeTypeahead
             bind:langCode={$form.Language}
             inputClasses="w-full md:max-w-xs validator"
@@ -61,7 +61,7 @@
             {/snippet}
           </LanguageCodeTypeahead>
         </LabeledFormInput>
-        <LabeledFormInput name="project_type" className="md:max-w-xs">
+        <LabeledFormInput key="project_type" classes="md:max-w-xs">
           <select name="type" class="select select-bordered" bind:value={$form.type}>
             {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
               <option value={type.Id}>{type.Description}</option>
@@ -70,7 +70,7 @@
         </LabeledFormInput>
       </div>
       <div class="row">
-        <LabeledFormInput name="project_description" className="md:max-w-xs">
+        <LabeledFormInput key="project_description" classes="md:max-w-xs">
           <textarea
             name="Description"
             class="textarea textarea-bordered h-48 w-full"

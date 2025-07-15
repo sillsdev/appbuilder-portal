@@ -1,4 +1,4 @@
-version: '3.4'
+version: "3.4"
 
 # NOTE: that --project-directory .
 # must be passed to every docker-compose command
@@ -7,67 +7,47 @@ version: '3.4'
 # NOTE: environment vars are public, and should not contain secrets ^_~
 #       use `env_file: [.env]` for secret things.
 
-volumes:
-  ui-tmp:
-  ui-dist:
-  ui-node_modules:
-  ui-yarn-cache:
-  api-obj:
-  api-bin:
-  postgres-data:
-
 services:
   db:
     image: postgres:10
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: development
       POSTGRES_USER: db-user
       POSTGRES_PASSWORD: 1234
       PGDATA: /var/lib/postgresql/data
 
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ./scripts/DB:/scripts
-
-  api:
+  svelte-ui:
+    depends_on:
+      - db
+      - valkey
     build:
-      context: .
-      dockerfile: Dockerfile.backend
-      target: development
-    command: bash -c " dotnet watch run"
-    links:
-      - db:db.docker
-    env_file:
-      - ./source/OptimaJet.DWKit.StarterApplication/.env.dev
-    volumes:
-      - ./source/:/app
-      # - api-obj:/app/obj
-      # - api-bin:/app/bin
-
-  ui:
-    build:
-      context: ./source/SIL.AppBuilder.Portal.Frontend/
-      dockerfile: Dockerfile.ci
-    command: bash -c "yarn && yarn start:dev"
-
+      context: ./portal/
+      dockerfile: Dockerfile
+    ports:
+      - "6173:6173"
     environment:
-      API_HOST: api:7081
-
-    env_file:
-      - ./source/SIL.AppBuilder.Portal.Frontend/.env.dev
-
+      DATABASE_URL: "postgresql://db-user:1234@db:5432/development?schema=public"
+      MAIL_SENDER: "LogEmail"
+      EMAIL_FROM: "noreply@scriptoria.io"
+      DEFAULT_BUILDENGINE_URL: "http://stg-tunnel:8443"
+      DEFAULT_BUILDENGINE_API_ACCESS_TOKEN: "${BUILDENGINE_TOKEN}"
+      AUTH0_SECRET: "${AUTH0_SECRET}"
+      AUTH0_CLIENT_SECRET: "${AUTH0_CLIENT_SECRET}"
+      AUTH0_CLIENT_ID: "${AUTH0_CLIENT_ID}"
+      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
+      AUTH0_CONNECTION: "${AUTH0_CONNECTION}"
+      # MUST be included (the path the application will be accessed on) and MUST NOT have a trailing slash
+      ORIGIN: "http://localhost:6173"
+  valkey:
+    image: valkey/valkey:latest
+    command: valkey-server --appendonly yes --appendfilename appendonly.aof --maxmemory-policy noeviction
+  stg-tunnel:
+    build:
+      context: ./deployment/development
+      dockerfile: Dockerfile.stg-tunnel
+    # yikes
+    command: bash -c "cp -r /root/ssh /root/.ssh; chmod -R 600 /root/.ssh; ssh -N -L \*:8443:localhost:\$(ssh aps-stg \"docker ps --format '{{.Names}} {{.Ports}}' | grep -E 'buildengine.*web' | awk -F '->' '{print \\$1}' | awk -F ':' '{print \\$2}'\") aps-stg"
     volumes:
-      - ./source/SIL.AppBuilder.Portal.Frontend/src:/app/src
-      - ./source/SIL.AppBuilder.Portal.Frontend/tests:/app/tests
-      - ./source/SIL.AppBuilder.Portal.Frontend/types:/app/types
-
-      - ./source/SIL.AppBuilder.Portal.Frontend/.babelrc:/app/.babelrc
-      - ./source/SIL.AppBuilder.Portal.Frontend/package.json:/app/package.json
-      - ./source/SIL.AppBuilder.Portal.Frontend/tsconfig.json:/app/tsconfig.json
-      - ./source/SIL.AppBuilder.Portal.Frontend/tslint.json:/app/tslint.json
-      - ./source/SIL.AppBuilder.Portal.Frontend/yarn.lock:/app/yarn.lock
-
-      - ui-tmp:/app/tmp
-      - ui-dist:/app/dist
-      - ui-node_modules:/app/node_modules
-      - ui-yarn-cache:/.yarn-cache
+      - ~/.ssh:/root/ssh

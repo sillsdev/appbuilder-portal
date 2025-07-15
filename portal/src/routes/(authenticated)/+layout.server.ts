@@ -1,13 +1,13 @@
-import { langtagsSchema, type L10NEntries, type L10NKeys } from '$lib/locales.svelte';
-import { locales, type Locale } from '$lib/paraglide/runtime';
-import type { Entries } from '$lib/utils';
-import { isSuperAdmin } from '$lib/utils/roles';
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { safeParse } from 'valibot';
 import type { LayoutServerLoad } from './$types';
+import { type L10NEntries, type L10NKeys, langtagsSchema } from '$lib/locales.svelte';
+import { type Locale, locales } from '$lib/paraglide/runtime';
+import type { Entries } from '$lib/utils';
+import { isSuperAdmin } from '$lib/utils/roles';
 
 export const load: LayoutServerLoad = async (event) => {
   const user = (await event.locals.auth())!.user;
@@ -62,7 +62,7 @@ export const load: LayoutServerLoad = async (event) => {
         console.log(r);
         return [];
       }),
-    localizedNames: await Promise.all(
+    localizedNames: (await Promise.all(
       locales.map(async (locale) => {
         const filePath = join(localDir, locale, 'ldml.json');
 
@@ -73,6 +73,6 @@ export const load: LayoutServerLoad = async (event) => {
         }
         return [locale, ret] as [Locale, typeof ret];
       })
-    ) as L10NEntries
+    )) as L10NEntries
   };
 };

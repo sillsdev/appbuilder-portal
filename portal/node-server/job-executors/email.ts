@@ -1,15 +1,15 @@
-import { Job } from 'bullmq';
+import type { Job } from 'bullmq';
 import { BullMQ, getQueues, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { notifySuperAdmins, sendEmail } from '../email-service/EmailClient.js';
 import {
-  addProperties,
   NotificationTemplate,
   NotificationWithLinkTemplate,
   OrganizationInviteRequestTemplate,
   OrganizationMembershipInviteTemplate,
   ProjectImportTemplate,
-  ReviewProductTemplate
+  ReviewProductTemplate,
+  addProperties
 } from '../email-service/EmailTemplates.js';
 import { getOwnerAdminVariantKeys, translate } from '../email-service/locales/locale.js';
 

@@ -18,7 +18,7 @@ export const ReadonlyClient = Prisma.defineExtension({
     $allModels: Object.fromEntries(
       WRITE_METHODS.map((method) => [
         method,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
         function (args: never) {
           throw new Error(`Calling the \`${method}\` method on a readonly client is not allowed`);
         }

@@ -1,10 +1,10 @@
 <script lang="ts">
+  import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+  import type { Snippet } from 'svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { enumNumVals } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
-  import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-  import type { Snippet } from 'svelte';
   interface Props {
     selector?: Snippet<[RoleId]>;
   }

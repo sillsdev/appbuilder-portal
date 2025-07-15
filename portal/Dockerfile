@@ -1,7 +1,8 @@
 # Temporary container to build output
-FROM node:24-alpine3.19 AS builder
+FROM node:24-alpine3.21 AS builder
 
 WORKDIR /build
+RUN apk add --no-cache openssl
 
 # Run npm i before copying all source code because Docker caches each layer
 # and reuses them if nothing has changed. This way if package.json is unchanged,
@@ -27,9 +28,10 @@ RUN (cp -r /build/node-server/* /build/out)
 RUN (cd /build/node-server/; cp -r email-service/templates/ /build/out/email-service/templates)
 
 # Real container that will run
-FROM node:24-alpine3.19
+FROM node:24-alpine3.21
 
 WORKDIR /app
+RUN apk add --no-cache openssl
 
 # Bring in package.json and install deps
 COPY --from=builder /build/package*.json /app/

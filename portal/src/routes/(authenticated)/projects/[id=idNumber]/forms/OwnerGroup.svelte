@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { Prisma } from '@prisma/client';
+  import type { ActionData } from '../$types';
   import { enhance } from '$app/forms';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
@@ -6,8 +8,6 @@
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
-  import type { Prisma } from '@prisma/client';
-  import type { ActionData } from '../$types';
 
   interface Props {
     project: Prisma.ProjectsGetPayload<{
@@ -44,6 +44,7 @@
 
   let { project, users, groups, orgName, endpoint }: Props = $props();
 
+  // eslint-disable-next-line no-undef
   let timeout: NodeJS.Timeout;
   let form: HTMLFormElement;
   let ownerField: HTMLInputElement;

@@ -2,7 +2,7 @@ import * as v from 'valibot';
 
 export const idSchema = v.pipe(v.number(), v.minValue(0), v.integer());
 
-/** mostly for product IDs */ 
+/** mostly for product IDs */
 export const stringIdSchema = v.pipe(v.string(), v.uuid());
 
 export const deleteSchema = v.object({
@@ -28,13 +28,15 @@ export const propertiesSchema = v.nullable(
       } catch (e) {
         addIssue({
           message: e instanceof Error ? e.message : String(e),
-          path: [{
-            type: 'unknown',
-            origin: 'value',
-            input: dataset.value,
-            key: 'root',
-            value: dataset.value
-          }]
+          path: [
+            {
+              type: 'unknown',
+              origin: 'value',
+              input: dataset.value,
+              key: 'root',
+              value: dataset.value
+            }
+          ]
         });
         return NEVER;
       }
@@ -53,15 +55,15 @@ export const propertiesSchema = v.nullable(
 );
 
 /** Legal phone numbers: +1 (123) 456-7890 1234567890 123-4567890 123 456-7890 */
-export const phoneRegex = new RegExp(/[\d\(\) \-+]+/);
+export const phoneRegex = new RegExp(/[\d() \-+]+/);
 
 //language tag regex sourced from: https://stackoverflow.com/a/60899733
 export const langtagRegex = new RegExp(
   '^(' +
     '(' + // grandfathered
-  /* irregular */ '(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)' +
+    /* irregular */ '(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)' +
     '|' +
-  /* regular */ '(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)' +
+    /* regular */ '(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)' +
     ')' +
     '|' + // langtag
     '(' +
@@ -83,7 +85,7 @@ export const langtagRegex = new RegExp(
     //extension
     '(-' +
     '(' +
-  /* singleton */ ('[0-9A-WY-Za-wy-z]' + '(-[A-Za-z0-9]{2,8})+)') +
+    /* singleton */ ('[0-9A-WY-Za-wy-z]' + '(-[A-Za-z0-9]{2,8})+)') +
     ')*' +
     '(-' +
     '(x(-[A-Za-z0-9]{1,8})+)' +

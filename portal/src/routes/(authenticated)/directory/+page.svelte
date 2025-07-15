@@ -1,4 +1,7 @@
 <script lang="ts">
+  import type { FormResult } from 'sveltekit-superforms';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
   import DateRangePicker from '$lib/components/DateRangePicker.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
@@ -10,9 +13,6 @@
   import type { PrunedProject } from '$lib/projects';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import { byName } from '$lib/utils/sorting';
-  import type { FormResult } from 'sveltekit-superforms';
-  import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -72,6 +72,7 @@
         />
         <Tooltip className="tooltip-bottom {mobileSizing}">
           <div class="tooltip-content text-left">
+            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             {@html m.directory_searchHelp()}
           </div>
           <SearchBar bind:value={$form.search} />

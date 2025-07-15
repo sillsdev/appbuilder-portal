@@ -1,4 +1,7 @@
 <script lang="ts">
+  import type { FormResult } from 'sveltekit-superforms';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
   import DateRangePicker from '$lib/components/DateRangePicker.svelte';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
@@ -9,9 +12,6 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
-  import type { FormResult } from 'sveltekit-superforms';
-  import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -33,7 +33,7 @@
     },
     onUpdate(event) {
       const data = event.result.data as FormResult<{
-        query: { data: any[]; count: number };
+        query: { data: PageData['instances']; count: number };
       }>;
       if (event.form.valid && data.query) {
         instances = data.query.data;

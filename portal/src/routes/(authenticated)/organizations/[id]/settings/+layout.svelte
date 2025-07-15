@@ -1,10 +1,10 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
+  import type { LayoutData } from './$types';
   import { base } from '$app/paths';
   import { page } from '$app/state';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
   import { m } from '$lib/paraglide/messages';
-  import type { Snippet } from 'svelte';
-  import type { LayoutData } from './$types';
 
   interface Props {
     data: LayoutData;

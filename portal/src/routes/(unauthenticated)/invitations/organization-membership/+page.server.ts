@@ -1,7 +1,7 @@
-import { acceptOrganizationInvite, checkInviteErrors } from '$lib/organizationInvites';
-import { localizeHref } from '$lib/paraglide/runtime';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { acceptOrganizationInvite, checkInviteErrors } from '$lib/organizationInvites';
+import { localizeHref } from '$lib/paraglide/runtime';
 
 export const load = (async (event) => {
   const inviteToken = event.url.searchParams.get('t')!;

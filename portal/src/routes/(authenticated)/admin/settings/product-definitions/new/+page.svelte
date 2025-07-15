@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
@@ -6,8 +8,6 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
-  import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -44,7 +44,7 @@
 <h3>{m.prodDefs_add()}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput name="prodDefs_name">
+  <LabeledFormInput key="prodDefs_name">
     <input
       type="text"
       name="name"
@@ -54,7 +54,7 @@
     />
     <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="prodDefs_type">
+  <LabeledFormInput key="prodDefs_type">
     <select
       class="select select-bordered validator"
       name="applicationType"
@@ -67,7 +67,7 @@
     </select>
     <span class="validator-hint">{m.prodDefs_emptyType()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="prodDefs_flow">
+  <LabeledFormInput key="prodDefs_flow">
     <select
       class="select select-bordered validator"
       name="workflow"
@@ -80,7 +80,7 @@
     </select>
     <span class="validator-hint">{m.prodDefs_emptyFlow()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="prodDefs_rebuildFlow">
+  <LabeledFormInput key="prodDefs_rebuildFlow">
     <select
       class="select select-bordered"
       name="rebuildWorkflow"
@@ -92,7 +92,7 @@
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="prodDefs_republishFlow">
+  <LabeledFormInput key="prodDefs_republishFlow">
     <select
       class="select select-bordered"
       name="republishWorkflow"
@@ -104,15 +104,20 @@
       {/each}
     </select>
   </LabeledFormInput>
-  <LabeledFormInput name="prodDefs_description">
+  <LabeledFormInput key="prodDefs_description">
     <textarea
       name="description"
       class="textarea textarea-bordered h-36 w-full"
       bind:value={$form.description}
     ></textarea>
   </LabeledFormInput>
-  <LabeledFormInput name="prodDefs_properties">
-    <PropertiesEditor name="properties" className="w-full" bind:value={$form.properties} bind:ok={propsOk} />
+  <LabeledFormInput key="prodDefs_properties">
+    <PropertiesEditor
+      name="properties"
+      className="w-full"
+      bind:value={$form.properties}
+      bind:ok={propsOk}
+    />
   </LabeledFormInput>
   <div class="my-4">
     <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>

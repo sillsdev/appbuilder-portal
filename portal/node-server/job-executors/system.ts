@@ -1,4 +1,4 @@
-import { Job } from 'bullmq';
+import type { Job } from 'bullmq';
 import { XMLParser } from 'fast-xml-parser';
 import { existsSync } from 'fs';
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
@@ -7,19 +7,20 @@ import {
   BuildEngine,
   BullMQ,
   DatabaseWrites,
+  Workflow,
   getQueues,
-  prisma,
-  Workflow
+  prisma
 } from 'sil.appbuilder.portal.common';
 import { WorkflowType, WorkflowTypeString } from 'sil.appbuilder.portal.common/prisma';
-import {
+import type {
   Environment,
+  WorkflowInstanceContext} from 'sil.appbuilder.portal.common/workflow';
+import {
   ENVKeys,
-  isDeprecated,
-  isWorkflowState,
   WorkflowAction,
-  WorkflowInstanceContext,
-  WorkflowState
+  WorkflowState,
+  isDeprecated,
+  isWorkflowState
 } from 'sil.appbuilder.portal.common/workflow';
 
 export async function checkSystemStatuses(

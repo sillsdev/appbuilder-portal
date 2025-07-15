@@ -1,4 +1,10 @@
 <script lang="ts">
+  import type { Readable } from 'svelte/store';
+  import { source } from 'sveltekit-sse';
+  import ProductCard from './ProductCard.svelte';
+  import { Authors, OwnerGroup, Reviewers, Settings } from './forms';
+  import { AddProduct } from './modals';
+  import type { ProjectDataSSE } from './sse/+server';
   import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
@@ -8,12 +14,6 @@
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
-  import type { Readable } from 'svelte/store';
-  import { source } from 'sveltekit-sse';
-  import { Authors, OwnerGroup, Reviewers, Settings } from './forms';
-  import { AddProduct } from './modals';
-  import ProductCard from './ProductCard.svelte';
-  import type { ProjectDataSSE } from './sse/+server';
 
   const { data } = $props();
 

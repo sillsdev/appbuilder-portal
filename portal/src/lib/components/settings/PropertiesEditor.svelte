@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { propertiesSchema } from '$lib/valibot';
   import { flatten, safeParse } from 'valibot';
+  import { propertiesSchema } from '$lib/valibot';
 
   interface Props {
     value: string | null;
@@ -12,7 +12,7 @@
   let { value = $bindable(), name, className = '', ok = $bindable(true) }: Props = $props();
 
   const parsed = $derived(safeParse(propertiesSchema, value));
-  
+
   let showErrors = $state(true);
 
   $effect(() => {

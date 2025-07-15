@@ -1,8 +1,14 @@
 <h3>Instructions</h3>
-<p>For apps being added to Scriptoria that are already published to Google Play, most of these steps have already been completed. You will still need to perform the last step to complete the rollout of the draft publish of the new version of the app.</p>
+<p>
+  For apps being added to Scriptoria that are already published to Google Play, most of these steps
+  have already been completed. You will still need to perform the last step to complete the rollout
+  of the draft publish of the new version of the app.
+</p>
 <ul>
   <li>
-    Go to <a href="https://play.google.com/apps/publish/" target="_blank">Google Play Developer Console</a>
+    Go to <a href="https://play.google.com/apps/publish/" target="_blank">
+      Google Play Developer Console
+    </a>
     and sign in.
   </li>
   <li>

@@ -1,6 +1,6 @@
-import { localizeHref } from '$lib/paraglide/runtime';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { localizeHref } from '$lib/paraglide/runtime';
 
 // We don't have anything on this page currently, so just redirect to the basic info page
 export const load = (async (event) => {

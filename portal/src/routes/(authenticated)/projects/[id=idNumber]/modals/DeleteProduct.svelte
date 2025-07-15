@@ -1,8 +1,10 @@
 <script lang="ts">
+  /* eslint-disable svelte/no-at-html-tags */
+  import type { Prisma } from '@prisma/client';
   import { enhance } from '$app/forms';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
-  import type { Prisma } from '@prisma/client';
+  import { sanitizeInput } from '$lib/utils';
 
   interface Props {
     modal?: HTMLDialogElement;
@@ -49,7 +51,7 @@
         </div>
         <span>
           {@html m.deletePrompt_prompt({
-            product: product.ProductDefinition.Name ?? m.tasks_product(),
+            product: sanitizeInput(product.ProductDefinition.Name ?? m.tasks_product()),
             project
           })}
         </span>

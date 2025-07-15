@@ -1,4 +1,7 @@
 <script lang="ts">
+  import type { FormResult } from 'sveltekit-superforms';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
   import { afterNavigate, goto } from '$app/navigation';
   import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
@@ -15,9 +18,6 @@
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
   import { byName, byString } from '$lib/utils/sorting';
-  import type { FormResult } from 'sveltekit-superforms';
-  import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -155,6 +155,7 @@
         />
         <Tooltip className="tooltip-bottom {mobileSizing}">
           <div class="tooltip-content text-left">
+            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             {@html m.directory_searchHelp()}
           </div>
           <SearchBar bind:value={$pageForm.search} />
@@ -234,8 +235,6 @@
                 <h3>{project.Name}</h3>
                 {#if products?.length}
                   {#each products.toSorted( (a, b) => byString(a.ProductDefinitionName, b.ProductDefinitionName, getLocale()) ) as product}
-                    <!-- svelte-ignore a11y_click_events_have_key_events -->
-                    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                     <label
                       class="flex flex-col border border-secondary rounded text-left cursor-pointer"
                     >

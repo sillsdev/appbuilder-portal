@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { bytesToHumanSize } from '$lib/utils';
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
+  import { bytesToHumanSize } from '$lib/utils';
 
   interface Props {
     data: PageData;

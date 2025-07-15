@@ -1,9 +1,9 @@
 <script lang="ts">
+  import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import OrganizationSelector from '$lib/components/OrganizationSelector.svelte';
   import { m } from '$lib/paraglide/messages';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;

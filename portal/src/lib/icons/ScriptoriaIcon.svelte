@@ -23,7 +23,7 @@
     bordercolor="#000000"
     borderopacity="0.25"
     showgrid="false"
-></sodipodi:namedview>
+  ></sodipodi:namedview>
   <defs id="defs2" />
   <g id="layer1" transform="translate(14.202624,-29.114538)">
     <path

@@ -1,9 +1,9 @@
-import { phoneRegex } from '$lib/valibot';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { phoneRegex } from '$lib/valibot';
 
 const profileSchema = v.object({
   firstName: v.nullable(v.string()),

@@ -1,6 +1,6 @@
-import { SSEPageUpdates } from '$lib/projects/listener.js';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { produce } from 'sveltekit-sse';
+import { SSEPageUpdates } from '$lib/projects/listener.js';
 
 export async function POST(request) {
   const userId = (await request.locals.auth())!.user.userId;

@@ -1,11 +1,11 @@
 <script lang="ts">
+  import type { Prisma } from '@prisma/client';
   import { enhance } from '$app/forms';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
-  import type { Prisma } from '@prisma/client';
 
   interface Props {
     modal?: HTMLDialogElement;
@@ -100,8 +100,6 @@
         {#if availableStores.length}
           {@const locale = getLocale()}
           {#each availableStores.toSorted((a, b) => byName(a, b, locale)) as store}
-            <!-- svelte-ignore a11y_click_events_have_key_events -->
-            <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
             <label
               class="flex flex-col border border-secondary rounded-sm text-left cursor-pointer"
             >

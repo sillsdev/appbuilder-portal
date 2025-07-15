@@ -1,7 +1,7 @@
-import { localizeHref } from '$lib/paraglide/runtime';
 import { redirect } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import type { LayoutServerLoad } from './$types';
+import { localizeHref } from '$lib/paraglide/runtime';
 
 export const load = (async (event) => {
   const id = parseInt(event.params.id);

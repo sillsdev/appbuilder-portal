@@ -1,14 +1,14 @@
 <script lang="ts">
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
+  import { instructions } from './instructions';
   import IconContainer from '$lib/components/IconContainer.svelte';
-  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { bytesToHumanSize } from '$lib/utils';
   import { byName, byNumber, byString } from '$lib/utils/sorting';
-  import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
-  import { instructions } from './instructions';
 
   interface Props {
     data: PageData;
@@ -29,8 +29,12 @@
   <div class="flex flex-row gap-x-3 p-2 flex-wrap">
     <div class="breadcrumbs">
       <ul>
-        <li><a class="link" href={localizeHref("/tasks")}>{m.sidebar_myTasks({ count: 0 })}</a></li>
-        <li><a class="link" href={localizeHref(`/projects/${data.projectId}`)}>{data.fields.projectName}</a></li>
+        <li><a class="link" href={localizeHref('/tasks')}>{m.sidebar_myTasks({ count: 0 })}</a></li>
+        <li>
+          <a class="link" href={localizeHref(`/projects/${data.projectId}`)}>
+            {data.fields.projectName}
+          </a>
+        </li>
         <li>{data.productDescription}</li>
       </ul>
     </div>
@@ -52,7 +56,7 @@
         {/each}
       </div>
     {/if}
-    <LabeledFormInput name="transitions_comment">
+    <LabeledFormInput key="transitions_comment">
       <textarea
         class="textarea textarea-bordered h-24 w-full"
         name="comment"
@@ -68,7 +72,7 @@
   <div>
     {#if data.fields.ownerName && data.fields.ownerEmail}
       <div class="flex flex-col gap-x-3 w-full md:flex-row">
-        <LabeledFormInput name="projectTable_owner" className="md:w-2/4">
+        <LabeledFormInput key="projectTable_owner" classes="md:w-2/4">
           <input
             type="text"
             class="input input-bordered w-full"
@@ -76,7 +80,7 @@
             value={data.fields.ownerName}
           />
         </LabeledFormInput>
-        <LabeledFormInput name="profile_email" className="md:w-2/4">
+        <LabeledFormInput key="profile_email" classes="md:w-2/4">
           <input
             type="text"
             class="input input-bordered w-full"
@@ -87,7 +91,7 @@
       </div>
     {/if}
     <div class="flex flex-col gap-x-3 w-full md:flex-row">
-      <LabeledFormInput name="project_name" className="md:w-2/4">
+      <LabeledFormInput key="project_name" classes="md:w-2/4">
         <input
           type="text"
           class="input input-bordered w-full"
@@ -95,7 +99,7 @@
           value={data.fields.projectName}
         />
       </LabeledFormInput>
-      <LabeledFormInput name="project_description" className="md:w-2/4">
+      <LabeledFormInput key="project_description" classes="md:w-2/4">
         <input
           type="text"
           class="input input-bordered w-full"
@@ -106,7 +110,7 @@
     </div>
     {#if data.fields.storeDescription}
       <div class="flex flex-col gap-x-3 md:flex-row">
-        <LabeledFormInput name="stores_name" className="md:w-2/4">
+        <LabeledFormInput key="stores_name" classes="md:w-2/4">
           <input
             type="text"
             class="input input-bordered w-full"
@@ -115,7 +119,7 @@
           />
         </LabeledFormInput>
         {#if data.fields.listingLanguageCode}
-          <LabeledFormInput name="tasks_storeLanguage" className="md:w-2/4">
+          <LabeledFormInput key="tasks_storeLanguage" classes="md:w-2/4">
             <input
               type="text"
               class="input input-bordered w-full"
@@ -127,7 +131,7 @@
       </div>
     {/if}
     {#if data.fields.projectURL}
-      <LabeledFormInput name="tasks_appProjectURL">
+      <LabeledFormInput key="tasks_appProjectURL">
         <span class="input input-bordered w-full flex flex-row gap-2 items-center">
           <input type="text" class="grow" readonly value={data.fields.projectURL} />
           <button
@@ -152,7 +156,7 @@
       </LabeledFormInput>
     {/if}
     {#if data.fields.displayProductDescription && data.fields.appType && data.fields.projectLanguageCode}
-      <LabeledFormInput name="tasks_product">
+      <LabeledFormInput key="tasks_product">
         <input
           type="text"
           class="input input-bordered w-full"
@@ -160,7 +164,7 @@
           value={data.productDescription}
         />
       </LabeledFormInput>
-      <LabeledFormInput name="prodDefs_type">
+      <LabeledFormInput key="prodDefs_type">
         <input
           type="text"
           class="input input-bordered w-full"
@@ -168,7 +172,7 @@
           value={data.fields.appType}
         />
       </LabeledFormInput>
-      <LabeledFormInput name="project_languageCode">
+      <LabeledFormInput key="project_languageCode">
         <input
           type="text"
           class="input input-bordered w-full"

@@ -1,11 +1,11 @@
 <script lang="ts">
+  import RolesSelector from '../../../RolesSelector.svelte';
+  import type { ActionData, PageData } from './$types';
   import { enhance } from '$app/forms';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
-  import RolesSelector from '../../../RolesSelector.svelte';
-  import type { ActionData, PageData } from './$types';
 
   interface Props {
     data: PageData;

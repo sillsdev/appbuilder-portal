@@ -1,6 +1,4 @@
-import './handleEnvVars.js';
-
-import { getSession, type ExpressAuthConfig } from '@auth/express';
+import { type ExpressAuthConfig, getSession } from '@auth/express';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
@@ -23,15 +21,15 @@ globalThis.__filename = fileURLToPath(import.meta.url);
 globalThis.__dirname = path.dirname(__filename);
 
 const authConfig: ExpressAuthConfig = {
-  secret: process.env.VITE_AUTH0_SECRET,
+  secret: process.env.AUTH0_SECRET,
   providers: [
     Auth0Provider({
       id: 'auth0',
       name: 'Auth0',
-      clientId: process.env.VITE_AUTH0_CLIENT_ID,
-      clientSecret: process.env.VITE_AUTH0_CLIENT_SECRET,
-      issuer: `https://${process.env.VITE_AUTH0_DOMAIN}/`,
-      wellKnown: `https://${process.env.VITE_AUTH0_DOMAIN}/.well-known/openid-configuration`
+      clientId: process.env.AUTH0_CLIENT_ID,
+      clientSecret: process.env.AUTH0_CLIENT_SECRET,
+      issuer: `https://${process.env.AUTH0_DOMAIN}/`,
+      wellKnown: `https://${process.env.AUTH0_DOMAIN}/.well-known/openid-configuration`
     })
   ],
   callbacks: {

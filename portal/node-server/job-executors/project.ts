@@ -1,11 +1,11 @@
-import { Job } from 'bullmq';
+import type { Job } from 'bullmq';
 import {
   BuildEngine,
   BullMQ,
   DatabaseWrites,
+  Workflow,
   getQueues,
-  prisma,
-  Workflow
+  prisma
 } from 'sil.appbuilder.portal.common';
 
 export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> {

@@ -2,13 +2,14 @@
   lang="ts"
   generics="Group extends Prisma.GroupsGetPayload<{ select: { Id: true; Name: true }}>"
 >
-  import { getLocale } from '$lib/paraglide/runtime';
-  import { byName } from '$lib/utils/sorting';
   import type { Prisma } from '@prisma/client';
   import type { Snippet } from 'svelte';
+  import { getLocale } from '$lib/paraglide/runtime';
+  import { byName } from '$lib/utils/sorting';
 
   interface Props {
     groups: Group[];
+
     selector?: Snippet<[Group]>;
   }
 

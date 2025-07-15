@@ -1,9 +1,9 @@
-import { deleteSchema, idSchema } from '$lib/valibot';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { deleteSchema, idSchema } from '$lib/valibot';
 
 const addGroupSchema = v.object({
   orgId: idSchema,
@@ -32,7 +32,8 @@ export const actions = {
   async deleteGroup(event) {
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    if ( // if user modified hidden values
+    if (
+      // if user modified hidden values
       !(await prisma.groups.findFirst({
         where: { Id: form.data.id, OwnerId: parseInt(event.params.id) }
       }))
