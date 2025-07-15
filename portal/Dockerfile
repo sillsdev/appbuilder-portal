@@ -1,5 +1,5 @@
 # Temporary container to build output
-FROM node:22-alpine3.19 AS builder
+FROM node:24-alpine3.19 AS builder
 
 WORKDIR /build
 
@@ -11,7 +11,7 @@ COPY common/package*.json /build/common/
 RUN npm i
 
 # Run prisma generate to rebuild with the correct target, also caching
-COPY common/prisma /build/common/
+COPY common/prisma /build/common/prisma
 RUN (cd common; npx prisma generate)
 
 # Copy all source and run a build
@@ -27,7 +27,7 @@ RUN (cp -r /build/node-server/* /build/out)
 RUN (cd /build/node-server/; cp -r email-service/templates/ /build/out/email-service/templates)
 
 # Real container that will run
-FROM node:22-alpine3.19
+FROM node:24-alpine3.19
 
 WORKDIR /app
 
