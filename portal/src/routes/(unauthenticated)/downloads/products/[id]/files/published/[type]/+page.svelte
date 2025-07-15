@@ -1,7 +1,7 @@
 <script lang="ts">
+  import type { PageData } from './$types';
   import { m } from '$lib/paraglide/messages';
   import { bytesToHumanSize } from '$lib/utils';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;

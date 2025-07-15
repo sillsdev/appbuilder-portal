@@ -1,17 +1,18 @@
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import type {
   Actor,
   InspectedSnapshotEvent,
+  StateNode as XStateNode,
   TransitionDefinition,
-  TransitionDefinitionMap,
-  StateNode as XStateNode
+  TransitionDefinitionMap
 } from 'xstate';
 import { createActor } from 'xstate';
 import { BullMQ, getQueues } from '../bullmq/index.js';
+import { allUsersByRole } from '../databaseProxy/UserRoles.js';
 import { DatabaseWrites } from '../databaseProxy/index.js';
 import prisma from '../databaseProxy/prisma.js';
-import { allUsersByRole } from '../databaseProxy/UserRoles.js';
-import { ProductTransitionType, RoleId, WorkflowType } from '../public/prisma.js';
+import type { RoleId} from '../public/prisma.js';
+import { ProductTransitionType, WorkflowType } from '../public/prisma.js';
 import type {
   Snapshot,
   StateNode,
@@ -22,10 +23,10 @@ import type {
 } from '../public/workflow.js';
 import {
   ActionType,
-  includeStateOrTransition,
-  isTerminal,
   WorkflowAction,
-  WorkflowState
+  WorkflowState,
+  includeStateOrTransition,
+  isTerminal
 } from '../public/workflow.js';
 import { WorkflowStateMachine } from './state-machine.js';
 

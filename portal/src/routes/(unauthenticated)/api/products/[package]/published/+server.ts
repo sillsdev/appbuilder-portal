@@ -1,6 +1,6 @@
+import { prisma } from 'sil.appbuilder.portal.common';
 import { getFileInfo } from '$lib/products';
 import { getPublishedFile } from '$lib/products/server';
-import { prisma } from 'sil.appbuilder.portal.common';
 
 type ManifestResponse = {
   url: string;

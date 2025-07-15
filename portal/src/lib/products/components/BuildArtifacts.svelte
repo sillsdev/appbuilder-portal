@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Prisma } from '@prisma/client';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -6,7 +7,6 @@
   import { bytesToHumanSize } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
-  import type { Prisma } from '@prisma/client';
 
   interface Props {
     build: Prisma.ProductBuildsGetPayload<{

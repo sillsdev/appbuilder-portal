@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/default
 import aws from '@aws-sdk/client-ses';
 import { EmailProvider } from './EmailProvider.js';
 

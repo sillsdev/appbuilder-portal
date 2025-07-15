@@ -1,15 +1,15 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { superForm } from 'sveltekit-superforms';
+  import GroupsSelector from '../GroupsSelector.svelte';
+  import RolesSelector from '../RolesSelector.svelte';
+  import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
-  import { onMount } from 'svelte';
-  import { superForm } from 'sveltekit-superforms';
-  import GroupsSelector from '../GroupsSelector.svelte';
-  import RolesSelector from '../RolesSelector.svelte';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -45,7 +45,7 @@
   <form class="m-4" method="post" action="?/new" use:enhance>
     <div class="flex flex-row justify-between gap-4 flex-wrap">
       <div class="grow">
-        <LabeledFormInput name="orgMembership_email">
+        <LabeledFormInput key="orgMembership_email">
           <input
             type="email"
             name="email"
@@ -58,7 +58,7 @@
             {$form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty()}
           </span>
         </LabeledFormInput>
-        <LabeledFormInput name="project_org">
+        <LabeledFormInput key="project_org">
           <OrganizationDropdown
             className="w-full"
             name="organizationId"

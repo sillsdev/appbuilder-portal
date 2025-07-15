@@ -1,4 +1,5 @@
-import { Job, Worker } from 'bullmq';
+import type { Job} from 'bullmq';
+import { Worker } from 'bullmq';
 import { BullMQ, getQueues, getWorkerConfig } from 'sil.appbuilder.portal.common';
 import * as Executor from './job-executors/index.js';
 

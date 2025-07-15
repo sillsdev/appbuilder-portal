@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import type { RepeatOptions } from 'bullmq';
 import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-api/types.js';
-import { RoleId } from '../public/prisma.js';
+import type { RoleId } from '../public/prisma.js';
 
 /** Maximum 5 attempts with a 5 second exponential backoff */
 export const Retry5e5 = {

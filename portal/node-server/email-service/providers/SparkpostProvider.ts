@@ -12,7 +12,7 @@ export class SparkpostProvider extends EmailProvider {
    */
   constructor(apiKey?: string) {
     super();
-    this.sp = new SparkPost(apiKey || process.env.VITE_SPARKPOST_API_KEY);
+    this.sp = new SparkPost(apiKey || process.env.SPARKPOST_API_KEY);
   }
 
   async sendEmail(

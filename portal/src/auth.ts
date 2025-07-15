@@ -1,15 +1,25 @@
+import {
+  type DefaultSession,
+  type Session,
+  SvelteKitAuth,
+  type SvelteKitAuthConfig
+} from '@auth/sveltekit';
+import Auth0Provider from '@auth/sveltekit/providers/auth0';
+import { type Handle, redirect } from '@sveltejs/kit';
+import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import type { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import {
+  AUTH0_CLIENT_ID,
+  AUTH0_CLIENT_SECRET,
+  AUTH0_DOMAIN,
+  AUTH0_SECRET
+} from '$env/static/private';
 import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { verifyCanViewAndEdit } from '$lib/projects/server';
 import { adminOrgs } from '$lib/users/server';
 import { ServerStatus } from '$lib/utils';
 import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
-import type { Session } from '@auth/sveltekit';
-import { SvelteKitAuth, type DefaultSession, type SvelteKitAuthConfig } from '@auth/sveltekit';
-import Auth0Provider from '@auth/sveltekit/providers/auth0';
-import { redirect, type Handle } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
-import type { RoleId } from 'sil.appbuilder.portal.common/prisma';
 
 declare module '@auth/sveltekit' {
   interface Session {
@@ -30,20 +40,19 @@ enum TokenStatus {
   Valid,
   Invalid
 }
-
 const config: SvelteKitAuthConfig = {
   trustHost: true,
   providers: [
     Auth0Provider({
       id: 'auth0',
       name: 'Auth0',
-      clientId: import.meta.env.VITE_AUTH0_CLIENT_ID,
-      clientSecret: import.meta.env.VITE_AUTH0_CLIENT_SECRET,
-      issuer: `https://${import.meta.env.VITE_AUTH0_DOMAIN}/`,
-      wellKnown: `https://${import.meta.env.VITE_AUTH0_DOMAIN}/.well-known/openid-configuration`
+      clientId: AUTH0_CLIENT_ID,
+      clientSecret: AUTH0_CLIENT_SECRET,
+      issuer: `https://${AUTH0_DOMAIN}/`,
+      wellKnown: `https://${AUTH0_DOMAIN}/.well-known/openid-configuration`
     })
   ],
-  secret: import.meta.env.VITE_AUTH0_SECRET,
+  secret: AUTH0_SECRET,
   // debug: true,
   session: {
     maxAge: 60 * 60 * 24 // 24 hours

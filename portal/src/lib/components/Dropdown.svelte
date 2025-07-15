@@ -4,8 +4,8 @@ A simple dropdown menu from DaisyUI.
 
 -->
 <script lang="ts">
-  import { onNavigate } from '$app/navigation';
   import type { Snippet } from 'svelte';
+  import { onNavigate } from '$app/navigation';
   interface Props {
     /** class="dropdown ..." */
     dropdownClasses?: string;

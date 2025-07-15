@@ -1,12 +1,12 @@
 import type { Prisma } from '@prisma/client';
-import { Job } from 'bullmq';
+import type { Job } from 'bullmq';
 import {
   BuildEngine,
   BullMQ,
   DatabaseWrites,
+  Workflow,
   getQueues,
-  prisma,
-  Workflow
+  prisma
 } from 'sil.appbuilder.portal.common';
 import { WorkflowAction } from 'sil.appbuilder.portal.common/workflow';
 import {

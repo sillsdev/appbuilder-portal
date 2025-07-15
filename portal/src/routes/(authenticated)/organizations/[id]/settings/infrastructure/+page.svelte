@@ -1,10 +1,10 @@
 <script lang="ts">
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
-  import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -33,7 +33,7 @@
         />
       </InputWithMessage>
       {#if !$form.useDefaultBuildEngine}
-        <LabeledFormInput name="org_buildEngineURL">
+        <LabeledFormInput key="org_buildEngineURL">
           <input
             type="url"
             name="buildEngineUrl"
@@ -43,7 +43,7 @@
           />
           <span class="validator-hint">{m.org_emptyBuildEngineURL()}</span>
         </LabeledFormInput>
-        <LabeledFormInput name="org_accessToken">
+        <LabeledFormInput key="org_accessToken">
           <input
             type="text"
             name="buildEngineApiAccessToken"

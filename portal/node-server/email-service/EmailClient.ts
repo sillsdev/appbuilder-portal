@@ -1,23 +1,23 @@
 import { prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import {
-  addProperties,
   EmailLayoutTemplate,
   NotificationTemplate,
-  NotificationWithLinkTemplate
+  NotificationWithLinkTemplate,
+  addProperties
 } from './EmailTemplates.js';
-import { EmailProvider } from './providers/EmailProvider.js';
+import type { EmailProvider } from './providers/EmailProvider.js';
 import { LogProvider } from './providers/LogProvider.js';
 
 let emailProvider: EmailProvider = new LogProvider();
 
-if (process.env.VITE_MAIL_SENDER === 'SparkPost') {
+if (process.env.MAIL_SENDER === 'SparkPost') {
   const { SparkpostProvider } = await import('./providers/SparkpostProvider.js');
-  if (!process.env.VITE_SPARKPOST_API_KEY) {
-    throw new Error('VITE_SPARKPOST_API_KEY must be set to use SparkPost for email sending.');
+  if (!process.env.SPARKPOST_API_KEY) {
+    throw new Error('SPARKPOST_API_KEY must be set to use SparkPost for email sending.');
   }
-  emailProvider = new SparkpostProvider(process.env.VITE_SPARKPOST_API_KEY);
-} else if (process.env.VITE_MAIL_SENDER === 'AmazonSES') {
+  emailProvider = new SparkpostProvider(process.env.SPARKPOST_API_KEY);
+} else if (process.env.MAIL_SENDER === 'AmazonSES') {
   const { AmazonSESProvider } = await import('./providers/AmazonSESProvider.js');
   if (!process.env.AWS_EMAIL_ACCESS_KEY_ID || !process.env.AWS_EMAIL_SECRET_ACCESS_KEY) {
     throw new Error(
@@ -25,9 +25,9 @@ if (process.env.VITE_MAIL_SENDER === 'SparkPost') {
     );
   }
   emailProvider = new AmazonSESProvider();
-} else if (process.env.VITE_MAIL_SENDER !== 'LogEmail') {
+} else if (process.env.MAIL_SENDER !== 'LogEmail') {
   console.warn(
-    `Unknown MAIL_SENDER: ${process.env.VITE_MAIL_SENDER}. Emails will be logged instead of sent.`
+    `Unknown MAIL_SENDER: ${process.env.MAIL_SENDER}. Emails will be logged instead of sent.`
   );
 }
 

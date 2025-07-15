@@ -24,7 +24,7 @@
 >
   <div>
     <h1>{m.invitations_requestOrgInvite()}</h1>
-    <LabeledFormInput name="invitations_orgName">
+    <LabeledFormInput key="invitations_orgName">
       <input
         class="input w-full input-bordered validator"
         type="text"
@@ -33,11 +33,11 @@
       />
     </LabeledFormInput>
     <br />
-    <LabeledFormInput name="invitations_orgAdminEmail">
+    <LabeledFormInput key="invitations_orgAdminEmail">
       <input class="input w-full input-bordered validator" type="email" name="email" required />
     </LabeledFormInput>
     <br />
-    <LabeledFormInput name="invitations_orgUrl">
+    <LabeledFormInput key="invitations_orgUrl">
       <input class="input w-full input-bordered validator" type="text" name="url" required />
     </LabeledFormInput>
   </div>

@@ -1,11 +1,11 @@
-import { projectSearchSchema, pruneProjects } from '$lib/projects';
-import { projectFilter } from '$lib/projects/server';
 import type { Prisma } from '@prisma/client';
 import { type Actions } from '@sveltejs/kit';
 import { prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad } from './$types';
+import { projectSearchSchema, pruneProjects } from '$lib/projects';
+import { projectFilter } from '$lib/projects/server';
 
 export const load = (async () => {
   // auth handled by hooks

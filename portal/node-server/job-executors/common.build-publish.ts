@@ -1,6 +1,7 @@
 import { prisma } from 'sil.appbuilder.portal.common';
 import { WorkflowType, WorkflowTypeString } from 'sil.appbuilder.portal.common/prisma';
-import { Environment, ENVKeys, ProductType } from 'sil.appbuilder.portal.common/workflow';
+import type { Environment} from 'sil.appbuilder.portal.common/workflow';
+import { ENVKeys, ProductType } from 'sil.appbuilder.portal.common/workflow';
 
 export async function addProductPropertiesToEnvironment(productId: string) {
   const product = await prisma.products.findUnique({
@@ -44,7 +45,7 @@ export async function addProductPropertiesToEnvironment(productId: string) {
     [ENVKeys.PROJECT_ORGANIZATION]: product.Project.Organization.Name,
     [ENVKeys.PROJECT_OWNER_NAME]: product.Project.Owner.Name,
     [ENVKeys.PROJECT_OWNER_EMAIL]: product.Project.Owner.Email,
-    ...(product.Properties ? JSON.parse(product.Properties).environment ?? {} : {})
+    ...(product.Properties ? (JSON.parse(product.Properties).environment ?? {}) : {})
   } as Environment;
 }
 
@@ -92,7 +93,7 @@ export async function getWorkflowParameters(
       environment[ENVKeys.BUILD_SHARE_APP_LINK] = '1';
     }
   }
-  
+
   const result: Record<string, string> = {};
   const scoped: Record<string, string> = {};
   Object.entries(JSON.parse(instance.WorkflowDefinition.Properties ?? '{}')).forEach(([k, v]) => {

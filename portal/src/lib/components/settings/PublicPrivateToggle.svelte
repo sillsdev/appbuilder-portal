@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { ValidI13nKey } from '$lib/locales.svelte';
   import type { HTMLInputAttributes } from 'svelte/elements';
   import IconContainer from '../IconContainer.svelte';
   import InputWithMessage from './InputWithMessage.svelte';
+  import type { ValidI13nKey, ValueKey } from '$lib/locales.svelte';
 
   interface Props {
-    title?: { key: ValidI13nKey; parms?: any; classes?: string };
-    message?: { key: ValidI13nKey; parms?: any; classes?: string };
+    title?: ValueKey;
+    message?: ValueKey;
     className?: string;
     formName?: string;
     checked: boolean;

@@ -1,4 +1,4 @@
-import { and, type TransitionConfig } from 'xstate';
+import { type TransitionConfig, and } from 'xstate';
 import type { RoleId, WorkflowType } from './prisma.js';
 import type { SetFilter, ValueFilter } from './utils.js';
 import { filterSet, filterValue } from './utils.js';
@@ -57,7 +57,7 @@ const AuthorStates = [
   WorkflowState.Author_Download,
   WorkflowState.Author_Upload
 ] as const;
-type AuthorState = typeof AuthorStates[number];
+type AuthorState = (typeof AuthorStates)[number];
 export function isAuthorState(state: string): state is AuthorState {
   return AuthorStates.includes(state as AuthorState);
 }
@@ -137,12 +137,12 @@ export type ArtifactLists = 'latestAAB' | 'latestAssetPackage' | 'all';
 
 export function artifactLists(listName: ArtifactLists) {
   switch (listName) {
-  case 'latestAAB':
-    return ['aab', 'data-safety-csv'];
-  case 'latestAssetPackage':
-    return ['asset-package', 'asset-preview'];
-  case 'all':
-    return [];
+    case 'latestAAB':
+      return ['aab', 'data-safety-csv'];
+    case 'latestAssetPackage':
+      return ['asset-package', 'asset-preview'];
+    case 'all':
+      return [];
   }
 }
 

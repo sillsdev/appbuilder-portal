@@ -1,4 +1,4 @@
-import { BullMQ, DatabaseWrites, getQueues, prisma, Workflow } from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseWrites, Workflow, getQueues, prisma } from 'sil.appbuilder.portal.common';
 import { ProductTransitionType, WorkflowType } from 'sil.appbuilder.portal.common/prisma';
 import { ProductActionType } from '.';
 

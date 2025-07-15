@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 
 import { BullMQ, getQueues } from '../bullmq/index.js';
 import prisma from './prisma.js';

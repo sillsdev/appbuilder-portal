@@ -1,14 +1,14 @@
 <script lang="ts">
   import Fuse from 'fuse.js';
 
-  import { page } from '$app/state';
-  import { l10nMap, localizeTagData, type LangInfo } from '$lib/locales.svelte';
-  import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
   import type { FuseResultMatch } from 'fuse.js';
   import type { Snippet } from 'svelte';
   import type { HTMLInputAttributes } from 'svelte/elements';
   import TypeaheadInput from './TypeaheadInput.svelte';
+  import { page } from '$app/state';
+  import { type LangInfo, l10nMap, localizeTagData } from '$lib/locales.svelte';
+  import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
 
   let langtagList = localizeTagData(page.data.langtags as LangInfo[], l10nMap.value, getLocale());
 
@@ -165,9 +165,10 @@
   bind:inputElement={typeaheadInput}
 >
   <!-- This is a convenience option and unnecessary for a11y -->
-  <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
   {#snippet custom()}
+    <!-- eslint-disable-next-line svelte/valid-compile -->
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <span
       class="absolute right-4 italic [line-height:3rem]"
       onclick={() => typeaheadInput?.focus()}

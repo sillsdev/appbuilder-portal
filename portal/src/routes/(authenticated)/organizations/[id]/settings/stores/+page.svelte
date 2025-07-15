@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { ActionData, PageData } from './$types';
   import { enhance } from '$app/forms';
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
@@ -6,7 +7,6 @@
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
-  import type { ActionData, PageData } from './$types';
   interface Props {
     data: PageData;
   }

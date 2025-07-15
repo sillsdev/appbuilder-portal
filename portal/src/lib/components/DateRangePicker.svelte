@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
-  import { m } from '$lib/paraglide/messages';
   import sv_flatpickr, { themeChanger, themeNames } from 'svelte-flatpickr-plus';
   import IconContainer from './IconContainer.svelte';
+  import { browser } from '$app/environment';
+  import { m } from '$lib/paraglide/messages';
   // This component is here because the range mode of the Flatpickr svelte package
   // is a bit broken. Essentially, the 'value' property is updated when the second
   // date is clicked but not reassigned, only when the first is and it is set to a new value.

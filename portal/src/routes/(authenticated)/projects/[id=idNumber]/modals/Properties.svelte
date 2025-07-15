@@ -1,9 +1,9 @@
 <script lang="ts">
+  import type { Prisma } from '@prisma/client';
   import { enhance } from '$app/forms';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
-  import type { Prisma } from '@prisma/client';
 
   interface Props {
     modal?: HTMLDialogElement;
@@ -72,7 +72,7 @@
       <hr />
       <div class="flex flex-col gap-2 items-center w-full pt-2 text-left">
         <input type="hidden" name="productId" value={product.Id} />
-        <LabeledFormInput name="products_properties_computeType" className="w-full">
+        <LabeledFormInput key="products_properties_computeType" classes="w-full">
           <select
             class="select select-bordered w-full"
             placeholder={m.products_properties_selectComputeType()}
@@ -92,7 +92,7 @@
             {/each}
           </select>
         </LabeledFormInput>
-        <LabeledFormInput name="products_properties_title">
+        <LabeledFormInput key="products_properties_title">
           <PropertiesEditor name="properties" className="w-full" bind:value bind:ok />
         </LabeledFormInput>
         <div class="flex flex-row gap-2">

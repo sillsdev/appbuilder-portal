@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { m } from '$lib/paraglide/messages';
   import type { Snippet } from 'svelte';
+  import { m } from '$lib/paraglide/messages';
 
   interface Props {
     children?: Snippet;

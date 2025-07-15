@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { ActionData, PageData } from './$types';
   import { enhance } from '$app/forms';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
@@ -6,7 +7,6 @@
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
-  import type { ActionData, PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -65,11 +65,11 @@
   {m.org_addGroupButton()}
   <input type="hidden" name="orgId" value={data.organization.Id} />
   <div class="my-4 flex flex-row w-full space-x-2 items-center">
-    <LabeledFormInput name="common_name">
+    <LabeledFormInput key="common_name">
       <input class="w-full input input-bordered validator" type="text" name="name" required />
       <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
-    <LabeledFormInput name="common_abbreviation">
+    <LabeledFormInput key="common_abbreviation">
       <input
         class="w-full input input-bordered validator"
         type="text"

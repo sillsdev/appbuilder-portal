@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { type FormResult, superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
+  import type { MinifiedUser } from './common';
   import { enhance as svk_enhance } from '$app/forms';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
@@ -9,9 +12,6 @@
   import { toast } from '$lib/utils';
   import { isAdmin } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
-  import { superForm, type FormResult } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
-  import type { MinifiedUser } from './common';
 
   interface Props {
     data: PageData;
@@ -171,9 +171,8 @@
                   bind:checked={user.A}
                   onchange={(e) => {
                     if (data.session?.user.userId !== user.I) {
-                      //@ts-ignore
+                      // @ts-expect-error Just submit the form
                       e.currentTarget.parentElement?.requestSubmit();
-                      // Apparently full TS is not supported in this instance, otherwise I would just cast to HTMLFormElement
                     }
                   }}
                 />

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
@@ -6,8 +8,6 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
-  import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -30,7 +30,7 @@
 <h3>{m.newOrganization_title()}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput name="org_name">
+  <LabeledFormInput key="org_name">
     <input
       class="input w-full input-bordered validator"
       type="text"
@@ -40,7 +40,7 @@
     />
     <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="org_owner">
+  <LabeledFormInput key="org_owner">
     <select class="select select-bordered validator" name="owner" bind:value={$form.owner} required>
       {#each data.options.users.toSorted((a, b) => byName(a, b, getLocale())) as user}
         <option value={user.Id}>{user.Name}</option>
@@ -48,7 +48,7 @@
     </select>
     <span class="validator-hint">{m.org_emptyOwner()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="org_websiteURL">
+  <LabeledFormInput key="org_websiteURL">
     <input
       type="url"
       name="websiteUrl"
@@ -65,7 +65,7 @@
     />
   </InputWithMessage>
   {#if !$form.useDefaultBuildEngine}
-    <LabeledFormInput name="org_buildEngineURL">
+    <LabeledFormInput key="org_buildEngineURL">
       <input
         type="url"
         name="buildEngineUrl"
@@ -75,7 +75,7 @@
       />
       <span class="validator-hint">{m.org_emptyBuildEngineURL()}</span>
     </LabeledFormInput>
-    <LabeledFormInput name="org_accessToken">
+    <LabeledFormInput key="org_accessToken">
       <input
         type="text"
         name="buildEngineApiAccessToken"
@@ -86,7 +86,7 @@
       <span class="validator-hint">{m.org_emptyAccessToken()}</span>
     </LabeledFormInput>
   {/if}
-  <LabeledFormInput name="org_logoURL">
+  <LabeledFormInput key="org_logoURL">
     <input
       type="url"
       name="logoUrl"

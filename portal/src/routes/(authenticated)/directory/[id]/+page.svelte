@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { PageData } from './$types';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
@@ -9,7 +10,6 @@
   import { canModifyProject } from '$lib/projects';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime } from '$lib/utils/time';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;

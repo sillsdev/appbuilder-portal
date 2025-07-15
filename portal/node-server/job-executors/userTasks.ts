@@ -1,7 +1,7 @@
-import { Prisma } from '@prisma/client';
-import { Job } from 'bullmq';
-import { BullMQ, DatabaseWrites, getQueues, prisma, Workflow } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import type { Prisma } from '@prisma/client';
+import type { Job } from 'bullmq';
+import { BullMQ, DatabaseWrites, Workflow, getQueues, prisma } from 'sil.appbuilder.portal.common';
+import type { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { ActionType } from 'sil.appbuilder.portal.common/workflow';
 
 export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown> {

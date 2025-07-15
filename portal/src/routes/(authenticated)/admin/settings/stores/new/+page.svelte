@@ -1,12 +1,12 @@
 <script lang="ts">
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
-  import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -29,7 +29,7 @@
 <h3>{m.models_add({ name: m.stores_name() })}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput name="storeTypes_name">
+  <LabeledFormInput key="storeTypes_name">
     <input
       type="text"
       name="name"
@@ -39,7 +39,7 @@
     />
     <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
-  <LabeledFormInput name="stores_attributes_description">
+  <LabeledFormInput key="stores_attributes_description">
     <input
       type="text"
       name="description"
@@ -47,7 +47,7 @@
       bind:value={$form.description}
     />
   </LabeledFormInput>
-  <LabeledFormInput name="storeTypes_name">
+  <LabeledFormInput key="storeTypes_name">
     <select
       class="select select-bordered validator"
       name="storeType"

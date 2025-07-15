@@ -1,12 +1,12 @@
 <script lang="ts">
+  import type { Infer, SuperValidated } from 'sveltekit-superforms';
+  import { superForm } from 'sveltekit-superforms';
   import { page } from '$app/state';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import type { ProjectActionSchema, ProjectForAction } from '$lib/projects';
   import { canArchive, canClaimProject, canReactivate } from '$lib/projects';
-  import type { Infer, SuperValidated } from 'sveltekit-superforms';
-  import { superForm } from 'sveltekit-superforms';
 
   interface Props {
     data: SuperValidated<Infer<ProjectActionSchema>>;

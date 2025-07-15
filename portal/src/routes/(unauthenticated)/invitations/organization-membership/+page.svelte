@@ -1,8 +1,8 @@
 <script lang="ts">
+  import type { PageData } from './$types';
   import ScriptoriaIcon from '$lib/icons/ScriptoriaIcon.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;

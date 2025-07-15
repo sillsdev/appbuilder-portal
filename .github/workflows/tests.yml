@@ -1,0 +1,180 @@
+name: Scriptoria v2 Tests
+
+on:
+  push:
+    branches:
+      - feature/svelte
+      - develop
+      - master
+  pull_request:
+    branches:
+      - feature/svelte
+      - develop
+      - master
+  workflow_dispatch:
+
+jobs:
+  # Install dependencies once and cache for other jobs
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: portal/package-lock.json
+
+      - name: Get environment info
+        run: |
+          echo Node version
+          node --version
+          npm --version
+          echo
+          echo Docker version
+          docker --version
+          echo
+          echo Environment variables
+          env
+
+      - name: Install dependencies
+        run: |
+          cd portal
+          echo "Installing dependencies..."
+          npm ci
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: portal/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('portal/package-lock.json') }}
+
+  # Type checking job
+  typecheck-lint:
+    runs-on: ubuntu-latest
+    needs: setup
+    env:
+      BUILDENGINE_TOKEN: ${{ secrets.BUILD_ENGINE_TOKEN }}
+      AUTH0_SECRET: ${{ secrets.AUTH0_SECRET }}
+      AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
+      AUTH0_CLIENT_ID: ${{ vars.AUTH0_CLIENT_ID }}
+      AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+      AUTH0_CONNECTION: ${{ vars.AUTH0_CONNECTION }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: portal/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('portal/package-lock.json') }}
+
+      - name: Compile paraglide messages and run svelte-check
+        run: |
+          cd portal
+          echo "Compiling paraglide messages..."
+          npx @inlang/paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide
+          echo "Running svelte-check..."
+          npm run check
+
+      - name: Run lint
+        run: |
+          cd portal
+          echo "Running lint..."
+          npm run lint
+
+  # Build and deploy job
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    needs: setup
+    env:
+      CI: true
+      BUILDENGINE_TOKEN: ${{ secrets.BUILD_ENGINE_TOKEN }}
+      AUTH0_SECRET: ${{ secrets.AUTH0_SECRET }}
+      AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
+      AUTH0_CLIENT_ID: ${{ vars.AUTH0_CLIENT_ID }}
+      AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+      AUTH0_CONNECTION: ${{ vars.AUTH0_CONNECTION }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: portal/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('portal/package-lock.json') }}
+
+      - name: Setup stg-tunnel
+        run: |
+          echo "Setting up stg-tunnel..."
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          echo "$APS_STG_SSH_CONFIG" > ~/.ssh/config
+          chmod 600 ~/.ssh/config
+          ssh aps-stg "echo 'SSH connection established successfully.'"
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.APS_STG_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.APS_STG_KNOWN_HOSTS }}
+          APS_STG_SSH_CONFIG: ${{ secrets.APS_STG_SSH_CONFIG }}
+
+      - name: Build, Install Playwright dependencies, and seed database
+        run: |
+          echo "Building .env file..."
+          echo "AUTH0_CLIENT_ID=${{ vars.AUTH0_CLIENT_ID }}" > ./portal/.env
+          echo "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}" >> ./portal/.env
+          echo "AUTH0_DOMAIN=${{ vars.AUTH0_DOMAIN }}" >> ./portal/.env
+          echo "AUTH0_CONNECTION=${{ vars.AUTH0_CONNECTION }}" >> ./portal/.env
+          echo "AUTH0_SECRET=${{ secrets.AUTH0_SECRET }}" >> ./portal/.env
+          echo "Building the docker project..."
+          mkdir -p command-output
+          (./run ci build > command-output/build-output.txt 2>&1 || echo $? > command-output/build-exit-code.txt) &
+          cd portal
+          echo "Installing Playwright dependencies..."
+          (npx playwright install --with-deps > ../command-output/playwright-output.txt 2>&1 || echo $? > ../command-output/playwright-exit-code.txt) &
+          echo "Beginning pull of images"
+          (cd .. ; ./run ci pull valkey > /dev/null) &
+          echo "Starting database..."
+          (cd .. ; ./run ci up -d db)
+          sleep 1
+          echo "Seeding the database..."
+          npx prisma migrate reset -f --skip-seed --skip-generate && npx prisma db seed -- -o
+          echo "Waiting for build and Playwright installation to finish..."
+          wait
+          if [ -f command-output/build-exit-code.txt ]; then
+            BUILD_EXIT_CODE=$(cat command-output/build-exit-code.txt)
+            echo "Build failed with exit code $BUILD_EXIT_CODE"
+            exit $BUILD_EXIT_CODE
+          fi
+          if [ -f command-output/playwright-exit-code.txt ]; then
+            PLAYWRIGHT_EXIT_CODE=$(cat command-output/playwright-exit-code.txt)
+            echo "Playwright installation failed with exit code $PLAYWRIGHT_EXIT_CODE"
+            exit $PLAYWRIGHT_EXIT_CODE
+          fi
+          echo "Build and Playwright installation completed."
+        env:
+          DATABASE_URL: "postgresql://db-user:1234@localhost:5432/development?schema=public"
+
+      - name: Start docker-compose services
+        run: |
+          echo "Starting docker-compose services..."
+          ./run ci up -d
+
+      - name: Run tests
+        run: |
+          cd portal
+          # Is the port open
+          nc -zv localhost 6173 || { echo "Port 6173 is not open"; exit 1; }
+          npx svelte-kit sync
+          echo "Running tests..."
+          npm run test
+        env:
+          CI_PASSWORD: ${{ secrets.CI_PASSWORD }}
+          CI_EMAIL: ci@scriptoria.io

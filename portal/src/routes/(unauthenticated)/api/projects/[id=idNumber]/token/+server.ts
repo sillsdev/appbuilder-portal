@@ -1,9 +1,12 @@
-import { isAdmin } from '$lib/utils/roles';
 import { error, json } from '@sveltejs/kit';
 import { jwtVerify } from 'jose';
+import type { KeyObject} from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
 import { BuildEngine, DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
+import { building } from '$app/environment';
+import { AUTH0_DOMAIN } from '$env/static/private';
+import { isAdmin } from '$lib/utils/roles';
 
 const TOKEN_USE_HEADER = 'Use';
 const TOKEN_USE_UPLOAD = 'Upload';
@@ -219,30 +222,35 @@ export async function POST({ params, request, fetch }) {
 
   return json({ data: projectToken });
 }
-const secrets = (async () => {
-  const res = await fetch(
-    'https://' + import.meta.env.VITE_AUTH0_DOMAIN + '/.well-known/jwks.json'
-  );
-  const keys: {
-    kty: string;
-    use: string;
-    n: string;
-    e: string;
-    kid: string;
-    x5t: string;
-    x5c: string[];
-    alg: string;
-  }[] = (await res.json()).keys;
-  return new Map(
-    keys.map((key) => [
-      key.kid,
-      createPublicKey({
-        key,
-        format: 'jwk'
-      })
-    ])
-  );
-})();
+let resolve: CallableFunction = () => {};
+const secrets: Promise<Map<string, KeyObject>> = new Promise((r) => (resolve = r));
+
+if (!building) {
+  (async () => {
+    const res = await fetch('https://' + AUTH0_DOMAIN + '/.well-known/jwks.json');
+    const keys: {
+      kty: string;
+      use: string;
+      n: string;
+      e: string;
+      kid: string;
+      x5t: string;
+      x5c: string[];
+      alg: string;
+    }[] = (await res.json()).keys;
+    resolve(
+      new Map(
+        keys.map((key) => [
+          key.kid,
+          createPublicKey({
+            key,
+            format: 'jwk'
+          })
+        ])
+      )
+    );
+  })();
+}
 async function decryptJwtWithAuth0(jwt: string) {
   return jwtVerify(jwt, async (header, token) => {
     return (await secrets).get(header.kid!)!;

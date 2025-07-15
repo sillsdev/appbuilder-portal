@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { signOut } from '@auth/sveltekit/client';
+  import type { Snippet } from 'svelte';
+  import type { LayoutData } from './$types';
   import { dev } from '$app/environment';
   import { base } from '$app/paths';
   import { page } from '$app/state';
@@ -10,9 +13,6 @@
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
-  import { signOut } from '@auth/sveltekit/client';
-  import type { Snippet } from 'svelte';
-  import type { LayoutData } from './$types';
 
   interface Props {
     data: LayoutData;

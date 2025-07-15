@@ -1,3 +1,2 @@
-export { getQueueConfig, getQueues, getWorkerConfig, QueueConnected } from './queues.js';
+export { QueueConnected, getQueueConfig, getQueues, getWorkerConfig } from './queues.js';
 export * as BullMQ from './types.js';
-

@@ -1,10 +1,10 @@
-import { propertiesSchema } from '$lib/valibot';
 import { fail } from '@sveltejs/kit';
 import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { propertiesSchema } from '$lib/valibot';
 
 const createSchema = v.object({
   name: v.nullable(v.string()),

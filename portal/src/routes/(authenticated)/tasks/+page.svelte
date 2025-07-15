@@ -1,4 +1,7 @@
 <script lang="ts">
+  import type { Readable } from 'svelte/store';
+  import { source } from 'sveltekit-sse';
+  import type { UserTaskDataSSE } from './sse/+server';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
@@ -7,9 +10,6 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { getRelativeTime } from '$lib/utils/time';
-  import type { Readable } from 'svelte/store';
-  import { source } from 'sveltekit-sse';
-  import type { UserTaskDataSSE } from './sse/+server';
 
   const currentPageUrl = page.url.pathname;
   let reconnectDelay = 1000; // Initial delay for reconnection

@@ -1,9 +1,9 @@
 <script lang="ts">
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
-  import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
 
   interface Props {
     data: PageData;
@@ -23,7 +23,7 @@
 <form action="" class="m-4" method="post" use:enhance>
   <div class="flex flex-row">
     <div>
-      <LabeledFormInput name="org_name">
+      <LabeledFormInput key="org_name">
         <input
           type="text"
           name="name"
@@ -33,7 +33,7 @@
         />
         <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
       </LabeledFormInput>
-      <LabeledFormInput name="org_logoURL">
+      <LabeledFormInput key="org_logoURL">
         <input
           type="url"
           name="logoUrl"

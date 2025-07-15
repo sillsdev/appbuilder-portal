@@ -1,8 +1,8 @@
 <script lang="ts">
+  import type { Prisma } from '@prisma/client';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
-  import type { Prisma } from '@prisma/client';
   interface Props {
     organizations: Prisma.OrganizationsGetPayload<{
       include: {
@@ -26,10 +26,7 @@
     </thead>
     <tbody>
       {#each organizations.toSorted((a, b) => byName(a, b, getLocale())) as org}
-        <tr
-          class="h-16 border-y hover:bg-base-200 cursor-pointer"
-          onclick={() => onSelect(org.Id)}
-        >
+        <tr class="h-16 border-y hover:bg-base-200 cursor-pointer" onclick={() => onSelect(org.Id)}>
           <td>
             {#if org.LogoUrl}
               <img class="inline-block p-2 h-16 w-16" src={org.LogoUrl} alt="Logo" />
