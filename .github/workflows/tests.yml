@@ -151,11 +151,13 @@ jobs:
           if [ -f command-output/build-exit-code.txt ]; then
             BUILD_EXIT_CODE=$(cat command-output/build-exit-code.txt)
             echo "Build failed with exit code $BUILD_EXIT_CODE"
+            cat command-output/build-output.txt
             exit $BUILD_EXIT_CODE
           fi
           if [ -f command-output/playwright-exit-code.txt ]; then
             PLAYWRIGHT_EXIT_CODE=$(cat command-output/playwright-exit-code.txt)
             echo "Playwright installation failed with exit code $PLAYWRIGHT_EXIT_CODE"
+            cat command-output/playwright-output.txt
             exit $PLAYWRIGHT_EXIT_CODE
           fi
           echo "Build and Playwright installation completed."
