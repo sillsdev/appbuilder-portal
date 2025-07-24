@@ -9,86 +9,14 @@
   "automerge": false,
   "enabled": true,
   "ignorePaths": [
-    "source/OptimaJet.DWKit.StarterApplication/package.json"
   ],
   "packageRules": [
-    {
-      "managers": ["nuget"],
-      "ignoreDeps": [
-        "Microsoft.EntityFrameworkCore.InMemory",
-        "Microsoft.EntityFrameworkCore.Design",
-        "Microsoft.EntityFrameworkCore",
-        "Microsoft.AspNetCore.StaticFiles",
-        "Microsoft.AspNetCore.Mvc",
-        "Microsoft.AspNetCore.Http.Abstractions",
-        "Microsoft.AspNetCore.Authentication.Cookies",
-        "Microsoft.AspNetCore",
-        "Microsoft.ApplicationInsights.AspNetCore",
-        "BundlerMinifier.Core"
-      ]
-    },
-    {
-      // Upgrading from 0.10 to 0.14 breaks (changed API)
-      "packageNames" : ["react-hooks-fetch"],
-      "enabled": false
-    },
-    {
-      // Upgrading from 2.0 to 4.0 breaks
-      "packageNames" : ["css-loader"],
-      "enabled": false
-    },
-    {
-      // Upgrading from 0.15.14 to 0.16 breaks
-      // Probably (but not sure) due to react-orbitjs fork
-      "packageNames" : [
-        "orbit/coordinator",
-        "orbit/core",
-	"orbit/data",
-	"orbit/indexeddb",
-	"orbit/indexeddb-bucket",
-	"orbit/jsonapi",
-	"orbit/local-storage-bucket",
-	"orbit/store"
-      ],
-      "enabled": false
-    },
-    {
-      "sourceUrlPrefixes": ["https://github.com/aspnet/Extensions"],
-      "groupName": "ASP.NET Extensions"
-    },
-    {
-      "packagePatterns": ["DWKit"],
-      "groupName": "DWKit packages"
-    },
-    {
-      "packagePatterns": ["xunit"],
-      "groupName": "XUnit packages"
-    },    
-    {
-      "packagePatterns": ["^Microsoft.AspNetCore"],
-      "groupName": "ASP.NET Core packages"
-    },
     {
       "packagePatterns": ["^@types"],
       "groupName": "TypeScript type definitions"
     },
     {
-      "packagePatterns": ["^@orbit"],
-      "groupName": "Orbit.JS"
-    },
-    {
-      "packagePatterns": ["^@polly"],
-      "groupName": "Polly.JS"
-    },
-    {
-      "sourceUrlPrefixes": [
-        "https://github.com/aspnet/MetaPackages",
-        "https://github.com/aspnet/AspNetCore"
-      ],
-      "groupName": "ASP.NET Core packages"
-    },
-    {
-        "paths": ["source/SIL.AppBuilder.Portal.Frontend/package.json"],
+        "paths": ["package.json"],
         "rangeStrategy": "replace",
         "enabled": true,
         "automerge": true
