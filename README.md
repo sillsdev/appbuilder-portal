@@ -6,9 +6,9 @@
 
 ### Description
 
-The `appbuilder-portal` is the portal frontend/backend for the Scriptoria project. This project provides software to automate the building and publishing of apps (and other related content) to App Stores and websites. It runs as a pair of docker containers.
+The `appbuilder-portal` is the portal frontend/backend for the Scriptoria project. This project provides software to automate the building and publishing of apps (and other related content) to App Stores and websites. It runs as a single docker container, requiring a database and redis (valkey) server.
 
-This process requires the coordination of user activites, project data, automated services, and administrative activities (e.g. managing App Store listings). The process is defined and managed by a [DW KIT](https://dwkit.com) Workflow instance. The portal provides organization, group, user, project, and product management and provides access to users and organizational admins to interact with the workflow activities.
+This process requires the coordination of user activites, project data, automated services, and administrative activities (e.g. managing App Store listings). The portal provides organization, group, user, project, and product management and provides access to users and organizational admins to interact with the workflow activities.
 
 This process also requires management of resources to store project data (AWS CodeCommit), generate product files from project data (AWS CodeBuild), and store product files for distribution (AWS S3). These resources are managed by an instance of [AppBuilder BuildEngine](https://github.com/sillsdev/appbuilder-buildengine-api).
 
@@ -17,7 +17,6 @@ This process also requires management of resources to store project data (AWS Co
 ### Prerequisites
 
 - [Docker CE](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) ([Docker Desktop on Mac](https://docs.docker.com/docker-for-mac/install/))
-- Bash (Note: On macOS, for `run clean:frontend` to work correctly, install bash from [homebrew](https://brew.sh)).
 - [Volta](https://volta.sh) - controls which version of node/yarn is used per directory
 
 Common scripts are in the `run` file, so be sure to check that for reference.
