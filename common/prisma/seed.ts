@@ -6,7 +6,7 @@ const ProductType = {
   Android_S3: 1,
   AssetPackage: 2,
   Web: 3
-}
+};
 
 export const WorkflowOptions = {
   /** Require an OrgAdmin to access the GooglePlay Developer Console */
@@ -15,7 +15,7 @@ export const WorkflowOptions = {
   ApprovalProcess: 2,
   /** Allow Owner to delegate actions to Authors */
   AllowTransferToAuthors: 3
-}
+};
 
 const program = new Command();
 program

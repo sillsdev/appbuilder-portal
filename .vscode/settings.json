@@ -1,3 +1,6 @@
 {
-    "svelte.plugin.css.diagnostics.enable": false,
+  "svelte.plugin.css.diagnostics.enable": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
 }

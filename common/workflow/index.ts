@@ -11,7 +11,7 @@ import { BullMQ, getQueues } from '../bullmq/index.js';
 import { allUsersByRole } from '../databaseProxy/UserRoles.js';
 import { DatabaseWrites } from '../databaseProxy/index.js';
 import prisma from '../databaseProxy/prisma.js';
-import type { RoleId} from '../public/prisma.js';
+import type { RoleId } from '../public/prisma.js';
 import { ProductTransitionType, WorkflowType } from '../public/prisma.js';
 import type {
   Snapshot,
