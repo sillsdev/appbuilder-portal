@@ -187,12 +187,7 @@
               </a>
             </li>
             <li>
-              <a
-                class="rounded-none"
-                href={dev ? 'http://localhost:6100' : '/admin/jobs'}
-                onclick={closeDrawer}
-                target="_blank"
-              >
+              <a class="rounded-none" href="/admin/jobs" onclick={closeDrawer} target="_blank">
                 {m.sidebar_jobAdministration()}
                 <IconContainer icon="mdi:open-in-new" width="18" />
               </a>

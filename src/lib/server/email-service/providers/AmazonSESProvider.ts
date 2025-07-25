@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/default
 import aws from '@aws-sdk/client-ses';
-import { EmailProvider } from './EmailProvider.js';
+import { EmailProvider } from './EmailProvider';
 
 export class AmazonSESProvider extends EmailProvider {
   private ses: aws.SES;

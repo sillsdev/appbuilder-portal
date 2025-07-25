@@ -2,13 +2,7 @@
 import { type Handle, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { Worker } from 'bullmq';
-import {
-  BullMQ,
-  DatabaseConnected,
-  QueueConnected,
-  getQueues,
-  getWorkerConfig
-} from 'sil.appbuilder.portal.common';
+import { BullMQ, DatabaseConnected, QueueConnected, getQueues } from 'sil.appbuilder.portal.common';
 import {
   authRouteHandle,
   checkUserExistsHandle,
@@ -18,27 +12,10 @@ import {
 import { building } from '$app/environment';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
-import { SSEPageUpdates } from '$lib/projects/listener';
+import { bullboardHandle } from '$lib/server/bullmq/BullBoard';
+import '$lib/server/bullmq/BullMQ';
 
 if (!building) {
-  // Create a worker to listen for project updates
-  new Worker<BullMQ.Job>(
-    BullMQ.QueueName.SvelteSSE,
-    async (job) => {
-      switch (job.data.type) {
-        case BullMQ.JobType.SvelteSSE_UpdateProject:
-          // Trigger an event for the project id
-          SSEPageUpdates.emit('projectPage', job.data.projectIds);
-          break;
-        case BullMQ.JobType.SvelteSSE_UpdateUserTasks:
-          // Trigger an event for the user ids
-          SSEPageUpdates.emit('userTasksPage', job.data.userIds);
-          break;
-      }
-    },
-    getWorkerConfig()
-  );
-  // Call getQueues to ensure the queues are initialized
   // Otherwise valkey will never connect and the server will always 503
   getQueues();
   // Likewise, initialize the Prisma connection heartbeat
@@ -86,5 +63,6 @@ export const handle: Handle = sequence(
   organizationInviteHandle,
   authRouteHandle,
   checkUserExistsHandle,
-  localRouteHandle
+  localRouteHandle,
+  bullboardHandle
 );

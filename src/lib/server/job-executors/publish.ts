@@ -9,10 +9,7 @@ import {
   prisma
 } from 'sil.appbuilder.portal.common';
 import { WorkflowAction } from 'sil.appbuilder.portal.common/workflow';
-import {
-  addProductPropertiesToEnvironment,
-  getWorkflowParameters
-} from './common.build-publish.js';
+import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
 
 export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown> {
   const productData = await prisma.products.findUnique({
@@ -89,23 +86,23 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     job.updateProgress(50);
     const isError = response.responseType === 'error';
     if (isError || response.error) {
-      const message = isError ? response.message : response.error;
+      const message = (isError ? response.message : response.error)!;
       job.log(message);
       // if final retry
-      if (job.attemptsStarted >= job.opts.attempts) {
+      if (job.attemptsStarted >= (job.opts.attempts ?? 0)) {
         if (isError && response.code === BuildEngine.Types.EndpointUnavailable) {
           await notifyConnectionFailed(
             job.data.productId,
             productData.Project.Id,
-            productData.Project.Name,
-            productData.ProductDefinition.Name
+            productData.Project.Name!,
+            productData.ProductDefinition.Name!
           );
         } else {
           await notifyUnableToCreate(
             job.data.productId,
             productData.Project.Id,
-            productData.Project.Name,
-            productData.ProductDefinition.Name
+            productData.Project.Name!,
+            productData.ProductDefinition.Name!
           );
         }
         const flow = await Workflow.restore(job.data.productId);
@@ -152,7 +149,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     return {
       response: {
         ...response,
-        environment: JSON.parse(response['environment'] ?? '{}')
+        environment: JSON.parse((response['environment'] as string) ?? '{}')
       },
       params,
       env
@@ -214,7 +211,7 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
     job.updateProgress(100);
     return {
       ...response,
-      environment: JSON.parse(response['environment'] ?? '{}')
+      environment: JSON.parse((response['environment'] as string) ?? '{}')
     };
   }
 }
@@ -264,8 +261,8 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
         job.data.publicationId,
         job.data.productId,
         product.Project.OwnerId,
-        product.Project.Name,
-        product.ProductDefinition.Name
+        product.Project.Name!,
+        product.ProductDefinition.Name!
       );
       flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
       const packageFile = await prisma.productPublications.findUnique({
@@ -289,7 +286,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
         }
       });
       if (packageFile?.ProductBuild.ProductArtifacts[0]) {
-        packageName = await fetch(packageFile.ProductBuild.ProductArtifacts[0].Url).then((r) =>
+        packageName = await fetch(packageFile.ProductBuild.ProductArtifacts[0].Url!).then((r) =>
           r.text()
         );
       }
@@ -406,17 +403,17 @@ async function notifyFailed(
       projectId: product.Project.Id,
       messageKey: 'releaseFailed',
       messageProperties: {
-        projectName: product.Project.Name,
-        productName: product.ProductDefinition.Name,
+        projectName: product.Project.Name!,
+        productName: product.ProductDefinition.Name!,
         releaseStatus: release.status,
-        releaseError: release.error,
+        releaseError: release.error!,
         buildEngineUrl: endpoint.url + '/release-admin/view?id=' + product.WorkflowPublishId,
         consoleTextUrl: release.artifacts['consoleText'] ?? '',
         jobId: '' + product.WorkflowJobId,
         buildId: '' + product.WorkflowBuildId,
         publishId: '' + product.WorkflowPublishId,
         projectId: '' + product.Project.Id,
-        projectUrl: product.Project.WorkflowAppProjectUrl
+        projectUrl: product.Project.WorkflowAppProjectUrl!
       },
       link: release.artifacts['consoleText'] ?? ''
     }
