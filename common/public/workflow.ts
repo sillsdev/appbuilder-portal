@@ -227,7 +227,7 @@ export function includeStateOrTransition(config: WorkflowConfig, filter?: MetaFi
 export type WorkflowEvent =
   | {
       type: Exclude<WorkflowAction, WorkflowAction.Jump | WorkflowAction.Migrate>;
-      userId: number;
+      userId: number | null;
       comment?: string;
     }
   | {

@@ -2,7 +2,8 @@ import en from './en-us.json' with { type: 'json' };
 import es from './es-419.json' with { type: 'json' };
 import fr from './fr-FR.json' with { type: 'json' };
 
-function getValueFromKey(key: string, map): string {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getValueFromKey(key: string, map: any): string {
   return key.split('.').reduce((acc, k) => acc[k], map);
 }
 
@@ -24,13 +25,17 @@ type DeepKeys<T extends Record<string, unknown>> = {
 export function translate<T extends DeepKeys<typeof en>>(
   locale: 'en' | 'es-419' | 'fr-FR',
   key: T,
-  options?: Record<string, string>
+  options?: Record<string, string | null | undefined>
 ): string;
-export function translate(locale: string, key: string, options?: Record<string, string>): string;
 export function translate(
-  locale: string,
+  locale: string | null | undefined,
   key: string,
-  options: Record<string, string> = {}
+  options?: Record<string, string | null | undefined>
+): string;
+export function translate(
+  locale: string | null | undefined,
+  key: string,
+  options: Record<string, string | null | undefined> = {}
 ): string {
   let translation: string;
   switch (locale) {
@@ -43,7 +48,7 @@ export function translate(
   }
   translation ??= getValueFromKey(key, en);
   return Object.entries(options).reduce(
-    (acc, [key, value]) => acc.replace(new RegExp(`{{${key}}}`, 'g'), value),
+    (acc, [key, value]) => acc.replace(new RegExp(`{{${key}}}`, 'g'), value ?? 'null'),
     translation
   );
 }

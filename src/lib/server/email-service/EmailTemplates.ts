@@ -35,11 +35,11 @@ export const ReviewProductTemplate = readFileSync(
 );
 export function addProperties(
   template: string,
-  properties: Record<string, string>,
+  properties: Record<string, string | null>,
   allowMissing = false
 ): string {
   const ret = Object.entries(properties).reduce(
-    (acc, [key, value]) => acc.replace(new RegExp(`{{${key}}}`, 'g'), value),
+    (acc, [key, value]) => acc.replace(new RegExp(`{{${key}}}`, 'g'), value ?? 'null'),
     template
   );
   if (ret.includes('{{') && !allowMissing) {

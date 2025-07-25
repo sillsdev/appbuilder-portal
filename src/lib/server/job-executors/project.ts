@@ -9,7 +9,7 @@ import {
 } from 'sil.appbuilder.portal.common';
 
 export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> {
-  const projectData = await prisma.projects.findUnique({
+  const projectData = await prisma.projects.findUniqueOrThrow({
     where: {
       Id: job.data.projectId
     },
@@ -36,9 +36,9 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
   const response = await BuildEngine.Requests.createProject(
     { type: 'query', organizationId: projectData.Organization.Id },
     {
-      app_id: projectData.ApplicationType.Name,
-      project_name: projectData.Name,
-      language_code: projectData.Language,
+      app_id: projectData.ApplicationType.Name!,
+      project_name: projectData.Name!,
+      language_code: projectData.Language!,
       storage_type: 's3'
     }
   );
@@ -46,20 +46,20 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
   const isError = response.responseType === 'error';
   if (isError || response.error) {
     const message = isError ? response.message : response.error;
-    job.log(message);
+    job.log(message!);
     // if final retry
-    if (job.attemptsStarted >= job.opts.attempts) {
+    if (job.attemptsStarted >= (job.opts.attempts ?? 0)) {
       if (isError && response.code === BuildEngine.Types.EndpointUnavailable) {
         await notifyConnectionFailed(
           job.data.projectId,
-          projectData.Name,
-          projectData.Organization.Name
+          projectData.Name!,
+          projectData.Organization.Name!
         );
       } else {
-        await notifyUnableToCreate(job.data.projectId, projectData.Name);
+        await notifyUnableToCreate(job.data.projectId, projectData.Name!);
       }
     }
-    throw new Error(message);
+    throw new Error(message!);
   } else {
     await DatabaseWrites.projects.update(job.data.projectId, {
       WorkflowProjectId: response.id,
@@ -114,7 +114,7 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
   } else {
     if (response.status === 'completed') {
       await getQueues().RemotePolling.removeJobScheduler(job.name);
-      const project = await prisma.projects.findUnique({
+      const project = await prisma.projects.findUniqueOrThrow({
         where: { Id: job.data.projectId },
         select: {
           Name: true,
@@ -129,9 +129,9 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
           project.WorkflowProjectId;
         await notifyCreationFailed(
           job.data.projectId,
-          project.Name,
+          project.Name!,
           response.status,
-          response.error,
+          response.error!,
           buildEngineUrl
         );
       } else {
@@ -140,7 +140,7 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
           WorkflowProjectUrl: response.url
         });
 
-        await notifyCreated(job.data.projectId, project.OwnerId, project.Name);
+        await notifyCreated(job.data.projectId, project.OwnerId, project.Name!);
 
         const projectImport = (
           await prisma.projects.findUnique({
@@ -175,14 +175,14 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
 }
 
 export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): Promise<unknown> {
-  const projectImport = await prisma.projectImports.findUnique({
+  const projectImport = await prisma.projectImports.findUniqueOrThrow({
     where: {
       Id: job.data.importId
     }
   });
   job.updateProgress(25);
   const productsToCreate: { Name: string; Store: string }[] = JSON.parse(
-    projectImport.ImportData
+    projectImport.ImportData!
   ).Products;
   job.updateProgress(30);
   const products = await Promise.all(

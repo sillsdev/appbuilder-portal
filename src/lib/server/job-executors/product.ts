@@ -46,12 +46,12 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
     return await notifyNotFound(job.data.productId);
   }
   if (!productData.Project.WorkflowProjectUrl) {
-    if (job.attemptsStarted >= job.opts.attempts) {
+    if (job.attemptsStarted >= (job.opts.attempts ?? 0)) {
       await notifyProjectUrlNotSet(
         job.data.productId,
         productData.Project.Id,
-        productData.Project.Name,
-        productData.ProductDefinition.Name
+        productData.Project.Name!,
+        productData.ProductDefinition.Name!
       );
     }
     throw new Error('Project.WorkflowProjectUrl not set!');
@@ -62,28 +62,28 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
     {
       request_id: job.data.productId,
       git_url: productData.Project.WorkflowProjectUrl,
-      app_id: productData.Project.ApplicationType.Name,
-      publisher_id: productData.Store.Name
+      app_id: productData.Project.ApplicationType.Name!,
+      publisher_id: productData.Store!.Name!
     }
   );
   job.updateProgress(50);
   if (response.responseType === 'error') {
     job.log(response.message);
-    if (job.attemptsStarted >= job.opts.attempts) {
+    if (job.attemptsStarted >= (job.opts.attempts ?? 0)) {
       if (response.code === BuildEngine.Types.EndpointUnavailable) {
         await notifyConnectionFailed(
           job.data.productId,
           productData.Project.Id,
-          productData.Project.Name,
-          productData.ProductDefinition.Name
+          productData.Project.Name!,
+          productData.ProductDefinition.Name!
         );
       } else {
         await notifyFailed(
           job.data.productId,
           productData.Project.Id,
           productData.Project.OrganizationId,
-          productData.Project.Name,
-          productData.ProductDefinition.Name
+          productData.Project.Name!,
+          productData.ProductDefinition.Name!
         );
       }
     }
@@ -97,8 +97,8 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
     await notifyCreated(
       job.data.productId,
       productData.Project.OwnerId,
-      productData.Project.Name,
-      productData.ProductDefinition.Name
+      productData.Project.Name!,
+      productData.ProductDefinition.Name!
     );
     const flow = await Workflow.restore(job.data.productId);
 
@@ -128,7 +128,7 @@ export async function deleteProduct(job: Job<BullMQ.Product.Delete>): Promise<un
 // This shouldn't need any notifications
 export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): Promise<unknown> {
   let versionCode = 0;
-  const product = await prisma.products.findUnique({
+  const product = await prisma.products.findUniqueOrThrow({
     where: {
       Id: job.data.productId
     },
@@ -162,7 +162,7 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
       return 0;
     }
     job.updateProgress(45);
-    const versionCodeArtifact = await prisma.productArtifacts.findFirst({
+    const versionCodeArtifact = await prisma.productArtifacts.findFirstOrThrow({
       where: {
         ProductId: job.data.productId,
         ProductBuildId: productBuild.Id,
@@ -176,14 +176,14 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
       return 0;
     }
     job.updateProgress(60);
-    const version = JSON.parse(await fetch(versionCodeArtifact.Url).then((r) => r.text()));
+    const version = JSON.parse(await fetch(versionCodeArtifact.Url!).then((r) => r.text()));
     if (version['versionCode'] !== undefined) {
       versionCode = parseInt(version['versionCode']);
     }
     job.updateProgress(75);
   }
   if (versionCode) {
-    const instance = await prisma.workflowInstances.findUnique({
+    const instance = await prisma.workflowInstances.findUniqueOrThrow({
       where: {
         ProductId: job.data.productId
       },

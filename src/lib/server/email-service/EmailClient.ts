@@ -5,9 +5,9 @@ import {
   NotificationTemplate,
   NotificationWithLinkTemplate,
   addProperties
-} from './EmailTemplates.js';
-import type { EmailProvider } from './providers/EmailProvider.js';
-import { LogProvider } from './providers/LogProvider.js';
+} from './EmailTemplates';
+import type { EmailProvider } from './providers/EmailProvider';
+import { LogProvider } from './providers/LogProvider';
 
 let emailProvider: EmailProvider = new LogProvider();
 
@@ -75,13 +75,13 @@ export async function notifySuperAdmins(
   });
   return {
     email: await sendEmail(
-      superAdmins.map((admin) => ({ email: admin.Email, name: admin.Name })),
+      superAdmins.map((admin) => ({ email: admin.Email!, name: admin.Name! })),
       subject,
       link
         ? addProperties(NotificationWithLinkTemplate, {
             Message: message,
             LinkUrl: link,
-            UrlText: linkText
+            UrlText: linkText!
           })
         : addProperties(NotificationTemplate, {
             Message: message

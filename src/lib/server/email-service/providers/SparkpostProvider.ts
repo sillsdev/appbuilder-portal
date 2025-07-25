@@ -1,6 +1,6 @@
 import SparkPost from 'sparkpost';
-import { ScriptoriaLogoBase64 } from '../EmailTemplates.js';
-import { EmailProvider } from './EmailProvider.js';
+import { ScriptoriaLogoBase64 } from '../EmailTemplates';
+import { EmailProvider } from './EmailProvider';
 
 export class SparkpostProvider extends EmailProvider {
   private sp: SparkPost;

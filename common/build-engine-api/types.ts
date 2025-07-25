@@ -58,7 +58,7 @@ type SuccessResponse = {
       href: string;
     };
   };
-};
+} & Record<string, unknown>;
 
 type CommonStatus = 'initialized' | 'accepted' | 'completed';
 type CommonResult = 'SUCCESS' | 'FAILURE' | null;

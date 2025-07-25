@@ -11,7 +11,7 @@
   import ProductDetails, {
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
-  import { Springy } from '$lib/springyGraph.js';
+  import { Springy } from '$lib/springyGraph';
 
   interface Props {
     data: PageData;

@@ -4,7 +4,7 @@ import type { Environment } from 'sil.appbuilder.portal.common/workflow';
 import { ENVKeys, ProductType } from 'sil.appbuilder.portal.common/workflow';
 
 export async function addProductPropertiesToEnvironment(productId: string) {
-  const product = await prisma.products.findUnique({
+  const product = await prisma.products.findUniqueOrThrow({
     where: {
       Id: productId
     },
@@ -52,8 +52,9 @@ export async function addProductPropertiesToEnvironment(productId: string) {
 export async function getWorkflowParameters(
   workflowInstanceId: number,
   scope: 'build' | 'publish'
-) {
-  const instance = await prisma.workflowInstances.findUnique({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any & { environment: Environment }> {
+  const instance = await prisma.workflowInstances.findUniqueOrThrow({
     where: {
       Id: workflowInstanceId
     },
@@ -79,7 +80,7 @@ export async function getWorkflowParameters(
   });
   let environment: Environment = {
     [ENVKeys.WORKFLOW_TYPE]: WorkflowTypeString[instance.WorkflowDefinition.Type],
-    [ENVKeys.WORKFLOW_PRODUCT_NAME]: instance.Product.ProductDefinition.Name
+    [ENVKeys.WORKFLOW_PRODUCT_NAME]: instance.Product.ProductDefinition.Name!
   };
 
   if (instance.WorkflowDefinition.ProductType !== ProductType.Web) {
@@ -153,5 +154,5 @@ export async function getWorkflowParameters(
     }
   });
 
-  return { ...result, environment: environment };
+  return { environment: environment };
 }

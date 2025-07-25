@@ -21,7 +21,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
   job.updateProgress(10);
   const projectId = job.data.scope === 'Project' ? job.data.projectId : products[0].ProjectId;
 
-  const project = await prisma.projects.findUnique({
+  const project = await prisma.projects.findUniqueOrThrow({
     where: { Id: projectId },
     select: { DateArchived: true }
   });
@@ -58,9 +58,11 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
 
     mapping = await Promise.all(
       job.data.operation.userMapping.map(async (u) => ({
-        from: (await prisma.users.findUnique({ where: { Id: u.from }, select: { Name: true } }))
-          .Name,
-        to: (await prisma.users.findUnique({ where: { Id: u.to }, select: { Name: true } })).Name,
+        from: (
+          await prisma.users.findUniqueOrThrow({ where: { Id: u.from }, select: { Name: true } })
+        ).Name!,
+        to: (await prisma.users.findUniqueOrThrow({ where: { Id: u.to }, select: { Name: true } }))
+          .Name!,
         count: (
           await DatabaseWrites.userTasks.updateMany({
             where: {
@@ -76,7 +78,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     );
     job.updateProgress(40);
     for (let i = 0; i < products.length; i++) {
-      const snap = await Workflow.getSnapshot(products[i].Id);
+      const snap = (await Workflow.getSnapshot(products[i].Id))!;
       job.updateProgress(40 + ((i + 0.2) * 40) / products.length);
       await DatabaseWrites.productTransitions.createMany(
         {
@@ -130,7 +132,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
       // Create tasks for all users that could perform this activity
       if (!project.DateArchived && job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
         const product = products[i];
-        const snap = await Workflow.getSnapshot(product.Id);
+        const snap = (await Workflow.getSnapshot(product.Id))!;
         const roleSet = new Set(
           (
             Workflow.availableTransitionsFromName(snap.state, snap.config)
@@ -175,7 +177,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
 
   const notifications: BullMQ.Email.SendBatchUserTaskNotifications['notifications'] = [];
   for (const task of createdTasks) {
-    const productInfo = await prisma.products.findUnique({
+    const productInfo = await prisma.products.findUniqueOrThrow({
       where: {
         Id: task.ProductId
       },
@@ -190,11 +192,11 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
       }
     });
     notifications.push({
-      activityName: task.ActivityName,
-      project: productInfo.Project.Name,
-      productName: productInfo.ProductDefinition.Name,
-      status: task.Status,
-      originator: productInfo.Project.Owner.Name,
+      activityName: task.ActivityName!,
+      project: productInfo.Project.Name!,
+      productName: productInfo.ProductDefinition.Name!,
+      status: task.Status!,
+      originator: productInfo.Project.Owner.Name!,
       comment: task.Comment ?? '',
       userId: task.UserId
     });
@@ -220,7 +222,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
       count: createdTasks.length,
       tasks: createdTasks.map((t) => ({
         productId: t.ProductId,
-        user: userNameMap.find((m) => m.Id === t.UserId).Name,
+        user: userNameMap.find((m) => m.Id === t.UserId)?.Name,
         task: t.ActivityName,
         roles: t.Role
       }))
