@@ -9,10 +9,7 @@ import {
   prisma
 } from 'sil.appbuilder.portal.common';
 import { WorkflowAction } from 'sil.appbuilder.portal.common/workflow';
-import {
-  addProductPropertiesToEnvironment,
-  getWorkflowParameters
-} from './common.build-publish.js';
+import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
 
 export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> {
   const productData = await prisma.products.findUnique({
@@ -65,23 +62,23 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
     job.updateProgress(50);
     const isError = response.responseType === 'error';
     if (isError || response.error) {
-      const message = isError ? response.message : response.error;
+      const message = (isError ? response.message : response.error)!;
       job.log(message);
       // if final retry
-      if (job.attemptsStarted >= job.opts.attempts) {
+      if (job.attemptsStarted >= (job.opts.attempts ?? 0)) {
         if (isError && response.code === BuildEngine.Types.EndpointUnavailable) {
           await notifyConnectionFailed(
             job.data.productId,
             productData.Project.Id,
-            productData.Project.Name,
-            productData.ProductDefinition.Name
+            productData.Project.Name!,
+            productData.ProductDefinition.Name!
           );
         } else {
           await notifyUnableToCreate(
             job.data.productId,
             productData.Project.Id,
-            productData.Project.Name,
-            productData.ProductDefinition.Name
+            productData.Project.Name!,
+            productData.ProductDefinition.Name!
           );
         }
         const flow = await Workflow.restore(job.data.productId);
@@ -124,7 +121,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
     return {
       response: {
         ...response,
-        environment: JSON.parse(response['environment'] ?? '{}')
+        environment: JSON.parse((response['environment'] as string) ?? '{}')
       },
       params,
       env
@@ -184,7 +181,7 @@ export async function check(job: Job<BullMQ.Build.Check>): Promise<unknown> {
     job.updateProgress(100);
     return {
       ...response,
-      environment: JSON.parse(response['environment'] ?? '{}')
+      environment: JSON.parse((response['environment'] as string) ?? '{}')
     };
   }
 }
@@ -224,7 +221,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
       Object.entries(job.data.build.artifacts).map(async ([type, url]) => {
         job.log(`${type}: ${url}`);
         const res = await fetch(url, { method: 'HEAD' });
-        const lastModified = new Date(res.headers.get('Last-Modified'));
+        const lastModified = new Date(res.headers.get('Last-Modified')!);
         if (lastModified > latestArtifactDate) {
           latestArtifactDate = lastModified;
         }
@@ -280,7 +277,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
           ContentType: res.headers.get('Content-Type'),
           FileSize:
             res.headers.get('Content-Type') !== 'text/html'
-              ? parseInt(res.headers.get('Content-Length'))
+              ? parseInt(res.headers.get('Content-Length')!)
               : undefined
         };
       })
@@ -306,8 +303,8 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
         job.data.productBuildId,
         job.data.productId,
         product.Project.OwnerId,
-        product.Project.Name,
-        product.ProductDefinition.Name
+        product.Project.Name!,
+        product.ProductDefinition.Name!
       );
       flow.send({ type: WorkflowAction.Build_Successful, userId: null });
     } else {
@@ -414,16 +411,16 @@ async function notifyFailed(
       projectId: product.Project.Id,
       messageKey: 'buildFailed',
       messageProperties: {
-        projectName: product.Project.Name,
-        productName: product.ProductDefinition.Name,
+        projectName: product.Project.Name!,
+        productName: product.ProductDefinition.Name!,
         buildStatus: buildResponse.status,
-        buildError: buildResponse.error,
+        buildError: buildResponse.error!,
         buildEngineUrl: endpoint.url + '/build-admin/view?id=' + product.WorkflowBuildId,
         consoleText: buildResponse.artifacts['consoleText'] ?? '',
         projectId: '' + product.Project.Id,
         jobId: '' + product.WorkflowJobId,
         buildId: '' + product.WorkflowBuildId,
-        projectUrl: product.Project.WorkflowAppProjectUrl
+        projectUrl: product.Project.WorkflowAppProjectUrl!
       },
       link: buildResponse.artifacts['consoleText'] ?? ''
     }

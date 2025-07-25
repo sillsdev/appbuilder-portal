@@ -1,7 +1,7 @@
 import type { Job } from 'bullmq';
 import { BullMQ, getQueues, prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import { notifySuperAdmins, sendEmail } from '../email-service/EmailClient.js';
+import { notifySuperAdmins, sendEmail } from '../email-service/EmailClient';
 import {
   NotificationTemplate,
   NotificationWithLinkTemplate,
@@ -10,8 +10,8 @@ import {
   ProjectImportTemplate,
   ReviewProductTemplate,
   addProperties
-} from '../email-service/EmailTemplates.js';
-import { getOwnerAdminVariantKeys, translate } from '../email-service/locales/locale.js';
+} from '../email-service/EmailTemplates';
+import { getOwnerAdminVariantKeys, translate } from '../email-service/locales/locale';
 
 export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unknown> {
   const inviteInformation = await prisma.organizationMembershipInvites.findFirstOrThrow({
@@ -96,10 +96,10 @@ export async function sendNotificationToReviewers(
     reviewerEmails: await Promise.all(
       product.Project.Reviewers.map((r) =>
         sendEmail(
-          [{ email: r.Email, name: r.Name }],
-          translate(r.Locale, 'notifications.subject.' + messageId, properties),
+          [{ email: r.Email!, name: r.Name! }],
+          translate(r.Locale!, 'notifications.subject.' + messageId, properties),
           addProperties(NotificationTemplate, {
-            Message: translate(r.Locale, 'notifications.body.' + messageId, {
+            Message: translate(r.Locale!, 'notifications.body.' + messageId, {
               ...properties,
               reviewerName: r.Name
             })
@@ -108,10 +108,10 @@ export async function sendNotificationToReviewers(
       )
     ),
     ownerEmail: await sendEmail(
-      [{ email: product.Project.Owner.Email, name: product.Project.Owner.Name }],
-      translate(product.Project.Owner.Locale, 'notifications.subject.' + messageId, properties),
+      [{ email: product.Project.Owner.Email!, name: product.Project.Owner.Name! }],
+      translate(product.Project.Owner.Locale!, 'notifications.subject.' + messageId, properties),
       addProperties(ReviewProductTemplate, {
-        Message: translate(product.Project.Owner.Locale, 'notifications.body.' + messageId, {
+        Message: translate(product.Project.Owner.Locale!, 'notifications.body.' + messageId, {
           ...properties,
           ownerName: product.Project.Owner.Name,
           reviewerNames: product.Project.Reviewers.map((r) => r.Name + ' (' + r.Email + ')').join(
@@ -145,11 +145,11 @@ export async function sendBatchUserTaskNotifications(
     // const message = translate(user.Locale, 'notifications.notification.userTaskAdded', properties);
     //// S1 used to have notifications in the frontend, with emails also being sent,
     //// but that feature was removed a while ago (but the i18n is still present for some reason...)
-    const message = translate(user.Locale, 'notifications.body.userTaskAdded', properties);
+    const message = translate(user.Locale!, 'notifications.body.userTaskAdded', properties);
     allEmails.push(
       sendEmail(
-        [{ email, name: user.Name }],
-        translate(user.Locale, 'notifications.subject.userTaskAdded', properties),
+        [{ email: email!, name: user.Name! }],
+        translate(user.Locale!, 'notifications.subject.userTaskAdded', properties),
         addProperties(NotificationTemplate, {
           Message: message
         })
@@ -178,7 +178,7 @@ export async function notifySuperAdminsOfNewOrganizationRequest(
   };
   return {
     email: await sendEmail(
-      superAdmins.map((admin) => ({ email: admin.Email, name: admin.Name })),
+      superAdmins.map((admin) => ({ email: admin.Email!, name: admin.Name! })),
       translate('en', 'organizationInvites.subject', properties),
       addProperties(OrganizationInviteRequestTemplate, {
         ...properties
@@ -213,7 +213,7 @@ export async function notifySuperAdminsOfOfflineSystems(
     translate('en', 'notifications.body.buildengineDisconnected', {
       url: statuses.map((s) => s.BuildEngineUrl).join(', '),
       minutes: statuses
-        .map((s) => Math.floor((Date.now() - s.DateUpdated.getTime()) / 1000 / 60))
+        .map((s) => Math.floor((Date.now() - s.DateUpdated!.getTime()) / 1000 / 60))
         .join(', ')
     })
   );
@@ -235,7 +235,7 @@ export async function notifySuperAdminsLowPriority(
   if (superAdmins.length) {
     return {
       email: await sendEmail(
-        superAdmins.map((admin) => ({ email: admin.Email, name: admin.Name })),
+        superAdmins.map((admin) => ({ email: admin.Email!, name: admin.Name! })),
         translate('en', 'notifications.subject.' + job.data.messageKey, job.data.messageProperties),
         addProperties(NotificationTemplate, {
           Message: translate(
@@ -262,20 +262,20 @@ export async function sendNotificationToUser(
   });
   if (!user) return `User ${job.data.userId} has disabled Email Notifications`;
   return await sendEmail(
-    [{ email: user.Email, name: user.Name }],
+    [{ email: user.Email!, name: user.Name! }],
     translate(
-      user.Locale,
+      user.Locale!,
       'notifications.subject.' + job.data.messageKey,
       job.data.messageProperties
     ),
     addProperties(job.data.link ? NotificationWithLinkTemplate : NotificationTemplate, {
       Message: translate(
-        user.Locale,
+        user.Locale!,
         'notifications.body.' + job.data.messageKey,
         job.data.messageProperties
       ),
-      LinkUrl: job.data.link,
-      UrlText: translate(user.Locale, 'notifications.body.log')
+      LinkUrl: job.data.link!,
+      UrlText: translate(user.Locale!, 'notifications.body.log')
     })
   );
 }
@@ -316,10 +316,10 @@ export async function reportProjectImport(
       Name: string;
       Store: string;
     }[];
-  } = JSON.parse(projectImport.ImportData);
+  } = JSON.parse(projectImport.ImportData!);
   const existingProjects = await prisma.projects.findMany({
     where: {
-      OrganizationId: projectImport.Organizations.Id,
+      OrganizationId: projectImport.Organizations!.Id,
       Name: {
         in: importJSON.Projects.map((p) => p.Name).filter(
           (p) => !newProjects.find((n) => n.Name === p)
@@ -329,13 +329,13 @@ export async function reportProjectImport(
   });
   const reportLines = [
     ...newProjects.map((p) =>
-      translate(projectImport.Users.Locale, 'importProject.newProject', {
+      translate(projectImport.Users!.Locale, 'importProject.newProject', {
         projectName: p.Name,
         projectId: '' + p.Id
       })
     ),
     ...existingProjects.map((p) =>
-      translate(projectImport.Users.Locale, 'importProject.existingProject', {
+      translate(projectImport.Users!.Locale, 'importProject.existingProject', {
         projectName: p.Name,
         projectId: '' + p.Id
       })
@@ -354,11 +354,11 @@ export async function reportProjectImport(
     // It is not possible to have an imported project with existing products
     reportLines.push(
       ...products.map((p) =>
-        translate(projectImport.Users.Locale, 'importProject.newProduct', {
+        translate(projectImport.Users!.Locale, 'importProject.newProduct', {
           projectId: '' + project.Id,
           projectName: project.Name,
           productDefinitionName: p.ProductDefinition.Name,
-          storeName: p.Store.Name,
+          storeName: p.Store!.Name,
           storeId: '' + p.StoreId
         })
       )
@@ -370,35 +370,35 @@ export async function reportProjectImport(
   }
 
   const properties = [
-    translate(projectImport.Users.Locale, 'importProject.property', {
-      name: translate(projectImport.Users.Locale, 'importProject.Owner'),
-      value: projectImport.Users.Name
+    translate(projectImport.Users!.Locale, 'importProject.property', {
+      name: translate(projectImport.Users!.Locale, 'importProject.Owner'),
+      value: projectImport.Users!.Name
     }),
-    translate(projectImport.Users.Locale, 'importProject.property', {
-      name: translate(projectImport.Users.Locale, 'importProject.Group'),
-      value: projectImport.Groups.Name
+    translate(projectImport.Users!.Locale, 'importProject.property', {
+      name: translate(projectImport.Users!.Locale, 'importProject.Group'),
+      value: projectImport.Groups!.Name
     }),
-    translate(projectImport.Users.Locale, 'importProject.property', {
-      name: translate(projectImport.Users.Locale, 'importProject.Organization'),
-      value: projectImport.Organizations.Name
+    translate(projectImport.Users!.Locale, 'importProject.property', {
+      name: translate(projectImport.Users!.Locale, 'importProject.Organization'),
+      value: projectImport.Organizations!.Name
     }),
-    translate(projectImport.Users.Locale, 'importProject.property', {
-      name: translate(projectImport.Users.Locale, 'importProject.Application Type'),
-      value: projectImport.ApplicationTypes.Description
+    translate(projectImport.Users!.Locale, 'importProject.property', {
+      name: translate(projectImport.Users!.Locale, 'importProject.Application Type'),
+      value: projectImport.ApplicationTypes!.Description
     })
   ];
 
   const body = addProperties(ProjectImportTemplate, {
-    Title: translate(projectImport.Users.Locale, 'importProject.title'),
-    PropertiesHeader: translate(projectImport.Users.Locale, 'importProject.propertiesHeader'),
+    Title: translate(projectImport.Users!.Locale, 'importProject.title'),
+    PropertiesHeader: translate(projectImport.Users!.Locale, 'importProject.propertiesHeader'),
     Properties: '<li>' + properties.join('</li><li>') + '</li>',
-    OutputHeader: translate(projectImport.Users.Locale, 'importProject.outputHeader'),
+    OutputHeader: translate(projectImport.Users!.Locale, 'importProject.outputHeader'),
     Output: '<tr><td><p>' + reportLines.join('</p></td></tr><tr><td><p>') + '</p></td></tr>'
   });
 
   return await sendEmail(
-    [{ email: projectImport.Users.Email, name: projectImport.Users.Name }],
-    translate(projectImport.Users.Locale, 'importProject.subject'),
+    [{ email: projectImport.Users!.Email!, name: projectImport.Users!.Name! }],
+    translate(projectImport.Users!.Locale, 'importProject.subject'),
     body
   );
 }
@@ -433,7 +433,7 @@ export async function sendNotificationToOrgAdminsAndOwner(
   const messageKey = getOwnerAdminVariantKeys(job.data.messageKey);
   const emails = orgAdmins.map((admin) =>
     sendEmail(
-      [{ email: admin.Email, name: admin.Name }],
+      [{ email: admin.Email!, name: admin.Name! }],
       translate(
         admin.Locale,
         'notifications.subject.' + messageKey.admin,
@@ -445,7 +445,7 @@ export async function sendNotificationToOrgAdminsAndOwner(
           'notifications.body.' + messageKey.admin,
           job.data.messageProperties
         ),
-        LinkUrl: job.data.link,
+        LinkUrl: job.data.link!,
         UrlText: translate(admin.Locale, 'notifications.body.log')
       })
     )
@@ -459,7 +459,7 @@ export async function sendNotificationToOrgAdminsAndOwner(
   ) {
     emails.push(
       sendEmail(
-        [{ email: owner.Email, name: owner.Name }],
+        [{ email: owner.Email!, name: owner.Name! }],
         translate(
           owner.Locale,
           'notifications.subject.' + messageKey.owner,
@@ -471,7 +471,7 @@ export async function sendNotificationToOrgAdminsAndOwner(
             'notifications.body.' + messageKey.owner,
             job.data.messageProperties
           ),
-          LinkUrl: job.data.link,
+          LinkUrl: job.data.link!,
           UrlText: translate(owner.Locale, 'notifications.body.log')
         })
       )

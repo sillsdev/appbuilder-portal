@@ -38,7 +38,7 @@ export async function checkSystemStatuses(
   });
   // Add defaults
   const defaults = BuildEngine.Requests.tryGetDefaultBuildEngineParameters();
-  if (defaults.url) {
+  if (defaults.url && defaults.token) {
     organizations.push({
       BuildEngineUrl: defaults.url,
       BuildEngineApiAccessToken: defaults.token
@@ -118,7 +118,7 @@ export async function checkSystemStatuses(
         partialToken: s.BuildEngineApiAccessToken?.substring(0, 4),
         status: res.status,
         error: res.responseType === 'error' ? res : undefined,
-        minutes: Math.floor((Date.now() - new Date(s.DateUpdated).valueOf()) / 60000)
+        minutes: Math.floor((Date.now() - new Date(s.DateUpdated!).valueOf()) / 60000)
       };
     })
   );
@@ -164,12 +164,13 @@ const sectionDelim = '********************';
 export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): Promise<unknown> {
   const localDir =
     process.env.NODE_ENV === 'development'
-      ? join(import.meta.dirname, '../../static/languages')
+      ? join(import.meta.dirname, '../../../../static/languages')
       : '/app/build/client/languages';
   if (!existsSync(localDir)) {
     await mkdir(localDir, { recursive: true });
   }
-  const ret = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ret: any = {};
 
   const log = (msg: string) => job.log(msg);
 
@@ -237,7 +238,7 @@ export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): 
 
     job.updateProgress(100);
   } catch (err) {
-    job.log(err);
+    job.log(JSON.stringify(err));
   }
 
   return ret;
@@ -275,7 +276,7 @@ async function shouldUpdate(localPath: string, remotePath: string, logger: Logge
         remoteLastModified
       };
     } catch (err) {
-      logger(err);
+      logger(JSON.stringify(err));
     }
   } else {
     logger(`${localPath} does not exist`);
@@ -308,7 +309,12 @@ async function processLocalizedNames(
   logger(`${sectionDelim}`);
 
   let revid = '';
-  let update: Awaited<ReturnType<typeof shouldUpdate>>;
+  let update: Awaited<ReturnType<typeof shouldUpdate>> & {
+    foundRevid?: string;
+    languages?: number;
+    territories?: number;
+    revid?: string;
+  };
   if (existsSync(revIdFileName)) {
     revid = (await readFile(revIdFileName)).toString();
     update = await shouldUpdate(finalName, endpoint + '?revid=' + revid, logger);
@@ -337,7 +343,7 @@ async function processLocalizedNames(
         'languages',
         parsed.ldml.localeDisplayNames.languages.language
           .map(mapXMLAttributes)
-          .map(([code, name]) => [(code as string).replace(/_/g, '-'), name])
+          .map(([code, name]: [string, string]) => [code.replace(/_/g, '-'), name])
       ],
       ['territories', parsed.ldml.localeDisplayNames.territories.territory.map(mapXMLAttributes)]
     ];

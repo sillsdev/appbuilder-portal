@@ -1,4 +1,4 @@
-import { EmailProvider } from './EmailProvider.js';
+import { EmailProvider } from './EmailProvider';
 
 export class LogProvider extends EmailProvider {
   async sendEmail(

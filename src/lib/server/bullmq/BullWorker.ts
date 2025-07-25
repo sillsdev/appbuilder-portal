@@ -1,12 +1,14 @@
 import type { Job } from 'bullmq';
 import { Worker } from 'bullmq';
 import { BullMQ, getQueues, getWorkerConfig } from 'sil.appbuilder.portal.common';
-import * as Executor from './job-executors/index.js';
+import * as Executor from '../job-executors';
+import { building } from '$app/environment';
+import { SSEPageUpdates } from '$lib/projects/listener';
 
 export abstract class BullWorker<T> {
-  public worker: Worker;
+  public worker?: Worker;
   constructor(public queue: BullMQ.QueueName) {
-    this.worker = new Worker<T>(queue, this.run, getWorkerConfig());
+    if (!building) this.worker = new Worker<T>(queue, this.run, getWorkerConfig());
   }
   abstract run(job: Job<T>): Promise<unknown>;
 }
@@ -154,7 +156,7 @@ export class UserTasks<J extends BullMQ.UserTasksJob> extends BullWorker<J> {
   }
 }
 
-export class Emails<J extends BullMQ.EmailJob> extends BullWorker<BullMQ.Job> {
+export class Emails<J extends BullMQ.EmailJob> extends BullWorker<J> {
   constructor() {
     super(BullMQ.QueueName.Emails);
   }
@@ -192,6 +194,22 @@ export class Emails<J extends BullMQ.EmailJob> extends BullWorker<BullMQ.Job> {
         );
       case BullMQ.JobType.Email_ProjectImportReport:
         return Executor.Email.reportProjectImport(job as Job<BullMQ.Email.ProjectImportReport>);
+    }
+  }
+}
+
+export class SvelteSSE<J extends BullMQ.SvelteSSEJob> extends BullWorker<J> {
+  constructor() {
+    super(BullMQ.QueueName.SvelteSSE);
+  }
+  async run(job: Job<J>) {
+    switch (job.data.type) {
+      case BullMQ.JobType.SvelteSSE_UpdateProject:
+        SSEPageUpdates.emit('projectPage', job.data.projectIds);
+        break;
+      case BullMQ.JobType.SvelteSSE_UpdateUserTasks:
+        SSEPageUpdates.emit('userTasksPage', job.data.userIds);
+        break;
     }
   }
 }

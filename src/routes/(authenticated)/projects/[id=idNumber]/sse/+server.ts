@@ -2,7 +2,7 @@ import { prisma } from 'sil.appbuilder.portal.common';
 import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { produce } from 'sveltekit-sse';
 import { getProductActions } from '$lib/products';
-import { SSEPageUpdates } from '$lib/projects/listener.js';
+import { SSEPageUpdates } from '$lib/projects/listener';
 import { userGroupsForOrg } from '$lib/projects/server';
 
 export async function POST(request) {
