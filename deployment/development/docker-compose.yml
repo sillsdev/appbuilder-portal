@@ -1,21 +1,6 @@
-version: "3.4"
-
-# NOTE: that --project-directory ./source
-# must be passed to every docker-compose command
-# ./source is the docker-compose context
-#
-# NOTE: environment vars are public, and should not contain secrets ^_~
-#       use `env_file: [.env]` for secret things.
-
 volumes:
-  ui-tmp:
-  ui-dist:
-  ui-node_modules:
-  ui-yarn-cache:
   postgres-data:
   valkey-data:
-  outdir:
-
 
 services:
   db:
@@ -25,14 +10,10 @@ services:
       POSTGRES_USER: db-user
       POSTGRES_PASSWORD: 1234
       PGDATA: /var/lib/postgresql/data
-
     ports:
       - "5432:5432"
-      - "15432:5432"
-
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./scripts/DB:/scripts
 
   # Debugging database
   adminer:
@@ -41,69 +22,19 @@ services:
     ports:
       # Host:Container
       - "18080:8080"
-    links:
-      - db:db.docker
 
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
-      target: development
-    command: bash -c " dotnet watch run"
-    ports:
-      - "7081:7081"
-    links:
-      - db:db.docker
-    env_file:
-      - ./source/OptimaJet.DWKit.StarterApplication/.env.dev
-    volumes:
-      - ./source/:/app
-      - "outdir:/app/out"
-  nginx:
-    build:
-      context: .
-      dockerfile: Dockerfile.nginx
-    ports:
-      - 9091:80
-    links:
-      - api:api.docker
-    environment:
-      - API_URL=http://api.docker:7081
-      - DWKIT_UI_HOST=localhost:7081
-  ui:
-    build:
-      context: ./source/SIL.AppBuilder.Portal.Frontend/
-      dockerfile: Dockerfile
-    command: bash -c "yarn && yarn start:dev"
-
-    ports:
-      - "9091:9091"
-      - "9092:9092"
-
-    environment:
-      API_HOST: api:7081
-
-    env_file:
-      - ./source/SIL.AppBuilder.Portal.Frontend/.env.dev
-
-    volumes:
-      - ./source/SIL.AppBuilder.Portal.Frontend:/app
-
-      - ui-tmp:/app/tmp
-      - ui-dist:/app/dist
-      - ui-node_modules:/app/node_modules
-      - ui-yarn-cache:/.yarn-cache
   svelte-ui:
     build:
-      context: ./portal/
+      context: .
       dockerfile: Dockerfile
     ports:
       - "6173:6173"
-    env_file: portal/.env
+    env_file: .env
     environment:
       DATABASE_URL: "postgresql://db-user:1234@db:5432/development?schema=public"
       # MUST be included (the path the application will be accessed on) and MUST NOT have a trailing slash
       ORIGIN: "http://localhost:6173"
+
   valkey:
     image: valkey/valkey:latest
     ports:
@@ -111,6 +42,7 @@ services:
     command: valkey-server --appendonly yes --appendfilename appendonly.aof --maxmemory-policy noeviction
     volumes:
       - valkey-data:/data
+
   stg-tunnel:
     build:
       context: ./deployment/development

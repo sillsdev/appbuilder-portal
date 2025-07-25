@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 24
           cache: 'npm'
-          cache-dependency-path: portal/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Get environment info
         run: |
@@ -39,15 +39,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd portal
           echo "Installing dependencies..."
           npm ci
 
       - name: Cache node_modules
         uses: actions/cache@v4
         with:
-          path: portal/node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('portal/package-lock.json') }}
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
   # Type checking job
   typecheck-lint:
@@ -69,12 +68,11 @@ jobs:
       - name: Restore node_modules cache
         uses: actions/cache@v4
         with:
-          path: portal/node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('portal/package-lock.json') }}
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Compile paraglide messages and run svelte-check
         run: |
-          cd portal
           echo "Compiling paraglide messages..."
           npx @inlang/paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide
           echo "Running svelte-check..."
@@ -82,7 +80,6 @@ jobs:
 
       - name: Run lint
         run: |
-          cd portal
           echo "Running lint..."
           npm run lint
 
@@ -107,8 +104,8 @@ jobs:
       - name: Restore node_modules cache
         uses: actions/cache@v4
         with:
-          path: portal/node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('portal/package-lock.json') }}
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Setup stg-tunnel
         run: |
@@ -128,24 +125,23 @@ jobs:
       - name: Build, Install Playwright dependencies, and seed database
         run: |
           echo "Building .env file..."
-          echo "AUTH0_CLIENT_ID=${{ vars.AUTH0_CLIENT_ID }}" > ./portal/.env
-          echo "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}" >> ./portal/.env
-          echo "AUTH0_DOMAIN=${{ vars.AUTH0_DOMAIN }}" >> ./portal/.env
-          echo "AUTH0_CONNECTION=${{ vars.AUTH0_CONNECTION }}" >> ./portal/.env
-          echo "AUTH0_SECRET=${{ secrets.AUTH0_SECRET }}" >> ./portal/.env
+          echo "AUTH0_CLIENT_ID=${{ vars.AUTH0_CLIENT_ID }}" > .env
+          echo "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}" >> .env
+          echo "AUTH0_DOMAIN=${{ vars.AUTH0_DOMAIN }}" >> .env
+          echo "AUTH0_CONNECTION=${{ vars.AUTH0_CONNECTION }}" >> .env
+          echo "AUTH0_SECRET=${{ secrets.AUTH0_SECRET }}" >> .env
           echo "Building the docker project..."
           mkdir -p command-output
           (./run ci build > command-output/build-output.txt 2>&1 || echo $? > command-output/build-exit-code.txt) &
-          cd portal
           echo "Installing Playwright dependencies..."
-          (npx playwright install --with-deps > ../command-output/playwright-output.txt 2>&1 || echo $? > ../command-output/playwright-exit-code.txt) &
+          (npx playwright install --with-deps > command-output/playwright-output.txt 2>&1 || echo $? > command-output/playwright-exit-code.txt) &
           echo "Beginning pull of images"
-          (cd .. ; ./run ci pull valkey > /dev/null) &
+          ./run ci pull valkey > /dev/null &
           echo "Starting database..."
-          (cd .. ; ./run ci up -d db)
+          ./run ci up -d db
           sleep 1
           echo "Seeding the database..."
-          npx prisma migrate reset -f --skip-seed --skip-generate && npx prisma db seed -- -o
+          npx prisma migrate reset -f --skip-seed --skip-generate && npx prisma db seed
           echo "Waiting for build and Playwright installation to finish..."
           wait
           if [ -f command-output/build-exit-code.txt ]; then
@@ -171,7 +167,6 @@ jobs:
 
       - name: Run tests
         run: |
-          cd portal
           # Is the port open
           nc -zv localhost 6173 || { echo "Port 6173 is not open"; exit 1; }
           npx svelte-kit sync

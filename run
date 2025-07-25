@@ -5,15 +5,9 @@
 #
 # For local development only.
 
-UI_PATH="source/SIL.AppBuilder.Portal.Frontend"
-API_PATH="source/OptimaJet.DWKit.StarterApplication"
-SVELTE_PATH="portal"
 COMPOSE="docker compose -f deployment/development/docker-compose.yml --project-directory . -p appbuilder-portal"
-COMPOSE_SERVICES="db adminer svelte-ui valkey stg-tunnel"
-
 CI_COMPOSE="docker compose -f deployment/ci/docker-compose.yml --project-directory . -p appbuilder-portal-ci"
-
-PSQL="PGPASSWORD=\$POSTGRES_PASSWORD psql -h localhost -U \$POSTGRES_USER"
+COMPOSE_SERVICES="db adminer svelte-ui valkey stg-tunnel"
 
 function runstuff {
   # First arg
@@ -27,186 +21,33 @@ function runstuff {
     up:build) ${COMPOSE} up --build $arguments ${COMPOSE_SERVICES} ;;
     up)       ${COMPOSE} up $arguments ${COMPOSE_SERVICES} ;;
     up:local:start)
-      runstuff dc up -d db adminer redis
-
-      echo "db and adminer have been started. please make sure you have /etc/hosts entries"
-      echo ""
-      echo "  127.0.0.1 db.docker"
-      echo "  127.0.0.1 api"
-      echo "  127.0.0.1 adminer"
-      echo ""
-      echo "if you need to connect to these services from locally run api and ui"
-      echo ""
-      echo "also make sure any environment variables present in docker-compose.yml"
-      echo "for the non-running services are present when booting up the services"
-      echo "on the host environment (use .env.dev files to make this simpler)"
-      echo ""
-      echo "why?"
-      echo "because currently, docker compose doesn't have a way to omit files / folders"
-      echo "from volume mounts, so whenever dotnet watch would do a rebuild inside the"
-      echo "docker environment, it would blow away all the host-dependencies that the"
-      echo "editor was using for intellisense..."
-
-      runstuff dc ps
-      runstuff dc logs --follow --tail="2"
+      runstuff dc up -d db adminer valkey
     ;;
 
     bash)     ${COMPOSE} run --rm $arguments bash;;
     restart)  ${COMPOSE} stop $arguments && ${COMPOSE} start $arguments;;
 
-    api:ef)
-      ${COMPOSE} exec api bash -c "\
-        dotnet ef ${arguments} \
-          --startup-project /app/OptimaJet.DWKit.StarterApplication/OptimaJet.DWKit.StarterApplication.csproj \
-          --project /app/OptimaJet.DWKit.StarterApplication/OptimaJet.DWKit.StarterApplication.csproj \
-          --msbuildprojectextensionspath /app/out/OptimaJet.DWKit.StarterApplication/obj/ \
-        ";;
-
-    db:update)     runstuff api:ef database update ${arguments};;
-    db:migrations) runstuff api:ef migrations ${arguments};;
-
     bootstrap)
       set -e
-      runstuff bootstrap:stop-api
-      runstuff bootstrap:drop
-      runstuff bootstrap:svelte
-      runstuff bootstrap:dwkit-data
-      runstuff bootstrap:restart-api
-      runstuff bootstrap:data
-      runstuff bootstrap:workflow
-      runstuff bootstrap:sample
-      runstuff bootstrap:dev
-      runstuff bootstrap:ui-static
+      runstuff dc down --remove-orphans
+      runstuff up:local:start
+      runstuff db:migrate
+      runstuff stop
       set +e
     ;;
 
-    bootstrap:s1)
-      set -e
-      runstuff bootstrap:stop-api
-      runstuff bootstrap:drop
-      runstuff bootstrap:dwkit
-      runstuff bootstrap:restart-api
-      runstuff bootstrap:api
-      runstuff bootstrap:sample
-      runstuff bootstrap:dev
-      runstuff bootstrap:ui-static
-      set +e
+    db:migrate)
+	    npx prisma migrate dev --schema common/prisma/schema.prisma
     ;;
 
-    bootstrap:alpha)
-      set -e
-      runstuff bootstrap:dwkit
-      runstuff bootstrap:api
-      runstuff bootstrap:orgs
-      runstuff bootstrap:dev
-      runstuff bootstrap:ui-static
-      set +e
+    db:reset)
+      npx prisma migrate reset --force --schema common/prisma/schema.prisma
     ;;
-
-    bootstrap:stop-api)
-      echo "api must not be running in order to run the initial db scripts ..."
-      runstuff dc stop api
-    ;;
-
-    bootstrap:drop)
-      # Setup Database
-      ${COMPOSE} exec db bash -c "\
-        ${PSQL} -d postgres -tc \
-          \"SELECT 1 FROM pg_database \
-            WHERE datname = '\$POSTGRES_DB'\" \
-        | grep -q 1 \
-        && ${PSQL} -d postgres -c \"DROP DATABASE \$POSTGRES_DB\""
-
-      ${COMPOSE} exec db bash -c "${PSQL} -d postgres -c \"CREATE DATABASE \$POSTGRES_DB WITH ENCODING 'UTF8'\""
-    ;;
-
-    bootstrap:dwkit)
-      echo "Setting up DWKit..."
-      runstuff bootstrap:dwkit-data
-      runstuff bootstrap:dwkit-migrate
-      echo "DB setup with DWKit Scripts"
-    ;;
-    bootstrap:dwkit-data)
-      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/DWKitScript.sql" 
-    ;;
-
-    bootstrap:dwkit-migrate)
-      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/Workflow_CreatePersistenceObjects.sql"
-      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/PostgreSQL/DWKitUpdate_2.6.sql"
-    ;;
-
-    bootstrap:restart-api)
-      echo "api must be running in order to run the db migration scripts ..."
-      runstuff dc start api
-    ;;
-
-    bootstrap:api)
-      echo "Running migrations..."
-      runstuff db:update
-      runstuff bootstrap:data
-      runstuff bootstrap:workflow
-      echo "DB setup for json:api"
-    ;;
-
-    bootstrap:data)
-      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/bootstrap.sql"
-    ;;
-
-    bootstrap:workflow)
-	    ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/default_workflow.sql"
-    ;;
-
-    bootstrap:svelte)
-	    (cd $SVELTE_PATH \
-	      && npx prisma migrate dev --schema common/prisma/schema.prisma)
-    ;;
-
-    bootstrap:sample)
-      echo "Adding sample data..."
-
-      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/sample_data.sql" \
-        && echo "DB setup with sample data"
-    ;;
-
-    bootstrap:ui-static)
-      echo "Building Static Data for the UI"
-
-      ( cd $UI_PATH && ./scripts/refresh-languages.sh )
-    ;;
-
-    bootstrap:orgs)
-      echo "Adding sample data..."
-
-      ${COMPOSE} exec db bash -c "${PSQL} -d \$POSTGRES_DB -f /scripts/default_organizations.sql" \
-        && echo "DB setup with default organizations data"
-    ;;
-
-    bootstrap:dev)
-      # add something like the following to scripts/DB/dev.sql
-      # UPDATE "Users"
-      # SET "PublishingKey" = 'ssh-rsa ...'
-      # WHERE
-      #   "Id" = X;
-      ${COMPOSE} exec db bash -c "if [ -f /scripts/dev.sql ]; then ${PSQL} -d \$POSTGRES_DB -f /scripts/dev.sql; fi" \
-        && echo "DB setup with dev data"
-    ;;
-
-
 
     ##################
     # Testing
     ci:build)
       ${CI_COMPOSE} build
-    ;;
-
-    ci:ui)
-      ${CI_COMPOSE} run --rm ui \
-        bash -c "yarn && yarn lint && yarn test:ci"
-    ;;
-
-    ci:api)
-      ${CI_COMPOSE} run --rm api \
-        bash -c "dotnet test /app/SIL.AppBuilder.Portal.Backend.Tests/"
     ;;
 
     ci)
@@ -244,40 +85,11 @@ function runstuff {
     ################
     # Host-Machine Utils
 
-    # frontend things
-    yarn) ( cd $UI_PATH && yarn $arguments );;
-    refresh-languages) ( cd $UI_PATH && ./scripts/refresh-languages.sh );;
-
-    # backend / api things
-    dotnet:api) ( cd $API_PATH && dotnet $arguments );;
-
-    dotnet) ( cd source && dotnet ${arguments} );;
-    dotnet:ef)
-      runstuff dotnet ef \
-        ${arguments} \
-        --startup-project ./OptimaJet.DWKit.StarterApplication/OptimaJet.DWKit.StarterApplication.csproj \
-        --project ./OptimaJet.DWKit.StarterApplication/OptimaJet.DWKit.StarterApplication.csproj \
-        --msbuildprojectextensionspath ./out/OptimaJet.DWKit.StarterApplication/obj/
-    ;;
-    # dotnet:api)
-
     # Don't name any folders bin, obj, tmp, dist, or node_modules
     clean:all)
       echo "Cleaning..."
-      runstuff clean:api
-      runstuff clean:frontend
-    ;;
-
-    clean:api)
       shopt -s globstar
-      rm -rf **/out/ &&
-      # rm -rf source//bin && \
-      rm -rf **/obj
-    ;;
-
-    clean:frontend)
-      shopt -s globstar
-      runstuff yarn cache clean && \
+      rm -rf **/out/ && \
       rm -rf **/dist && \
       rm -rf **/node_modules && \
       rm -rf **/tmp
@@ -295,27 +107,16 @@ function print_help {
   echo "dc             : short for docker compose"
   echo "up:build"
   echo "up"
-  echo "up:local:start : starts non-essential services in docker, and the api and ui services natively on the host machine"
+  echo "up:local:start : starts external services in docker"
   echo ""
   echo "bash           : drop into a bash shell in a temporary docker compose service"
   echo "restart        : restart a specific docker compose service"
   echo ""
   echo "bootstrap      : runs initial scripts for project setup"
-  echo "bootstrap:dwkit"
-  echo "bootstrap:alpha"
-  echo "bootstrap:orgs"
-  echo "bootstrap:api"
-  echo "bootstrap:sample"
-  echo "db:migrations  : run Entity Framework migrations command"
-  echo "db:update      : run Entity Framework database command"
+  echo "db:migrate     : run prisma migrate dev command"
+  echo "db:reset       : run prisma migrate reset command"
   echo ""
-  echo "yarn"
-  echo ""
-  echo "dotnet"
-  echo ""
-  echo "clean:all      : recursively removes dist, node_modules, and tmp directories"
-  echo "clean:api"
-  echo "clean:frontend"
+  echo "clean:all      : recursively removes out, dist, node_modules, and tmp directories"
 }
 
 if [ $1 ]; then
