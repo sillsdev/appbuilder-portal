@@ -2,6 +2,7 @@ import js from '@eslint/js';
 
 import { globalIgnores } from 'eslint/config';
 import importPlugin from 'eslint-plugin-import';
+import prettierConfig from 'eslint-plugin-prettier/recommended';
 import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
 import ts from 'typescript-eslint';
@@ -10,6 +11,7 @@ import svelteConfig from './svelte.config.js';
 export default ts.config(
   js.configs.recommended,
   ...ts.configs.recommended,
+  prettierConfig,
   svelte.configs['flat/recommended'],
   svelte.configs['flat/prettier'],
   importPlugin.flatConfigs.recommended,
@@ -23,17 +25,19 @@ export default ts.config(
     }
   },
   {
-    files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
+    files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js', '**/*.ts'],
 
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ["playwright.config.ts"]
+        },
         extraFileExtensions: ['.svelte'],
         parser: ts.parser,
         svelteFeatures: {
           experimentalGenerics: true
         },
-        svelteConfig
+        svelteConfig,
       }
     }
   },
@@ -49,7 +53,6 @@ export default ts.config(
         }
       ],
       'import/no-unresolved': 'off',
-      '@typescript-eslint/consistent-type-imports': 'warn'
     }
   },
   globalIgnores([
@@ -68,6 +71,3 @@ export default ts.config(
     '**/*.js'
   ])
 );
-
-// No single line conditionals
-// Unused variables as func params

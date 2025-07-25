@@ -5,6 +5,5 @@
     "moduleResolution": "NodeNext",
     "module": "NodeNext",
     "resolveJsonModule": true
-  },
-  "exclude": ["dev.ts"]
+  }
 }

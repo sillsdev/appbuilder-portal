@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import { jwtVerify } from 'jose';
-import type { KeyObject} from 'node:crypto';
+import type { KeyObject } from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
 import { BuildEngine, DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';

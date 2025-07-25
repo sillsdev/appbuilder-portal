@@ -12,9 +12,7 @@ import {
   prisma
 } from 'sil.appbuilder.portal.common';
 import { WorkflowType, WorkflowTypeString } from 'sil.appbuilder.portal.common/prisma';
-import type {
-  Environment,
-  WorkflowInstanceContext} from 'sil.appbuilder.portal.common/workflow';
+import type { Environment, WorkflowInstanceContext } from 'sil.appbuilder.portal.common/workflow';
 import {
   ENVKeys,
   WorkflowAction,

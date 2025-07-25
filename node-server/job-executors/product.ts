@@ -7,13 +7,8 @@ import {
   getQueues,
   prisma
 } from 'sil.appbuilder.portal.common';
-import type {
-  WorkflowInstanceContext
-} from 'sil.appbuilder.portal.common/workflow';
-import {
-  ENVKeys,
-  WorkflowAction
-} from 'sil.appbuilder.portal.common/workflow';
+import type { WorkflowInstanceContext } from 'sil.appbuilder.portal.common/workflow';
+import { ENVKeys, WorkflowAction } from 'sil.appbuilder.portal.common/workflow';
 
 export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> {
   const productData = await prisma.products.findUnique({
