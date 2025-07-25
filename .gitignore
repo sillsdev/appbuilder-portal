@@ -1,16 +1,18 @@
-# Global project ignores:
+.DS_Store
+node_modules
+/.svelte-kit
+/package
 .env
-.idea
+.env.*
+!.env.example
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+static/languages/*
+node-server/**/*.js
+common/**/*.js
+test-results
 *.log
 *.swp
 out/
-
-# Node.js Tools for Visual Studio
-node_modules/
-
-# Mac desktop services store files
-.DS_Store
-
-# Windows image file caches
 Thumbs.db
 ehthumbs.db
