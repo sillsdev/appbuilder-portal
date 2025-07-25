@@ -1,6 +1,6 @@
 import { prisma } from 'sil.appbuilder.portal.common';
 import { WorkflowType, WorkflowTypeString } from 'sil.appbuilder.portal.common/prisma';
-import type { Environment} from 'sil.appbuilder.portal.common/workflow';
+import type { Environment } from 'sil.appbuilder.portal.common/workflow';
 import { ENVKeys, ProductType } from 'sil.appbuilder.portal.common/workflow';
 
 export async function addProductPropertiesToEnvironment(productId: string) {

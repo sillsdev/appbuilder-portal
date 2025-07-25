@@ -36,15 +36,18 @@ export async function sendEmail(
   subject: string,
   body: string
 ) {
-  const template = addProperties(
-    EmailLayoutTemplate,
-    {
-      // If the subject isn't fairly short, including it is ugly
-      INSERT_SUBJECT: subject.length > 70 && body.length > 100 ? '' : subject,
-      INSERT_CONTENT: body
-    },
-    true
-  );
+  const template =
+    emailProvider instanceof LogProvider
+      ? body
+      : addProperties(
+          EmailLayoutTemplate,
+          {
+            // If the subject isn't fairly short, including it is ugly
+            INSERT_SUBJECT: subject.length > 70 && body.length > 100 ? '' : subject,
+            INSERT_CONTENT: body
+          },
+          true
+        );
   return emailProvider.sendEmail(to, subject, template);
 }
 
