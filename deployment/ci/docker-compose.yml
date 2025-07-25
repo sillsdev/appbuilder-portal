@@ -1,12 +1,3 @@
-version: "3.4"
-
-# NOTE: that --project-directory .
-# must be passed to every docker-compose command
-# . is the docker-compose context
-#
-# NOTE: environment vars are public, and should not contain secrets ^_~
-#       use `env_file: [.env]` for secret things.
-
 services:
   db:
     image: postgres:10
@@ -23,7 +14,7 @@ services:
       - db
       - valkey
     build:
-      context: ./portal/
+      context: .
       dockerfile: Dockerfile
     ports:
       - "6173:6173"
