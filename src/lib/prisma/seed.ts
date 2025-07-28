@@ -154,7 +154,6 @@ async function main() {
   // WorkflowDefnitions
   const workflowDefinitionData = [
     {
-      Id: 1,
       Name: 'sil_android_google_play',
       Type: 1,
       Enabled: true,
@@ -165,7 +164,6 @@ async function main() {
       WorkflowOptions: [WorkflowOptions.AdminStoreAccess, WorkflowOptions.ApprovalProcess]
     },
     {
-      Id: 2,
       Name: 'sil_android_google_play_rebuild',
       Type: 2,
       Enabled: true,
@@ -175,7 +173,6 @@ async function main() {
       StoreTypeId: 1
     },
     {
-      Id: 3,
       Name: 'sil_android_google_play_republish',
       Type: 3,
       Enabled: true,
@@ -185,7 +182,6 @@ async function main() {
       StoreTypeId: 1
     },
     {
-      Id: 4,
       Name: 'sil_android_s3',
       Type: 1,
       Enabled: true,
@@ -197,7 +193,6 @@ async function main() {
       WorkflowOptions: [WorkflowOptions.ApprovalProcess]
     },
     {
-      Id: 5,
       Name: 'sil_android_s3_rebuild',
       Type: 2,
       Enabled: true,
@@ -208,7 +203,6 @@ async function main() {
       ProductType: ProductType.Android_S3
     },
     {
-      Id: 6,
       Name: 'la_android_google_play',
       Type: 1,
       Enabled: true,
@@ -219,7 +213,6 @@ async function main() {
       WorkflowOptions: [WorkflowOptions.AdminStoreAccess]
     },
     {
-      Id: 7,
       Name: 'oa_android_google_play',
       Type: 1,
       Enabled: true,
@@ -229,7 +222,6 @@ async function main() {
       StoreTypeId: 1
     },
     {
-      Id: 8,
       Name: 'na_android_s3',
       Type: 1,
       Enabled: true,
@@ -240,7 +232,6 @@ async function main() {
       ProductType: ProductType.Android_S3
     },
     {
-      Id: 9,
       Name: 'pwa_cloud',
       Type: 1,
       Enabled: true,
@@ -252,7 +243,6 @@ async function main() {
       ProductType: ProductType.Web
     },
     {
-      Id: 10,
       Name: 'pwa_cloud_rebuild',
       Type: 2,
       Enabled: true,
@@ -264,7 +254,6 @@ async function main() {
       ProductType: ProductType.Web
     },
     {
-      Id: 11,
       Name: 'html_cloud',
       Type: 1,
       Enabled: true,
@@ -275,7 +264,6 @@ async function main() {
       ProductType: ProductType.Web
     },
     {
-      Id: 12,
       Name: 'html_cloud_rebuild',
       Type: 2,
       Enabled: true,
@@ -286,7 +274,6 @@ async function main() {
       ProductType: ProductType.Web
     },
     {
-      Id: 13,
       Name: 'asset_package',
       Type: 1,
       Enabled: true,
@@ -297,7 +284,6 @@ async function main() {
       ProductType: ProductType.AssetPackage
     },
     {
-      Id: 14,
       Name: 'asset_package_rebuild',
       Type: 2,
       Enabled: true,
@@ -309,17 +295,12 @@ async function main() {
     }
   ];
 
-  for (const data of workflowDefinitionData) {
-    await prisma.workflowDefinitions.upsert({
-      where: { Id: data.Id },
-      update: data,
-      create: data
-    });
-  }
+  await prisma.workflowDefinitions.createMany({
+    data: workflowDefinitionData
+  });
 
   const productDefinitionData = [
     {
-      Id: 1,
       Name: 'Android App to Google Play',
       TypeId: 1,
       Description:
@@ -329,7 +310,6 @@ async function main() {
       RepublishWorkflowId: 3
     },
     {
-      Id: 2,
       Name: 'Android App to Amazon S3 Bucket',
       TypeId: 1,
       Description:
@@ -338,7 +318,6 @@ async function main() {
       RebuildWorkflowId: 5
     },
     {
-      Id: 3,
       Name: 'Android App to Google Play (Low Admin)',
       TypeId: 1,
       Description:
@@ -348,7 +327,6 @@ async function main() {
       RepublishWorkflowId: 3
     },
     {
-      Id: 4,
       Name: 'Android App to Amazon S3 Bucket (No Admin)',
       TypeId: 1,
       Description:
@@ -357,7 +335,6 @@ async function main() {
       RebuildWorkflowId: 5
     },
     {
-      Id: 5,
       Name: 'Android App to Google Play (Owner Admin)',
       TypeId: 1,
       Description:
@@ -368,18 +345,13 @@ async function main() {
     }
   ];
 
-  for (const data of productDefinitionData) {
-    await prisma.productDefinitions.upsert({
-      where: { Id: data.Id },
-      update: data,
-      create: data
-    });
-  }
+  await prisma.productDefinitions.createMany({
+    data: productDefinitionData
+  });
 
   if (options.organizations) {
     const usersData = [
       {
-        Id: 1,
         Name: 'Chris Hubbard',
         Email: 'chris_hubbard@sil.org',
         ExternalId: 'google-oauth2|116747902156680384840',
@@ -388,7 +360,6 @@ async function main() {
         IsLocked: false
       },
       {
-        Id: 2,
         Name: 'David Moore',
         Email: 'david_moore1@sil.org',
         ExternalId: 'google-oauth2|114981819181509824425',
@@ -397,7 +368,6 @@ async function main() {
         IsLocked: false
       },
       {
-        Id: 3,
         Name: 'Bill Dyck',
         Email: 'bill_dyck@sil.org',
         ExternalId: 'google-oauth2|102643649500459434996',
@@ -406,7 +376,6 @@ async function main() {
         IsLocked: false
       },
       {
-        Id: 4,
         Name: 'Loren Hawthorne',
         Email: 'loren_hawthorne@sil.org',
         ExternalId: 'google-oauth2|116603781884964961816',
@@ -415,7 +384,6 @@ async function main() {
         IsLocked: false
       },
       {
-        Id: 5,
         Name: 'Chris Hubbard (Kalaam)',
         Email: 'chris.kalaam@gmail.com',
         ExternalId: 'auth0|5b578f6197af652b19f9bb41',
@@ -424,27 +392,37 @@ async function main() {
         IsLocked: false
       },
       {
-        Id: 6,
         Name: 'Scriptoria CI',
         Email: 'ci@scriptoria.io',
         ExternalId: 'auth0|687519a365a66ae37f53f27a',
         FamilyName: 'CI',
         GivenName: 'Scriptoria',
         IsLocked: false
+      },
+      {
+        Name: 'Micah Henney',
+        Email: '7dev7urandom@gmail.com',
+        ExternalId: 'google-oauth2|102633638937992588080',
+        FamilyName: 'Henney',
+        GivenName: 'Micah',
+        IsLocked: false
+      },
+      {
+        Name: 'Aidan Jones',
+        Email: 'aejones4gm@gmail.com',
+        ExternalId: 'google-oauth2|108677489047994521292',
+        FamilyName: 'Jones',
+        GivenName: 'Aidan',
+        IsLocked: false
       }
     ];
 
-    for (const userData of usersData) {
-      await prisma.users.upsert({
-        where: { Id: userData.Id },
-        update: userData,
-        create: userData
-      });
-    }
+    await prisma.users.createMany({
+      data: usersData
+    });
 
     const organizationsData = [
       {
-        Id: 1,
         Name: 'SIL International',
         WebsiteUrl: 'https://sil.org',
         BuildEngineUrl: 'https://replace.scriptoria.io:8443',
@@ -453,7 +431,6 @@ async function main() {
         OwnerId: 1
       },
       {
-        Id: 2,
         Name: 'Kalaam Media',
         WebsiteUrl: 'https://kalaam.org',
         BuildEngineUrl: 'https://replace.scriptoria.io:8443',
@@ -462,7 +439,6 @@ async function main() {
         OwnerId: 1
       },
       {
-        Id: 3,
         Name: 'Faith Comes By Hearing',
         WebsiteUrl: 'https://kalaam.org',
         BuildEngineUrl: 'https://replace.scriptoria.io:8443',
@@ -472,7 +448,6 @@ async function main() {
         OwnerId: 1
       },
       {
-        Id: 4,
         Name: 'Scripture Earth',
         WebsiteUrl: 'https://scriptureearth.org',
         BuildEngineUrl: 'https://replace.scriptoria.io:8443',
@@ -482,158 +457,128 @@ async function main() {
       }
     ];
 
-    for (const organizationData of organizationsData) {
-      await prisma.organizations.upsert({
-        where: { Id: organizationData.Id },
-        update: organizationData,
-        create: organizationData
-      });
-    }
+    await prisma.organizations.createMany({
+      data: organizationsData
+    });
 
     const storesData = [
       {
-        Id: 1,
         Name: 'wycliffeusa',
         Description: 'Wycliffe USA - Google Play',
         StoreTypeId: 1
       },
       {
-        Id: 2,
         Name: 'internetpublishingservice',
         Description: 'Internet Publishing Service (Kalaam) - Google Play',
         StoreTypeId: 1
       },
-      { Id: 3, Name: 'indhack', Description: 'Indigitous Hack - Google Play', StoreTypeId: 1 }
+      { Name: 'indhack', Description: 'Indigitous Hack - Google Play', StoreTypeId: 1 }
     ];
 
-    for (const storeData of storesData) {
-      await prisma.stores.upsert({
-        where: { Id: storeData.Id },
-        update: storeData,
-        create: storeData
-      });
-    }
+    await prisma.stores.createMany({
+      data: storesData
+    });
 
     const organizationProductDefinitionsData = [
-      { Id: 1, OrganizationId: 1, ProductDefinitionId: 1 },
-      { Id: 2, OrganizationId: 2, ProductDefinitionId: 1 },
-      { Id: 3, OrganizationId: 3, ProductDefinitionId: 1 }
+      { OrganizationId: 1, ProductDefinitionId: 1 },
+      { OrganizationId: 2, ProductDefinitionId: 1 },
+      { OrganizationId: 3, ProductDefinitionId: 1 }
     ];
 
-    for (const data of organizationProductDefinitionsData) {
-      await prisma.organizationProductDefinitions.upsert({
-        where: {
-          Id: data.Id
-        },
-        update: data,
-        create: data
-      });
-    }
+    await prisma.organizationProductDefinitions.createMany({
+      data: organizationProductDefinitionsData
+    });
 
     const organizationStoresData = [
-      { Id: 1, OrganizationId: 1, StoreId: 1 },
-      { Id: 2, OrganizationId: 2, StoreId: 2 },
-      { Id: 3, OrganizationId: 3, StoreId: 3 },
-      { Id: 4, OrganizationId: 4, StoreId: 3 }
+      { OrganizationId: 1, StoreId: 1 },
+      { OrganizationId: 2, StoreId: 2 },
+      { OrganizationId: 3, StoreId: 3 },
+      { OrganizationId: 4, StoreId: 3 }
     ];
 
-    for (const data of organizationStoresData) {
-      await prisma.organizationStores.upsert({
-        where: { Id: data.Id },
-        update: data,
-        create: data
-      });
-    }
+    await prisma.organizationStores.createMany({
+      data: organizationStoresData
+    });
 
     const groupsData = [
-      { Id: 1, Name: 'Language Software Development', Abbreviation: 'LSDEV', OwnerId: 1 },
-      { Id: 2, Name: 'Chad Branch', Abbreviation: 'CHB', OwnerId: 1 },
-      { Id: 3, Name: 'Mexico Branch', Abbreviation: 'MXB', OwnerId: 1 },
-      { Id: 4, Name: 'AuSIL', Abbreviation: 'AAB', OwnerId: 1 },
-      { Id: 5, Name: 'Americas Group', Abbreviation: 'AMG', OwnerId: 1 },
-      { Id: 6, Name: 'Asia Area', Abbreviation: 'ASA', OwnerId: 1 },
-      { Id: 7, Name: 'Camaroon Branch', Abbreviation: 'CMB', OwnerId: 1 },
-      { Id: 8, Name: 'Roma Region', Abbreviation: 'RMA', OwnerId: 1 },
-      { Id: 9, Name: 'The Seed Company', Abbreviation: 'RSM', OwnerId: 1 },
-      { Id: 10, Name: 'SIL International', Abbreviation: 'SIL', OwnerId: 1 },
-      { Id: 11, Name: 'Mainland Southeast Asia Group', Abbreviation: 'THG', OwnerId: 1 },
-      { Id: 12, Name: 'Wycliffe Taiwan', Abbreviation: 'TWN', OwnerId: 1 },
-      { Id: 13, Name: 'West Africa', Abbreviation: 'WAF', OwnerId: 1 },
-      { Id: 14, Name: 'Kalaam', Abbreviation: 'KAL', OwnerId: 2 },
-      { Id: 15, Name: 'FCBH', Abbreviation: 'FCBH', OwnerId: 3 },
-      { Id: 16, Name: 'Scripture Earth', Abbreviation: 'SE', OwnerId: 4 }
+      { Name: 'Language Software Development', Abbreviation: 'LSDEV', OwnerId: 1 },
+      { Name: 'Chad Branch', Abbreviation: 'CHB', OwnerId: 1 },
+      { Name: 'Mexico Branch', Abbreviation: 'MXB', OwnerId: 1 },
+      { Name: 'AuSIL', Abbreviation: 'AAB', OwnerId: 1 },
+      { Name: 'Americas Group', Abbreviation: 'AMG', OwnerId: 1 },
+      { Name: 'Asia Area', Abbreviation: 'ASA', OwnerId: 1 },
+      { Name: 'Camaroon Branch', Abbreviation: 'CMB', OwnerId: 1 },
+      { Name: 'Roma Region', Abbreviation: 'RMA', OwnerId: 1 },
+      { Name: 'The Seed Company', Abbreviation: 'RSM', OwnerId: 1 },
+      { Name: 'SIL International', Abbreviation: 'SIL', OwnerId: 1 },
+      { Name: 'Mainland Southeast Asia Group', Abbreviation: 'THG', OwnerId: 1 },
+      { Name: 'Wycliffe Taiwan', Abbreviation: 'TWN', OwnerId: 1 },
+      { Name: 'West Africa', Abbreviation: 'WAF', OwnerId: 1 },
+      { Name: 'Kalaam', Abbreviation: 'KAL', OwnerId: 2 },
+      { Name: 'FCBH', Abbreviation: 'FCBH', OwnerId: 3 },
+      { Name: 'Scripture Earth', Abbreviation: 'SE', OwnerId: 4 }
     ];
 
-    for (const data of groupsData) {
-      await prisma.groups.upsert({
-        where: { Id: data.Id },
-        update: data,
-        create: data
-      });
-    }
+    await prisma.groups.createMany({
+      data: groupsData
+    });
 
     const organizationMembershipsData = [
-      { Id: 1, UserId: 1, OrganizationId: 1 }, // chris_hubbard@sil.org - SIL
-      { Id: 2, UserId: 1, OrganizationId: 2 }, // chris_hubbard@sil.org - Kalaam
-      { Id: 3, UserId: 1, OrganizationId: 3 }, // chris_hubbard@sil.org - FCBH
-      { Id: 4, UserId: 2, OrganizationId: 1 }, // david_moore1@sil.org - SIL
-      { Id: 5, UserId: 3, OrganizationId: 1 }, // bill_dyck@sil.org - SIL
-      { Id: 6, UserId: 3, OrganizationId: 4 }, // bill_dyck@sil.org - SE
-      { Id: 7, UserId: 4, OrganizationId: 1 }, // loren_hawthorne@sil.org - SIL
-      { Id: 8, UserId: 5, OrganizationId: 2 }, // chris.kalaam@gmail.com - Kalaam
-      { Id: 9, UserId: 6, OrganizationId: 1 } // Scriptoria CI - SIL
+      { UserId: 1, OrganizationId: 1 }, // chris_hubbard@sil.org - SIL
+      { UserId: 1, OrganizationId: 2 }, // chris_hubbard@sil.org - Kalaam
+      { UserId: 1, OrganizationId: 3 }, // chris_hubbard@sil.org - FCBH
+      { UserId: 2, OrganizationId: 1 }, // david_moore1@sil.org - SIL
+      { UserId: 3, OrganizationId: 1 }, // bill_dyck@sil.org - SIL
+      { UserId: 3, OrganizationId: 4 }, // bill_dyck@sil.org - SE
+      { UserId: 4, OrganizationId: 1 }, // loren_hawthorne@sil.org - SIL
+      { UserId: 5, OrganizationId: 2 }, // chris.kalaam@gmail.com - Kalaam
+      { UserId: 6, OrganizationId: 1 }, // Scriptoria CI - SIL
+      { UserId: 7, OrganizationId: 1 }, // 7dev7urandom@gmail.com - SIL
+      { UserId: 8, OrganizationId: 1 } // aejones4gm@gmail.com - SIL
     ];
 
-    for (const data of organizationMembershipsData) {
-      await prisma.organizationMemberships.upsert({
-        where: { Id: data.Id },
-        update: data,
-        create: data
-      });
-    }
+    await prisma.organizationMemberships.createMany({
+      data: organizationMembershipsData
+    });
 
     const groupMembershipsData = [
-      { Id: 1, UserId: 1, GroupId: 1 },
-      { Id: 2, UserId: 2, GroupId: 1 },
-      { Id: 3, UserId: 3, GroupId: 5 },
-      { Id: 4, UserId: 3, GroupId: 6 },
-      { Id: 5, UserId: 3, GroupId: 11 },
-      { Id: 6, UserId: 3, GroupId: 12 },
-      { Id: 7, UserId: 3, GroupId: 16 },
-      { Id: 8, UserId: 4, GroupId: 3 },
-      { Id: 9, UserId: 5, GroupId: 14 },
-      { Id: 10, UserId: 6, GroupId: 1 }
+      { UserId: 1, GroupId: 1 },
+      { UserId: 2, GroupId: 1 },
+      { UserId: 3, GroupId: 5 },
+      { UserId: 3, GroupId: 6 },
+      { UserId: 3, GroupId: 11 },
+      { UserId: 3, GroupId: 12 },
+      { UserId: 3, GroupId: 16 },
+      { UserId: 4, GroupId: 3 },
+      { UserId: 5, GroupId: 14 },
+      { UserId: 6, GroupId: 1 },
+      { UserId: 7, GroupId: 1 },
+      { UserId: 8, GroupId: 1 }
     ];
 
-    for (const data of groupMembershipsData) {
-      await prisma.groupMemberships.upsert({
-        where: { Id: data.Id },
-        update: data,
-        create: data
-      });
-    }
+    await prisma.groupMemberships.createMany({
+      data: groupMembershipsData
+    });
 
     const userRolesData = [
-      { Id: 1, UserId: 1, RoleId: 1, OrganizationId: 1 }, // chris_hubbard@sil.org - SuperAdmin - SIL
-      { Id: 2, UserId: 1, RoleId: 2, OrganizationId: 1 }, // chris_hubbard@sil.org - OrgAdmin - SIL
-      { Id: 3, UserId: 1, RoleId: 1, OrganizationId: 2 }, // chris_hubbard@sil.org - SuperAdmin - Kalaam
-      { Id: 4, UserId: 1, RoleId: 1, OrganizationId: 3 }, // chris_hubbard@sil.org - SuperAdmin - FCBH
-      { Id: 5, UserId: 1, RoleId: 1, OrganizationId: 4 }, // chris_hubbard@sil.org - SuperAdmin - SE
-      { Id: 6, UserId: 2, RoleId: 1, OrganizationId: 1 }, // david_moore1@sil.org - SuperAdmin - SIL
-      { Id: 7, UserId: 2, RoleId: 2, OrganizationId: 1 }, // david_moore1@sil.org - OrgAdmin - SIL
-      { Id: 8, UserId: 3, RoleId: 2, OrganizationId: 1 }, // bill_dyck@sil.org - OrgAdmin - SIL
-      { Id: 9, UserId: 3, RoleId: 2, OrganizationId: 4 }, // bill_dyck@sil.org - OrgAdmin - SE
-      { Id: 10, UserId: 4, RoleId: 3, OrganizationId: 1 }, // loren_hawthorne@sil.org - AppBuilder - SIL
-      { Id: 11, UserId: 5, RoleId: 3, OrganizationId: 3 } // chris.kalaam@gmail.com - AppBuilder - Kalaam
+      { UserId: 1, RoleId: 1, OrganizationId: 1 }, // chris_hubbard@sil.org - SuperAdmin - SIL
+      { UserId: 1, RoleId: 2, OrganizationId: 1 }, // chris_hubbard@sil.org - OrgAdmin - SIL
+      { UserId: 1, RoleId: 1, OrganizationId: 2 }, // chris_hubbard@sil.org - SuperAdmin - Kalaam
+      { UserId: 1, RoleId: 1, OrganizationId: 3 }, // chris_hubbard@sil.org - SuperAdmin - FCBH
+      { UserId: 1, RoleId: 1, OrganizationId: 4 }, // chris_hubbard@sil.org - SuperAdmin - SE
+      { UserId: 2, RoleId: 1, OrganizationId: 1 }, // david_moore1@sil.org - SuperAdmin - SIL
+      { UserId: 2, RoleId: 2, OrganizationId: 1 }, // david_moore1@sil.org - OrgAdmin - SIL
+      { UserId: 3, RoleId: 2, OrganizationId: 1 }, // bill_dyck@sil.org - OrgAdmin - SIL
+      { UserId: 3, RoleId: 2, OrganizationId: 4 }, // bill_dyck@sil.org - OrgAdmin - SE
+      { UserId: 4, RoleId: 3, OrganizationId: 1 }, // loren_hawthorne@sil.org - AppBuilder - SIL
+      { UserId: 5, RoleId: 3, OrganizationId: 3 }, // chris.kalaam@gmail.com - AppBuilder - Kalaam
+      { UserId: 6, RoleId: 1, OrganizationId: 1 }, // 7dev7urandom@gmail.com - SuperAdmin - SIL
+      { UserId: 7, RoleId: 1, OrganizationId: 1 } // aejones4gm@gmail.com - SuperAdmin - SIL
     ];
 
-    for (const data of userRolesData) {
-      await prisma.userRoles.upsert({
-        where: { Id: data.Id },
-        update: data,
-        create: data
-      });
-    }
+    await prisma.userRoles.createMany({
+      data: userRolesData
+    });
   }
 }
 main()
