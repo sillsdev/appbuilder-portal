@@ -35,7 +35,7 @@ export async function POST(request) {
       if (!error) return;
       SSEPageUpdates.off('projectPage', updateCb);
       clearInterval(pingInterval);
-    }, 10000);
+    }, 10000).unref();
   });
 }
 export type ProjectDataSSE = Awaited<ReturnType<typeof getProjectDetails>>;

@@ -7,7 +7,7 @@ const config: PlaywrightTestConfig = {
     // and the web server should already be running
     command: process.env.CI
       ? 'sleep 1d'
-      : 'npm run build && (cd .. ; ./run dc up -d db valkey) ; npm run preview',
+      : 'npm run build && ./run dc up -d db valkey ; npm run preview',
     port: 6173,
     reuseExistingServer: true,
     env: {
@@ -16,7 +16,8 @@ const config: PlaywrightTestConfig = {
   },
   use: {
     baseURL: 'http://localhost:6173',
-    trace: 'on-first-retry'
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure'
   },
   testDir: 'tests',
   testMatch: /(.+\.)?(test|spec)\.[jt]s/

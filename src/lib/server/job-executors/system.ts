@@ -158,10 +158,7 @@ export async function checkSystemStatuses(
 const sectionDelim = '********************';
 
 export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): Promise<unknown> {
-  const localDir =
-    process.env.NODE_ENV === 'development'
-      ? join(import.meta.dirname, '../../../../static/languages')
-      : '/app/build/client/languages';
+  const localDir = join(process.cwd(), 'languages');
   if (!existsSync(localDir)) {
     await mkdir(localDir, { recursive: true });
   }

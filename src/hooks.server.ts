@@ -13,6 +13,7 @@ import { paraglideMiddleware } from '$lib/paraglide/server';
 import { QueueConnected, getQueues } from '$lib/server/bullmq';
 import { bullboardHandle } from '$lib/server/bullmq/BullBoard';
 import '$lib/server/bullmq/BullMQ';
+import { DatabaseConnected } from '$lib/server/database';
 
 if (!building) {
   // Otherwise valkey will never connect and the server will always 503
@@ -65,6 +66,3 @@ export const handle: Handle = sequence(
   localRouteHandle,
   bullboardHandle
 );
-function DatabaseConnected(): never {
-  throw new Error('Function not implemented.');
-}

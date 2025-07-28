@@ -44,10 +44,7 @@ export const load: LayoutServerLoad = async (event) => {
     }
   });
 
-  const localDir =
-    process.env.NODE_ENV === 'development'
-      ? join(import.meta.dirname, '../../../static/languages')
-      : '/app/build/client/languages';
+  const localDir = join(process.cwd(), 'languages');
 
   return {
     organizations,

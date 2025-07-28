@@ -2,6 +2,10 @@
   "name": "sil.appbuilder.portal",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
+  "volta": {
+    "node": "22.11.0"
+  },
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
@@ -21,12 +25,18 @@
   },
   "devDependencies": {
     "@auth/core": "^0.37.4",
+    "@auth/sveltekit": "^1.7.4",
+    "@aws-sdk/client-ses": "^3.830.0",
+    "@bull-board/api": "^6.12.0",
+    "@bull-board/express": "^6.9.0",
+    "@bull-board/hono": "^6.12.0",
+    "@bull-board/ui": "^6.12.0",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.31.0",
+    "@hono/node-server": "^1.17.1",
     "@iconify/svelte": "^4.2.0",
     "@inlang/paraglide-js": "^2.2.0",
     "@playwright/test": "^1.50.0",
-    "@prisma/client": "^5.18.0",
     "@sveltejs/adapter-node": "^5.2.12",
     "@sveltejs/kit": "^2.16.1",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
@@ -38,6 +48,7 @@
     "@typescript-eslint/parser": "^8.21.0",
     "@vvo/tzdb": "^6.159.0",
     "@zerodevx/svelte-toast": "^0.9.6",
+    "bullmq": "^5.52.0",
     "commander": "^13.1.0",
     "daisyui": "^5.0.0",
     "eslint": "^9.31.0",
@@ -46,15 +57,20 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.3",
     "eslint-plugin-svelte": "^2.46.1",
+    "express": "^4.21.2",
+    "fast-xml-parser": "^5.0.9",
     "fuse.js": "^7.0.0",
     "globals": "^16.3.0",
+    "hono": "^4.8.7",
     "prettier": "^3.6.2",
     "prettier-eslint": "^17.0.0-alpha.1",
     "prettier-plugin-prisma": "^5.0.0",
     "prettier-plugin-svelte": "^3.4.0",
+    "sparkpost": "^2.1.4",
     "svelte": "^5.19.2",
     "svelte-check": "^4.1.4",
     "svelte-flatpickr-plus": "^2.0.6",
+    "sveltekit-sse": "^0.13.19",
     "sveltekit-superforms": "^2.23.1",
     "svelvet": "^10.0.2",
     "tailwindcss": "^4.0.6",
@@ -64,26 +80,10 @@
     "typescript-eslint": "^8.37.0",
     "valibot": "^1.0.0-beta.14",
     "vite": "^6.0.11",
-    "vitest": "^3.0.4"
-  },
-  "type": "module",
-  "volta": {
-    "node": "22.11.0"
+    "vitest": "^3.0.4",
+    "xstate": "^5.20.1"
   },
   "dependencies": {
-    "@auth/express": "^0.8.4",
-    "@auth/sveltekit": "^1.7.4",
-    "@aws-sdk/client-ses": "^3.830.0",
-    "@bull-board/api": "^6.12.0",
-    "@bull-board/express": "^6.9.0",
-    "@bull-board/hono": "^6.12.0",
-    "@hono/node-server": "^1.17.1",
-    "bullmq": "^5.52.0",
-    "express": "^4.21.2",
-    "fast-xml-parser": "^5.0.9",
-    "hono": "^4.8.7",
-    "sparkpost": "^2.1.4",
-    "sveltekit-sse": "^0.13.19",
-    "xstate": "^5.20.1"
+    "@prisma/client": "^5.22.0"
   }
 }
