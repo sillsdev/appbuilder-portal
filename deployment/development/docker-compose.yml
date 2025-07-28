@@ -24,6 +24,9 @@ services:
       - "18080:8080"
 
   svelte-ui:
+    depends_on:
+      - valkey
+      - db
     build:
       context: .
       dockerfile: Dockerfile

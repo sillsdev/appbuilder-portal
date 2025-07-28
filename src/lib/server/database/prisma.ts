@@ -25,7 +25,7 @@ class ConnectionChecker {
   constructor() {
     this.connected = false;
     this.checkConnection();
-    setInterval(async () => this.checkConnection(), 10000); // Check every 10 seconds
+    setInterval(async () => this.checkConnection(), 10000).unref(); // Check every 10 seconds
   }
   private async checkConnection() {
     try {
@@ -55,7 +55,7 @@ class ConnectionChecker {
 let conn: ConnectionChecker | null = null;
 
 /** Main database is up */
-export const connected = () => {
+export const DatabaseConnected = () => {
   if (!conn) {
     // If conn is not initialized, we create a new one
     // This is to ensure that the connection checker is only created once

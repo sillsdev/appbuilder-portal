@@ -26,7 +26,7 @@ export async function POST(request) {
       if (!error) return;
       SSEPageUpdates.off('userTasksPage', updateCb);
       clearInterval(pingInterval);
-    }, 10000);
+    }, 10000).unref();
   });
 }
 
