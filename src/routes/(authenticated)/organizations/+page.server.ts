@@ -1,18 +1,18 @@
 import { redirect } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
 import type { PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
+import { DatabaseReads } from '$lib/server/database';
 import { isSuperAdmin } from '$lib/utils/roles';
 
 export const load = (async (event) => {
   const user = (await event.locals.auth())!.user;
   const organizations = isSuperAdmin(user.roles)
-    ? await prisma.organizations.findMany({
+    ? await DatabaseReads.organizations.findMany({
         include: {
           Owner: true
         }
       })
-    : await prisma.organizations.findMany({
+    : await DatabaseReads.organizations.findMany({
         where: {
           OrganizationMemberships: {
             some: {

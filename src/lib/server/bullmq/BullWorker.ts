@@ -1,7 +1,8 @@
 import type { Job } from 'bullmq';
 import { Worker } from 'bullmq';
-import { BullMQ, getQueues, getWorkerConfig } from 'sil.appbuilder.portal.common';
 import * as Executor from '../job-executors';
+import { getQueues, getWorkerConfig } from './queues';
+import * as BullMQ from './types';
 import { building } from '$app/environment';
 import { SSEPageUpdates } from '$lib/projects/listener';
 

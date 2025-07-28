@@ -1,10 +1,10 @@
 import { error } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { RoleId } from '$lib/prisma';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { adminOrgs } from '$lib/users/server';
 import { isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
@@ -21,7 +21,7 @@ export const load = (async ({ params, locals }) => {
   const user = (await locals.auth())!.user;
 
   return {
-    rolesByOrg: await prisma.organizations.findMany({
+    rolesByOrg: await DatabaseReads.organizations.findMany({
       where: adminOrgs(subjectId, user.userId, isSuperAdmin(user.roles)),
       select: {
         Id: true,
@@ -49,7 +49,7 @@ export const actions = {
     if (
       !(
         form.data.userId === parseInt(event.params.id) ||
-        (await prisma.organizations.findFirst({
+        (await DatabaseReads.organizations.findFirst({
           where: adminOrgs(form.data.userId, user.userId, isSuperAdmin(user.roles), form.data.orgId)
         }))
       )

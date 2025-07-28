@@ -1,16 +1,17 @@
 import { error } from '@sveltejs/kit';
-import { BullMQ, DatabaseWrites, getQueues, prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, RequestEvent } from './$types';
 import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
 import { baseLocale } from '$lib/paraglide/runtime';
+import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { projectActionSchema } from '$lib/projects';
 import { doProjectAction, userGroupsForOrg } from '$lib/projects/server';
+import { BullMQ, getQueues } from '$lib/server/bullmq';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { deleteSchema, idSchema, propertiesSchema, stringIdSchema } from '$lib/valibot';
 
 const updateOwnerGroupSchema = v.object({
@@ -40,7 +41,7 @@ export const load = async (event: RequestEvent) => {
 };
 
 async function verifyProduct(event: RequestEvent, Id: string) {
-  return !!(await prisma.products.findFirst({
+  return !!(await DatabaseReads.products.findFirst({
     where: { Id, ProjectId: parseInt(event.params.id) }
   }));
 }
@@ -63,7 +64,7 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false });
     if (
       // if user modified hidden values
-      !(await prisma.authors.findFirst({
+      !(await DatabaseReads.authors.findFirst({
         where: { Id: form.data.id, ProjectId: parseInt(event.params.id) }
       }))
     ) {
@@ -91,7 +92,7 @@ export const actions = {
     const ProjectId = parseInt(event.params.id);
     if (
       // if user modified hidden values
-      !(await prisma.reviewers.findFirst({
+      !(await DatabaseReads.reviewers.findFirst({
         where: { Id: form.data.id, ProjectId }
       }))
     ) {
@@ -104,7 +105,7 @@ export const actions = {
     // permissions checked in auth
     const form = await superValidate(event.request, valibot(addProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    const checkRepository = await prisma.projects.findUnique({
+    const checkRepository = await DatabaseReads.projects.findUnique({
       where: {
         Id: parseInt(event.params.id)
       },
@@ -157,7 +158,7 @@ export const actions = {
     const projectId = parseInt(event.params.id);
     if (
       // if user modified hidden values
-      !(await prisma.organizationMemberships.findFirst({
+      !(await DatabaseReads.organizationMemberships.findFirst({
         where: {
           UserId: form.data.author,
           Organization: {
@@ -248,7 +249,7 @@ export const actions = {
     const form = await superValidate(event.request, valibot(projectActionSchema));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
     // prefer single project over array
-    const project = await prisma.projects.findUniqueOrThrow({
+    const project = await DatabaseReads.projects.findUniqueOrThrow({
       where: { Id: parseInt(event.params.id) },
       select: {
         Id: true,

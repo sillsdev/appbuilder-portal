@@ -1,18 +1,14 @@
 import type { Prisma } from '@prisma/client';
 import type { Job } from 'bullmq';
-import {
-  BuildEngine,
-  BullMQ,
-  DatabaseWrites,
-  Workflow,
-  getQueues,
-  prisma
-} from 'sil.appbuilder.portal.common';
-import { WorkflowAction } from 'sil.appbuilder.portal.common/workflow';
+import { BuildEngine } from '../build-engine-api';
+import { BullMQ, getQueues } from '../bullmq';
+import { DatabaseReads, DatabaseWrites } from '../database';
+import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
+import { WorkflowAction } from '$lib/workflowTypes';
 
 export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown> {
-  const productData = await prisma.products.findUnique({
+  const productData = await DatabaseReads.products.findUnique({
     where: {
       Id: job.data.productId
     },
@@ -42,7 +38,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     return await notifyProductNotFound(job.data.productId);
   }
   job.updateProgress(10);
-  const productBuild = await prisma.productBuilds.findFirst({
+  const productBuild = await DatabaseReads.productBuilds.findFirst({
     where: {
       BuildId: productData.WorkflowBuildId
     },
@@ -162,7 +158,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
 }
 
 export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
-  const product = await prisma.products.findFirst({
+  const product = await DatabaseReads.products.findFirst({
     where: {
       WorkflowJobId: job.data.jobId,
       WorkflowBuildId: job.data.buildId,
@@ -217,7 +213,7 @@ export async function check(job: Job<BullMQ.Publish.Check>): Promise<unknown> {
 }
 
 export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise<unknown> {
-  const product = await prisma.products.findUnique({
+  const product = await DatabaseReads.products.findUnique({
     where: { Id: job.data.productId },
     select: {
       WorkflowJobId: true,
@@ -265,7 +261,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
         product.ProductDefinition.Name!
       );
       flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
-      const packageFile = await prisma.productPublications.findUnique({
+      const packageFile = await DatabaseReads.productPublications.findUnique({
         where: {
           Id: job.data.publicationId
         },

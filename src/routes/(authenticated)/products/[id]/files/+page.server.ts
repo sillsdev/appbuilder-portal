@@ -1,13 +1,13 @@
 import { fail } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
+import { DatabaseReads } from '$lib/server/database';
 import { paginateSchema } from '$lib/valibot';
 
 export const load = (async ({ params }) => {
   // auth handled by hooks
-  const builds = await prisma.productBuilds.findMany({
+  const builds = await DatabaseReads.productBuilds.findMany({
     orderBy: [
       {
         DateUpdated: 'desc'
@@ -44,7 +44,7 @@ export const load = (async ({ params }) => {
     },
     take: 3
   });
-  const product = await prisma.products.findUnique({
+  const product = await DatabaseReads.products.findUnique({
     where: {
       Id: params.id
     },
@@ -67,7 +67,7 @@ export const load = (async ({ params }) => {
     product,
     builds,
     form: await superValidate({ page: 0, size: 3 }, valibot(paginateSchema)),
-    count: await prisma.productBuilds.count({ where: { ProductId: params.id } })
+    count: await DatabaseReads.productBuilds.count({ where: { ProductId: params.id } })
   };
 }) satisfies PageServerLoad;
 
@@ -77,7 +77,7 @@ export const actions = {
     const form = await superValidate(request, valibot(paginateSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const builds = await prisma.productBuilds.findMany({
+    const builds = await DatabaseReads.productBuilds.findMany({
       orderBy: [
         {
           DateUpdated: 'desc'
@@ -122,7 +122,7 @@ export const actions = {
       query: {
         data: builds,
         // update count, just in case more builds were added
-        count: await prisma.productBuilds.count({ where: { ProductId: params.id } })
+        count: await DatabaseReads.productBuilds.count({ where: { ProductId: params.id } })
       }
     };
   }

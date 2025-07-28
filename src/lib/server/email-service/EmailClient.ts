@@ -1,5 +1,4 @@
-import { prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import { DatabaseReads } from '../database';
 import {
   EmailLayoutTemplate,
   NotificationTemplate,
@@ -8,6 +7,7 @@ import {
 } from './EmailTemplates';
 import type { EmailProvider } from './providers/EmailProvider';
 import { LogProvider } from './providers/LogProvider';
+import { RoleId } from '$lib/prisma';
 
 let emailProvider: EmailProvider = new LogProvider();
 
@@ -64,7 +64,7 @@ export async function notifySuperAdmins(
   link?: string,
   linkText?: string
 ): Promise<unknown> {
-  const superAdmins = await prisma.users.findMany({
+  const superAdmins = await DatabaseReads.users.findMany({
     where: {
       UserRoles: {
         some: {

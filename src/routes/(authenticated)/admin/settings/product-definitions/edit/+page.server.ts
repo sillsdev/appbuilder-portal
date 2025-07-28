@@ -1,10 +1,10 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { idSchema, propertiesSchema } from '$lib/valibot';
 
 const editSchema = v.object({
@@ -23,10 +23,10 @@ export const load = (async ({ url }) => {
     return redirect(302, localizeHref('/admin/settings/product-definitions'));
   }
   const options = {
-    applicationTypes: await prisma.applicationTypes.findMany(),
-    workflows: await prisma.workflowDefinitions.findMany()
+    applicationTypes: await DatabaseReads.applicationTypes.findMany(),
+    workflows: await DatabaseReads.workflowDefinitions.findMany()
   };
-  const data = await prisma.productDefinitions.findFirst({
+  const data = await DatabaseReads.productDefinitions.findFirst({
     where: {
       Id: id
     }

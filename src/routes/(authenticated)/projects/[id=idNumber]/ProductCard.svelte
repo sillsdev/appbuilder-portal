@@ -1,7 +1,6 @@
 <script lang="ts">
   /* eslint-disable svelte/no-at-html-tags */
   import type { Prisma } from '@prisma/client';
-  import { ProductType } from 'sil.appbuilder.portal.common/workflow';
   import DeleteProduct from './modals/DeleteProduct.svelte';
   import Properties from './modals/Properties.svelte';
   import { invalidateAll } from '$app/navigation';
@@ -19,6 +18,7 @@
   import { sanitizeInput } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime } from '$lib/utils/time';
+  import { ProductType } from '$lib/workflowTypes';
 
   type Transition = Prisma.ProductTransitionsGetPayload<{
     select: {

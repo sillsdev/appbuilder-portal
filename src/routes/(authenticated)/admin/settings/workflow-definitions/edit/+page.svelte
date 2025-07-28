@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import { businessFlows } from '../common';
   import type { PageData } from './$types';
@@ -11,6 +10,7 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { enumNumVals, toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
+  import { ProductType, WorkflowOptions } from '$lib/workflowTypes';
 
   interface Props {
     data: PageData;

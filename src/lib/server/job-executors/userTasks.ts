@@ -1,11 +1,13 @@
 import type { Prisma } from '@prisma/client';
 import type { Job } from 'bullmq';
-import { BullMQ, DatabaseWrites, Workflow, getQueues, prisma } from 'sil.appbuilder.portal.common';
-import type { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import { ActionType } from 'sil.appbuilder.portal.common/workflow';
+import { BullMQ, getQueues } from '../bullmq';
+import { DatabaseReads, DatabaseWrites } from '../database';
+import { Workflow } from '../workflow';
+import type { RoleId } from '$lib/prisma';
+import { ActionType } from '$lib/workflowTypes';
 
 export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown> {
-  const products = await prisma.products.findMany({
+  const products = await DatabaseReads.products.findMany({
     where: {
       Id: job.data.scope === 'Product' ? job.data.productId : undefined,
       ProjectId: job.data.scope === 'Project' ? job.data.projectId : undefined,
@@ -21,7 +23,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
   job.updateProgress(10);
   const projectId = job.data.scope === 'Project' ? job.data.projectId : products[0].ProjectId;
 
-  const project = await prisma.projects.findUniqueOrThrow({
+  const project = await DatabaseReads.projects.findUniqueOrThrow({
     where: { Id: projectId },
     select: { DateArchived: true }
   });
@@ -59,10 +61,17 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     mapping = await Promise.all(
       job.data.operation.userMapping.map(async (u) => ({
         from: (
-          await prisma.users.findUniqueOrThrow({ where: { Id: u.from }, select: { Name: true } })
+          await DatabaseReads.users.findUniqueOrThrow({
+            where: { Id: u.from },
+            select: { Name: true }
+          })
         ).Name!,
-        to: (await prisma.users.findUniqueOrThrow({ where: { Id: u.to }, select: { Name: true } }))
-          .Name!,
+        to: (
+          await DatabaseReads.users.findUniqueOrThrow({
+            where: { Id: u.to },
+            select: { Name: true }
+          })
+        ).Name!,
         count: (
           await DatabaseWrites.userTasks.updateMany({
             where: {
@@ -90,7 +99,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     }
     job.updateProgress(80);
     // Just in case the user had already existing tasks before the reassignment
-    createdTasks = await prisma.userTasks.findMany({
+    createdTasks = await DatabaseReads.userTasks.findMany({
       where: {
         UserId: { in: job.data.operation.userMapping.map((u) => u.to) },
         DateUpdated: {
@@ -177,7 +186,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
 
   const notifications: BullMQ.Email.SendBatchUserTaskNotifications['notifications'] = [];
   for (const task of createdTasks) {
-    const productInfo = await prisma.products.findUniqueOrThrow({
+    const productInfo = await DatabaseReads.products.findUniqueOrThrow({
       where: {
         Id: task.ProductId
       },
@@ -207,7 +216,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     notifications
   });
   job.updateProgress(100);
-  const userNameMap = await prisma.users.findMany({
+  const userNameMap = await DatabaseReads.users.findMany({
     where: {
       Id: { in: Array.from(new Set(createdTasks.map((t) => t.UserId))) }
     },

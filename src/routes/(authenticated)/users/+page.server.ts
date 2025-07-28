@@ -1,13 +1,13 @@
 import type { Prisma } from '@prisma/client';
 import { error, redirect } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { minifyUser } from './common';
 import { localizeHref } from '$lib/paraglide/runtime';
+import { RoleId } from '$lib/prisma';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { isAdminForOrgs, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema, paginateSchema } from '$lib/valibot';
 
@@ -88,7 +88,7 @@ export const load = (async (event) => {
 
   const isSuper = isSuperAdmin(userInfo.roles);
 
-  const organizations = await prisma.organizations.findMany({
+  const organizations = await DatabaseReads.organizations.findMany({
     where: isSuper
       ? undefined
       : {
@@ -107,7 +107,7 @@ export const load = (async (event) => {
 
   const orgIds = organizations.map((o) => o.Id);
 
-  const users = await prisma.users.findMany({
+  const users = await DatabaseReads.users.findMany({
     orderBy: {
       Name: 'asc'
     },
@@ -131,7 +131,7 @@ export const load = (async (event) => {
     // Could be improved by putting group names into a referenced palette
     // (minimal returns if most users are in different organizations and groups)
     // I went ahead and did this too. My assumption is that there will generally be multiple users in each organization and group, so I think this should be a justifiable change. - Aidan
-    groups: await prisma.groups.findMany({
+    groups: await DatabaseReads.groups.findMany({
       where: {
         OwnerId: { in: orgIds },
         GroupMemberships: {
@@ -163,7 +163,7 @@ export const actions: Actions = {
       !isSuperAdmin(session.user.roles) ||
       !isAdminForOrgs(
         (
-          await prisma.organizationMemberships.findMany({
+          await DatabaseReads.organizationMemberships.findMany({
             where: { UserId: form.data.user },
             distinct: 'OrganizationId'
           })
@@ -192,7 +192,7 @@ export const actions: Actions = {
 
     const isSuper = isSuperAdmin(session.user.roles);
 
-    const organizations = await prisma.organizations.findMany({
+    const organizations = await DatabaseReads.organizations.findMany({
       where:
         form.data.organizationId !== null
           ? { Id: form.data.organizationId }
@@ -239,7 +239,7 @@ export const actions: Actions = {
       ]
     };
 
-    const users = await prisma.users.findMany({
+    const users = await DatabaseReads.users.findMany({
       orderBy: {
         Name: 'asc'
       },
@@ -253,7 +253,10 @@ export const actions: Actions = {
     return {
       form,
       ok: true,
-      query: { data: users.map(minifyUser), count: await prisma.users.count({ where: where }) }
+      query: {
+        data: users.map(minifyUser),
+        count: await DatabaseReads.users.count({ where: where })
+      }
     };
   }
 };

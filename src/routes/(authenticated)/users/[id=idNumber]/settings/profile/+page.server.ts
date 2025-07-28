@@ -1,8 +1,8 @@
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { phoneRegex } from '$lib/valibot';
 
 const profileSchema = v.object({
@@ -18,7 +18,7 @@ const profileSchema = v.object({
 });
 
 export const load = (async (event) => {
-  const subData = await prisma.users.findUniqueOrThrow({
+  const subData = await DatabaseReads.users.findUniqueOrThrow({
     where: { Id: parseInt(event.params.id) }
   });
   return {

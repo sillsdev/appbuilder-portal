@@ -1,11 +1,12 @@
 import { error } from '@sveltejs/kit';
-import { Workflow, prisma } from 'sil.appbuilder.portal.common';
-import { WorkflowAction, type WorkflowState } from 'sil.appbuilder.portal.common/workflow';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { DatabaseReads } from '$lib/server/database';
+import { Workflow } from '$lib/server/workflow';
 import { isSuperAdmin } from '$lib/utils/roles';
+import { WorkflowAction, type WorkflowState } from '$lib/workflowTypes';
 
 const jumpStateSchema = v.object({
   state: v.string()
@@ -13,7 +14,7 @@ const jumpStateSchema = v.object({
 
 export const load: PageServerLoad = async ({ params }) => {
   // route already protected by hooks.server.ts
-  const product = await prisma.products.findUnique({
+  const product = await DatabaseReads.products.findUnique({
     where: {
       Id: params.product_id
     },
@@ -51,7 +52,7 @@ export const load: PageServerLoad = async ({ params }) => {
   const snap = await Workflow.getSnapshot(params.product_id);
   if (!(flow && snap)) return error(404);
 
-  const workflowDefinition = await prisma.workflowDefinitions.findUnique({
+  const workflowDefinition = await DatabaseReads.workflowDefinitions.findUnique({
     where: {
       Id: snap.definitionId
     },
@@ -71,7 +72,7 @@ export const load: PageServerLoad = async ({ params }) => {
       },
       valibot(jumpStateSchema)
     ),
-    transitions: await prisma.productTransitions.findMany({
+    transitions: await DatabaseReads.productTransitions.findMany({
       where: { ProductId: params.product_id },
       select: {
         DateTransition: true,

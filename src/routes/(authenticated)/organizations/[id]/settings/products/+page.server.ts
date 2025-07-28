@@ -1,8 +1,8 @@
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { idSchema } from '$lib/valibot';
 
 const togglePublicSchema = v.object({
@@ -18,7 +18,7 @@ export const load = (async (event) => {
   const { organization } = await event.parent();
   const setOrgProductDefs = new Set(
     (
-      await prisma.organizationProductDefinitions.findMany({
+      await DatabaseReads.organizationProductDefinitions.findMany({
         where: {
           OrganizationId: organization.Id
         }
@@ -26,7 +26,7 @@ export const load = (async (event) => {
     ).map((p) => p.ProductDefinitionId)
   );
   return {
-    allProductDefs: (await prisma.productDefinitions.findMany()).map((pd) => ({
+    allProductDefs: (await DatabaseReads.productDefinitions.findMany()).map((pd) => ({
       ...pd,
       enabled: setOrgProductDefs.has(pd.Id)
     }))

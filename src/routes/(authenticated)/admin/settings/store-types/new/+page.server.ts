@@ -1,9 +1,9 @@
 import { fail } from '@sveltejs/kit';
-import { DatabaseWrites } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { DatabaseWrites } from '$lib/server/database';
 
 const createSchema = v.object({
   name: v.nullable(v.string()),

@@ -1,5 +1,4 @@
 import { error, redirect } from '@sveltejs/kit';
-import { BullMQ, DatabaseWrites, getQueues, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -7,6 +6,8 @@ import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { importJSONSchema } from '$lib/projects';
 import { verifyCanCreateProject } from '$lib/projects/server';
+import { BullMQ, getQueues } from '$lib/server/bullmq';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { idSchema } from '$lib/valibot';
 
 const projectsImportSchema = v.object({
@@ -22,7 +23,7 @@ const projectsImportSchema = v.object({
 export const load = (async ({ locals, params }) => {
   if (!verifyCanCreateProject((await locals.auth())!, parseInt(params.id))) return error(403);
 
-  const organization = await prisma.organizations.findUnique({
+  const organization = await DatabaseReads.organizations.findUnique({
     where: {
       Id: parseInt(params.id)
     },
@@ -53,7 +54,7 @@ export const load = (async ({ locals, params }) => {
 
   if (!organization) return error(404);
 
-  const types = await prisma.applicationTypes.findMany({
+  const types = await DatabaseReads.applicationTypes.findMany({
     select: {
       Id: true,
       Description: true
@@ -86,7 +87,7 @@ export const actions: Actions = {
       return fail(400, { form, ok: false });
     }
 
-    const organization = await prisma.organizations.findUnique({
+    const organization = await DatabaseReads.organizations.findUnique({
       where: {
         Id: organizationId
       },
@@ -108,7 +109,7 @@ export const actions: Actions = {
 
     await Promise.all(
       importJSON.Products.map(async (product, i) => {
-        const prodDef = await prisma.productDefinitions.findFirst({
+        const prodDef = await DatabaseReads.productDefinitions.findFirst({
           where: {
             Name: product.Name
           },
@@ -141,7 +142,7 @@ export const actions: Actions = {
           });
         }
 
-        const store = await prisma.stores.findFirst({
+        const store = await DatabaseReads.stores.findFirst({
           where: {
             Name: product.Store
           },
@@ -180,7 +181,7 @@ export const actions: Actions = {
 
     if (!errors.length) {
       const existingProjects = (
-        await prisma.projects.findMany({
+        await DatabaseReads.projects.findMany({
           where: {
             Name: {
               in: importJSON.Projects.map((p) => p.Name)

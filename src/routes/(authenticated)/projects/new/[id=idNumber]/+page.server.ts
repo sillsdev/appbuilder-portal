@@ -1,16 +1,17 @@
 import { error, redirect } from '@sveltejs/kit';
-import { BullMQ, DatabaseWrites, getQueues, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { projectCreateSchema } from '$lib/projects';
 import { verifyCanCreateProject } from '$lib/projects/server';
+import { BullMQ, getQueues } from '$lib/server/bullmq';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 
 export const load = (async ({ locals, params }) => {
   if (!verifyCanCreateProject((await locals.auth())!, parseInt(params.id))) return error(403);
 
-  const organization = await prisma.organizations.findUnique({
+  const organization = await DatabaseReads.organizations.findUnique({
     where: {
       Id: parseInt(params.id)
     },
@@ -28,7 +29,7 @@ export const load = (async ({ locals, params }) => {
   if (!organization) return error(404);
 
   // There shouldn't actually be any restriction on this
-  const types = await prisma.applicationTypes.findMany({
+  const types = await DatabaseReads.applicationTypes.findMany({
     select: {
       Id: true,
       Description: true

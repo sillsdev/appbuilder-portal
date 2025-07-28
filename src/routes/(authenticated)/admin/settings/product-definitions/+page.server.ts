@@ -1,10 +1,10 @@
 // src/routes/+page.server.ts
 
-import { prisma } from 'sil.appbuilder.portal.common';
 import type { PageServerLoad } from './$types';
+import { DatabaseReads } from '$lib/server/database';
 
 export const load = (async () => {
-  const productDefinitions = await prisma.productDefinitions.findMany({
+  const productDefinitions = await DatabaseReads.productDefinitions.findMany({
     include: {
       ApplicationTypes: true,
       Workflow: true,

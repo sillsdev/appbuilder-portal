@@ -1,6 +1,6 @@
-import { prisma } from 'sil.appbuilder.portal.common';
 import { getFileInfo } from '$lib/products';
 import { getPublishedFile } from '$lib/products/server';
+import { DatabaseReads } from '$lib/server/database';
 
 type ManifestResponse = {
   url: string;
@@ -75,7 +75,7 @@ export async function _getManifest(packageName: string) {
 }
 
 async function getPublishedAppDetails(Package: string) {
-  const publications = await prisma.productPublications.findMany({
+  const publications = await DatabaseReads.productPublications.findMany({
     where: {
       Package,
       Success: true

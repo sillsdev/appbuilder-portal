@@ -1,12 +1,12 @@
 import { error } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
 import type { PageServerLoad } from './$types';
+import { DatabaseReads } from '$lib/server/database';
 
 export const load = (async ({ params, locals }) => {
   // need this for org membership check
   const user = (await locals.auth())!.user;
   if (isNaN(parseInt(params.id))) return error(400);
-  const projectCheck = await prisma.projects.findUnique({
+  const projectCheck = await DatabaseReads.projects.findUnique({
     where: {
       Id: parseInt(params.id)
     },
@@ -23,13 +23,13 @@ export const load = (async ({ params, locals }) => {
   // This assumes that a null value is meant as false
   const allowDownloads = !!(
     projectCheck.AllowDownloads ||
-    (await prisma.organizationMemberships.findFirst({
+    (await DatabaseReads.organizationMemberships.findFirst({
       where: { OrganizationId: projectCheck.OrganizationId, UserId: user.userId }
     }))
   );
 
   return {
-    project: await prisma.projects.findUniqueOrThrow({
+    project: await DatabaseReads.projects.findUniqueOrThrow({
       where: {
         Id: parseInt(params.id)
       },

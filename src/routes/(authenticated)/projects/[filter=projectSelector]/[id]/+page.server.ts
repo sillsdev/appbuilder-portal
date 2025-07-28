@@ -1,6 +1,5 @@
 import type { Prisma } from '@prisma/client';
 import { type Actions, redirect } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -15,6 +14,7 @@ import {
   pruneProjects
 } from '$lib/projects';
 import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/server';
+import { DatabaseReads } from '$lib/server/database';
 import { stringIdSchema } from '$lib/valibot';
 
 const bulkProductActionSchema = v.object({
@@ -68,12 +68,12 @@ export const load = (async ({ params, locals }) => {
   if (
     isNaN(orgId) ||
     !(orgId + '' === params.id) ||
-    !(await prisma.organizations.findFirst({ where: { Id: orgId } }))
+    !(await DatabaseReads.organizations.findFirst({ where: { Id: orgId } }))
   ) {
     return redirect(302, localizeHref(`/projects/${params.filter}`));
   }
 
-  const projects = await prisma.projects.findMany({
+  const projects = await DatabaseReads.projects.findMany({
     where: whereStatements(params.filter, orgId, userId),
     include: {
       Products: {
@@ -99,10 +99,12 @@ export const load = (async ({ params, locals }) => {
       },
       valibot(projectSearchSchema)
     ),
-    count: await prisma.projects.count({ where: whereStatements(params.filter, orgId, userId) }),
+    count: await DatabaseReads.projects.count({
+      where: whereStatements(params.filter, orgId, userId)
+    }),
     actionForm: await superValidate(valibot(bulkProjectActionSchema)),
     productForm: await superValidate(valibot(bulkProductActionSchema)),
-    productDefinitions: await prisma.productDefinitions.findMany(),
+    productDefinitions: await DatabaseReads.productDefinitions.findMany(),
     /** allow actions other than reactivation */
     allowActions: params.filter !== 'archived',
     allowReactivate: params.filter === 'all' || params.filter === 'archived',
@@ -124,7 +126,7 @@ export const actions: Actions = {
       ...whereStatements(params.filter!, organizationId, user.userId)
     };
 
-    const projects = await prisma.projects.findMany({
+    const projects = await DatabaseReads.projects.findMany({
       where,
       include: {
         Products: {
@@ -141,7 +143,7 @@ export const actions: Actions = {
       take: form.data.page.size
     });
 
-    const count = await prisma.projects.count({ where: where });
+    const count = await DatabaseReads.projects.count({ where: where });
 
     return { form, ok: true, query: { data: pruneProjects(projects), count } };
   },
@@ -152,7 +154,7 @@ export const actions: Actions = {
     if (
       isNaN(orgId) ||
       !(orgId + '' === event.params.id) ||
-      !(await prisma.organizations.findFirst({ where: { Id: orgId } }))
+      !(await DatabaseReads.organizations.findFirst({ where: { Id: orgId } }))
     ) {
       return fail(404);
     }
@@ -166,7 +168,7 @@ export const actions: Actions = {
       return fail(400, { form, ok: false });
     }
     // prefer single project over array
-    const projects = await prisma.projects.findMany({
+    const projects = await DatabaseReads.projects.findMany({
       where: {
         Id: { in: form.data.projectId !== null ? [form.data.projectId] : form.data.projects }
       },
@@ -205,10 +207,10 @@ export const actions: Actions = {
     // if user modified hidden values
     if (
       !(
-        (await prisma.products.count({ where: { Id: { in: form.data.products } } })) ===
+        (await DatabaseReads.products.count({ where: { Id: { in: form.data.products } } })) ===
           form.data.products.length &&
         (
-          await prisma.projects.findMany({
+          await DatabaseReads.projects.findMany({
             where: {
               Products: {
                 some: {

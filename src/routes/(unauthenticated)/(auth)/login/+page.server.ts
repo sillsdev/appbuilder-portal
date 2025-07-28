@@ -1,8 +1,8 @@
 import { redirect } from '@sveltejs/kit';
-import { QueueConnected } from 'sil.appbuilder.portal.common';
 import { signIn } from '../../../../auth';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
+import { QueueConnected } from '$lib/server/bullmq';
 
 export const load: PageServerLoad = async (event) => {
   if ((await event.locals.auth())?.user && QueueConnected()) {

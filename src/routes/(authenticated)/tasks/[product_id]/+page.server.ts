@@ -1,18 +1,15 @@
 import type { Session } from '@auth/sveltekit';
 import { error, redirect } from '@sveltejs/kit';
-import { Workflow, prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
-import {
-  WorkflowAction,
-  WorkflowState,
-  artifactLists
-} from 'sil.appbuilder.portal.common/workflow';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
+import { RoleId } from '$lib/prisma';
+import { DatabaseReads } from '$lib/server/database';
+import { Workflow } from '$lib/server/workflow';
 import { isSuperAdmin } from '$lib/utils/roles';
+import { WorkflowAction, WorkflowState, artifactLists } from '$lib/workflowTypes';
 
 const sendActionSchema = v.object({
   state: v.enum(WorkflowState),
@@ -40,7 +37,7 @@ export const load = (async ({ params, locals }) => {
   if (!snap) return error(404);
 
   // product will not be null if snap exists
-  const product = (await prisma.products.findUnique({
+  const product = (await DatabaseReads.products.findUnique({
     where: {
       Id: params.product_id
     },
@@ -101,7 +98,7 @@ export const load = (async ({ params, locals }) => {
   }))!;
 
   const artifacts = snap.context.includeArtifacts
-    ? await prisma.productArtifacts.findMany({
+    ? await DatabaseReads.productArtifacts.findMany({
         where: {
           ProductId: params.product_id,
           ProductBuild: {
@@ -163,7 +160,7 @@ export const load = (async ({ params, locals }) => {
     } as Fields,
     files: artifacts,
     reviewers: snap.context.includeReviewers
-      ? await prisma.reviewers.findMany({
+      ? await DatabaseReads.reviewers.findMany({
           where: {
             ProjectId: product.Project.Id
           },
@@ -210,7 +207,7 @@ export const actions = {
       });
     }
 
-    const product = (await prisma.products.findUnique({
+    const product = (await DatabaseReads.products.findUnique({
       where: { Id: params.product_id },
       select: { ProjectId: true }
     }))!;
@@ -225,7 +222,7 @@ async function verifyCanViewTask(session: Session | null, productId: string): Pr
 
   return (
     isSuperAdmin(session.user.roles) ||
-    !!(await prisma.userTasks.findFirst({
+    !!(await DatabaseReads.userTasks.findFirst({
       where: {
         ProductId: productId,
         UserId: session.user.userId

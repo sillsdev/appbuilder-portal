@@ -8,9 +8,9 @@
 
 <script lang="ts">
   import type { Prisma } from '@prisma/client';
-  import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { ProductTransitionType } from '$lib/prisma';
   import { getTimeDateString } from '$lib/utils/time';
 
   interface Props {

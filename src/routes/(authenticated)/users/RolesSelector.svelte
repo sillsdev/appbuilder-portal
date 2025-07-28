@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { RoleId } from 'sil.appbuilder.portal.common/prisma';
   import type { Snippet } from 'svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
+  import { RoleId } from '$lib/prisma';
   import { enumNumVals } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
   interface Props {

@@ -1,23 +1,10 @@
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
-import { type ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import {
-  type BuilderProgram,
-  type Watch,
-  createEmitAndSemanticDiagnosticsBuilderProgram,
-  createWatchCompilerHost,
-  createWatchProgram,
-  sys
-} from 'typescript';
-import { loadEnv, searchForWorkspaceRoot } from 'vite';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   server: {
-    fs: {
-      allow: [searchForWorkspaceRoot(process.cwd()), '/common']
-    },
     port: 6173
   },
   preview: {

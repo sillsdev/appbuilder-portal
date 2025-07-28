@@ -43,7 +43,14 @@ export default ts.config(
   },
   {
     rules: {
-      '@typescript-eslint/no-unused-vars': 0,
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          args: 'none'
+        }
+      ],
+      '@typescript-eslint/consistent-type-imports': 'warn',
       'import/order': [
         'warn',
         {
