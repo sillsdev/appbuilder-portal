@@ -1,10 +1,11 @@
 import { error, fail } from '@sveltejs/kit';
-import { BullMQ, DatabaseWrites, getQueues, prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { RoleId } from '$lib/prisma';
+import { BullMQ, getQueues } from '$lib/server/bullmq';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 
@@ -20,7 +21,7 @@ export const load = (async ({ locals }) => {
 
   const user = await locals.auth();
   if (!isAdmin(user?.user.roles)) return error(403);
-  const groupsByOrg = await prisma.organizations.findMany({
+  const groupsByOrg = await DatabaseReads.organizations.findMany({
     where: {
       // Only send a list of groups for orgs that the current user has access to
       UserRoles: isSuperAdmin(user?.user.roles)

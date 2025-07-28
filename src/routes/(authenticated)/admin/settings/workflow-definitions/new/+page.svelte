@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { WorkflowType } from 'sil.appbuilder.portal.common/prisma';
-  import { ProductType, WorkflowOptions } from 'sil.appbuilder.portal.common/workflow';
   import { superForm } from 'sveltekit-superforms';
   import { businessFlows } from '../common';
   import type { PageData } from './$types';
@@ -10,8 +8,10 @@
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { WorkflowType } from '$lib/prisma';
   import { enumNumVals, toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
+  import { ProductType, WorkflowOptions } from '$lib/workflowTypes';
 
   interface Props {
     data: PageData;

@@ -1,11 +1,11 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import { workflowDefinitionSchemaBase } from '../common';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { idSchema } from '$lib/valibot';
 
 const editSchema = v.object({
@@ -17,14 +17,14 @@ export const load = (async ({ url }) => {
   if (isNaN(id)) {
     return redirect(302, localizeHref('/admin/settings/workflow-definitions'));
   }
-  const data = await prisma.workflowDefinitions.findFirst({
+  const data = await DatabaseReads.workflowDefinitions.findFirst({
     where: {
       Id: id
     }
   });
   if (!data) return redirect(302, localizeHref('/admin/settings/workflow-definitions'));
-  const storeTypes = await prisma.storeTypes.findMany();
-  const schemes = await prisma.workflowScheme.findMany({ select: { Code: true } });
+  const storeTypes = await DatabaseReads.storeTypes.findMany();
+  const schemes = await DatabaseReads.workflowScheme.findMany({ select: { Code: true } });
   const form = await superValidate(
     {
       id: data.Id,

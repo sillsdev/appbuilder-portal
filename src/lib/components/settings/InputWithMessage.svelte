@@ -6,7 +6,7 @@
 <script lang="ts">
   /* eslint-disable @typescript-eslint/no-explicit-any */
   import type { Snippet } from 'svelte';
-  import type { ValidI13nKey, ValueKey } from '$lib/locales.svelte';
+  import type { ValueKey } from '$lib/locales.svelte';
   import * as m from '$lib/paraglide/messages';
 
   interface Props {

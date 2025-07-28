@@ -2,14 +2,16 @@ import { error, json } from '@sveltejs/kit';
 import { jwtVerify } from 'jose';
 import type { KeyObject } from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
-import { BuildEngine, DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
-import { ProductTransitionType } from 'sil.appbuilder.portal.common/prisma';
 import { building } from '$app/environment';
 import { AUTH0_DOMAIN } from '$env/static/private';
+import { ProductTransitionType } from '$lib/prisma';
+import { BuildEngine } from '$lib/server/build-engine-api';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { isAdmin } from '$lib/utils/roles';
 
 const TOKEN_USE_HEADER = 'Use';
 const TOKEN_USE_UPLOAD = 'Upload';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TOKEN_USE_DOWNLOAD = 'Download';
 
 export async function POST({ params, request, fetch }) {
@@ -22,11 +24,11 @@ export async function POST({ params, request, fetch }) {
   let jwtData;
   try {
     jwtData = await decryptJwtWithAuth0(authToken ?? '');
-  } catch (e) {
+  } catch {
     // Signature verification failed
     return error(401, `Unauthorized`);
   }
-  const user = await prisma.users.findMany({
+  const user = await DatabaseReads.users.findMany({
     where: {
       ExternalId: jwtData.payload.sub
     },
@@ -54,7 +56,7 @@ export async function POST({ params, request, fetch }) {
 
   const tokenUse = request.headers.get(TOKEN_USE_HEADER);
 
-  const project = await prisma.projects.findUnique({
+  const project = await DatabaseReads.projects.findUnique({
     where: {
       Id: projectId
     },
@@ -107,7 +109,7 @@ export async function POST({ params, request, fetch }) {
 
   // Check authors
   if (readOnly === null) {
-    const authors = await prisma.authors.findMany({
+    const authors = await DatabaseReads.authors.findMany({
       where: {
         ProjectId: projectId
       },
@@ -200,7 +202,7 @@ export async function POST({ params, request, fetch }) {
   if (tokenUse) {
     use = tokenUse;
   }
-  const products = await prisma.products.findMany({
+  const products = await DatabaseReads.products.findMany({
     where: { ProjectId: projectId },
     select: { Id: true }
   });

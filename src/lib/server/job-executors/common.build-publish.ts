@@ -1,10 +1,10 @@
-import { prisma } from 'sil.appbuilder.portal.common';
-import { WorkflowType, WorkflowTypeString } from 'sil.appbuilder.portal.common/prisma';
-import type { Environment } from 'sil.appbuilder.portal.common/workflow';
-import { ENVKeys, ProductType } from 'sil.appbuilder.portal.common/workflow';
+import { DatabaseReads } from '../database';
+import { WorkflowType, WorkflowTypeString } from '$lib/prisma';
+import type { Environment } from '$lib/workflowTypes';
+import { ENVKeys, ProductType } from '$lib/workflowTypes';
 
 export async function addProductPropertiesToEnvironment(productId: string) {
-  const product = await prisma.products.findUniqueOrThrow({
+  const product = await DatabaseReads.products.findUniqueOrThrow({
     where: {
       Id: productId
     },
@@ -54,7 +54,7 @@ export async function getWorkflowParameters(
   scope: 'build' | 'publish'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any & { environment: Environment }> {
-  const instance = await prisma.workflowInstances.findUniqueOrThrow({
+  const instance = await DatabaseReads.workflowInstances.findUniqueOrThrow({
     where: {
       Id: workflowInstanceId
     },

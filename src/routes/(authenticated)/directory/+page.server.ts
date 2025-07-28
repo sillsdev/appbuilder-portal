@@ -1,15 +1,15 @@
 import type { Prisma } from '@prisma/client';
 import { type Actions } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad } from './$types';
 import { projectSearchSchema, pruneProjects } from '$lib/projects';
 import { projectFilter } from '$lib/projects/server';
+import { DatabaseReads } from '$lib/server/database';
 
 export const load = (async () => {
   // auth handled by hooks
-  const projects = await prisma.projects.findMany({
+  const projects = await DatabaseReads.projects.findMany({
     where: {
       IsPublic: true
     },
@@ -29,7 +29,7 @@ export const load = (async () => {
       Name: 'asc'
     }
   });
-  const productDefinitions = await prisma.productDefinitions.findMany();
+  const productDefinitions = await DatabaseReads.productDefinitions.findMany();
   return {
     projects: pruneProjects(projects),
     productDefinitions,
@@ -42,12 +42,12 @@ export const load = (async () => {
       },
       valibot(projectSearchSchema)
     ),
-    count: await prisma.projects.count({
+    count: await DatabaseReads.projects.count({
       where: {
         IsPublic: true
       }
     }),
-    organizations: await prisma.organizations.findMany({
+    organizations: await DatabaseReads.organizations.findMany({
       select: {
         Id: true,
         Name: true
@@ -67,7 +67,7 @@ export const actions: Actions = {
       IsPublic: true
     };
 
-    const projects = await prisma.projects.findMany({
+    const projects = await DatabaseReads.projects.findMany({
       where: where,
       include: {
         Products: {
@@ -87,7 +87,7 @@ export const actions: Actions = {
       }
     });
 
-    const count = await prisma.projects.count({ where: where });
+    const count = await DatabaseReads.projects.count({ where: where });
 
     return { form, ok: true, query: { data: pruneProjects(projects), count } };
   }

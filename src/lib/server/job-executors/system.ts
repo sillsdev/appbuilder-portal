@@ -3,28 +3,24 @@ import { XMLParser } from 'fast-xml-parser';
 import { existsSync } from 'fs';
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
 import { join } from 'path';
-import {
-  BuildEngine,
-  BullMQ,
-  DatabaseWrites,
-  Workflow,
-  getQueues,
-  prisma
-} from 'sil.appbuilder.portal.common';
-import { WorkflowType, WorkflowTypeString } from 'sil.appbuilder.portal.common/prisma';
-import type { Environment, WorkflowInstanceContext } from 'sil.appbuilder.portal.common/workflow';
+import { BuildEngine } from '../build-engine-api';
+import { BullMQ, getQueues } from '../bullmq';
+import { DatabaseReads, DatabaseWrites } from '../database';
+import { Workflow } from '../workflow';
+import { WorkflowType, WorkflowTypeString } from '$lib/prisma';
 import {
   ENVKeys,
   WorkflowAction,
   WorkflowState,
   isDeprecated,
   isWorkflowState
-} from 'sil.appbuilder.portal.common/workflow';
+} from '$lib/workflowTypes';
+import type { Environment, WorkflowInstanceContext } from '$lib/workflowTypes';
 
 export async function checkSystemStatuses(
   job: Job<BullMQ.System.CheckEngineStatuses>
 ): Promise<unknown> {
-  const organizations = await prisma.organizations.findMany({
+  const organizations = await DatabaseReads.organizations.findMany({
     where: {
       // treat null same as false
       NOT: { UseDefaultBuildEngine: true },
@@ -76,7 +72,7 @@ export async function checkSystemStatuses(
     }
   });
   job.updateProgress(20);
-  const systems = await prisma.systemStatuses.findMany({
+  const systems = await DatabaseReads.systemStatuses.findMany({
     select: {
       BuildEngineUrl: true,
       BuildEngineApiAccessToken: true
@@ -97,7 +93,7 @@ export async function checkSystemStatuses(
   });
   job.updateProgress(50);
   const statuses = await Promise.all(
-    (await prisma.systemStatuses.findMany()).map(async (s) => {
+    (await DatabaseReads.systemStatuses.findMany()).map(async (s) => {
       const res = await BuildEngine.Requests.systemCheck({
         type: 'provided',
         url: s.BuildEngineUrl ?? '',
@@ -418,7 +414,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   const updatedTransitions = (
     await Promise.all(
       (
-        await prisma.productTransitions.findMany({
+        await DatabaseReads.productTransitions.findMany({
           where: {
             UserId: null,
             WorkflowUserId: { not: null }
@@ -427,7 +423,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
           distinct: 'WorkflowUserId'
         })
       ).map(async ({ WorkflowUserId }) => {
-        const user = await prisma.users.findFirst({
+        const user = await DatabaseReads.users.findFirst({
           where: { WorkflowUserId },
           select: { Id: true }
         });
@@ -449,7 +445,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   ).reduce((p, c) => p + c.count, 0);
 
   const missingWorkflowUserIDs = (
-    await prisma.productTransitions.findMany({
+    await DatabaseReads.productTransitions.findMany({
       where: {
         UserId: null,
         WorkflowUserId: { not: null }
@@ -476,7 +472,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
 
   let migratedProducts = 0;
   const migrationErrors: { Id: string; error: string }[] = [];
-  const products = await prisma.$queryRaw<InstanceData[]>`
+  const products = await DatabaseReads.$queryRaw<InstanceData[]>`
     SELECT p."Id", wpi."ActivityName", wpis."Status" from "Products" p
     LEFT JOIN "WorkflowProcessInstance" wpi on wpi."Id" = p."Id"
     LEFT JOIN "WorkflowProcessInstanceStatus" wpis on wpis."Id" = p."Id"
@@ -531,7 +527,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   const orphanedInstances = await Promise.all(
     // If the database had properly defined relationships between these tables, this raw query wouldn't be necessary...
     (
-      await prisma.$queryRaw<ProductId[]>`
+      await DatabaseReads.$queryRaw<ProductId[]>`
         SELECT wpi."Id" FROM "WorkflowProcessInstance" wpi 
         WHERE NOT EXISTS (SELECT p."Id" from "Products" p WHERE p."Id" = wpi."Id")`
     ).map(({ Id }) => DatabaseWrites.workflowInstances.markProcessFinalized(Id))
@@ -555,7 +551,7 @@ async function tryCreateInstance(
   log: Logger
 ): Promise<{ ok: boolean; value: string }> {
   try {
-    const product = await prisma.products.findUnique({
+    const product = await DatabaseReads.products.findUnique({
       where: { Id: productId },
       select: {
         ProductDefinition: {
@@ -571,7 +567,7 @@ async function tryCreateInstance(
 
     if (!product) return { ok: false, value: 'Product not found' };
 
-    const persistence = await prisma.workflowProcessInstancePersistence.findMany({
+    const persistence = await DatabaseReads.workflowProcessInstancePersistence.findMany({
       where: { ProcessId: productId }
     });
 

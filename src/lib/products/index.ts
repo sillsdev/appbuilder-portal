@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client';
-import { WorkflowType } from 'sil.appbuilder.portal.common/prisma';
+import { WorkflowType } from '$lib/prisma';
 
 export enum ProductActionType {
   Rebuild = 'rebuild',

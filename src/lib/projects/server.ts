@@ -1,8 +1,9 @@
 import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
-import { BullMQ, DatabaseWrites, getQueues, prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import { RoleId } from '$lib/prisma';
 import { type ProjectForAction, canClaimProject, canModifyProject } from '$lib/projects';
+import { BullMQ, getQueues } from '$lib/server/bullmq';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { ServerStatus } from '$lib/utils';
 import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
 
@@ -13,7 +14,7 @@ export async function verifyCanViewAndEdit(
   // Editing is allowed if the user owns the project, or if the user is an organization
   // admin for the project's organization, or if the user is a super admin
   if (isNaN(projectId)) return ServerStatus.NotFound;
-  const project = await prisma.projects.findUnique({
+  const project = await DatabaseReads.projects.findUnique({
     where: {
       Id: projectId
     },
@@ -121,7 +122,7 @@ export function verifyCanCreateProject(user: Session, orgId: number): boolean {
 }
 
 export async function userGroupsForOrg(userId: number, orgId: number) {
-  return prisma.groupMemberships.findMany({
+  return await DatabaseReads.groupMemberships.findMany({
     where: {
       UserId: userId,
       Group: {

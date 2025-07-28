@@ -1,9 +1,9 @@
-import { prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import { produce } from 'sveltekit-sse';
+import { RoleId } from '$lib/prisma';
 import { getProductActions } from '$lib/products';
 import { SSEPageUpdates } from '$lib/projects/listener';
 import { userGroupsForOrg } from '$lib/projects/server';
+import { DatabaseReads } from '$lib/server/database';
 
 export async function POST(request) {
   const userId = (await request.locals.auth())!.user.userId;
@@ -41,7 +41,7 @@ export async function POST(request) {
 export type ProjectDataSSE = Awaited<ReturnType<typeof getProjectDetails>>;
 async function getProjectDetails(id: number, userId: number) {
   // permissions checked in auth
-  const project = await prisma.projects.findUniqueOrThrow({
+  const project = await DatabaseReads.projects.findUniqueOrThrow({
     where: {
       Id: id
     },
@@ -145,7 +145,7 @@ async function getProjectDetails(id: number, userId: number) {
     }
   });
 
-  const organization = await prisma.organizations.findUnique({
+  const organization = await DatabaseReads.organizations.findUnique({
     where: {
       Id: project.Organization.Id
     },
@@ -165,7 +165,7 @@ async function getProjectDetails(id: number, userId: number) {
     }
   });
 
-  const transitions = await prisma.productTransitions.findMany({
+  const transitions = await DatabaseReads.productTransitions.findMany({
     where: {
       ProductId: {
         in: project.Products.map((p) => p.Id)
@@ -194,7 +194,7 @@ async function getProjectDetails(id: number, userId: number) {
   ]);
 
   const productDefinitions = (
-    await prisma.organizationProductDefinitions.findMany({
+    await DatabaseReads.organizationProductDefinitions.findMany({
       where: {
         OrganizationId: project.Organization.Id,
         ProductDefinition: {
@@ -239,7 +239,7 @@ async function getProjectDetails(id: number, userId: number) {
     },
     productsToAdd: productDefinitions.filter((pd) => !projectProductDefinitionIds.includes(pd.Id)),
     stores: organization?.OrganizationStores.map((os) => os.Store) ?? [],
-    possibleProjectOwners: await prisma.users.findMany({
+    possibleProjectOwners: await DatabaseReads.users.findMany({
       where: {
         OrganizationMemberships: {
           some: {
@@ -253,14 +253,14 @@ async function getProjectDetails(id: number, userId: number) {
         }
       }
     }),
-    possibleGroups: await prisma.groups.findMany({
+    possibleGroups: await DatabaseReads.groups.findMany({
       where: {
         OwnerId: project.Organization.Id
       }
     }),
     // All users who are members of the group and have the author role in the project's organization
     // May be a more efficient way to search this, by referencing group memberships instead of users
-    authorsToAdd: await prisma.users.findMany({
+    authorsToAdd: await DatabaseReads.users.findMany({
       where: {
         GroupMemberships: {
           some: {

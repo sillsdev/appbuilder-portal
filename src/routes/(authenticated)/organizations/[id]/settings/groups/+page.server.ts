@@ -1,8 +1,8 @@
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { deleteSchema, idSchema } from '$lib/valibot';
 
 const addGroupSchema = v.object({
@@ -14,7 +14,7 @@ const addGroupSchema = v.object({
 export const load = (async (event) => {
   const { organization } = await event.parent();
   return {
-    groups: await prisma.groups.findMany({ where: { OwnerId: organization.Id } })
+    groups: await DatabaseReads.groups.findMany({ where: { OwnerId: organization.Id } })
   };
 }) satisfies PageServerLoad;
 
@@ -34,7 +34,7 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false });
     if (
       // if user modified hidden values
-      !(await prisma.groups.findFirst({
+      !(await DatabaseReads.groups.findFirst({
         where: { Id: form.data.id, OwnerId: parseInt(event.params.id) }
       }))
     ) {

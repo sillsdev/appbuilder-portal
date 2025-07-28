@@ -1,16 +1,16 @@
 import { fail } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
 import { organizationBaseSchema } from '$lib/organizations';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 
 const createSchema = organizationBaseSchema;
 
 export const load = (async ({ url }) => {
   const form = await superValidate(valibot(createSchema));
   const options = {
-    users: await prisma.users.findMany()
+    users: await DatabaseReads.users.findMany()
   };
   return { form, options };
 }) satisfies PageServerLoad;

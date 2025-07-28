@@ -1,8 +1,6 @@
 // hooks.server.ts
 import { type Handle, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { Worker } from 'bullmq';
-import { BullMQ, DatabaseConnected, QueueConnected, getQueues } from 'sil.appbuilder.portal.common';
 import {
   authRouteHandle,
   checkUserExistsHandle,
@@ -12,6 +10,7 @@ import {
 import { building } from '$app/environment';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
+import { QueueConnected, getQueues } from '$lib/server/bullmq';
 import { bullboardHandle } from '$lib/server/bullmq/BullBoard';
 import '$lib/server/bullmq/BullMQ';
 
@@ -66,3 +65,6 @@ export const handle: Handle = sequence(
   localRouteHandle,
   bullboardHandle
 );
+function DatabaseConnected(): never {
+  throw new Error('Function not implemented.');
+}

@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import { RoleId } from '$lib/prisma';
 
 /**
  *

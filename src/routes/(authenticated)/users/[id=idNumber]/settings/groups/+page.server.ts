@@ -1,9 +1,9 @@
 import { error } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { adminOrgs } from '$lib/users/server';
 import { isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
@@ -19,7 +19,7 @@ export const load = (async ({ params, locals }) => {
   const user = (await locals.auth())!.user;
 
   return {
-    groupsByOrg: await prisma.organizations.findMany({
+    groupsByOrg: await DatabaseReads.organizations.findMany({
       where: adminOrgs(subjectId, user.userId, isSuperAdmin(user.roles)),
       select: {
         Id: true,
@@ -58,7 +58,7 @@ export const actions = {
     const subjectId = parseInt(event.params.id);
     // if user modified hidden values
     if (
-      !(await prisma.organizations.findFirst({
+      !(await DatabaseReads.organizations.findFirst({
         where: {
           AND: [
             adminOrgs(subjectId, user.userId, isSuperAdmin(user.roles), form.data.orgId),

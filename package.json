@@ -16,8 +16,8 @@
     "prepare": "svelte-kit sync"
   },
   "prisma": {
-    "seed": "node --experimental-strip-types common/prisma/seed.ts -o",
-    "schema": "common/prisma/schema.prisma"
+    "seed": "node --experimental-strip-types src/lib/prisma/seed.ts -o",
+    "schema": "src/lib/prisma/schema.prisma"
   },
   "devDependencies": {
     "@auth/core": "^0.37.4",
@@ -26,12 +26,14 @@
     "@iconify/svelte": "^4.2.0",
     "@inlang/paraglide-js": "^2.2.0",
     "@playwright/test": "^1.50.0",
+    "@prisma/client": "^5.18.0",
     "@sveltejs/adapter-node": "^5.2.12",
     "@sveltejs/kit": "^2.16.1",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tailwindcss/vite": "^4.0.6",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.10",
+    "@types/sparkpost": "^2.1.8",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
     "@typescript-eslint/parser": "^8.21.0",
     "@vvo/tzdb": "^6.159.0",
@@ -80,7 +82,8 @@
     "express": "^4.21.2",
     "fast-xml-parser": "^5.0.9",
     "hono": "^4.8.7",
-    "sil.appbuilder.portal.common": "file:common",
-    "sveltekit-sse": "^0.13.19"
+    "sparkpost": "^2.1.4",
+    "sveltekit-sse": "^0.13.19",
+    "xstate": "^5.20.1"
   }
 }

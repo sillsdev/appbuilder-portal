@@ -54,49 +54,38 @@ function pushToast(type: 'info' | 'success' | 'warning' | 'error', message: stri
 }
 export { pushToast as toast };
 
-/**
-  Locations where toasts are used in S1:
-  data/containers/resources/group/with-data-actions.tsx
-  data/containers/resources/notification/with-data-actions.tsx
-  data/containers/resources/project/with-data-actions.tsx
-  data/containers/resources/user/with-user-groups.tsx
-  data/containers/resources/user/with-user-roles.tsx
-  
-  data/containers/with-current-organization/require-selected.tsx
-  data/containers/with-role.tsx
+export type ValueFilter<T> =
+  | { is: T } // T is the provided
+  | { any: Set<T> } // T is any of the provided
+  | { not: T } // T is not the provided
+  | { none: Set<T> }; // T is none of the provided
 
-  ui/components/product-properties/index.tsx
+export type SetFilter<T> =
+  | { has: T } // Set<T> contains the provided
+  | { any: Set<T> } // Set<T> contains any of the provided
+  | { all: Set<T> } // Set<T> contains all of the provided
+  | { none: Set<T> }; // Set<T> contains none of the provided
 
-  ui/routes/admin/invite-organization/index.tsx
-  ui/routes/admin/settings/organizations/common/form.tsx
-  ui/routes/admin/settings/product-definitions/common/form.tsx
-  ui/routes/admin/settings/store-types/common/form.tsx
-  ui/routes/admin/settings/stores/-components/form.tsx
-  ui/routes/admin/settings/workflow-definitions/common/form.tsx
+export function filterValue<T>(value: T, filter: ValueFilter<T>) {
+  if ('is' in filter) {
+    return value === filter.is;
+  } else if ('any' in filter) {
+    return filter.any.has(value);
+  } else if ('not' in filter) {
+    return value !== filter.not;
+  } else {
+    return !filter.none.has(value);
+  }
+}
 
-  ui/routes/invitations/create-organization/form/index.tsx
-
-  ui/routes/organizations/settings/groups/form.tsx
-  ui/routes/organizations/settings/groups/list.tsx
-  ui/routes/organizations/settings/index.tsx
-
-  ui/routes/projects/edit/display.tsx
-  ui/routes/projects/edit/with-access-restriction.tsx
-  ui/routes/projects/import/display.tsx
-  ui/routes/projects/import/with-access-restriction.tsx
-  ui/routes/projects/list/header/bulk-buttons.tsx
-  ui/routes/projects/list/header/bulk-product-selection/index.tsx
-  ui/routes/projects/new/display.tsx
-  ui/routes/projects/new/with-access-restriction.tsx
-  ui/routes/projects/show/display.tsx
-  ui/routes/projects/show/overview/owners/index.tsx
-  ui/routes/projects/show/overview/products/selection-manager/with-product-selection-state.tsx
-  ui/routes/projects/show/overview/settings/with-settings.tsx
-  ui/routes/projects/show/with-access-restriction.tsx
-
-  ui/routes/users/edit/index.tsx
-  ui/routes/users/editsettings/settings/index.tsx
-  ui/routes/users/list/add/index.tsx
-
-  ui/routes/workflow/app.tsx
- */
+export function filterSet<T>(values: Set<T>, filter: SetFilter<T>) {
+  if ('has' in filter) {
+    return values.has(filter.has);
+  } else if ('any' in filter) {
+    return !values.isDisjointFrom(filter.any);
+  } else if ('all' in filter) {
+    return values.isSupersetOf(filter.all);
+  } else {
+    return values.isDisjointFrom(filter.none);
+  }
+}

@@ -6,8 +6,6 @@ import {
 } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { type Handle, redirect } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
-import type { RoleId } from 'sil.appbuilder.portal.common/prisma';
 import {
   AUTH0_CLIENT_ID,
   AUTH0_CLIENT_SECRET,
@@ -16,7 +14,9 @@ import {
 } from '$env/static/private';
 import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
+import type { RoleId } from '$lib/prisma';
 import { verifyCanViewAndEdit } from '$lib/projects/server';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { adminOrgs } from '$lib/users/server';
 import { ServerStatus } from '$lib/utils';
 import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
@@ -102,7 +102,7 @@ const config: SvelteKitAuthConfig = {
     },
     async session({ session, token }) {
       session.user.userId = token.userId as number;
-      const userRoles = await prisma.userRoles.findMany({
+      const userRoles = await DatabaseReads.userRoles.findMany({
         where: {
           UserId: token.userId as number
         }
@@ -126,7 +126,7 @@ export const checkUserExistsHandle: Handle = async ({ event, resolve }) => {
     // User has no session at all; allow normal events
     return resolve(event);
   }
-  const user = await prisma.users.findUnique({
+  const user = await DatabaseReads.users.findUnique({
     where: {
       Id: userId
     },
@@ -205,14 +205,14 @@ async function validateRouteForAuthenticatedUser(
       if (params.id) {
         // Must be org admin for specified organization (or a super admin)
         const Id = parseInt(params.id);
-        if (isNaN(Id) || !(await prisma.organizations.findFirst({ where: { Id } }))) {
+        if (isNaN(Id) || !(await DatabaseReads.organizations.findFirst({ where: { Id } }))) {
           return ServerStatus.NotFound;
         }
         return isAdminForOrg(Id, session?.user?.roles) ? ServerStatus.Ok : ServerStatus.Forbidden;
       }
       return ServerStatus.Ok;
     } else if (path[1] === 'products') {
-      const product = await prisma.products.findFirst({
+      const product = await DatabaseReads.products.findFirst({
         where: {
           Id: params.id
         }
@@ -238,9 +238,9 @@ async function validateRouteForAuthenticatedUser(
       } else if (path[2] === '[id=idNumber]') {
         // /id: not implemented yet (ISSUE #1142)
         const subjectId = parseInt(params.id!);
-        if (!(await prisma.users.findFirst({ where: { Id: subjectId } })))
+        if (!(await DatabaseReads.users.findFirst({ where: { Id: subjectId } })))
           return ServerStatus.NotFound;
-        const admin = !!(await prisma.organizations.findFirst({
+        const admin = !!(await DatabaseReads.organizations.findFirst({
           where: adminOrgs(subjectId, session.user.userId, isSuperAdmin(session.user.roles)),
           select: {
             Id: true

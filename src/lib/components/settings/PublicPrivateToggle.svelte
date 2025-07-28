@@ -2,7 +2,7 @@
   import type { HTMLInputAttributes } from 'svelte/elements';
   import IconContainer from '../IconContainer.svelte';
   import InputWithMessage from './InputWithMessage.svelte';
-  import type { ValidI13nKey, ValueKey } from '$lib/locales.svelte';
+  import type { ValueKey } from '$lib/locales.svelte';
 
   interface Props {
     title?: ValueKey;

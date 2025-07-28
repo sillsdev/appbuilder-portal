@@ -1,17 +1,13 @@
 import type { Job } from 'bullmq';
-import {
-  BuildEngine,
-  BullMQ,
-  DatabaseWrites,
-  Workflow,
-  getQueues,
-  prisma
-} from 'sil.appbuilder.portal.common';
-import type { WorkflowInstanceContext } from 'sil.appbuilder.portal.common/workflow';
-import { ENVKeys, WorkflowAction } from 'sil.appbuilder.portal.common/workflow';
+import { BuildEngine } from '../build-engine-api';
+import { BullMQ, getQueues } from '../bullmq';
+import { DatabaseReads, DatabaseWrites } from '../database';
+import { Workflow } from '../workflow';
+import type { WorkflowInstanceContext } from '$lib/workflowTypes';
+import { ENVKeys, WorkflowAction } from '$lib/workflowTypes';
 
 export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> {
-  const productData = await prisma.products.findUnique({
+  const productData = await DatabaseReads.products.findUnique({
     where: {
       Id: job.data.productId
     },
@@ -128,7 +124,7 @@ export async function deleteProduct(job: Job<BullMQ.Product.Delete>): Promise<un
 // This shouldn't need any notifications
 export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): Promise<unknown> {
   let versionCode = 0;
-  const product = await prisma.products.findUniqueOrThrow({
+  const product = await DatabaseReads.products.findUniqueOrThrow({
     where: {
       Id: job.data.productId
     },
@@ -149,7 +145,7 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
   });
   job.updateProgress(30);
   if (product?.WorkflowBuildId && product?.WorkflowJobId) {
-    const productBuild = await prisma.productBuilds.findFirst({
+    const productBuild = await DatabaseReads.productBuilds.findFirst({
       where: {
         ProductId: job.data.productId,
         BuildId: product.WorkflowBuildId
@@ -162,7 +158,7 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
       return 0;
     }
     job.updateProgress(45);
-    const versionCodeArtifact = await prisma.productArtifacts.findFirstOrThrow({
+    const versionCodeArtifact = await DatabaseReads.productArtifacts.findFirstOrThrow({
       where: {
         ProductId: job.data.productId,
         ProductBuildId: productBuild.Id,
@@ -183,7 +179,7 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
     job.updateProgress(75);
   }
   if (versionCode) {
-    const instance = await prisma.workflowInstances.findUniqueOrThrow({
+    const instance = await DatabaseReads.workflowInstances.findUniqueOrThrow({
       where: {
         ProductId: job.data.productId
       },
@@ -301,7 +297,7 @@ export async function createLocal(job: Job<BullMQ.Product.CreateLocal>): Promise
     if (!product) return false;
 
     const flowDefinition = (
-      await prisma.productDefinitions.findUnique({
+      await DatabaseReads.productDefinitions.findUnique({
         where: {
           Id: job.data.productDefinitionId
         },
@@ -325,7 +321,7 @@ export async function createLocal(job: Job<BullMQ.Product.CreateLocal>): Promise
         workflowType: flowDefinition.Type
       });
     }
-  } catch (e) {
+  } catch {
     return false;
   }
 }

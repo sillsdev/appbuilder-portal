@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { ValidI13nKey, ValueKey } from '$lib/locales.svelte';
+  import type { ValueKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
 
   interface Props extends ValueKey {
