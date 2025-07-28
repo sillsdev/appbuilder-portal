@@ -1,9 +1,9 @@
 import { fail } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { propertiesSchema } from '$lib/valibot';
 
 const createSchema = v.object({
@@ -19,8 +19,8 @@ const createSchema = v.object({
 export const load = (async ({ url }) => {
   const form = await superValidate(valibot(createSchema));
   const options = {
-    applicationTypes: await prisma.applicationTypes.findMany(),
-    workflows: await prisma.workflowDefinitions.findMany()
+    applicationTypes: await DatabaseReads.applicationTypes.findMany(),
+    workflows: await DatabaseReads.workflowDefinitions.findMany()
   };
   return { form, options };
 }) satisfies PageServerLoad;

@@ -1,15 +1,11 @@
 import type { Job } from 'bullmq';
-import {
-  BuildEngine,
-  BullMQ,
-  DatabaseWrites,
-  Workflow,
-  getQueues,
-  prisma
-} from 'sil.appbuilder.portal.common';
+import { BuildEngine } from '../build-engine-api';
+import { BullMQ, getQueues } from '../bullmq';
+import { DatabaseReads, DatabaseWrites } from '../database';
+import { Workflow } from '../workflow';
 
 export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> {
-  const projectData = await prisma.projects.findUniqueOrThrow({
+  const projectData = await DatabaseReads.projects.findUniqueOrThrow({
     where: {
       Id: job.data.projectId
     },
@@ -86,7 +82,7 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
 }
 
 export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
-  const project = await prisma.projects.findUnique({
+  const project = await DatabaseReads.projects.findUnique({
     where: { Id: job.data.projectId },
     select: {
       Name: true,
@@ -114,7 +110,7 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
   } else {
     if (response.status === 'completed') {
       await getQueues().RemotePolling.removeJobScheduler(job.name);
-      const project = await prisma.projects.findUniqueOrThrow({
+      const project = await DatabaseReads.projects.findUniqueOrThrow({
         where: { Id: job.data.projectId },
         select: {
           Name: true,
@@ -143,7 +139,7 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
         await notifyCreated(job.data.projectId, project.OwnerId, project.Name!);
 
         const projectImport = (
-          await prisma.projects.findUnique({
+          await DatabaseReads.projects.findUnique({
             where: {
               Id: job.data.projectId
             },
@@ -175,7 +171,7 @@ export async function check(job: Job<BullMQ.Project.Check>): Promise<unknown> {
 }
 
 export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): Promise<unknown> {
-  const projectImport = await prisma.projectImports.findUniqueOrThrow({
+  const projectImport = await DatabaseReads.projectImports.findUniqueOrThrow({
     where: {
       Id: job.data.importId
     }
@@ -187,7 +183,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
   job.updateProgress(30);
   const products = await Promise.all(
     productsToCreate.map(async (p) => {
-      const productDefinitionId = await prisma.productDefinitions.findFirst({
+      const productDefinitionId = await DatabaseReads.productDefinitions.findFirst({
         where: {
           Name: p.Name,
           OrganizationProductDefinitions: {
@@ -201,7 +197,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
         }
       });
       if (!productDefinitionId) return null;
-      const storeId = await prisma.stores.findFirst({
+      const storeId = await DatabaseReads.stores.findFirst({
         where: {
           Name: p.Store,
           OrganizationStores: {
@@ -225,7 +221,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
       });
       if (!productId) return null;
       const flowDefinition = (
-        await prisma.productDefinitions.findUnique({
+        await DatabaseReads.productDefinitions.findUnique({
           where: {
             Id: productDefinitionId.Id
           },

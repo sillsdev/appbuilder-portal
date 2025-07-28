@@ -1,6 +1,6 @@
-import { prisma } from 'sil.appbuilder.portal.common';
 import { produce } from 'sveltekit-sse';
 import { SSEPageUpdates } from '$lib/projects/listener';
+import { DatabaseReads } from '$lib/server/database';
 
 export async function POST(request) {
   const userId = (await request.locals.auth())!.user.userId;
@@ -32,7 +32,7 @@ export async function POST(request) {
 
 export type UserTaskDataSSE = Awaited<ReturnType<typeof getUserTasks>>;
 async function getUserTasks(userId: number) {
-  const tasks = await prisma.userTasks.findMany({
+  const tasks = await DatabaseReads.userTasks.findMany({
     where: {
       UserId: userId
     },

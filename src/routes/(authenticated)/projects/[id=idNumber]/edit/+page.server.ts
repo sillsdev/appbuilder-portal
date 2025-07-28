@@ -1,8 +1,8 @@
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { idSchema } from '$lib/valibot';
 
 const projectPropertyEditSchema = v.object({
@@ -16,12 +16,12 @@ const projectPropertyEditSchema = v.object({
 export const load = (async ({ params }) => {
   // permissions checked in auth
   // verifyCanViewAndEdit already checks if project exists
-  const project = await prisma.projects.findUniqueOrThrow({
+  const project = await DatabaseReads.projects.findUniqueOrThrow({
     where: {
       Id: parseInt(params.id)
     }
   });
-  const owners = await prisma.users.findMany({
+  const owners = await DatabaseReads.users.findMany({
     where: {
       OrganizationMemberships: {
         some: {
@@ -30,7 +30,7 @@ export const load = (async ({ params }) => {
       }
     }
   });
-  const groups = await prisma.groups.findMany({
+  const groups = await DatabaseReads.groups.findMany({
     where: {
       OwnerId: project.OrganizationId
     }

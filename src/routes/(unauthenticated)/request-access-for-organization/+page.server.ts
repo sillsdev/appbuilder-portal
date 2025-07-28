@@ -1,8 +1,8 @@
-import { BullMQ, getQueues } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { BullMQ, getQueues } from '$lib/server/bullmq';
 
 const requestSchema = v.object({
   organizationName: v.pipe(v.string(), v.nonEmpty()),

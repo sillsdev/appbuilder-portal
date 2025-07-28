@@ -1,10 +1,10 @@
 import type { Prisma } from '@prisma/client';
 import { error } from '@sveltejs/kit';
-import { prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { DatabaseReads } from '$lib/server/database';
 import { isSuperAdmin } from '$lib/utils/roles';
 import { idSchema, paginateSchema } from '$lib/valibot';
 
@@ -23,7 +23,7 @@ const tableSchema = v.object({
 });
 
 export const load: PageServerLoad = async (event) => {
-  const instances = await prisma.workflowInstances.findMany({
+  const instances = await DatabaseReads.workflowInstances.findMany({
     select: {
       State: true,
       DateUpdated: true,
@@ -55,7 +55,7 @@ export const load: PageServerLoad = async (event) => {
 
   return {
     instances,
-    count: await prisma.workflowInstances.count(),
+    count: await DatabaseReads.workflowInstances.count(),
     form: await superValidate(
       {
         page: {
@@ -65,7 +65,7 @@ export const load: PageServerLoad = async (event) => {
       },
       valibot(tableSchema)
     ),
-    productDefinitions: await prisma.productDefinitions.findMany({
+    productDefinitions: await DatabaseReads.productDefinitions.findMany({
       select: {
         Id: true,
         Name: true
@@ -145,7 +145,7 @@ export const actions: Actions = {
           : undefined
     };
 
-    const instances = await prisma.workflowInstances.findMany({
+    const instances = await DatabaseReads.workflowInstances.findMany({
       orderBy:
         form.data.sort?.field === 'organization'
           ? { Product: { Project: { Organization: { Name: form.data.sort.direction } } } }
@@ -194,7 +194,7 @@ export const actions: Actions = {
       ok: true,
       query: {
         data: instances,
-        count: await prisma.workflowInstances.count({ where: where })
+        count: await DatabaseReads.workflowInstances.count({ where: where })
       }
     };
   }

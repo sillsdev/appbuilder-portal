@@ -1,17 +1,17 @@
 import { fail } from '@sveltejs/kit';
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import { workflowDefinitionSchemaBase } from '../common';
 import type { Actions, PageServerLoad } from './$types';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 
 const createSchema = workflowDefinitionSchemaBase;
 
 export const load = (async ({ url }) => {
   const form = await superValidate(valibot(createSchema));
   const options = {
-    storeType: await prisma.storeTypes.findMany(),
-    schemes: await prisma.workflowScheme.findMany({ select: { Code: true } })
+    storeType: await DatabaseReads.storeTypes.findMany(),
+    schemes: await DatabaseReads.workflowScheme.findMany({ select: { Code: true } })
   };
 
   return { form, options };

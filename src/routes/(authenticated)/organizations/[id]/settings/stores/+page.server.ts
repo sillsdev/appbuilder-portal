@@ -1,8 +1,8 @@
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { idSchema } from '$lib/valibot';
 
 const toggleStoreSchema = v.object({
@@ -12,14 +12,17 @@ const toggleStoreSchema = v.object({
 
 export const load = (async (event) => {
   const { organization } = await event.parent();
-  const orgStores = await prisma.organizationStores.findMany({
+  const orgStores = await DatabaseReads.organizationStores.findMany({
     where: {
       OrganizationId: organization.Id
     }
   });
   const setOrgStores = new Set(orgStores.map((p) => p.StoreId));
   return {
-    stores: (await prisma.stores.findMany()).map((s) => ({ ...s, enabled: setOrgStores.has(s.Id) }))
+    stores: (await DatabaseReads.stores.findMany()).map((s) => ({
+      ...s,
+      enabled: setOrgStores.has(s.Id)
+    }))
   };
 }) satisfies PageServerLoad;
 

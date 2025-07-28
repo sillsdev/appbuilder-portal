@@ -1,9 +1,11 @@
-import { BullMQ, DatabaseWrites, Workflow, getQueues, prisma } from 'sil.appbuilder.portal.common';
-import { ProductTransitionType, WorkflowType } from 'sil.appbuilder.portal.common/prisma';
+import { ProductTransitionType, WorkflowType } from '$lib/prisma';
+import { BullMQ, getQueues } from '$lib/server/bullmq';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { Workflow } from '$lib/server/workflow';
 import { ProductActionType } from '.';
 
 export async function doProductAction(productId: string, action: ProductActionType) {
-  const product = await prisma.products.findUnique({
+  const product = await DatabaseReads.products.findUnique({
     where: {
       Id: productId
     },
@@ -91,7 +93,7 @@ export async function doProductAction(productId: string, action: ProductActionTy
  * @param type ProductArtifact type to be returned
  */
 export async function getPublishedFile(productId: string, type: string) {
-  const publications = await prisma.productPublications.findMany({
+  const publications = await DatabaseReads.productPublications.findMany({
     where: {
       ProductId: productId,
       Success: true

@@ -1,18 +1,18 @@
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { prisma } from 'sil.appbuilder.portal.common';
 import { safeParse } from 'valibot';
 import type { LayoutServerLoad } from './$types';
 import { type L10NEntries, type L10NKeys, langtagsSchema } from '$lib/locales.svelte';
 import { type Locale, locales } from '$lib/paraglide/runtime';
+import { DatabaseReads } from '$lib/server/database';
 import type { Entries } from '$lib/utils';
 import { isSuperAdmin } from '$lib/utils/roles';
 
 export const load: LayoutServerLoad = async (event) => {
   const user = (await event.locals.auth())!.user;
   const numberOfTasks = (
-    await prisma.userTasks.findMany({
+    await DatabaseReads.userTasks.findMany({
       where: {
         UserId: user.userId
       },
@@ -22,7 +22,7 @@ export const load: LayoutServerLoad = async (event) => {
       distinct: 'ProductId'
     })
   ).length;
-  const organizations = await prisma.organizations.findMany({
+  const organizations = await DatabaseReads.organizations.findMany({
     where: isSuperAdmin(user.roles)
       ? undefined
       : {

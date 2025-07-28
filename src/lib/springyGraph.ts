@@ -279,7 +279,7 @@ export namespace Springy {
       data.edges.forEach((e) => {
         const from = nodes[e.source.id];
         const to = nodes[e.target.id];
-        const edge = this.addEdge({
+        this.addEdge({
           id: this.nextEdgeId++,
           source: from,
           target: to,

@@ -1,6 +1,6 @@
 import type { Job } from 'bullmq';
-import { BullMQ, getQueues, prisma } from 'sil.appbuilder.portal.common';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import { BullMQ, getQueues } from '../bullmq';
+import { DatabaseReads } from '../database';
 import { notifySuperAdmins, sendEmail } from '../email-service/EmailClient';
 import {
   NotificationTemplate,
@@ -12,9 +12,10 @@ import {
   addProperties
 } from '../email-service/EmailTemplates';
 import { getOwnerAdminVariantKeys, translate } from '../email-service/locales/locale';
+import { RoleId } from '$lib/prisma';
 
 export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unknown> {
-  const inviteInformation = await prisma.organizationMembershipInvites.findFirstOrThrow({
+  const inviteInformation = await DatabaseReads.organizationMembershipInvites.findFirstOrThrow({
     where: {
       Email: job.data.email,
       Token: job.data.inviteToken
@@ -27,7 +28,7 @@ export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unk
   // If there is a user with the same email, we can localize the email
   // If there is no existing user, we can assume English
   // User locale is actually never set in the db (always NULL) but might be set in the future
-  const user = await prisma.users.findFirst({
+  const user = await DatabaseReads.users.findFirst({
     where: {
       Email: job.data.email
     }
@@ -51,7 +52,7 @@ export async function sendNotificationToReviewers(
   job: Job<BullMQ.Email.SendNotificationToReviewers>
 ): Promise<unknown> {
   // Get the artifacts
-  const product = await prisma.products.findFirstOrThrow({
+  const product = await DatabaseReads.products.findFirstOrThrow({
     where: {
       Id: job.data.productId
     },
@@ -128,7 +129,7 @@ export async function sendBatchUserTaskNotifications(
 ): Promise<unknown> {
   const allEmails = [];
   for (const notification of job.data.notifications) {
-    const user = await prisma.users.findUniqueOrThrow({
+    const user = await DatabaseReads.users.findUniqueOrThrow({
       where: {
         Id: notification.userId,
         EmailNotification: true
@@ -162,7 +163,7 @@ export async function sendBatchUserTaskNotifications(
 export async function notifySuperAdminsOfNewOrganizationRequest(
   job: Job<BullMQ.Email.NotifySuperAdminsOfNewOrganizationRequest>
 ): Promise<unknown> {
-  const superAdmins = await prisma.users.findMany({
+  const superAdmins = await DatabaseReads.users.findMany({
     where: {
       UserRoles: {
         some: {
@@ -190,7 +191,7 @@ export async function notifySuperAdminsOfNewOrganizationRequest(
 export async function notifySuperAdminsOfOfflineSystems(
   job: Job<BullMQ.Email.NotifySuperAdminsOfOfflineSystems>
 ): Promise<unknown> {
-  const statuses = await prisma.systemStatuses.findMany({
+  const statuses = await DatabaseReads.systemStatuses.findMany({
     where: {
       SystemAvailable: false
     }
@@ -222,7 +223,7 @@ export async function notifySuperAdminsOfOfflineSystems(
 export async function notifySuperAdminsLowPriority(
   job: Job<BullMQ.Email.NotifySuperAdminsLowPriority>
 ): Promise<unknown> {
-  const superAdmins = await prisma.users.findMany({
+  const superAdmins = await DatabaseReads.users.findMany({
     where: {
       UserRoles: {
         some: {
@@ -254,7 +255,7 @@ export async function notifySuperAdminsLowPriority(
 export async function sendNotificationToUser(
   job: Job<BullMQ.Email.SendNotificationToUser>
 ): Promise<unknown> {
-  const user = await prisma.users.findUniqueOrThrow({
+  const user = await DatabaseReads.users.findUniqueOrThrow({
     where: {
       Id: job.data.userId,
       EmailNotification: true
@@ -286,7 +287,7 @@ export async function reportProjectImport(
   // At this point the import is done.
   // We need to match the Projects table to projects listed in the import JSON
   // Each one is either "existing" or "new"
-  const projectImport = await prisma.projectImports.findUniqueOrThrow({
+  const projectImport = await DatabaseReads.projectImports.findUniqueOrThrow({
     where: {
       Id: job.data.importId
     },
@@ -298,7 +299,7 @@ export async function reportProjectImport(
       ApplicationTypes: true
     }
   });
-  const newProjects = await prisma.projects.findMany({
+  const newProjects = await DatabaseReads.projects.findMany({
     where: {
       ImportId: job.data.importId
     }
@@ -317,7 +318,7 @@ export async function reportProjectImport(
       Store: string;
     }[];
   } = JSON.parse(projectImport.ImportData!);
-  const existingProjects = await prisma.projects.findMany({
+  const existingProjects = await DatabaseReads.projects.findMany({
     where: {
       OrganizationId: projectImport.Organizations!.Id,
       Name: {
@@ -342,7 +343,7 @@ export async function reportProjectImport(
     )
   ];
   for (const project of newProjects) {
-    const products = await prisma.products.findMany({
+    const products = await DatabaseReads.products.findMany({
       where: {
         ProjectId: project.Id
       },
@@ -406,7 +407,7 @@ export async function reportProjectImport(
 export async function sendNotificationToOrgAdminsAndOwner(
   job: Job<BullMQ.Email.SendNotificationToOrgAdminsAndOwner>
 ): Promise<unknown> {
-  const project = await prisma.projects.findUniqueOrThrow({
+  const project = await DatabaseReads.projects.findUniqueOrThrow({
     where: {
       Id: job.data.projectId
     },
@@ -415,7 +416,7 @@ export async function sendNotificationToOrgAdminsAndOwner(
       Owner: true
     }
   });
-  const orgAdmins = await prisma.users.findMany({
+  const orgAdmins = await DatabaseReads.users.findMany({
     where: {
       UserRoles: {
         some: {
@@ -425,7 +426,7 @@ export async function sendNotificationToOrgAdminsAndOwner(
       }
     }
   });
-  const owner = await prisma.users.findUniqueOrThrow({
+  const owner = await DatabaseReads.users.findUniqueOrThrow({
     where: {
       Id: project.OwnerId
     }

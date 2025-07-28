@@ -5,7 +5,7 @@
 <script lang="ts" generics="T extends Record<string, unknown>">
   import Icon from '@iconify/svelte';
   import type { Snippet } from 'svelte';
-  import type { ValidI13nKey, ValueKey } from '$lib/locales.svelte';
+  import type { ValueKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
 
   interface Props {

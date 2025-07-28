@@ -5,7 +5,7 @@ import { serveStatic } from '@hono/node-server/serve-static';
 import type { Handle } from '@sveltejs/kit';
 import { Queue } from 'bullmq';
 import { Hono } from 'hono';
-import { getQueues } from 'sil.appbuilder.portal.common';
+import { getQueues } from './queues';
 
 // This is a full Hono app that serves the BullBoard UI
 // Unfortunately this is the only way to setup BullBoard

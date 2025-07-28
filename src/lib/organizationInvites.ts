@@ -1,8 +1,8 @@
-import { DatabaseWrites, prisma } from 'sil.appbuilder.portal.common';
+import { DatabaseReads, DatabaseWrites } from './server/database';
 
 export async function checkInviteErrors(inviteToken?: string | null, userId?: number) {
   try {
-    const invite = await prisma.organizationMembershipInvites.findFirst({
+    const invite = await DatabaseReads.organizationMembershipInvites.findFirst({
       where: {
         Token: inviteToken + ''
       }
@@ -13,12 +13,12 @@ export async function checkInviteErrors(inviteToken?: string | null, userId?: nu
     if (invite.Redeemed) return { error: 'redeemed' };
     if (!invite.Expires || invite.Expires < new Date()) return { error: 'expired' };
     return {};
-  } catch (e) {
+  } catch {
     return { error: 'not found' };
   }
 }
 export async function acceptOrganizationInvite(userId: number, inviteToken: string) {
-  const invite = await prisma.organizationMembershipInvites.findFirst({
+  const invite = await DatabaseReads.organizationMembershipInvites.findFirst({
     where: {
       Token: inviteToken
     },

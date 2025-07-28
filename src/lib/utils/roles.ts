@@ -1,5 +1,5 @@
 import type { Session } from '@auth/sveltekit';
-import { RoleId } from 'sil.appbuilder.portal.common/prisma';
+import { RoleId } from '$lib/prisma';
 
 type RolesMap = Session['user']['roles'];
 
