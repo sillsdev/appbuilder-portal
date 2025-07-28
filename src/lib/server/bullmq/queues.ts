@@ -24,6 +24,15 @@ class Connection {
     this.connected = false;
     this.conn.on('close', () => (this.connected = false));
     this.conn.on('connect', () => (this.connected = true));
+    this.conn.on('error', (err) => {
+      this.connected = false;
+      if (err.message.includes('ENOTFOUND')) {
+        console.error('Fatal Valkey connection', err);
+        process.exit(1);
+      } else if (!err.message.includes('ECONNREFUSED')) {
+        console.error('Valkey connection error', err);
+      }
+    });
     setInterval(() => {
       if (this.connected) {
         this.conn
@@ -37,7 +46,7 @@ class Connection {
             this.connected = false;
           });
       }
-    }, 10000); // Check every 10 seconds
+    }, 10000).unref(); // Check every 10 seconds
   }
   public IsConnected() {
     return this.connected;

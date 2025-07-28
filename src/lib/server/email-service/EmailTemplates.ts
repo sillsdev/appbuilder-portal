@@ -1,38 +1,23 @@
-import { readFileSync } from 'fs';
-import path from 'path';
+import EmailLayoutTemplate from './templates/Layout.html?raw';
+import NotificationTemplate from './templates/Notification.html?raw';
+import NotificationWithLinkTemplate from './templates/NotificationWithLink.html?raw';
+import OrganizationInviteRequestTemplate from './templates/OrganizationInviteRequest.html?raw';
+import OrganizationMembershipInviteTemplate from './templates/OrganizationMembershipInvite.html?raw';
+import ProjectImportTemplate from './templates/ProjectImport.html?raw';
+import ReviewProductTemplate from './templates/ReviewProduct.html?raw';
+import ScriptoriaLogoBase64 from './templates/scriptoria-logo-128w.png?raw';
 
-export const EmailLayoutTemplate = readFileSync(
-  path.join(import.meta.dirname, 'templates', 'Layout.html'),
-  'utf8'
-);
-export const ScriptoriaLogoBase64 = readFileSync(
-  path.join(import.meta.dirname, 'templates', 'scriptoria-logo-128w.png'),
-  'base64'
-);
-export const NotificationTemplate = readFileSync(
-  path.join(import.meta.dirname, 'templates', 'Notification.html'),
-  'utf8'
-);
-export const NotificationWithLinkTemplate = readFileSync(
-  path.join(import.meta.dirname, 'templates', 'NotificationWithLink.html'),
-  'utf8'
-);
-export const OrganizationInviteRequestTemplate = readFileSync(
-  path.join(import.meta.dirname, 'templates', 'OrganizationInviteRequest.html'),
-  'utf8'
-);
-export const OrganizationMembershipInviteTemplate = readFileSync(
-  path.join(import.meta.dirname, 'templates', 'OrganizationMembershipInvite.html'),
-  'utf8'
-);
-export const ProjectImportTemplate = readFileSync(
-  path.join(import.meta.dirname, 'templates', 'ProjectImport.html'),
-  'utf8'
-);
-export const ReviewProductTemplate = readFileSync(
-  path.join(import.meta.dirname, 'templates', 'ReviewProduct.html'),
-  'utf8'
-);
+export {
+  EmailLayoutTemplate,
+  NotificationTemplate,
+  NotificationWithLinkTemplate,
+  OrganizationInviteRequestTemplate,
+  OrganizationMembershipInviteTemplate,
+  ProjectImportTemplate,
+  ReviewProductTemplate,
+  ScriptoriaLogoBase64
+};
+
 export function addProperties(
   template: string,
   properties: Record<string, string | null>,

@@ -5,6 +5,8 @@ import { serveStatic } from '@hono/node-server/serve-static';
 import type { Handle } from '@sveltejs/kit';
 import { Queue } from 'bullmq';
 import { Hono } from 'hono';
+import { createRequire } from 'module';
+import path from 'path';
 import { getQueues } from './queues';
 
 // This is a full Hono app that serves the BullBoard UI
@@ -19,7 +21,12 @@ const bullboard = (() => {
     queues: Object.values(getQueues())
       .filter((q) => q instanceof Queue)
       .map((q) => new BullMQAdapter(q)),
-    serverAdapter
+    serverAdapter,
+    options: {
+      uiBasePath: path.dirname(
+        createRequire(import.meta.url).resolve('@bull-board/ui/package.json')
+      )
+    }
   });
 
   app.route('/admin/jobs', serverAdapter.registerPlugin());

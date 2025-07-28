@@ -1,14 +1,13 @@
-// eslint-disable-next-line import/default
-import aws from '@aws-sdk/client-ses';
+import { SES } from '@aws-sdk/client-ses';
 import { EmailProvider } from './EmailProvider';
 
 export class AmazonSESProvider extends EmailProvider {
-  private ses: aws.SES;
+  private ses: SES;
 
   constructor() {
     // TODO: AWS credentials and region
     super();
-    this.ses = new aws.SES({
+    this.ses = new SES({
       apiVersion: '2010-12-01',
       credentials: {
         accessKeyId: process.env.AWS_EMAIL_ACCESS_KEY_ID || '',
