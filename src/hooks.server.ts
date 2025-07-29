@@ -13,7 +13,8 @@ import { paraglideMiddleware } from '$lib/paraglide/server';
 import { QueueConnected, getQueues } from '$lib/server/bullmq';
 import { bullboardHandle } from '$lib/server/bullmq/BullBoard';
 import '$lib/server/bullmq/BullMQ';
-import { DatabaseConnected } from '$lib/server/database';
+import { DatabaseConnected, DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { RoleId } from '$lib/prisma';
 
 if (!building) {
   // Otherwise valkey will never connect and the server will always 503
@@ -66,3 +67,30 @@ export const handle: Handle = sequence(
   localRouteHandle,
   bullboardHandle
 );
+
+if (!building && typeof process.env.ADD_USER !== 'undefined' && process.env.ADD_USER !== 'false') {
+  process.env.ADD_USER = 'false';
+  // Bootstrap create an organization invite for the new developer
+  const organizationId = await DatabaseReads.organizations.findFirst({});
+  const invitedBy = await DatabaseReads.users.findFirst({});
+  if (!organizationId || !invitedBy) {
+    throw new Error(
+      'Missing organizations or users. Please bootstrap the database first using ./run bootstrap.'
+    );
+  }
+  const inviteToken = await DatabaseWrites.organizationMemberships.createOrganizationInvite(
+    '',
+    organizationId?.Id,
+    invitedBy.Id,
+    [RoleId.SuperAdmin, RoleId.OrgAdmin],
+    []
+  );
+  const inviteLink = `${process.env.ORIGIN ?? 'http://localhost:6173'}/invitations/organization-membership?t=${inviteToken}`;
+  console.log('---- Bootstrap Invite Link ----');
+  console.log('Welcome to Scriptoria development!');
+  console.log('An invite link has been generated:', inviteLink);
+  console.log(
+    'Please visit the link to create your account and join the organization. You will then be given SuperAdmin and OrgAdmin access roles.'
+  );
+  console.log('---- Bootstrap Invite Link ----');
+}

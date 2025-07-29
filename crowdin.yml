@@ -1,3 +1,5 @@
 files:
   - source: /**/en-us.json
     translation: /**/%locale%.json
+  - source: /**/en-US.json
+    translation: /**/%locale%.json
