@@ -9,22 +9,27 @@ The `appbuilder-portal` is the portal frontend/backend for the Scriptoria projec
 
 This process requires the coordination of user activites, project data, automated services, and administrative activities (e.g. managing App Store listings). The portal provides organization, group, user, project, and product management and provides access to users and organizational admins to interact with the workflow activities.
 
-This process also requires management of resources to store project data (AWS CodeCommit), generate product files from project data (AWS CodeBuild), and store product files for distribution (AWS S3). These resources are managed by an instance of [AppBuilder BuildEngine](https://github.com/sillsdev/appbuilder-buildengine-api).
+This process also requires management of resources to store project data (AWS S3), generate product files from project data (AWS CodeBuild), and store product files for distribution (AWS S3). These resources are managed by [AppBuilder BuildEngine](https://github.com/sillsdev/appbuilder-buildengine-api), which can be setup on a per-organization basis.
 
 # Development
 
 ### Prerequisites
 
-- [Docker CE](https://docs.docker.com/install/) and [Docker Compose](https://docs.docker.com/compose/install/) ([Docker Desktop on Mac](https://docs.docker.com/docker-for-mac/install/))
+- [Docker CE](https://docs.docker.com/install/) ([Docker Desktop on Mac](https://docs.docker.com/docker-for-mac/install/))
 - [Volta](https://volta.sh) - controls which version of node is used per directory
 
 Common scripts are in the `run` file, so be sure to check that for reference.
 
 ## First-time setup
 
-To get started, clone the repository.
-You will need a /.env file with the following variables set. 
-Contact [@sillsdev/scriptoria-developers](https://github.com/orgs/sillsdev/teams/scriptoria-developers/members) for help setting these up. 
+1. **Clone the repository.**
+```bash
+git clone https://github.com/sillsdev/appbuilder-portal
+cd appbuilder-portal
+```
+
+2. **Create environment file**
+Create a `.env` file in the root directory with the following variables: 
 ```env
 DATABASE_URL="postgresql://db-user:1234@localhost:5432/development?schema=public"
 MAIL_SENDER=LogEmail
@@ -39,12 +44,20 @@ DEFAULT_BUILDENGINE_API_ACCESS_TOKEN=
 EMAIL_FROM=
 ```
 
-Next, run the following commands to setup your environment. 
+> **Note:** Contact [@sillsdev/scriptoria-developers](https://github.com/orgs/sillsdev/teams/scriptoria-developers/members) for help obtaining the secret values.
 
+3. **Install and bootstrap**
 ```bash
-npm i # Install dependencies
-./run bootstrap # Bootstrap database and initalize docker support images (db adminer valkey)
-ADD_USER=true npm run dev # Start the local dev server and create a user invite link
+# Install dependencies
+npm i
+# Bootstrap database and initalize docker support images (db adminer valkey)
+./run bootstrap
+```
+
+4. **Start development server**
+```bash
+# Start the local dev server and create a user invite link
+ADD_USER=true npm run dev
 ```
 
 Visit [http://localhost:6173](http://localhost:6173) to see the homepage of the site, then click the invite link in the console to setup your admin account. 
@@ -81,6 +94,12 @@ npm run dev
 npm run build; NODE_ENV=development npm run preview
 ```
 
+## Connecting to BuildEngine
+
+You can connect to a staging instance of BuildEngine using the `stg-tunnel` docker container, accessed from Scriptoria by the URL `http://stg-tunnel:8443`. 
+Configure your host OS `.ssh/config` file to connect to a remote server named `aps-stg` using key authentication. 
+The `stg-tunnel` container can establish a tunnel to the build engine in your local environment. This step is not necessary if you have direct access to a BuildEngine instance through a different URL. 
+
 # Testing and linting
 
 ```bash
@@ -89,7 +108,7 @@ npm run lint
 ```
 
 Currently tests check that the page comes online and that a user is able to login.
-The `CI_EMAIL` and `CI_PASSWORD` environment variables are required to test login. 
+The `CI_EMAIL` and `CI_PASSWORD` environment variables are required to test login functionality. They should be set to the Auth0 credentials the test runner should login with. 
 
 # Deployment
 
