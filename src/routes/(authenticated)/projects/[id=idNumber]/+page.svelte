@@ -124,15 +124,13 @@
             <br />
             <p>{$projectData?.project?.Description}</p>
           </div>
-          {#if $projectData?.project?.WorkflowProjectUrl}
-            <div>
-              <span>{m.project_location()}:</span>
-              <br />
-              <p class="rounded-md text-nowrap overflow-x-scroll bg-base-200 p-3 pt-2 mt-2">
-                {$projectData?.project?.WorkflowProjectUrl}
-              </p>
-            </div>
-          {/if}
+          <div>
+            <span>{m.project_location()}:</span>
+            <br />
+            <p class="rounded-md text-nowrap overflow-x-scroll bg-base-200 p-3 pt-2 mt-2">
+              {$projectData?.project?.WorkflowProjectUrl || m.errors_notFoundTitle()}
+            </p>
+          </div>
         </div>
         <!-- Product List Header -->
         <div class="flex flex-row place-content-between items-end">
