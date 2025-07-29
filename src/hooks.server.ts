@@ -10,11 +10,11 @@ import {
 import { building } from '$app/environment';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
+import { RoleId } from '$lib/prisma';
 import { QueueConnected, getQueues } from '$lib/server/bullmq';
 import { bullboardHandle } from '$lib/server/bullmq/BullBoard';
 import '$lib/server/bullmq/BullMQ';
 import { DatabaseConnected, DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { RoleId } from '$lib/prisma';
 
 if (!building) {
   // Otherwise valkey will never connect and the server will always 503
