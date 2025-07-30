@@ -8,6 +8,7 @@ import {
   organizationInviteHandle
 } from './auth';
 import { building } from '$app/environment';
+import OTEL from '$lib/otel';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { RoleId } from '$lib/prisma';
@@ -21,6 +22,8 @@ if (!building) {
   getQueues();
   // Likewise, initialize the Prisma connection heartbeat
   DatabaseConnected();
+  // Start OTEL collector
+  OTEL.instance.start();
 }
 
 // creating a handle to use the paraglide middleware

@@ -56,3 +56,17 @@ services:
     command: bash -c "cp -r /root/ssh /root/.ssh; chmod -R 600 /root/.ssh; ssh -N -L \*:8443:localhost:\$(ssh aps-stg \"docker ps --format '{{.Names}} {{.Ports}}' | grep -E 'buildengine.*web' | awk -F '->' '{print \\$1}' | awk -F ':' '{print \\$2}'\") aps-stg"
     volumes:
       - ~/.ssh:/root/ssh
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    ports:
+      - "6317:6317"  # gRPC
+      - "6318:6318"  # HTTP
+      - "55679:55679"
+    volumes:
+      - ./src/lib/otel/config.yml:/etc/config.yml
+    command: ["--config", "/etc/config.yml"]
+    # environment:
+    #   OTEL_RESOURCE_ATTRIBUTES: "service.name=valkey-development"
+    #   OTEL_EXPORTER_OTLP_ENDPOINT: "http://localhost:4317"
+    #   OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
