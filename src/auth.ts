@@ -6,7 +6,6 @@ import {
 } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { trace } from '@opentelemetry/api';
-import type { Prisma } from '@prisma/client';
 import { type Handle, redirect } from '@sveltejs/kit';
 import {
   AUTH0_CLIENT_ID,

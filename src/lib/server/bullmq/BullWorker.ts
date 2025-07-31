@@ -1,4 +1,4 @@
-import { trace } from '@opentelemetry/api';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import type { Exception, Job } from 'bullmq';
 import { Worker } from 'bullmq';
 import * as Executor from '../job-executors';
@@ -12,7 +12,9 @@ const tracer = trace.getTracer('BullWorker');
 export abstract class BullWorker<T extends BullMQ.Job> {
   public worker?: Worker;
   constructor(public queue: BullMQ.QueueName) {
-    if (!building) this.worker = new Worker<T>(queue, this.runInternal, getWorkerConfig());
+    if (!building)
+      // Leaving out the bind here is the type of issue that TS unfortunately cannot catch
+      this.worker = new Worker<T>(queue, this.runInternal.bind(this), getWorkerConfig());
   }
   private async runInternal(job: Job<T>) {
     return await tracer.startActiveSpan(`${job.queueName} - ${job.data.type}`, async (span) => {
@@ -25,9 +27,13 @@ export abstract class BullWorker<T extends BullMQ.Job> {
         'job.data': JSON.stringify(job.data)
       });
       try {
-        await this.run(job);
+        return await this.run(job);
       } catch (error) {
         span.recordException(error as Exception);
+        span.setStatus({
+          code: SpanStatusCode.ERROR, // Error
+          message: (error as Error).message
+        });
         throw error;
       } finally {
         span.end();
