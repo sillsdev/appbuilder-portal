@@ -12,6 +12,7 @@ import type {
   UserTasksJob
 } from './types';
 import { QueueName } from './types';
+import OTEL from '$lib/otel';
 
 class Connection {
   private conn: Redis;
@@ -22,9 +23,23 @@ class Connection {
       maxRetriesPerRequest: isQueueConnection ? undefined : null
     });
     this.connected = false;
-    this.conn.on('close', () => (this.connected = false));
-    this.conn.on('connect', () => (this.connected = true));
+    this.conn.on('close', () => {
+      OTEL.instance.logger.info('Valkey connection closed', {
+        isQueueConnection
+      });
+      this.connected = false;
+    });
+    this.conn.on('connect', () => {
+      OTEL.instance.logger.info('Valkey connection established', {
+        isQueueConnection
+      });
+      this.connected = true;
+    });
     this.conn.on('error', (err) => {
+      OTEL.instance.logger.error('Valkey connection error', {
+        error: err.message,
+        isQueueConnection
+      });
       this.connected = false;
       if (err.message.includes('ENOTFOUND')) {
         console.error('Fatal Valkey connection', err);
@@ -41,9 +56,15 @@ class Connection {
             this.connected = true;
           })
           .catch((err) => {
-            console.error(err);
-            console.log('Valkey disconnected');
-            this.connected = false;
+            if (this.connected) {
+              console.error(err);
+              console.log('Valkey disconnected');
+              this.connected = false;
+              OTEL.instance.logger.error('Valkey disconnected', {
+                error: err.message,
+                isQueueConnection
+              });
+            }
           });
       }
     }, 10000).unref(); // Check every 10 seconds

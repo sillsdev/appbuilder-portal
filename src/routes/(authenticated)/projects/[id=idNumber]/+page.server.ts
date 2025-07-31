@@ -32,8 +32,6 @@ const productActionSchema = v.object({
   productAction: v.enum(ProductActionType)
 });
 
-// Are we sending too much data?
-// Maybe? I pared it down a bit with `select` instead of `include` - Aidan
 export const load = (async ({ locals, params }) => {
   // permissions checked in auth
   return {

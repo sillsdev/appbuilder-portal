@@ -1,9 +1,8 @@
 // This import should occur first
 // Importing with the --import node flag would be nice but unfortunately
 // when code is bundled, we cannot keep the file separate to import it first.
-// eslint-disable-next-line import/order
-import OTEL from '$lib/otel';
 
+import { trace } from '@opentelemetry/api';
 import { type Handle, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import {
@@ -13,6 +12,8 @@ import {
   organizationInviteHandle
 } from './auth';
 import { building } from '$app/environment';
+import OTEL from '$lib/otel';
+
 import { localizeHref } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { RoleId } from '$lib/prisma';
@@ -65,15 +66,42 @@ const heartbeat: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
-export const handle: Handle = sequence(
-  paraglideHandle,
-  heartbeat,
-  organizationInviteHandle,
-  authRouteHandle,
-  checkUserExistsHandle,
-  localRouteHandle,
-  bullboardHandle
-);
+const tracer = trace.getTracer('IncomingRequest');
+
+const authSequence = sequence(authRouteHandle, checkUserExistsHandle, localRouteHandle);
+
+export const handle: Handle = async ({ event, resolve }) => {
+  return tracer.startActiveSpan(`${event.request.method} ${event.url.pathname}`, async (span) => {
+    span.setAttributes({
+      'http.method': event.request.method,
+      'http.url': event.url.href,
+      'http.route': event.route.id ?? 'null'
+    });
+    const response = await sequence(
+      paraglideHandle,
+      heartbeat,
+      organizationInviteHandle,
+      // Handle auth hooks in a separate OTEL span
+      async function hookTelementry({ event, resolve }) {
+        return tracer.startActiveSpan('Auth Hooks', async (span) => {
+          // Call the auth sequence
+          try {
+            const ret = await authSequence({ event, resolve });
+            return ret;
+          } finally {
+            span.end();
+          }
+        });
+      },
+      bullboardHandle
+    )({ event, resolve });
+    span.setAttributes({
+      'http.status_code': response.status
+    });
+    span.end();
+    return response;
+  });
+};
 
 if (!building && typeof process.env.ADD_USER !== 'undefined' && process.env.ADD_USER !== 'false') {
   process.env.ADD_USER = 'false';

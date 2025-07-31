@@ -1,60 +1,108 @@
+import { SpanStatusCode, trace } from '@opentelemetry/api';
+import type { Exception } from 'bullmq';
 import { DatabaseReads } from '../database/prisma';
 import * as Types from './types';
 
+const tracer = trace.getTracer('build-engine-api');
+
 export async function request(resource: string, auth: Types.Auth, opts?: Types.RequestOpts) {
-  const { method = 'GET', body, checkStatusFirst = true } = opts ?? {};
-  try {
-    const { url, token } = auth.type === 'query' ? await getURLandToken(auth.organizationId) : auth;
-    const check = await DatabaseReads.systemStatuses.findFirst({
-      where: {
-        BuildEngineUrl: url,
-        BuildEngineApiAccessToken: token
-      },
-      select: {
-        SystemAvailable: true
-      }
+  // Use the tracer to create a span for the request
+  return await tracer.startActiveSpan(`request:/${resource}`, async (span) => {
+    span.setAttributes({
+      'auth.type': auth.type,
+      'auth.organizationId': auth.type === 'query' ? auth.organizationId : undefined,
+      'auth.url': auth.type === 'provided' ? auth.url : undefined,
+      'auth.token': auth.type === 'provided' ? auth.token : undefined
     });
-    if (!check?.SystemAvailable && checkStatusFirst) {
+
+    span.setAttributes({
+      'request.method': opts?.method ?? 'GET',
+      'request.resource': resource,
+      checkStatusFirst: opts?.checkStatusFirst ?? true
+    });
+
+    const { method = 'GET', body, checkStatusFirst = true } = opts ?? {};
+    try {
+      const { url, token } =
+        auth.type === 'query' ? await getURLandToken(auth.organizationId) : auth;
+      span.addEvent('Fetched URL and token', {
+        url: url ?? 'null',
+        token: token ? '***' : 'null' // Mask token in logs
+      });
+      const check = await DatabaseReads.systemStatuses.findFirst({
+        where: {
+          BuildEngineUrl: url,
+          BuildEngineApiAccessToken: token
+        },
+        select: {
+          SystemAvailable: true
+        }
+      });
+      span.setAttribute('systemAvailable', check?.SystemAvailable ?? false);
+      if (!check?.SystemAvailable && checkStatusFirst) {
+        span.setStatus({ code: SpanStatusCode.ERROR, message: 'System unavailable' });
+        span.end();
+        return {
+          ok: false,
+          status: Types.EndpointUnavailable,
+          json: {
+            responseType: 'error',
+            name: '',
+            status: Types.EndpointUnavailable,
+            code: Types.EndpointUnavailable,
+            message: `System ${url} unavailable`,
+            type: ''
+          } as Types.ErrorResponse
+        };
+      }
+      const ret = await fetch(`${url}/${resource}`, {
+        method: method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: body ? JSON.stringify(body) : undefined
+      }).then((r) => ({
+        ok: r.ok,
+        status: r.status,
+        json: r.json()
+      }));
+      if (!ret.ok) {
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+          message: `Request failed with status ${ret.status}`
+        });
+      }
+      ret.json.then((json) => {
+        span.addEvent('Request completed', {
+          url: `${url}/${resource}`,
+          method: method,
+          status: ret.status,
+          ok: ret.ok,
+          json
+        });
+        span.end();
+      });
+      return ret;
+    } catch (e) {
+      span.setStatus({ code: SpanStatusCode.ERROR, message: 'Request failed' });
+      span.recordException(e as Exception);
+      span.end();
       return {
         ok: false,
-        status: Types.EndpointUnavailable,
+        status: 500,
         json: {
           responseType: 'error',
           name: '',
-          status: Types.EndpointUnavailable,
-          code: Types.EndpointUnavailable,
-          message: `System ${url} unavailable`,
+          status: 500,
+          code: 500,
+          message: typeof e === 'string' ? e.toUpperCase() : e instanceof Error ? e.message : e,
           type: ''
         } as Types.ErrorResponse
       };
     }
-    return await fetch(`${url}/${resource}`, {
-      method: method,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: body ? JSON.stringify(body) : undefined
-    }).then((r) => ({
-      ok: r.ok,
-      status: r.status,
-      json: r.json()
-    }));
-  } catch (e) {
-    return {
-      ok: false,
-      status: 500,
-      json: {
-        responseType: 'error',
-        name: '',
-        status: 500,
-        code: 500,
-        message: typeof e === 'string' ? e.toUpperCase() : e instanceof Error ? e.message : e,
-        type: ''
-      } as Types.ErrorResponse
-    };
-  }
+  });
 }
 
 export function tryGetDefaultBuildEngineParameters() {
