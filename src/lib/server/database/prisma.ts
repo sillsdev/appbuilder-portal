@@ -1,5 +1,4 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { error } from 'console';
 import { ReadonlyClient } from './ReadonlyPrisma';
 import OTEL from '$lib/otel';
 
