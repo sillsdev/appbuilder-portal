@@ -25,10 +25,6 @@ export async function request(resource: string, auth: Types.Auth, opts?: Types.R
     try {
       const { url, token } =
         auth.type === 'query' ? await getURLandToken(auth.organizationId) : auth;
-      span.addEvent('Fetched URL and token', {
-        url: url ?? 'null',
-        token: token ? '***' : 'null' // Mask token in logs
-      });
       const check = await DatabaseReads.systemStatuses.findFirst({
         where: {
           BuildEngineUrl: url,
