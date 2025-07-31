@@ -19,7 +19,7 @@ import { paraglideMiddleware } from '$lib/paraglide/server';
 import { RoleId } from '$lib/prisma';
 import { QueueConnected, getQueues } from '$lib/server/bullmq';
 import { bullboardHandle } from '$lib/server/bullmq/BullBoard';
-import '$lib/server/bullmq/BullMQ';
+import { allWorkers } from '$lib/server/bullmq/BullMQ';
 import { DatabaseConnected, DatabaseReads, DatabaseWrites } from '$lib/server/database';
 
 if (!building) {
@@ -29,6 +29,16 @@ if (!building) {
   getQueues();
   // Likewise, initialize the Prisma connection heartbeat
   DatabaseConnected();
+
+  // Graceful shutdown
+  process.on('sveltekit:shutdown', async () => {
+    OTEL.instance.logger.info('Shutting down gracefully...');
+    await Promise.all(
+      allWorkers.map((worker) => {
+        worker.worker?.close();
+      })
+    );
+  });
 }
 
 // creating a handle to use the paraglide middleware
@@ -85,12 +95,14 @@ export const handle: Handle = async ({ event, resolve }) => {
       async function hookTelementry({ event, resolve }) {
         return tracer.startActiveSpan('Auth Hooks', async (span) => {
           // Call the auth sequence
-          try {
-            const ret = await authSequence({ event, resolve });
-            return ret;
-          } finally {
-            span.end();
-          }
+          const ret = await authSequence({
+            event,
+            resolve: (...args) => {
+              span.end();
+              return resolve(...args);
+            }
+          });
+          return ret;
         });
       },
       bullboardHandle
