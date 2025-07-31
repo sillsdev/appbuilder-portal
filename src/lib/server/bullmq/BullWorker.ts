@@ -1,4 +1,5 @@
-import type { Job } from 'bullmq';
+import { trace } from '@opentelemetry/api';
+import type { Exception, Job } from 'bullmq';
 import { Worker } from 'bullmq';
 import * as Executor from '../job-executors';
 import { getQueues, getWorkerConfig } from './queues';
@@ -6,10 +7,32 @@ import * as BullMQ from './types';
 import { building } from '$app/environment';
 import { SSEPageUpdates } from '$lib/projects/listener';
 
-export abstract class BullWorker<T> {
+const tracer = trace.getTracer('BullWorker');
+
+export abstract class BullWorker<T extends BullMQ.Job> {
   public worker?: Worker;
   constructor(public queue: BullMQ.QueueName) {
-    if (!building) this.worker = new Worker<T>(queue, this.run, getWorkerConfig());
+    if (!building) this.worker = new Worker<T>(queue, this.runInternal, getWorkerConfig());
+  }
+  private async runInternal(job: Job<T>) {
+    return await tracer.startActiveSpan(`${job.queueName} - ${job.data.type}`, async (span) => {
+      span.setAttributes({
+        'job.id': job.id,
+        'job.name': job.name,
+        'job.queueName': job.queueName,
+        'job.type': job.data.type,
+        'job.opts': JSON.stringify(job.opts),
+        'job.data': JSON.stringify(job.data)
+      });
+      try {
+        await this.run(job);
+      } catch (error) {
+        span.recordException(error as Exception);
+        throw error;
+      } finally {
+        span.end();
+      }
+    });
   }
   abstract run(job: Job<T>): Promise<unknown>;
 }

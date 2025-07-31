@@ -5,6 +5,8 @@ import {
   type SvelteKitAuthConfig
 } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
+import { trace } from '@opentelemetry/api';
+import type { Prisma } from '@prisma/client';
 import { type Handle, redirect } from '@sveltejs/kit';
 import {
   AUTH0_CLIENT_ID,
@@ -69,38 +71,59 @@ const config: SvelteKitAuthConfig = {
       //   - invite is invalid -> redirect to /invitations/organization-membership
       //   - invite is valid -> login, then redirect to /invitations/organization-membership
       // 3. The user does not exist and there is no invite -> redirect to /login/no-organization
-
-      if (!profile || !profile.sub) return false;
-      const user = await DatabaseWrites.utility.getUserIfExists(profile.sub);
-      if (user) {
-        return true;
-      } else {
-        if (tokenStatus === TokenStatus.Absent) return '/login/no-organization';
-        if (tokenStatus === TokenStatus.Invalid)
-          return '/invitations/organization-membership?t=' + currentInviteToken;
-        // If there is a pending invitation, allow the login anyway and create the user account
-        if (tokenStatus === TokenStatus.Valid) {
-          await DatabaseWrites.utility.createUser(profile);
+      let userExists: boolean = false;
+      let user;
+      try {
+        if (!profile || !profile.sub) return false;
+        user = await DatabaseWrites.utility.getUserIfExists(profile.sub);
+        userExists = !!user;
+        if (userExists) {
           return true;
+        } else {
+          if (tokenStatus === TokenStatus.Absent) return '/login/no-organization';
+          if (tokenStatus === TokenStatus.Invalid)
+            return '/invitations/organization-membership?t=' + currentInviteToken;
+          // If there is a pending invitation, allow the login anyway and create the user account
+          if (tokenStatus === TokenStatus.Valid) {
+            user = await DatabaseWrites.utility.createUser(profile);
+            return true;
+          }
         }
+        throw new Error('Invalid state');
+      } finally {
+        trace.getActiveSpan()?.addEvent('signIn callback completed', {
+          'auth.signIn.profile': profile ? profile.email + ' - ' + profile.sub : 'unknown',
+          'auth.signIn.tokenStatus': tokenStatus ?? 'null',
+          'auth.signIn.currentInviteToken': currentInviteToken ?? 'null',
+          'auth.signIn.user': JSON.stringify(user),
+          'auth.signIn.userExists': userExists
+        });
       }
-      throw new Error('Invalid state');
     },
     async jwt({ profile, token }) {
       // Called in two cases:
-      // a: client just logged in (new session): profile is passed and token is not (trigger == 'signIn')
+      // a: client just logged in (new session): profile is passed and token is a small subset (trigger == 'signIn')
       // b: subsequent calls (during an existing session), token is passed and profile is not (trigger == 'update')
 
       // make sure to handle values that could change mid-session in both cases
       // safest method is just handle such values in session below (see user.roles)
-      if (!profile) return token;
-      if (!profile.sub) throw new Error('No sub in profile');
-      const dbUser = await DatabaseWrites.utility.getUserIfExists(profile.sub);
-      if (!dbUser) throw new Error('User not found');
-      token.userId = dbUser.Id;
-      return token;
+      try {
+        if (!profile) return token;
+        if (!profile.sub) throw new Error('No sub in profile');
+        const dbUser = await DatabaseWrites.utility.getUserIfExists(profile.sub);
+        if (!dbUser) throw new Error('User not found');
+        token.userId = dbUser.Id;
+        return token;
+      } finally {
+        trace.getActiveSpan()?.addEvent('jwt callback completed', {
+          'auth.jwt.profile': profile ? profile.email + ' - ' + profile.sub : 'unknown',
+          'auth.jwt.token.userId': (token?.userId as number) ?? 'null'
+        });
+      }
     },
     async session({ session, token }) {
+      // Provide the userId and roles in the session
+      // Accessible by server and client
       session.user.userId = token.userId as number;
       const userRoles = await DatabaseReads.userRoles.findMany({
         where: {
@@ -108,6 +131,10 @@ const config: SvelteKitAuthConfig = {
         }
       });
       session.user.roles = userRoles.map((role) => [role.OrganizationId, role.RoleId]);
+      trace.getActiveSpan()?.addEvent('session callback completed', {
+        'auth.session.userId': session.user.userId,
+        'auth.session.roles': JSON.stringify(session.user.roles)
+      });
       return session;
     }
   }
@@ -134,6 +161,14 @@ export const checkUserExistsHandle: Handle = async ({ event, resolve }) => {
       OrganizationMemberships: true
     }
   });
+  trace.getActiveSpan()?.addEvent('checkUserExistsHandle completed', {
+    'auth.checkUserExists.userId': userId,
+    'auth.checkUserExists.user': user ? user.Email + ' - ' + user.Id : 'null',
+    'auth.checkUserExists.user.OrganizationMemberships': user
+      ? JSON.stringify(user.OrganizationMemberships.map((m) => m.OrganizationId))
+      : 'null',
+    'auth.checkUserExists.user.IsLocked': user ? user.IsLocked.toString() : 'null'
+  });
   if (!user || (user.OrganizationMemberships.length === 0 && !event.cookies.get('inviteToken'))) {
     event.cookies.set('authjs.session-token', '', { path: '/' });
     return redirect(302, localizeHref('/login/no-organization'));
@@ -159,6 +194,10 @@ export const organizationInviteHandle: Handle = async ({ event, resolve }) => {
   } else {
     tokenStatus = TokenStatus.Absent;
   }
+  trace.getActiveSpan()?.addEvent('organizationInviteHandle completed', {
+    'auth.organizationInvite.currentInviteToken': currentInviteToken ?? 'null',
+    'auth.organizationInvite.tokenStatus': tokenStatus ?? 'null'
+  });
 
   const result = await resolve(event);
 
@@ -179,6 +218,13 @@ export const localRouteHandle: Handle = async ({ event, resolve }) => {
     const session = await event.locals.auth();
     if (!session) return redirect(302, localizeHref('/login'));
     const status = await validateRouteForAuthenticatedUser(session, event.route.id, event.params);
+    trace.getActiveSpan()?.addEvent('localRouteHandle completed', {
+      'auth.localRouteHandle.routeId': event.route.id ?? 'null',
+      'auth.localRouteHandle.params': JSON.stringify(event.params),
+      'auth.localRouteHandle.session.userId': session.user.userId,
+      'auth.localRouteHandle.session.roles': JSON.stringify(session.user.roles),
+      'auth.localRouteHandle.status': status
+    });
     if (status !== ServerStatus.Ok) {
       return redirect(302, localizeHref(`/error?code=${status}`));
     }

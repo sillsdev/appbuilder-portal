@@ -1,3 +1,4 @@
+import { trace } from '@opentelemetry/api';
 import type { Prisma } from '@prisma/client';
 import { error, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
@@ -16,6 +17,8 @@ const lockSchema = v.object({
   user: idSchema,
   active: v.boolean()
 });
+
+const tracer = trace.getTracer('/users');
 
 const searchFilterSchema = v.object({
   page: paginateSchema,
@@ -86,72 +89,81 @@ export const load = (async (event) => {
   const userInfo = (await event.locals.auth())?.user;
   const userId = userInfo?.userId;
   if (!userId) return redirect(302, localizeHref('/'));
+  return await tracer.startActiveSpan('load', async (span) => {
+    try {
+      const isSuper = isSuperAdmin(userInfo.roles);
 
-  const isSuper = isSuperAdmin(userInfo.roles);
+      const organizations = await DatabaseReads.organizations.findMany({
+        where: isSuper
+          ? undefined
+          : {
+              UserRoles: {
+                some: {
+                  RoleId: RoleId.OrgAdmin,
+                  UserId: userId
+                }
+              }
+            },
+        select: {
+          Id: true,
+          Name: true
+        }
+      });
 
-  const organizations = await DatabaseReads.organizations.findMany({
-    where: isSuper
-      ? undefined
-      : {
-          UserRoles: {
-            some: {
-              RoleId: RoleId.OrgAdmin,
-              UserId: userId
+      const orgIds = organizations.map((o) => o.Id);
+
+      const users = await DatabaseReads.users.findMany({
+        orderBy: {
+          Name: 'asc'
+        },
+        select: select(isSuper ? undefined : orgIds),
+        where: adminOrDefaultWhere(isSuper, orgIds),
+        take: 50
+      });
+      span.setAttributes({
+        'auth.load.userId': userId,
+        'auth.load.user.roles': JSON.stringify(userInfo?.roles),
+        'auth.load.user.isSuper': isSuper,
+        'auth.load.user.orgIds': JSON.stringify(orgIds)
+      });
+      span.addEvent('loaded user list', {
+        'auth.load.userCount': users.length
+      });
+
+      return {
+        // Only pass essential information to the client.
+        // About 120 bytes per small user (with one organization and one group), and 240 for a larger user in several organizations.
+        // On average about 175 bytes per user. If PROD has 200 active users, that's 35 KB of data to send all of them. 620 total users = 110 KB
+        // The whole page is about 670 KB without this data.
+        // Only superadmins would see this larger size, most users have organizations with much fewer users where it does not matter
+
+        users: users.map(minifyUser),
+        userCount: users.length,
+        organizations,
+        groups: await DatabaseReads.groups.findMany({
+          where: {
+            OwnerId: { in: orgIds },
+            GroupMemberships: {
+              some: {}
             }
           }
-        },
-    select: {
-      Id: true,
-      Name: true
+        }),
+        form: await superValidate(
+          {
+            organizationId: organizations.length !== 1 ? null : organizations[0].Id,
+            page: {
+              page: 0,
+              size: 50
+            }
+          },
+          valibot(searchFilterSchema)
+        ),
+        jobsAvailable: QueueConnected()
+      };
+    } finally {
+      span.end();
     }
   });
-
-  const orgIds = organizations.map((o) => o.Id);
-
-  const users = await DatabaseReads.users.findMany({
-    orderBy: {
-      Name: 'asc'
-    },
-    select: select(isSuper ? undefined : orgIds),
-    where: adminOrDefaultWhere(isSuper, orgIds),
-    // More significantly, could paginate results to around 50 users/page = 10 KB
-    // Done - Aidan
-    take: 50
-  });
-
-  return {
-    // Only pass essential information to the client.
-    // About 120 bytes per small user (with one organization and one group), and 240 for a larger user in several organizations.
-    // On average about 175 bytes per user. If PROD has 200 active users, that's 35 KB of data to send all of them. 620 total users = 110 KB
-    // The whole page is about 670 KB without this data.
-    // Only superadmins would see this larger size, most users have organizations with much fewer users where it does not matter
-
-    users: users.map(minifyUser),
-    userCount: users.length,
-    organizations,
-    // Could be improved by putting group names into a referenced palette
-    // (minimal returns if most users are in different organizations and groups)
-    // I went ahead and did this too. My assumption is that there will generally be multiple users in each organization and group, so I think this should be a justifiable change. - Aidan
-    groups: await DatabaseReads.groups.findMany({
-      where: {
-        OwnerId: { in: orgIds },
-        GroupMemberships: {
-          some: {}
-        }
-      }
-    }),
-    form: await superValidate(
-      {
-        organizationId: organizations.length !== 1 ? null : organizations[0].Id,
-        page: {
-          page: 0,
-          size: 50
-        }
-      },
-      valibot(searchFilterSchema)
-    ),
-    jobsAvailable: QueueConnected()
-  };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
@@ -192,73 +204,85 @@ export const actions: Actions = {
     const form = await superValidate(event, valibot(searchFilterSchema));
     if (!form.valid) return { form, ok: false };
 
-    const isSuper = isSuperAdmin(session.user.roles);
+    return await tracer.startActiveSpan('page action', async (span) => {
+      const isSuper = isSuperAdmin(session.user.roles);
 
-    const organizations = await DatabaseReads.organizations.findMany({
-      where:
-        form.data.organizationId !== null
-          ? { Id: form.data.organizationId }
-          : isSuper
-            ? undefined
-            : {
-                UserRoles: {
-                  some: {
-                    RoleId: RoleId.OrgAdmin,
-                    UserId: session.user.userId
-                  }
-                }
-              },
-      select: {
-        Id: true
-      }
-    });
-
-    const orgIds = organizations.map((o) => o.Id);
-
-    const where: Prisma.UsersWhereInput = {
-      AND: [
-        form.data.organizationId !== null
-          ? { OrganizationMemberships: { some: { OrganizationId: form.data.organizationId } } }
-          : adminOrDefaultWhere(isSuper, orgIds),
-        {
-          OR: form.data.search
-            ? [
-                {
-                  Name: {
-                    contains: form.data.search,
-                    mode: 'insensitive'
+      const organizations = await DatabaseReads.organizations.findMany({
+        where:
+          form.data.organizationId !== null
+            ? { Id: form.data.organizationId }
+            : isSuper
+              ? undefined
+              : {
+                  UserRoles: {
+                    some: {
+                      RoleId: RoleId.OrgAdmin,
+                      UserId: session.user.userId
+                    }
                   }
                 },
-                {
-                  Email: {
-                    contains: form.data.search,
-                    mode: 'insensitive'
-                  }
-                }
-              ]
-            : undefined
+        select: {
+          Id: true
         }
-      ]
-    };
+      });
 
-    const users = await DatabaseReads.users.findMany({
-      orderBy: {
-        Name: 'asc'
-      },
-      select: select(isSuper ? undefined : orgIds),
-      where: where,
-      // More significantly, could paginate results to around 50 users/page = 10 KB
-      // Done - Aidan
-      skip: form.data.page.page * form.data.page.size,
-      take: form.data.page.size
+      const orgIds = organizations.map((o) => o.Id);
+
+      span.setAttributes({
+        'auth.load.userId': session.user.userId,
+        'auth.load.user.roles': JSON.stringify(session.user.roles),
+        'auth.load.user.isSuper': isSuper,
+        'auth.load.user.orgIds': JSON.stringify(orgIds)
+      });
+
+      const where: Prisma.UsersWhereInput = {
+        AND: [
+          form.data.organizationId !== null
+            ? { OrganizationMemberships: { some: { OrganizationId: form.data.organizationId } } }
+            : adminOrDefaultWhere(isSuper, orgIds),
+          {
+            OR: form.data.search
+              ? [
+                  {
+                    Name: {
+                      contains: form.data.search,
+                      mode: 'insensitive'
+                    }
+                  },
+                  {
+                    Email: {
+                      contains: form.data.search,
+                      mode: 'insensitive'
+                    }
+                  }
+                ]
+              : undefined
+          }
+        ]
+      };
+
+      const users = await DatabaseReads.users.findMany({
+        orderBy: {
+          Name: 'asc'
+        },
+        select: select(isSuper ? undefined : orgIds),
+        where: where,
+        skip: form.data.page.page * form.data.page.size,
+        take: form.data.page.size
+      });
+
+      span.addEvent('loaded user list', {
+        'auth.load.userCount': users.length
+      });
+
+      return {
+        form,
+        ok: true,
+        query: {
+          data: users.map(minifyUser),
+          count: await DatabaseReads.users.count({ where: where })
+        }
+      };
     });
-    return {
-      form,
-      ok: true,
-      query: {
-        data: users.map(minifyUser),
-        count: await DatabaseReads.users.count({ where: where })
-      }
-    };
   }
 };

@@ -1,5 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
+import { error } from 'console';
 import { ReadonlyClient } from './ReadonlyPrisma';
+import OTEL from '$lib/otel';
 
 // This is the home of all database operations through prisma
 // It is used from both the node-server package (which runs tasks) and from the sveltekit
@@ -30,7 +32,10 @@ class ConnectionChecker {
   private async checkConnection() {
     try {
       await DatabaseReads.$queryRaw`SELECT 1`;
-      this.connected = true;
+      if (!this.connected) {
+        this.connected = true;
+        OTEL.instance.logger.info('Database connection established');
+      }
     } catch (e) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError ||
@@ -39,8 +44,13 @@ class ConnectionChecker {
       ) {
         // As best as I can tell, the only types of PrismaClientKnownRequestError that
         // should be thrown by the above query would involve the database being unreachable.
-        this.connected = false;
-        console.log('Error checking database connection:', e);
+        if (this.connected) {
+          OTEL.instance.logger.error('Database connection lost', {
+            error: e.message
+          });
+          this.connected = false;
+          console.log('Error checking database connection:', e);
+        }
         // ISSUE: #1128 this should probably be logged
       } else {
         throw e;
