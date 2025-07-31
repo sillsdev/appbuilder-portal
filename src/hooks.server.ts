@@ -1,4 +1,9 @@
-// hooks.server.ts
+// This import should occur first
+// Importing with the --import node flag would be nice but unfortunately
+// when code is bundled, we cannot keep the file separate to import it first.
+// eslint-disable-next-line import/order
+import OTEL from '$lib/otel';
+
 import { type Handle, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import {
@@ -8,7 +13,6 @@ import {
   organizationInviteHandle
 } from './auth';
 import { building } from '$app/environment';
-import OTEL from '$lib/otel';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { RoleId } from '$lib/prisma';
@@ -18,12 +22,12 @@ import '$lib/server/bullmq/BullMQ';
 import { DatabaseConnected, DatabaseReads, DatabaseWrites } from '$lib/server/database';
 
 if (!building) {
+  // Start OTEL collector
+  OTEL.instance.start();
   // Otherwise valkey will never connect and the server will always 503
   getQueues();
   // Likewise, initialize the Prisma connection heartbeat
   DatabaseConnected();
-  // Start OTEL collector
-  OTEL.instance.start();
 }
 
 // creating a handle to use the paraglide middleware

@@ -1,6 +1,16 @@
+// This file should ideally be imported first in the application to ensure
+// that OpenTelemetry is initialized before any other modules are loaded.
+
+// Adding OTEL instrumentation hooks breaks the build
+// It should look like this but breaks imports later
+
+// import { register } from 'node:module';
+// // eslint-disable-next-line import/order
+// import { pathToFileURL } from 'node:url';
+// register('@opentelemetry/instrumentation/hook.mjs', pathToFileURL('./'));
+
 import { context } from '@opentelemetry/api';
 import type { AnyValueMap, Logger as OTLogger } from '@opentelemetry/api-logs';
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-grpc';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
@@ -78,13 +88,6 @@ export default class OTEL {
       metricReader: new PeriodicExportingMetricReader({
         exporter: new OTLPMetricExporter({ url: endpoint })
       }),
-      instrumentations: [
-        getNodeAutoInstrumentations({
-          '@opentelemetry/instrumentation-fs': {
-            enabled: false
-          }
-        })
-      ],
       logRecordProcessors: [logProcessor]
     });
   }
