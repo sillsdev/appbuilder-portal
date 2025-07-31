@@ -94,6 +94,7 @@
     "xstate": "^5.20.1"
   },
   "dependencies": {
+    "@opentelemetry/instrumentation": "^0.203.0",
     "@prisma/client": "^5.22.0"
   }
 }
