@@ -8,11 +8,15 @@ receivers:
 exporters:
   debug:
     verbosity: detailed
+  otlp:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
 service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [debug] # ISSUE: #1128 export to honeycomb in prod
+      exporters: [debug,otlp] # ISSUE: #1128 export to honeycomb in prod
     metrics:
       receivers: [otlp]
       exporters: [debug]
