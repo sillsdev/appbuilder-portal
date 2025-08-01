@@ -58,25 +58,17 @@ services:
       - ~/.ssh:/root/ssh
 
   otel-collector:
-    image: otel/opentelemetry-collector:latest
+    image: otel/opentelemetry-collector-contrib:0.131.0
     ports:
       - "6317:6317"  # gRPC
       - "6318:6318"  # HTTP
       - "55679:55679"
     volumes:
-      - ./src/lib/otel/config.yml:/etc/config.yml
-    command: ["--config", "/etc/config.yml"]
-    # environment:
-    #   OTEL_RESOURCE_ATTRIBUTES: "service.name=valkey-development"
-    #   OTEL_EXPORTER_OTLP_ENDPOINT: "http://localhost:4317"
-    #   OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      - ./src/lib/otel/development_config.yml:/etc/development_config.yml
+      - ./src/lib/otel/receivers_config.yml:/etc/receivers_config.yml
+    command: ["--config", "/etc/development_config.yml", "--config", "/etc/receivers_config.yml"]
 
   jaeger:
     image: cr.jaegertracing.io/jaegertracing/jaeger:latest
     ports:
       - "16686:16686"
-      - "4317:4317"
-      - "4318:4318"
-      - "5778:5778"
-      - "9411:9411"
-

@@ -1,0 +1,118 @@
+processors:
+  memory_limiter:
+    check_interval: 5s
+    limit_mib: 500
+    spike_limit_mib: 100
+  batch:
+  # Add SampleRate attribute to traces for Honeycomb automatic accounting
+  # SampleRate = N where we keep 1/N traces, or (sampled traces)/(real traces)
+  # Higher N means lower sampling rate
+  # N = 4 means 1/4 = 25% of traces sampled
+  # N = 2 means 1/2 = 50% of traces sampled
+  # N = 1.25 means 1/1.25 = 80% of traces sampled
+  # N = 1 means 100% of traces sampled
+  attributes/noisy:
+    actions:
+      - key: SampleRate
+        action: insert
+        value: 2
+  attributes/default:
+    actions:
+      - key: SampleRate
+        action: insert
+        value: 1.25
+  attributes/forced:
+    actions:
+      - key: SampleRate
+        action: insert
+        value: 1
+  tail_sampling:
+    decision_wait: 10s
+    num_traces: 1000
+    policies:
+      # Keep 5% of /admin/jobs requests (noisy route)
+      - name: Throttle noisy routes
+        type: and
+        and:
+          and_sub_policy:
+            - name: Match noisy routes
+              type: string_attribute
+              string_attribute:
+                key: svelte.route_id
+                values: ["/(authenticated)/admin/jobs/[...path]"]
+            - name: Throttle noisy routes
+              type: probabilistic
+              probabilistic:
+                sampling_percentage: 5.0
+      # Sample 80% of all traces
+      - name: Sample 80% of all traces
+        type: probabilistic
+        probabilistic:
+          sampling_percentage: 80.0
+      # Keep all error traces
+      - name: Keep all error traces
+        type: status_code
+        status_code: { status_codes: [ERROR] }
+      # Keep traces with force_sample
+      - name: Keep traces with force_sample
+        type: boolean_attribute
+        boolean_attribute:
+          key: force_sample
+          value: true
+      # Drop traces with do_not_sample
+      - name: Drop traces with do_not_sample
+        type: drop
+        drop:
+          drop_sub_policy:
+            - type: boolean_attribute
+              boolean_attribute:
+                key: do_not_sample
+                value: true
+                
+connectors:
+  routing:
+    default_pipelines: [traces/default]
+    table:
+      - context: span
+        condition: resource.attributes["svelte.route_id"] == "/(authenticated)/admin/jobs/[...path]"
+        pipelines: [traces/noisy]
+      - context: span
+        condition: resource.attributes["force_sample"] == true or span.status.code == STATUS_CODE_ERROR
+        pipelines: [traces/forced]
+
+exporters:
+  debug:
+  otlp:
+    endpoint: api.honeycomb.io:443
+    headers:
+      'x-honeycomb-team': ${env:HONEYCOMB_API_KEY}
+  otlp/metrics:
+    endpoint: api.honeycomb.io:443
+    headers:
+      'x-honeycomb-team': ${env:HONEYCOMB_API_KEY}
+      'x-honeycomb-dataset': 'appbuilder-portal-metrics'
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, tail_sampling]
+      exporters: [routing]
+    traces/noisy:
+      receivers: [routing]
+      processors: [attributes/noisy, batch]
+      exporters: [debug, otlp]
+    traces/default:
+      receivers: [routing]
+      processors: [attributes/default, batch]
+      exporters: [debug, otlp]
+    traces/forced:
+      receivers: [routing]
+      processors: [attributes/forced, batch]
+      exporters: [debug, otlp]
+    metrics:
+      receivers: [otlp]
+      exporters: [debug, otlp/metrics]
+    logs:
+      receivers: [otlp]
+      exporters: [debug]

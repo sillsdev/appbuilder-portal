@@ -1,5 +1,4 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
-import type { Exception } from 'bullmq';
 import { DatabaseReads } from '../database/prisma';
 import * as Types from './types';
 
@@ -10,9 +9,7 @@ export async function request(resource: string, auth: Types.Auth, opts?: Types.R
   return await tracer.startActiveSpan(`request:/${resource}`, async (span) => {
     span.setAttributes({
       'auth.type': auth.type,
-      'auth.organizationId': auth.type === 'query' ? auth.organizationId : undefined,
-      'auth.url': auth.type === 'provided' ? auth.url : undefined,
-      'auth.token': auth.type === 'provided' ? auth.token : undefined
+      'auth.organizationId': auth.type === 'query' ? auth.organizationId : undefined
     });
 
     span.setAttributes({
@@ -25,6 +22,11 @@ export async function request(resource: string, auth: Types.Auth, opts?: Types.R
     try {
       const { url, token } =
         auth.type === 'query' ? await getURLandToken(auth.organizationId) : auth;
+      span.setAttributes({
+        'auth.url': auth.type === 'provided' ? auth.url : (url ?? 'null'),
+        // Replace with *s
+        'auth.token': (auth.type === 'provided' ? auth.token : token)?.replace(/./g, '*') ?? 'null'
+      });
       const check = await DatabaseReads.systemStatuses.findFirst({
         where: {
           BuildEngineUrl: url,
@@ -70,20 +72,18 @@ export async function request(resource: string, auth: Types.Auth, opts?: Types.R
           message: `Request failed with status ${ret.status}`
         });
       }
-      ret.json.then((json) => {
-        span.addEvent('Request completed', {
-          url: `${url}/${resource}`,
-          method: method,
-          status: ret.status,
-          ok: ret.ok,
-          json
-        });
-        span.end();
+      span.addEvent('Request completed', {
+        url: `${url}/${resource}`,
+        method: method,
+        status: ret.status,
+        ok: ret.ok,
+        json: await ret.json
       });
+      span.end();
       return ret;
     } catch (e) {
       span.setStatus({ code: SpanStatusCode.ERROR, message: 'Request failed' });
-      span.recordException(e as Exception);
+      span.recordException(e as Error);
       span.end();
       return {
         ok: false,

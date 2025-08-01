@@ -85,7 +85,9 @@ export const handle: Handle = async ({ event, resolve }) => {
     span.setAttributes({
       'http.method': event.request.method,
       'http.url': event.url.href,
-      'http.route': event.route.id ?? 'null'
+      'http.route': event.url.pathname ?? '',
+      'http.user_agent': event.request.headers.get('user-agent') ?? '',
+      'svelte.route_id': event.route.id ?? ''
     });
     const response = await sequence(
       paraglideHandle,

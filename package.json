@@ -91,10 +91,11 @@
     "valibot": "^1.0.0-beta.14",
     "vite": "^6.0.11",
     "vitest": "^3.0.4",
-    "xstate": "^5.20.1"
+    "xstate": "^5.20.1",
+    "@opentelemetry/instrumentation": "^0.203.0",
+    "prisma": "^5.22.0"
   },
   "dependencies": {
-    "@opentelemetry/instrumentation": "^0.203.0",
     "@prisma/client": "^5.22.0"
   }
 }
