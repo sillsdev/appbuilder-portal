@@ -7,7 +7,6 @@
 
 COMPOSE="docker compose -f deployment/development/docker-compose.yml --project-directory . -p appbuilder-portal"
 CI_COMPOSE="docker compose -f deployment/ci/docker-compose.yml --project-directory . -p appbuilder-portal-ci"
-COMPOSE_SERVICES="db adminer svelte-ui valkey stg-tunnel otel-collector jaeger"
 
 function runstuff {
   # First arg
@@ -18,12 +17,12 @@ function runstuff {
   case $given_command in
     # docker compose proxy
     dc)       ${COMPOSE} $arguments;;
-    up:build) ${COMPOSE} up --build $arguments ${COMPOSE_SERVICES} ;;
-    up)       ${COMPOSE} up $arguments ${COMPOSE_SERVICES} ;;
+    up:build) ${COMPOSE} up --build $arguments ;;
+    up)       ${COMPOSE} up $arguments ;;
     up:local:start)
       runstuff dc up -d db adminer valkey stg-tunnel otel-collector jaeger
     ;;
-    build) ${COMPOSE} build $arguments ${COMPOSE_SERVICES};;
+    build) ${COMPOSE} build $arguments ;;
 
     bash)     ${COMPOSE} run --rm $arguments bash;;
     restart)  ${COMPOSE} stop $arguments && ${COMPOSE} start $arguments;;
