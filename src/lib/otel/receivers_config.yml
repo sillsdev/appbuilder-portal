@@ -1,0 +1,7 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:6317
+      http:
+        endpoint: 0.0.0.0:6318

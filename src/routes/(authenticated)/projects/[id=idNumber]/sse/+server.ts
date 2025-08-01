@@ -1,4 +1,4 @@
-import { trace } from '@opentelemetry/api';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { produce } from 'sveltekit-sse';
 import { RoleId } from '$lib/prisma';
 import { getProductActions } from '$lib/products';
@@ -294,6 +294,12 @@ async function getProjectDetails(id: number, userId: number) {
         }),
         userGroups: (await userGroupsForOrg(userId, project.Organization.Id)).map((g) => g.GroupId)
       };
+    } catch (e) {
+      span.recordException(e as Error);
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: (e as Error).message
+      });
     } finally {
       span.end();
     }

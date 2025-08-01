@@ -1,13 +1,8 @@
-receivers:
-  otlp:
-    protocols:
-      grpc:
-        endpoint: 0.0.0.0:6317
-      http:
-        endpoint: 0.0.0.0:6318
+processors:
+  batch:
 exporters:
   debug:
-    verbosity: detailed
+    # verbosity: detailed
   otlp:
     endpoint: jaeger:4317
     tls:
@@ -16,7 +11,8 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [debug,otlp] # ISSUE: #1128 export to honeycomb in prod
+      processors: [batch]
+      exporters: [debug,otlp]
     metrics:
       receivers: [otlp]
       exporters: [debug]
