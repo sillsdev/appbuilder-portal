@@ -168,7 +168,12 @@ jobs:
       - name: Run tests
         run: |
           # Is the port open
-          nc -zv localhost 6173 || { echo "Port 6173 is not open"; exit 1; }
+          sleep 1
+          nc -zv localhost 6173 || {
+            echo "Port 6173 is not open"
+            ./run ci logs svelte-ui
+            exit 1
+          }
           npx svelte-kit sync
           echo "Running tests..."
           npm run test
