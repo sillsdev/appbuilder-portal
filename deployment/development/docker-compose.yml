@@ -60,9 +60,9 @@ services:
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.131.0
     ports:
-      - "6317:6317"  # gRPC
-      - "6318:6318"  # HTTP
-      - "55679:55679"
+      - "6317:6317"   # gRPC
+      - "6318:6318"   # HTTP
+      - "55679:55679" # UI
     volumes:
       - ./src/lib/otel/development_config.yml:/etc/development_config.yml
       - ./src/lib/otel/receivers_config.yml:/etc/receivers_config.yml
