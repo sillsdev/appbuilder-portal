@@ -38,8 +38,8 @@
     .select('projectData')
     .json();
 
-  const dateCreated = $derived(getRelativeTime($projectData?.project?.DateCreated));
-  const dateArchived = $derived(getRelativeTime($projectData?.project?.DateArchived));
+  const dateCreated = $derived(getRelativeTime($projectData?.project?.DateCreated ?? null));
+  const dateArchived = $derived(getRelativeTime($projectData?.project?.DateArchived ?? null));
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
