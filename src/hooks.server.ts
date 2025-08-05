@@ -2,8 +2,8 @@
 // Importing with the --import node flag would be nice but unfortunately
 // when code is bundled, we cannot keep the file separate to import it first.
 
-import { trace } from '@opentelemetry/api';
-import { type Handle, redirect } from '@sveltejs/kit';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { type Handle, type HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import {
   authRouteHandle,
@@ -14,7 +14,6 @@ import {
 import { building } from '$app/environment';
 import OTEL from '$lib/otel';
 
-import { localizeHref } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { RoleId } from '$lib/prisma';
 import { QueueConnected, getQueues } from '$lib/server/bullmq';
@@ -70,7 +69,7 @@ const heartbeat: Handle = async ({ event, resolve }) => {
         QueueConnected()
       );
       // HTTP 503 *should* be the correct semantics here?
-      return redirect(302, localizeHref(`/error?code=503`));
+      event.locals.error = 503;
     }
   }
   return resolve(event);
@@ -143,3 +142,24 @@ if (!building && typeof process.env.ADD_USER !== 'undefined' && process.env.ADD_
   );
   console.log('---- Bootstrap Invite Link ----');
 }
+
+export const handleError: HandleServerError = ({ error, event }) => {
+  console.error('Error occurred:', error);
+  // Log the error with OTEL
+  OTEL.instance.logger.error('Error in handleError', {
+    error: error instanceof Error ? error.message : String(error),
+    route: event.route.id,
+    method: event.request.method,
+    url: event.url.href
+  });
+  trace.getActiveSpan()?.recordException(error as Error);
+  trace.getActiveSpan()?.setStatus({
+    code: SpanStatusCode.ERROR, // Error
+    message: error instanceof Error ? error.message : String(error)
+  });
+
+  return {
+    message: 'An unexpected error occurred. Please try again later.',
+    status: 500 // Internal Server Error
+  };
+};

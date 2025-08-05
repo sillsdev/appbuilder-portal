@@ -7,6 +7,7 @@ declare global {
     // interface Error {}
     interface Locals {
       paraglide: ParaglideLocals<AvailableLanguageTag>;
+      error?: number;
     }
     // interface PageData {}
     // interface Platform {}
