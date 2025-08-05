@@ -3,7 +3,7 @@ import { jwtVerify } from 'jose';
 import type { KeyObject } from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
 import { building } from '$app/environment';
-import { AUTH0_DOMAIN } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { ProductTransitionType } from '$lib/prisma';
 import { BuildEngine } from '$lib/server/build-engine-api';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
@@ -229,7 +229,7 @@ const secrets: Promise<Map<string, KeyObject>> = new Promise((r) => (resolve = r
 
 if (!building) {
   (async () => {
-    const res = await fetch('https://' + AUTH0_DOMAIN + '/.well-known/jwks.json');
+    const res = await fetch('https://' + env.AUTH0_DOMAIN + '/.well-known/jwks.json');
     const keys: {
       kty: string;
       use: string;

@@ -1,4 +1,4 @@
-name: Scriptoria v2 Tests
+name: Scriptoria v2 Test and Deploy
 
 on:
   push:
@@ -84,7 +84,7 @@ jobs:
           npm run lint
 
   # Build and deploy job
-  build-and-deploy:
+  build-and-test:
     runs-on: ubuntu-latest
     needs: setup
     env:
@@ -123,11 +123,11 @@ jobs:
       - name: Build, Install Playwright dependencies, and seed database
         run: |
           echo "Building .env file..."
-          echo "AUTH0_CLIENT_ID=${{ vars.AUTH0_CLIENT_ID }}" > .env
-          echo "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}" >> .env
-          echo "AUTH0_DOMAIN=${{ vars.AUTH0_DOMAIN }}" >> .env
-          echo "AUTH0_CONNECTION=${{ vars.AUTH0_CONNECTION }}" >> .env
-          echo "AUTH0_SECRET=${{ secrets.AUTH0_SECRET }}" >> .env
+          echo "AUTH0_CLIENT_ID=" > .env
+          echo "AUTH0_CLIENT_SECRET=" >> .env
+          echo "AUTH0_DOMAIN=" >> .env
+          echo "AUTH0_CONNECTION=" >> .env
+          echo "AUTH0_SECRET=" >> .env
           echo "Building the docker project..."
           mkdir -p command-output
           (./run ci build > command-output/build-output.txt 2>&1 || echo $? > command-output/build-exit-code.txt) &
@@ -161,6 +161,11 @@ jobs:
       - name: Start docker-compose services
         run: |
           echo "Starting docker-compose services..."
+          export "AUTH0_CLIENT_ID=${{ vars.AUTH0_CLIENT_ID }}"
+          export "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}"
+          export "AUTH0_DOMAIN=${{ vars.AUTH0_DOMAIN }}"
+          export "AUTH0_CONNECTION=${{ vars.AUTH0_CONNECTION }}"
+          export "AUTH0_SECRET=${{ secrets.AUTH0_SECRET }}"
           ./run ci up -d
 
       - name: Run tests
@@ -184,3 +189,57 @@ jobs:
         with:
           name: test-results
           path: test-results
+  deploy-to-ecr:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: ${{ success() && ((github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && github.event_name != 'pull_request' ) || true || github.ref == 'refs/heads/feature/push-ecr' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Configure AWS credentials (SIL)
+        id: aws_sil
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.DEPLOY__AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEPLOY__AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.DEPLOY__AWS_DEFAULT_REGION }}
+
+      - name: Login to AWS ECR (SIL)
+        id: ecr_sil
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registries: ${{ secrets.DEPLOY__AWS_ECR_ACCOUNT }}
+
+      - name: Build Docker image
+        run: |
+          echo "Building Docker image..."
+          docker build -t scriptoria-portal:${{ github.sha }} .
+          echo "Docker image built successfully."
+          # If branch is develop, staging, if master, production
+          export DEPLOY_LEVEL=staging
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+            export DEPLOY_LEVEL=production
+          fi
+          export IMAGE_URL=${{ secrets.DEPLOY__AWS_ECR_ACCOUNT }}.dkr.ecr.us-east-1.amazonaws.com/appbuilder-portal-origin
+          docker tag scriptoria-portal:${{ github.sha }} $IMAGE_URL:$DEPLOY_LEVEL
+          docker tag scriptoria-portal:${{ github.sha }} $IMAGE_URL:${{ github.sha }}
+          echo "Docker image tagged as $DEPLOY_LEVEL and ${{ github.sha }}"
+      - name: Push Docker image to ECR
+        run: |
+          # If branch is develop, staging, if master, production
+          export DEPLOY_LEVEL=staging
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+            export DEPLOY_LEVEL=production
+          fi
+          export IMAGE_URL=${{ secrets.DEPLOY__AWS_ECR_ACCOUNT }}.dkr.ecr.us-east-1.amazonaws.com/appbuilder-portal-origin
+          echo "Pushing Docker image to ECR..."
+          echo $IMAGE_URL:$DEPLOY_LEVEL
+          docker push $IMAGE_URL:$DEPLOY_LEVEL
+          docker push $IMAGE_URL:${{ github.sha }}
+          echo "Docker image pushed successfully to $IMAGE_URL"
+          echo "ecs-deploy not run"
