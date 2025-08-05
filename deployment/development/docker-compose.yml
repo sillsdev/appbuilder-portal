@@ -23,7 +23,7 @@ services:
       # Host:Container
       - "18080:8080"
 
-  svelte-ui:
+  portal:
     depends_on:
       - valkey
       - db

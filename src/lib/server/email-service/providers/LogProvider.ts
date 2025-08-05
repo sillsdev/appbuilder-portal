@@ -7,7 +7,7 @@ export class LogProvider extends EmailProvider {
     body: string
   ): Promise<unknown> {
     console.log('====================== EMAIL ======================');
-    console.log(`From: ${LogProvider.EMAIL_FROM}`);
+    console.log(`From: ${LogProvider.ADMIN_EMAIL}`);
     console.log(`To: ${to.map((email) => `${email.email} (${email.name})`).join(', ')}`);
     console.log(`Subject: ${subject}`);
     console.log(`Body:`);

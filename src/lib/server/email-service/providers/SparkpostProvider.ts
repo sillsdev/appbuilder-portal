@@ -28,7 +28,7 @@ export class SparkpostProvider extends EmailProvider {
       },
       content: {
         from: {
-          email: SparkpostProvider.EMAIL_FROM,
+          email: SparkpostProvider.ADMIN_EMAIL,
           name: SparkpostProvider.EMAIL_NAME
         },
         subject,

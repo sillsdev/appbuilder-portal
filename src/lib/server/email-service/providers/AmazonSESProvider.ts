@@ -22,7 +22,7 @@ export class AmazonSESProvider extends EmailProvider {
     body: string
   ): Promise<unknown> {
     return await this.ses.sendEmail({
-      Source: `${AmazonSESProvider.EMAIL_NAME} <${AmazonSESProvider.EMAIL_FROM}>`,
+      Source: `${AmazonSESProvider.EMAIL_NAME} <${AmazonSESProvider.ADMIN_EMAIL}>`,
       Destination: {
         ToAddresses: to.map((email) => safeAsciiString(`${email.name} <${email.email}>`))
       },
