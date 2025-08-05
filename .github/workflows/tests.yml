@@ -113,13 +113,11 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           echo "$APS_STG_SSH_CONFIG" > ~/.ssh/config
           chmod 600 ~/.ssh/config
           ssh aps-stg "echo 'SSH connection established successfully.'"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.APS_STG_SSH_PRIVATE_KEY }}
-          SSH_KNOWN_HOSTS: ${{ secrets.APS_STG_KNOWN_HOSTS }}
           APS_STG_SSH_CONFIG: ${{ secrets.APS_STG_SSH_CONFIG }}
 
       - name: Build, Install Playwright dependencies, and seed database
