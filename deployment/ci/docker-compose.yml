@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: 1234
       PGDATA: /var/lib/postgresql/data
 
-  svelte-ui:
+  portal:
     depends_on:
       - db
       - valkey
@@ -21,7 +21,7 @@ services:
     environment:
       DATABASE_URL: "postgresql://db-user:1234@db:5432/development?schema=public"
       MAIL_SENDER: "LogEmail"
-      EMAIL_FROM: "noreply@scriptoria.io"
+      ADMIN_EMAIL: "noreply@scriptoria.io"
       DEFAULT_BUILDENGINE_URL: "http://stg-tunnel:8443"
       DEFAULT_BUILDENGINE_API_ACCESS_TOKEN: "${BUILDENGINE_TOKEN}"
       AUTH0_SECRET: "${AUTH0_SECRET}"

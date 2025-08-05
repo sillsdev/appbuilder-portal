@@ -41,7 +41,7 @@ DEFAULT_BUILDENGINE_URL=http://stg-tunnel:8443
 AUTH0_SECRET=
 AUTH0_CLIENT_SECRET=
 DEFAULT_BUILDENGINE_API_ACCESS_TOKEN=
-EMAIL_FROM=
+ADMIN_EMAIL=
 ```
 
 > **Note:** Contact [@sillsdev/scriptoria-developers](https://github.com/orgs/sillsdev/teams/scriptoria-developers/members) for help obtaining the secret values.
