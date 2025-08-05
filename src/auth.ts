@@ -225,7 +225,8 @@ export const localRouteHandle: Handle = async ({ event, resolve }) => {
       'auth.localRouteHandle.status': status
     });
     if (status !== ServerStatus.Ok) {
-      return redirect(302, localizeHref(`/error?code=${status}`));
+      // error.html is extremely ugly, so we use a manual error throw
+      event.locals.error = status;
     }
   }
   return resolve(event);
@@ -257,15 +258,19 @@ async function validateRouteForAuthenticatedUser(
       }
       return ServerStatus.Ok;
     } else if (path[1] === 'products') {
-      const product = await DatabaseReads.products.findFirst({
-        where: {
-          Id: params.id
-        }
-      });
-      if (!product) return ServerStatus.NotFound;
-      // Must be allowed to view associated project
-      // (this route was originally part of the project page but was moved elsewhere to improve load time)
-      return await verifyCanViewAndEdit(session, product.ProjectId);
+      try {
+        const product = await DatabaseReads.products.findFirst({
+          where: {
+            Id: params.id
+          }
+        });
+        if (!product) return ServerStatus.NotFound;
+        // Must be allowed to view associated project
+        // (this route was originally part of the project page but was moved elsewhere to improve load time)
+        return await verifyCanViewAndEdit(session, product.ProjectId);
+      } catch {
+        return ServerStatus.NotFound;
+      }
     } else if (path[1] === 'projects') {
       if (path[2] === '[filter=projectSelector]') return ServerStatus.Ok;
       else if (path[2] === '[id=idNumber]') {
