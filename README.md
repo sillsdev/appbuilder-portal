@@ -83,7 +83,7 @@ This is important for local development. You still need the `db` and `valkey` do
 Start database and adminer
 
 ```bash
-./run up:local:start
+./run local
 ```
 
 Start SvelteKit project
