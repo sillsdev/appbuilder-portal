@@ -7,12 +7,7 @@ import {
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { trace } from '@opentelemetry/api';
 import { type Handle, redirect } from '@sveltejs/kit';
-import {
-  AUTH0_CLIENT_ID,
-  AUTH0_CLIENT_SECRET,
-  AUTH0_DOMAIN,
-  AUTH0_SECRET
-} from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
 import type { RoleId } from '$lib/prisma';
@@ -47,13 +42,13 @@ const config: SvelteKitAuthConfig = {
     Auth0Provider({
       id: 'auth0',
       name: 'Auth0',
-      clientId: AUTH0_CLIENT_ID,
-      clientSecret: AUTH0_CLIENT_SECRET,
-      issuer: `https://${AUTH0_DOMAIN}/`,
-      wellKnown: `https://${AUTH0_DOMAIN}/.well-known/openid-configuration`
+      clientId: env.AUTH0_CLIENT_ID,
+      clientSecret: env.AUTH0_CLIENT_SECRET,
+      issuer: `https://${env.AUTH0_DOMAIN}/`,
+      wellKnown: `https://${env.AUTH0_DOMAIN}/.well-known/openid-configuration`
     })
   ],
-  secret: AUTH0_SECRET,
+  secret: env.AUTH0_SECRET,
   // debug: true,
   session: {
     maxAge: 60 * 60 * 24 // 24 hours
