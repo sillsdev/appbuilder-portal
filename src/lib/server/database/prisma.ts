@@ -50,7 +50,6 @@ class ConnectionChecker {
           this.connected = false;
           console.log('Error checking database connection:', e);
         }
-        // ISSUE: #1128 this should probably be logged
       } else {
         throw e;
       }
