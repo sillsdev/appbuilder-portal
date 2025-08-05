@@ -19,8 +19,11 @@ function runstuff {
     dc)       ${COMPOSE} $arguments;;
     up:build) ${COMPOSE} up --build $arguments ;;
     up)       ${COMPOSE} up $arguments ;;
-    up:local:start)
+    local)
       runstuff dc up -d db adminer valkey stg-tunnel otel-collector jaeger
+    ;;
+    down)
+      ${COMPOSE} down $arguments
     ;;
     build) ${COMPOSE} build $arguments ;;
 
@@ -30,7 +33,7 @@ function runstuff {
     bootstrap)
       set -e
       runstuff dc down --remove-orphans
-      runstuff up:local:start
+      runstuff local
       runstuff db:migrate
       runstuff dc down
       set +e
@@ -77,9 +80,10 @@ function print_help {
   echo "Available Commands:"
   echo ""
   echo "dc             : short for docker compose"
-  echo "up:build"
-  echo "up"
-  echo "up:local:start : starts external services in docker"
+  echo "up:build       : starts the docker compose services and builds images"
+  echo "up             : starts the docker compose services"
+  echo "down           : stops the docker compose services"
+  echo "local          : starts external services in docker for local development"
   echo ""
   echo "bash           : drop into a bash shell in a temporary docker compose service"
   echo "restart        : restart a specific docker compose service"
