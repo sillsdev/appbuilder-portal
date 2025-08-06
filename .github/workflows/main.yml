@@ -225,30 +225,36 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         with:
           registries: ${{ secrets.DEPLOY__AWS_ECR_ACCOUNT }}
-      
+
       - name: Build deployment target variables
         id: vars
         run: |
           echo "Setting up deployment variables..."
           echo "IMAGE_URL=${{ secrets.DEPLOY__AWS_ECR_ACCOUNT }}.dkr.ecr.${{ secrets.DEPLOY__AWS_DEFAULT_REGION }}.amazonaws.com/appbuilder-portal-origin" >> $GITHUB_OUTPUT
+          echo "OTEL_URL=${{ secrets.DEPLOY__AWS_ECR_ACCOUNT }}.dkr.ecr.${{ secrets.DEPLOY__AWS_DEFAULT_REGION }}.amazonaws.com/otel-collector" >> $GITHUB_OUTPUT
           [[ "${{ github.ref }}" == "refs/heads/master" ]] && echo "DEPLOY_LEVEL=production" >> $GITHUB_OUTPUT || echo "DEPLOY_LEVEL=staging" >> $GITHUB_OUTPUT
           [[ "${{ github.ref }}" == "refs/heads/master" ]] && echo "ECS_CLUSTER=scriptoria-prd" >> $GITHUB_OUTPUT || echo "ECS_CLUSTER=scriptoria-stg" >> $GITHUB_OUTPUT
 
-      - name: Build Docker image
+      - name: Build Docker images
         run: |
-          echo "Building Docker image..."
+          echo "Building Docker images..."
           docker build -t scriptoria-portal:${{ github.sha }} .
-          echo "Docker image built successfully."
+          docker build -t scriptoria-otel:${{ github.sha }} -f Dockerfile.otel .
+          echo "Docker images built successfully."
           docker tag scriptoria-portal:${{ github.sha }} ${{ steps.vars.outputs.IMAGE_URL }}:${{ steps.vars.outputs.DEPLOY_LEVEL }}
           docker tag scriptoria-portal:${{ github.sha }} ${{ steps.vars.outputs.IMAGE_URL }}:${{ github.sha }}
-          echo "Docker image tagged as ${{ steps.vars.outputs.DEPLOY_LEVEL }} and ${{ github.sha }}"
+          docker tag scriptoria-otel:${{ github.sha }} ${{ steps.vars.outputs.OTEL_URL }}:${{ steps.vars.outputs.DEPLOY_LEVEL }}
+          docker tag scriptoria-otel:${{ github.sha }} ${{ steps.vars.outputs.OTEL_URL }}:${{ github.sha }}
+          echo "Docker images tagged as ${{ steps.vars.outputs.DEPLOY_LEVEL }} and ${{ github.sha }}"
 
       - name: Push Docker image to ECR
         run: |
           echo "Pushing Docker image to ECR..."
           docker push ${{ steps.vars.outputs.IMAGE_URL }}:${{ steps.vars.outputs.DEPLOY_LEVEL }}
           docker push ${{ steps.vars.outputs.IMAGE_URL }}:${{ github.sha }}
-          echo "Docker image pushed successfully to ${{ steps.vars.outputs.IMAGE_URL }}"
+          docker push ${{ steps.vars.outputs.OTEL_URL }}:${{ steps.vars.outputs.DEPLOY_LEVEL }}
+          docker push ${{ steps.vars.outputs.OTEL_URL }}:${{ github.sha }}
+          echo "Docker images pushed successfully to ${{ steps.vars.outputs.IMAGE_URL }}"
 
       - name: Deploy to ECS
         run: |
@@ -257,7 +263,6 @@ jobs:
           chmod +x $HOME/.local/bin/ecs-deploy
           echo "Deploying ${{ github.sha }} to ${{ steps.vars.outputs.ECS_CLUSTER }}..."
           # Deploy the ECS cluster with service name 'portal', setting all images to the latest tag
-          # FIXME: Change when OTEL collector is added
           ecs-deploy -c ${{ steps.vars.outputs.ECS_CLUSTER }} -n portal -i ignore -to ${{ github.sha }} --max-definitions 20 --timeout 600
           echo "Deployment initiated successfully."
         env:
