@@ -37,12 +37,21 @@ jobs:
           echo Environment variables
           env
 
+      - name: Restore node_modules cache
+        id: restore-cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+
       - name: Install dependencies
+        if: steps.restore-cache.outputs.cache-hit != 'true'
         run: |
           echo "Installing dependencies..."
           npm ci
 
       - name: Cache node_modules
+        if: steps.restore-cache.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
           path: node_modules
