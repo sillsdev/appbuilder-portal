@@ -134,7 +134,7 @@ jobs:
           echo "Installing Playwright dependencies..."
           (npx playwright install --with-deps > command-output/playwright-output.txt 2>&1 || echo $? > command-output/playwright-exit-code.txt) &
           echo "Beginning pull of images"
-          ./run ci pull valkey production> /dev/null &
+          ./run ci pull valkey > /dev/null &
           echo "Starting database..."
           ./run ci up -d db
           sleep 1
