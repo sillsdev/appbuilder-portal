@@ -48,7 +48,7 @@
     "@opentelemetry/semantic-conventions": "^1.36.0",
     "@playwright/test": "^1.50.0",
     "@sveltejs/adapter-node": "^5.2.12",
-    "@sveltejs/kit": "^2.16.1",
+    "@sveltejs/kit": "^2.27.1",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tailwindcss/vite": "^4.0.6",
     "@types/express": "^5.0.0",
