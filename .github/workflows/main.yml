@@ -259,6 +259,7 @@ jobs:
       - name: Deploy to ECS
         run: |
           echo "Installing ecs-deploy script..."
+          mkdir -p $HOME/.local/bin
           curl -o $HOME/.local/bin/ecs-deploy https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy
           chmod +x $HOME/.local/bin/ecs-deploy
           echo "Deploying ${{ github.sha }} to ${{ steps.vars.outputs.ECS_CLUSTER }}..."
