@@ -35,6 +35,8 @@ COPY --from=builder /build/out/build /app
 
 # Copy prisma data (npm ci nukes node_modules, so this must be last)
 COPY --from=builder /build/node_modules/.prisma /app/node_modules/.prisma
+# Copy prisma migrations
+COPY --from=builder /build/src/lib/prisma/migrations /app/prisma/migrations
 
 EXPOSE 6173
 ENV PORT=6173
