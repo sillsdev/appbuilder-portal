@@ -38,4 +38,4 @@ COPY --from=builder /build/node_modules/.prisma /app/node_modules/.prisma
 
 EXPOSE 6173
 ENV PORT=6173
-CMD ["node", "index.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy --schema=./node_modules/.prisma/client/schema.prisma && node index.js"]
