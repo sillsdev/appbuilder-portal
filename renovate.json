@@ -19,7 +19,7 @@
         "paths": ["package.json"],
         "rangeStrategy": "replace",
         "enabled": true,
-        "automerge": true
+        "automerge": false
     },
     {
         "packagePatterns": ["Dockerfile"],
