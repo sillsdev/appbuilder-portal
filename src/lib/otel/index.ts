@@ -61,7 +61,7 @@ export default class OTEL {
 
   private constructor() {
     const isDev = process.env.NODE_ENV === 'development';
-    const endpoint = `http://${isDev ? 'localhost' : 'otel-collector'}:6317`;
+    const endpoint = `http://${isDev ? 'localhost' : 'otel'}:6317`;
 
     const resource = resourceFromAttributes({
       [ATTR_SERVICE_NAME]: 'scriptoria',

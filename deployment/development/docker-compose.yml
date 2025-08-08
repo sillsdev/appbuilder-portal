@@ -57,7 +57,7 @@ services:
     volumes:
       - ~/.ssh:/root/ssh
 
-  otel-collector:
+  otel:
     image: otel/opentelemetry-collector-contrib:0.131.0
     ports:
       - "6317:6317"   # gRPC
