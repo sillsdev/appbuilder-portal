@@ -80,6 +80,11 @@ const tracer = trace.getTracer('IncomingRequest');
 const authSequence = sequence(authRouteHandle, checkUserExistsHandle, localRouteHandle);
 
 export const handle: Handle = async ({ event, resolve }) => {
+  if (event.url.pathname.startsWith('/.well-known/appspecific/')) {
+    // Ignore these requests without logging them`
+    return new Response('', { status: 404 });
+  }
+
   return tracer.startActiveSpan(`${event.request.method} ${event.url.pathname}`, async (span) => {
     span.setAttributes({
       'http.method': event.request.method,
