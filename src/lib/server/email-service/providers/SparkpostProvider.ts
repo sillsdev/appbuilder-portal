@@ -1,9 +1,11 @@
-import SparkPost from 'sparkpost';
+import type { default as SparkPostType } from 'sparkpost';
 import { ScriptoriaLogoBase64 } from '../EmailTemplates';
 import { EmailProvider } from './EmailProvider';
 
+const { default: SparkPost } = await import('sparkpost');
+
 export class SparkpostProvider extends EmailProvider {
-  private sp: SparkPost;
+  private sp: SparkPostType;
 
   /**
    * Creates an instance of SparkpostProvider.

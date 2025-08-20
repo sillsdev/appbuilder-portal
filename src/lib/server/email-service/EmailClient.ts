@@ -5,30 +5,32 @@ import {
   NotificationWithLinkTemplate,
   addProperties
 } from './EmailTemplates';
+import { AmazonSESProvider } from './providers/AmazonSESProvider';
 import type { EmailProvider } from './providers/EmailProvider';
 import { LogProvider } from './providers/LogProvider';
+import { SparkpostProvider } from './providers/SparkpostProvider';
+import { building } from '$app/environment';
 import { RoleId } from '$lib/prisma';
 
 let emailProvider: EmailProvider = new LogProvider();
-
-if (process.env.MAIL_SENDER === 'SparkPost') {
-  const { SparkpostProvider } = await import('./providers/SparkpostProvider.js');
-  if (!process.env.SPARKPOST_API_KEY) {
-    throw new Error('SPARKPOST_API_KEY must be set to use SparkPost for email sending.');
-  }
-  emailProvider = new SparkpostProvider(process.env.SPARKPOST_API_KEY);
-} else if (process.env.MAIL_SENDER === 'AmazonSES') {
-  const { AmazonSESProvider } = await import('./providers/AmazonSESProvider.js');
-  if (!process.env.AWS_EMAIL_ACCESS_KEY_ID || !process.env.AWS_EMAIL_SECRET_ACCESS_KEY) {
-    throw new Error(
-      'AWS_EMAIL_ACCESS_KEY_ID and AWS_EMAIL_SECRET_ACCESS_KEY must be set to use Amazon SES for email sending.'
+if (!building) {
+  if (process.env.MAIL_SENDER === 'SparkPost') {
+    if (!process.env.SPARKPOST_API_KEY) {
+      throw new Error('SPARKPOST_API_KEY must be set to use SparkPost for email sending.');
+    }
+    emailProvider = new SparkpostProvider(process.env.SPARKPOST_API_KEY);
+  } else if (process.env.MAIL_SENDER === 'AmazonSES') {
+    if (!process.env.AWS_EMAIL_ACCESS_KEY_ID || !process.env.AWS_EMAIL_SECRET_ACCESS_KEY) {
+      throw new Error(
+        'AWS_EMAIL_ACCESS_KEY_ID and AWS_EMAIL_SECRET_ACCESS_KEY must be set to use Amazon SES for email sending.'
+      );
+    }
+    emailProvider = new AmazonSESProvider();
+  } else if (process.env.MAIL_SENDER !== 'LogEmail') {
+    console.warn(
+      `Unknown MAIL_SENDER: ${process.env.MAIL_SENDER}. Emails will be logged instead of sent.`
     );
   }
-  emailProvider = new AmazonSESProvider();
-} else if (process.env.MAIL_SENDER !== 'LogEmail') {
-  console.warn(
-    `Unknown MAIL_SENDER: ${process.env.MAIL_SENDER}. Emails will be logged instead of sent.`
-  );
 }
 
 export async function sendEmail(

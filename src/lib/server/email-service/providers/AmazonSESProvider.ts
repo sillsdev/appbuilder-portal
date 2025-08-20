@@ -1,11 +1,11 @@
-import { SES } from '@aws-sdk/client-ses';
+import { type SES as SESType } from '@aws-sdk/client-ses';
 import { EmailProvider } from './EmailProvider';
+const { SES } = await import('@aws-sdk/client-ses');
 
 export class AmazonSESProvider extends EmailProvider {
-  private ses: SES;
+  private ses: SESType;
 
   constructor() {
-    // TODO: AWS credentials and region
     super();
     this.ses = new SES({
       apiVersion: '2010-12-01',
