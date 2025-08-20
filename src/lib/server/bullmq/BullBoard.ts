@@ -8,11 +8,13 @@ import { Hono } from 'hono';
 import { createRequire } from 'module';
 import path from 'path';
 import { getQueues } from './queues';
+import { building } from '$app/environment';
 
 // This is a full Hono app that serves the BullBoard UI
 // Unfortunately this is the only way to setup BullBoard
 // within SvelteKit, but Hono is extremely lightweight
 const bullboard = (() => {
+  if (building) return null;
   const app = new Hono({ strict: false });
   const serverAdapter = new HonoAdapter(serveStatic);
   serverAdapter.setBasePath('/admin/jobs');
@@ -36,7 +38,7 @@ const bullboard = (() => {
 
 export const bullboardHandle: Handle = async ({ event, resolve }) => {
   if (event.request.method === 'GET' && event.url.pathname.match(/^\/admin\/jobs($|\/)/)) {
-    return bullboard.fetch(event.request);
+    return bullboard!.fetch(event.request);
   }
   return resolve(event);
 };
