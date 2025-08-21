@@ -13,6 +13,7 @@
   import { createl10nMapFromEntries, l10nMap } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
+  import { orgActive } from '$lib/stores';
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
 
   interface Props {
@@ -29,6 +30,10 @@
 
   function isUrlActive(route: string) {
     return deLocalizeUrl(page.url).pathname?.startsWith(`${base}${route}`);
+  }
+
+  function activeOrgUrl(route: string) {
+    return localizeHref($orgActive ? `${route}/${$orgActive}` : route);
   }
 
   $effect(() => {
@@ -128,7 +133,7 @@
             <a
               class="rounded-none"
               class:active-menu-item={isUrlActive('/projects/own')}
-              href={localizeHref('/projects/own')}
+              href={activeOrgUrl(`/projects/own`)}
               onclick={closeDrawer}
             >
               {m.sidebar_myProjects()}
@@ -138,7 +143,7 @@
             <a
               class="rounded-none"
               class:active-menu-item={isUrlActive('/projects/organization')}
-              href={localizeHref('/projects/organization')}
+              href={activeOrgUrl('/projects/organization')}
               onclick={closeDrawer}
             >
               {m.sidebar_orgProjects()}
@@ -149,7 +154,7 @@
               <a
                 class="rounded-none"
                 class:active-menu-item={isUrlActive('/projects/active')}
-                href={localizeHref('/projects/active')}
+                href={activeOrgUrl('/projects/active')}
                 onclick={closeDrawer}
               >
                 {m.sidebar_activeProjects()}
