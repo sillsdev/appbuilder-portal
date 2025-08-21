@@ -80,7 +80,7 @@
             </tr>
             {#if task.Comment}
               <tr>
-                <td class="pl-7">
+                <td class="pl-7 pt-0" colspan="3">
                   {#if task.Comment.startsWith('system.')}
                     {#if task.Comment.startsWith('system.build-failed')}
                       <span>
@@ -91,7 +91,7 @@
                         {m.system_publishFailed()}
                       </span>
                     {/if}
-                    <br />
+                    <span>—</span>
                     <a
                       class="link link-info"
                       href={task.Comment.replace(/system\.(build|publish)-failed,/, '')}
@@ -121,8 +121,10 @@
   thead th {
     padding: 0.75rem;
   }
-  tbody td {
+  tbody td:not(.pl-7) {
     padding: 0.5rem;
+    padding-bottom: 0;
+    padding-top: 1rem;
   }
   td a:hover {
     text-decoration: underline;
