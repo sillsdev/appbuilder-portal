@@ -20,7 +20,7 @@ function runstuff {
     up:build) ${COMPOSE} up --build $arguments ;;
     up)       ${COMPOSE} up $arguments ;;
     local)
-      runstuff dc up -d db adminer valkey stg-tunnel otel-collector jaeger
+      runstuff dc up -d db adminer valkey stg-tunnel otel jaeger
     ;;
     down)
       ${COMPOSE} down $arguments
