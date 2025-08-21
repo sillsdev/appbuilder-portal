@@ -37,7 +37,7 @@ const bullboard = (() => {
 })();
 
 export const bullboardHandle: Handle = async ({ event, resolve }) => {
-  if (event.request.method === 'GET' && event.url.pathname.match(/^\/admin\/jobs($|\/)/)) {
+  if (event.request.method === 'GET' && event.url.pathname.match(/^\/admin\/jobs($|\/)/) && !event.locals.error) {
     return bullboard!.fetch(event.request);
   }
   return resolve(event);
