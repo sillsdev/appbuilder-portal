@@ -100,21 +100,24 @@ export async function checkSystemStatuses(
         token: s.BuildEngineApiAccessToken ?? ''
       });
       const available = res.status === 200;
-      await DatabaseWrites.systemStatuses.update({
-        where: {
-          Id: s.Id
-        },
-        data: {
-          SystemAvailable: available
-        }
-      });
+      if (s.SystemAvailable !== available) {
+        await DatabaseWrites.systemStatuses.update({
+          where: {
+            Id: s.Id
+          },
+          data: {
+            SystemAvailable: available
+          }
+        });
+      }
       return {
         url: s.BuildEngineUrl,
         // return first 4 characters of token for differentiation purposes
         partialToken: s.BuildEngineApiAccessToken?.substring(0, 4),
         status: res.status,
         error: res.responseType === 'error' ? res : undefined,
-        minutes: Math.floor((Date.now() - new Date(s.DateUpdated!).valueOf()) / 60000)
+        minutes: Math.floor((Date.now() - new Date(s.DateUpdated!).valueOf()) / 60000),
+        updating: available !== s.SystemAvailable
       };
     })
   );
