@@ -18,9 +18,9 @@
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
+  import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
-  import { orgActive } from '$lib/stores';
 
   interface Props {
     data: PageData;

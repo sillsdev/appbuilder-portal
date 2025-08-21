@@ -13,8 +13,8 @@
   import { createl10nMapFromEntries, l10nMap } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
-  import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
   import { orgActive } from '$lib/stores';
+  import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
 
   interface Props {
     data: LayoutData;
