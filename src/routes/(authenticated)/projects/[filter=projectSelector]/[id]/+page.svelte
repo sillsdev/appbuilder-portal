@@ -20,6 +20,7 @@
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
   import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
+  import { orgActive } from '$lib/stores';
 
   interface Props {
     data: PageData;
@@ -28,6 +29,10 @@
   let { data }: Props = $props();
   let projects = $state(data.projects);
   let count = $state(data.count);
+
+  $effect(() => {
+    $orgActive = $pageForm.organizationId;
+  });
 
   const {
     form: pageForm,

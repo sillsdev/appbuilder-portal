@@ -14,6 +14,7 @@
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
+  import { orgActive } from '$lib/stores';
 
   interface Props {
     data: LayoutData;
@@ -128,7 +129,7 @@
             <a
               class="rounded-none"
               class:active-menu-item={isUrlActive('/projects/own')}
-              href={localizeHref('/projects/own')}
+              href={localizeHref(`/projects/own/${$orgActive}`)}
               onclick={closeDrawer}
             >
               {m.sidebar_myProjects()}
@@ -138,7 +139,7 @@
             <a
               class="rounded-none"
               class:active-menu-item={isUrlActive('/projects/organization')}
-              href={localizeHref('/projects/organization')}
+              href={localizeHref(`/projects/organization/${$orgActive}`)}
               onclick={closeDrawer}
             >
               {m.sidebar_orgProjects()}
@@ -149,7 +150,7 @@
               <a
                 class="rounded-none"
                 class:active-menu-item={isUrlActive('/projects/active')}
-                href={localizeHref('/projects/active')}
+                href={localizeHref(`/projects/active/${$orgActive}`)}
                 onclick={closeDrawer}
               >
                 {m.sidebar_activeProjects()}
