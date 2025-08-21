@@ -32,6 +32,10 @@
     return deLocalizeUrl(page.url).pathname?.startsWith(`${base}${route}`);
   }
 
+  function activeOrgUrl(route: string) {
+    return localizeHref($orgActive ? `${route}/${$orgActive}` : route);
+  }
+
   $effect(() => {
     l10nMap.value = createl10nMapFromEntries(data.localizedNames);
   });
@@ -129,7 +133,7 @@
             <a
               class="rounded-none"
               class:active-menu-item={isUrlActive('/projects/own')}
-              href={localizeHref(`/projects/own/${$orgActive}`)}
+              href={activeOrgUrl(`/projects/own`)}
               onclick={closeDrawer}
             >
               {m.sidebar_myProjects()}
@@ -139,7 +143,7 @@
             <a
               class="rounded-none"
               class:active-menu-item={isUrlActive('/projects/organization')}
-              href={localizeHref(`/projects/organization/${$orgActive}`)}
+              href={activeOrgUrl('/projects/organization')}
               onclick={closeDrawer}
             >
               {m.sidebar_orgProjects()}
@@ -150,7 +154,7 @@
               <a
                 class="rounded-none"
                 class:active-menu-item={isUrlActive('/projects/active')}
-                href={localizeHref(`/projects/active/${$orgActive}`)}
+                href={activeOrgUrl('/projects/active')}
                 onclick={closeDrawer}
               >
                 {m.sidebar_activeProjects()}

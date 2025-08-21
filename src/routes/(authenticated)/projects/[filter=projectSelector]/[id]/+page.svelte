@@ -30,10 +30,6 @@
   let projects = $state(data.projects);
   let count = $state(data.count);
 
-  $effect(() => {
-    $orgActive = $pageForm.organizationId;
-  });
-
   const {
     form: pageForm,
     enhance: pageEnhance,
@@ -144,6 +140,9 @@
     $productForm.products = selectedProducts.map((p) => p.Id);
   });
 
+  $effect(() => {
+    $orgActive = $pageForm.organizationId || 0;
+  });
   const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 </script>
 

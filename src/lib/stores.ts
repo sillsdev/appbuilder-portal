@@ -32,5 +32,4 @@ export function persisted<T>(key: string, initial: T): Writable<T> {
   return start;
 }
 
-// usage
-export const orgActive = persisted('orgActive', '0');
+export const orgActive = persisted('orgActive', 0);
