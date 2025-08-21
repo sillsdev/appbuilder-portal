@@ -129,7 +129,7 @@ export async function sendBatchUserTaskNotifications(
 ): Promise<unknown> {
   const allEmails = [];
   for (const notification of job.data.notifications) {
-    const user = await DatabaseReads.users.findUniqueOrThrow({
+    const user = await DatabaseReads.users.findUnique({
       where: {
         Id: notification.userId,
         EmailNotification: true
@@ -255,7 +255,7 @@ export async function notifySuperAdminsLowPriority(
 export async function sendNotificationToUser(
   job: Job<BullMQ.Email.SendNotificationToUser>
 ): Promise<unknown> {
-  const user = await DatabaseReads.users.findUniqueOrThrow({
+  const user = await DatabaseReads.users.findUnique({
     where: {
       Id: job.data.userId,
       EmailNotification: true
