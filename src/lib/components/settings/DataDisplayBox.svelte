@@ -38,13 +38,17 @@
       </button>
     {/if}
     {#each fields as field}
-      <p style="padding-left: 1rem; text-indent: -1rem" class:opacity-40={field.faint}>
+      <p
+        style="padding-left: 1rem; text-indent: -1rem"
+        class:opacity-40={field.faint}
+        class="wrap-anywhere"
+      >
         <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
         <b>{m[field.key](field.params as any)}:</b>
         {#if field.snippet}
           {@render field.snippet(data)}
         {:else}
-          {field.value ?? ''}
+          <span>{field.value ?? ''}</span>
         {/if}
       </p>
     {/each}

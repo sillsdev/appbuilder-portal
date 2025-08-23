@@ -45,7 +45,7 @@
 
 <dialog bind:this={modal} class="modal">
   <form
-    class="modal-box"
+    class="modal-box max-w-3xl"
     action="?/{endpoint}"
     method="POST"
     use:enhance={() =>
@@ -61,7 +61,7 @@
     {#if page.data.jobsAvailable}
       <div class="items-center text-center" class:hidden={selectingStore}>
         <div class="flex flex-row">
-          <h2 class="text-lg font-bold grow">{m.products_addTitle()}</h2>
+          <h2 class="text-lg font-bold grow pt-2 ml-[68px]">{m.products_addTitle()}</h2>
           <button
             class="btn btn-ghost"
             type="button"
@@ -72,7 +72,6 @@
             <IconContainer icon="mdi:close" width={36} class="opacity-80" />
           </button>
         </div>
-        <hr />
         <div class="flex flex-col pt-1 space-y-1">
           {#each prodDefs.toSorted((a, b) => byName(a, b, getLocale())) as productDef}
             <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -96,7 +95,16 @@
       </div>
       <div class="items-center text-center" class:hidden={!selectingStore}>
         <div class="flex flex-row">
-          <h2 class="text-lg font-bold">
+          <button
+            class="btn btn-ghost"
+            type="button"
+            onclick={() => {
+              selectingStore = false;
+            }}
+          >
+            <IconContainer icon="mdi:arrow-left" width={36} class="opacity-80" />
+          </button>
+          <h2 class="text-lg grow font-bold pt-2">
             {m.products_storeSelect({
               name: selectedProduct?.Name || ''
             })}
@@ -105,13 +113,13 @@
             class="btn btn-ghost"
             type="button"
             onclick={() => {
-              selectingStore = false;
+              modal?.close();
+              setTimeout(() => (selectingStore = false), 300);
             }}
           >
             <IconContainer icon="mdi:close" width={36} class="opacity-80" />
           </button>
         </div>
-        <hr />
         <div class="flex flex-col pt-1 space-y-1">
           {#if availableStores.length}
             {@const locale = getLocale()}

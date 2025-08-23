@@ -82,7 +82,7 @@
         {/key}
       </ul>
     </div>
-    <div class="flex flex-col grow sm:mt-16">
+    <div class="flex flex-col grow sm:mt-16 overflow-auto">
       {@render children?.()}
     </div>
   </div>
