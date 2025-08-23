@@ -6,7 +6,7 @@
   import { getLocale } from '$lib/paraglide/runtime';
   import { bytesToHumanSize } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
-  import { getRelativeTime } from '$lib/utils/time';
+  import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
   interface Props {
     build: Prisma.ProductBuildsGetPayload<{
@@ -84,7 +84,7 @@
             <tr>
               <td><IconContainer icon="mdi:file" width="20" /> {artifact.ArtifactType}</td>
               <td>
-                <Tooltip tip={artifact.DateUpdated?.toLocaleString(locale)}>
+                <Tooltip tip={getTimeDateString(artifact.DateUpdated)}>
                   {$artifactUpdated[i]}
                 </Tooltip>
               </td>
@@ -118,7 +118,7 @@
             <td>
               {release.Success ? m.publications_succeeded() : m.publications_failed()}
             </td>
-            <td>{release.DateUpdated?.toLocaleDateString(getLocale())}</td>
+            <td>{getTimeDateString(release.DateUpdated)}</td>
             <td>
               <a href={release.LogUrl} class="link">{m.publications_console()}</a>
             </td>

@@ -11,7 +11,7 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
-  import { getRelativeTime } from '$lib/utils/time';
+  import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
   interface Props {
     data: PageData;
@@ -86,9 +86,8 @@
       />
     </div>
   </form>
-  <div class="m-4 relative mt-1 w-full overflow-x-auto">
+  <div class="p-4 relative mt-1 w-full overflow-x-auto">
     {#if instances.length > 0}
-      {@const locale = getLocale()}
       <SortTable
         data={instances.map((instance, index) => ({ ...instance, i: index }))}
         columns={[
@@ -144,7 +143,7 @@
             </td>
             <td class="border">{instance.State}</td>
             <td class="border">
-              <Tooltip className="text-left" tip={instance.DateUpdated?.toLocaleString(locale)}>
+              <Tooltip className="text-left" tip={getTimeDateString(instance.DateUpdated)}>
                 {$instanceUpdated[instance.i]}
               </Tooltip>
             </td>

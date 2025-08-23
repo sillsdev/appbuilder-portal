@@ -9,7 +9,7 @@
   import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
   import { canModifyProject } from '$lib/projects';
   import { byName } from '$lib/utils/sorting';
-  import { getRelativeTime } from '$lib/utils/time';
+  import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
   interface Props {
     data: PageData;
@@ -40,7 +40,7 @@
       {/if}
       <span>
         {m.project_createdOn()}
-        <Tooltip tip={data.project?.DateCreated?.toLocaleString(getLocale())}>
+        <Tooltip tip={getTimeDateString(data.project?.DateCreated)}>
           {data.project?.DateCreated ? $time : 'null'}
         </Tooltip>
       </span>

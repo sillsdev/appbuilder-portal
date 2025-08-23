@@ -14,7 +14,7 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { byName } from '$lib/utils/sorting';
-  import { getRelativeTime } from '$lib/utils/time';
+  import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
   const { data } = $props();
 
@@ -62,7 +62,7 @@
           <span>-</span>
           <span>
             {m.project_createdOn()}
-            <Tooltip tip={projectData?.project?.DateCreated?.toLocaleString(getLocale())}>
+            <Tooltip tip={getTimeDateString(projectData?.project?.DateCreated)}>
               {$dateCreated}
             </Tooltip>
           </span>
@@ -70,7 +70,7 @@
         {#if projectData?.project?.DateArchived}
           <span>
             {m.project_archivedOn()}
-            <Tooltip tip={projectData?.project?.DateArchived?.toLocaleString(getLocale())}>
+            <Tooltip tip={getTimeDateString(projectData?.project?.DateArchived)}>
               {$dateArchived}
             </Tooltip>
           </span>

@@ -9,8 +9,8 @@
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-  import { getRelativeTime } from '$lib/utils/time';
+  import { localizeHref } from '$lib/paraglide/runtime';
+  import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
   const currentPageUrl = page.url.pathname;
   let reconnectDelay = 1000; // Initial delay for reconnection
@@ -44,7 +44,6 @@
   <h1>{m.tasks_title()}</h1>
   <div class="m-4 relative mt-0">
     {#if userTasks.length > 0}
-      {@const locale = getLocale()}
       <table class="w-full">
         <thead>
           <tr class="border-b-2 text-left">
@@ -81,7 +80,7 @@
                 </a>
               </td>
               <td>
-                <Tooltip tip={task.DateUpdated?.toLocaleString(locale)}>
+                <Tooltip tip={getTimeDateString(task.DateUpdated)}>
                   {$dateUpdated[i]}
                 </Tooltip>
               </td>

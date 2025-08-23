@@ -5,7 +5,7 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byString } from '$lib/utils/sorting';
-  import { getRelativeTime } from '$lib/utils/time';
+  import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
   interface Props {
     data: PageData;
@@ -13,11 +13,10 @@
 
   let { data }: Props = $props();
   let dates = $derived(getRelativeTime(data.buildEngines.map((engine) => engine.DateUpdated)));
-  let locale = getLocale();
 </script>
 
 {#snippet date(engine?: (typeof data.buildEngines)[0] & { i: number })}
-  <Tooltip className="indent-0" tip={engine?.DateUpdated?.toLocaleString(locale)}>
+  <Tooltip className="indent-0" tip={getTimeDateString(engine?.DateUpdated ?? null)}>
     {engine ? $dates[engine.i] : '-'}
   </Tooltip>
 {/snippet}

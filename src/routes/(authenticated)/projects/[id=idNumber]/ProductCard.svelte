@@ -11,14 +11,14 @@
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import type { ProductActionType } from '$lib/products';
   import ProductDetails, {
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
   import { sanitizeInput, toast } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
-  import { getRelativeTime } from '$lib/utils/time';
+  import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
   import { ProductType } from '$lib/workflowTypes';
 
   type Transition = Prisma.ProductTransitionsGetPayload<{
@@ -158,14 +158,14 @@
     <span class="w-32 inline-block">
       {m.common_updated()}
       <br />
-      <Tooltip tip={product.DateUpdated?.toLocaleString(getLocale())}>
+      <Tooltip tip={getTimeDateString(product.DateUpdated)}>
         {$updatedTime}
       </Tooltip>
     </span>
     <span class="w-32 inline-block">
       {m.products_published()}
       <br />
-      <Tooltip tip={product.DatePublished?.toLocaleString(getLocale())}>
+      <Tooltip tip={getTimeDateString(product.DatePublished)}>
         {$publishedTime}
       </Tooltip>
     </span>
