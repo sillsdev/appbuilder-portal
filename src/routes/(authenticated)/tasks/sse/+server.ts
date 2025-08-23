@@ -1,6 +1,6 @@
 import { produce } from 'sveltekit-sse';
+import { getUserTasks } from '../userTasks';
 import { SSEPageUpdates } from '$lib/projects/listener';
-import { DatabaseReads } from '$lib/server/database';
 
 export async function POST(request) {
   const userId = (await request.locals.auth())!.user.userId;
@@ -11,7 +11,6 @@ export async function POST(request) {
     }
     async function updateCb(updateId: number[]) {
       if (updateId.includes(userId)) {
-        // console.log(`User tasks page SSE update for user ${userId}`);
         const userTaskData = await getUserTasks(userId);
         const { error } = emit('userTasks', JSON.stringify(userTaskData));
         if (error) {
@@ -28,31 +27,4 @@ export async function POST(request) {
       clearInterval(pingInterval);
     }, 10000).unref();
   });
-}
-
-export type UserTaskDataSSE = Awaited<ReturnType<typeof getUserTasks>>;
-async function getUserTasks(userId: number) {
-  const tasks = await DatabaseReads.userTasks.findMany({
-    where: {
-      UserId: userId
-    },
-    include: {
-      Product: {
-        include: {
-          Project: true,
-          ProductDefinition: {
-            include: {
-              Workflow: true
-            }
-          }
-        }
-      }
-    },
-    distinct: 'ProductId',
-    orderBy: {
-      // most recent first
-      DateUpdated: 'desc'
-    }
-  });
-  return tasks;
 }

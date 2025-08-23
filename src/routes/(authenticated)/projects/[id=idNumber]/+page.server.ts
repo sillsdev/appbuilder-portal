@@ -4,6 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
+import { getProjectDetails } from './project';
 import { baseLocale } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
@@ -35,6 +36,7 @@ const productActionSchema = v.object({
 export const load = (async ({ locals, params }) => {
   // permissions checked in auth
   return {
+    projectData: await getProjectDetails(parseInt(params.id), (await locals.auth())!.user.userId),
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),

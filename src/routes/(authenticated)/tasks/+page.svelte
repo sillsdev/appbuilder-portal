@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { Readable } from 'svelte/store';
   import { source } from 'sveltekit-sse';
-  import type { UserTaskDataSSE } from './sse/+server';
+  import type { PageData } from './$types';
+  import type { UserTaskDataSSE } from './userTasks';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
@@ -13,7 +14,7 @@
 
   const currentPageUrl = page.url.pathname;
   let reconnectDelay = 1000; // Initial delay for reconnection
-  const userTasks: Readable<UserTaskDataSSE> = source(`tasks/sse`, {
+  const userTasksSSE: Readable<UserTaskDataSSE> = source(`tasks/sse`, {
     close({ connect }) {
       setTimeout(() => {
         if (currentPageUrl !== page.url.pathname) {
@@ -29,13 +30,20 @@
     .select('userTasks')
     .json();
 
-  const dateUpdated = $derived(getRelativeTime($userTasks?.map((task) => task.DateUpdated)));
+  interface Props {
+    data: PageData;
+  }
+  let { data }: Props = $props();
+
+  const userTasks = $derived($userTasksSSE ?? data.userTasks);
+
+  const dateUpdated = $derived(getRelativeTime(userTasks.map((task) => task.DateUpdated)));
 </script>
 
 <div class="w-full">
   <h1>{m.tasks_title()}</h1>
   <div class="m-4 relative mt-0">
-    {#if $userTasks?.length > 0}
+    {#if userTasks.length > 0}
       {@const locale = getLocale()}
       <table class="w-full">
         <thead>
@@ -46,7 +54,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each $userTasks as task, i}
+          {#each userTasks as task, i}
             <tr
               class="cursor-pointer"
               onclick={() => goto(localizeHref(`/tasks/${task.ProductId}`))}

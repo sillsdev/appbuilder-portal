@@ -4,7 +4,7 @@
   import ProductCard from './ProductCard.svelte';
   import { Authors, OwnerGroup, Reviewers, Settings } from './forms';
   import { AddProduct } from './modals';
-  import type { ProjectDataSSE } from './sse/+server';
+  import type { ProjectDataSSE } from './project';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
@@ -22,7 +22,7 @@
 
   const currentPageUrl = page.url.pathname;
   let reconnectDelay = 1000;
-  const projectData: Readable<ProjectDataSSE> = source(`${page.params.id}/sse`, {
+  const projectDataSSE: Readable<ProjectDataSSE> = source(`${page.params.id}/sse`, {
     close({ connect }) {
       setTimeout(() => {
         if (currentPageUrl !== page.url.pathname) {
@@ -38,12 +38,13 @@
     .select('projectData')
     .json();
 
-  const dateCreated = $derived(getRelativeTime($projectData?.project?.DateCreated ?? null));
-  const dateArchived = $derived(getRelativeTime($projectData?.project?.DateArchived ?? null));
+  const projectData = $derived($projectDataSSE ?? data.projectData);
+  const dateCreated = $derived(getRelativeTime(projectData?.project?.DateCreated ?? null));
+  const dateArchived = $derived(getRelativeTime(projectData?.project?.DateArchived ?? null));
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
-  {#if !$projectData}
+  {#if !projectData}
     <div class="flex justify-center items-center h-64">
       <span class="loading loading-spinner loading-lg"></span>
     </div>
@@ -52,24 +53,24 @@
     <div class="flex p-6">
       <div class="shrink">
         <h1 class="p-0">
-          {$projectData?.project?.Name}
+          {projectData?.project?.Name}
         </h1>
         <div>
           <span class="font-bold">
-            {$projectData?.project?.IsPublic ? m.project_public() : m.project_private()}
+            {projectData?.project?.IsPublic ? m.project_public() : m.project_private()}
           </span>
           <span>-</span>
           <span>
             {m.project_createdOn()}
-            <Tooltip tip={$projectData?.project?.DateCreated?.toLocaleString(getLocale())}>
+            <Tooltip tip={projectData?.project?.DateCreated?.toLocaleString(getLocale())}>
               {$dateCreated}
             </Tooltip>
           </span>
         </div>
-        {#if $projectData?.project?.DateArchived}
+        {#if projectData?.project?.DateArchived}
           <span>
             {m.project_archivedOn()}
-            <Tooltip tip={$projectData?.project?.DateArchived?.toLocaleString(getLocale())}>
+            <Tooltip tip={projectData?.project?.DateArchived?.toLocaleString(getLocale())}>
               {$dateArchived}
             </Tooltip>
           </span>
@@ -78,7 +79,7 @@
       <div class="grow">
         <Tooltip className="tooltip-bottom" tip={m.project_editProject()}>
           <a
-            href={localizeHref(`/projects/${$projectData?.project?.Id}/edit`)}
+            href={localizeHref(`/projects/${projectData?.project?.Id}/edit`)}
             title={m.project_editProject()}
           >
             <IconContainer width="24" icon="mdi:pencil" />
@@ -88,9 +89,9 @@
       <div class="shrink">
         <ProjectActionMenu
           data={data.actionForm}
-          project={$projectData?.project}
-          userGroups={$projectData?.userGroups}
-          orgId={$projectData?.project.Organization.Id}
+          project={projectData?.project}
+          userGroups={projectData?.userGroups}
+          orgId={projectData?.project.Organization.Id}
         />
       </div>
     </div>
@@ -106,29 +107,29 @@
                 {m.project_details_language()}:
               </span>
               <span>
-                {$projectData?.project?.Language} ({tryLocalizeName(
+                {projectData?.project?.Language} ({tryLocalizeName(
                   data.langtags,
                   l10nMap.value,
                   getLocale(),
-                  $projectData?.project.Language ?? ''
+                  projectData?.project.Language ?? ''
                 )})
               </span>
             </div>
             <div class="flex place-content-between">
               <span>{m.project_details_type()}:</span>
-              <span>{$projectData?.project?.ApplicationType.Description}</span>
+              <span>{projectData?.project?.ApplicationType.Description}</span>
             </div>
           </div>
           <div class="my-4">
             <span>{m.project_description()}:</span>
             <br />
-            <p>{$projectData?.project?.Description}</p>
+            <p>{projectData?.project?.Description}</p>
           </div>
           <div>
             <span>{m.project_location()}:</span>
             <br />
             <p class="rounded-md text-nowrap overflow-x-scroll bg-base-200 p-3 pt-2 mt-2">
-              {$projectData?.project?.WorkflowProjectUrl || m.errors_notFoundTitle()}
+              {projectData?.project?.WorkflowProjectUrl || m.errors_notFoundTitle()}
             </p>
           </div>
         </div>
@@ -148,7 +149,7 @@
               class="btn btn-outline"
               onclick={() => addProductModal?.showModal()}
               disabled={!(
-                $projectData.productsToAdd.length && $projectData.project.WorkflowProjectUrl
+                projectData.productsToAdd.length && projectData.project.WorkflowProjectUrl
               )}
             >
               {m.products_add()}
@@ -156,20 +157,20 @@
           </BlockIfJobsUnavailable>
           <AddProduct
             bind:modal={addProductModal}
-            prodDefs={$projectData?.productsToAdd}
-            stores={$projectData?.stores}
+            prodDefs={projectData?.productsToAdd}
+            stores={projectData?.stores}
             endpoint="addProduct"
           />
         </div>
         <!-- Products List -->
         <div>
-          {#if !$projectData?.project?.Products.length}
+          {#if !projectData?.project?.Products.length}
             {m.projectTable_noProducts()}
           {:else}
-            {#each $projectData?.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, getLocale()) ) as product}
+            {#each projectData?.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, getLocale()) ) as product}
               <ProductCard
                 {product}
-                project={$projectData?.project}
+                project={projectData?.project}
                 actionEndpoint="productAction"
                 deleteEndpoint="deleteProduct"
                 updateEndpoint="updateProduct"
@@ -182,7 +183,7 @@
       <!-- Settings -->
       <div class="settingsarea my-4">
         <Settings
-          project={$projectData?.project}
+          project={projectData?.project}
           publicEndpoint="toggleVisibility"
           downloadEndpoint="toggleDownload"
         />
@@ -190,23 +191,23 @@
       <!-- Sidebar Settings -->
       <div class="space-y-2 min-w-0 flex-auto sidebararea">
         <OwnerGroup
-          project={$projectData?.project}
-          users={$projectData?.possibleProjectOwners}
-          groups={$projectData?.possibleGroups}
-          orgName={data.organizations.find((o) => o.Id === $projectData?.project.Organization.Id)
+          project={projectData?.project}
+          users={projectData?.possibleProjectOwners}
+          groups={projectData?.possibleGroups}
+          orgName={data.organizations.find((o) => o.Id === projectData?.project.Organization.Id)
             ?.Name}
           endpoint="editOwnerGroup"
         />
         <Authors
-          group={$projectData?.project.Group}
-          projectAuthors={$projectData?.project.Authors}
-          availableAuthors={$projectData?.authorsToAdd}
+          group={projectData?.project.Group}
+          projectAuthors={projectData?.project.Authors}
+          availableAuthors={projectData?.authorsToAdd}
           formData={data.authorForm}
           createEndpoint="addAuthor"
           deleteEndpoint="deleteAuthor"
         />
         <Reviewers
-          reviewers={$projectData?.project.Reviewers}
+          reviewers={projectData?.project.Reviewers}
           formData={data.reviewerForm}
           createEndpoint="addReviewer"
           deleteEndpoint="deleteReviewer"
