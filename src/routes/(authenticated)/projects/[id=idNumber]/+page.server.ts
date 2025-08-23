@@ -119,16 +119,14 @@ export const actions = {
     if (!checkRepository?.WorkflowProjectUrl) {
       return error(400, 'Project Repository not Yet Initialized');
     }
-    const productId = await DatabaseWrites.products.create({
-      ProjectId: parseInt(event.params.id),
-      ProductDefinitionId: form.data.productDefinitionId,
-      StoreId: form.data.storeId,
-      WorkflowJobId: 0,
-      WorkflowBuildId: 0,
-      WorkflowPublishId: 0
+    getQueues().Miscellaneous.add(`Create Product for Project #${event.params.id}`, {
+      type: BullMQ.JobType.Product_CreateLocal,
+      projectId: parseInt(event.params.id),
+      productDefinitionId: form.data.productDefinitionId,
+      storeId: form.data.storeId
     });
 
-    return { form, ok: !!productId };
+    return { form, ok: true };
   },
   async productAction(event) {
     // permissions checked in auth
