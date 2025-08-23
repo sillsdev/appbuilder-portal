@@ -98,19 +98,39 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
 }
 
 export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
+  private jobsLeft = 0;
   constructor() {
     super(BullMQ.QueueName.SystemStartup);
-    getQueues().SystemStartup.add('Check System Statuses (Startup)', {
-      type: BullMQ.JobType.System_CheckEngineStatuses
+    const startupJobs = [
+      [
+        'Check System Statuses (Startup)',
+        {
+          type: BullMQ.JobType.System_CheckEngineStatuses
+        }
+      ],
+      [
+        'Refresh LangTags (Startup)',
+        {
+          type: BullMQ.JobType.System_RefreshLangTags
+        }
+      ],
+      [
+        'Migrate Features from S1 to S2 (Startup)',
+        {
+          type: BullMQ.JobType.System_Migrate
+        }
+      ]
+    ] as const;
+    startupJobs.forEach(([name, data]) => {
+      getQueues().SystemStartup.add(name, data);
     });
-    getQueues().SystemStartup.add('Refresh LangTags (Startup)', {
-      type: BullMQ.JobType.System_RefreshLangTags
-    });
-    getQueues().SystemStartup.add('Migrate Features from S1 to S2 (Startup)', {
-      type: BullMQ.JobType.System_Migrate
-    });
+    this.jobsLeft = startupJobs.length;
   }
   async run(job: Job<J>) {
+    // Close the worker after running the startup jobs
+    // This prevents this worker from taking startup jobs when a new instance is started
+    // The worker will not actually be closed until all processing jobs are complete
+    if (--this.jobsLeft === 0) this.worker?.close();
     switch (job.data.type) {
       case BullMQ.JobType.System_CheckEngineStatuses:
         return Executor.System.checkSystemStatuses(job as Job<BullMQ.System.CheckEngineStatuses>);
