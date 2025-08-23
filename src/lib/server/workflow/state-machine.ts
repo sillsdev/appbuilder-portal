@@ -304,7 +304,7 @@ export const WorkflowStateMachine = setup({
               type: BullMQ.JobType.Product_Create,
               productId: context.productId
             },
-            BullMQ.Retry5e5
+            BullMQ.Retry0f600
           );
         }
       ],
@@ -512,7 +512,7 @@ export const WorkflowStateMachine = setup({
               // extra env handled in getWorkflowParameters
               environment: context.environment
             },
-            BullMQ.Retry5e5
+            BullMQ.Retry0f600
           );
         }
       ],
@@ -786,7 +786,7 @@ export const WorkflowStateMachine = setup({
                       's3-bucket',
               environment: context.environment
             },
-            BullMQ.Retry5e5
+            BullMQ.Retry0f600
           );
         }
       ],

@@ -98,7 +98,7 @@ async function deleteProduct(productId: string) {
       organizationId: product!.Project.OrganizationId,
       workflowJobId: product!.WorkflowJobId
     },
-    BullMQ.Retry5e5
+    BullMQ.Retry0f600
   );
   await prisma.$transaction([
     deleteInstance(productId, product!.Project.Id),

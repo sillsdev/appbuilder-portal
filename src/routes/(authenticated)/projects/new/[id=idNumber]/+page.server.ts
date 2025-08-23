@@ -77,7 +77,7 @@ export const actions: Actions = {
           type: BullMQ.JobType.Project_Create,
           projectId: project as number
         },
-        BullMQ.Retry5e5
+        BullMQ.Retry0f600
       );
       return redirect(302, localizeHref(`/projects/${project}`));
     }

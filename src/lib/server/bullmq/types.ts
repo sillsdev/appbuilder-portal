@@ -3,12 +3,12 @@ import type { RepeatOptions } from 'bullmq';
 import type { RoleId } from '../../prisma';
 import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-api/types';
 
-/** Maximum 5 attempts with a 5 second exponential backoff */
-export const Retry5e5 = {
-  attempts: 5,
+/** Retry a job forever with fixed backoff of 10 minutes. Useful for build engine tasks */
+export const Retry0f600 = {
+  attempts: 0,
   backoff: {
-    type: 'exponential',
-    delay: 5000 // 5 seconds
+    type: 'fixed',
+    delay: 600000 // 10 minute
   }
 } as const;
 
