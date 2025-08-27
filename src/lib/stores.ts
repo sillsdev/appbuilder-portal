@@ -16,10 +16,8 @@ export function persistedLocal<T>(key: string, initial: T): Writable<T> {
     const stored = localStorage.getItem(key);
     if (stored !== null) {
       try {
-        console.log('Loaded from localStorage:', JSON.parse(stored));
         start.set(JSON.parse(stored));
       } catch {
-        console.error('Failed to parse stored value for key ', key, ' using ', initial);
         // if parsing fails, fall back to initial
         start.set(initial);
       }

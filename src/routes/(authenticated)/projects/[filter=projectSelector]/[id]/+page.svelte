@@ -141,15 +141,7 @@
   });
 
   $effect(() => {
-    console.log(
-      'pageForm.organizationId',
-      $pageForm.organizationId,
-      'orgLastSelected',
-      $orgLastSelected,
-      'orgActive',
-      $orgActive
-    );
-    $orgActive = $pageForm.organizationId || $orgActive || $orgLastSelected;
+    $orgActive = $pageForm.organizationId || $orgLastSelected;
   });
   const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 </script>
