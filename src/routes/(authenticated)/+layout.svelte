@@ -174,7 +174,7 @@
               <a
                 class="rounded-none"
                 class:active-menu-item={isUrlActive('/organizations')}
-                href={localizeHref('/organizations')}
+                href={activeOrgUrl('/organizations')}
                 onclick={closeDrawer}
               >
                 {m.sidebar_orgSettings()}
