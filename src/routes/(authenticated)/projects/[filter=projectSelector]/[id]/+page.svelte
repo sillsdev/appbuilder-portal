@@ -18,7 +18,7 @@
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
-  import { orgActive } from '$lib/stores';
+  import { orgActive, orgLastSelected } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
 
@@ -141,7 +141,15 @@
   });
 
   $effect(() => {
-    $orgActive = $pageForm.organizationId || 0;
+    console.log(
+      'pageForm.organizationId',
+      $pageForm.organizationId,
+      'orgLastSelected',
+      $orgLastSelected,
+      'orgActive',
+      $orgActive
+    );
+    $orgActive = $pageForm.organizationId || $orgActive || $orgLastSelected;
   });
   const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 </script>
