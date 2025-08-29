@@ -155,7 +155,7 @@ export enum ENVKeys {
   GOOGLE_PLAY_EXISTING = 'google_play_existing',
   GOOGLE_PLAY_DRAFT = 'PUBLISH_GOOGLE_PLAY_DRAFT',
   // Before Build
-  UI_URL = 'UI_URL',
+  ORIGIN = 'ORIGIN',
   PRODUCT_ID = 'PRODUCT_ID',
   PROJECT_ID = 'PROJECT_ID',
   PROJECT_NAME = 'PROJECT_NAME',

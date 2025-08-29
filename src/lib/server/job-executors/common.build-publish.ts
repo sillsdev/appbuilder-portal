@@ -31,11 +31,11 @@ export async function addProductPropertiesToEnvironment(productId: string) {
       Properties: true
     }
   });
-  const uiUrl = process.env.UI_URL || 'http://localhost:6173';
-  const projectUrl = uiUrl + '/projects/' + product.Project.Id;
+  const originUrl = process.env.ORIGIN || 'http://localhost:6173';
+  const projectUrl = originUrl + '/projects/' + product.Project.Id;
 
   return {
-    [ENVKeys.UI_URL]: uiUrl,
+    [ENVKeys.ORIGIN]: originUrl,
     [ENVKeys.PRODUCT_ID]: productId,
     [ENVKeys.PROJECT_ID]: '' + product.Project.Id,
     [ENVKeys.PROJECT_NAME]: product.Project.Name ?? '',
