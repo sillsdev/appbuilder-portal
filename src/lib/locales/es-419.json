@@ -396,6 +396,7 @@
   "project_visibility_title": "Public Visibility",
   "project_visibility_description": "Public Projects allow any Scriptoria User to view your project in the Directory",
   "project_location": "Repository Location",
+  "project_location_placeholder": "Creating the repository...",
   "project_org": "Organization",
   "authors_title": "Authors",
   "authors_submit": "Add Author",
