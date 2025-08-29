@@ -396,7 +396,7 @@
   "project_visibility_title": "Visibilidad pública",
   "project_visibility_description": "Los proyectos públicos permiten a cualquier usuario de Scriptoria ver su proyecto en el Directorio",
   "project_location": "Ubicación del repositorio",
-  "project_location_placeholder": "El repositorio se está creando. Por favor espera.",
+  "project_location_placeholder": "Creando el repositorio...",
   "project_org": "Organización",
   "authors_title": "Autores",
   "authors_submit": "Agregar autor(a)",
