@@ -15,7 +15,7 @@ export async function createMany(createManyData: Prisma.UserTasksCreateManyArgs)
 
 export async function deleteMany(deleteManyData: Prisma.UserTasksDeleteManyArgs) {
   const rows = await prisma.userTasks.findMany({
-    ...deleteManyData
+    where: deleteManyData.where
   });
   const res = await prisma.userTasks.deleteMany({
     ...deleteManyData
