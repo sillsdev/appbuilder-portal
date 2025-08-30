@@ -12,5 +12,8 @@ export const load: PageServerLoad = async (event) => {
     }
     return redirect(302, localizeHref('/tasks'));
   }
+  return {
+    serviceAvailable: QueueConnected()
+  };
 };
 export const actions: Actions = { default: signIn };
