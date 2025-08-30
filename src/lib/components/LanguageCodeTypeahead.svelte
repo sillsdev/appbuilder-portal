@@ -244,6 +244,6 @@
 
 <style>
   .selected {
-    background-color: var(--color-base-200);
+    background-color: var(--color-base-300);
   }
 </style>
