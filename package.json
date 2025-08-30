@@ -77,7 +77,7 @@
     "prettier-eslint": "^17.0.0-alpha.1",
     "prettier-plugin-prisma": "^5.0.0",
     "prettier-plugin-svelte": "^3.4.0",
-    "prisma": "^5.22.0",
+    "prisma": "^6.15.0",
     "sparkpost": "^2.1.4",
     "svelte": "^5.19.2",
     "svelte-check": "^4.1.4",
@@ -96,6 +96,6 @@
     "xstate": "^5.20.1"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0"
+    "@prisma/client": "^6.15.0"
   }
 }
