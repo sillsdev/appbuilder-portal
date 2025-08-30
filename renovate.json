@@ -2,28 +2,23 @@
   "labels": [
     "dependency upgrade"
   ],
-  "masterIssue": true,
+  "dependencyDashboard": true,
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "automerge": false,
   "enabled": true,
-  "ignorePaths": [
-  ],
+  "ignorePaths": [],
   "packageRules": [
     {
-      "packagePatterns": ["^@types"],
-      "groupName": "TypeScript type definitions"
+      "groupName": "TypeScript type definitions",
+      "matchPackageNames": ["/^@types/"]
     },
     {
-        "paths": ["package.json"],
-        "rangeStrategy": "replace",
-        "enabled": true,
-        "automerge": false
-    },
-    {
-        "packagePatterns": ["Dockerfile"],
-        "enabled": false
+      "matchFileNames": ["package.json"],
+      "rangeStrategy": "replace",
+      "enabled": true,
+      "automerge": false
     }
   ]
 }
