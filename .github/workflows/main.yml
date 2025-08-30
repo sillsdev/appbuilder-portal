@@ -18,7 +18,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -69,7 +69,7 @@ jobs:
       AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
       AUTH0_CONNECTION: ${{ vars.AUTH0_CONNECTION }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -105,7 +105,7 @@ jobs:
       AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
       AUTH0_CONNECTION: ${{ vars.AUTH0_CONNECTION }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -206,7 +206,7 @@ jobs:
     if: ${{ success() && ((github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && github.event_name != 'pull_request' ) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup node
         uses: actions/setup-node@v4
         with:
