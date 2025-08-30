@@ -1,7 +1,14 @@
-<script>
+<script lang="ts">
   import { SignIn } from '@auth/sveltekit/components';
   import ScriptoriaIcon from '$lib/icons/ScriptoriaIcon.svelte';
   import * as m from '$lib/paraglide/messages';
+
+  // Add a boolean param
+  let {
+    serviceAvailable
+  }: {
+    serviceAvailable: boolean;
+  } = $props();
 </script>
 
 <div class="card shadow-xl bg-white border p-4">
@@ -14,20 +21,28 @@
     <p class="text-black m-4 text-center w-80">
       {m.about()}
     </p>
-    <SignIn provider="auth0" signInPage="login" class="signin-button">
-      <div slot="submitButton" class="btn btn-primary w-full mx-auto">{m.auth_login()}</div>
-    </SignIn>
-    <p class="text-gray-700 text-sm text-center">{m.common_or()}</p>
-    <SignIn
-      provider="auth0"
-      signInPage="login"
-      class="signin-button"
-      authorizationParams={{ prompt: 'login', screen_hint: 'signup' }}
-    >
-      <div slot="submitButton" class="btn w-full mx-auto btn-secondary">
-        {m.auth_loginNewSession()}
-      </div>
-    </SignIn>
+    {#if serviceAvailable}
+      <SignIn provider="auth0" signInPage="login" class="signin-button">
+        <div slot="submitButton" class="btn btn-primary w-full mx-auto">
+          {m.auth_login()}
+        </div>
+      </SignIn>
+      <p class="text-gray-700 text-sm text-center">{m.common_or()}</p>
+      <SignIn
+        provider="auth0"
+        signInPage="login"
+        class="signin-button"
+        authorizationParams={{ prompt: 'login', screen_hint: 'signup' }}
+      >
+        <div slot="submitButton" class="btn w-full mx-auto btn-secondary">
+          {m.auth_loginNewSession()}
+        </div>
+      </SignIn>
+    {:else}
+      <p class="text-red-600 text-center">
+        {m.errors_appUnavailable()}
+      </p>
+    {/if}
   </div>
 </div>
 

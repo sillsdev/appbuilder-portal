@@ -69,7 +69,12 @@ const config: SvelteKitAuthConfig = {
       let user;
       try {
         if (!profile || !profile.sub) return false;
-        user = await DatabaseWrites.utility.getUserIfExists(profile.sub);
+        try {
+          user = await DatabaseWrites.utility.getUserIfExists(profile.sub);
+        } catch {
+          // If the database is down, return the user to the homepage
+          return '/';
+        }
         userExists = !!user;
         if (userExists) {
           return true;
