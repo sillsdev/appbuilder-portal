@@ -86,6 +86,7 @@ export const handle: Handle = async ({ event, resolve }) => {
       'http.route': event.url.pathname ?? '',
       'http.user_agent': event.request.headers.get('user-agent') ?? '',
       'http.client_ip': event.getClientAddress(),
+      'http.x-forwarded-for': event.request.headers.get('x-forwarded-for') ?? '',
       'svelte.route_id': event.route.id ?? ''
     });
     const response = await sequence(
