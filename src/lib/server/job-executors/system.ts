@@ -10,7 +10,9 @@ import { Workflow } from '../workflow';
 import { WorkflowType, WorkflowTypeString } from '$lib/prisma';
 import {
   ENVKeys,
+  ProductType,
   WorkflowAction,
+  WorkflowOptions,
   WorkflowState,
   isDeprecated,
   isWorkflowState
@@ -533,6 +535,86 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     ).map(({ Id }) => DatabaseWrites.workflowInstances.markProcessFinalized(Id))
   );
 
+  job.updateProgress(85);
+  // Update WorkflowDefinitions ProductType and WorkflowOptions
+  const workflowDefsNeedUpdate =
+    (await DatabaseReads.workflowDefinitions.count({
+      where: {
+        ProductType: 0
+      }
+    })) === 14;
+  if (workflowDefsNeedUpdate) {
+    const workflowDefs: Parameters<typeof DatabaseWrites.workflowDefinitions.updateMany>[0][] = [
+      {
+        where: {
+          Name: {
+            contains: 'google_play'
+          }
+        },
+        data: {
+          ProductType: ProductType.Android_GooglePlay
+        }
+      },
+      {
+        where: {
+          Name: {
+            contains: 's3'
+          }
+        },
+        data: {
+          ProductType: ProductType.Android_S3
+        }
+      },
+      {
+        where: {
+          Name: {
+            contains: 'cloud'
+          }
+        },
+        data: {
+          ProductType: ProductType.Web
+        }
+      },
+      {
+        where: {
+          Name: {
+            contains: 'asset_package'
+          }
+        },
+        data: {
+          ProductType: ProductType.AssetPackage
+        }
+      },
+      {
+        where: {
+          Name: 'sil_android_google_play'
+        },
+        data: {
+          WorkflowOptions: [WorkflowOptions.AdminStoreAccess, WorkflowOptions.ApprovalProcess]
+        }
+      },
+      {
+        where: {
+          Name: 'sil_android_s3'
+        },
+        data: {
+          WorkflowOptions: [WorkflowOptions.ApprovalProcess]
+        }
+      },
+      {
+        where: {
+          Name: 'la_android_google_play'
+        },
+        data: {
+          WorkflowOptions: [WorkflowOptions.AdminStoreAccess]
+        }
+      }
+    ];
+    for (const def of workflowDefs) {
+      await DatabaseWrites.workflowDefinitions.updateMany(def);
+    }
+  }
+
   job.updateProgress(100);
   return {
     deletedTasks: deletedTasks.count,
@@ -540,7 +622,8 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     missingWorkflowUserIDs,
     migratedProducts,
     migrationErrors,
-    orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0)
+    orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0),
+    updatedWorkflowDefinitions: workflowDefsNeedUpdate
   };
 }
 

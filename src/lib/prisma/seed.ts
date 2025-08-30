@@ -8,7 +8,7 @@ const ProductType = {
   Web: 3
 };
 
-export const WorkflowOptions = {
+const WorkflowOptions = {
   /** Require an OrgAdmin to access the GooglePlay Developer Console */
   AdminStoreAccess: 1,
   /** Require approval from an OrgAdmin before product can be created */
