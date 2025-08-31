@@ -34,7 +34,7 @@ export abstract class BullWorker<T extends BullMQ.Job> {
           code: SpanStatusCode.ERROR, // Error
           message: (error as Error).message
         });
-        throw error;
+        console.error(error);
       } finally {
         span.end();
       }
