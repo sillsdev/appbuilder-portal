@@ -10,6 +10,9 @@ export default defineConfig({
   preview: {
     port: 6173
   },
+  build: {
+    sourcemap: 'inline'
+  },
   plugins: [
     tailwindcss(),
     sveltekit(),
