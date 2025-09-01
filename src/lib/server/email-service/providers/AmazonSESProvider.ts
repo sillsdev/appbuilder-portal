@@ -1,4 +1,5 @@
-import { type SES as SESType } from '@aws-sdk/client-ses';
+import { type SES as SESType, SendEmailCommand } from '@aws-sdk/client-ses';
+import { trace } from '@opentelemetry/api';
 import { EmailProvider } from './EmailProvider';
 const { SES } = await import('@aws-sdk/client-ses');
 
@@ -21,7 +22,7 @@ export class AmazonSESProvider extends EmailProvider {
     subject: string,
     body: string
   ): Promise<unknown> {
-    return await this.ses.sendEmail({
+    const command = new SendEmailCommand({
       Source: `${AmazonSESProvider.EMAIL_NAME} <${AmazonSESProvider.ADMIN_EMAIL}>`,
       Destination: {
         ToAddresses: to.map((email) => safeAsciiString(`${email.name} <${email.email}>`))
@@ -37,6 +38,13 @@ export class AmazonSESProvider extends EmailProvider {
         }
       }
     });
+    try {
+      return await this.ses.send(command);
+    } catch (error) {
+      console.error('Error sending email via Amazon SES:', error);
+      trace.getActiveSpan()?.recordException(error as Error);
+      throw error;
+    }
   }
 }
 
