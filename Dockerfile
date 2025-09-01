@@ -40,4 +40,4 @@ COPY --from=builder /build/src/lib/prisma/migrations /app/node_modules/.prisma/c
 
 EXPOSE 6173
 ENV PORT=6173
-CMD ["sh", "-c", "npx prisma migrate deploy --schema=./node_modules/.prisma/client/schema.prisma && node index.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy --schema=./node_modules/.prisma/client/schema.prisma && node --enable-source-maps index.js"]
