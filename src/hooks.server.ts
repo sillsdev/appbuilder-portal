@@ -74,9 +74,6 @@ const tracer = trace.getTracer('IncomingRequest');
 const authSequence = sequence(authRouteHandle, checkUserExistsHandle, localRouteHandle);
 
 export const handle: Handle = async ({ event, resolve }) => {
-  if (event.url.pathname === '/error') {
-    throw new Error('This is a test error page');
-  }
   if (event.url.pathname.startsWith('/.well-known/appspecific/')) {
     // Ignore these requests without logging them`
     return new Response('', { status: 404 });

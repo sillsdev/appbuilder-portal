@@ -18,6 +18,9 @@ RUN npx prisma generate
 COPY . /build/
 RUN npm run build
 
+# Fix sourcemaps
+RUN npm run fix-sourcemaps
+
 # Real container that will run
 FROM node:24-alpine3.21
 
