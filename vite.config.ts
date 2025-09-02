@@ -11,7 +11,7 @@ export default defineConfig({
     port: 6173
   },
   build: {
-    sourcemap: 'inline'
+    sourcemap: true
   },
   plugins: [
     tailwindcss(),

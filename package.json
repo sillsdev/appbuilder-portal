@@ -17,7 +17,8 @@
     "format": "eslint --fix .",
     "test:integration": "playwright test",
     "test:unit": "vitest run",
-    "prepare": "svelte-kit sync"
+    "prepare": "svelte-kit sync",
+    "fix-sourcemaps": "node --experimental-strip-types fixSourcemaps.cts"
   },
   "prisma": {
     "seed": "node --experimental-strip-types src/lib/prisma/seed.ts -o",
@@ -37,7 +38,6 @@
     "@iconify/svelte": "^4.2.0",
     "@inlang/paraglide-js": "^2.2.0",
     "@opentelemetry/api": "^1.9.0",
-    "@opentelemetry/auto-instrumentations-node": "^0.62.0",
     "@opentelemetry/exporter-logs-otlp-grpc": "^0.203.0",
     "@opentelemetry/exporter-metrics-otlp-grpc": "^0.203.0",
     "@opentelemetry/exporter-trace-otlp-grpc": "^0.203.0",
@@ -78,6 +78,7 @@
     "prettier-plugin-prisma": "^5.0.0",
     "prettier-plugin-svelte": "^3.4.0",
     "prisma": "^6.15.0",
+    "sorcery": "^1.0.0",
     "sparkpost": "^2.1.4",
     "svelte": "^5.19.2",
     "svelte-check": "^4.1.4",
@@ -96,6 +97,7 @@
     "xstate": "^5.20.1"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.13.4",
     "@prisma/client": "^6.15.0"
   }
 }
