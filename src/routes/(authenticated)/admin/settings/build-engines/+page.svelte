@@ -12,20 +12,23 @@
   }
 
   let { data }: Props = $props();
-  let dates = $derived(getRelativeTime(data.buildEngines.map((engine) => engine.DateUpdated)));
+  const buildEngines = $derived(
+    data.buildEngines.toSorted((a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, getLocale()))
+  );
+  let dates = $derived(getRelativeTime(buildEngines.map((engine) => engine.DateUpdated)));
 </script>
 
-{#snippet date(engine?: (typeof data.buildEngines)[0] & { i: number })}
+{#snippet date(engine?: (typeof buildEngines)[0] & { i: number })}
   <Tooltip className="indent-0" tip={getTimeDateString(engine?.DateUpdated ?? null)}>
     {engine ? $dates[engine.i] : '-'}
   </Tooltip>
 {/snippet}
 
 <div class="flex flex-col w-full">
-  {#if data.buildEngines.length === 0}
+  {#if buildEngines.length === 0}
     <i>No build engine information. Check the "Check System Statuses" recurring BullMQ job</i>
   {/if}
-  {#each data.buildEngines.toSorted( (a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, getLocale()) ) as buildEngine, i}
+  {#each buildEngines.toSorted( (a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, getLocale()) ) as buildEngine, i}
     <DataDisplayBox
       title={buildEngine.BuildEngineUrl}
       data={{ ...buildEngine, i }}
