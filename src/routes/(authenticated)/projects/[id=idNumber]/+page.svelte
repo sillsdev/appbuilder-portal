@@ -19,6 +19,7 @@
   const { data } = $props();
 
   let addProductModal: HTMLDialogElement | undefined = $state(undefined);
+  let projectLocationCopied = $state(false);
 
   const currentPageUrl = page.url.pathname;
   let reconnectDelay = 1000;
@@ -128,9 +129,40 @@
           <div>
             <span>{m.project_location()}:</span>
             <br />
-            <p class="rounded-md text-nowrap overflow-x-scroll bg-base-200 p-3 pt-2 mt-2">
-              {projectData?.project?.WorkflowProjectUrl || m.project_location_placeholder()}
-            </p>
+            <div class="flex rounded-md text-nowrap bg-base-200 p-3 pt-2 mt-2">
+              <p>
+                {projectData?.project?.WorkflowProjectUrl?.substring(0, 5) ?? ''}
+              </p>
+              <p class="shrink overflow-hidden text-ellipsis">
+                {projectData?.project?.WorkflowProjectUrl?.split('/').slice(2, -1).join('/') ||
+                  m.project_location_placeholder()}
+              </p>
+              <p class="grow pr-2">
+                /{projectData?.project?.WorkflowProjectUrl
+                  ? projectData.project.WorkflowProjectUrl.split('/').pop()
+                  : ''}
+              </p>
+              {#if projectData?.project?.WorkflowProjectUrl}
+                <button
+                  class="cursor-copy float-right"
+                  onclick={() => {
+                    if (projectData?.project?.WorkflowProjectUrl) {
+                      navigator.clipboard.writeText(projectData.project.WorkflowProjectUrl);
+                      projectLocationCopied = true;
+                      setTimeout(() => {
+                        projectLocationCopied = false;
+                      }, 5000);
+                    }
+                  }}
+                >
+                  {#if projectLocationCopied}
+                    <IconContainer icon="mdi:check" width={24} class="text-success" />
+                  {:else}
+                    <IconContainer icon="mdi:content-copy" width={24} />
+                  {/if}
+                </button>
+              {/if}
+            </div>
           </div>
         </div>
         <!-- Product List Header -->
