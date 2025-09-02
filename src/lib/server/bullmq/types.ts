@@ -5,7 +5,7 @@ import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-a
 
 /** Retry a job forever with fixed backoff of 10 minutes. Useful for build engine tasks */
 export const Retry0f600 = {
-  attempts: 0,
+  attempts: Infinity,
   backoff: {
     type: 'fixed',
     delay: 600000 // 10 minute
