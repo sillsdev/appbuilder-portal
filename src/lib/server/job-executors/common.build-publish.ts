@@ -97,7 +97,7 @@ export async function getWorkflowParameters(
 
   const result: Record<string, string> = {};
   const scoped: Record<string, string> = {};
-  Object.entries(JSON.parse(instance.WorkflowDefinition.Properties ?? '{}')).forEach(([k, v]) => {
+  Object.entries(JSON.parse(instance.WorkflowDefinition.Properties || '{}')).forEach(([k, v]) => {
     const strValue = JSON.stringify(v);
     let strKey = k;
     if (strKey === 'environment') {
