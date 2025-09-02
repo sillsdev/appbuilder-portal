@@ -117,6 +117,36 @@ export const handle: Handle = async ({ event, resolve }) => {
   });
 };
 
+export const handleError: HandleServerError = ({ error, event, status }) => {
+  // Log the error with OTEL
+  OTEL.instance.logger.error('Error in handleError', {
+    error: error instanceof Error ? error.message : String(error),
+    route: event.route.id,
+    method: event.request.method,
+    url: event.url.href
+  });
+  trace.getActiveSpan()?.recordException(error as Error);
+  trace.getActiveSpan()?.setStatus({
+    code: SpanStatusCode.ERROR, // Error
+    message: error instanceof Error ? error.message : String(error)
+  });
+
+  if (status === 404) {
+    // Don't log 404 errors, they are common and not actionable
+    return {
+      message: 'Not found',
+      status: 404
+    };
+  }
+
+  console.error('Error occurred:', error);
+
+  return {
+    message: 'An unexpected error occurred. Please try again later.',
+    status: 500 // Internal Server Error
+  };
+};
+
 if (!building && typeof process.env.ADD_USER !== 'undefined' && process.env.ADD_USER !== 'false') {
   process.env.ADD_USER = 'false';
   // Bootstrap create an organization invite for the new developer
@@ -143,24 +173,3 @@ if (!building && typeof process.env.ADD_USER !== 'undefined' && process.env.ADD_
   );
   console.log('---- Bootstrap Invite Link ----');
 }
-
-export const handleError: HandleServerError = ({ error, event }) => {
-  console.error('Error occurred:', error);
-  // Log the error with OTEL
-  OTEL.instance.logger.error('Error in handleError', {
-    error: error instanceof Error ? error.message : String(error),
-    route: event.route.id,
-    method: event.request.method,
-    url: event.url.href
-  });
-  trace.getActiveSpan()?.recordException(error as Error);
-  trace.getActiveSpan()?.setStatus({
-    code: SpanStatusCode.ERROR, // Error
-    message: error instanceof Error ? error.message : String(error)
-  });
-
-  return {
-    message: 'An unexpected error occurred. Please try again later.',
-    status: 500 // Internal Server Error
-  };
-};
