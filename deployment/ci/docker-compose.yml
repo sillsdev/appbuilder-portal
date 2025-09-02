@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:10
+    image: postgres:17
     ports:
       - "5432:5432"
     environment:

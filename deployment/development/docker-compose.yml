@@ -4,7 +4,7 @@ volumes:
 
 services:
   db:
-    image: postgres:10
+    image: postgres:17
     environment:
       POSTGRES_DB: development
       POSTGRES_USER: db-user
