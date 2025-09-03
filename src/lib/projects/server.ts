@@ -106,16 +106,6 @@ export function projectFilter(args: {
                     mode: 'insensitive'
                   }
                 }
-              },
-              {
-                Products: {
-                  some: {
-                    PublishLink: {
-                      contains: args.search,
-                      mode: 'insensitive'
-                    }
-                  }
-                }
               }
             ]
           : undefined

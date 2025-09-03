@@ -130,7 +130,7 @@
       }
     }
   ],
-  "directory_searchHelp": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name<br />• Group Name<br />• Package Name",
+  "directory_searchHelp": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name<br />• Group Name",
   "header_myProfile": "Mi perfil",
   "header_community": "Community",
   "header_help": "Ayuda",
