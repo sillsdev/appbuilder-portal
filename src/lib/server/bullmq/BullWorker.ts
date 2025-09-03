@@ -17,28 +17,32 @@ export abstract class BullWorker<T extends BullMQ.Job> {
       this.worker = new Worker<T>(queue, this.runInternal.bind(this), getWorkerConfig());
   }
   private async runInternal(job: Job<T>) {
-    return await tracer.startActiveSpan(`${job.queueName} - ${job.data.type}`, async (span) => {
-      span.setAttributes({
-        'job.id': job.id,
-        'job.name': job.name,
-        'job.queueName': job.queueName,
-        'job.type': job.data.type,
-        'job.opts': JSON.stringify(job.opts),
-        'job.data': JSON.stringify(job.data)
-      });
-      try {
-        return await this.run(job);
-      } catch (error) {
-        span.recordException(error as Exception);
-        span.setStatus({
-          code: SpanStatusCode.ERROR, // Error
-          message: (error as Error).message
+    return await tracer.startActiveSpan(
+      `${job.queueName} - ${job.data.type}`,
+      { links: job.data.OTLinks },
+      async (span) => {
+        span.setAttributes({
+          'job.id': job.id,
+          'job.name': job.name,
+          'job.queueName': job.queueName,
+          'job.type': job.data.type,
+          'job.opts': JSON.stringify(job.opts),
+          'job.data': JSON.stringify(job.data)
         });
-        console.error(error);
-      } finally {
-        span.end();
+        try {
+          return await this.run(job);
+        } catch (error) {
+          span.recordException(error as Exception);
+          span.setStatus({
+            code: SpanStatusCode.ERROR, // Error
+            message: (error as Error).message
+          });
+          console.error(error);
+        } finally {
+          span.end();
+        }
       }
-    });
+    );
   }
   abstract run(job: Job<T>): Promise<unknown>;
 }
