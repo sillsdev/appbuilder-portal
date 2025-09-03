@@ -298,7 +298,7 @@ export const WorkflowStateMachine = setup({
       entry: [
         assign({ instructions: 'waiting' }),
         ({ context }) => {
-          getQueues().Miscellaneous.add(
+          getQueues().BE_Miscellaneous.add(
             `Create Product #${context.productId}`,
             {
               type: BullMQ.JobType.Product_Create,

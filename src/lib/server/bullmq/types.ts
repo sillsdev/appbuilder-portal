@@ -22,6 +22,7 @@ export enum QueueName {
   SystemRecurring = 'System Recurring',
   SystemStartup = 'System Startup',
   Miscellaneous = 'Miscellaneous',
+  BE_Miscellaneous = 'Miscellaneous (BuildEngine)',
   Publishing = 'Publishing',
   RemotePolling = 'Remote Polling',
   UserTasks = 'User Tasks',
@@ -311,9 +312,20 @@ export type EmailJob = JobTypeMap[
 export type SvelteSSEJob = JobTypeMap[
   | JobType.SvelteSSE_UpdateProject
   | JobType.SvelteSSE_UpdateUserTasks];
+export type BE_MiscJob = JobTypeMap[
+  | JobType.Product_Create
+  | JobType.Project_Create
+  | JobType.Product_Delete];
 export type MiscJob = Exclude<
   Job,
-  BuildJob | RecurringJob | PublishJob | PollJob | UserTasksJob | EmailJob | SvelteSSEJob
+  | BuildJob
+  | RecurringJob
+  | PublishJob
+  | PollJob
+  | UserTasksJob
+  | EmailJob
+  | SvelteSSEJob
+  | BE_MiscJob
 >;
 
 export type JobTypeMap = {

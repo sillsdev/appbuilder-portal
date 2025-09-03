@@ -1,6 +1,7 @@
 import { Queue } from 'bullmq';
 import { Redis } from 'ioredis';
 import type {
+  BE_MiscJob,
   BuildJob,
   EmailJob,
   MiscJob,
@@ -104,8 +105,10 @@ function createQueues() {
   const SystemRecurring = new Queue<RecurringJob>(QueueName.SystemRecurring, getQueueConfig());
   /** Queue for system jobs that run on startup, such as prepopulating langtags.json */
   const SystemStartup = new Queue<StartupJob>(QueueName.SystemStartup, getQueueConfig());
-  /** Queue for miscellaneous jobs such as Product and Project Creation */
+  /** Queue for miscellaneous jobs such as getting a VersionCode or importing products */
   const Miscellaneous = new Queue<MiscJob>(QueueName.Miscellaneous, getQueueConfig());
+  /** Queue for miscellaneous jobs in BuildEngine such as Product and Project Creation */
+  const BE_Miscellaneous = new Queue<BE_MiscJob>(QueueName.BE_Miscellaneous, getQueueConfig());
   /** Queue for Product Publishing  */
   const Publishing = new Queue<PublishJob>(QueueName.Publishing, getQueueConfig());
   /** Queue for jobs that poll BuildEngine, such as checking the status of a build */
@@ -121,6 +124,7 @@ function createQueues() {
     SystemRecurring,
     SystemStartup,
     Miscellaneous,
+    BE_Miscellaneous,
     Publishing,
     RemotePolling,
     UserTasks,

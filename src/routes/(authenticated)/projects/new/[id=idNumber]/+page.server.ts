@@ -71,7 +71,7 @@ export const actions: Actions = {
     });
 
     if (project !== false) {
-      await getQueues().Miscellaneous.add(
+      await getQueues().BE_Miscellaneous.add(
         `Create Project #${project}`,
         {
           type: BullMQ.JobType.Project_Create,

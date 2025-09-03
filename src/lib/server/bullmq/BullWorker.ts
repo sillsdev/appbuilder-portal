@@ -148,18 +148,28 @@ export class Miscellaneous<J extends BullMQ.MiscJob> extends BullWorker<J> {
   }
   async run(job: Job<J>) {
     switch (job.data.type) {
-      case BullMQ.JobType.Product_Create:
-        return Executor.Product.create(job as Job<BullMQ.Product.Create>);
-      case BullMQ.JobType.Product_Delete:
-        return Executor.Product.deleteProduct(job as Job<BullMQ.Product.Delete>);
       case BullMQ.JobType.Product_GetVersionCode:
         return Executor.Product.getVersionCode(job as Job<BullMQ.Product.GetVersionCode>);
       case BullMQ.JobType.Product_CreateLocal:
         return Executor.Product.createLocal(job as Job<BullMQ.Product.CreateLocal>);
-      case BullMQ.JobType.Project_Create:
-        return Executor.Project.create(job as Job<BullMQ.Project.Create>);
       case BullMQ.JobType.Project_ImportProducts:
         return Executor.Project.importProducts(job as Job<BullMQ.Project.ImportProducts>);
+    }
+  }
+}
+
+export class BE_Miscellaneous<J extends BullMQ.BE_MiscJob> extends BullWorker<J> {
+  constructor() {
+    super(BullMQ.QueueName.Miscellaneous);
+  }
+  async run(job: Job<J>) {
+    switch (job.data.type) {
+      case BullMQ.JobType.Product_Create:
+        return Executor.Product.create(job as Job<BullMQ.Product.Create>);
+      case BullMQ.JobType.Product_Delete:
+        return Executor.Product.deleteProduct(job as Job<BullMQ.Product.Delete>);
+      case BullMQ.JobType.Project_Create:
+        return Executor.Project.create(job as Job<BullMQ.Project.Create>);
     }
   }
 }

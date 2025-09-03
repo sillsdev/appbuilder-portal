@@ -8,6 +8,7 @@ export const allWorkers = building
       new Workers.SystemRecurring(),
       new Workers.SystemStartup(),
       new Workers.Miscellaneous(),
+      new Workers.BE_Miscellaneous(),
       new Workers.Publishing(),
       new Workers.RemotePolling(),
       new Workers.UserTasks(),
