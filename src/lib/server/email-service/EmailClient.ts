@@ -4,6 +4,7 @@ import {
   EmailLayoutTemplate,
   NotificationTemplate,
   NotificationWithLinkTemplate,
+  ScriptoriaLogo,
   addProperties
 } from './EmailTemplates';
 import { building } from '$app/environment';
@@ -31,6 +32,7 @@ export async function sendEmail(
   subject: string,
   body: string
 ) {
+  console.log(`Preparing to send email to ${to.map((e) => e.email).join(', ')}`);
   if (process.env.MAIL_SENDER === 'AmazonSES') {
     return await transporter?.sendMail({
       from: `"${EMAIL_NAME}" <${ADMIN_EMAIL}>`,
@@ -44,7 +46,14 @@ export async function sendEmail(
           INSERT_CONTENT: body
         },
         true
-      )
+      ),
+      attachments: [
+        {
+          filename: 'logo.png',
+          content: ScriptoriaLogo,
+          cid: 'logo' // same cid value as in the html img src
+        }
+      ]
     });
   } else {
     console.log('====================== EMAIL ======================');
