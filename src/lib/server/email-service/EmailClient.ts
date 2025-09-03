@@ -1,3 +1,4 @@
+import { type Transporter, createTransport } from 'nodemailer';
 import { DatabaseReads } from '../database';
 import {
   EmailLayoutTemplate,
@@ -5,31 +6,23 @@ import {
   NotificationWithLinkTemplate,
   addProperties
 } from './EmailTemplates';
-import { AmazonSESProvider } from './providers/AmazonSESProvider';
-import type { EmailProvider } from './providers/EmailProvider';
-import { LogProvider } from './providers/LogProvider';
-import { SparkpostProvider } from './providers/SparkpostProvider';
 import { building } from '$app/environment';
 import { RoleId } from '$lib/prisma';
 
-let emailProvider: EmailProvider = new LogProvider();
+const EMAIL_NAME =
+  process.env.ADMIN_NAME ??
+  'Scriptoria' + (process.env.NODE_ENV === 'development' ? ' Staging' : '');
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '<no-email>';
+let transporter: Transporter | null = null;
 if (!building) {
-  if (process.env.MAIL_SENDER === 'SparkPost') {
-    if (!process.env.SPARKPOST_API_KEY) {
-      throw new Error('SPARKPOST_API_KEY must be set to use SparkPost for email sending.');
-    }
-    emailProvider = new SparkpostProvider(process.env.SPARKPOST_API_KEY);
-  } else if (process.env.MAIL_SENDER === 'AmazonSES') {
-    if (!process.env.AWS_EMAIL_ACCESS_KEY_ID || !process.env.AWS_EMAIL_SECRET_ACCESS_KEY) {
-      throw new Error(
-        'AWS_EMAIL_ACCESS_KEY_ID and AWS_EMAIL_SECRET_ACCESS_KEY must be set to use Amazon SES for email sending.'
-      );
-    }
-    emailProvider = new AmazonSESProvider();
+  if (process.env.MAIL_SENDER === 'AmazonSES') {
+    const { SESv2Client, SendEmailCommand } = await import('@aws-sdk/client-sesv2');
+    const sesClient = new SESv2Client();
+    transporter = createTransport({
+      SES: { sesClient, SendEmailCommand }
+    });
   } else if (process.env.MAIL_SENDER !== 'LogEmail') {
-    console.warn(
-      `Unknown MAIL_SENDER: ${process.env.MAIL_SENDER}. Emails will be logged instead of sent.`
-    );
+    console.log('Invalid MAIL_SENDER, defaulting to LogEmail');
   }
 }
 
@@ -38,19 +31,30 @@ export async function sendEmail(
   subject: string,
   body: string
 ) {
-  const template =
-    emailProvider instanceof LogProvider
-      ? body
-      : addProperties(
-          EmailLayoutTemplate,
-          {
-            // If the subject isn't fairly short, including it is ugly
-            INSERT_SUBJECT: subject.length > 70 && body.length > 100 ? '' : subject,
-            INSERT_CONTENT: body
-          },
-          true
-        );
-  return emailProvider.sendEmail(to, subject, template);
+  if (process.env.MAIL_SENDER === 'AmazonSES') {
+    return await transporter?.sendMail({
+      from: `"${EMAIL_NAME}" <${ADMIN_EMAIL}>`,
+      to: to.map((email) => ({ name: email.name, address: email.email })),
+      subject,
+      html: addProperties(
+        EmailLayoutTemplate,
+        {
+          // If the subject isn't fairly short, including it is ugly
+          INSERT_SUBJECT: subject.length > 70 && body.length > 100 ? '' : subject,
+          INSERT_CONTENT: body
+        },
+        true
+      )
+    });
+  } else {
+    console.log('====================== EMAIL ======================');
+    console.log(`From: ${ADMIN_EMAIL}`);
+    console.log(`To: ${to.map((email) => `${email.email} (${email.name})`).join(', ')}`);
+    console.log(`Subject: ${subject}`);
+    console.log(`Body:`);
+    console.log(body);
+    console.log('---------------------- EMAIL ----------------------');
+  }
 }
 
 export async function notifySuperAdmins(subject: string, message: string): Promise<unknown>;
