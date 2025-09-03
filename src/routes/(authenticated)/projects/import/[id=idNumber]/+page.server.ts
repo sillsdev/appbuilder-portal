@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import { error, redirect } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -230,6 +232,7 @@ export const actions: Actions = {
             name: `Create Project #${p}`,
             data: {
               type: BullMQ.JobType.Project_Create,
+              OTContext: trace.getSpanContext(api.context.active()),
               projectId: p
             }
           }))

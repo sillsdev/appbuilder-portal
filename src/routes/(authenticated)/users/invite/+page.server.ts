@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -65,6 +67,7 @@ export const actions = {
     const inviteLink = `${url.origin}/invitations/organization-membership?t=${inviteToken}`;
     await getQueues().Emails.add('Invite User ' + email, {
       type: BullMQ.JobType.Email_InviteUser,
+      OTContext: trace.getSpanContext(api.context.active()),
       email,
       inviteToken,
       inviteLink

@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import { error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -80,6 +82,7 @@ export const actions = {
     if (!author) return fail(404, { form, ok: false });
     await getQueues().UserTasks.add(`Remove UserTasks for Author #${form.data.id}`, {
       type: BullMQ.JobType.UserTasks_Modify,
+      OTContext: trace.getSpanContext(api.context.active()),
       scope: 'Project',
       projectId: parseInt(event.params.id),
       operation: {
@@ -123,6 +126,7 @@ export const actions = {
     }
     getQueues().Products.add(`Create Product for Project #${event.params.id}`, {
       type: BullMQ.JobType.Product_CreateLocal,
+      OTContext: trace.getSpanContext(api.context.active()),
       projectId: parseInt(event.params.id),
       productDefinitionId: form.data.productDefinitionId,
       storeId: form.data.storeId
@@ -185,6 +189,7 @@ export const actions = {
     });
     await getQueues().UserTasks.add(`Add UserTasks for Author #${author.Id}`, {
       type: BullMQ.JobType.UserTasks_Modify,
+      OTContext: trace.getSpanContext(api.context.active()),
       scope: 'Project',
       projectId,
       operation: {
