@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import type { Link } from '@opentelemetry/api';
+import type { SpanContext } from '@opentelemetry/api';
 import type { RepeatOptions } from 'bullmq';
 import type { RoleId } from '../../prisma';
 import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-api/types';
@@ -73,7 +73,7 @@ export enum JobType {
 
 export interface JobBase {
   type: JobType;
-  OTLinks?: Link[];
+  OTContext?: SpanContext;
 }
 
 export namespace Build {

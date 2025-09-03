@@ -19,7 +19,7 @@ export abstract class BullWorker<T extends BullMQ.Job> {
   private async runInternal(job: Job<T>) {
     return await tracer.startActiveSpan(
       `${job.queueName} - ${job.data.type}`,
-      { links: job.data.OTLinks },
+      { links: job.data.OTContext ? [{ context: job.data.OTContext }] : undefined },
       async (span) => {
         span.setAttributes({
           'job.id': job.id,
