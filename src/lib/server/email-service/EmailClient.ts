@@ -17,12 +17,18 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '<no-email>';
 let transporter: Transporter | null = null;
 if (!building) {
   if (process.env.MAIL_SENDER === 'AmazonSES') {
+    const creds =
+      process.env.AWS_EMAIL_ACCESS_KEY_ID && process.env.AWS_EMAIL_SECRET_ACCESS_KEY
+        ? {
+            credentials: {
+              accessKeyId: process.env.AWS_EMAIL_ACCESS_KEY_ID,
+              secretAccessKey: process.env.AWS_EMAIL_SECRET_ACCESS_KEY
+            }
+          }
+        : {};
     const sesClient = new SESv2Client({
-      credentials: {
-        accessKeyId: process.env.AWS_EMAIL_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.AWS_EMAIL_SECRET_ACCESS_KEY || ''
-      },
-      region: process.env.AWS_REGION || 'us-east-1'
+      region: process.env.AWS_REGION || 'us-east-1',
+      ...creds
     });
     transporter = createTransport({
       SES: { sesClient, SendEmailCommand }
