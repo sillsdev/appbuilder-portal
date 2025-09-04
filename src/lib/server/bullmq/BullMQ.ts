@@ -10,7 +10,7 @@ export const allWorkers = building
       new Workers.Products(),
       new Workers.Projects(),
       new Workers.Publishing(),
-      new Workers.RemotePolling(),
+      new Workers.Polling(),
       new Workers.UserTasks(),
       new Workers.Emails(),
       new Workers.SvelteSSE()

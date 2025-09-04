@@ -106,7 +106,7 @@ function createQueues() {
   /** Queue for system jobs that run on startup, such as prepopulating langtags.json */
   const SystemStartup = new Queue<StartupJob>(QueueName.System_Startup, getQueueConfig());
   /** Queue for miscellaneous jobs such as getting a VersionCode or importing products */
-  const Products = new Queue<ProductJob>(QueueName.Projects, getQueueConfig());
+  const Products = new Queue<ProductJob>(QueueName.Products, getQueueConfig());
   /** Queue for miscellaneous jobs in BuildEngine such as Product and Project Creation */
   const Projects = new Queue<ProjectJob>(QueueName.Projects, getQueueConfig());
   /** Queue for Product Publishing  */

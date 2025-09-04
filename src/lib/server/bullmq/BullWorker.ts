@@ -188,7 +188,7 @@ export class Publishing<J extends BullMQ.PublishJob> extends BullWorker<J> {
   }
 }
 
-export class RemotePolling<J extends BullMQ.PollJob> extends BullWorker<J> {
+export class Polling<J extends BullMQ.PollJob> extends BullWorker<J> {
   constructor() {
     super(BullMQ.QueueName.Polling);
   }
