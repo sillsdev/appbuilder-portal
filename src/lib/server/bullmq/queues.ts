@@ -1,11 +1,11 @@
 import { Queue } from 'bullmq';
 import { Redis } from 'ioredis';
 import type {
-  BE_MiscJob,
   BuildJob,
   EmailJob,
-  MiscJob,
   PollJob,
+  ProductJob,
+  ProjectJob,
   PublishJob,
   RecurringJob,
   StartupJob,
@@ -102,17 +102,17 @@ function createQueues() {
   /** Queue for Product Builds */
   const Builds = new Queue<BuildJob>(QueueName.Builds, getQueueConfig());
   /** Queue for default recurring jobs such as the BuildEngine status check */
-  const SystemRecurring = new Queue<RecurringJob>(QueueName.SystemRecurring, getQueueConfig());
+  const SystemRecurring = new Queue<RecurringJob>(QueueName.System_Recurring, getQueueConfig());
   /** Queue for system jobs that run on startup, such as prepopulating langtags.json */
-  const SystemStartup = new Queue<StartupJob>(QueueName.SystemStartup, getQueueConfig());
+  const SystemStartup = new Queue<StartupJob>(QueueName.System_Startup, getQueueConfig());
   /** Queue for miscellaneous jobs such as getting a VersionCode or importing products */
-  const Miscellaneous = new Queue<MiscJob>(QueueName.Miscellaneous, getQueueConfig());
+  const Products = new Queue<ProductJob>(QueueName.Projects, getQueueConfig());
   /** Queue for miscellaneous jobs in BuildEngine such as Product and Project Creation */
-  const BE_Miscellaneous = new Queue<BE_MiscJob>(QueueName.BE_Miscellaneous, getQueueConfig());
+  const Projects = new Queue<ProjectJob>(QueueName.Projects, getQueueConfig());
   /** Queue for Product Publishing  */
   const Publishing = new Queue<PublishJob>(QueueName.Publishing, getQueueConfig());
   /** Queue for jobs that poll BuildEngine, such as checking the status of a build */
-  const RemotePolling = new Queue<PollJob>(QueueName.RemotePolling, getQueueConfig());
+  const Polling = new Queue<PollJob>(QueueName.Polling, getQueueConfig());
   /** Queue for operations on UserTasks */
   const UserTasks = new Queue<UserTasksJob>(QueueName.UserTasks, getQueueConfig());
   /** Queue for Email tasks */
@@ -123,10 +123,10 @@ function createQueues() {
     Builds,
     SystemRecurring,
     SystemStartup,
-    Miscellaneous,
-    BE_Miscellaneous,
+    Products,
+    Projects,
     Publishing,
-    RemotePolling,
+    Polling,
     UserTasks,
     Emails,
     SvelteSSE

@@ -121,7 +121,7 @@ export const actions = {
     if (!checkRepository?.WorkflowProjectUrl) {
       return error(400, 'Project Repository not Yet Initialized');
     }
-    getQueues().Miscellaneous.add(`Create Product for Project #${event.params.id}`, {
+    getQueues().Products.add(`Create Product for Project #${event.params.id}`, {
       type: BullMQ.JobType.Product_CreateLocal,
       projectId: parseInt(event.params.id),
       productDefinitionId: form.data.productDefinitionId,

@@ -101,10 +101,10 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
       job.updateProgress(85);
 
       const name = `Check status of Build #${response.id}`;
-      await getQueues().RemotePolling.upsertJobScheduler(name, BullMQ.RepeatEveryMinute, {
+      await getQueues().Polling.upsertJobScheduler(name, BullMQ.RepeatEveryMinute, {
         name,
         data: {
-          type: BullMQ.JobType.Build_Check,
+          type: BullMQ.JobType.Poll_Build,
           productId: job.data.productId,
           organizationId: productData.Project.OrganizationId,
           jobId: productData.WorkflowJobId,
@@ -126,59 +126,6 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
     job.log('No WorkflowInstance found. Workflow cancelled?');
     job.updateProgress(100);
     return { productData };
-  }
-}
-
-export async function check(job: Job<BullMQ.Build.Check>): Promise<unknown> {
-  const product = await DatabaseReads.products.findFirst({
-    where: {
-      WorkflowJobId: job.data.jobId,
-      WorkflowBuildId: job.data.buildId
-    },
-    select: {
-      WorkflowInstance: {
-        select: {
-          Id: true
-        }
-      }
-    }
-  });
-  if (!product?.WorkflowInstance) {
-    await getQueues().RemotePolling.removeJobScheduler(job.name);
-    job.log('No WorkflowInstance found. Workflow cancelled?');
-    if (!product) {
-      return await notifyProductNotFound(job.data.productId);
-    }
-    job.updateProgress(100);
-    return { product };
-  }
-  job.updateProgress(25);
-  const response = await BuildEngine.Requests.getBuild(
-    { type: 'query', organizationId: job.data.organizationId },
-    job.data.jobId,
-    job.data.buildId
-  );
-  job.updateProgress(50);
-  if (response.responseType === 'error') {
-    throw new Error(response.message);
-  } else {
-    if (response.status === 'completed') {
-      await getQueues().RemotePolling.removeJobScheduler(job.name);
-      await getQueues().Builds.add(
-        `PostProcess Build #${job.data.buildId} for Product #${job.data.productId}`,
-        {
-          type: BullMQ.JobType.Build_PostProcess,
-          productId: job.data.productId,
-          productBuildId: job.data.productBuildId,
-          build: response
-        }
-      );
-    }
-    job.updateProgress(100);
-    return {
-      ...response,
-      environment: JSON.parse((response['environment'] as string) ?? '{}')
-    };
   }
 }
 
@@ -422,7 +369,7 @@ async function notifyFailed(
     }
   );
 }
-async function notifyProductNotFound(productId: string) {
+export async function notifyProductNotFound(productId: string) {
   await getQueues().Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
     type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
     messageKey: 'buildProductRecordNotFound',

@@ -59,7 +59,7 @@ export class Builds<J extends BullMQ.BuildJob> extends BullWorker<J> {
 
 export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J> {
   constructor() {
-    super(BullMQ.QueueName.SystemRecurring);
+    super(BullMQ.QueueName.System_Recurring);
     getQueues().SystemRecurring.upsertJobScheduler(
       BullMQ.JobSchedulerId.CheckSystemStatuses,
       {
@@ -100,7 +100,7 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
 export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
   private jobsLeft = 0;
   constructor() {
-    super(BullMQ.QueueName.SystemStartup);
+    super(BullMQ.QueueName.System_Startup);
     const startupJobs = [
       [
         'Check System Statuses (Startup)',
@@ -142,25 +142,9 @@ export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
   }
 }
 
-export class Miscellaneous<J extends BullMQ.MiscJob> extends BullWorker<J> {
+export class Products<J extends BullMQ.ProductJob> extends BullWorker<J> {
   constructor() {
-    super(BullMQ.QueueName.Miscellaneous);
-  }
-  async run(job: Job<J>) {
-    switch (job.data.type) {
-      case BullMQ.JobType.Product_GetVersionCode:
-        return Executor.Product.getVersionCode(job as Job<BullMQ.Product.GetVersionCode>);
-      case BullMQ.JobType.Product_CreateLocal:
-        return Executor.Product.createLocal(job as Job<BullMQ.Product.CreateLocal>);
-      case BullMQ.JobType.Project_ImportProducts:
-        return Executor.Project.importProducts(job as Job<BullMQ.Project.ImportProducts>);
-    }
-  }
-}
-
-export class BE_Miscellaneous<J extends BullMQ.BE_MiscJob> extends BullWorker<J> {
-  constructor() {
-    super(BullMQ.QueueName.Miscellaneous);
+    super(BullMQ.QueueName.Products);
   }
   async run(job: Job<J>) {
     switch (job.data.type) {
@@ -168,8 +152,24 @@ export class BE_Miscellaneous<J extends BullMQ.BE_MiscJob> extends BullWorker<J>
         return Executor.Product.create(job as Job<BullMQ.Product.Create>);
       case BullMQ.JobType.Product_Delete:
         return Executor.Product.deleteProduct(job as Job<BullMQ.Product.Delete>);
+      case BullMQ.JobType.Product_GetVersionCode:
+        return Executor.Product.getVersionCode(job as Job<BullMQ.Product.GetVersionCode>);
+      case BullMQ.JobType.Product_CreateLocal:
+        return Executor.Product.createLocal(job as Job<BullMQ.Product.CreateLocal>);
+    }
+  }
+}
+
+export class Projects<J extends BullMQ.ProjectJob> extends BullWorker<J> {
+  constructor() {
+    super(BullMQ.QueueName.Projects);
+  }
+  async run(job: Job<J>) {
+    switch (job.data.type) {
       case BullMQ.JobType.Project_Create:
         return Executor.Project.create(job as Job<BullMQ.Project.Create>);
+      case BullMQ.JobType.Project_ImportProducts:
+        return Executor.Project.importProducts(job as Job<BullMQ.Project.ImportProducts>);
     }
   }
 }
@@ -190,16 +190,16 @@ export class Publishing<J extends BullMQ.PublishJob> extends BullWorker<J> {
 
 export class RemotePolling<J extends BullMQ.PollJob> extends BullWorker<J> {
   constructor() {
-    super(BullMQ.QueueName.RemotePolling);
+    super(BullMQ.QueueName.Polling);
   }
   async run(job: Job<J>) {
     switch (job.data.type) {
-      case BullMQ.JobType.Build_Check:
-        return Executor.Build.check(job as Job<BullMQ.Build.Check>);
-      case BullMQ.JobType.Publish_Check:
-        return Executor.Publish.check(job as Job<BullMQ.Publish.Check>);
-      case BullMQ.JobType.Project_Check:
-        return Executor.Project.check(job as Job<BullMQ.Project.Check>);
+      case BullMQ.JobType.Poll_Build:
+        return Executor.Polling.build(job as Job<BullMQ.Polling.Build>);
+      case BullMQ.JobType.Poll_Publish:
+        return Executor.Polling.publish(job as Job<BullMQ.Polling.Publish>);
+      case BullMQ.JobType.Poll_Project:
+        return Executor.Polling.project(job as Job<BullMQ.Polling.Project>);
     }
   }
 }

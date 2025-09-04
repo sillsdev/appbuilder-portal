@@ -225,7 +225,7 @@ export const actions: Actions = {
 
       if (projects) {
         // Create products
-        await getQueues().BE_Miscellaneous.addBulk(
+        await getQueues().Projects.addBulk(
           projects.map((p) => ({
             name: `Create Project #${p}`,
             data: {
