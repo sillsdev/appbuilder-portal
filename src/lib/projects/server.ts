@@ -111,7 +111,7 @@ export function projectFilter(args: {
                 Products: {
                   some: {
                     PublishLink: {
-                      contains: args.search,
+                      startsWith: 'https://play.google.com/store/apps/details?id=' + args.search,
                       mode: 'insensitive'
                     }
                   }
