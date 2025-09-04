@@ -3,9 +3,9 @@ import type { RepeatOptions } from 'bullmq';
 import type { RoleId } from '../../prisma';
 import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-api/types';
 
-/** Retry a job forever with fixed backoff of 10 minutes. Useful for build engine tasks */
+/** Retry a job for 72 hours every 10 minutes. Useful for build engine tasks */
 export const Retry0f600 = {
-  attempts: Infinity,
+  attempts: 432,
   backoff: {
     type: 'fixed',
     delay: 600000 // 10 minute
