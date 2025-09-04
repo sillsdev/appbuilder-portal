@@ -207,7 +207,7 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
 
 export async function createLocal(job: Job<BullMQ.Product.CreateLocal>): Promise<unknown> {
   try {
-    const product = await DatabaseWrites.products.create({
+    const productId = await DatabaseWrites.products.create({
       ProjectId: job.data.projectId,
       ProductDefinitionId: job.data.productDefinitionId,
       StoreId: job.data.storeId,
@@ -215,7 +215,7 @@ export async function createLocal(job: Job<BullMQ.Product.CreateLocal>): Promise
       WorkflowJobId: 0,
       WorkflowPublishId: 0
     });
-    if (!product) return false;
+    if (!productId) return false;
 
     const flowDefinition = (
       await DatabaseReads.productDefinitions.findUnique({
@@ -236,14 +236,14 @@ export async function createLocal(job: Job<BullMQ.Product.CreateLocal>): Promise
     )?.Workflow;
 
     if (flowDefinition) {
-      await Workflow.create(product, {
+      await Workflow.create(productId, {
         productType: flowDefinition.ProductType,
         options: new Set(flowDefinition.WorkflowOptions),
         workflowType: flowDefinition.Type
       });
     }
 
-    return product;
+    return productId;
   } catch {
     return false;
   }
