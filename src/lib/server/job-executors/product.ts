@@ -244,7 +244,8 @@ export async function createLocal(job: Job<BullMQ.Product.CreateLocal>): Promise
     }
 
     return productId;
-  } catch {
+  } catch (err) {
+    await job.log(err instanceof Error ? err.message : String(err));
     return false;
   }
 }
