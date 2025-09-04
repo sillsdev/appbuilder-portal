@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import { delete as deleteInstance } from './WorkflowInstances';
@@ -27,6 +29,7 @@ export async function create(
     if (res) {
       getQueues().SvelteSSE.add(`Update Project #${productData.ProjectId} (product created)`, {
         type: BullMQ.JobType.SvelteSSE_UpdateProject,
+        OTContext: null,
         projectIds: [productData.ProjectId]
       });
     }
@@ -67,6 +70,7 @@ export async function update(
     });
     getQueues().SvelteSSE.add(`Update Project #${projectId} (product updated)`, {
       type: BullMQ.JobType.SvelteSSE_UpdateProject,
+      OTContext: null,
       projectIds: [projectId]
     });
   } catch {
@@ -95,6 +99,7 @@ async function deleteProduct(productId: string) {
     `Delete Product #${productId} from BuildEngine`,
     {
       type: BullMQ.JobType.Product_Delete,
+      OTContext: trace.getSpanContext(api.context.active()) ?? null,
       organizationId: product!.Project.OrganizationId,
       workflowJobId: product!.WorkflowJobId
     },
@@ -115,6 +120,7 @@ async function deleteProduct(productId: string) {
   ]);
   getQueues().SvelteSSE.add(`Update #${product?.Project.Id} (product delete)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
+    OTContext: null,
     projectIds: [product!.Project.Id]
   });
 }

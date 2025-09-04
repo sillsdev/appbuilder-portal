@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import type { Job } from 'bullmq';
 import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
@@ -45,6 +47,7 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
         `PostProcess Build #${job.data.buildId} for Product #${job.data.productId}`,
         {
           type: BullMQ.JobType.Build_PostProcess,
+          OTContext: trace.getSpanContext(api.context.active()) ?? null,
           productId: job.data.productId,
           productBuildId: job.data.productBuildId,
           build: response
@@ -100,6 +103,7 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
         `PostProcess Release #${job.data.releaseId} for Product #${job.data.productId}`,
         {
           type: BullMQ.JobType.Publish_PostProcess,
+          OTContext: trace.getSpanContext(api.context.active()) ?? null,
           productId: job.data.productId,
           publicationId: job.data.publicationId,
           release: response
@@ -188,6 +192,7 @@ export async function project(job: Job<BullMQ.Polling.Project>): Promise<unknown
         if (projectImport) {
           await getQueues().Projects.add(`Import Products for Project #${job.data.projectId}`, {
             type: BullMQ.JobType.Project_ImportProducts,
+            OTContext: trace.getSpanContext(api.context.active()) ?? null,
             organizationId: job.data.organizationId,
             importId: projectImport.Id,
             projectId: job.data.projectId
@@ -210,6 +215,7 @@ async function notifyCreationFailed(
   // BuildEngineProjectService.ProjectCreationFailedAsync
   return getQueues().Emails.add(`Notify Owner/Admins of Project #${projectId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+    OTContext: trace.getSpanContext(api.context.active()) ?? null,
     projectId,
     // Admin or Owner suffix is added by sender
     messageKey: 'projectCreationFailed',
@@ -224,6 +230,7 @@ async function notifyCreationFailed(
 async function notifyCreated(projectId: number, userId: number, projectName: string) {
   return getQueues().Emails.add(`Notify Owner of Successful Creation of Project #${projectId}`, {
     type: BullMQ.JobType.Email_SendNotificationToUser,
+    OTContext: trace.getSpanContext(api.context.active()) ?? null,
     userId,
     messageKey: 'projectCreatedSuccessfully',
     messageProperties: {

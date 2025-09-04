@@ -1,4 +1,6 @@
 import type { Session } from '@auth/sveltekit';
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import type { Prisma } from '@prisma/client';
 import { RoleId } from '$lib/prisma';
 import { type ProjectForAction, canClaimProject, canModifyProject } from '$lib/projects';
@@ -161,6 +163,7 @@ export async function doProjectAction(
     await getQueues().UserTasks.add(`Delete UserTasks for Archived Project #${project.Id}`, {
       type: BullMQ.JobType.UserTasks_Modify,
       scope: 'Project',
+      OTContext: trace.getSpanContext(api.context.active()) ?? null,
       projectId: project.Id,
       operation: {
         type: BullMQ.UserTasks.OpType.Delete
@@ -172,6 +175,7 @@ export async function doProjectAction(
     });
     await getQueues().UserTasks.add(`Create UserTasks for Reactivated Project #${project.Id}`, {
       type: BullMQ.JobType.UserTasks_Modify,
+      OTContext: trace.getSpanContext(api.context.active()) ?? null,
       scope: 'Project',
       projectId: project.Id,
       operation: {

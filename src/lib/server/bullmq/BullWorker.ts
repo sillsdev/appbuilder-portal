@@ -73,7 +73,8 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
       {
         name: 'Check System Statuses',
         data: {
-          type: BullMQ.JobType.System_CheckEngineStatuses
+          type: BullMQ.JobType.System_CheckEngineStatuses,
+          OTContext: null
         }
       }
     );
@@ -86,7 +87,8 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
       {
         name: 'Refresh LangTags',
         data: {
-          type: BullMQ.JobType.System_RefreshLangTags
+          type: BullMQ.JobType.System_RefreshLangTags,
+          OTContext: null
         }
       }
     );
@@ -109,19 +111,22 @@ export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
       [
         'Check System Statuses (Startup)',
         {
-          type: BullMQ.JobType.System_CheckEngineStatuses
+          type: BullMQ.JobType.System_CheckEngineStatuses,
+          OTContext: null
         }
       ],
       [
         'Refresh LangTags (Startup)',
         {
-          type: BullMQ.JobType.System_RefreshLangTags
+          type: BullMQ.JobType.System_RefreshLangTags,
+          OTContext: null
         }
       ],
       [
         'Migrate Features from S1 to S2 (Startup)',
         {
-          type: BullMQ.JobType.System_Migrate
+          type: BullMQ.JobType.System_Migrate,
+          OTContext: null
         }
       ]
     ] as const;

@@ -232,7 +232,7 @@ export const actions: Actions = {
             name: `Create Project #${p}`,
             data: {
               type: BullMQ.JobType.Project_Create,
-              OTContext: trace.getSpanContext(api.context.active()),
+              OTContext: trace.getSpanContext(api.context.active()) ?? null,
               projectId: p
             }
           }))

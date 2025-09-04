@@ -67,7 +67,7 @@ export const actions = {
     const inviteLink = `${url.origin}/invitations/organization-membership?t=${inviteToken}`;
     await getQueues().Emails.add('Invite User ' + email, {
       type: BullMQ.JobType.Email_InviteUser,
-      OTContext: trace.getSpanContext(api.context.active()),
+      OTContext: trace.getSpanContext(api.context.active()) ?? null,
       email,
       inviteToken,
       inviteLink

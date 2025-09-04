@@ -8,6 +8,7 @@ export async function createMany(createManyData: Prisma.UserTasksCreateManyArgs)
   });
   getQueues().SvelteSSE.add(`Update UserTasks`, {
     type: BullMQ.JobType.SvelteSSE_UpdateUserTasks,
+    OTContext: null,
     userIds: [createManyData.data].flat().map((r) => r.UserId)
   });
   return res;
@@ -23,6 +24,7 @@ export async function deleteMany(deleteManyData: Prisma.UserTasksDeleteManyArgs)
 
   getQueues().SvelteSSE.add(`Update UserTasks`, {
     type: BullMQ.JobType.SvelteSSE_UpdateUserTasks,
+    OTContext: null,
     userIds: [...new Set(rows.map((r) => r.UserId))]
   });
   return res;
@@ -40,6 +42,7 @@ export async function updateMany(updateManyData: Prisma.UserTasksUpdateManyArgs)
   });
   getQueues().SvelteSSE.add(`Update UserTasks`, {
     type: BullMQ.JobType.SvelteSSE_UpdateUserTasks,
+    OTContext: null,
     userIds: [...new Set([...beforeUsers.map((r) => r.UserId), ...afterUsers.map((r) => r.UserId)])]
   });
   return res;

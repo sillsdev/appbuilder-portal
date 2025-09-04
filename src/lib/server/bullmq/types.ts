@@ -73,7 +73,7 @@ export enum JobType {
 
 export interface JobBase {
   type: JobType;
-  OTContext?: SpanContext;
+  OTContext: SpanContext | null;
 }
 
 export namespace Build {
@@ -84,7 +84,7 @@ export namespace Build {
     environment: Record<string, string>;
   }
 
-  export interface PostProcess {
+  export interface PostProcess extends JobBase {
     type: JobType.Build_PostProcess;
     productId: string;
     productBuildId: number;

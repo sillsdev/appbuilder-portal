@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import type { Prisma } from '@prisma/client';
 import type { Job } from 'bullmq';
 import { BullMQ, getQueues } from '../bullmq';
@@ -213,6 +215,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
   // might be good to use one job type for all notification types
   await getQueues().Emails.add('Email Notifications', {
     type: BullMQ.JobType.Email_SendBatchUserTaskNotifications,
+    OTContext: trace.getSpanContext(api.context.active()) ?? null,
     notifications
   });
   job.updateProgress(100);

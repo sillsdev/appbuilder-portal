@@ -16,6 +16,7 @@ async function deleteReviewer(id: number) {
 
   getQueues().SvelteSSE.add(`Update Project #${reviewer.ProjectId} (reviewer removed)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
+    OTContext: null,
     projectIds: [reviewer.ProjectId]
   });
   return ret;
@@ -29,6 +30,7 @@ export async function create(reviewerData: Prisma.ReviewersUncheckedCreateInput)
   });
   getQueues().SvelteSSE.add(`Update Project #${reviewerData.ProjectId} (reviewer added)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
+    OTContext: null,
     projectIds: [reviewerData.ProjectId]
   });
   return ret;

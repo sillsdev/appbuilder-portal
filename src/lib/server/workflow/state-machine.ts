@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import { assign, setup } from 'xstate';
 import { RoleId, WorkflowType } from '../../prisma';
 import type {
@@ -302,6 +304,7 @@ export const WorkflowStateMachine = setup({
             `Create Product #${context.productId}`,
             {
               type: BullMQ.JobType.Product_Create,
+              OTContext: trace.getSpanContext(api.context.active()) ?? null,
               productId: context.productId
             },
             BullMQ.Retry0f600
@@ -496,6 +499,7 @@ export const WorkflowStateMachine = setup({
             `Build Product #${context.productId}`,
             {
               type: BullMQ.JobType.Build_Product,
+              OTContext: trace.getSpanContext(api.context.active()) ?? null,
               productId: context.productId,
               defaultTargets:
                 context.workflowType === WorkflowType.Republish
@@ -651,6 +655,7 @@ export const WorkflowStateMachine = setup({
               // Given that the Set Google Play Uploaded action in S1 require DB and BuildEngine queries, this is probably the best way to do this
               getQueues().Products.add(`Get VersionCode for Product #${context.productId}`, {
                 type: BullMQ.JobType.Product_GetVersionCode,
+                OTContext: trace.getSpanContext(api.context.active()) ?? null,
                 productId: context.productId
               });
             },
@@ -667,6 +672,7 @@ export const WorkflowStateMachine = setup({
             actions: ({ context }) => {
               getQueues().Products.add(`Get VersionCode for Product #${context.productId}`, {
                 type: BullMQ.JobType.Product_GetVersionCode,
+                OTContext: trace.getSpanContext(api.context.active()) ?? null,
                 productId: context.productId
               });
             },
@@ -759,6 +765,7 @@ export const WorkflowStateMachine = setup({
           actions: ({ context }) => {
             getQueues().Emails.add(`Email reviewers for Product #${context.productId}`, {
               type: BullMQ.JobType.Email_SendNotificationToReviewers,
+              OTContext: trace.getSpanContext(api.context.active()) ?? null,
               productId: context.productId
             });
           }
@@ -773,6 +780,7 @@ export const WorkflowStateMachine = setup({
             `Publish Product #${context.productId}`,
             {
               type: BullMQ.JobType.Publish_Product,
+              OTContext: trace.getSpanContext(api.context.active()) ?? null,
               productId: context.productId,
               defaultChannel: 'production', //default unless overriden by WorkflowDefinition.Properties or ProductDefinition.Properties
               defaultTargets:
@@ -930,6 +938,7 @@ export const WorkflowStateMachine = setup({
           if (isDeprecated(event.target) && event.target === 'Set Google Play Uploaded') {
             getQueues().Products.add(`Get VersionCode for Migrated Product #${context.productId}`, {
               type: BullMQ.JobType.Product_GetVersionCode,
+              OTContext: trace.getSpanContext(api.context.active()) ?? null,
               productId: context.productId
             });
           }

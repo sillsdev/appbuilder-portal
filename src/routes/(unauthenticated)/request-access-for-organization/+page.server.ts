@@ -22,7 +22,7 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false });
     await getQueues().Emails.add('Email SuperAdmins about new org ' + form.data.organizationName, {
       type: BullMQ.JobType.Email_NotifySuperAdminsOfNewOrganizationRequest,
-      OTContext: trace.getSpanContext(api.context.active()),
+      OTContext: trace.getSpanContext(api.context.active()) ?? null,
       email: form.data.email,
       organizationName: form.data.organizationName,
       url: form.data.url

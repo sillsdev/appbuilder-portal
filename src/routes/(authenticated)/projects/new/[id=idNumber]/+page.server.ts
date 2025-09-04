@@ -77,7 +77,7 @@ export const actions: Actions = {
         `Create Project #${project}`,
         {
           type: BullMQ.JobType.Project_Create,
-          OTContext: trace.getSpanContext(api.context.active()),
+          OTContext: trace.getSpanContext(api.context.active()) ?? null,
           projectId: project as number
         },
         BullMQ.Retry0f600

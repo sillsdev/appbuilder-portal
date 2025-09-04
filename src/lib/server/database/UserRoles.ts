@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
 import { RoleId } from '$lib/prisma';
@@ -45,6 +47,7 @@ export async function toggleForOrg(
         name: `${enabled ? 'Add' : 'Remove'} OrgAdmin tasks for User #${UserId} on Project #${p.Id}`,
         data: {
           type: BullMQ.JobType.UserTasks_Modify,
+          OTContext: trace.getSpanContext(api.context.active()) ?? null,
           scope: 'Project',
           projectId: p.Id,
           operation: {

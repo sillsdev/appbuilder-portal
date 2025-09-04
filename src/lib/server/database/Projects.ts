@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
@@ -70,6 +72,7 @@ export async function update(
     if (ownerId && ownerId !== existing?.OwnerId) {
       await getQueues().UserTasks.add(`Reassign tasks for Project #${id} (New Owner)`, {
         type: BullMQ.JobType.UserTasks_Modify,
+        OTContext: trace.getSpanContext(api.context.active()) ?? null,
         scope: 'Project',
         projectId: id,
         operation: {
@@ -83,6 +86,7 @@ export async function update(
   }
   getQueues().SvelteSSE.add(`Update Project #${id} (update details)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
+    OTContext: null,
     projectIds: [id]
   });
   return true;

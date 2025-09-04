@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import { ProductTransitionType, WorkflowType } from '$lib/prisma';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
@@ -63,6 +65,7 @@ export async function doProductAction(productId: string, action: ProductActionTy
             `Delete UserTasks for canceled workflow (product #${productId})`,
             {
               type: BullMQ.JobType.UserTasks_Modify,
+              OTContext: trace.getSpanContext(api.context.active()) ?? null,
               scope: 'Product',
               productId,
               operation: {

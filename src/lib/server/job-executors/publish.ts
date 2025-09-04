@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import type { Prisma } from '@prisma/client';
 import type { Job } from 'bullmq';
 import { BuildEngine } from '../build-engine-api';
@@ -132,6 +134,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
         name,
         data: {
           type: BullMQ.JobType.Poll_Publish,
+          OTContext: trace.getSpanContext(api.context.active()) ?? null,
           productId: job.data.productId,
           organizationId: productData.Project.OrganizationId,
           jobId: productData.WorkflowJobId,
@@ -265,6 +268,7 @@ async function notifyConnectionFailed(
     `Notify Owner/Admins of Failure to Create Release for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+      OTContext: trace.getSpanContext(api.context.active()) ?? null,
       projectId,
       messageKey: 'releaseFailedUnableToConnect',
       messageProperties: {
@@ -284,6 +288,7 @@ async function notifyUnableToCreate(
     `Notify Owner/Admins of Failure to Create Release for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+      OTContext: trace.getSpanContext(api.context.active()) ?? null,
       projectId,
       messageKey: 'releaseFailedUnableToCreate',
       messageProperties: {
@@ -304,6 +309,7 @@ async function notifyCompleted(
     `Notify Owner of Successful Completion of Release #${publicationId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToUser,
+      OTContext: trace.getSpanContext(api.context.active()) ?? null,
       userId,
       messageKey: 'releaseCompletedSuccessfully',
       messageProperties: {
@@ -341,6 +347,7 @@ async function notifyFailed(
     `Notify Owner/Admins of Failure to Create Release #${publicationId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+      OTContext: trace.getSpanContext(api.context.active()) ?? null,
       projectId: product.Project.Id,
       messageKey: 'releaseFailed',
       messageProperties: {
@@ -363,6 +370,7 @@ async function notifyFailed(
 export async function notifyProductNotFound(productId: string) {
   await getQueues().Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
     type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
+    OTContext: trace.getSpanContext(api.context.active()) ?? null,
     messageKey: 'releaseProductRecordNotFound',
     messageProperties: {
       productId

@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import type { Job } from 'bullmq';
 import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
@@ -258,6 +260,7 @@ async function notifyConnectionFailed(
 ) {
   return getQueues().Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+    OTContext: trace.getSpanContext(api.context.active()) ?? null,
     projectId,
     messageKey: 'productFailedUnableToConnect',
     messageProperties: {
@@ -274,6 +277,7 @@ async function notifyProjectUrlNotSet(
 ) {
   return getQueues().Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+    OTContext: trace.getSpanContext(api.context.active()) ?? null,
     projectId,
     messageKey: 'productProjectUrlNotSet',
     messageProperties: {
@@ -290,6 +294,7 @@ async function notifyCreated(
 ) {
   return getQueues().Emails.add(`Notify Owner of Product #${productId} Creation Success`, {
     type: BullMQ.JobType.Email_SendNotificationToUser,
+    OTContext: trace.getSpanContext(api.context.active()) ?? null,
     userId,
     messageKey: 'productCreatedSuccessfully',
     messageProperties: {
@@ -309,6 +314,7 @@ async function notifyFailed(
   const buildEngineUrl = endpoint + '/job-admin';
   return getQueues().Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
+    OTContext: trace.getSpanContext(api.context.active()) ?? null,
     projectId,
     messageKey: 'productCreationFailed',
     messageProperties: {
@@ -322,6 +328,7 @@ async function notifyFailed(
 async function notifyNotFound(productId: string) {
   await getQueues().Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
     type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
+    OTContext: trace.getSpanContext(api.context.active()) ?? null,
     messageKey: 'productRecordNotFound',
     messageProperties: {
       productId

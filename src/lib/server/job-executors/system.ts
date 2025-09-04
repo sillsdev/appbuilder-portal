@@ -145,7 +145,8 @@ export async function checkSystemStatuses(
         {
           name: 'Email SuperAdmins about offline systems',
           data: {
-            type: BullMQ.JobType.Email_NotifySuperAdminsOfOfflineSystems
+            type: BullMQ.JobType.Email_NotifySuperAdminsOfOfflineSystems,
+            OTContext: null
           }
         }
       );

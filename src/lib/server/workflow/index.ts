@@ -1,3 +1,5 @@
+import { trace } from '@opentelemetry/api';
+import { api } from '@opentelemetry/sdk-node';
 import type { Prisma } from '@prisma/client';
 import type {
   Actor,
@@ -76,6 +78,7 @@ export class Workflow {
     });
     await getQueues().UserTasks.add(`Create UserTasks for Product #${productId}`, {
       type: BullMQ.JobType.UserTasks_Modify,
+      OTContext: trace.getSpanContext(api.context.active()) ?? null,
       scope: 'Product',
       productId: productId,
       operation: {
@@ -320,6 +323,7 @@ export class Workflow {
         // This will also create the dummy entries in the ProductTransitions table
         await getQueues().UserTasks.add(`Update UserTasks for Product #${this.productId}`, {
           type: BullMQ.JobType.UserTasks_Modify,
+          OTContext: trace.getSpanContext(api.context.active()) ?? null,
           scope: 'Product',
           productId: this.productId,
           comment: jump ? undefined : migration ? '' : event.comment,
