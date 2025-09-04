@@ -80,12 +80,19 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
 
   return tracer.startActiveSpan(`${event.request.method} ${event.url.pathname}`, async (span) => {
+    let clientIp;
+    try {
+      clientIp = event.getClientAddress();
+    } catch (e) {
+      span.recordException(e as Error);
+      clientIp = 'unknown';
+    }
     span.setAttributes({
       'http.method': event.request.method,
       'http.url': event.url.href,
       'http.route': event.url.pathname ?? '',
       'http.user_agent': event.request.headers.get('user-agent') ?? '',
-      'http.client_ip': event.getClientAddress(),
+      'http.client_ip': clientIp,
       'http.x-forwarded-for': event.request.headers.get('x-forwarded-for') ?? '',
       'svelte.route_id': event.route.id ?? ''
     });
