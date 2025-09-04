@@ -60,7 +60,7 @@ export async function sendEmail(
       ),
       attachments: [
         {
-          path: join(import.meta.dirname, 'templates', 'scriptoria-logo-128w.png'),
+          path: join(process.cwd(), 'static', 'scriptoria-logo-128w.png'),
           cid: 'logo' // same cid value as in the html img src
         }
       ]
