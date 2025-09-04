@@ -54,7 +54,7 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
     job.updateProgress(100);
     return {
       ...response,
-      environment: JSON.parse((response['environment'] as string) ?? '{}')
+      environment: JSON.parse((response['environment'] as string) || '{}')
     };
   }
 }
@@ -109,7 +109,7 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
     job.updateProgress(100);
     return {
       ...response,
-      environment: JSON.parse((response['environment'] as string) ?? '{}')
+      environment: JSON.parse((response['environment'] as string) || '{}')
     };
   }
 }
