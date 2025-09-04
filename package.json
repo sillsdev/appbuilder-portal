@@ -101,5 +101,9 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.13.4",
     "@prisma/client": "^6.15.0"
+  },
+  "//": "@auth/core has a peerDep on v6, but it is never used",
+  "overrides": {
+    "nodemailer": "^7.0.6"
   }
 }
