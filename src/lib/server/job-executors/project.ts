@@ -2,7 +2,6 @@ import type { Job } from 'bullmq';
 import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
-import { Workflow } from '../workflow';
 
 export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> {
   const projectData = await DatabaseReads.projects.findUniqueOrThrow({
@@ -94,71 +93,45 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
   job.updateProgress(30);
   const products = await Promise.all(
     productsToCreate.map(async (p) => {
-      const productDefinitionId = await DatabaseReads.productDefinitions.findFirst({
-        where: {
-          Name: p.Name,
-          OrganizationProductDefinitions: {
-            some: {
-              OrganizationId: job.data.organizationId
-            }
-          }
-        },
-        select: {
-          Id: true
-        }
-      });
-      if (!productDefinitionId) return null;
-      const storeId = await DatabaseReads.stores.findFirst({
-        where: {
-          Name: p.Store,
-          OrganizationStores: {
-            some: {
-              OrganizationId: job.data.organizationId
-            }
-          }
-        },
-        select: {
-          Id: true
-        }
-      });
-      if (!storeId) return null;
-      const productId = await DatabaseWrites.products.create({
-        ProjectId: job.data.projectId,
-        ProductDefinitionId: productDefinitionId.Id,
-        StoreId: storeId.Id,
-        WorkflowJobId: 0,
-        WorkflowBuildId: 0,
-        WorkflowPublishId: 0
-      });
-      if (!productId) return null;
-      const flowDefinition = (
-        await DatabaseReads.productDefinitions.findUnique({
+      const productDefinitionId = (
+        await DatabaseReads.productDefinitions.findFirst({
           where: {
-            Id: productDefinitionId.Id
-          },
-          select: {
-            Workflow: {
-              select: {
-                Id: true,
-                Type: true,
-                ProductType: true,
-                WorkflowOptions: true
+            Name: p.Name,
+            OrganizationProductDefinitions: {
+              some: {
+                OrganizationId: job.data.organizationId
               }
             }
+          },
+          select: {
+            Id: true
           }
         })
-      )?.Workflow;
-      if (flowDefinition) {
-        await Workflow.create(productId, {
-          productType: flowDefinition.ProductType,
-          options: new Set(flowDefinition.WorkflowOptions),
-          workflowType: flowDefinition.Type
-        });
-      }
-      return {
-        ...p,
-        Id: productId
-      };
+      )?.Id;
+      if (productDefinitionId === undefined) return null;
+      const storeId = (
+        await DatabaseReads.stores.findFirst({
+          where: {
+            Name: p.Store,
+            OrganizationStores: {
+              some: {
+                OrganizationId: job.data.organizationId
+              }
+            }
+          },
+          select: {
+            Id: true
+          }
+        })
+      )?.Id;
+      if (storeId === undefined) return null;
+      await getQueues().Products.add(`Import ${p.Name} for Project #${job.data.projectId}`, {
+        type: BullMQ.JobType.Product_CreateLocal,
+        projectId: job.data.projectId,
+        productDefinitionId,
+        storeId
+      });
+      return p;
     })
   );
   job.updateProgress(75);

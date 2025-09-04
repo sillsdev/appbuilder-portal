@@ -205,6 +205,50 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
   return versionCode;
 }
 
+export async function createLocal(job: Job<BullMQ.Product.CreateLocal>): Promise<unknown> {
+  try {
+    const product = await DatabaseWrites.products.create({
+      ProjectId: job.data.projectId,
+      ProductDefinitionId: job.data.productDefinitionId,
+      StoreId: job.data.storeId,
+      WorkflowBuildId: 0,
+      WorkflowJobId: 0,
+      WorkflowPublishId: 0
+    });
+    if (!product) return false;
+
+    const flowDefinition = (
+      await DatabaseReads.productDefinitions.findUnique({
+        where: {
+          Id: job.data.productDefinitionId
+        },
+        select: {
+          Workflow: {
+            select: {
+              Id: true,
+              Type: true,
+              ProductType: true,
+              WorkflowOptions: true
+            }
+          }
+        }
+      })
+    )?.Workflow;
+
+    if (flowDefinition) {
+      await Workflow.create(product, {
+        productType: flowDefinition.ProductType,
+        options: new Set(flowDefinition.WorkflowOptions),
+        workflowType: flowDefinition.Type
+      });
+    }
+
+    return product;
+  } catch {
+    return false;
+  }
+}
+
 async function notifyConnectionFailed(
   productId: string,
   projectId: number,
@@ -283,45 +327,4 @@ async function notifyNotFound(productId: string) {
     }
   });
   return { message: 'Product Not Found' };
-}
-export async function createLocal(job: Job<BullMQ.Product.CreateLocal>): Promise<unknown> {
-  try {
-    const product = await DatabaseWrites.products.create({
-      ProjectId: job.data.projectId,
-      ProductDefinitionId: job.data.productDefinitionId,
-      StoreId: job.data.storeId,
-      WorkflowBuildId: 0,
-      WorkflowJobId: 0,
-      WorkflowPublishId: 0
-    });
-    if (!product) return false;
-
-    const flowDefinition = (
-      await DatabaseReads.productDefinitions.findUnique({
-        where: {
-          Id: job.data.productDefinitionId
-        },
-        select: {
-          Workflow: {
-            select: {
-              Id: true,
-              Type: true,
-              ProductType: true,
-              WorkflowOptions: true
-            }
-          }
-        }
-      })
-    )?.Workflow;
-
-    if (flowDefinition) {
-      await Workflow.create(product, {
-        productType: flowDefinition.ProductType,
-        options: new Set(flowDefinition.WorkflowOptions),
-        workflowType: flowDefinition.Type
-      });
-    }
-  } catch {
-    return false;
-  }
 }
