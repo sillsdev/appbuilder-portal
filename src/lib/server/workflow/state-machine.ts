@@ -103,7 +103,6 @@ export const WorkflowStateMachine = setup({
           {
             target: WorkflowState.Author_Configuration,
             filter: {
-              options: { has: WorkflowOptions.AllowTransferToAuthors },
               workflowType: { is: WorkflowType.Startup }
             }
           },
@@ -112,16 +111,14 @@ export const WorkflowStateMachine = setup({
         jump({ target: WorkflowState.Synchronize_Data }),
         jump(
           {
-            target: WorkflowState.Author_Download,
-            filter: { options: { has: WorkflowOptions.AllowTransferToAuthors } }
+            target: WorkflowState.Author_Download
           },
           [hasAuthors]
         ),
         //note: authors can upload at any time, this state is just to prompt an upload
         jump(
           {
-            target: WorkflowState.Author_Upload,
-            filter: { options: { has: WorkflowOptions.AllowTransferToAuthors } }
+            target: WorkflowState.Author_Upload
           },
           [hasAuthors]
         ),
@@ -370,7 +367,7 @@ export const WorkflowStateMachine = setup({
             type: ActionType.User,
             user: RoleId.AppBuilder,
             includeWhen: {
-              options: { has: WorkflowOptions.AllowTransferToAuthors }
+              guards: [hasAuthors]
             }
           },
           guard: hasAuthors,
@@ -381,7 +378,7 @@ export const WorkflowStateMachine = setup({
     [WorkflowState.Author_Configuration]: {
       meta: {
         includeWhen: {
-          options: { has: WorkflowOptions.AllowTransferToAuthors },
+          guards: [hasAuthors],
           workflowType: { is: WorkflowType.Startup }
         }
       },
@@ -424,7 +421,7 @@ export const WorkflowStateMachine = setup({
             type: ActionType.User,
             user: RoleId.AppBuilder,
             includeWhen: {
-              options: { has: WorkflowOptions.AllowTransferToAuthors }
+              guards: [hasAuthors]
             }
           },
           guard: hasAuthors,
@@ -435,7 +432,7 @@ export const WorkflowStateMachine = setup({
     [WorkflowState.Author_Download]: {
       meta: {
         includeWhen: {
-          options: { has: WorkflowOptions.AllowTransferToAuthors }
+          guards: [hasAuthors]
         }
       },
       entry: assign({
@@ -462,7 +459,7 @@ export const WorkflowStateMachine = setup({
     [WorkflowState.Author_Upload]: {
       meta: {
         includeWhen: {
-          options: { has: WorkflowOptions.AllowTransferToAuthors }
+          guards: [hasAuthors]
         }
       },
       entry: assign({
@@ -906,10 +903,7 @@ export const WorkflowStateMachine = setup({
                 case 'Set Google Play Uploaded':
                   return WorkflowState.Verify_and_Publish;
               }
-            } else if (
-              isAuthorState(event.target) &&
-              !(context.options.has(WorkflowOptions.AllowTransferToAuthors) && context.hasAuthors)
-            ) {
+            } else if (isAuthorState(event.target) && !context.hasAuthors) {
               switch (event.target) {
                 case WorkflowState.Author_Configuration:
                   return WorkflowState.App_Builder_Configuration;

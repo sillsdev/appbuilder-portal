@@ -17,9 +17,7 @@ export enum WorkflowOptions {
   /** Require an OrgAdmin to access the GooglePlay Developer Console */
   AdminStoreAccess = 1,
   /** Require approval from an OrgAdmin before product can be created */
-  ApprovalProcess,
-  /** Allow Owner to delegate actions to Authors */
-  AllowTransferToAuthors
+  ApprovalProcess
 }
 
 export enum ProductType {
@@ -192,6 +190,7 @@ export type MetaFilter = {
   options?: SetFilter<WorkflowOptions>;
   productType?: ValueFilter<ProductType>;
   workflowType?: ValueFilter<WorkflowType>;
+  guards?: Guards[];
 };
 
 export type WorkflowStateMeta = { includeWhen?: MetaFilter };
@@ -207,19 +206,22 @@ export type WorkflowTransitionMeta = {
  *  - no conditions are specified
  *  - all specified conditions are met
  */
-export function includeStateOrTransition(config: WorkflowConfig, filter?: MetaFilter) {
+export function includeStateOrTransition(input: WorkflowInput, filter?: MetaFilter) {
   let include = !!filter;
   if (!filter) {
     return true; // no conditions are specified
   }
   if (include && filter.options) {
-    include &&= filterSet(config.options, filter.options);
+    include &&= filterSet(input.options, filter.options);
   }
   if (include && filter.productType) {
-    include &&= filterValue(config.productType, filter.productType);
+    include &&= filterValue(input.productType, filter.productType);
   }
   if (include && filter.workflowType) {
-    include &&= filterValue(config.workflowType, filter.workflowType);
+    include &&= filterValue(input.workflowType, filter.workflowType);
+  }
+  if (include && filter.guards) {
+    include &&= filter.guards.every((g) => g({ context: input }));
   }
   return include;
 }
@@ -246,12 +248,13 @@ export function canJump(args: { context: WorkflowContext }, params: JumpParams):
     args.context.start === params.target && includeStateOrTransition(args.context, params.filter)
   );
 }
-export function hasAuthors(args: { context: WorkflowContext }): boolean {
+export function hasAuthors(args: { context: WorkflowInput }): boolean {
   return args.context.hasAuthors;
 }
-export function hasReviewers(args: { context: WorkflowContext }): boolean {
+export function hasReviewers(args: { context: WorkflowInput }): boolean {
   return args.context.hasReviewers;
 }
+export type Guards = typeof hasAuthors | typeof hasReviewers;
 /**
  * @param params expected params of `canJump` guard from StartupWorkflow
  * @param optionalGuards other guards that can optionally be added.
@@ -259,7 +262,7 @@ export function hasReviewers(args: { context: WorkflowContext }): boolean {
  */
 export function jump(
   params: JumpParams,
-  optionalGuards?: (typeof hasAuthors | typeof hasReviewers)[]
+  optionalGuards?: Guards[]
 ):
   | TransitionConfig<
       WorkflowContext,
@@ -275,7 +278,7 @@ export function jump(
   | string {
   const j = (args: { context: WorkflowContext }) => canJump(args, params);
   return {
-    guard: optionalGuards ? and(optionalGuards.concat([j])) : j,
+    guard: optionalGuards ? and(optionalGuards.concat([j as Guards])) : j,
     target: params.target
   };
 }

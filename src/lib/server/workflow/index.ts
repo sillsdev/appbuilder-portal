@@ -22,6 +22,7 @@ import type {
   WorkflowConfig,
   WorkflowContext,
   WorkflowEvent,
+  WorkflowInput,
   WorkflowInstanceContext
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
@@ -36,13 +37,13 @@ export class Workflow {
   private flow: Actor<typeof WorkflowStateMachine> | null;
   private productId: string;
   private currentState: XStateNode<WorkflowContext, WorkflowEvent> | null;
-  private config: WorkflowConfig;
+  private input: WorkflowInput;
 
   private constructor(productId: string, config: WorkflowConfig) {
     this.flow = null; // to make svelte-check happy
     this.currentState = null; // ^^^
     this.productId = productId;
-    this.config = config;
+    this.input = { ...config, hasAuthors: false, hasReviewers: false, productId };
   }
 
   /* PUBLIC METHODS */
@@ -51,17 +52,14 @@ export class Workflow {
     const flow = new Workflow(productId, config);
 
     const check = await flow.checkAuthorsAndReviewers();
+    flow.input.hasAuthors = !!check && check.Project._count.Authors > 0;
+    flow.input.hasReviewers = !!check && check.Project._count.Reviewers > 0;
 
     flow.flow = createActor(WorkflowStateMachine, {
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
-      input: {
-        productId,
-        hasAuthors: !!check && check.Project._count.Authors > 0,
-        hasReviewers: !!check && check.Project._count.Reviewers > 0,
-        ...config
-      }
+      input: flow.input
     });
 
     flow.flow.start();
@@ -92,29 +90,25 @@ export class Workflow {
       return null;
     }
     const flow = new Workflow(productId, snap.config);
+
     const check = await flow.checkAuthorsAndReviewers();
+    flow.input.hasAuthors = !!check && check.Project._count.Authors > 0;
+    flow.input.hasReviewers = !!check && check.Project._count.Reviewers > 0;
+
     flow.flow = createActor(WorkflowStateMachine, {
       snapshot: snap
         ? WorkflowStateMachine.resolveState({
             value: snap.state,
             context: {
               ...snap.context,
-              ...snap.config,
-              productId: productId,
-              hasAuthors: !!check && check.Project._count.Authors > 0,
-              hasReviewers: !!check && check.Project._count.Reviewers > 0
+              ...flow.input
             }
           })
         : undefined,
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
       },
-      input: {
-        ...snap.config,
-        productId: productId,
-        hasAuthors: !!check && check.Project._count.Authors > 0,
-        hasReviewers: !!check && check.Project._count.Reviewers > 0
-      }
+      input: flow.input
     });
 
     flow.flow.start();
@@ -178,24 +172,24 @@ export class Workflow {
   }
 
   /** Returns a list of valid transitions from the provided state. */
-  public static availableTransitionsFromName(stateName: string, config: WorkflowConfig) {
+  public static availableTransitionsFromName(stateName: string, input: WorkflowInput) {
     return Workflow.availableTransitionsFromNode(
       WorkflowStateMachine.getStateNodeById(Workflow.stateIdFromName(stateName)),
-      config
+      input
     );
   }
 
   public static availableTransitionsFromNode(
     s: XStateNode<WorkflowContext, WorkflowEvent>,
-    config: WorkflowConfig
+    input: WorkflowInput
   ) {
-    return Workflow.filterTransitions(s.on, config);
+    return Workflow.filterTransitions(s.on, input);
   }
 
   /** Transform state machine definition into something more easily usable by the visualization algorithm */
   public serializeForVisualization(): StateNode[] {
     const states = Object.entries(WorkflowStateMachine.states).filter(([k, v]) =>
-      includeStateOrTransition(this.config, v.meta?.includeWhen)
+      includeStateOrTransition(this.input, v.meta?.includeWhen)
     );
     const lookup = states.map((s) => s[0]);
     const actions: StateNode[] = [];
@@ -204,7 +198,7 @@ export class Workflow {
         return {
           id: lookup.indexOf(k),
           label: k,
-          connections: Workflow.filterTransitions(v.on, this.config).map((o) => {
+          connections: Workflow.filterTransitions(v.on, this.input).map((o) => {
             let target = Workflow.targetStringFromEvent(o[0]);
             if (!target) {
               target = o[0].eventType;
@@ -232,7 +226,7 @@ export class Workflow {
           }),
           inCount: states
             .flatMap(([k, v]) => {
-              return Workflow.filterTransitions(v.on, this.config).map((e) => {
+              return Workflow.filterTransitions(v.on, this.input).map((e) => {
                 // treat no target on transition as self target
                 return { from: k, to: Workflow.targetStringFromEvent(e[0]) || k };
               });
@@ -272,7 +266,7 @@ export class Workflow {
           ProductId: this.productId,
           DateTransition: new Date(),
           TransitionType: ProductTransitionType.Migration,
-          WorkflowType: this.config.workflowType
+          WorkflowType: this.input.workflowType
         }
       });
       if (event.target !== xSnap.value) {
@@ -285,7 +279,7 @@ export class Workflow {
             Comment: `${event.target} => ${xSnap.value}`,
             DateTransition: new Date(),
             TransitionType: ProductTransitionType.Activity,
-            WorkflowType: this.config.workflowType
+            WorkflowType: this.input.workflowType
           }
         });
       }
@@ -375,7 +369,7 @@ export class Workflow {
   /** Filter a states transitions based on provided context */
   private static filterTransitions(
     on: TransitionDefinitionMap<WorkflowContext, WorkflowEvent>,
-    filter: WorkflowConfig
+    filter: WorkflowInput
   ) {
     return Object.values(on)
       .map((v) => v.filter((t) => includeStateOrTransition(filter, t.meta?.includeWhen)))
@@ -386,10 +380,10 @@ export class Workflow {
   private static transitionFromState(
     state: XStateNode<WorkflowContext, WorkflowEvent>,
     productId: string,
-    config: WorkflowConfig,
+    input: WorkflowInput,
     users: Record<string, Set<RoleId>>
   ): Prisma.ProductTransitionsCreateManyInput {
-    const t = Workflow.filterTransitions(state.on, config)[0][0];
+    const t = Workflow.filterTransitions(state.on, input)[0][0];
 
     return {
       ProductId: productId,
@@ -407,14 +401,14 @@ export class Workflow {
       InitialState: Workflow.stateName(state),
       DestinationState: Workflow.targetStringFromEvent(t),
       Command: t.meta.type !== ActionType.Auto ? t.eventType : null,
-      WorkflowType: config.workflowType
+      WorkflowType: input.workflowType
     };
   }
 
   public static async transitionEntriesFromState(
     stateName: string,
     productId: string,
-    config: WorkflowConfig
+    input: WorkflowInput
   ): Promise<Prisma.ProductTransitionsCreateManyInput[]> {
     const projectId = (await DatabaseReads.products.findUnique({
       where: {
@@ -441,10 +435,10 @@ export class Workflow {
     const ret: Prisma.ProductTransitionsCreateManyInput[] = [
       Workflow.transitionFromState(
         stateName === WorkflowState.Start
-          ? Workflow.availableTransitionsFromName(WorkflowState.Start, config)[0][0]!.target![0]
+          ? Workflow.availableTransitionsFromName(WorkflowState.Start, input)[0][0]!.target![0]
           : WorkflowStateMachine.getStateNodeById(Workflow.stateIdFromName(stateName)),
         productId,
-        config,
+        input,
         users
       )
     ];
@@ -453,7 +447,7 @@ export class Workflow {
         Workflow.transitionFromState(
           Workflow.nodeFromName(ret.at(-1)!.DestinationState!),
           productId,
-          config,
+          input,
           users
         )
       );
@@ -521,7 +515,7 @@ export class Workflow {
           Command: command ?? null,
           DateTransition: new Date(),
           Comment: comment ?? null,
-          WorkflowType: this.config.workflowType
+          WorkflowType: this.input.workflowType
         }
       });
     }
