@@ -1,5 +1,6 @@
 import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2';
 import { type Transporter, createTransport } from 'nodemailer';
+import { join } from 'path';
 import { DatabaseReads } from '../database';
 import {
   EmailLayoutTemplate,
@@ -59,7 +60,7 @@ export async function sendEmail(
       ),
       attachments: [
         {
-          path: import.meta.dirname + '/templates/scriptoria-logo-128w.png',
+          path: join(import.meta.dirname, 'templates', 'scriptoria-logo-128w.png'),
           cid: 'logo' // same cid value as in the html img src
         }
       ]
