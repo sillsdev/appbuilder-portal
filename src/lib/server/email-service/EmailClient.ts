@@ -1,10 +1,10 @@
+import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2';
 import { type Transporter, createTransport } from 'nodemailer';
 import { DatabaseReads } from '../database';
 import {
   EmailLayoutTemplate,
   NotificationTemplate,
   NotificationWithLinkTemplate,
-  ScriptoriaLogo,
   addProperties
 } from './EmailTemplates';
 import { building } from '$app/environment';
@@ -17,8 +17,13 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '<no-email>';
 let transporter: Transporter | null = null;
 if (!building) {
   if (process.env.MAIL_SENDER === 'AmazonSES') {
-    const { SESv2Client, SendEmailCommand } = await import('@aws-sdk/client-sesv2');
-    const sesClient = new SESv2Client();
+    const sesClient = new SESv2Client({
+      credentials: {
+        accessKeyId: process.env.AWS_EMAIL_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.AWS_EMAIL_SECRET_ACCESS_KEY || ''
+      },
+      region: process.env.AWS_REGION || 'us-east-1'
+    });
     transporter = createTransport({
       SES: { sesClient, SendEmailCommand }
     });
@@ -32,7 +37,6 @@ export async function sendEmail(
   subject: string,
   body: string
 ) {
-  console.log(`Preparing to send email to ${to.map((e) => e.email).join(', ')}`);
   if (process.env.MAIL_SENDER === 'AmazonSES') {
     return await transporter?.sendMail({
       from: `"${EMAIL_NAME}" <${ADMIN_EMAIL}>`,
@@ -49,8 +53,7 @@ export async function sendEmail(
       ),
       attachments: [
         {
-          filename: 'logo.png',
-          content: ScriptoriaLogo,
+          path: import.meta.dirname + '/templates/scriptoria-logo-128w.png',
           cid: 'logo' // same cid value as in the html img src
         }
       ]

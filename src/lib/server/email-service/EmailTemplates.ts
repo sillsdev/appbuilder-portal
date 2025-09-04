@@ -5,7 +5,6 @@ import OrganizationInviteRequestTemplate from './templates/OrganizationInviteReq
 import OrganizationMembershipInviteTemplate from './templates/OrganizationMembershipInvite.html?raw';
 import ProjectImportTemplate from './templates/ProjectImport.html?raw';
 import ReviewProductTemplate from './templates/ReviewProduct.html?raw';
-import ScriptoriaLogo from './templates/scriptoria-logo-128w.png?raw';
 
 export {
   EmailLayoutTemplate,
@@ -14,8 +13,7 @@ export {
   OrganizationInviteRequestTemplate,
   OrganizationMembershipInviteTemplate,
   ProjectImportTemplate,
-  ReviewProductTemplate,
-  ScriptoriaLogo
+  ReviewProductTemplate
 };
 
 export function addProperties(
