@@ -5,7 +5,7 @@ import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-a
 
 /** Retry a job for 72 hours every 10 minutes. Useful for build engine tasks */
 export const Retry0f600 = {
-  attempts: 432,
+  attempts: (72 * 60) / 10,
   backoff: {
     type: 'fixed',
     delay: 600000 // 10 minute
