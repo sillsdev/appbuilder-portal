@@ -3,8 +3,9 @@ import { Redis } from 'ioredis';
 import type {
   BuildJob,
   EmailJob,
-  MiscJob,
   PollJob,
+  ProductJob,
+  ProjectJob,
   PublishJob,
   RecurringJob,
   StartupJob,
@@ -101,15 +102,17 @@ function createQueues() {
   /** Queue for Product Builds */
   const Builds = new Queue<BuildJob>(QueueName.Builds, getQueueConfig());
   /** Queue for default recurring jobs such as the BuildEngine status check */
-  const SystemRecurring = new Queue<RecurringJob>(QueueName.SystemRecurring, getQueueConfig());
+  const SystemRecurring = new Queue<RecurringJob>(QueueName.System_Recurring, getQueueConfig());
   /** Queue for system jobs that run on startup, such as prepopulating langtags.json */
-  const SystemStartup = new Queue<StartupJob>(QueueName.SystemStartup, getQueueConfig());
-  /** Queue for miscellaneous jobs such as Product and Project Creation */
-  const Miscellaneous = new Queue<MiscJob>(QueueName.Miscellaneous, getQueueConfig());
+  const SystemStartup = new Queue<StartupJob>(QueueName.System_Startup, getQueueConfig());
+  /** Queue for miscellaneous jobs such as getting a VersionCode or importing products */
+  const Products = new Queue<ProductJob>(QueueName.Products, getQueueConfig());
+  /** Queue for miscellaneous jobs in BuildEngine such as Product and Project Creation */
+  const Projects = new Queue<ProjectJob>(QueueName.Projects, getQueueConfig());
   /** Queue for Product Publishing  */
   const Publishing = new Queue<PublishJob>(QueueName.Publishing, getQueueConfig());
   /** Queue for jobs that poll BuildEngine, such as checking the status of a build */
-  const RemotePolling = new Queue<PollJob>(QueueName.RemotePolling, getQueueConfig());
+  const Polling = new Queue<PollJob>(QueueName.Polling, getQueueConfig());
   /** Queue for operations on UserTasks */
   const UserTasks = new Queue<UserTasksJob>(QueueName.UserTasks, getQueueConfig());
   /** Queue for Email tasks */
@@ -120,9 +123,10 @@ function createQueues() {
     Builds,
     SystemRecurring,
     SystemStartup,
-    Miscellaneous,
+    Products,
+    Projects,
     Publishing,
-    RemotePolling,
+    Polling,
     UserTasks,
     Emails,
     SvelteSSE

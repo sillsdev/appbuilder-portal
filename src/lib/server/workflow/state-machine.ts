@@ -298,7 +298,7 @@ export const WorkflowStateMachine = setup({
       entry: [
         assign({ instructions: 'waiting' }),
         ({ context }) => {
-          getQueues().Miscellaneous.add(
+          getQueues().Products.add(
             `Create Product #${context.productId}`,
             {
               type: BullMQ.JobType.Product_Create,
@@ -649,7 +649,7 @@ export const WorkflowStateMachine = setup({
             },
             actions: ({ context }) => {
               // Given that the Set Google Play Uploaded action in S1 require DB and BuildEngine queries, this is probably the best way to do this
-              getQueues().Miscellaneous.add(`Get VersionCode for Product #${context.productId}`, {
+              getQueues().Products.add(`Get VersionCode for Product #${context.productId}`, {
                 type: BullMQ.JobType.Product_GetVersionCode,
                 productId: context.productId
               });
@@ -665,7 +665,7 @@ export const WorkflowStateMachine = setup({
               }
             },
             actions: ({ context }) => {
-              getQueues().Miscellaneous.add(`Get VersionCode for Product #${context.productId}`, {
+              getQueues().Products.add(`Get VersionCode for Product #${context.productId}`, {
                 type: BullMQ.JobType.Product_GetVersionCode,
                 productId: context.productId
               });
@@ -928,13 +928,10 @@ export const WorkflowStateMachine = setup({
         }),
         ({ event, context }) => {
           if (isDeprecated(event.target) && event.target === 'Set Google Play Uploaded') {
-            getQueues().Miscellaneous.add(
-              `Get VersionCode for Migrated Product #${context.productId}`,
-              {
-                type: BullMQ.JobType.Product_GetVersionCode,
-                productId: context.productId
-              }
-            );
+            getQueues().Products.add(`Get VersionCode for Migrated Product #${context.productId}`, {
+              type: BullMQ.JobType.Product_GetVersionCode,
+              productId: context.productId
+            });
           }
         }
       ],

@@ -91,7 +91,7 @@ async function deleteProduct(productId: string) {
       WorkflowJobId: true
     }
   });
-  await getQueues().Miscellaneous.add(
+  await getQueues().Products.add(
     `Delete Product #${productId} from BuildEngine`,
     {
       type: BullMQ.JobType.Product_Delete,
