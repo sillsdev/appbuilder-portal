@@ -6,6 +6,7 @@ import {
   EmailLayoutTemplate,
   NotificationTemplate,
   NotificationWithLinkTemplate,
+  ScriptoriaLogoBuffer,
   addProperties
 } from './EmailTemplates';
 import { building } from '$app/environment';
@@ -60,7 +61,8 @@ export async function sendEmail(
       ),
       attachments: [
         {
-          path: join(process.cwd(), 'static', 'scriptoria-logo-128w.png'),
+          filename: 'logo.png',
+          content: ScriptoriaLogoBuffer,
           cid: 'logo' // same cid value as in the html img src
         }
       ]

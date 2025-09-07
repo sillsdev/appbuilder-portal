@@ -1,3 +1,5 @@
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import EmailLayoutTemplate from './templates/Layout.html?raw';
 import NotificationTemplate from './templates/Notification.html?raw';
 import NotificationWithLinkTemplate from './templates/NotificationWithLink.html?raw';
@@ -5,6 +7,9 @@ import OrganizationInviteRequestTemplate from './templates/OrganizationInviteReq
 import OrganizationMembershipInviteTemplate from './templates/OrganizationMembershipInvite.html?raw';
 import ProjectImportTemplate from './templates/ProjectImport.html?raw';
 import ReviewProductTemplate from './templates/ReviewProduct.html?raw';
+import ScriptoriaLogo from './templates/scriptoria-logo-128w.png?inline';
+
+const ScriptoriaLogoBuffer = Buffer.from(ScriptoriaLogo.split(',')[1], 'base64');
 
 export {
   EmailLayoutTemplate,
@@ -13,7 +18,8 @@ export {
   OrganizationInviteRequestTemplate,
   OrganizationMembershipInviteTemplate,
   ProjectImportTemplate,
-  ReviewProductTemplate
+  ReviewProductTemplate,
+  ScriptoriaLogoBuffer
 };
 
 export function addProperties(
