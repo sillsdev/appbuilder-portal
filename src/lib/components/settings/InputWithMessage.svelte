@@ -22,7 +22,7 @@
 <div class="flex flex-row items-center gap-2 {className}">
   <div class="fieldset-label flex-col items-start grow text-base-content">
     {#if title}
-      <span class={title.classes ?? ''}>
+      <span class="title {title.classes ?? ''}">
         {m[title.key](title.params as any)}
       </span>
     {/if}
@@ -36,7 +36,7 @@
 </div>
 
 <style>
-  .fieldset-label > :not(.text-sm) {
+  .title {
     font-weight: bold;
   }
 </style>
