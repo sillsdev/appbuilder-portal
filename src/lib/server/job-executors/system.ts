@@ -8,6 +8,7 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { WorkflowType, WorkflowTypeString } from '$lib/prisma';
+import { extractPackageName } from '$lib/products';
 import {
   ENVKeys,
   ProductType,
@@ -634,7 +635,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
         }
       })
     ).map(async (p) => {
-      const pname = p.PublishLink?.match(/\?id=([^&]+)/)?.at(1);
+      const pname = extractPackageName(p.PublishLink);
       await DatabaseWrites.products.update(p.Id, {
         PackageName: pname
       });

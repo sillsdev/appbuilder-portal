@@ -55,3 +55,7 @@ export async function getFileInfo(url: string) {
       res.headers.get('Content-Type') !== 'text/html' ? res.headers.get('Content-Length') : null
   };
 }
+
+export function extractPackageName(PublishLink: string | null) {
+  return PublishLink?.match(/[?&]id=([^&#/]+)/i)?.at(1) ?? null;
+}
