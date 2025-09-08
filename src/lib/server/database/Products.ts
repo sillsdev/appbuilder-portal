@@ -58,6 +58,11 @@ export async function update(
 
   // No additional verification steps
 
+  // write package name whenever publish link is updated
+  if (productData.PublishLink && productData.PublishLink.match(/\?id=([^&]+)/)) {
+    productData.PackageName = productData.PublishLink.match(/\?id=([^&]+)/)?.at(1);
+  }
+
   try {
     await prisma.products.update({
       where: {
