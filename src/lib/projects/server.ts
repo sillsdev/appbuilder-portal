@@ -110,20 +110,10 @@ export function projectFilter(args: {
               {
                 Products: {
                   some: {
-                    AND: [
-                      {
-                        PublishLink: {
-                          startsWith: 'https://play.google.com/store/apps/details',
-                          mode: 'insensitive'
-                        }
-                      },
-                      {
-                        PublishLink: {
-                          contains: 'id=' + args.search,
-                          mode: 'insensitive'
-                        }
-                      }
-                    ]
+                    PackageName: {
+                      contains: args.search,
+                      mode: 'insensitive'
+                    }
                   }
                 }
               }
