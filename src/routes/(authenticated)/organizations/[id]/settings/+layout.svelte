@@ -51,10 +51,7 @@
         {m.org_settingsTitle()}
       </h1>
       <h2>
-        <OrganizationDropdown bind:value={selectedOrg} organizations={data.organizations} onchange={() => {
-          let currentRoute = page.route.id?.split('/') ?? [];
-          currentRoute[3] = ''+selectedOrg;
-          goto(localizeUrl(currentRoute?.slice(2).join('/') ?? '/'))}} />
+        <OrganizationDropdown bind:value={selectedOrg} organizations={data.organizations} onchange={() => goto(localizeUrl(page.url.pathname.replace(`/organizations/${page.params.id}`, `/organizations/${selectedOrg}`)))} />
       </h2>
     </div>
   {/snippet}
