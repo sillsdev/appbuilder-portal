@@ -20,9 +20,9 @@
 </script>
 
 <div class="flex flex-row items-center gap-2 {className}">
-  <div class="fieldset-label flex-col items-start grow">
+  <div class="fieldset-label flex-col items-start grow text-base-content">
     {#if title}
-      <span class={title.classes ?? ''}>
+      <span class="title {title.classes ?? ''}">
         {m[title.key](title.params as any)}
       </span>
     {/if}
@@ -34,3 +34,9 @@
   </div>
   {@render children?.()}
 </div>
+
+<style>
+  .title {
+    font-weight: bold;
+  }
+</style>
