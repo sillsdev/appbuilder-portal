@@ -133,26 +133,23 @@
               <p>
                 {projectData?.project?.WorkflowProjectUrl?.substring(0, 5) ?? ''}
               </p>
-              <p class="shrink overflow-hidden text-ellipsis">
-                {projectData?.project?.WorkflowProjectUrl?.split('/').slice(2, -1).join('/') ||
-                  m.project_location_placeholder()}
-              </p>
-              <p class="grow pr-2">
-                /{projectData?.project?.WorkflowProjectUrl
-                  ? projectData.project.WorkflowProjectUrl.split('/').pop()
-                  : ''}
-              </p>
-              {#if projectData?.project?.WorkflowProjectUrl}
+              {#if !projectData?.project?.WorkflowProjectUrl}
+                <p class="italic">{m.project_location_placeholder()}</p>
+              {:else}
+                <p class="shrink overflow-hidden text-ellipsis">
+                  {projectData?.project?.WorkflowProjectUrl?.split('/').slice(2, -1).join('/')}
+                </p>
+                <p class="grow pr-2">
+                  /{projectData.project.WorkflowProjectUrl.split('/').pop()}
+                </p>
                 <button
                   class="cursor-copy float-right"
                   onclick={() => {
-                    if (projectData?.project?.WorkflowProjectUrl) {
-                      navigator.clipboard.writeText(projectData.project.WorkflowProjectUrl);
-                      projectLocationCopied = true;
-                      setTimeout(() => {
-                        projectLocationCopied = false;
-                      }, 5000);
-                    }
+                    navigator.clipboard.writeText(projectData.project.WorkflowProjectUrl!);
+                    projectLocationCopied = true;
+                    setTimeout(() => {
+                      projectLocationCopied = false;
+                    }, 5000);
                   }}
                 >
                   {#if projectLocationCopied}
