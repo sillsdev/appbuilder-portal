@@ -12,9 +12,7 @@ const WorkflowOptions = {
   /** Require an OrgAdmin to access the GooglePlay Developer Console */
   AdminStoreAccess: 1,
   /** Require approval from an OrgAdmin before product can be created */
-  ApprovalProcess: 2,
-  /** Allow Owner to delegate actions to Authors */
-  AllowTransferToAuthors: 3
+  ApprovalProcess: 2
 };
 
 const program = new Command();

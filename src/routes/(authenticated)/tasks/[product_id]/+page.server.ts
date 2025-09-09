@@ -63,6 +63,11 @@ export const load = (async ({ params, locals }) => {
               UserId: true
             }
           },
+          _count: {
+            select: {
+              Reviewers: true
+            }
+          },
           Organization: {
             select: {
               UserRoles: {
@@ -122,7 +127,12 @@ export const load = (async ({ params, locals }) => {
     : [];
 
   return {
-    actions: Workflow.availableTransitionsFromName(snap.state, snap.config)
+    actions: Workflow.availableTransitionsFromName(snap.state, {
+      ...snap.config,
+      productId: params.product_id,
+      hasAuthors: !!product.Project.Authors.length,
+      hasReviewers: !!product.Project._count.Reviewers
+    })
       .filter((a) => {
         if (session?.user.userId === undefined) return false;
         switch (a[0].meta?.user) {

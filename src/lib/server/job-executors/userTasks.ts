@@ -25,7 +25,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
 
   const project = await DatabaseReads.projects.findUniqueOrThrow({
     where: { Id: projectId },
-    select: { DateArchived: true }
+    select: { DateArchived: true, _count: { select: { Reviewers: true, Authors: true } } }
   });
 
   const productIds = products.map((p) => p.Id);
@@ -91,7 +91,12 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
       job.updateProgress(40 + ((i + 0.2) * 40) / products.length);
       await DatabaseWrites.productTransitions.createMany(
         {
-          data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, snap.config)
+          data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, {
+            ...snap.config,
+            productId: products[i].Id,
+            hasAuthors: !!project._count.Authors,
+            hasReviewers: !!project._count.Reviewers
+          })
         },
         products[i].ProjectId
       );
@@ -144,7 +149,12 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         const snap = (await Workflow.getSnapshot(product.Id))!;
         const roleSet = new Set(
           (
-            Workflow.availableTransitionsFromName(snap.state, snap.config)
+            Workflow.availableTransitionsFromName(snap.state, {
+              ...snap.config,
+              productId: product.Id,
+              hasAuthors: !!project._count.Authors,
+              hasReviewers: !!project._count.Reviewers
+            })
               .filter((t) => t[0].meta.type === ActionType.User)
               .map((t) => t[0].meta.user) as RoleId[]
           ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
@@ -174,7 +184,12 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         job.updateProgress(40 + ((i + 0.67) * 40) / products.length);
         await DatabaseWrites.productTransitions.createMany(
           {
-            data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, snap.config)
+            data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, {
+              ...snap.config,
+              productId: products[i].Id,
+              hasAuthors: !!project._count.Authors,
+              hasReviewers: !!project._count.Reviewers
+            })
           },
           products[i].ProjectId
         );

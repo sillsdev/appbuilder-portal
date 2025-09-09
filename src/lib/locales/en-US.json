@@ -514,8 +514,7 @@
     {
       "match": {
         "option=1": "Require an organization admin to access the GooglePlay developer console.",
-        "option=2": "Require approval by an organization admin before product is created.",
-        "option=3": "Allow project owner to delegate configuration and product uploads to authors."
+        "option=2": "Require approval by an organization admin before product is created."
       }
     }
   ],
