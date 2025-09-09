@@ -49,21 +49,25 @@
       <h1 class="p-4 pl-3 pb-0 [text-wrap:nowrap]">
         {m.org_settingsTitle()}
       </h1>
-      <h2>
-        <OrganizationDropdown
-          bind:value={$orgActive}
-          organizations={data.organizations}
-          onchange={() =>
-            goto(
-              localizeUrl(
-                page.url.pathname.replace(
-                  `/organizations/${page.params.id}`,
-                  `/organizations/${$orgActive}`
+      {#if data.organizations.length > 1}
+        <h2>
+          <OrganizationDropdown
+            bind:value={$orgActive}
+            organizations={data.organizations}
+            onchange={() =>
+              goto(
+                localizeUrl(
+                  page.url.pathname.replace(
+                    `/organizations/${page.params.id}`,
+                    `/organizations/${$orgActive}`
+                  )
                 )
-              )
-            )}
-        />
-      </h2>
+              )}
+          />
+        </h2>
+      {:else}
+        <h2>{data.organization.Name}</h2>
+      {/if}
     </div>
   {/snippet}
   {@render children?.()}
