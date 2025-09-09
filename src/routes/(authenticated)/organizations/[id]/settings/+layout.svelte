@@ -1,10 +1,14 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { LayoutData } from './$types';
+  import { goto } from '$app/navigation';
   import { base } from '$app/paths';
   import { page } from '$app/state';
+  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { localizeUrl } from '$lib/paraglide/runtime';
+  import { orgActive } from '$lib/stores';
 
   interface Props {
     data: LayoutData;
@@ -45,7 +49,25 @@
       <h1 class="p-4 pl-3 pb-0 [text-wrap:nowrap]">
         {m.org_settingsTitle()}
       </h1>
-      <h2>{data.organization.Name}</h2>
+      {#if data.organizations.length > 1}
+        <h2>
+          <OrganizationDropdown
+            bind:value={$orgActive}
+            organizations={data.organizations}
+            onchange={() =>
+              goto(
+                localizeUrl(
+                  page.url.pathname.replace(
+                    `/organizations/${page.params.id}`,
+                    `/organizations/${$orgActive}`
+                  )
+                )
+              )}
+          />
+        </h2>
+      {:else}
+        <h2>{data.organization.Name}</h2>
+      {/if}
     </div>
   {/snippet}
   {@render children?.()}
