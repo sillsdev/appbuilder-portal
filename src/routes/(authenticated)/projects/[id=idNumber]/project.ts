@@ -256,9 +256,15 @@ export async function getProjectDetails(id: number, userId: number) {
             }
           }
         }),
+        // possibleGroups are ones owned by the same org as the project and contain the project's owner
         possibleGroups: await DatabaseReads.groups.findMany({
           where: {
-            OwnerId: project.Organization.Id
+            OwnerId: project.Organization.Id,
+            GroupMemberships: {
+              some: {
+                UserId: project.Owner.Id
+              }
+            }
           }
         }),
         // All users who are members of the group and have the author role in the project's organization
