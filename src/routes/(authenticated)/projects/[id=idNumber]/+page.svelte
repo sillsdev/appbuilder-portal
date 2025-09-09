@@ -15,6 +15,7 @@
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
+  import { canModifyProject } from '$lib/projects';
 
   const { data } = $props();
 
@@ -42,6 +43,14 @@
   const projectData = $derived($projectDataSSE ?? data.projectData);
   const dateCreated = $derived(getRelativeTime(projectData?.project?.DateCreated ?? null));
   const dateArchived = $derived(getRelativeTime(projectData?.project?.DateArchived ?? null));
+
+  const canEdit = $derived(
+    canModifyProject(
+      data.session,
+      projectData?.project.OwnerId ?? -1,
+      projectData?.project.Organization.Id ?? -1
+    )
+  );
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
@@ -77,24 +86,26 @@
           </span>
         {/if}
       </div>
-      <div class="grow">
-        <Tooltip className="tooltip-bottom" tip={m.project_editProject()}>
-          <a
-            href={localizeHref(`/projects/${projectData?.project?.Id}/edit`)}
-            title={m.project_editProject()}
-          >
-            <IconContainer width="24" icon="mdi:pencil" />
-          </a>
-        </Tooltip>
-      </div>
-      <div class="shrink">
-        <ProjectActionMenu
-          data={data.actionForm}
-          project={projectData?.project}
-          userGroups={projectData?.userGroups}
-          orgId={projectData?.project.Organization.Id}
-        />
-      </div>
+      {#if canEdit}
+        <div class="grow">
+          <Tooltip className="tooltip-bottom" tip={m.project_editProject()}>
+            <a
+              href={localizeHref(`/projects/${projectData?.project?.Id}/edit`)}
+              title={m.project_editProject()}
+            >
+              <IconContainer width="24" icon="mdi:pencil" />
+            </a>
+          </Tooltip>
+        </div>
+        <div class="shrink">
+          <ProjectActionMenu
+            data={data.actionForm}
+            project={projectData?.project}
+            userGroups={projectData?.userGroups}
+            orgId={projectData?.project.Organization.Id}
+          />
+        </div>
+      {/if}
     </div>
     <div class="grid maingrid w-full p-4 pb-0">
       <div class="mainarea min-w-0">
