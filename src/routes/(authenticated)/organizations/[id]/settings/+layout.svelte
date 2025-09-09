@@ -8,6 +8,7 @@
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeUrl } from '$lib/paraglide/runtime';
+  import { orgActive } from '$lib/stores';
 
   interface Props {
     data: LayoutData;
@@ -15,8 +16,6 @@
   }
 
   let { data, children }: Props = $props();
-
-  let selectedOrg = $state(data.organization.Id);
 </script>
 
 <TabbedMenu
@@ -52,14 +51,14 @@
       </h1>
       <h2>
         <OrganizationDropdown
-          bind:value={selectedOrg}
+          bind:value={$orgActive}
           organizations={data.organizations}
           onchange={() =>
             goto(
               localizeUrl(
                 page.url.pathname.replace(
                   `/organizations/${page.params.id}`,
-                  `/organizations/${selectedOrg}`
+                  `/organizations/${$orgActive}`
                 )
               )
             )}
