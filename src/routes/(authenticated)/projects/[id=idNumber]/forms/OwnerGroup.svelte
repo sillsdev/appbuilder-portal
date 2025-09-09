@@ -41,9 +41,10 @@
     }>[];
     orgName: string | null | undefined;
     endpoint: string;
+    canEdit: boolean;
   }
 
-  let { project, users, groups, orgName, endpoint }: Props = $props();
+  let { project, users, groups, orgName, endpoint, canEdit }: Props = $props();
 
   // eslint-disable-next-line no-undef
   let timeout: NodeJS.Timeout;
@@ -99,41 +100,45 @@
           {m.project_owner()}
         </span>
         <span class="text-right flex place-content-end dropdown-wrapper">
-          <Dropdown
-            labelClasses="p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
-            contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
-          >
-            {#snippet label()}
-              <BlockIfJobsUnavailable>
-                {#snippet altContent()}
-                  <span class="flex items-center pl-1">
-                    {project?.Owner.Name}
-                    <IconContainer icon="gridicons:dropdown" width="20" />
-                  </span>
-                {/snippet}
-                {@render altContent()}
-              </BlockIfJobsUnavailable>
-            {/snippet}
-            {#snippet content()}
-              <input type="hidden" name="owner" value={project.Owner.Id} bind:this={ownerField} />
-              <ul class="menu menu-compact overflow-hidden rounded-md">
-                {#each users.toSorted((a, b) => byName(a, b, getLocale())) as user}
-                  <li class="w-full rounded-none">
-                    <button
-                      class="text-nowrap"
-                      class:font-bold={user.Id === project.Owner.Id}
-                      onclick={() => {
-                        ownerField.value = user.Id + '';
-                        submit();
-                      }}
-                    >
-                      {user.Name}
-                    </button>
-                  </li>
-                {/each}
-              </ul>
-            {/snippet}
-          </Dropdown>
+          <input type="hidden" name="owner" value={project.Owner.Id} bind:this={ownerField} />
+          {#if canEdit}
+            <Dropdown
+              labelClasses="p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
+              contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
+            >
+              {#snippet label()}
+                <BlockIfJobsUnavailable>
+                  {#snippet altContent()}
+                    <span class="flex items-center pl-1">
+                      {project?.Owner.Name}
+                      <IconContainer icon="gridicons:dropdown" width="20" />
+                    </span>
+                  {/snippet}
+                  {@render altContent()}
+                </BlockIfJobsUnavailable>
+              {/snippet}
+              {#snippet content()}
+                <ul class="menu menu-compact overflow-hidden rounded-md">
+                  {#each users.toSorted((a, b) => byName(a, b, getLocale())) as user}
+                    <li class="w-full rounded-none">
+                      <button
+                        class="text-nowrap"
+                        class:font-bold={user.Id === project.Owner.Id}
+                        onclick={() => {
+                          ownerField.value = user.Id + '';
+                          submit();
+                        }}
+                      >
+                        {user.Name}
+                      </button>
+                    </li>
+                  {/each}
+                </ul>
+              {/snippet}
+            </Dropdown>
+          {:else}
+            {project.Owner.Name}
+          {/if}
         </span>
       </div>
       <div class="divider my-2"></div>
@@ -143,36 +148,40 @@
           {m.project_group()}
         </span>
         <span class="shrink text-right flex place-content-end items-center dropdown-wrapper">
-          <Dropdown
-            labelClasses="p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
-            contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
-          >
-            {#snippet label()}
-              <span class="flex items-center pl-1">
-                {project?.Group.Name}
-                <IconContainer icon="gridicons:dropdown" width="20" />
-              </span>
-            {/snippet}
-            {#snippet content()}
-              <input type="hidden" name="group" value={project.Group.Id} bind:this={groupField} />
-              <ul class="menu menu-compact overflow-hidden rounded-md">
-                {#each groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
-                  <li class="w-full rounded-none">
-                    <button
-                      class="text-nowrap"
-                      class:font-bold={group.Id === project.Group.Id}
-                      onclick={() => {
-                        groupField.value = group.Id + '';
-                        submit();
-                      }}
-                    >
-                      {group.Name}
-                    </button>
-                  </li>
-                {/each}
-              </ul>
-            {/snippet}
-          </Dropdown>
+          <input type="hidden" name="group" value={project.Group.Id} bind:this={groupField} />
+          {#if canEdit}
+            <Dropdown
+              labelClasses="p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
+              contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
+            >
+              {#snippet label()}
+                <span class="flex items-center pl-1">
+                  {project?.Group.Name}
+                  <IconContainer icon="gridicons:dropdown" width="20" />
+                </span>
+              {/snippet}
+              {#snippet content()}
+                <ul class="menu menu-compact overflow-hidden rounded-md">
+                  {#each groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
+                    <li class="w-full rounded-none">
+                      <button
+                        class="text-nowrap"
+                        class:font-bold={group.Id === project.Group.Id}
+                        onclick={() => {
+                          groupField.value = group.Id + '';
+                          submit();
+                        }}
+                      >
+                        {group.Name}
+                      </button>
+                    </li>
+                  {/each}
+                </ul>
+              {/snippet}
+            </Dropdown>
+          {:else}
+            {project.Group.Name}
+          {/if}
         </span>
       </div>
     </div>

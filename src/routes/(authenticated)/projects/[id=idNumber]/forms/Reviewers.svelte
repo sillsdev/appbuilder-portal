@@ -19,9 +19,10 @@
     formData: SuperValidated<Infer<ReviewerSchema>>;
     createEndpoint: string;
     deleteEndpoint: string;
+    canEdit: boolean;
   }
 
-  let { reviewers, formData, createEndpoint, deleteEndpoint }: Props = $props();
+  let { reviewers, formData, createEndpoint, deleteEndpoint, canEdit }: Props = $props();
 
   const { form, enhance } = superForm(formData, {
     resetForm: true
@@ -51,38 +52,40 @@
     {/if}
   </div>
   <div class="p-2 bg-neutral">
-    <form action="?/{createEndpoint}" method="post" use:enhance>
-      <div class="flex flex-col place-content-between space-y-2">
-        <div class="flex flex-col gap-2 reviewerform">
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            class="input input-bordered grow validator"
-            bind:value={$form.name}
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            class="input input-bordered grow validator"
-            bind:value={$form.email}
-            required
-          />
+    {#if canEdit}
+      <form action="?/{createEndpoint}" method="post" use:enhance>
+        <div class="flex flex-col place-content-between space-y-2">
+          <div class="flex flex-col gap-2 reviewerform">
+            <input
+              type="text"
+              name="name"
+              placeholder="Name"
+              class="input input-bordered grow validator"
+              bind:value={$form.name}
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              class="input input-bordered grow validator"
+              bind:value={$form.email}
+              required
+            />
+          </div>
+          <div class="flex flex-row space-x-2">
+            <select name="locale" class="grow select select-bordered" bind:value={$form.language}>
+              {#each locales as locale}
+                <option value={locale}>{locale.split('-')[0]}</option>
+              {/each}
+            </select>
+            <button type="submit" class="btn btn-primary">
+              {m.reviewers_submit()}
+            </button>
+          </div>
         </div>
-        <div class="flex flex-row space-x-2">
-          <select name="locale" class="grow select select-bordered" bind:value={$form.language}>
-            {#each locales as locale}
-              <option value={locale}>{locale.split('-')[0]}</option>
-            {/each}
-          </select>
-          <button type="submit" class="btn btn-primary">
-            {m.reviewers_submit()}
-          </button>
-        </div>
-      </div>
-    </form>
+      </form>
+    {/if}
   </div>
 </div>
 

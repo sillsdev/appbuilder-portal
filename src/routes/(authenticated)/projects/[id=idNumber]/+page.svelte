@@ -241,6 +241,7 @@
           orgName={data.organizations.find((o) => o.Id === projectData?.project.Organization.Id)
             ?.Name}
           endpoint="editOwnerGroup"
+          {canEdit}
         />
         <Authors
           group={projectData?.project.Group}
@@ -249,12 +250,14 @@
           formData={data.authorForm}
           createEndpoint="addAuthor"
           deleteEndpoint="deleteAuthor"
+          {canEdit}
         />
         <Reviewers
           reviewers={projectData?.project.Reviewers}
           formData={data.reviewerForm}
           createEndpoint="addReviewer"
           deleteEndpoint="deleteReviewer"
+          {canEdit}
         />
       </div>
     </div>
