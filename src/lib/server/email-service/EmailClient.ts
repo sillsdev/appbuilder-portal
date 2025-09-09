@@ -1,6 +1,5 @@
 import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2';
 import { type Transporter, createTransport } from 'nodemailer';
-import { join } from 'path';
 import { DatabaseReads } from '../database';
 import {
   EmailLayoutTemplate,

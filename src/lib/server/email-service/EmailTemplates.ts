@@ -1,5 +1,3 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import EmailLayoutTemplate from './templates/Layout.html?raw';
 import NotificationTemplate from './templates/Notification.html?raw';
 import NotificationWithLinkTemplate from './templates/NotificationWithLink.html?raw';
