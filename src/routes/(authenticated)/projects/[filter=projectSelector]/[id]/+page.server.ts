@@ -8,6 +8,7 @@ import { localizeHref } from '$lib/paraglide/runtime';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import {
+  type MaybeSession,
   bulkProjectActionSchema,
   canModifyProject,
   projectSearchSchema,
@@ -16,6 +17,7 @@ import {
 import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/server';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
+import { isAdminForOrg } from '$lib/utils/roles';
 import { stringIdSchema } from '$lib/valibot';
 
 const bulkProductActionSchema = v.object({
@@ -24,10 +26,27 @@ const bulkProductActionSchema = v.object({
 });
 
 function whereStatements(
-  filter: string,
+  paramFilter: string,
   orgId: number,
-  userId?: number
+  user: MaybeSession
 ): Prisma.ProjectsWhereInput {
+  if (isAdminForOrg(orgId, user?.user.roles)) {
+    return filter(paramFilter, orgId, user?.user.userId);
+  } else {
+    return {
+      Group: {
+        GroupMemberships: {
+          some: {
+            UserId: user?.user.userId
+          }
+        }
+      },
+      ...filter(paramFilter, orgId, user?.user.userId)
+    };
+  }
+}
+
+function filter(filter: string, orgId: number, userId?: number): Prisma.ProjectsWhereInput {
   const selector = filter as 'organization' | 'active' | 'archived' | 'all' | 'own';
   switch (selector) {
     case 'organization':
@@ -64,7 +83,7 @@ function whereStatements(
 }
 
 export const load = (async ({ params, locals }) => {
-  const userId = (await locals.auth())?.user.userId;
+  const session = (await locals.auth())!;
   const orgId = parseInt(params.id);
   if (
     isNaN(orgId) ||
@@ -75,7 +94,7 @@ export const load = (async ({ params, locals }) => {
   }
 
   const projects = await DatabaseReads.projects.findMany({
-    where: whereStatements(params.filter, orgId, userId),
+    where: whereStatements(params.filter, orgId, session),
     include: {
       Products: {
         include: {
@@ -107,7 +126,7 @@ export const load = (async ({ params, locals }) => {
       valibot(projectSearchSchema)
     ),
     count: await DatabaseReads.projects.count({
-      where: whereStatements(params.filter, orgId, userId)
+      where: whereStatements(params.filter, orgId, session)
     }),
     actionForm: await superValidate(valibot(bulkProjectActionSchema)),
     productForm: await superValidate(valibot(bulkProductActionSchema)),
@@ -115,14 +134,14 @@ export const load = (async ({ params, locals }) => {
     /** allow actions other than reactivation */
     allowActions: params.filter !== 'archived',
     allowReactivate: params.filter === 'all' || params.filter === 'archived',
-    userGroups: (await userGroupsForOrg(userId!, orgId)).map((g) => g.GroupId),
+    userGroups: (await userGroupsForOrg(session.user.userId, orgId)).map((g) => g.GroupId),
     jobsAvailable: QueueConnected()
   };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
   page: async function ({ params, request, locals }) {
-    const user = (await locals.auth())!.user;
+    const user = (await locals.auth())!;
 
     const form = await superValidate(request, valibot(projectSearchSchema));
     if (!form.valid) return fail(400, { form, ok: false });
@@ -131,7 +150,7 @@ export const actions: Actions = {
 
     const where: Prisma.ProjectsWhereInput = {
       ...projectFilter({ ...form.data, organizationId }),
-      ...whereStatements(params.filter!, organizationId, user.userId)
+      ...whereStatements(params.filter!, organizationId, user)
     };
 
     const projects = await DatabaseReads.projects.findMany({
