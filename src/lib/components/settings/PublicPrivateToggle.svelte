@@ -10,7 +10,7 @@
     className?: string;
     formName?: string;
     checked: boolean;
-    onchange?: HTMLInputAttributes['onchange'];
+    inputAttr?: HTMLInputAttributes;
   }
   let {
     title,
@@ -18,14 +18,14 @@
     className = '',
     formName,
     checked = $bindable(),
-    onchange
+    inputAttr
   }: Props = $props();
 </script>
 
 <InputWithMessage {title} {message} {className}>
   <label class="group">
     <div class="relative">
-      <input name={formName} type="checkbox" class="sr-only group" bind:checked {onchange} />
+      <input name={formName} type="checkbox" class="sr-only group" bind:checked {...inputAttr} />
       <div
         class="block h-8 rounded-full bg-gray-3 dark:bg-dark-2 w-14 toggle group-has-checked:border-accent"
       ></div>

@@ -229,6 +229,7 @@
           project={projectData?.project}
           publicEndpoint="toggleVisibility"
           downloadEndpoint="toggleDownload"
+          {canEdit}
         />
       </div>
       <!-- Sidebar Settings -->

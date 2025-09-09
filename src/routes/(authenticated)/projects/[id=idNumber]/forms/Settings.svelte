@@ -16,9 +16,10 @@
     }>;
     publicEndpoint: string;
     downloadEndpoint: string;
+    canEdit: boolean;
   }
 
-  let { project, publicEndpoint, downloadEndpoint }: Props = $props();
+  let { project, publicEndpoint, downloadEndpoint, canEdit }: Props = $props();
 
   let isPublic = $state(!!project.IsPublic);
   let publicForm: HTMLFormElement;
@@ -54,9 +55,13 @@
       message={{ key: 'project_visibility_description' }}
       formName="isPublic"
       bind:checked={isPublic}
-      onchange={() => {
-        publicForm.requestSubmit();
+      inputAttr={{
+        onchange: () => {
+          publicForm.requestSubmit();
+        },
+        disabled: !canEdit
       }}
+      className={canEdit ? '' : 'cursor-not-allowed'}
     />
   </form>
   <form
@@ -83,6 +88,7 @@
     <InputWithMessage
       title={{ key: 'project_orgDownloads_title' }}
       message={{ key: 'project_orgDownloads_description' }}
+      className={canEdit ? '' : 'cursor-not-allowed'}
     >
       <input
         bind:this={downloadInput}
@@ -93,6 +99,7 @@
         onchange={() => {
           downloadInput.form?.requestSubmit();
         }}
+        disabled={!canEdit}
       />
     </InputWithMessage>
   </form>
