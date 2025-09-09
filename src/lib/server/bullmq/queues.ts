@@ -1,4 +1,5 @@
 import { Queue } from 'bullmq';
+import { BullMQOtel } from 'bullmq-otel';
 import { Redis } from 'ioredis';
 import type {
   BuildJob,
@@ -86,12 +87,18 @@ export const QueueConnected = () => _queueConnection?.IsConnected() ?? false;
 
 export const getWorkerConfig = () => {
   if (!_workerConnection) _workerConnection = new Connection(false);
-  return { connection: _workerConnection!.connection() } as const;
+  return {
+    connection: _workerConnection!.connection(),
+    telemetry: new BullMQOtel('scriptoria')
+  } as const;
 };
 
 export const getQueueConfig = () => {
   if (!_queueConnection) _queues = createQueues();
-  return { connection: _queueConnection!.connection() } as const;
+  return {
+    connection: _queueConnection!.connection(),
+    telemetry: new BullMQOtel('scriptoria')
+  } as const;
 };
 let _queues: ReturnType<typeof createQueues> | undefined = undefined;
 
