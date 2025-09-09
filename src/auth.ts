@@ -11,7 +11,7 @@ import { env } from '$env/dynamic/private';
 import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
 import type { RoleId } from '$lib/prisma';
-import { verifyCanViewAndEdit } from '$lib/projects/server';
+import { verifyCanEdit, verifyCanView } from '$lib/projects/server';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { adminOrgs } from '$lib/users/server';
 import { ServerStatus } from '$lib/utils';
@@ -216,7 +216,12 @@ export const localRouteHandle: Handle = async ({ event, resolve }) => {
   ) {
     const session = await event.locals.auth();
     if (!session) return redirect(302, localizeHref('/login'));
-    const status = await validateRouteForAuthenticatedUser(session, event.route.id, event.params);
+    const status = await validateRouteForAuthenticatedUser(
+      session,
+      event.route.id,
+      event.params,
+      event.request.method
+    );
     trace.getActiveSpan()?.addEvent('localRouteHandle completed', {
       'auth.localRouteHandle.routeId': event.route.id ?? 'null',
       'auth.localRouteHandle.params': JSON.stringify(event.params),
@@ -235,7 +240,8 @@ export const localRouteHandle: Handle = async ({ event, resolve }) => {
 async function validateRouteForAuthenticatedUser(
   session: Session,
   route: string,
-  params: Partial<Record<string, string>>
+  params: Partial<Record<string, string>>,
+  method: string
 ): Promise<ServerStatus> {
   const path = route.split('/').filter((r) => !!r);
   // Only guarding authenticated routes
@@ -267,15 +273,19 @@ async function validateRouteForAuthenticatedUser(
         if (!product) return ServerStatus.NotFound;
         // Must be allowed to view associated project
         // (this route was originally part of the project page but was moved elsewhere to improve load time)
-        return await verifyCanViewAndEdit(session, product.ProjectId);
+        return await verifyCanView(session, product.ProjectId);
       } catch {
         return ServerStatus.NotFound;
       }
     } else if (path[1] === 'projects') {
       if (path[2] === '[filter=projectSelector]') return ServerStatus.Ok;
       else if (path[2] === '[id=idNumber]') {
-        // A project can be viewed if the user owns it, is an org admin for the org, or is a super admin
-        return await verifyCanViewAndEdit(session, parseInt(params.id!));
+        // prevent edits and actions without breaking SSE
+        if (path[3] === 'edit' || (method === 'POST' && path[3] !== 'sse')) {
+          return await verifyCanEdit(session, parseInt(params.id!));
+        }
+        // A project can be viewed if the user is an admin or in the project's group
+        return await verifyCanView(session, parseInt(params.id!));
       }
       return ServerStatus.Ok;
     } else if (path[1] === 'tasks') {
