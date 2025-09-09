@@ -162,8 +162,10 @@ export type ProjectForAction = Prisma.ProjectsGetPayload<{
   };
 }>;
 
+export type MaybeSession = Pick<Session, 'user'> | null | undefined;
+
 export function canModifyProject(
-  user: Session | null | undefined,
+  user: MaybeSession,
   projectOwnerId: number,
   organizationId: number
 ): boolean {
@@ -174,7 +176,7 @@ export function canModifyProject(
 }
 
 export function canClaimProject(
-  session: Session | null | undefined,
+  session: MaybeSession,
   projectOwnerId: number,
   organizationId: number,
   projectGroupId: number,
@@ -190,7 +192,7 @@ export function canClaimProject(
 
 export function canArchive(
   project: Pick<ProjectForAction, 'OwnerId' | 'DateArchived'>,
-  session: Session | null | undefined,
+  session: MaybeSession,
   orgId: number
 ): boolean {
   return !project.DateArchived && canModifyProject(session, project.OwnerId, orgId);
@@ -198,7 +200,7 @@ export function canArchive(
 
 export function canReactivate(
   project: Pick<ProjectForAction, 'OwnerId' | 'DateArchived'>,
-  session: Session | null | undefined,
+  session: MaybeSession,
   orgId: number
 ): boolean {
   return !!project.DateArchived && canModifyProject(session, project.OwnerId, orgId);
