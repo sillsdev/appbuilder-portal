@@ -39,7 +39,9 @@
       className="pb-2"
       formName="publicByDefault"
       checked={!!data.organization.PublicByDefault}
-      onchange={(e) => e.currentTarget.form?.requestSubmit()}
+      inputAttr={{
+        onchange: (e) => e.currentTarget.form?.requestSubmit()
+      }}
     />
   </form>
   <MultiselectBox header={m.org_productSelectTitle()}>
