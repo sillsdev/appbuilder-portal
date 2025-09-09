@@ -1,6 +1,7 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { RoleId } from '$lib/prisma';
 import { getProductActions } from '$lib/products';
+import { canModifyProject } from '$lib/projects';
 import { userGroupsForOrg } from '$lib/projects/server';
 import { DatabaseReads } from '$lib/server/database';
 
@@ -195,6 +196,31 @@ export async function getProjectDetails(id: number, userId: number) {
 
       const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
       span.addEvent('Product definitions fetched');
+
+      const canEdit = canModifyProject(
+        {
+          user: {
+            userId,
+            roles: [
+              [
+                project.Organization.Id,
+                (
+                  await DatabaseReads.userRoles.findFirst({
+                    where: {
+                      UserId: userId,
+                      OrganizationId: project.Organization.Id,
+                      RoleId: { in: [RoleId.SuperAdmin, RoleId.OrgAdmin] }
+                    }
+                  })
+                )?.RoleId ?? -1
+              ]
+            ]
+          }
+        },
+        project.Owner.Id,
+        project.Organization.Id
+      );
+
       return {
         project: {
           ...project,
@@ -209,7 +235,7 @@ export async function getProjectDetails(id: number, userId: number) {
             ActiveTransition: strippedTransitions.find(
               (t) => (t[0] ?? t[1])?.ProductId === product.Id
             )?.[1],
-            actions: getProductActions(product, project.Owner.Id, userId)
+            actions: canEdit ? getProductActions(product, project.Owner.Id, userId) : []
           }))
         },
         productsToAdd: productDefinitions.filter(

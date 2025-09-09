@@ -89,9 +89,11 @@
     actionEndpoint: string;
     deleteEndpoint: string;
     updateEndpoint: string;
+    canEdit: boolean;
   }
 
-  let { product, project, actionEndpoint, deleteEndpoint, updateEndpoint }: Props = $props();
+  let { product, project, actionEndpoint, deleteEndpoint, updateEndpoint, canEdit }: Props =
+    $props();
 
   let deleteProductModal: HTMLDialogElement | undefined = $state(undefined);
   let updateProductModal: HTMLDialogElement | undefined = $state(undefined);
@@ -220,29 +222,33 @@
               </a>
             </li>
           {/if}
-          <li class="w-full rounded-none">
-            <BlockIfJobsUnavailable className="text-nowrap text-error">
-              {#snippet altContent()}
-                {m.models_delete({ name: m.tasks_product() })}
-              {/snippet}
-              <button
-                class="text-nowrap text-error"
-                onclick={() => deleteProductModal?.showModal()}
-              >
-                {m.models_delete({ name: m.tasks_product() })}
-              </button>
-            </BlockIfJobsUnavailable>
-          </li>
+          {#if canEdit}
+            <li class="w-full rounded-none">
+              <BlockIfJobsUnavailable className="text-nowrap text-error">
+                {#snippet altContent()}
+                  {m.models_delete({ name: m.tasks_product() })}
+                {/snippet}
+                <button
+                  class="text-nowrap text-error"
+                  onclick={() => deleteProductModal?.showModal()}
+                >
+                  {m.models_delete({ name: m.tasks_product() })}
+                </button>
+              </BlockIfJobsUnavailable>
+            </li>
+          {/if}
         </ul>
       {/snippet}
     </Dropdown>
-    <DeleteProduct
-      bind:modal={deleteProductModal}
-      {product}
-      endpoint={deleteEndpoint}
-      project={project.Name ?? m.tasks_project()}
-    />
-    <Properties bind:modal={updateProductModal} {product} endpoint={updateEndpoint} />
+    {#if canEdit}
+      <DeleteProduct
+        bind:modal={deleteProductModal}
+        {product}
+        endpoint={deleteEndpoint}
+        project={project.Name ?? m.tasks_project()}
+      />
+      <Properties bind:modal={updateProductModal} {product} endpoint={updateEndpoint} />
+    {/if}
   </div>
   {#if showTaskWaiting}
     <div class="p-2 flex gap-1">

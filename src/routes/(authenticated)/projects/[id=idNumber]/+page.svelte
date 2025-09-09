@@ -189,18 +189,20 @@
               class="btn btn-outline"
               onclick={() => addProductModal?.showModal()}
               disabled={!(
-                projectData.productsToAdd.length && projectData.project.WorkflowProjectUrl
+                canEdit && projectData.productsToAdd.length && projectData.project.WorkflowProjectUrl
               )}
             >
               {m.products_add()}
             </button>
           </BlockIfJobsUnavailable>
-          <AddProduct
-            bind:modal={addProductModal}
-            prodDefs={projectData?.productsToAdd}
-            stores={projectData?.stores}
-            endpoint="addProduct"
-          />
+          {#if canEdit}
+            <AddProduct
+              bind:modal={addProductModal}
+              prodDefs={projectData?.productsToAdd}
+              stores={projectData?.stores}
+              endpoint="addProduct"
+            />
+          {/if}
         </div>
         <!-- Products List -->
         <div>
@@ -214,6 +216,7 @@
                 actionEndpoint="productAction"
                 deleteEndpoint="deleteProduct"
                 updateEndpoint="updateProduct"
+                {canEdit}
               />
             {/each}
           {/if}
