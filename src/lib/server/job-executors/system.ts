@@ -8,6 +8,7 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { WorkflowType, WorkflowTypeString } from '$lib/prisma';
+import { extractPackageName } from '$lib/products';
 import {
   ENVKeys,
   ProductType,
@@ -398,6 +399,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
    * 1. Delete UserTasks for archived projects
    * 2. Add UserId to transitions with a WorkflowUserId but no UserId
    * 3. Migrate data from DWKit tables to WorkflowInstances
+   * 4. Populate Product.PackageName
    */
 
   // 1. Delete UserTasks for archived projects
@@ -410,7 +412,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       }
     }
   });
-  job.updateProgress(33);
+  job.updateProgress(25);
 
   // 2. Add UserId to transitions with a WorkflowUserId but no UserId
   const updatedTransitions = (
@@ -457,7 +459,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     })
   ).map(({ WorkflowUserId }) => WorkflowUserId);
 
-  job.updateProgress(66);
+  job.updateProgress(50);
 
   // 3. Migrate data from DWKit tables to WorkflowInstances
 
@@ -535,7 +537,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     ).map(({ Id }) => DatabaseWrites.workflowInstances.markProcessFinalized(Id))
   );
 
-  job.updateProgress(85);
+  job.updateProgress(70);
   // Update WorkflowDefinitions ProductType and WorkflowOptions
   const workflowDefsNeedUpdate =
     (await DatabaseReads.workflowDefinitions.count({
@@ -614,6 +616,32 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       await DatabaseWrites.workflowDefinitions.updateMany(def);
     }
   }
+  job.updateProgress(75);
+
+  // 4. Populate Product.PackageName
+  const updatedPackages = await Promise.all(
+    (
+      await DatabaseReads.products.findMany({
+        where: {
+          PackageName: null,
+          PublishLink: {
+            startsWith: 'https://play.google.com/store/apps/details',
+            mode: 'insensitive'
+          }
+        },
+        select: {
+          Id: true,
+          PublishLink: true
+        }
+      })
+    ).map(async (p) => {
+      const pname = extractPackageName(p.PublishLink);
+      await DatabaseWrites.products.update(p.Id, {
+        PackageName: pname
+      });
+      return pname;
+    })
+  );
 
   job.updateProgress(100);
   return {
@@ -623,7 +651,8 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     migratedProducts,
     migrationErrors,
     orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0),
-    updatedWorkflowDefinitions: workflowDefsNeedUpdate
+    updatedWorkflowDefinitions: workflowDefsNeedUpdate,
+    updatedPackages
   };
 }
 

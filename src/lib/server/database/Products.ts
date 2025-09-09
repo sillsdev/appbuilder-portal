@@ -3,6 +3,7 @@ import { BullMQ, getQueues } from '../bullmq/index';
 import { delete as deleteInstance } from './WorkflowInstances';
 import prisma from './prisma';
 import type { RequirePrimitive } from './utility';
+import { extractPackageName } from '$lib/products';
 
 export async function create(
   productData: RequirePrimitive<Prisma.ProductsUncheckedCreateInput>
@@ -57,6 +58,11 @@ export async function update(
     return false;
 
   // No additional verification steps
+
+  // write package name whenever publish link is updated
+  if (productData.PublishLink) {
+    productData.PackageName = extractPackageName(productData.PublishLink);
+  }
 
   try {
     await prisma.products.update({

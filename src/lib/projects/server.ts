@@ -110,7 +110,7 @@ export function projectFilter(args: {
               {
                 Products: {
                   some: {
-                    PublishLink: {
+                    PackageName: {
                       contains: args.search,
                       mode: 'insensitive'
                     }
