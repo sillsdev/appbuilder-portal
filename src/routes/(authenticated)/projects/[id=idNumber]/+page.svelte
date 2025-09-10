@@ -63,16 +63,16 @@
     <div class="flex p-6">
       <div class="shrink">
         <h1 class="p-0">
-          {projectData?.project?.Name}
+          {projectData.project?.Name}
         </h1>
         <div>
           <span class="font-bold">
-            {projectData?.project?.IsPublic ? m.project_public() : m.project_private()}
+            {projectData.project.IsPublic ? m.project_public() : m.project_private()}
           </span>
           <span>-</span>
           <span>
             {m.project_createdOn()}
-            <Tooltip tip={getTimeDateString(projectData?.project?.DateCreated)}>
+            <Tooltip tip={getTimeDateString(projectData.project.DateCreated)}>
               {$dateCreated}
             </Tooltip>
           </span>
@@ -80,7 +80,7 @@
         {#if projectData?.project?.DateArchived}
           <span>
             {m.project_archivedOn()}
-            <Tooltip tip={getTimeDateString(projectData?.project?.DateArchived)}>
+            <Tooltip tip={getTimeDateString(projectData.project.DateArchived)}>
               {$dateArchived}
             </Tooltip>
           </span>
@@ -90,7 +90,7 @@
         <div class="grow">
           <Tooltip className="tooltip-bottom" tip={m.project_editProject()}>
             <a
-              href={localizeHref(`/projects/${projectData?.project?.Id}/edit`)}
+              href={localizeHref(`/projects/${projectData.project.Id}/edit`)}
               title={m.project_editProject()}
             >
               <IconContainer width="24" icon="mdi:pencil" />
@@ -100,9 +100,9 @@
         <div class="shrink">
           <ProjectActionMenu
             data={data.actionForm}
-            project={projectData?.project}
-            userGroups={projectData?.userGroups}
-            orgId={projectData?.project.Organization.Id}
+            project={projectData.project}
+            userGroups={projectData.userGroups}
+            orgId={projectData.project.Organization.Id}
           />
         </div>
       {/if}
@@ -119,36 +119,36 @@
                 {m.project_details_language()}:
               </span>
               <span>
-                {projectData?.project?.Language} ({tryLocalizeName(
+                {projectData.project.Language} ({tryLocalizeName(
                   data.langtags,
                   l10nMap.value,
                   getLocale(),
-                  projectData?.project.Language ?? ''
+                  projectData.project.Language ?? ''
                 )})
               </span>
             </div>
             <div class="flex place-content-between">
               <span>{m.project_details_type()}:</span>
-              <span>{projectData?.project?.ApplicationType.Description}</span>
+              <span>{projectData.project.ApplicationType.Description}</span>
             </div>
           </div>
           <div class="my-4">
             <span>{m.project_description()}:</span>
             <br />
-            <p>{projectData?.project?.Description}</p>
+            <p>{projectData.project.Description}</p>
           </div>
           <div>
             <span>{m.project_location()}:</span>
             <br />
             <div class="flex rounded-md text-nowrap bg-base-200 p-3 pt-2 mt-2">
               <p>
-                {projectData?.project?.WorkflowProjectUrl?.substring(0, 5) ?? ''}
+                {projectData.project.WorkflowProjectUrl?.substring(0, 5) ?? ''}
               </p>
-              {#if !projectData?.project?.WorkflowProjectUrl}
+              {#if !projectData.project.WorkflowProjectUrl}
                 <p class="italic">{m.project_location_placeholder()}</p>
               {:else}
                 <p class="shrink overflow-hidden text-ellipsis">
-                  {projectData?.project?.WorkflowProjectUrl?.split('/').slice(2, -1).join('/')}
+                  {projectData.project.WorkflowProjectUrl.split('/').slice(2, -1).join('/')}
                 </p>
                 <p class="grow pr-2">
                   /{projectData.project.WorkflowProjectUrl.split('/').pop()}
@@ -200,8 +200,8 @@
           {#if canEdit}
             <AddProduct
               bind:modal={addProductModal}
-              prodDefs={projectData?.productsToAdd}
-              stores={projectData?.stores}
+              prodDefs={projectData.productsToAdd}
+              stores={projectData.stores}
               endpoint="addProduct"
             />
           {/if}
@@ -211,10 +211,10 @@
           {#if !projectData?.project?.Products.length}
             {m.projectTable_noProducts()}
           {:else}
-            {#each projectData?.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, getLocale()) ) as product}
+            {#each projectData.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, getLocale()) ) as product}
               <ProductCard
                 {product}
-                project={projectData?.project}
+                project={projectData.project}
                 actionEndpoint="productAction"
                 deleteEndpoint="deleteProduct"
                 updateEndpoint="updateProduct"
@@ -228,7 +228,7 @@
       <!-- Settings -->
       <div class="settingsarea my-4">
         <Settings
-          project={projectData?.project}
+          project={projectData.project}
           publicEndpoint="toggleVisibility"
           downloadEndpoint="toggleDownload"
           {canEdit}
@@ -237,25 +237,25 @@
       <!-- Sidebar Settings -->
       <div class="space-y-2 min-w-0 flex-auto sidebararea">
         <OwnerGroup
-          project={projectData?.project}
-          users={projectData?.possibleProjectOwners}
-          groups={projectData?.possibleGroups}
-          orgName={data.organizations.find((o) => o.Id === projectData?.project.Organization.Id)
+          project={projectData.project}
+          users={projectData.possibleProjectOwners}
+          groups={projectData.possibleGroups}
+          orgName={data.organizations.find((o) => o.Id === projectData.project.Organization.Id)
             ?.Name}
           endpoint="editOwnerGroup"
           {canEdit}
         />
         <Authors
-          group={projectData?.project.Group}
-          projectAuthors={projectData?.project.Authors}
-          availableAuthors={projectData?.authorsToAdd}
+          group={projectData.project.Group}
+          projectAuthors={projectData.project.Authors}
+          availableAuthors={projectData.authorsToAdd}
           formData={data.authorForm}
           createEndpoint="addAuthor"
           deleteEndpoint="deleteAuthor"
           {canEdit}
         />
         <Reviewers
-          reviewers={projectData?.project.Reviewers}
+          reviewers={projectData.project.Reviewers}
           formData={data.reviewerForm}
           createEndpoint="addReviewer"
           deleteEndpoint="deleteReviewer"
