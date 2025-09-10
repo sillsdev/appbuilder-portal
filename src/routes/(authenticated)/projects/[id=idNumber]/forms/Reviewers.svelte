@@ -39,12 +39,14 @@
       {#each reviewers.toSorted((a, b) => byName(a, b, locale)) as reviewer}
         <div class="flex flex-row w-full place-content-between p-2">
           <span>{reviewer.Name} ({reviewer.Email})</span>
-          <form action="?/{deleteEndpoint}" method="post" use:svk_enhance>
-            <input type="hidden" name="id" value={reviewer.Id} />
-            <button type="submit" class="cursor-pointer">
-              <IconContainer icon="mdi:close" width="24" />
-            </button>
-          </form>
+          {#if canEdit}
+            <form action="?/{deleteEndpoint}" method="post" use:svk_enhance>
+              <input type="hidden" name="id" value={reviewer.Id} />
+              <button type="submit" class="cursor-pointer">
+                <IconContainer icon="mdi:close" width="24" />
+              </button>
+            </form>
+          {/if}
         </div>
       {/each}
     {:else}
