@@ -281,7 +281,7 @@ async function validateRouteForAuthenticatedUser(
       if (path[2] === '[filter=projectSelector]') return ServerStatus.Ok;
       else if (path[2] === '[id=idNumber]') {
         // prevent edits and actions without breaking SSE
-        if (path[3] === 'edit' || (method === 'POST' && path[3] !== 'sse')) {
+        if (path[3] === 'edit' || (method !== 'GET' && path[3] !== 'sse')) {
           return await verifyCanEdit(session, parseInt(params.id!));
         }
         // A project can be viewed if the user is an admin or in the project's group
