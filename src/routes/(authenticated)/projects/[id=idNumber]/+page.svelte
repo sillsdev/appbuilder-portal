@@ -12,10 +12,10 @@
   import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { canModifyProject } from '$lib/projects';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
-  import { canModifyProject } from '$lib/projects';
 
   const { data } = $props();
 
@@ -189,7 +189,9 @@
               class="btn btn-outline"
               onclick={() => addProductModal?.showModal()}
               disabled={!(
-                canEdit && projectData.productsToAdd.length && projectData.project.WorkflowProjectUrl
+                canEdit &&
+                projectData.productsToAdd.length &&
+                projectData.project.WorkflowProjectUrl
               )}
             >
               {m.products_add()}
