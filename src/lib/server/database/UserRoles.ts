@@ -121,25 +121,3 @@ export async function allUsersByRole(
   }
   return ret;
 }
-
-// returns -1 if no RoleId
-export async function getAdminRole(UserId: number, OrganizationId?: number): Promise<RoleId> {
-  return (
-    (
-      await prisma.userRoles.findFirst({
-        where: {
-          UserId,
-          OR: [
-            {
-              RoleId: RoleId.SuperAdmin
-            },
-            {
-              OrganizationId,
-              RoleId: RoleId.OrgAdmin
-            }
-          ]
-        }
-      })
-    )?.RoleId ?? -1
-  );
-}

@@ -4,7 +4,6 @@ import { getProductActions } from '$lib/products';
 import { canModifyProject } from '$lib/projects';
 import { userGroupsForOrg } from '$lib/projects/server';
 import { DatabaseReads } from '$lib/server/database';
-import { getAdminRole } from '$lib/server/database/UserRoles';
 
 const tracer = trace.getTracer('ProjectSSE');
 export type ProjectDataSSE = Awaited<ReturnType<typeof getProjectDetails>>;
@@ -202,7 +201,17 @@ export async function getProjectDetails(id: number, userId: number) {
         {
           user: {
             userId,
-            roles: [[project.Organization.Id, await getAdminRole(userId, project.Organization.Id)]]
+            roles: (
+              await DatabaseReads.userRoles.findMany({
+                where: {
+                  UserId: userId,
+                  OR: [
+                    { RoleId: RoleId.SuperAdmin },
+                    { RoleId: RoleId.OrgAdmin, OrganizationId: project.Organization.Id }
+                  ]
+                }
+              })
+            ).map(({ OrganizationId, RoleId }) => [OrganizationId, RoleId])
           }
         },
         project.Owner.Id,
