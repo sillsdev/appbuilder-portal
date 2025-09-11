@@ -161,7 +161,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
             ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
           );
           job.updateProgress(40 + ((i + 0.33) * 40) / products.length);
-          createdTasks = Array.from(
+          const toCreate = Array.from(
             new Set(
               Object.entries(allUsers)
                 .filter(([users, roles]) => !roleSet.isDisjointFrom(roles))
@@ -180,8 +180,9 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
               }))
             );
           await DatabaseWrites.userTasks.createMany({
-            data: createdTasks
+            data: toCreate
           });
+          createdTasks.concat(toCreate);
           job.updateProgress(40 + ((i + 0.67) * 40) / products.length);
         }
         // create ProductTransitions if user tasks still exist
