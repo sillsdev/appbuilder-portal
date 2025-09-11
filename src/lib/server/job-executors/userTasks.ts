@@ -75,7 +75,8 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         count: (
           await DatabaseWrites.userTasks.updateMany({
             where: {
-              UserId: u.from
+              UserId: u.from,
+              ProductId: { in: productIds }
             },
             data: {
               UserId: u.to,
@@ -178,11 +179,12 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
                 Comment: job.data.comment,
                 Role: r
               }))
-            );
+            )
+            .filter((t) => allUsers[t.UserId].has(t.Role));
           await DatabaseWrites.userTasks.createMany({
             data: toCreate
           });
-          createdTasks.concat(toCreate);
+          createdTasks = createdTasks.concat(toCreate);
           job.updateProgress(40 + ((i + 0.67) * 40) / products.length);
         }
         // create ProductTransitions if user tasks still exist
