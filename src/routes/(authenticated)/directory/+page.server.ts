@@ -25,9 +25,12 @@ export const load = (async () => {
       Organization: true
     },
     take: 10,
-    orderBy: {
-      Name: 'asc'
-    }
+    orderBy: [
+      {
+        Name: 'asc'
+      },
+      { Id: 'asc' }
+    ]
   });
   const productDefinitions = await DatabaseReads.productDefinitions.findMany();
   return {
@@ -82,9 +85,12 @@ export const actions: Actions = {
       },
       skip: form.data.page.size * form.data.page.page,
       take: form.data.page.size,
-      orderBy: {
-        Name: 'asc'
-      }
+      orderBy: [
+        {
+          Name: 'asc'
+        },
+        { Id: 'asc' }
+      ]
     });
 
     const count = await DatabaseReads.projects.count({ where: where });

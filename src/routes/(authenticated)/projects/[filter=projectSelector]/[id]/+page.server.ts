@@ -88,9 +88,12 @@ export const load = (async ({ params, locals }) => {
       Organization: true
     },
     take: 10,
-    orderBy: {
-      Name: 'asc'
-    }
+    orderBy: [
+      {
+        Name: 'asc'
+      },
+      { Id: 'asc' }
+    ]
   });
   return {
     projects: pruneProjects(projects),
@@ -146,9 +149,12 @@ export const actions: Actions = {
       },
       skip: form.data.page.size * form.data.page.page,
       take: form.data.page.size,
-      orderBy: {
-        Name: 'asc'
-      }
+      orderBy: [
+        {
+          Name: 'asc'
+        },
+        { Id: 'asc' }
+      ]
     });
 
     const count = await DatabaseReads.projects.count({ where: where });
@@ -220,7 +226,7 @@ export const actions: Actions = {
     if (
       !(
         (await DatabaseReads.products.count({ where: { Id: { in: form.data.products } } })) ===
-        form.data.products.length &&
+          form.data.products.length &&
         (
           await DatabaseReads.projects.findMany({
             where: {
