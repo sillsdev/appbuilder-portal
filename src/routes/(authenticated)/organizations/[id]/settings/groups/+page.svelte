@@ -26,7 +26,7 @@
           Id: result.data.createdId,
           Name: form.data.name,
           Abbreviation: form.data.abbreviation,
-          OwnerId: form.data.orgId
+          OwnerId: data.organization.Id
         });
         formElement.reset();
       } else {
@@ -83,7 +83,6 @@
   }}
 >
   {m.org_addGroupButton()}
-  <input type="hidden" name="orgId" value={data.organization.Id} />
   <div class="my-4 flex flex-row w-full space-x-2 items-center">
     <LabeledFormInput key="common_name">
       <input

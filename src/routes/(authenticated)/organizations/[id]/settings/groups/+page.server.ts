@@ -6,7 +6,6 @@ import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { deleteSchema, idSchema } from '$lib/valibot';
 
 const addGroupSchema = v.object({
-  orgId: idSchema,
   name: v.string(),
   abbreviation: v.string()
 });
@@ -26,7 +25,7 @@ export const actions = {
     const group = await DatabaseWrites.groups.createGroup(
       form.data.name,
       form.data.abbreviation,
-      form.data.orgId
+      parseInt(event.params.id)
     );
     return { form, ok: true, createdId: group.Id };
   },
