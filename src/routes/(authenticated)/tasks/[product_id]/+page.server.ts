@@ -202,19 +202,65 @@ export const actions = {
     }
     //double check that state matches current snapshot
     if (form.data.state === flow.state()) {
+      const old = flow.state()!;
+      const snap = (await Workflow.getSnapshot(params.product_id))!;
       flow.send({
         type: form.data.flowAction,
         comment: form.data.comment,
         userId: session.user.userId
       });
+
+      const product = (await DatabaseReads.products.findUnique({
+        where: { Id: params.product_id },
+        select: {
+          Project: {
+            select: {
+              Id: true,
+              Owner: {
+                select: {
+                  Id: true
+                }
+              },
+              Authors: {
+                select: {
+                  UserId: true
+                }
+              },
+              Organization: {
+                select: {
+                  UserRoles: {
+                    where: {
+                      RoleId: RoleId.OrgAdmin
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }))!;
+
+      const availableTransitions = Workflow.availableTransitionsFromNode(
+        Workflow.availableTransitionsFromName(old, snap.input).find(
+          (t) => t[0].eventType === form.data.flowAction
+        )![0].target![0],
+        snap.input
+      ).filter((a) =>
+        filterAvailableActions(
+          a,
+          session?.user.userId,
+          product.Project.Owner.Id,
+          product.Project.Authors,
+          product.Project.Organization.UserRoles
+        )
+      );
+
+      if (availableTransitions.length) {
+        redirect(302, localizeHref(`/tasks/${params.product_id}`));
+      } else {
+        redirect(302, localizeHref(`/projects/${product.Project.Id}`));
+      }
     }
-
-    const product = (await DatabaseReads.products.findUnique({
-      where: { Id: params.product_id },
-      select: { ProjectId: true }
-    }))!;
-
-    redirect(302, localizeHref(`/projects/${product.ProjectId}`));
   }
 } satisfies Actions;
 
