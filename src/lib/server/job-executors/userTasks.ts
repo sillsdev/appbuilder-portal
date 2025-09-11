@@ -144,58 +144,60 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     }
     for (let i = 0; i < products.length; i++) {
       const product = products[i];
-      const snap = (await Workflow.getSnapshot(product.Id))!;
-      // Create tasks for all users that could perform this activity
-      if (!project.DateArchived && job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
-        const roleSet = new Set(
-          (
-            Workflow.availableTransitionsFromName(snap.state, {
-              ...snap.config,
-              productId: product.Id,
-              hasAuthors: !!project._count.Authors,
-              hasReviewers: !!project._count.Reviewers
-            })
-              .filter((t) => t[0].meta.type === ActionType.User)
-              .map((t) => t[0].meta.user) as RoleId[]
-          ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
-        );
-        job.updateProgress(40 + ((i + 0.33) * 40) / products.length);
-        createdTasks = Array.from(
-          new Set(
-            Object.entries(allUsers)
-              .filter(([users, roles]) => !roleSet.isDisjointFrom(roles))
-              .map(([user, roles]) => parseInt(user))
-          )
-        )
-          .filter((u) => job.data.operation.users?.includes(u) ?? true)
-          .flatMap((user) =>
-            Array.from(roleSet).map((r) => ({
-              UserId: user,
-              ProductId: product.Id,
-              ActivityName: snap.state,
-              Status: snap.state,
-              Comment: job.data.comment,
-              Role: r
-            }))
+      const snap = await Workflow.getSnapshot(product.Id);
+      if (snap) {
+        // Create tasks for all users that could perform this activity
+        if (!project.DateArchived && job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
+          const roleSet = new Set(
+            (
+              Workflow.availableTransitionsFromName(snap.state, {
+                ...snap.config,
+                productId: product.Id,
+                hasAuthors: !!project._count.Authors,
+                hasReviewers: !!project._count.Reviewers
+              })
+                .filter((t) => t[0].meta.type === ActionType.User)
+                .map((t) => t[0].meta.user) as RoleId[]
+            ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
           );
-        await DatabaseWrites.userTasks.createMany({
-          data: createdTasks
-        });
-        job.updateProgress(40 + ((i + 0.67) * 40) / products.length);
-      }
-      // create ProductTransitions if user tasks still exist
-      if (await DatabaseReads.userTasks.findFirst({ where: { ProductId: product.Id } })) {
-        await DatabaseWrites.productTransitions.createMany(
-          {
-            data: await Workflow.transitionEntriesFromState(snap.state, product.Id, {
-              ...snap.config,
-              productId: product.Id,
-              hasAuthors: !!project._count.Authors,
-              hasReviewers: !!project._count.Reviewers
-            })
-          },
-          products[i].ProjectId
-        );
+          job.updateProgress(40 + ((i + 0.33) * 40) / products.length);
+          createdTasks = Array.from(
+            new Set(
+              Object.entries(allUsers)
+                .filter(([users, roles]) => !roleSet.isDisjointFrom(roles))
+                .map(([user, roles]) => parseInt(user))
+            )
+          )
+            .filter((u) => job.data.operation.users?.includes(u) ?? true)
+            .flatMap((user) =>
+              Array.from(roleSet).map((r) => ({
+                UserId: user,
+                ProductId: product.Id,
+                ActivityName: snap.state,
+                Status: snap.state,
+                Comment: job.data.comment,
+                Role: r
+              }))
+            );
+          await DatabaseWrites.userTasks.createMany({
+            data: createdTasks
+          });
+          job.updateProgress(40 + ((i + 0.67) * 40) / products.length);
+        }
+        // create ProductTransitions if user tasks still exist
+        if (await DatabaseReads.userTasks.findFirst({ where: { ProductId: product.Id } })) {
+          await DatabaseWrites.productTransitions.createMany(
+            {
+              data: await Workflow.transitionEntriesFromState(snap.state, product.Id, {
+                ...snap.config,
+                productId: product.Id,
+                hasAuthors: !!project._count.Authors,
+                hasReviewers: !!project._count.Reviewers
+              })
+            },
+            products[i].ProjectId
+          );
+        }
       }
       job.updateProgress(40 + ((i + 1) * 40) / products.length);
     }
