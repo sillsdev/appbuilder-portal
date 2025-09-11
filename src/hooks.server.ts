@@ -3,14 +3,9 @@
 // when code is bundled, we cannot keep the file separate to import it first.
 
 import { SpanStatusCode, trace } from '@opentelemetry/api';
-import { type Handle, type HandleServerError } from '@sveltejs/kit';
+import { type Handle, type HandleServerError, error } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import {
-  authRouteHandle,
-  checkUserExistsHandle,
-  localRouteHandle,
-  organizationInviteHandle
-} from './auth';
+import { authRouteHandle, organizationInviteHandle, populateSecurityInfo } from './auth';
 import { building } from '$app/environment';
 import OTEL from '$lib/otel';
 
@@ -51,6 +46,7 @@ const paraglideHandle: Handle = ({ event, resolve }) =>
     });
   });
 
+// TODO: investigate not throwing an error here and passing it to load instead
 const heartbeat: Handle = async ({ event, resolve }) => {
   // this check is important to prevent infinite redirects...
   // Also, the homepage should always be accessible
@@ -62,8 +58,7 @@ const heartbeat: Handle = async ({ event, resolve }) => {
         'Connected to Valkey:',
         QueueConnected()
       );
-      // HTTP 503 *should* be the correct semantics here?
-      event.locals.error = 503;
+      throw error(503, 'Database connection error');
     }
   }
   return resolve(event);
@@ -71,7 +66,7 @@ const heartbeat: Handle = async ({ event, resolve }) => {
 
 const tracer = trace.getTracer('IncomingRequest');
 
-const authSequence = sequence(authRouteHandle, checkUserExistsHandle, localRouteHandle);
+const authSequence = sequence(authRouteHandle, populateSecurityInfo);
 
 export const handle: Handle = async ({ event, resolve }) => {
   if (event.url.pathname.startsWith('/.well-known/appspecific/')) {

@@ -1,4 +1,3 @@
-import { error } from '@sveltejs/kit';
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
@@ -13,10 +12,6 @@ import type { Entries } from '$lib/utils';
 import { isSuperAdmin } from '$lib/utils/roles';
 
 export const load: LayoutServerLoad = async (event) => {
-  if (event.locals.error) {
-    // If there is an error, we throw it to be handled by the error page
-    error(event.locals.error);
-  }
   const user = (await event.locals.auth())!.user;
   const organizations = await DatabaseReads.organizations.findMany({
     where: isSuperAdmin(user.roles)
