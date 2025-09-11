@@ -69,7 +69,7 @@ export function tryLocalizeName(data: LangInfo[], lookup: L10NMap, locale: Local
     locale,
     'languages',
     tag,
-    data.find((l) => l.tag === tag)?.name ?? tag
+    data.find((l) => l.tag === tag)?.name || tag
   );
 }
 
