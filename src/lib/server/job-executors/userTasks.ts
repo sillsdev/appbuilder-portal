@@ -92,12 +92,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
       job.updateProgress(40 + ((i + 0.2) * 40) / products.length);
       await DatabaseWrites.productTransitions.createMany(
         {
-          data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, {
-            ...snap.config,
-            productId: products[i].Id,
-            hasAuthors: !!project._count.Authors,
-            hasReviewers: !!project._count.Reviewers
-          })
+          data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, snap.input)
         },
         products[i].ProjectId
       );
@@ -151,12 +146,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         if (!project.DateArchived && job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
           const roleSet = new Set(
             (
-              Workflow.availableTransitionsFromName(snap.state, {
-                ...snap.config,
-                productId: product.Id,
-                hasAuthors: !!project._count.Authors,
-                hasReviewers: !!project._count.Reviewers
-              })
+              Workflow.availableTransitionsFromName(snap.state, snap.input)
                 .filter((t) => t[0].meta.type === ActionType.User)
                 .map((t) => t[0].meta.user) as RoleId[]
             ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
@@ -194,12 +184,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         ) {
           await DatabaseWrites.productTransitions.createMany(
             {
-              data: await Workflow.transitionEntriesFromState(snap.state, product.Id, {
-                ...snap.config,
-                productId: product.Id,
-                hasAuthors: !!project._count.Authors,
-                hasReviewers: !!project._count.Reviewers
-              })
+              data: await Workflow.transitionEntriesFromState(snap.state, product.Id, snap.input)
             },
             products[i].ProjectId
           );

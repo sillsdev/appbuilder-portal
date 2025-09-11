@@ -127,12 +127,7 @@ export const load = (async ({ params, locals }) => {
     : [];
 
   return {
-    actions: Workflow.availableTransitionsFromName(snap.state, {
-      ...snap.config,
-      productId: params.product_id,
-      hasAuthors: !!product.Project.Authors.length,
-      hasReviewers: !!product.Project._count.Reviewers
-    })
+    actions: Workflow.availableTransitionsFromName(snap.state, snap.input)
       .filter((a) => {
         if (session?.user.userId === undefined) return false;
         switch (a[0].meta?.user) {

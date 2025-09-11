@@ -39,22 +39,39 @@ export class Workflow {
   private currentState: XStateNode<WorkflowContext, WorkflowEvent> | null;
   private input: WorkflowInput;
 
-  private constructor(productId: string, config: WorkflowConfig) {
+  private constructor(productId: string, input: WorkflowInput) {
     this.flow = null; // to make svelte-check happy
     this.currentState = null; // ^^^
     this.productId = productId;
-    this.input = { ...config, hasAuthors: false, hasReviewers: false, productId };
+    this.input = input;
   }
 
   /* PUBLIC METHODS */
   /** Create a new workflow instance and populate the database tables. */
   public static async create(productId: string, config: WorkflowConfig): Promise<Workflow> {
-    const flow = new Workflow(productId, config);
-
-    const check = await flow.checkAuthorsAndReviewers();
-    flow.input.hasAuthors = !!check && check.Project._count.Authors > 0;
-    flow.input.hasReviewers = !!check && check.Project._count.Reviewers > 0;
-
+    const check = await DatabaseReads.products.findFirst({
+      where: {
+        Id: productId
+      },
+      select: {
+        Project: {
+          select: {
+            _count: {
+              select: {
+                Authors: true,
+                Reviewers: true
+              }
+            }
+          }
+        }
+      }
+    });
+    const flow = new Workflow(productId, {
+      ...config,
+      hasAuthors: !!check?.Project._count.Authors,
+      hasReviewers: !!check?.Project._count.Reviewers,
+      productId
+    });
     flow.flow = createActor(WorkflowStateMachine, {
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
@@ -89,11 +106,7 @@ export class Workflow {
     if (!snap) {
       return null;
     }
-    const flow = new Workflow(productId, snap.config);
-
-    const check = await flow.checkAuthorsAndReviewers();
-    flow.input.hasAuthors = !!check && check.Project._count.Authors > 0;
-    flow.input.hasReviewers = !!check && check.Project._count.Reviewers > 0;
+    const flow = new Workflow(productId, snap.input);
 
     flow.flow = createActor(WorkflowStateMachine, {
       snapshot: snap
@@ -147,6 +160,20 @@ export class Workflow {
             WorkflowOptions: true,
             Type: true
           }
+        },
+        Product: {
+          select: {
+            Project: {
+              select: {
+                _count: {
+                  select: {
+                    Authors: true,
+                    Reviewers: true
+                  }
+                }
+              }
+            }
+          }
         }
       }
     });
@@ -158,10 +185,13 @@ export class Workflow {
       definitionId: instance.WorkflowDefinition.Id,
       state: instance.State,
       context: JSON.parse(instance.Context) as WorkflowInstanceContext,
-      config: {
+      input: {
         workflowType: instance.WorkflowDefinition.Type,
         productType: instance.WorkflowDefinition.ProductType,
-        options: new Set(instance.WorkflowDefinition.WorkflowOptions)
+        options: new Set(instance.WorkflowDefinition.WorkflowOptions),
+        hasAuthors: !!instance.Product.Project._count.Authors,
+        hasReviewers: !!instance.Product.Project._count.Reviewers,
+        productId
       }
     };
   }
@@ -542,25 +572,5 @@ export class Workflow {
         .target?.at(0)
         ?.replace('#' + WorkflowStateMachine.id + '.', '') || ''
     );
-  }
-
-  private async checkAuthorsAndReviewers() {
-    return await DatabaseReads.products.findFirst({
-      where: {
-        Id: this.productId
-      },
-      select: {
-        Project: {
-          select: {
-            _count: {
-              select: {
-                Authors: true,
-                Reviewers: true
-              }
-            }
-          }
-        }
-      }
-    });
   }
 }
