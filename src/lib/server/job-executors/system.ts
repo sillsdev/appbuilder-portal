@@ -795,5 +795,7 @@ export async function prune(job: Job<BullMQ.System.PruneUsers>): Promise<unknown
     select: { Id: true, GivenName: true, Email: true }
   });
 
+  job.updateProgress(100);
+
   return { deletedUsers, lockedUsers };
 }
