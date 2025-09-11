@@ -128,21 +128,15 @@ export const load = (async ({ params, locals }) => {
 
   return {
     actions: Workflow.availableTransitionsFromName(snap.state, snap.input)
-      .filter((a) => {
-        if (session?.user.userId === undefined) return false;
-        switch (a[0].meta?.user) {
-          case RoleId.AppBuilder:
-            return session.user.userId === product.Project.Owner.Id;
-          case RoleId.Author:
-            return product.Project.Authors.map((a) => a.UserId).includes(session.user.userId);
-          case RoleId.OrgAdmin:
-            return product.Project.Organization.UserRoles.map((u) => u.UserId).includes(
-              session.user.userId
-            );
-          default:
-            return false;
-        }
-      })
+      .filter((a) =>
+        filterAvailableActions(
+          a,
+          session?.user.userId,
+          product.Project.Owner.Id,
+          product.Project.Authors,
+          product.Project.Organization.UserRoles
+        )
+      )
       .map((a) => a[0].eventType as WorkflowAction),
     taskTitle: snap.state,
     instructions: snap.context.instructions,
@@ -240,4 +234,24 @@ async function verifyCanViewTask(session: Session | null, productId: string): Pr
       }
     }))
   );
+}
+
+function filterAvailableActions(
+  action: ReturnType<typeof Workflow.availableTransitionsFromName>[number],
+  userId: number | undefined,
+  ownerId: number,
+  authors: { UserId: number }[],
+  orgAdmins: { UserId: number }[]
+): boolean {
+  if (userId === undefined) return false;
+  switch (action[0].meta?.user) {
+    case RoleId.AppBuilder:
+      return userId === ownerId;
+    case RoleId.Author:
+      return authors.map((a) => a.UserId).includes(userId);
+    case RoleId.OrgAdmin:
+      return orgAdmins.map((u) => u.UserId).includes(userId);
+    default:
+      return false;
+  }
 }
