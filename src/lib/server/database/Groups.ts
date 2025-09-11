@@ -17,12 +17,14 @@ export async function deleteGroup(id: number) {
   return true;
 }
 export async function createGroup(name: string, abbreviation: string, organization: number) {
-  await prisma.groups.create({
+  return prisma.groups.create({
     data: {
       OwnerId: organization,
       Name: name,
       Abbreviation: abbreviation
+    },
+    select: {
+      Id: true
     }
   });
-  return true;
 }
