@@ -768,3 +768,32 @@ async function tryCreateInstance(
     return { ok: false, value: e instanceof Error ? e.message : String(e) };
   }
 }
+
+export async function prune(job: Job<BullMQ.System.PruneUsers>): Promise<unknown> {
+  // Step 1. Delete all users that are BOTH locked AND don't have org memberships
+  const deletedUsers = await DatabaseWrites.users.deleteMany({
+    where: {
+      IsLocked: true,
+      NOT: { OrganizationMemberships: { some: {} } }
+    }
+  });
+  job.updateProgress(50);
+
+  // Step 2. Lock all remaining users that don't have org memberships
+  // AND has an unexpired invite
+  // these users will be deleted a week later
+  const lockedUsers = await DatabaseWrites.users.updateManyAndReturn({
+    where: {
+      NOT: {
+        OR: [
+          { OrganizationMemberships: { some: {} } },
+          { OrganizationMembershipInvites: { some: { Expires: { gt: new Date() } } } }
+        ]
+      }
+    },
+    data: { IsLocked: true },
+    select: { Id: true, GivenName: true, Email: true }
+  });
+
+  return { deletedUsers, lockedUsers };
+}

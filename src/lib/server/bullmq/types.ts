@@ -53,6 +53,7 @@ export enum JobType {
   System_CheckEngineStatuses = 'Check BuildEngine Statuses',
   System_RefreshLangTags = 'Refresh langtags.json',
   System_Migrate = 'Migrate Features from S1 to S2',
+  System_PruneUsers = 'Prune Users without Organization Membership',
   // UserTasks Job
   UserTasks_Modify = 'Modify UserTasks',
   // Email Jobs
@@ -177,6 +178,9 @@ export namespace System {
   export interface Migrate {
     type: JobType.System_Migrate;
   }
+  export interface PruneUsers {
+    type: JobType.System_PruneUsers;
+  }
 }
 
 export namespace UserTasks {
@@ -293,7 +297,9 @@ export type Job = JobTypeMap[keyof JobTypeMap];
 export type BuildJob = JobTypeMap[JobType.Build_Product | JobType.Build_PostProcess];
 export type RecurringJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
-  | JobType.System_RefreshLangTags];
+  | JobType.System_RefreshLangTags
+  // PruneUsers is not a high priority, does not need to run on startup?
+  | JobType.System_PruneUsers];
 export type StartupJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags
@@ -338,6 +344,7 @@ export type JobTypeMap = {
   [JobType.System_CheckEngineStatuses]: System.CheckEngineStatuses;
   [JobType.System_RefreshLangTags]: System.RefreshLangTags;
   [JobType.System_Migrate]: System.Migrate;
+  [JobType.System_PruneUsers]: System.PruneUsers;
   [JobType.UserTasks_Modify]: UserTasks.Modify;
   [JobType.Email_InviteUser]: Email.InviteUser;
   [JobType.Email_SendNotificationToUser]: Email.SendNotificationToUser;
@@ -356,5 +363,6 @@ export type JobTypeMap = {
 export enum JobSchedulerId {
   SystemStatusEmail = 'SystemStatusEmail',
   RefreshLangTags = 'RefreshLangTags',
-  CheckSystemStatuses = 'CheckSystemStatuses'
+  CheckSystemStatuses = 'CheckSystemStatuses',
+  PruneUsers = 'PruneUsers'
 }
