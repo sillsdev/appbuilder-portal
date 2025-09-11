@@ -25,7 +25,7 @@
   {:else if !data.error}
     <h2>{m.orgMembership_joined()}</h2>
     <!-- Organization info -->
-    <div class="flex flex-row">
+    <div class="flex flex-row mb-4 items-center">
       {#if data.joinedOrganization?.logoUrl}
         <img
           class="inline-block p-2 h-16 w-16"
