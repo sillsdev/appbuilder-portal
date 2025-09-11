@@ -143,10 +143,10 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
       job.updateProgress(job.data.operation.type === BullMQ.UserTasks.OpType.Delete ? 90 : 40);
     }
     for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      const snap = (await Workflow.getSnapshot(product.Id))!;
       // Create tasks for all users that could perform this activity
       if (!project.DateArchived && job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
-        const product = products[i];
-        const snap = (await Workflow.getSnapshot(product.Id))!;
         const roleSet = new Set(
           (
             Workflow.availableTransitionsFromName(snap.state, {
@@ -182,11 +182,14 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
           data: createdTasks
         });
         job.updateProgress(40 + ((i + 0.67) * 40) / products.length);
+      }
+      // create ProductTransitions if user tasks still exist
+      if (await DatabaseReads.userTasks.findFirst({ where: { ProductId: product.Id } })) {
         await DatabaseWrites.productTransitions.createMany(
           {
-            data: await Workflow.transitionEntriesFromState(snap.state, products[i].Id, {
+            data: await Workflow.transitionEntriesFromState(snap.state, product.Id, {
               ...snap.config,
-              productId: products[i].Id,
+              productId: product.Id,
               hasAuthors: !!project._count.Authors,
               hasReviewers: !!project._count.Reviewers
             })
