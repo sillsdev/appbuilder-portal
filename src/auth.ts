@@ -6,11 +6,11 @@ import {
 } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { trace } from '@opentelemetry/api';
-import { type Handle, redirect } from '@sveltejs/kit';
+import { type Handle, error, isHttpError, redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
-import type { RoleId } from '$lib/prisma';
+import { RoleId } from '$lib/prisma';
 import { verifyCanEdit, verifyCanView } from '$lib/projects/server';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { adminOrgs } from '$lib/users/server';
@@ -26,7 +26,6 @@ declare module '@auth/sveltekit' {
     } & DefaultSession['user'];
   }
 }
-
 // Stupidly hacky way to get access to the request data from the auth callbacks
 // This is a global variable that is set in a separate hook handle
 let currentInviteToken: string | null = null;
@@ -90,6 +89,8 @@ const config: SvelteKitAuthConfig = {
         }
         throw new Error('Invalid state');
       } finally {
+        tokenStatus = null;
+        currentInviteToken = null;
         trace.getActiveSpan()?.addEvent('signIn callback completed', {
           'auth.signIn.profile': profile ? profile.email + ' - ' + profile.sub : 'unknown',
           'auth.signIn.tokenStatus': tokenStatus ?? 'null',
@@ -138,46 +139,155 @@ const config: SvelteKitAuthConfig = {
     }
   }
 };
+
+export class Security {
+  public readonly isSuperAdmin;
+  private securityHandled = false;
+  constructor(
+    public readonly event: Parameters<Handle>[0]['event'],
+    // Note these three CAN be null if the user is not authenticated
+    public readonly userId: number,
+    public readonly organizationMemberships: number[],
+    public readonly roles: Map<number, RoleId[]>
+  ) {
+    this.isSuperAdmin = roles?.values().some((r) => r.includes(RoleId.SuperAdmin)) ?? false;
+  }
+
+  requireAuthenticated() {
+    this.securityHandled = true;
+    if (!this.userId || !this.organizationMemberships || !this.roles) {
+      // Redirect to login
+      // TODO: preserve the original URL to return to after login
+      throw redirect(302, localizeHref('/login'));
+    }
+  }
+
+  requireSuperAdmin() {
+    this.requireAuthenticated();
+    if (!this.isSuperAdmin) error(403, 'User is not a super admin');
+    return this;
+  }
+
+  requireAdminForOrgIn(organizationIds: number[]) {
+    this.requireAuthenticated();
+    if (
+      !this.isSuperAdmin &&
+      !organizationIds.some((id) => this.roles.get(id)?.includes(RoleId.OrgAdmin))
+    ) {
+      error(403, 'User is not an admin for the organization');
+    }
+    return this;
+  }
+
+  requireAdminForOrg(organizationId: number) {
+    this.requireAuthenticated();
+    this.requireAdminForOrgIn([organizationId]);
+    return this;
+  }
+
+  requireAdminOfAny() {
+    this.requireAuthenticated();
+    if (!this.isSuperAdmin && !this.roles.values().some((r) => r.includes(RoleId.OrgAdmin)))
+      error(403, 'User is not an admin of any organization');
+    return this;
+  }
+
+  requireHasRole(organizationId: number, roleId: RoleId) {
+    this.requireAuthenticated();
+    if (!this.isSuperAdmin && !this.roles.get(organizationId)?.includes(roleId))
+      error(403, 'User does not have the required role ' + roleId);
+    return this;
+  }
+
+  requireMemberOfOrg(organizationId: number) {
+    this.requireAuthenticated();
+    if (!this.organizationMemberships.includes(organizationId))
+      error(403, 'User is not a member of the organization');
+    return this;
+  }
+
+  requireMemberOfOrgOrSuperAdmin(organizationId: number) {
+    this.requireAuthenticated();
+    if (!this.isSuperAdmin) this.requireMemberOfOrg(organizationId);
+    return this;
+  }
+
+  requireMemberOfAnyOrg() {
+    this.requireAuthenticated();
+    if (this.organizationMemberships.length === 0)
+      error(403, 'User is not a member of any organization');
+    return this;
+  }
+
+  requireNothing() {
+    this.securityHandled = true;
+    return this;
+  }
+}
+
+export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
+  const session = (await event.locals.auth())?.user;
+  try {
+    if (session) {
+      // If the user does not exist in the database, invalidate the login and redirect to prevent unauthorized access
+      // This can happen when the user is deleted from the database but still has a valid session.
+      // This should only happen when a superadmin manually deletes a user but is particularly annoying in development
+      // The user should also be redirected if they are not a member of any organizations
+      // Finally, the user should be redirected if they are locked
+      const user = await DatabaseReads.users.findUnique({
+        where: {
+          Id: session.userId
+        },
+        include: {
+          OrganizationMemberships: true
+        }
+      });
+
+      // Create a map of organizationId -> RoleId[]
+      const rolesMap = new Map<number, RoleId[]>();
+      for (const [orgId, roleId] of session.roles) {
+        if (!rolesMap.has(orgId)) rolesMap.set(orgId, []);
+        rolesMap.get(orgId)!.push(roleId);
+      }
+
+      trace.getActiveSpan()?.addEvent('checkUserExistsHandle completed', {
+        'auth.userId': session?.userId,
+        'auth.user': user ? user.Email + ' - ' + user.Id : 'null',
+        'auth.user.OrganizationMemberships':
+          user?.OrganizationMemberships.map((o) => o.OrganizationId).join(', ') ?? 'null',
+        'auth.user.roles': user ? JSON.stringify(rolesMap.entries()) : 'null',
+        'auth.user.IsLocked': user ? user.IsLocked + '' : 'null'
+      });
+
+      if (
+        !user ||
+        (user.OrganizationMemberships.length === 0 && !event.cookies.get('inviteToken'))
+      ) {
+        event.cookies.set('authjs.session-token', '', { path: '/' });
+        return redirect(302, localizeHref('/login/no-organization'));
+      }
+      if (user.IsLocked) {
+        event.cookies.set('authjs.session-token', '', { path: '/' });
+        return redirect(302, localizeHref('/login/locked'));
+      }
+      event.locals.security = new Security(
+        event,
+        session.userId,
+        user.OrganizationMemberships.map((o) => o.OrganizationId),
+        rolesMap
+      );
+    }
+  } finally {
+    if (!event.locals.security) {
+      // @ts-expect-error Not typed as null but null is allowed
+      event.locals.security = new Security(event, null, null, null);
+    }
+  }
+  return await resolve(event);
+};
+
 // Handles the /auth route, which is used to handle external auth0 authentication
 export const { handle: authRouteHandle, signIn, signOut } = SvelteKitAuth(config);
-
-export const checkUserExistsHandle: Handle = async ({ event, resolve }) => {
-  // If the user does not exist in the database, invalidate the login and redirect to prevent unauthorized access
-  // This can happen when the user is deleted from the database but still has a valid session.
-  // This should only happen when a superadmin manually deletes a user but is particularly annoying in development
-  // The user should also be redirected if they are not a member of any organizations
-  // Finally, the user should be redirected if they are locked
-  const userId = (await event.locals.auth())?.user.userId;
-  if (!userId) {
-    // User has no session at all; allow normal events
-    return resolve(event);
-  }
-  const user = await DatabaseReads.users.findUnique({
-    where: {
-      Id: userId
-    },
-    include: {
-      OrganizationMemberships: true
-    }
-  });
-  trace.getActiveSpan()?.addEvent('checkUserExistsHandle completed', {
-    'auth.checkUserExists.userId': userId,
-    'auth.checkUserExists.user': user ? user.Email + ' - ' + user.Id : 'null',
-    'auth.checkUserExists.user.OrganizationMemberships': user
-      ? JSON.stringify(user.OrganizationMemberships.map((m) => m.OrganizationId))
-      : 'null',
-    'auth.checkUserExists.user.IsLocked': user ? user.IsLocked.toString() : 'null'
-  });
-  if (!user || (user.OrganizationMemberships.length === 0 && !event.cookies.get('inviteToken'))) {
-    event.cookies.set('authjs.session-token', '', { path: '/' });
-    return redirect(302, localizeHref('/login/no-organization'));
-  }
-  if (user.IsLocked) {
-    event.cookies.set('authjs.session-token', '', { path: '/' });
-    return redirect(302, localizeHref('/login/locked'));
-  }
-  return resolve(event);
-};
 
 // Handle organization invites
 export const organizationInviteHandle: Handle = async ({ event, resolve }) => {
@@ -205,6 +315,7 @@ export const organizationInviteHandle: Handle = async ({ event, resolve }) => {
   return result;
 };
 
+// This is entirely unused now but will be referenced for setting up individual guards.
 // Locks down the authenticated routes by redirecting to /login
 // This guarantees a logged in user under (authenticated) but does not guarantee
 // authorization to the route. Each page must manually check in +page.server.ts or here
@@ -231,7 +342,7 @@ export const localRouteHandle: Handle = async ({ event, resolve }) => {
     });
     if (status !== ServerStatus.Ok) {
       // error.html is extremely ugly, so we use a manual error throw
-      event.locals.error = status;
+      // event.locals.error = status;
     }
   }
   return resolve(event);
