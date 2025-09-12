@@ -571,8 +571,9 @@ async function main() {
       { UserId: 3, RoleId: 2, OrganizationId: 4 }, // bill_dyck@sil.org - OrgAdmin - SE
       { UserId: 4, RoleId: 3, OrganizationId: 1 }, // loren_hawthorne@sil.org - AppBuilder - SIL
       { UserId: 5, RoleId: 3, OrganizationId: 3 }, // chris.kalaam@gmail.com - AppBuilder - Kalaam
-      { UserId: 6, RoleId: 1, OrganizationId: 1 }, // 7dev7urandom@gmail.com - SuperAdmin - SIL
-      { UserId: 7, RoleId: 1, OrganizationId: 1 } // aejones4gm@gmail.com - SuperAdmin - SIL
+      // TODO: Should CI have any roles???
+      { UserId: 7, RoleId: 1, OrganizationId: 1 }, // 7dev7urandom@gmail.com - SuperAdmin - SIL
+      { UserId: 8, RoleId: 1, OrganizationId: 1 } // aejones4gm@gmail.com - SuperAdmin - SIL
     ];
 
     await prisma.userRoles.createMany({
