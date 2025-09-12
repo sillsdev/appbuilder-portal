@@ -49,7 +49,7 @@ export class Workflow {
   /* PUBLIC METHODS */
   /** Create a new workflow instance and populate the database tables. */
   public static async create(productId: string, config: WorkflowConfig): Promise<Workflow> {
-    const check = await DatabaseReads.products.findFirst({
+    const check = await DatabaseReads.products.findUnique({
       where: {
         Id: productId
       },
