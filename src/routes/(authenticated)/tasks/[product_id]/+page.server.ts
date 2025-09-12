@@ -204,9 +204,12 @@ export const actions = {
       });
     }
     //double check that state matches current snapshot
-    if (form.data.state === flow.state()) {
-      const old = flow.state()!;
-      const snap = (await Workflow.getSnapshot(params.product_id))!;
+    const snap = (await Workflow.getSnapshot(params.product_id))!;
+    const old = flow.state()!;
+    const transition = Workflow.availableTransitionsFromName(old, snap.input)
+      .find((t) => t[0].eventType === form.data.flowAction)
+      ?.at(0);
+    if (transition && form.data.state === flow.state()) {
       flow.send({
         type: form.data.flowAction,
         comment: form.data.comment,
@@ -246,9 +249,7 @@ export const actions = {
       const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
       const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
 
-      const targetState = Workflow.availableTransitionsFromName(old, snap.input).find(
-        (t) => t[0].eventType === form.data.flowAction
-      )![0].target;
+      const targetState = transition.target;
 
       const availableTransitions = targetState
         ? Workflow.availableTransitionsFromNode(targetState[0], snap.input).filter((a) =>
