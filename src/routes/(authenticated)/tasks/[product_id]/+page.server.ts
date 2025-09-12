@@ -268,6 +268,11 @@ export const actions = {
       } else {
         redirect(302, localizeHref(`/projects/${product.Project.Id}`));
       }
+    } else {
+      return fail(400, {
+        form,
+        ok: false
+      });
     }
   }
 } satisfies Actions;
