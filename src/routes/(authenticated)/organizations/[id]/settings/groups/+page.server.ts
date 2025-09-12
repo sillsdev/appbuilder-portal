@@ -3,10 +3,9 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { deleteSchema, idSchema } from '$lib/valibot';
+import { deleteSchema } from '$lib/valibot';
 
 const addGroupSchema = v.object({
-  orgId: idSchema,
   name: v.string(),
   abbreviation: v.string()
 });
@@ -14,7 +13,8 @@ const addGroupSchema = v.object({
 export const load = (async (event) => {
   const { organization } = await event.parent();
   return {
-    groups: await DatabaseReads.groups.findMany({ where: { OwnerId: organization.Id } })
+    groups: await DatabaseReads.groups.findMany({ where: { OwnerId: organization.Id } }),
+    form: await superValidate(valibot(addGroupSchema))
   };
 }) satisfies PageServerLoad;
 
@@ -22,12 +22,12 @@ export const actions = {
   async addGroup(event) {
     const form = await superValidate(event.request, valibot(addGroupSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    await DatabaseWrites.groups.createGroup(
+    const group = await DatabaseWrites.groups.createGroup(
       form.data.name,
       form.data.abbreviation,
-      form.data.orgId
+      parseInt(event.params.id)
     );
-    return { form, ok: true };
+    return { form, ok: true, createdId: group.Id };
   },
   async deleteGroup(event) {
     const form = await superValidate(event.request, valibot(deleteSchema));
