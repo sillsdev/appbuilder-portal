@@ -3,7 +3,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { deleteSchema, idSchema } from '$lib/valibot';
+import { deleteSchema } from '$lib/valibot';
 
 const addGroupSchema = v.object({
   name: v.string(),
