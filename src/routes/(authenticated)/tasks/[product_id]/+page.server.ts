@@ -126,6 +126,9 @@ export const load = (async ({ params, locals }) => {
       })
     : [];
 
+  const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
+  const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
+
   return {
     actions: Workflow.availableTransitionsFromName(snap.state, snap.input)
       .filter((a) =>
@@ -133,8 +136,8 @@ export const load = (async ({ params, locals }) => {
           a,
           session?.user.userId,
           product.Project.Owner.Id,
-          product.Project.Authors,
-          product.Project.Organization.UserRoles
+          authorIds,
+          orgAdminIds
         )
       )
       .map((a) => a[0].eventType as WorkflowAction),
@@ -240,6 +243,9 @@ export const actions = {
         }
       }))!;
 
+      const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
+      const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
+
       const availableTransitions = Workflow.availableTransitionsFromNode(
         Workflow.availableTransitionsFromName(old, snap.input).find(
           (t) => t[0].eventType === form.data.flowAction
@@ -250,8 +256,8 @@ export const actions = {
           a,
           session?.user.userId,
           product.Project.Owner.Id,
-          product.Project.Authors,
-          product.Project.Organization.UserRoles
+          authorIds,
+          orgAdminIds
         )
       );
 
@@ -286,17 +292,17 @@ function filterAvailableActions(
   action: ReturnType<typeof Workflow.availableTransitionsFromName>[number],
   userId: number | undefined,
   ownerId: number,
-  authors: { UserId: number }[],
-  orgAdmins: { UserId: number }[]
+  authors: Set<number>,
+  orgAdmins: Set<number>
 ): boolean {
   if (userId === undefined) return false;
   switch (action[0].meta?.user) {
     case RoleId.AppBuilder:
       return userId === ownerId;
     case RoleId.Author:
-      return authors.map((a) => a.UserId).includes(userId);
+      return authors.has(userId);
     case RoleId.OrgAdmin:
-      return orgAdmins.map((u) => u.UserId).includes(userId);
+      return orgAdmins.has(userId);
     default:
       return false;
   }
