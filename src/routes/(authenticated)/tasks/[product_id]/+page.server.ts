@@ -246,20 +246,21 @@ export const actions = {
       const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
       const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
 
-      const availableTransitions = Workflow.availableTransitionsFromNode(
-        Workflow.availableTransitionsFromName(old, snap.input).find(
-          (t) => t[0].eventType === form.data.flowAction
-        )![0].target![0],
-        snap.input
-      ).filter((a) =>
-        filterAvailableActions(
-          a,
-          session?.user.userId,
-          product.Project.Owner.Id,
-          authorIds,
-          orgAdminIds
-        )
-      );
+      const targetState = Workflow.availableTransitionsFromName(old, snap.input).find(
+        (t) => t[0].eventType === form.data.flowAction
+      )![0].target;
+
+      const availableTransitions = targetState
+        ? Workflow.availableTransitionsFromNode(targetState[0], snap.input).filter((a) =>
+            filterAvailableActions(
+              a,
+              session?.user.userId,
+              product.Project.Owner.Id,
+              authorIds,
+              orgAdminIds
+            )
+          )
+        : [];
 
       if (availableTransitions.length) {
         redirect(302, localizeHref(`/tasks/${params.product_id}`));
