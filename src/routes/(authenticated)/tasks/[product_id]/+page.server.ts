@@ -206,7 +206,48 @@ export const actions = {
     //double check that state matches current snapshot
     const snap = (await Workflow.getSnapshot(params.product_id))!;
     const old = flow.state()!;
+    const product = (await DatabaseReads.products.findUnique({
+      where: { Id: params.product_id },
+      select: {
+        Project: {
+          select: {
+            Id: true,
+            Owner: {
+              select: {
+                Id: true
+              }
+            },
+            Authors: {
+              select: {
+                UserId: true
+              }
+            },
+            Organization: {
+              select: {
+                UserRoles: {
+                  where: {
+                    RoleId: RoleId.OrgAdmin
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }))!;
+
+    const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
+    const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
     const transition = Workflow.availableTransitionsFromName(old, snap.input)
+      .filter((a) =>
+        filterAvailableActions(
+          a,
+          session?.user.userId,
+          product.Project.Owner.Id,
+          authorIds,
+          orgAdminIds
+        )
+      )
       .find((t) => t[0].eventType === form.data.flowAction)
       ?.at(0);
     if (transition && form.data.state === flow.state()) {
@@ -215,39 +256,6 @@ export const actions = {
         comment: form.data.comment,
         userId: session.user.userId
       });
-
-      const product = (await DatabaseReads.products.findUnique({
-        where: { Id: params.product_id },
-        select: {
-          Project: {
-            select: {
-              Id: true,
-              Owner: {
-                select: {
-                  Id: true
-                }
-              },
-              Authors: {
-                select: {
-                  UserId: true
-                }
-              },
-              Organization: {
-                select: {
-                  UserRoles: {
-                    where: {
-                      RoleId: RoleId.OrgAdmin
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }))!;
-
-      const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
-      const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
 
       const targetState = transition.target;
 
