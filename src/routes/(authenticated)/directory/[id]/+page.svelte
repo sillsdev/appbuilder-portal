@@ -3,7 +3,6 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
-  import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
@@ -25,12 +24,7 @@
       {#if canModifyProject(data.session, data.project.Owner.Id, data.project.Organization.Id)}
         <a class="link" href={localizeHref(`/projects/${data.project.Id}`)}>
           <h1 class="p-0">
-            {data.project?.Name} ({tryLocalizeName(
-              data.langtags,
-              l10nMap.value,
-              getLocale(),
-              data.project.Language ?? ''
-            )})
+            {data.project?.Name} ({data.project.Language ?? ''})
           </h1>
         </a>
       {:else}
