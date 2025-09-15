@@ -87,7 +87,13 @@ export const load = (async ({ params, locals }) => {
       Group: true,
       Organization: true
     },
-    take: 10
+    take: 10,
+    orderBy: [
+      {
+        Name: 'asc'
+      },
+      { Id: 'asc' }
+    ]
   });
   return {
     projects: pruneProjects(projects),
@@ -142,7 +148,13 @@ export const actions: Actions = {
         Organization: true
       },
       skip: form.data.page.size * form.data.page.page,
-      take: form.data.page.size
+      take: form.data.page.size,
+      orderBy: [
+        {
+          Name: 'asc'
+        },
+        { Id: 'asc' }
+      ]
     });
 
     const count = await DatabaseReads.projects.count({ where: where });
