@@ -1,4 +1,9 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
+import dotenv from 'dotenv';
+
+if (process.env.NODE_ENV === 'development') {
+  dotenv.config({ path: '.env' });
+}
 
 const config: PlaywrightTestConfig = {
   webServer: {
