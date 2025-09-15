@@ -64,7 +64,13 @@ function tryLocalize(
 }
 
 export function tryLocalizeName(data: LangInfo[], lookup: L10NMap, locale: Locale, tag: string) {
-  return tryLocalize(lookup, locale, 'languages', tag, data.find((l) => l.tag === tag)?.name ?? '');
+  return tryLocalize(
+    lookup,
+    locale,
+    'languages',
+    tag,
+    data.find((l) => l.tag === tag)?.name || tag
+  );
 }
 
 export function localizeTagData(data: LangInfo[], lookup: L10NMap, locale: Locale) {
