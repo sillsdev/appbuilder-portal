@@ -400,6 +400,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
    * 2. Add UserId to transitions with a WorkflowUserId but no UserId
    * 3. Migrate data from DWKit tables to WorkflowInstances
    * 4. Populate Product.PackageName
+   * 5. Remove users with no org membership
    */
 
   // 1. Delete UserTasks for archived projects
@@ -412,7 +413,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       }
     }
   });
-  job.updateProgress(25);
+  job.updateProgress(20);
 
   // 2. Add UserId to transitions with a WorkflowUserId but no UserId
   const updatedTransitions = (
@@ -459,7 +460,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     })
   ).map(({ WorkflowUserId }) => WorkflowUserId);
 
-  job.updateProgress(50);
+  job.updateProgress(40);
 
   // 3. Migrate data from DWKit tables to WorkflowInstances
 
@@ -616,7 +617,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       await DatabaseWrites.workflowDefinitions.updateMany(def);
     }
   }
-  job.updateProgress(75);
+  job.updateProgress(60);
 
   // 4. Populate Product.PackageName
   const updatedPackages = await Promise.all(
@@ -642,8 +643,24 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       return pname;
     })
   );
+  job.updateProgress(80);
+
+  const deletedUsers = await DatabaseReads.users.findMany({
+    where: {
+      NOT: { OrganizationMemberships: { some: {} } }
+    },
+    select: { Id: true, GivenName: true, Email: true }
+  });
+  const deleteRes = await DatabaseWrites.users.deleteMany({
+    where: {
+      NOT: { OrganizationMemberships: { some: {} } }
+    }
+  });
+
+  job.log(`Deleted ${deleteRes.count} users`);
 
   job.updateProgress(100);
+
   return {
     deletedTasks: deletedTasks.count,
     updatedTransitions,
@@ -652,7 +669,8 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     migrationErrors,
     orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0),
     updatedWorkflowDefinitions: workflowDefsNeedUpdate,
-    updatedPackages
+    updatedPackages,
+    deletedUsers
   };
 }
 
@@ -767,35 +785,4 @@ async function tryCreateInstance(
   } catch (e) {
     return { ok: false, value: e instanceof Error ? e.message : String(e) };
   }
-}
-
-export async function prune(job: Job<BullMQ.System.PruneUsers>): Promise<unknown> {
-  // Step 1. Delete all users that are BOTH locked AND don't have org memberships
-  const deletedUsers = await DatabaseWrites.users.deleteMany({
-    where: {
-      IsLocked: true,
-      NOT: { OrganizationMemberships: { some: {} } }
-    }
-  });
-  job.updateProgress(50);
-
-  // Step 2. Lock all remaining users that don't have org memberships
-  // AND do not have an unexpired invite (i.e. no invite, or invite but expired)
-  // these users will be deleted a week later
-  const lockedUsers = await DatabaseWrites.users.updateManyAndReturn({
-    where: {
-      NOT: {
-        OR: [
-          { OrganizationMemberships: { some: {} } },
-          { OrganizationMembershipInvites: { some: { Expires: { gt: new Date() } } } }
-        ]
-      }
-    },
-    data: { IsLocked: true },
-    select: { Id: true, GivenName: true, Email: true }
-  });
-
-  job.updateProgress(100);
-
-  return { deletedUsers, lockedUsers };
 }

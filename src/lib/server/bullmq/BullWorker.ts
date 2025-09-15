@@ -86,19 +86,6 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         }
       }
     );
-    getQueues().SystemRecurring.upsertJobScheduler(
-      BullMQ.JobSchedulerId.PruneUsers,
-      {
-        pattern: '@weekly', // every Sunday at midnight
-        immediately: false
-      },
-      {
-        name: 'Prune Users without Organization Membership',
-        data: {
-          type: BullMQ.JobType.System_PruneUsers
-        }
-      }
-    );
   }
   async run(job: Job<J>) {
     switch (job.data.type) {
@@ -106,8 +93,6 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         return Executor.System.checkSystemStatuses(job as Job<BullMQ.System.CheckEngineStatuses>);
       case BullMQ.JobType.System_RefreshLangTags:
         return Executor.System.refreshLangTags(job as Job<BullMQ.System.RefreshLangTags>);
-      case BullMQ.JobType.System_PruneUsers:
-        return Executor.System.prune(job as Job<BullMQ.System.PruneUsers>);
     }
   }
 }
