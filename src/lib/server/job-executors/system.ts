@@ -651,13 +651,17 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     },
     select: { Id: true, GivenName: true, Email: true }
   });
-  const deleteRes = await DatabaseWrites.users.deleteMany({
-    where: {
-      NOT: { OrganizationMemberships: { some: {} } }
-    }
-  });
-
-  job.log(`Deleted ${deleteRes.count} users`);
+  let deleteCount = 0;
+  try {
+    const deleteRes = await DatabaseWrites.users.deleteMany({
+      where: {
+        NOT: { OrganizationMemberships: { some: {} } }
+      }
+    });
+    deleteCount = deleteRes.count;
+  } catch (e) {
+    job.log(`User prune failed: ${e instanceof Error ? e.message : String(e)}`);
+  }
 
   job.updateProgress(100);
 
@@ -670,7 +674,11 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0),
     updatedWorkflowDefinitions: workflowDefsNeedUpdate,
     updatedPackages,
-    deletedUsers
+    deletedUsers: {
+      users: deletedUsers,
+      count: deleteCount,
+      success: deleteCount === deletedUsers.length
+    }
   };
 }
 
