@@ -780,7 +780,7 @@ export async function prune(job: Job<BullMQ.System.PruneUsers>): Promise<unknown
   job.updateProgress(50);
 
   // Step 2. Lock all remaining users that don't have org memberships
-  // AND has an unexpired invite
+  // AND do not have an unexpired invite (i.e. no invite, or invite but expired)
   // these users will be deleted a week later
   const lockedUsers = await DatabaseWrites.users.updateManyAndReturn({
     where: {
