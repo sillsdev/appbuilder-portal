@@ -149,11 +149,9 @@
   });
   const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 
-  const canCreateProject = $derived(
-    !(
-      isAdminForOrg(parsedParamId, data.session?.user.roles) ||
+  const canModifyProjects = $derived(
+    isAdminForOrg(parsedParamId, data.session?.user.roles) ||
       hasRoleForOrg(RoleId.AppBuilder, parsedParamId, data.session?.user.roles)
-    )
   );
 </script>
 
@@ -190,7 +188,7 @@
       </div>
     </div>
   </form>
-  {#if canCreateProject}
+  {#if canModifyProjects}
     <div class="w-full flex flex-row flex-wrap place-content-between gap-1 mt-4">
       <form
         class="flex flex-row flex-wrap {mobileSizing} gap-1 mx-4"
@@ -405,7 +403,7 @@
       {#each projects.toSorted((a, b) => byName(a, b, locale)) as project}
         <ProjectCard {project}>
           {#snippet select()}
-            {#if canCreateProject}
+            {#if canModifyProjects}
               <input
                 type="checkbox"
                 class="mr-2 checkbox checkbox-accent"
@@ -415,7 +413,7 @@
             {/if}
           {/snippet}
           {#snippet actions()}
-            {#if canCreateProject}
+            {#if canModifyProjects}
               <ProjectActionMenu
                 data={data.actionForm}
                 {project}
