@@ -15,7 +15,7 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
   import type { ProjectForAction, PrunedProject } from '$lib/projects';
-  import { canArchive, canReactivate } from '$lib/projects';
+  import { canArchive, canClaimProject, canReactivate } from '$lib/projects';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
@@ -111,13 +111,13 @@
     $pageForm.organizationId = parseInt(navigation.to!.params!.id);
   });
 
-  const parsedParamId = $derived(parseInt(page.params.id));
+  const organizationId = $derived(parseInt(page.params.id));
 
   let canArchiveSelected = $derived(
-    selectedProjects.every((p) => canArchive(p, page.data.session, parsedParamId))
+    selectedProjects.every((p) => canArchive(p, page.data.session, organizationId))
   );
   let canReactivateSelected = $derived(
-    selectedProjects.every((p) => canReactivate(p, page.data.session, parsedParamId))
+    selectedProjects.every((p) => canReactivate(p, page.data.session, organizationId))
   );
 
   const {
@@ -150,8 +150,8 @@
   const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 
   const canModifyProjects = $derived(
-    isAdminForOrg(parsedParamId, data.session?.user.roles) ||
-      hasRoleForOrg(RoleId.AppBuilder, parsedParamId, data.session?.user.roles)
+    isAdminForOrg(organizationId, data.session?.user.roles) ||
+      hasRoleForOrg(RoleId.AppBuilder, organizationId, data.session?.user.roles)
   );
 </script>
 
@@ -413,14 +413,14 @@
             {/if}
           {/snippet}
           {#snippet actions()}
-            {#if canModifyProjects}
+            {#if canModifyProjects || canClaimProject(data.session, project.OwnerId, organizationId, project.GroupId, data.userGroups)}
               <ProjectActionMenu
                 data={data.actionForm}
                 {project}
                 allowActions={data.allowActions}
                 allowReactivate={data.allowReactivate}
                 userGroups={data.userGroups}
-                orgId={parseInt(page.params.id)}
+                orgId={organizationId}
               />
             {/if}
           {/snippet}
