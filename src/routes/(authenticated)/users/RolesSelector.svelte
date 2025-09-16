@@ -17,10 +17,10 @@
     {#each enumNumVals(RoleId)
       .filter((r) => r !== RoleId.SuperAdmin)
       .toSorted( (a, b) => byString(m.users_roles( { role: a } ), m.users_roles( { role: b } ), getLocale()) ) as role}
-      <div class="flex space-x-2">
+      <label class="flex space-x-2">
         {@render selector?.(role)}
         <span>{m.users_roles({ role })}</span>
-      </div>
+      </label>
     {/each}
   </div>
   <div class="grow"></div>
