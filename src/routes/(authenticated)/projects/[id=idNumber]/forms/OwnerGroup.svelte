@@ -126,6 +126,7 @@
                       user.Id !== page.data.session?.user.userId && canClaim && !canEdit}
                     <li class="w-full rounded-none">
                       <button
+                        type="button"
                         class="text-nowrap"
                         class:font-bold={user.Id === project.Owner.Id}
                         class:pointer-events-none={disabled || user.Id === project.Owner.Id}
@@ -172,6 +173,7 @@
                   {#each groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
                     <li class="w-full rounded-none">
                       <button
+                        type="button"
                         class="text-nowrap"
                         class:font-bold={group.Id === project.Group.Id}
                         onclick={() => {
