@@ -55,7 +55,8 @@ export const propertiesSchema = v.nullable(
 );
 
 /** Legal phone numbers: +1 (123) 456-7890 1234567890 123-4567890 123 456-7890 */
-export const phoneRegex = new RegExp(/[\d() \-+]+/);
+// eslint-disable-next-line no-useless-escape
+export const phoneRegex = new RegExp(/[\d\(\) \-+]*/);
 
 //language tag regex sourced from: https://stackoverflow.com/a/60899733
 export const langtagRegex = new RegExp(

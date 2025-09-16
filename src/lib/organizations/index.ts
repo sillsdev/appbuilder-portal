@@ -3,7 +3,15 @@ import * as v from 'valibot';
 export const infoSchema = v.object({
   name: v.nullable(v.string()),
   logoUrl: v.nullable(v.string()),
-  contact: v.nullable(v.pipe(v.string(), v.email()))
+  contact: v.nullable(
+    v.union([
+      v.pipe(
+        v.literal(''),
+        v.transform(() => null)
+      ),
+      v.pipe(v.string(), v.email())
+    ])
+  )
 });
 
 export const infrastructureSchema = v.object({
