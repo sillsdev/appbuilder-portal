@@ -43,7 +43,11 @@
             </span>
           </td>
           <td>
-            {org.ContactEmail}
+            {#if org.ContactEmail}
+              <a class="link" href="mailto:{org.ContactEmail}">{org.ContactEmail}</a>
+            {:else}
+              {m.common_notAvailable()}
+            {/if}
           </td>
           <!-- <td>
             {org.Projects.length}

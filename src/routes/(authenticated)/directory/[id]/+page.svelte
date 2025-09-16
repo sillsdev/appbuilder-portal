@@ -55,7 +55,13 @@
           <h2 class="pl-0">{org.Name}</h2>
           <i class="block">
             {m.project_orgContact()}:
-            <strong>{org.ContactEmail}</strong>
+            <strong>
+              {#if org.ContactEmail}
+                <a class="link" href="mailto:{org.ContactEmail}">{org.ContactEmail}</a>
+              {:else}
+                {m.common_notAvailable()}
+              {/if}
+            </strong>
           </i>
           <i class="block">
             {m.project_owner()}:
