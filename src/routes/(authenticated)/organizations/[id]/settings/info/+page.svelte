@@ -33,6 +33,15 @@
         />
         <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
       </LabeledFormInput>
+      <LabeledFormInput key="project_orgContact">
+        <input
+          name="contact"
+          class="input input-bordered w-full"
+          type="email"
+          bind:value={$form.contact}
+        />
+        <span class="validator-hint">{m.formErrors_emailInvalid()}</span>
+      </LabeledFormInput>
       <LabeledFormInput key="org_logoURL">
         <input
           type="url"

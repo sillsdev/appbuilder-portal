@@ -9,7 +9,8 @@ export const load = (async (event) => {
   const form = await superValidate(
     {
       name: organization.Name,
-      logoUrl: organization.LogoUrl
+      logoUrl: organization.LogoUrl,
+      contact: organization.ContactEmail
     },
     valibot(infoSchema)
   );
@@ -26,7 +27,8 @@ export const actions = {
       },
       data: {
         Name: form.data.name,
-        LogoUrl: form.data.logoUrl
+        LogoUrl: form.data.logoUrl,
+        ContactEmail: form.data.contact
       }
     });
     return { form, ok: true };
