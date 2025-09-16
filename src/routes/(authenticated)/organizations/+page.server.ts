@@ -8,14 +8,14 @@ export const load = (async (event) => {
   const user = (await event.locals.auth())!.user;
   const organizations = await DatabaseReads.organizations.findMany({
     where: isSuperAdmin(user.roles)
-      ? {
+      ? undefined
+      : {
           OrganizationMemberships: {
             some: {
               UserId: user.userId
             }
           }
-        }
-      : undefined,
+        },
     select: {
       Id: true,
       LogoUrl: true,
