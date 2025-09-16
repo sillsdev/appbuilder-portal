@@ -7,13 +7,12 @@ import { DatabaseWrites } from '$lib/server/database';
 
 const createSchema = organizationBaseSchema;
 
-export const load = (async ({ url }) => {
-  const form = await superValidate(valibot(createSchema));
-  return { form };
+export const load = (async () => {
+  return { form: await superValidate(valibot(createSchema)) };
 }) satisfies PageServerLoad;
 
 export const actions = {
-  async new({ cookies, request }) {
+  async new({ request }) {
     const form = await superValidate(request, valibot(createSchema));
     if (!form.valid) {
       return fail(400, { form, ok: false });
