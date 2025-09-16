@@ -12,7 +12,7 @@
   import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-  import { canModifyProject } from '$lib/projects';
+  import { canClaimProject, canModifyProject } from '$lib/projects';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
@@ -51,6 +51,15 @@
       projectData?.project.Organization.Id ?? -1
     )
   );
+  const canClaim = $derived(
+    canClaimProject(
+      data.session,
+      projectData?.project.OwnerId ?? -1,
+      projectData?.project.Organization.Id ?? -1,
+      projectData?.project.GroupId ?? -1,
+      projectData?.userGroups ?? []
+    )
+  );
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
@@ -86,8 +95,9 @@
           </span>
         {/if}
       </div>
-      {#if canEdit}
-        <div class="grow">
+
+      <div class="grow">
+        {#if canEdit}
           <Tooltip className="tooltip-bottom" tip={m.project_editProject()}>
             <a
               href={localizeHref(`/projects/${projectData.project.Id}/edit`)}
@@ -96,7 +106,9 @@
               <IconContainer width="24" icon="mdi:pencil" />
             </a>
           </Tooltip>
-        </div>
+        {/if}
+      </div>
+      {#if canEdit || canClaim}
         <div class="shrink">
           <ProjectActionMenu
             data={data.actionForm}
@@ -244,6 +256,7 @@
             ?.Name}
           endpoint="editOwnerGroup"
           {canEdit}
+          {canClaim}
         />
         <Authors
           group={projectData.project.Group}

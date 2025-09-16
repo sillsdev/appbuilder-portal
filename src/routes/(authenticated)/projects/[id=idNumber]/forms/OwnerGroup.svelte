@@ -2,6 +2,7 @@
   import type { Prisma } from '@prisma/client';
   import type { ActionData } from '../$types';
   import { enhance } from '$app/forms';
+  import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
@@ -42,9 +43,10 @@
     orgName: string | null | undefined;
     endpoint: string;
     canEdit: boolean;
+    canClaim: boolean;
   }
 
-  let { project, users, groups, orgName, endpoint, canEdit }: Props = $props();
+  let { project, users, groups, orgName, endpoint, canEdit, canClaim }: Props = $props();
 
   // eslint-disable-next-line no-undef
   let timeout: NodeJS.Timeout;
@@ -101,7 +103,7 @@
         </span>
         <span class="text-right flex place-content-end dropdown-wrapper">
           <input type="hidden" name="owner" value={project.Owner.Id} bind:this={ownerField} />
-          {#if canEdit}
+          {#if canEdit || canClaim}
             <Dropdown
               labelClasses="p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
               contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
@@ -120,14 +122,19 @@
               {#snippet content()}
                 <ul class="menu menu-compact overflow-hidden rounded-md">
                   {#each users.toSorted((a, b) => byName(a, b, getLocale())) as user}
+                    {@const disabled =
+                      user.Id !== page.data.session?.user.userId && canClaim && !canEdit}
                     <li class="w-full rounded-none">
                       <button
                         class="text-nowrap"
                         class:font-bold={user.Id === project.Owner.Id}
+                        class:pointer-events-none={disabled || user.Id === project.Owner.Id}
+                        class:opacity-70={disabled && user.Id !== project.Owner.Id}
                         onclick={() => {
                           ownerField.value = user.Id + '';
                           submit();
                         }}
+                        {disabled}
                       >
                         {user.Name}
                       </button>
