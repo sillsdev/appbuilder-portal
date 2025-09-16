@@ -7,6 +7,7 @@ import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
 import ts from 'typescript-eslint';
 import svelteConfig from './svelte.config.js';
+import requireSecurityCheck from './eslint-rules/require-security-check.js';
 
 export default ts.config(
   js.configs.recommended,
@@ -21,6 +22,13 @@ export default ts.config(
       globals: {
         ...globals.browser,
         ...globals.node
+      }
+    },
+    plugins: {
+      'sveltekit-sec': {
+        rules: {
+          "require-security-check": requireSecurityCheck
+        }
       }
     }
   },
@@ -60,6 +68,7 @@ export default ts.config(
         }
       ],
       'import/no-unresolved': 'off',
+      'sveltekit-sec/require-security-check': 'error'
     }
   },
   globalIgnores([
