@@ -299,3 +299,39 @@ export async function getProjectDetails(id: number, userId: number) {
     }
   });
 }
+
+export type UserTaskDataSSE = Awaited<ReturnType<typeof getUserTasks>>;
+export async function getUserTasks(userId: number) {
+  const tasks = await DatabaseReads.userTasks.findMany({
+    where: {
+      UserId: userId
+    },
+    select: {
+      Status: true,
+      Comment: true,
+      DateUpdated: true,
+      ProductId: true,
+      Product: {
+        select: {
+          ProductDefinition: {
+            select: {
+              Name: true
+            }
+          },
+          ProjectId: true,
+          Project: {
+            select: {
+              Name: true
+            }
+          }
+        }
+      }
+    },
+    distinct: 'ProductId',
+    orderBy: {
+      // most recent first
+      DateUpdated: 'desc'
+    }
+  });
+  return tasks;
+}

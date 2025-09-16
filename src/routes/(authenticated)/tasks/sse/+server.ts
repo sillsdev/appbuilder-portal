@@ -1,6 +1,6 @@
 import { produce } from 'sveltekit-sse';
-import { getUserTasks } from '../userTasks';
 import { SSEPageUpdates } from '$lib/projects/listener';
+import { getUserTasks } from '$lib/projects/sse';
 
 export async function POST(request) {
   const userId = (await request.locals.auth())!.user.userId;

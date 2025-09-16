@@ -4,7 +4,6 @@
   import ProductCard from './ProductCard.svelte';
   import { Authors, OwnerGroup, Reviewers, Settings } from './forms';
   import { AddProduct } from './modals';
-  import type { ProjectDataSSE } from './project';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
@@ -14,6 +13,7 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { canClaimProject, canModifyProject } from '$lib/projects';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
+  import type { ProjectDataSSE } from '$lib/projects/sse';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 

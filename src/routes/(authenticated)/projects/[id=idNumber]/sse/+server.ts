@@ -1,6 +1,6 @@
 import { produce } from 'sveltekit-sse';
-import { getProjectDetails } from '../project';
 import { SSEPageUpdates } from '$lib/projects/listener';
+import { getProjectDetails } from '$lib/projects/sse';
 
 export async function POST(request) {
   const userId = (await request.locals.auth())!.user.userId;

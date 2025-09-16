@@ -1,38 +1,18 @@
 <script lang="ts">
-  import type { Readable } from 'svelte/store';
-  import { source } from 'sveltekit-sse';
   import type { PageData } from './$types';
-  import type { UserTaskDataSSE } from './userTasks';
   import { goto } from '$app/navigation';
-  import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
+  import { userTasksSSE } from '$lib/stores';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
-
-  const currentPageUrl = page.url.pathname;
-  let reconnectDelay = 1000; // Initial delay for reconnection
-  const userTasksSSE: Readable<UserTaskDataSSE> = source(`tasks/sse`, {
-    close({ connect }) {
-      setTimeout(() => {
-        if (currentPageUrl !== page.url.pathname) {
-          // If the current page has changed, we don't want to reconnect.
-          return;
-        }
-        console.log('Disconnected. Reconnecting...');
-        connect();
-        reconnectDelay = Math.min(reconnectDelay * 2, 30000); // Exponential backoff, max 30 seconds
-      }, reconnectDelay);
-    }
-  })
-    .select('userTasks')
-    .json();
 
   interface Props {
     data: PageData;
   }
+
   let { data }: Props = $props();
 
   const userTasks = $derived($userTasksSSE ?? data.userTasks);
