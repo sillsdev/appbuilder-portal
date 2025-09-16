@@ -36,7 +36,7 @@
       <LabeledFormInput key="project_orgContact">
         <input
           name="contact"
-          class="input input-bordered w-full"
+          class="input input-bordered w-full validator"
           type="email"
           bind:value={$form.contact}
         />
