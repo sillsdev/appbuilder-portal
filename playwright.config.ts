@@ -25,7 +25,17 @@ const config: PlaywrightTestConfig = {
     screenshot: 'only-on-failure'
   },
   testDir: 'tests',
-  testMatch: /(.+\.)?(test|spec)\.[jt]s/
+  outputDir: 'playwright/test-results',
+  projects: [
+    // Setup Project
+    { name: 'setup', testMatch: /.*\.setup.ts/ },
+    {
+      name: 'scriptoria',
+      use: { storageState: 'playwright/.auth/user.json' },
+      testMatch: /(.+\.)?(test|spec)\.[jt]s/,
+      dependencies: ['setup']
+    }
+  ]
 };
 
 export default config;
