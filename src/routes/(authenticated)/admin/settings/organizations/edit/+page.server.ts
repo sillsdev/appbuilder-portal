@@ -23,12 +23,11 @@ export const load = (async ({ url }) => {
     }
   });
   if (!data) return redirect(302, localizeHref('/admin/settings/organizations'));
-  const users = await DatabaseReads.users.findMany();
   const form = await superValidate(
     {
       id: data.Id,
       name: data.Name,
-      owner: data.OwnerId,
+      contact: data.ContactEmail,
       websiteUrl: data.WebsiteUrl,
       buildEngineUrl: data.BuildEngineUrl,
       buildEngineApiAccessToken: data.BuildEngineApiAccessToken,
@@ -38,7 +37,7 @@ export const load = (async ({ url }) => {
     },
     valibot(editSchema)
   );
-  return { form, users };
+  return { form };
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -56,7 +55,7 @@ export const actions = {
         BuildEngineApiAccessToken: form.data.buildEngineApiAccessToken,
         BuildEngineUrl: form.data.buildEngineUrl,
         LogoUrl: form.data.logoUrl,
-        OwnerId: form.data.owner,
+        ContactEmail: form.data.contact,
         PublicByDefault: form.data.publicByDefault,
         UseDefaultBuildEngine: form.data.useDefaultBuildEngine,
         WebsiteUrl: form.data.websiteUrl

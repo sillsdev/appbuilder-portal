@@ -7,11 +7,7 @@ import { isSuperAdmin } from '$lib/utils/roles';
 export const load = (async (event) => {
   const user = (await event.locals.auth())!.user;
   const organizations = isSuperAdmin(user.roles)
-    ? await DatabaseReads.organizations.findMany({
-        include: {
-          Owner: true
-        }
-      })
+    ? await DatabaseReads.organizations.findMany()
     : await DatabaseReads.organizations.findMany({
         where: {
           OrganizationMemberships: {
@@ -19,9 +15,6 @@ export const load = (async (event) => {
               UserId: user.userId
             }
           }
-        },
-        include: {
-          Owner: true
         }
       });
   if (organizations.length === 1) {

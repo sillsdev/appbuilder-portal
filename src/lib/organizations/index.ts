@@ -1,5 +1,4 @@
 import * as v from 'valibot';
-import { idSchema } from '$lib/valibot';
 
 export const infoSchema = v.object({
   name: v.nullable(v.string()),
@@ -17,5 +16,5 @@ export const organizationBaseSchema = v.object({
   ...infrastructureSchema.entries,
   websiteUrl: v.nullable(v.string()),
   publicByDefault: v.boolean(),
-  owner: idSchema
+  contact: v.nullable(v.pipe(v.string(), v.email()))
 });

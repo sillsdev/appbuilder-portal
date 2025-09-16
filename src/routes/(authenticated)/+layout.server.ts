@@ -42,11 +42,7 @@ export const load: LayoutServerLoad = async (event) => {
       Id: true,
       Name: true,
       LogoUrl: true,
-      Owner: {
-        select: {
-          Name: true
-        }
-      }
+      ContactEmail: true
     }
   });
 

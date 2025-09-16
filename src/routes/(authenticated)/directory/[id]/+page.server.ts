@@ -51,11 +51,7 @@ export const load = (async ({ params, locals }) => {
             Id: true,
             LogoUrl: true,
             Name: true,
-            Owner: {
-              select: {
-                Name: true
-              }
-            }
+            ContactEmail: true
           }
         },
         Products: {
