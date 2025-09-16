@@ -425,17 +425,14 @@ async function main() {
         WebsiteUrl: 'https://sil.org',
         BuildEngineUrl: 'https://replace.scriptoria.io:8443',
         BuildEngineApiAccessToken: 'replace',
-        LogoUrl: 'https://sil-prd-scriptoria-resources.s3.amazonaws.com/sil/sil_logo.png',
-        OwnerId: 1
+        LogoUrl: 'https://sil-prd-scriptoria-resources.s3.amazonaws.com/sil/sil_logo.png'
       },
       {
         Name: 'Kalaam Media',
         WebsiteUrl: 'https://kalaam.org',
         BuildEngineUrl: 'https://replace.scriptoria.io:8443',
         BuildEngineApiAccessToken: 'replace',
-        LogoUrl:
-          'https://s3.amazonaws.com/sil-prd-scriptoria-resources/ips/wildfire_flame_logo.png',
-        OwnerId: 1
+        LogoUrl: 'https://s3.amazonaws.com/sil-prd-scriptoria-resources/ips/wildfire_flame_logo.png'
       },
       {
         Name: 'Faith Comes By Hearing',
@@ -443,16 +440,14 @@ async function main() {
         BuildEngineUrl: 'https://replace.scriptoria.io:8443',
         BuildEngineApiAccessToken: 'replace',
         LogoUrl:
-          'https://play-lh.googleusercontent.com/yXm_WKG7_DJxL3IPYFul6iYfRNzWGdSbOJad7acWt28Xc6jSdlJCXPgrJOc-mdkf5_OE',
-        OwnerId: 1
+          'https://play-lh.googleusercontent.com/yXm_WKG7_DJxL3IPYFul6iYfRNzWGdSbOJad7acWt28Xc6jSdlJCXPgrJOc-mdkf5_OE'
       },
       {
         Name: 'Scripture Earth',
         WebsiteUrl: 'https://scriptureearth.org',
         BuildEngineUrl: 'https://replace.scriptoria.io:8443',
         BuildEngineApiAccessToken: 'replace',
-        LogoUrl: 'https://s3.amazonaws.com/sil-prd-scriptoria-resources/scriptureearth/se_logo.png',
-        OwnerId: 1
+        LogoUrl: 'https://s3.amazonaws.com/sil-prd-scriptoria-resources/scriptureearth/se_logo.png'
       }
     ];
 
