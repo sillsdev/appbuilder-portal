@@ -79,7 +79,7 @@ if (browser) {
 }
 
 let reconnectDelay = 1000; // Initial delay for reconnection
-export const userTasksSSE: Readable<UserTaskDataSSE> = source(`tasks/sse`, {
+export const userTasksSSE: Readable<UserTaskDataSSE> = source(`/tasks/sse`, {
   close({ connect }) {
     setTimeout(() => {
       console.log('Disconnected. Reconnecting...');
