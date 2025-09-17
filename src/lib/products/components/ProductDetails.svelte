@@ -11,6 +11,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { ProductTransitionType } from '$lib/prisma';
+  import type { WithSerializedDates } from '$lib/projects/sse';
   import { getTimeDateString } from '$lib/utils/time';
 
   interface Props {
@@ -20,18 +21,20 @@
         Store: { select: { Description: true } };
       };
     }>;
-    transitions: Prisma.ProductTransitionsGetPayload<{
-      select: {
-        TransitionType: true;
-        InitialState: true;
-        WorkflowType: true;
-        AllowedUserNames: true;
-        Command: true;
-        Comment: true;
-        DateTransition: true;
-        User: { select: { Name: true } };
-      };
-    }>[];
+    transitions: WithSerializedDates<
+      Prisma.ProductTransitionsGetPayload<{
+        select: {
+          TransitionType: true;
+          InitialState: true;
+          WorkflowType: true;
+          AllowedUserNames: true;
+          Command: true;
+          Comment: true;
+          DateTransition: true;
+          User: { select: { Name: true } };
+        };
+      }>
+    >[];
   }
 
   let { product, transitions }: Props = $props();

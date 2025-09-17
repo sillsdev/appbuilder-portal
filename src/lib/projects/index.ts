@@ -1,6 +1,7 @@
 import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
 import * as v from 'valibot';
+import type { WithSerializedDates } from './sse';
 import { RoleId } from '$lib/prisma';
 import { hasRoleForOrg, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema, langtagRegex, paginateSchema } from '$lib/valibot';
@@ -153,15 +154,17 @@ export const bulkProjectActionSchema = v.object({
 
 export type ProjectActionSchema = typeof projectActionSchema;
 
-export type ProjectForAction = Prisma.ProjectsGetPayload<{
-  select: {
-    Id: true;
-    Name: true;
-    OwnerId: true;
-    GroupId: true;
-    DateArchived: true;
-  };
-}>;
+export type ProjectForAction = WithSerializedDates<
+  Prisma.ProjectsGetPayload<{
+    select: {
+      Id: true;
+      Name: true;
+      OwnerId: true;
+      GroupId: true;
+      DateArchived: true;
+    };
+  }>
+>;
 
 export type MaybeSession = Pick<Session, 'user'> | null | undefined;
 

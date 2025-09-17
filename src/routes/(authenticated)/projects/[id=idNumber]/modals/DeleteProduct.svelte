@@ -5,21 +5,24 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
+  import type { WithSerializedDates } from '$lib/projects/sse';
   import { sanitizeInput, toast } from '$lib/utils';
 
   interface Props {
     modal?: HTMLDialogElement;
-    product: Prisma.ProductsGetPayload<{
-      select: {
-        Id: true;
-        DatePublished: true;
-        ProductDefinition: {
-          select: {
-            Name: true;
+    product: WithSerializedDates<
+      Prisma.ProductsGetPayload<{
+        select: {
+          Id: true;
+          DatePublished: true;
+          ProductDefinition: {
+            select: {
+              Name: true;
+            };
           };
         };
-      };
-    }>;
+      }>
+    >;
     endpoint: string;
     project: string;
   }
