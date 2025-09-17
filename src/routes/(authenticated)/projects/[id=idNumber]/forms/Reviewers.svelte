@@ -25,7 +25,12 @@
   let { reviewers, formData, createEndpoint, deleteEndpoint, canEdit }: Props = $props();
 
   const { form, enhance } = superForm(formData, {
-    resetForm: true
+    resetForm: true,
+    onUpdate({ form, result, formElement }) {
+      if (form.valid && result.type === 'success') {
+        formElement.reset();
+      }
+    }
   });
 </script>
 
@@ -55,7 +60,13 @@
   </div>
   <div class="p-2 bg-neutral">
     {#if canEdit}
-      <form action="?/{createEndpoint}" method="post" use:enhance>
+      <form action="?/{createEndpoint}" method="post" use:enhance onreset={(e) => {
+        for (const el of e.currentTarget.elements) {
+          if (el instanceof HTMLInputElement) {
+            el.setCustomValidity('');
+          }
+        }
+      }}>
         <div class="flex flex-col place-content-between space-y-2">
           <div class="flex flex-col gap-2 reviewerform">
             <input
