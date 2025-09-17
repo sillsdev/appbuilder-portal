@@ -2,12 +2,15 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { instructions } from './instructions';
+  import { invalidate } from '$app/navigation';
+  import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { userTasksSSE } from '$lib/stores';
   import { bytesToHumanSize, toast } from '$lib/utils';
   import { byName, byNumber, byString } from '$lib/utils/sorting';
 
@@ -26,9 +29,29 @@
       if (result.status === 503) {
         toast('error', m.system_unavailable());
       }
+    },
+    onUpdate: ({ form, result }) => {
+      if (form.valid && result.type === 'success') {
+        waiting = true;
+      }
     }
   });
   let urlCopied = $state(false);
+  let waiting = $state(false);
+
+  $effect(() => {
+    if ($userTasksSSE?.length) {
+      const productTasks = $userTasksSSE.filter((t) => t.ProductId === page.params.product_id);
+      const fallback = new Date().valueOf();
+      const oldTask = productTasks.find(
+        (t) => new Date(t.DateUpdated ?? fallback).valueOf() <= data.loadTime
+      );
+      if (productTasks.length && !oldTask) {
+        invalidate('task:id:load');
+        waiting = false;
+      }
+    }
+  });
 </script>
 
 <div class="p-5">
@@ -45,163 +68,167 @@
       </ul>
     </div>
   </div>
-  <form method="POST" use:enhance>
-    {#if data.actions?.length}
-      <div class="flex flex-row gap-x-3">
-        {#each data.actions as action}
-          <BlockIfJobsUnavailable className="btn btn-primary">
-            {#snippet altContent()}
-              {action}
-            {/snippet}
-            <label class="btn btn-primary">
-              {action}<!-- ISSUE: #1104 i18n (after MVP) -->
-              <input
-                type="radio"
-                name="flowAction"
-                bind:group={$form.flowAction}
-                class="hidden"
-                value={action}
-              />
-            </label>
-          </BlockIfJobsUnavailable>
-        {/each}
-      </div>
-    {/if}
-    <LabeledFormInput key="transitions_comment">
-      <textarea
-        class="textarea textarea-bordered h-24 w-full"
-        name="comment"
-        bind:value={$form.comment}
-      ></textarea>
-    </LabeledFormInput>
-    <input type="hidden" name="state" bind:value={$form.state} />
-  </form>
+  {#if !waiting}
+    <form method="POST" use:enhance>
+      {#if data.actions?.length}
+        <div class="flex flex-row gap-x-3">
+          {#each data.actions as action}
+            <BlockIfJobsUnavailable className="btn btn-primary">
+              {#snippet altContent()}
+                {action}
+              {/snippet}
+              <label class="btn btn-primary">
+                {action}<!-- ISSUE: #1104 i18n (after MVP) -->
+                <input
+                  type="radio"
+                  name="flowAction"
+                  bind:group={$form.flowAction}
+                  class="hidden"
+                  value={action}
+                />
+              </label>
+            </BlockIfJobsUnavailable>
+          {/each}
+        </div>
+      {/if}
+      <LabeledFormInput key="transitions_comment">
+        <textarea
+          class="textarea textarea-bordered h-24 w-full"
+          name="comment"
+          bind:value={$form.comment}
+        ></textarea>
+      </LabeledFormInput>
+      <input type="hidden" name="state" bind:value={$form.state} />
+    </form>
+  {/if}
   <hr class="border-t-4 my-2" />
   <h2>
-    {data.taskTitle}
+    {waiting ? 'Waiting' : data.taskTitle}
   </h2>
-  <div>
-    {#if data.fields.ownerName && data.fields.ownerEmail}
-      <div class="flex flex-col gap-x-3 w-full md:flex-row">
-        <LabeledFormInput key="projectTable_owner" classes="md:w-2/4">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            readonly
-            value={data.fields.ownerName}
-          />
-        </LabeledFormInput>
-        <LabeledFormInput key="profile_email" classes="md:w-2/4">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            readonly
-            value={data.fields.ownerEmail}
-          />
-        </LabeledFormInput>
-      </div>
-    {/if}
-    <div class="flex flex-col gap-x-3 w-full md:flex-row">
-      <LabeledFormInput key="project_name" classes="md:w-2/4">
-        <input
-          type="text"
-          class="input input-bordered w-full"
-          readonly
-          value={data.fields.projectName}
-        />
-      </LabeledFormInput>
-      <LabeledFormInput key="project_description" classes="md:w-2/4">
-        <input
-          type="text"
-          class="input input-bordered w-full"
-          readonly
-          value={data.fields.projectDescription}
-        />
-      </LabeledFormInput>
-    </div>
-    {#if data.fields.storeDescription}
-      <div class="flex flex-col gap-x-3 md:flex-row">
-        <LabeledFormInput key="stores_name" classes="md:w-2/4">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            readonly
-            value={data.fields.storeDescription}
-          />
-        </LabeledFormInput>
-        {#if data.fields.listingLanguageCode}
-          <LabeledFormInput key="tasks_storeLanguage" classes="md:w-2/4">
+  {#if !waiting}
+    <div>
+      {#if data.fields.ownerName && data.fields.ownerEmail}
+        <div class="flex flex-col gap-x-3 w-full md:flex-row">
+          <LabeledFormInput key="projectTable_owner" classes="md:w-2/4">
             <input
               type="text"
               class="input input-bordered w-full"
               readonly
-              value={data.fields.listingLanguageCode}
+              value={data.fields.ownerName}
             />
           </LabeledFormInput>
-        {/if}
+          <LabeledFormInput key="profile_email" classes="md:w-2/4">
+            <input
+              type="text"
+              class="input input-bordered w-full"
+              readonly
+              value={data.fields.ownerEmail}
+            />
+          </LabeledFormInput>
+        </div>
+      {/if}
+      <div class="flex flex-col gap-x-3 w-full md:flex-row">
+        <LabeledFormInput key="project_name" classes="md:w-2/4">
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            readonly
+            value={data.fields.projectName}
+          />
+        </LabeledFormInput>
+        <LabeledFormInput key="project_description" classes="md:w-2/4">
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            readonly
+            value={data.fields.projectDescription}
+          />
+        </LabeledFormInput>
       </div>
-    {/if}
-    {#if data.fields.projectURL}
-      <LabeledFormInput key="tasks_appProjectURL">
-        <span class="input input-bordered w-full flex flex-row gap-2 items-center">
-          <input type="text" class="grow" readonly value={data.fields.projectURL} />
-          <button
-            class="cursor-copy"
-            onclick={() => {
-              if (data.fields.projectURL) {
-                navigator.clipboard.writeText(data.fields.projectURL);
-                urlCopied = true;
-                setTimeout(() => {
-                  urlCopied = false;
-                }, 5000);
-              }
-            }}
-          >
-            {#if urlCopied}
-              <IconContainer icon="mdi:check" width={24} class="text-success" />
-            {:else}
-              <IconContainer icon="mdi:content-copy" width={24} />
-            {/if}
-          </button>
-        </span>
-      </LabeledFormInput>
-    {/if}
-    {#if data.fields.displayProductDescription && data.fields.appType && data.fields.projectLanguageCode}
-      <LabeledFormInput key="tasks_product">
-        <input
-          type="text"
-          class="input input-bordered w-full"
-          readonly
-          value={data.productDescription}
-        />
-      </LabeledFormInput>
-      <LabeledFormInput key="prodDefs_type">
-        <input
-          type="text"
-          class="input input-bordered w-full"
-          readonly
-          value={data.fields.appType}
-        />
-      </LabeledFormInput>
-      <LabeledFormInput key="project_languageCode">
-        <input
-          type="text"
-          class="input input-bordered w-full"
-          readonly
-          value={data.fields.projectLanguageCode}
-        />
-      </LabeledFormInput>
-    {/if}
-  </div>
+      {#if data.fields.storeDescription}
+        <div class="flex flex-col gap-x-3 md:flex-row">
+          <LabeledFormInput key="stores_name" classes="md:w-2/4">
+            <input
+              type="text"
+              class="input input-bordered w-full"
+              readonly
+              value={data.fields.storeDescription}
+            />
+          </LabeledFormInput>
+          {#if data.fields.listingLanguageCode}
+            <LabeledFormInput key="tasks_storeLanguage" classes="md:w-2/4">
+              <input
+                type="text"
+                class="input input-bordered w-full"
+                readonly
+                value={data.fields.listingLanguageCode}
+              />
+            </LabeledFormInput>
+          {/if}
+        </div>
+      {/if}
+      {#if data.fields.projectURL}
+        <LabeledFormInput key="tasks_appProjectURL">
+          <span class="input input-bordered w-full flex flex-row gap-2 items-center">
+            <input type="text" class="grow" readonly value={data.fields.projectURL} />
+            <button
+              class="cursor-copy"
+              onclick={() => {
+                if (data.fields.projectURL) {
+                  navigator.clipboard.writeText(data.fields.projectURL);
+                  urlCopied = true;
+                  setTimeout(() => {
+                    urlCopied = false;
+                  }, 5000);
+                }
+              }}
+            >
+              {#if urlCopied}
+                <IconContainer icon="mdi:check" width={24} class="text-success" />
+              {:else}
+                <IconContainer icon="mdi:content-copy" width={24} />
+              {/if}
+            </button>
+          </span>
+        </LabeledFormInput>
+      {/if}
+      {#if data.fields.displayProductDescription && data.fields.appType && data.fields.projectLanguageCode}
+        <LabeledFormInput key="tasks_product">
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            readonly
+            value={data.productDescription}
+          />
+        </LabeledFormInput>
+        <LabeledFormInput key="prodDefs_type">
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            readonly
+            value={data.fields.appType}
+          />
+        </LabeledFormInput>
+        <LabeledFormInput key="project_languageCode">
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            readonly
+            value={data.fields.projectLanguageCode}
+          />
+        </LabeledFormInput>
+      {/if}
+    </div>
+  {/if}
   {#if data.instructions}
     <!-- svelte:component is dynamic now. Since this won't change, using @const. 
      The below was generated by the migration script -->
-    {@const SvelteComponent = instructions[data.instructions]}
+    {@const SvelteComponent = instructions[waiting ? 'waiting' : data.instructions]}
     <div class="py-2" id="instructions">
       <SvelteComponent />
     </div>
   {/if}
-  {#if data?.files?.length}
+  {#if data?.files?.length && !waiting}
     {@const locale = getLocale()}
     <h3>{m.products_files_title()}</h3>
     <div class="w-full overflow-x-auto">
@@ -248,7 +275,7 @@
       </SortTable>
     </div>
   {/if}
-  {#if data?.reviewers?.length}
+  {#if data?.reviewers?.length && !waiting}
     {@const locale = getLocale()}
     <h3>{m.reviewers_title()}</h3>
     <div class="w-full overflow-x-auto">

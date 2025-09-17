@@ -31,7 +31,8 @@ type Fields = {
   projectLanguageCode?: string; //Product.Project.Language
 };
 
-export const load = (async ({ params, locals }) => {
+export const load = (async ({ params, locals, depends }) => {
+  depends('task:id:load');
   const session = await locals.auth();
   if (!(await verifyCanViewTask(session!, params.product_id))) return error(403);
   const snap = await Workflow.getSnapshot(params.product_id);
@@ -130,6 +131,7 @@ export const load = (async ({ params, locals }) => {
   const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
 
   return {
+    loadTime: new Date().valueOf(),
     actions: Workflow.availableTransitionsFromName(snap.state, snap.input)
       .filter((a) =>
         filterAvailableActions(
@@ -272,7 +274,7 @@ export const actions = {
         : [];
 
       if (availableTransitions.length) {
-        redirect(302, localizeHref(`/tasks/${params.product_id}`));
+        return { form, ok: true };
       } else {
         redirect(302, localizeHref(`/projects/${product.Project.Id}`));
       }
