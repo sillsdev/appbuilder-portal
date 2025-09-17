@@ -57,7 +57,7 @@
       if (waitRead && productTasks.length && !oldTask) {
         invalidate('task:id:load');
         waiting = false;
-      } 
+      }
       // not waiting but task updated/deleted (by some other user)
       else if (!(waitRead || oldTask)) {
         if (productTasks.length) {
@@ -65,7 +65,7 @@
         } else {
           history.back();
         }
-        toast('warning', m.tasks_reloaded())
+        toast('warning', m.tasks_reloaded());
       }
     }
   });
