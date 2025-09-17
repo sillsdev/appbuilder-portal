@@ -48,19 +48,11 @@
 
   let { project, users, groups, orgName, endpoint, canEdit, canClaim }: Props = $props();
 
-  // eslint-disable-next-line no-undef
-  let timeout: NodeJS.Timeout;
   let form: HTMLFormElement;
   let ownerField: HTMLInputElement;
+  let ownerOpen = $state(false);
   let groupField: HTMLInputElement;
-  function submit() {
-    if (timeout) {
-      clearTimeout(timeout);
-    }
-    timeout = setTimeout(() => {
-      form.requestSubmit();
-    }, 2000);
-  }
+  let groupOpen = $state(false);
 </script>
 
 <div class="bg-neutral card card-bordered border-slate-400 rounded-md max-w-full">
@@ -107,6 +99,7 @@
             <Dropdown
               labelClasses="p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
               contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
+              bind:open={ownerOpen}
             >
               {#snippet label()}
                 <BlockIfJobsUnavailable>
@@ -133,7 +126,8 @@
                         class:opacity-70={disabled && user.Id !== project.Owner.Id}
                         onclick={() => {
                           ownerField.value = user.Id + '';
-                          submit();
+                          form.requestSubmit();
+                          ownerOpen = false;
                         }}
                         {disabled}
                       >
@@ -161,6 +155,7 @@
             <Dropdown
               labelClasses="p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
               contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
+              bind:open={groupOpen}
             >
               {#snippet label()}
                 <span class="flex items-center pl-1">
@@ -178,7 +173,8 @@
                         class:font-bold={group.Id === project.Group.Id}
                         onclick={() => {
                           groupField.value = group.Id + '';
-                          submit();
+                          form.requestSubmit();
+                          groupOpen = false;
                         }}
                       >
                         {group.Name}
