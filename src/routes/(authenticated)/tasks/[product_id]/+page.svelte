@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { instructions } from './instructions';
@@ -32,7 +33,12 @@
     },
     onUpdate: ({ form, result }) => {
       if (form.valid && result.type === 'success') {
-        waiting = true;
+        const actionData = result.data;
+        waiting = !!actionData.hasTarget;
+        toast('success', m.tasks_submitted({ action: form.data.flowAction }));
+        if (!actionData.hasTransitions) {
+          history.back();
+        }
       }
     }
   });
@@ -46,9 +52,20 @@
       const oldTask = productTasks.find(
         (t) => new Date(t.DateUpdated ?? fallback).valueOf() <= data.loadTime
       );
-      if (productTasks.length && !oldTask) {
+      const waitRead = untrack(() => waiting);
+      // waiting and task updated
+      if (waitRead && productTasks.length && !oldTask) {
         invalidate('task:id:load');
         waiting = false;
+      } 
+      // not waiting but task updated/deleted (by some other user)
+      else if (!(waitRead || oldTask)) {
+        if (productTasks.length) {
+          invalidate('task:id:load');
+        } else {
+          history.back();
+        }
+        toast('warning', m.tasks_reloaded())
       }
     }
   });

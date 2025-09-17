@@ -317,6 +317,8 @@
   "tasks_storeLanguage": "Store Listing Language",
   "tasks_appProjectURL": "App Project URL",
   "tasks_downloadURL": "Download URL",
+  "tasks_submitted": "<b>{action}</b> submitted",
+  "tasks_reloaded": "Task updated by Scriptoria",
   "projects_noBuilds": "No Builds Yet",
   "projects_latestBuild": "Latest Build ({version})",
   "projects_buildPending": "Build Pending",

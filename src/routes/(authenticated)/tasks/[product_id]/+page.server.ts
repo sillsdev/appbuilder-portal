@@ -1,10 +1,9 @@
 import type { Session } from '@auth/sveltekit';
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { localizeHref } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads } from '$lib/server/database';
@@ -273,11 +272,13 @@ export const actions = {
           )
         : [];
 
-      if (availableTransitions.length) {
-        return { form, ok: true };
-      } else {
-        redirect(302, localizeHref(`/projects/${product.Project.Id}`));
-      }
+
+      return {
+        form,
+        ok: true,
+        hasTarget: !!targetState,
+        hasTransitions: !!availableTransitions.length
+      };
     } else {
       return fail(400, {
         form,
