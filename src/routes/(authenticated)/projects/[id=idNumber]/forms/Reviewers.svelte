@@ -60,13 +60,18 @@
   </div>
   <div class="p-2 bg-neutral">
     {#if canEdit}
-      <form action="?/{createEndpoint}" method="post" use:enhance onreset={(e) => {
-        for (const el of e.currentTarget.elements) {
-          if (el instanceof HTMLInputElement) {
-            el.setCustomValidity('');
+      <form
+        action="?/{createEndpoint}"
+        method="post"
+        use:enhance
+        onreset={(e) => {
+          for (const el of e.currentTarget.elements) {
+            if (el instanceof HTMLInputElement) {
+              el.setCustomValidity('');
+            }
           }
-        }
-      }}>
+        }}
+      >
         <div class="flex flex-col place-content-between space-y-2">
           <div class="flex flex-col gap-2 reviewerform">
             <input
