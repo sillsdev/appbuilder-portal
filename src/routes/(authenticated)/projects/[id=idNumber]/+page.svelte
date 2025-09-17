@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { parse } from 'devalue';
   import type { Readable } from 'svelte/store';
   import { source } from 'sveltekit-sse';
   import ProductCard from './ProductCard.svelte';
@@ -38,7 +39,7 @@
     }
   })
     .select('projectData')
-    .json();
+    .transform((t) => (t ? parse(t) : undefined));
 
   const projectData = $derived($projectDataSSE ?? data.projectData);
   const dateCreated = $derived(getRelativeTime(projectData?.project?.DateCreated ?? null));

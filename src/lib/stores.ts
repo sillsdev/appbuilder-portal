@@ -1,3 +1,4 @@
+import { parse } from 'devalue';
 import { type Readable, type Writable, get, writable } from 'svelte/store';
 import { source } from 'sveltekit-sse';
 import { browser } from '$app/environment';
@@ -79,7 +80,7 @@ if (browser) {
 }
 
 let reconnectDelay = 1000; // Initial delay for reconnection
-export const userTasksSSE: Readable<UserTaskDataSSE> = source(`/tasks/sse`, {
+export const userTasksSSE: Readable<UserTaskDataSSE | undefined> = source(`/tasks/sse`, {
   close({ connect }) {
     setTimeout(() => {
       console.log('Disconnected. Reconnecting...');
@@ -89,4 +90,4 @@ export const userTasksSSE: Readable<UserTaskDataSSE> = source(`/tasks/sse`, {
   }
 })
   .select('userTasks')
-  .json();
+  .transform((t) => (t ? parse(t) : undefined));

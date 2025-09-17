@@ -16,77 +16,70 @@
   import ProductDetails, {
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
-  import type { WithSerializedDates } from '$lib/projects/sse';
   import { sanitizeInput, toast } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
   import { ProductType } from '$lib/workflowTypes';
 
-  type Transition = WithSerializedDates<
-    Prisma.ProductTransitionsGetPayload<{
+  type Transition = Prisma.ProductTransitionsGetPayload<{
+    select: {
+      TransitionType: true;
+      InitialState: true;
+      WorkflowType: true;
+      AllowedUserNames: true;
+      Command: true;
+      Comment: true;
+      DateTransition: true;
+      User: {
+        select: {
+          Name: true;
+        };
+      };
+    };
+  }>;
+
+  interface Props {
+    project: Prisma.ProjectsGetPayload<{
       select: {
-        TransitionType: true;
-        InitialState: true;
-        WorkflowType: true;
-        AllowedUserNames: true;
-        Command: true;
-        Comment: true;
-        DateTransition: true;
-        User: {
+        Name: true;
+        DateArchived: true;
+        Organization: {
           select: {
-            Name: true;
+            Id: true;
           };
         };
       };
-    }>
-  >;
-
-  interface Props {
-    project: WithSerializedDates<
-      Prisma.ProjectsGetPayload<{
-        select: {
-          Name: true;
-          DateArchived: true;
-          Organization: {
-            select: {
-              Id: true;
-            };
-          };
-        };
-      }>
-    >;
-    product: WithSerializedDates<
-      Prisma.ProductsGetPayload<{
-        select: {
-          Id: true;
-          DatePublished: true;
-          DateUpdated: true;
-          Properties: true;
-          PublishLink: true;
-          ProductDefinition: {
-            select: {
-              Name: true;
-              Workflow: {
-                select: {
-                  ProductType: true;
-                };
+    }>;
+    product: Prisma.ProductsGetPayload<{
+      select: {
+        Id: true;
+        DatePublished: true;
+        DateUpdated: true;
+        Properties: true;
+        PublishLink: true;
+        ProductDefinition: {
+          select: {
+            Name: true;
+            Workflow: {
+              select: {
+                ProductType: true;
               };
             };
           };
-          Store: {
-            select: {
-              Description: true;
-            };
-          };
-          UserTasks: {
-            select: {
-              UserId: true;
-              DateCreated: true;
-            };
+        };
+        Store: {
+          select: {
+            Description: true;
           };
         };
-      }>
-    > & {
+        UserTasks: {
+          select: {
+            UserId: true;
+            DateCreated: true;
+          };
+        };
+      };
+    }> & {
       Transitions: Transition[];
       WorkflowInstance: unknown;
       actions: ProductActionType[];

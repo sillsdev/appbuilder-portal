@@ -5,18 +5,8 @@ import { canModifyProject } from '$lib/projects';
 import { userGroupsForOrg } from '$lib/projects/server';
 import { DatabaseReads } from '$lib/server/database';
 
-// source: https://github.com/prisma/prisma/discussions/5522#discussioncomment-8209277
-// this is necessary because these functions are serialized by the actual SSE function, which converts Dates to strings
-export type WithSerializedDates<T> = T extends Date
-  ? string | Date // Date added to make other functions happy
-  : T extends Array<infer R>
-    ? Array<WithSerializedDates<R>>
-    : T extends object
-      ? { [K in keyof T]: WithSerializedDates<T[K]> }
-      : T;
-
 const tracer = trace.getTracer('ProjectSSE');
-export type ProjectDataSSE = WithSerializedDates<Awaited<ReturnType<typeof getProjectDetails>>>;
+export type ProjectDataSSE = Awaited<ReturnType<typeof getProjectDetails>>;
 export async function getProjectDetails(id: number, userId: number) {
   // permissions checked in auth
   return tracer.startActiveSpan('getProjectDetails', async (span) => {
@@ -310,7 +300,7 @@ export async function getProjectDetails(id: number, userId: number) {
   });
 }
 
-export type UserTaskDataSSE = WithSerializedDates<Awaited<ReturnType<typeof getUserTasks>>>;
+export type UserTaskDataSSE = Awaited<ReturnType<typeof getUserTasks>>;
 export async function getUserTasks(userId: number) {
   const tasks = await DatabaseReads.userTasks.findMany({
     where: {
