@@ -74,6 +74,7 @@ export async function sendEmail(
     console.log(`Body:`);
     console.log(body);
     console.log('---------------------- EMAIL ----------------------');
+    return true;
   }
 }
 
