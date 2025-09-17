@@ -25,7 +25,7 @@
       onEdit={() => goto(localizeHref(`${base}/edit?id=${organization.Id}`))}
       title={organization.Name}
       fields={[
-        { key: 'org_owner', value: organization.Owner.Name },
+        { key: 'project_orgContact', value: organization.ContactEmail },
         {
           key: 'org_websiteURL',
           value: organization.WebsiteUrl

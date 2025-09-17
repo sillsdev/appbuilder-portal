@@ -164,18 +164,15 @@ model Organizations {
   LogoUrl                        String?
   UseDefaultBuildEngine          Boolean?                         @default(true)
   PublicByDefault                Boolean?                         @default(true)
-  OwnerId                        Int
+  ContactEmail                   String?
   Groups                         Groups[]
   OrganizationMembershipInvites  OrganizationMembershipInvites[]
   OrganizationMemberships        OrganizationMemberships[]
   OrganizationProductDefinitions OrganizationProductDefinitions[]
-  OrganizationStores             OrganizationStores[]
-  Owner                          Users                            @relation(fields: [OwnerId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Organizations_Users_OwnerId")
   ProjectImports                 ProjectImports[]
   Projects                       Projects[]
   UserRoles                      UserRoles[]
-
-  @@index([OwnerId], map: "IX_Organizations_OwnerId")
+  OrganizationStores             OrganizationStores[]
 }
 
 model ProductArtifacts {
@@ -480,7 +477,6 @@ model Users {
   Notifications                 Notifications[]
   OrganizationMembershipInvites OrganizationMembershipInvites[]
   OrganizationMemberships       OrganizationMemberships[]
-  Organizations                 Organizations[]
   ProjectImports                ProjectImports[]
   Projects                      Projects[]
   UserRoles                     UserRoles[]

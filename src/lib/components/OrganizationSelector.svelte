@@ -5,8 +5,11 @@
   import { byName } from '$lib/utils/sorting';
   interface Props {
     organizations: Prisma.OrganizationsGetPayload<{
-      include: {
-        Owner: true;
+      select: {
+        Id: true;
+        LogoUrl: true;
+        Name: true;
+        ContactEmail: true;
       };
     }>[];
     onSelect: (id: number) => void;
@@ -20,7 +23,7 @@
     <thead>
       <tr class="text-left">
         <th>{m.project_org()}</th>
-        <th>{m.org_owner()}</th>
+        <th>{m.project_orgContact()}</th>
         <!-- <th>Projects</th> -->
       </tr>
     </thead>
@@ -40,7 +43,11 @@
             </span>
           </td>
           <td>
-            {org.Owner.Name}
+            {#if org.ContactEmail}
+              <a class="link" href="mailto:{org.ContactEmail}">{org.ContactEmail}</a>
+            {:else}
+              {m.common_notAvailable()}
+            {/if}
           </td>
           <!-- <td>
             {org.Projects.length}

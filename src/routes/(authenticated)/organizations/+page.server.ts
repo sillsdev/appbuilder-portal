@@ -6,24 +6,23 @@ import { isSuperAdmin } from '$lib/utils/roles';
 
 export const load = (async (event) => {
   const user = (await event.locals.auth())!.user;
-  const organizations = isSuperAdmin(user.roles)
-    ? await DatabaseReads.organizations.findMany({
-        include: {
-          Owner: true
-        }
-      })
-    : await DatabaseReads.organizations.findMany({
-        where: {
+  const organizations = await DatabaseReads.organizations.findMany({
+    where: isSuperAdmin(user.roles)
+      ? undefined
+      : {
           OrganizationMemberships: {
             some: {
               UserId: user.userId
             }
           }
         },
-        include: {
-          Owner: true
-        }
-      });
+    select: {
+      Id: true,
+      LogoUrl: true,
+      Name: true,
+      ContactEmail: true
+    }
+  });
   if (organizations.length === 1) {
     return redirect(302, localizeHref(`/organizations/${organizations[0].Id}/settings/info`));
   }

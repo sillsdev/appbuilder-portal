@@ -6,9 +6,8 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
-  import { byName } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -44,13 +43,14 @@
     />
     <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
-  <LabeledFormInput key="org_owner">
-    <select class="select select-bordered validator" name="owner" bind:value={$form.owner} required>
-      {#each data.users.toSorted((a, b) => byName(a, b, getLocale())) as user}
-        <option value={user.Id}>{user.Name}</option>
-      {/each}
-    </select>
-    <span class="validator-hint">{m.org_emptyOwner()}</span>
+  <LabeledFormInput key="project_orgContact">
+    <input
+      name="contact"
+      class="input input-bordered w-full validator"
+      type="email"
+      bind:value={$form.contact}
+    />
+    <span class="validator-hint">{m.formErrors_emailInvalid()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="org_websiteURL">
     <input

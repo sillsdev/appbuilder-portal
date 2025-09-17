@@ -147,8 +147,6 @@
   "org_addSuccess": "Organization added",
   "org_edit": "Edit Organization",
   "org_editSuccess": "Organization updated",
-  "org_owner": "Owner",
-  "org_emptyOwner": "Need to select an owner for this organization",
   "org_websiteURL": "Website URL",
   "org_allOrganizations": "All Organizations",
   "org_createSuccess": "Organization created successfully!",
