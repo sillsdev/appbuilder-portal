@@ -1,6 +1,7 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { RoleId } from '$lib/prisma';
 import { getProductActions } from '$lib/products';
+import { canModifyProject } from '$lib/projects';
 import { userGroupsForOrg } from '$lib/projects/server';
 import { DatabaseReads } from '$lib/server/database';
 
@@ -195,6 +196,28 @@ export async function getProjectDetails(id: number, userId: number) {
 
       const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
       span.addEvent('Product definitions fetched');
+
+      const canEdit = canModifyProject(
+        {
+          user: {
+            userId,
+            roles: (
+              await DatabaseReads.userRoles.findMany({
+                where: {
+                  UserId: userId,
+                  OR: [
+                    { RoleId: RoleId.SuperAdmin },
+                    { RoleId: RoleId.OrgAdmin, OrganizationId: project.Organization.Id }
+                  ]
+                }
+              })
+            ).map(({ OrganizationId, RoleId }) => [OrganizationId, RoleId])
+          }
+        },
+        project.Owner.Id,
+        project.Organization.Id
+      );
+
       return {
         project: {
           ...project,
@@ -209,7 +232,7 @@ export async function getProjectDetails(id: number, userId: number) {
             ActiveTransition: strippedTransitions.find(
               (t) => (t[0] ?? t[1])?.ProductId === product.Id
             )?.[1],
-            actions: getProductActions(product, project.Owner.Id, userId)
+            actions: canEdit ? getProductActions(product, project.Owner.Id, userId) : []
           }))
         },
         productsToAdd: productDefinitions.filter(
@@ -230,9 +253,15 @@ export async function getProjectDetails(id: number, userId: number) {
             }
           }
         }),
+        // possibleGroups are ones owned by the same org as the project and contain the project's owner
         possibleGroups: await DatabaseReads.groups.findMany({
           where: {
-            OwnerId: project.Organization.Id
+            OwnerId: project.Organization.Id,
+            GroupMemberships: {
+              some: {
+                UserId: project.Owner.Id
+              }
+            }
           }
         }),
         // All users who are members of the group and have the author role in the project's organization

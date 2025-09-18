@@ -32,10 +32,17 @@
     formData: SuperValidated<Infer<AuthorSchema>>;
     createEndpoint: string;
     deleteEndpoint: string;
+    canEdit: boolean;
   }
 
-  let { projectAuthors, availableAuthors, formData, createEndpoint, deleteEndpoint }: Props =
-    $props();
+  let {
+    projectAuthors,
+    availableAuthors,
+    formData,
+    createEndpoint,
+    deleteEndpoint,
+    canEdit
+  }: Props = $props();
 
   const { form, enhance } = superForm(formData, {
     onError: ({ result }) => {
@@ -56,65 +63,70 @@
       {#each projectAuthors.toSorted((a, b) => byName(a.Users, b.Users, locale)) as author}
         <div class="flex flex-row w-full place-content-between p-2">
           <span>{author.Users.Name}</span>
-          <BlockIfJobsUnavailable>
-            {#snippet altContent()}
-              <IconContainer icon="mdi:close" width="24" />
-            {/snippet}
-            <form
-              action="?/{deleteEndpoint}"
-              method="post"
-              use:svk_enhance={() =>
-                ({ update, result }) => {
-                  if (result.type === 'error') {
-                    if (result.status === 503) {
-                      toast('error', m.system_unavailable());
-                    }
-                  }
-                  update({ reset: false });
-                }}
-            >
-              <input type="hidden" name="id" value={author.Id} />
-              <button type="submit" class="cursor-pointer">
+          {#if canEdit}
+            <BlockIfJobsUnavailable>
+              {#snippet altContent()}
                 <IconContainer icon="mdi:close" width="24" />
-              </button>
-            </form>
-          </BlockIfJobsUnavailable>
+              {/snippet}
+              <form
+                action="?/{deleteEndpoint}"
+                method="post"
+                use:svk_enhance={() =>
+                  ({ update, result }) => {
+                    if (result.type === 'error') {
+                      if (result.status === 503) {
+                        toast('error', m.system_unavailable());
+                      }
+                    }
+                    update({ reset: false });
+                  }}
+              >
+                <input type="hidden" name="id" value={author.Id} />
+                <button type="submit" class="cursor-pointer">
+                  <IconContainer icon="mdi:close" width="24" />
+                </button>
+              </form>
+            </BlockIfJobsUnavailable>
+          {/if}
         </div>
       {/each}
     {:else}
       <p class="p-2">{m.authors_empty()}</p>
     {/if}
   </div>
+
   <div class="bg-neutral p-2">
-    <form action="?/{createEndpoint}" method="post" use:enhance>
-      <div class="flex place-content-between space-x-2">
-        <select
-          class="grow select select-bordered"
-          name="author"
-          bind:value={$form.author}
-          required
-        >
-          {#if availableAuthors.length}
-            {#each availableAuthors.sort((a, b) => byName(a, b, getLocale())) as author}
-              <option value={author.Id}>
-                {author.Name}
+    {#if canEdit}
+      <form action="?/{createEndpoint}" method="post" use:enhance>
+        <div class="flex place-content-between space-x-2">
+          <select
+            class="grow select select-bordered"
+            name="author"
+            bind:value={$form.author}
+            required
+          >
+            {#if availableAuthors.length}
+              {#each availableAuthors.sort((a, b) => byName(a, b, getLocale())) as author}
+                <option value={author.Id}>
+                  {author.Name}
+                </option>
+              {/each}
+            {:else}
+              <option disabled selected value="">
+                {m.authors_emptyGroup()}
               </option>
-            {/each}
-          {:else}
-            <option disabled selected value="">
-              {m.authors_emptyGroup()}
-            </option>
-          {/if}
-        </select>
-        <BlockIfJobsUnavailable className="btn btn-primary">
-          {#snippet altContent()}
-            {m.authors_submit()}
-          {/snippet}
-          <button type="submit" class="btn btn-primary">
-            {m.authors_submit()}
-          </button>
-        </BlockIfJobsUnavailable>
-      </div>
-    </form>
+            {/if}
+          </select>
+          <BlockIfJobsUnavailable className="btn btn-primary">
+            {#snippet altContent()}
+              {m.authors_submit()}
+            {/snippet}
+            <button type="submit" class="btn btn-primary">
+              {m.authors_submit()}
+            </button>
+          </BlockIfJobsUnavailable>
+        </div>
+      </form>
+    {/if}
   </div>
 </div>

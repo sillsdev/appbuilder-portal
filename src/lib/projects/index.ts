@@ -1,7 +1,8 @@
 import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
 import * as v from 'valibot';
-import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
+import { RoleId } from '$lib/prisma';
+import { hasRoleForOrg, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema, langtagRegex, paginateSchema } from '$lib/valibot';
 
 export function pruneProjects(
@@ -162,8 +163,14 @@ export type ProjectForAction = Prisma.ProjectsGetPayload<{
   };
 }>;
 
+export type MaybeSession = Pick<Session, 'user'> | null | undefined;
+
+/**
+ * User can modify a project (excluding ownership) iff:
+ * The user is the owner or is an admin for the org
+ */
 export function canModifyProject(
-  user: Session | null | undefined,
+  user: MaybeSession,
   projectOwnerId: number,
   organizationId: number
 ): boolean {
@@ -173,24 +180,29 @@ export function canModifyProject(
   );
 }
 
+/**
+ * User can claim a project iff:
+ * They are not the owner and are in the same group and have the AppBuilder or OrgAdmin roles (ignored if superAdmin)
+ */
 export function canClaimProject(
-  session: Session | null | undefined,
+  session: MaybeSession,
   projectOwnerId: number,
   organizationId: number,
   projectGroupId: number,
   userGroupIds: number[]
 ) {
-  if (session?.user.userId === projectOwnerId) return false;
-  if (isSuperAdmin(session?.user.roles)) return true;
   return (
-    canModifyProject(session, projectOwnerId, organizationId) &&
-    userGroupIds.includes(projectGroupId)
+    session?.user.userId !== projectOwnerId && // user is not the owner AND
+    (isSuperAdmin(session?.user.roles) || // short circuit if superadmin
+      ((isAdminForOrg(organizationId, session?.user.roles) || // (user is admin OR
+        hasRoleForOrg(RoleId.AppBuilder, organizationId, session?.user.roles)) && // user is AppBuilder) AND
+        userGroupIds.includes(projectGroupId))) // user is in the group
   );
 }
 
 export function canArchive(
   project: Pick<ProjectForAction, 'OwnerId' | 'DateArchived'>,
-  session: Session | null | undefined,
+  session: MaybeSession,
   orgId: number
 ): boolean {
   return !project.DateArchived && canModifyProject(session, project.OwnerId, orgId);
@@ -198,7 +210,7 @@ export function canArchive(
 
 export function canReactivate(
   project: Pick<ProjectForAction, 'OwnerId' | 'DateArchived'>,
-  session: Session | null | undefined,
+  session: MaybeSession,
   orgId: number
 ): boolean {
   return !!project.DateArchived && canModifyProject(session, project.OwnerId, orgId);

@@ -46,13 +46,6 @@
       }
     }
   });
-
-  function canClaimOwnership(project: Omit<ProjectForAction, 'Id' | 'Name'>): boolean {
-    return (
-      project.OwnerId !== page.data.session?.user.userId &&
-      canClaimProject(page.data.session, project.OwnerId, orgId, project.GroupId, userGroups)
-    );
-  }
 </script>
 
 <Dropdown
@@ -101,7 +94,7 @@
             </BlockIfJobsUnavailable>
           </li>
         {/if}
-        {#if canClaimOwnership(project)}
+        {#if canClaimProject(page.data.session, project.OwnerId, orgId, project.GroupId, userGroups)}
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable className="text-nowrap">
               {#snippet altContent()}

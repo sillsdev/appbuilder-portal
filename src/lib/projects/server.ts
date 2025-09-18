@@ -7,10 +7,31 @@ import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { ServerStatus } from '$lib/utils';
 import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
 
-export async function verifyCanViewAndEdit(
-  user: Session,
-  projectId: number
-): Promise<ServerStatus> {
+export async function verifyCanView(user: Session, projectId: number): Promise<ServerStatus> {
+  // Viewing is allowed if the user is an admin or is in the project's group
+  // Note: being in the project's group is a prerequisite for owning it
+  if (isNaN(projectId)) return ServerStatus.NotFound;
+  const project = await DatabaseReads.projects.findUnique({
+    where: {
+      Id: projectId
+    },
+    select: {
+      Id: true,
+      OwnerId: true,
+      GroupId: true,
+      OrganizationId: true
+    }
+  });
+  if (!project) return ServerStatus.NotFound;
+  return isAdminForOrg(project.OrganizationId, user.user.roles) ||
+    (await DatabaseReads.groupMemberships.findFirst({
+      where: { UserId: user.user.userId, GroupId: project.GroupId }
+    }))
+    ? ServerStatus.Ok
+    : ServerStatus.Forbidden;
+}
+
+export async function verifyCanEdit(user: Session, projectId: number): Promise<ServerStatus> {
   // Editing is allowed if the user owns the project, or if the user is an organization
   // admin for the project's organization, or if the user is a super admin
   if (isNaN(projectId)) return ServerStatus.NotFound;
