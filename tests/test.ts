@@ -70,5 +70,33 @@ test.describe('Create a Test Project', () => {
     console.log(`Created Project: Id = ${id}, Name = ${projectName}`);
   });
 
+  test('Archive Project (Test SSE)', async ({ context }) => {
+    // make sure we're on the same page
+    await expect(page.getByRole('heading', { name: projectName })).toBeVisible();
+    // open a separate tab
+    const alt = await context.newPage();
+    alt.goto(page.url());
+    await expect(alt.getByRole('heading', { name: projectName })).toBeVisible();
+    // find action menu and archive project
+    const actMenu = page
+      .getByRole('group')
+      .filter({ hasText: /(Archive|Reactivate)/ })
+      .first();
+    await actMenu.click();
+    const archive = actMenu.getByText('Archive');
+    await expect(archive).toBeVisible();
+    await archive.click();
+    await expect(actMenu.getByText('Reactivate')).toBeVisible();
+    await expect(archive).toBeHidden();
+    // test that change was made on alternate page
+    const act2 = alt
+      .getByRole('group')
+      .filter({ hasText: /(Archive|Reactivate)/ })
+      .first();
+    await act2.click();
+    await expect(act2.getByText('Archive')).toBeHidden();
+    await expect(act2.getByText('Reactivate')).toBeVisible();
+  });
+
   // TODO: test BuildEngine stuff
 });
