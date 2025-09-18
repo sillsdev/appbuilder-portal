@@ -73,6 +73,7 @@ export default ESLintUtils.RuleCreator(() => '')({
   name: 'require-security-check',
   meta: {
     type: 'problem',
+    hasSuggestions: true,
     docs: {
       description: 'Require calling event.locals.security.* in every server load/action'
     },
@@ -81,7 +82,11 @@ export default ESLintUtils.RuleCreator(() => '')({
       missingSecurityCheck:
         'Missing call to requireAuthenticated() or similar security check. This must be of the form locals.security.require*()',
       unexpectedFunction:
-        'Unexpected export function type. Expected ArrowFunctionExpression, FunctionExpression, TSSatisfiesExpression or ObjectExpression.'
+        'Unexpected export function type {{type}}. Expected ArrowFunctionExpression, FunctionExpression, TSSatisfiesExpression or ObjectExpression.',
+      suggestAuthCall:
+        'Require authentication by adding "event.locals.security.requireAuthenticated();" to the start of the function body.',
+      suggestNoAuthCall:
+        'Mark this function as not requiring any auth by adding "event.locals.security.requireNothing();" to the start of the function body.'
     }
   },
   defaultOptions: [],
@@ -158,6 +163,7 @@ export default ESLintUtils.RuleCreator(() => '')({
           if (functionExport.type !== 'VariableDeclarator' || !objectExpression) {
             context.report({
               node: node.declaration,
+              data: { type: functionExport.type },
               messageId: 'unexpectedFunction'
             });
             return;
@@ -180,6 +186,7 @@ export default ESLintUtils.RuleCreator(() => '')({
             } else {
               context.report({
                 node: prop,
+                data: { type: prop.value.type },
                 messageId: 'unexpectedFunction'
               });
             }
@@ -194,6 +201,7 @@ export default ESLintUtils.RuleCreator(() => '')({
           // Unexpected type of export
           context.report({
             node: node.declaration,
+            data: { type: (functionExport as TSESTree.VariableDeclaratorMaybeInit).init?.type },
             messageId: 'unexpectedFunction'
           });
           return;
@@ -215,7 +223,31 @@ export default ESLintUtils.RuleCreator(() => '')({
             // Flag an error on the parent node of the block statement (the whole function)
             context.report({
               node: bs.parent,
-              messageId: 'missingSecurityCheck'
+              messageId: 'missingSecurityCheck',
+              suggest: [
+                {
+                  messageId: 'suggestAuthCall',
+                  fix: (fixer) =>
+                    fixer.insertTextBefore(
+                      bs.body[0] || bs,
+                      'event.locals.security.requireAuthenticated();\n' +
+                        ((functionExport.id as TSESTree.Identifier).name === 'actions'
+                          ? '    '
+                          : '  ')
+                    )
+                },
+                {
+                  messageId: 'suggestNoAuthCall',
+                  fix: (fixer) =>
+                    fixer.insertTextBefore(
+                      bs.body[0] || bs,
+                      'event.locals.security.requireNothing();\n' +
+                        ((functionExport.id as TSESTree.Identifier).name === 'actions'
+                          ? '    '
+                          : '  ')
+                    )
+                }
+              ]
             });
           }
         });
