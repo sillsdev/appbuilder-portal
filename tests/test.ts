@@ -8,11 +8,14 @@ test('auth shared to tests', async ({ page }) => {
 test('test LanguageCodeTypeahead', async ({ page }) => {
   // go to new projects page
   await page.goto('/projects/new/1');
+  await expect(page.getByRole('heading', { name: 'New Project' })).toBeVisible();
   // type 'eng' into LanguageCodeTypeahead
   const typeaheadInput = page.getByPlaceholder('Language Code');
   await expect(typeaheadInput).toBeVisible();
   await typeaheadInput.focus();
+  await expect(typeaheadInput).toBeFocused();
   await typeaheadInput.fill('eng');
+  await expect(typeaheadInput).toHaveValue('eng');
   // look for result with tag 'en'
   // Note: for some reason, this only works when not reusing an existing server
   const list = page.getByRole('listbox');
