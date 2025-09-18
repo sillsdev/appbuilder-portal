@@ -91,31 +91,57 @@ export const handle: Handle = async ({ event, resolve }) => {
       'http.x-forwarded-for': event.request.headers.get('x-forwarded-for') ?? '',
       'svelte.route_id': event.route.id ?? ''
     });
-    const response = await sequence(
-      paraglideHandle,
-      heartbeat,
-      organizationInviteHandle,
-      // Handle auth hooks in a separate OTEL span
-      async function hookTelementry({ event, resolve }) {
-        return tracer.startActiveSpan('Auth Hooks', async (span) => {
-          // Call the auth sequence
-          const ret = await authSequence({
-            event,
-            resolve: (...args) => {
-              span.end();
-              return resolve(...args);
-            }
+    try {
+      const response = await sequence(
+        paraglideHandle,
+        heartbeat,
+        organizationInviteHandle,
+        // Handle auth hooks in a separate OTEL span
+        async function hookTelementry({ event, resolve }) {
+          return tracer.startActiveSpan('Auth Hooks', async (span) => {
+            // Call the auth sequence
+            const ret = await authSequence({
+              event,
+              resolve: (...args) => {
+                span.end();
+                return resolve(...args);
+              }
+            });
+            return ret;
           });
-          return ret;
+        },
+        bullboardHandle
+      )({ event, resolve });
+      // @ts-expect-error securityHandled is not in the type definition
+      if (!event.locals.security.securityHandled) {
+        OTEL.instance.logger.error(
+          `Security checks were not performed for route ${event.url.pathname}`,
+          {
+            route: event.route.id,
+            method: event.request.method,
+            url: event.url.href,
+            userId: event.locals.security.userId ?? 'unauthenticated',
+            http_status_for_response: response.status
+          }
+        );
+        span.recordException(new Error('Security checks were not performed'));
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+          message: 'Security checks were not performed'
         });
-      },
-      bullboardHandle
-    )({ event, resolve });
-    span.setAttributes({
-      'http.status_code': response.status
-    });
-    span.end();
-    return response;
+        span.setAttributes({
+          'http.status_code': 500
+        });
+        // This is a server error because a developer misconfigured the route
+        return new Response('Internal Server Error', { status: 500 });
+      }
+      span.setAttributes({
+        'http.status_code': response.status
+      });
+      return response;
+    } finally {
+      span.end();
+    }
   });
 };
 

@@ -142,7 +142,7 @@ const config: SvelteKitAuthConfig = {
 
 export class Security {
   public readonly isSuperAdmin;
-  private securityHandled = false;
+  public securityHandled = false;
   constructor(
     public readonly event: Parameters<Handle>[0]['event'],
     // Note these three CAN be null if the user is not authenticated
