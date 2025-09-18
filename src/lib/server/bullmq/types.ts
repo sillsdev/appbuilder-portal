@@ -356,5 +356,6 @@ export type JobTypeMap = {
 export enum JobSchedulerId {
   SystemStatusEmail = 'SystemStatusEmail',
   RefreshLangTags = 'RefreshLangTags',
-  CheckSystemStatuses = 'CheckSystemStatuses'
+  CheckSystemStatuses = 'CheckSystemStatuses',
+  PruneUsers = 'PruneUsers'
 }

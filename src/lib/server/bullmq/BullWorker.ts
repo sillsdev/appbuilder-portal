@@ -76,7 +76,7 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
     getQueues().SystemRecurring.upsertJobScheduler(
       BullMQ.JobSchedulerId.RefreshLangTags,
       {
-        pattern: '@daily', // every day at midnight
+        pattern: '@weekly', // every Sunday at midnight
         immediately: false
       },
       {

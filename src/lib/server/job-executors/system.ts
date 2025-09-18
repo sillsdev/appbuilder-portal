@@ -400,6 +400,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
    * 2. Add UserId to transitions with a WorkflowUserId but no UserId
    * 3. Migrate data from DWKit tables to WorkflowInstances
    * 4. Populate Product.PackageName
+   * 5. Remove users with no org membership
    */
 
   // 1. Delete UserTasks for archived projects
@@ -412,7 +413,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       }
     }
   });
-  job.updateProgress(25);
+  job.updateProgress(20);
 
   // 2. Add UserId to transitions with a WorkflowUserId but no UserId
   const updatedTransitions = (
@@ -459,7 +460,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     })
   ).map(({ WorkflowUserId }) => WorkflowUserId);
 
-  job.updateProgress(50);
+  job.updateProgress(40);
 
   // 3. Migrate data from DWKit tables to WorkflowInstances
 
@@ -616,7 +617,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       await DatabaseWrites.workflowDefinitions.updateMany(def);
     }
   }
-  job.updateProgress(75);
+  job.updateProgress(60);
 
   // 4. Populate Product.PackageName
   const updatedPackages = await Promise.all(
@@ -642,8 +643,28 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       return pname;
     })
   );
+  job.updateProgress(80);
+
+  const deletedUsers = await DatabaseReads.users.findMany({
+    where: {
+      NOT: { OrganizationMemberships: { some: {} } }
+    },
+    select: { Id: true, GivenName: true, Email: true }
+  });
+  let deleteCount = 0;
+  try {
+    const deleteRes = await DatabaseWrites.users.deleteMany({
+      where: {
+        NOT: { OrganizationMemberships: { some: {} } }
+      }
+    });
+    deleteCount = deleteRes.count;
+  } catch (e) {
+    job.log(`User prune failed: ${e instanceof Error ? e.message : String(e)}`);
+  }
 
   job.updateProgress(100);
+
   return {
     deletedTasks: deletedTasks.count,
     updatedTransitions,
@@ -652,7 +673,12 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     migrationErrors,
     orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0),
     updatedWorkflowDefinitions: workflowDefsNeedUpdate,
-    updatedPackages
+    updatedPackages,
+    deletedUsers: {
+      users: deletedUsers,
+      count: deleteCount,
+      success: deleteCount === deletedUsers.length
+    }
   };
 }
 
