@@ -8,8 +8,10 @@ test('auth shared to tests', async ({ page }) => {
 test.describe('Create a Test Project', () => {
   //test.describe.configure({ mode: 'serial' });
   let page: Page;
+  let projectName: string;
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
+    projectName = `CI Test Project ${new Date().toLocaleString('en-US')}`;
   });
 
   test('Go to New Projects', async () => {
@@ -50,8 +52,7 @@ test.describe('Create a Test Project', () => {
     // project type should already be SAB
     await page.getByRole('combobox', { name: 'Type' }).selectOption('Scripture App Builder');
     // fill project name
-    const name = page.getByLabel('Project Name');
-    await name.fill(`CI Test Project ${new Date().toLocaleString('en-US')}`);
+    await page.getByLabel('Project Name').fill(projectName);
     // submit button should no longer be disabled
     await expect(submit).toBeEnabled();
   });
@@ -61,11 +62,12 @@ test.describe('Create a Test Project', () => {
     const submit = page.getByRole('button', { name: 'Save' });
     await expect(submit).toBeEnabled();
     // get project name and assert that it matches expecations
-    const name = await page.getByLabel('Project Name').inputValue();
-    expect(name).toContain('CI Test Project');
+    await expect(page.getByLabel('Project Name')).toHaveValue(projectName);
     // submit project (should redirect to project page)
     await submit.click();
-    await expect(page.getByRole('heading', { name })).toBeVisible();
+    await expect(page.getByRole('heading', { name: projectName })).toBeVisible();
+    const id = parseInt(page.url().split('/').at(-1)!);
+    console.log(`Created Project: Id = ${id}, Name = ${projectName}`);
   });
 
   // TODO: test BuildEngine stuff
