@@ -25,6 +25,8 @@ test.describe('Create a Test Project', () => {
     // type 'eng' into LanguageCodeTypeahead
     const typeaheadInput = page.getByPlaceholder('Language Code');
     await expect(typeaheadInput).toBeVisible();
+    // wait a small amount of time for event handlers to be added to typeaheadInput
+    await page.waitForTimeout(1_000);
     await typeaheadInput.focus();
     await expect(typeaheadInput).toBeFocused();
     await typeaheadInput.fill('eng');
