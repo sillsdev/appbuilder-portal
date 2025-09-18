@@ -6,7 +6,8 @@ test('auth shared to tests', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'My Tasks' })).toBeVisible();
 });
 test.describe('Create a Test Project', () => {
-  //test.describe.configure({ mode: 'serial' });
+  // skip tests if earlier one fails
+  test.describe.configure({ mode: 'serial' });
   let page: Page;
   let projectName: string;
   test.beforeAll(async ({ browser }) => {
