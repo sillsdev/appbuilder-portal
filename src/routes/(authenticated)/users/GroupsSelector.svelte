@@ -19,10 +19,10 @@
 <div class="flex w-full">
   <div class="shrink space-y-2">
     {#each groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
-      <label class="flex space-x-2">
+      <div class="flex space-x-2">
         {@render selector?.(group)}
         <span>{group.Name}</span>
-      </label>
+      </div>
     {/each}
   </div>
   <div class="grow"></div>
