@@ -50,7 +50,7 @@
       const productTasks = $userTasksSSE.filter((t) => t.ProductId === page.params.product_id);
       const fallback = new Date().valueOf();
       const oldTask = productTasks.find(
-        (t) => new Date(t.DateUpdated ?? fallback).valueOf() <= data.loadTime
+        (t) => (t.DateUpdated?.valueOf() ?? fallback) <= data.loadTime
       );
       const waitRead = untrack(() => waiting);
       // waiting and task updated
