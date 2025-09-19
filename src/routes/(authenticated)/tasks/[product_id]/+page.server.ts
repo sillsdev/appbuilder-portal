@@ -181,6 +181,9 @@ export const load = (async ({ params, locals }) => {
           select: {
             Name: true,
             Email: true
+          },
+          orderBy: {
+            Name: 'asc'
           }
         })
       : [],
