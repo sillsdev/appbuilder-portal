@@ -24,6 +24,8 @@
   </Tooltip>
 {/snippet}
 
+<h2>{m.buildEngines_title()}</h2>
+
 <div class="flex flex-col w-full">
   {#if buildEngines.length === 0}
     <i>No build engine information. Check the "Check System Statuses" recurring BullMQ job</i>

@@ -15,6 +15,8 @@
   const base = '/admin/settings/product-definitions';
 </script>
 
+<h2>{m.prodDefs_title()}</h2>
+
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
   {m.prodDefs_add()}
 </a>

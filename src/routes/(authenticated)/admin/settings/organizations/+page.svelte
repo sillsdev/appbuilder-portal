@@ -14,6 +14,8 @@
   const base = '/admin/settings/organizations';
 </script>
 
+<h2>{m.org_title()}</h2>
+
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
   {m.org_add()}
 </a>

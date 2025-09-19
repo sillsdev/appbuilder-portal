@@ -15,6 +15,8 @@
   const base = '/admin/settings/workflow-definitions';
 </script>
 
+<h2>{m.flowDefs_title()}</h2>
+
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
   {m.flowDefs_add()}
 </a>

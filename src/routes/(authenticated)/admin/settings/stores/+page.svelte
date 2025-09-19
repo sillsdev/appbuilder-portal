@@ -15,6 +15,8 @@
   const base = '/admin/settings/stores';
 </script>
 
+<h2>{m.admin_nav_stores()}</h2>
+
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
   {m.models_add({ name: m.stores_name() })}
 </a>
