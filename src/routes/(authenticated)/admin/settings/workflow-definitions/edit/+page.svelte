@@ -83,6 +83,7 @@
       class="input input-bordered w-full"
       bind:value={$form.description}
     />
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_scheme">
     <select class="select select-bordered" name="workflowScheme" bind:value={$form.workflowScheme}>
@@ -90,6 +91,7 @@
         <option value={scheme.Code}>{scheme.Code}</option>
       {/each}
     </select>
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_businessFlow">
     <select
@@ -101,6 +103,7 @@
         <option value={flow}>{flow}</option>
       {/each}
     </select>
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_properties">
     <PropertiesEditor
@@ -109,6 +112,7 @@
       bind:value={$form.properties}
       bind:ok={propsOk}
     />
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput
     key="flowDefs_options_title"

@@ -52,9 +52,10 @@
     <input
       type="url"
       name="websiteUrl"
-      class="input input-bordered w-full"
+      class="input input-bordered w-full validator"
       bind:value={$form.websiteUrl}
     />
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <InputWithMessage title={{ key: 'org_useDefaultBuildEngine' }} className="py-2">
     <input
@@ -90,9 +91,10 @@
     <input
       type="url"
       name="logoUrl"
-      class="input input-bordered w-full"
+      class="input input-bordered w-full validator"
       bind:value={$form.logoUrl}
     />
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <InputWithMessage
     title={{ key: 'org_publicByDefault' }}
