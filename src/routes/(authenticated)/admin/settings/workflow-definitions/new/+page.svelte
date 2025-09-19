@@ -131,7 +131,7 @@
     classes="border border-warning p-1 my-4 rounded-lg"
   >
     {#each enumNumVals(WorkflowOptions) as option}
-      <InputWithMessage message={{ key: 'flowDefs_options', params: option }} className="my-1">
+      <InputWithMessage message={{ key: 'flowDefs_options', params: { option } }} className="my-1">
         <input
           class="toggle toggle-warning border-warning"
           type="checkbox"
