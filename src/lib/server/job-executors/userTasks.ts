@@ -188,7 +188,10 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
           job.updateProgress(40 + ((i + 0.67) * 40) / products.length);
         }
         // create ProductTransitions if user tasks still exist
-        if (await DatabaseReads.userTasks.findFirst({ where: { ProductId: product.Id } })) {
+        if (
+          job.data.operation.type !== BullMQ.UserTasks.OpType.Delete ||
+          (await DatabaseReads.userTasks.findFirst({ where: { ProductId: product.Id } }))
+        ) {
           await DatabaseWrites.productTransitions.createMany(
             {
               data: await Workflow.transitionEntriesFromState(snap.state, product.Id, {
