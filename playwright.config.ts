@@ -35,7 +35,10 @@ const config: PlaywrightTestConfig = {
       testMatch: /(.+\.)?(test|spec)\.[jt]s/,
       dependencies: ['setup']
     }
-  ]
+  ],
+  expect: {
+    timeout: 10_000 // 10s
+  }
 };
 
 export default config;
