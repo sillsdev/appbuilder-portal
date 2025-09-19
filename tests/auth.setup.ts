@@ -1,7 +1,7 @@
 import { expect, test as setup } from '@playwright/test';
 import { join } from 'path';
 
-const authFile = join(import.meta.dirname, '../playwright/.auth/user.json');
+const authFile = join(process.cwd(), './playwright/.auth/user.json');
 
 setup('index page has expected h1', async ({ page }) => {
   await page.goto('/');
@@ -16,8 +16,15 @@ setup('can login', async ({ page }) => {
   // Wait for the login page to load
   await expect(page.getByPlaceholder('yours@example.com')).toBeVisible();
   // Fill in the email and password
-  await page.getByPlaceholder('yours@example.com').fill(process.env.CI_EMAIL ?? '');
-  await page.getByPlaceholder('your password').fill(process.env.CI_PASSWORD ?? '');
+  const { CI_EMAIL, CI_PASSWORD } = process.env;
+  if (!(CI_EMAIL && CI_PASSWORD)) {
+    console.warn('CI user credentials missing from env');
+    console.log(process.env);
+  }
+  expect(CI_EMAIL).toBeTruthy();
+  expect(CI_PASSWORD).toBeTruthy();
+  await page.getByPlaceholder('yours@example.com').fill(CI_EMAIL!);
+  await page.getByPlaceholder('your password').fill(CI_PASSWORD!);
   // Click the login button
   await page.getByRole('button', { name: 'Log In' }).click();
   // Wait for the page to load
