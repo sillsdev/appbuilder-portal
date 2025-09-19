@@ -122,6 +122,9 @@ export const load = (async ({ params, locals }) => {
           ArtifactType: true,
           FileSize: true,
           Url: true
+        },
+        orderBy: {
+          ArtifactType: 'asc'
         }
       })
     : [];
