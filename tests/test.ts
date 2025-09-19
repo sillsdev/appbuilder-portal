@@ -15,6 +15,10 @@ test.describe('Create a Test Project', () => {
     projectName = `CI Test Project ${new Date().toLocaleString('en-US')}`;
   });
 
+  test.afterAll(async () => {
+    await page.close();
+  });
+
   test('Go to New Projects', async () => {
     // go to new projects page
     await page.goto('/projects/new/1');
@@ -26,13 +30,12 @@ test.describe('Create a Test Project', () => {
     const typeaheadInput = page.getByPlaceholder('Language Code');
     await expect(typeaheadInput).toBeVisible();
     // wait a small amount of time for event handlers to be added to typeaheadInput
-    await page.waitForTimeout(1_000);
+    await page.waitForTimeout(200);
     await typeaheadInput.focus();
     await expect(typeaheadInput).toBeFocused();
     await typeaheadInput.fill('eng');
     await expect(typeaheadInput).toHaveValue(/^eng$/);
     // look for result with tag 'en'
-    // Note: for some reason, this only works when not reusing an existing server
     const list = page.getByRole('listbox');
     await expect(list).toBeVisible();
     const option = list.getByRole('option', { name: 'English en Code' });
@@ -78,7 +81,7 @@ test.describe('Create a Test Project', () => {
     await expect(page.getByRole('heading', { name: projectName })).toBeVisible();
     // open a separate tab
     const alt = await context.newPage();
-    alt.goto(page.url());
+    await alt.goto(page.url());
     await expect(alt.getByRole('heading', { name: projectName })).toBeVisible();
     // find action menu and archive project
     const actMenu = page
@@ -99,6 +102,7 @@ test.describe('Create a Test Project', () => {
     await act2.click();
     await expect(act2.getByText('Archive')).toBeHidden();
     await expect(act2.getByText('Reactivate')).toBeVisible();
+    await alt.close();
   });
 
   // TODO: test BuildEngine stuff
