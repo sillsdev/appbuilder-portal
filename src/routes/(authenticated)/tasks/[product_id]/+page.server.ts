@@ -1,4 +1,3 @@
-import type { Session } from '@auth/sveltekit';
 import { error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -8,7 +7,6 @@ import { RoleId } from '$lib/prisma';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
-import { isSuperAdmin } from '$lib/utils/roles';
 import { WorkflowAction, WorkflowState, artifactLists } from '$lib/workflowTypes';
 
 const sendActionSchema = v.object({
@@ -32,8 +30,9 @@ type Fields = {
 
 export const load = (async ({ params, locals, depends }) => {
   depends('task:id:load');
-  const session = await locals.auth();
-  if (!(await verifyCanViewTask(session!, params.product_id))) return error(403);
+  // Auth handled in verifyCanViewTask
+  locals.security.requireAuthenticated();
+  if (!(await verifyCanViewTask(locals.security, params.product_id))) return error(403);
   const snap = await Workflow.getSnapshot(params.product_id);
   if (!snap) return error(404);
 
@@ -138,7 +137,7 @@ export const load = (async ({ params, locals, depends }) => {
       .filter((a) =>
         filterAvailableActions(
           a,
-          session?.user.userId,
+          locals.security.userId,
           product.Project.Owner.Id,
           authorIds,
           orgAdminIds
@@ -192,8 +191,9 @@ export const load = (async ({ params, locals, depends }) => {
 
 export const actions = {
   default: async ({ request, params, locals }) => {
-    const session = (await locals.auth())!;
-    if (!(await verifyCanViewTask(session, params.product_id))) return error(403);
+    // Auth handled in verifyCanViewTask
+    locals.security.requireAuthenticated();
+    if (!(await verifyCanViewTask(locals.security, params.product_id))) return error(403);
     if (!QueueConnected()) return error(503);
     const form = await superValidate(request, valibot(sendActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
@@ -249,7 +249,7 @@ export const actions = {
       .filter((a) =>
         filterAvailableActions(
           a,
-          session?.user.userId,
+          locals.security.userId,
           product.Project.Owner.Id,
           authorIds,
           orgAdminIds
@@ -261,7 +261,7 @@ export const actions = {
       flow.send({
         type: form.data.flowAction,
         comment: form.data.comment,
-        userId: session.user.userId
+        userId: locals.security.userId
       });
 
       const targetState = transition.target;
@@ -270,7 +270,7 @@ export const actions = {
         ? Workflow.availableTransitionsFromNode(targetState[0], snap.input).filter((a) =>
             filterAvailableActions(
               a,
-              session?.user.userId,
+              locals.security.userId,
               product.Project.Owner.Id,
               authorIds,
               orgAdminIds
@@ -294,15 +294,15 @@ export const actions = {
 } satisfies Actions;
 
 // allowed if SuperAdmin, or the user has a UserTask for the Product
-async function verifyCanViewTask(session: Session | null, productId: string): Promise<boolean> {
-  if (!session) return false;
+async function verifyCanViewTask(security: Security, productId: string): Promise<boolean> {
+  if (!security) return false;
 
   return (
-    isSuperAdmin(session.user.roles) ||
+    security.isSuperAdmin ||
     !!(await DatabaseReads.userTasks.findFirst({
       where: {
         ProductId: productId,
-        UserId: session.user.userId
+        UserId: security.userId
       },
       select: {
         Id: true

@@ -14,7 +14,7 @@
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
   import { orgActive, userTasksSSE } from '$lib/stores';
-  import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
+  import { isAdminForAny, isSuperAdmin } from '$lib/utils/roles';
 
   interface Props {
     data: LayoutData;
@@ -151,7 +151,7 @@
               {m.sidebar_orgProjects()}
             </a>
           </li>
-          {#if isAdmin(page.data.session?.user.roles)}
+          {#if isAdminForAny(page.data.session?.user.roles)}
             <li>
               <a
                 class="rounded-none"

@@ -11,7 +11,7 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
-  import { isAdmin } from '$lib/utils/roles';
+  import { isAdminForAny } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
@@ -65,7 +65,7 @@
   <div class="flex flex-row place-content-between w-full flex-wrap items-center">
     <div class="flex flex-row items-center">
       <h1>{m.users_title()}</h1>
-      {#if isAdmin(data.session?.user.roles)}
+      {#if isAdminForAny(data.session?.user.roles)}
         <BlockIfJobsUnavailable className="btn btn-outline">
           {#snippet altContent()}
             <IconContainer icon="mdi:user-add" width="20" />

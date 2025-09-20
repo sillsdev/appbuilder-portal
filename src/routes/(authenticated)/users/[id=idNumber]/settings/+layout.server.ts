@@ -1,9 +1,13 @@
+import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import { DatabaseReads } from '$lib/server/database';
 import { adminOrgs } from '$lib/users/server';
-import { isSuperAdmin } from '$lib/utils/roles';
 
 export const load = (async ({ params, locals }) => {
+  locals.security.requireAuthenticated();
+  if (!locals.security.isSuperAdmin && locals.security.userId !== parseInt(params.id!)) {
+    throw error(403);
+  }
   const subject = await DatabaseReads.users.findUniqueOrThrow({
     where: {
       Id: parseInt(params.id!)
@@ -14,10 +18,8 @@ export const load = (async ({ params, locals }) => {
     }
   });
 
-  const user = (await locals.auth())!.user;
-
   // return only orgs containing the subject that the current user is also an admin for
-  const filter = adminOrgs(subject.Id, user.userId, isSuperAdmin(user.roles));
+  const filter = adminOrgs(subject.Id, locals.security.userId, locals.security.isSuperAdmin);
 
   const canEdit = !!(await DatabaseReads.organizations.findFirst({ where: filter }));
 

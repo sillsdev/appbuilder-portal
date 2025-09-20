@@ -1,16 +1,13 @@
 import { trace } from '@opentelemetry/api';
 import type { Prisma } from '@prisma/client';
-import { error, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { minifyUser } from './common';
-import { localizeHref } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { isAdminForOrgs, isSuperAdmin } from '$lib/utils/roles';
 import { idSchema, paginateSchema } from '$lib/valibot';
 
 const lockSchema = v.object({
@@ -85,23 +82,22 @@ function adminOrDefaultWhere(isSuper: boolean, orgIds: number[]) {
       };
 }
 
-export const load = (async (event) => {
-  const userInfo = (await event.locals.auth())?.user;
-  const userId = userInfo?.userId;
-  if (!userId) return redirect(302, localizeHref('/'));
+export const load = (async ({ locals }) => {
+  locals.security.requireAdminOfAny();
   return await tracer.startActiveSpan('load', async (span) => {
     try {
-      const isSuper = isSuperAdmin(userInfo.roles);
-
+      const isSuper = locals.security.isSuperAdmin;
       const organizations = await DatabaseReads.organizations.findMany({
-        where: isSuper
+        where: locals.security.isSuperAdmin
           ? undefined
           : {
-              UserRoles: {
-                some: {
-                  RoleId: RoleId.OrgAdmin,
-                  UserId: userId
-                }
+              Id: {
+                in: [
+                  ...locals.security.roles
+                    .entries()
+                    .filter(([_, role]) => role.includes(RoleId.OrgAdmin))
+                    .map(([orgId]) => orgId)
+                ]
               }
             },
         select: {
@@ -110,7 +106,7 @@ export const load = (async (event) => {
         }
       });
 
-      const orgIds = organizations.map((o) => o.Id);
+      const orgIds = locals.security.organizationMemberships;
 
       const users = await DatabaseReads.users.findMany({
         orderBy: {
@@ -121,8 +117,8 @@ export const load = (async (event) => {
         take: 50
       });
       span.setAttributes({
-        'auth.load.userId': userId,
-        'auth.load.user.roles': JSON.stringify(userInfo?.roles),
+        'auth.load.userId': locals.security.userId!,
+        'auth.load.user.roles': JSON.stringify(locals.security.roles),
         'auth.load.user.isSuper': isSuper,
         'auth.load.user.orgIds': JSON.stringify(orgIds)
       });
@@ -168,25 +164,17 @@ export const load = (async (event) => {
 
 export const actions: Actions = {
   async lock(event) {
-    const session = await event.locals.auth();
-    if (!session) return error(403);
+    event.locals.security.requireAdminOfAny();
     const form = await superValidate(event, valibot(lockSchema));
-    if (!form.valid || session.user.userId === form.data.user) return { form, ok: false };
-    // if user modified hidden values
-    if (
-      !isSuperAdmin(session.user.roles) ||
-      !isAdminForOrgs(
-        (
-          await DatabaseReads.organizationMemberships.findMany({
-            where: { UserId: form.data.user },
-            distinct: 'OrganizationId'
-          })
-        ).map(({ OrganizationId }) => OrganizationId),
-        session.user.roles
-      )
-    ) {
-      return error(403);
-    }
+    if (!form.valid || event.locals.security.userId === form.data.user) return { form, ok: false };
+    event.locals.security.requireAdminOfOrgIn(
+      (
+        await DatabaseReads.organizationMemberships.findMany({
+          where: { UserId: form.data.user },
+          distinct: 'OrganizationId'
+        })
+      ).map(({ OrganizationId }) => OrganizationId)
+    );
     await DatabaseWrites.users.update({
       where: {
         Id: form.data.user
@@ -199,13 +187,12 @@ export const actions: Actions = {
   },
 
   async page(event) {
-    const session = await event.locals.auth();
-    if (!session) return error(403);
+    event.locals.security.requireAdminOfAny();
     const form = await superValidate(event, valibot(searchFilterSchema));
     if (!form.valid) return { form, ok: false };
 
     return await tracer.startActiveSpan('page action', async (span) => {
-      const isSuper = isSuperAdmin(session.user.roles);
+      const isSuper = event.locals.security.isSuperAdmin;
 
       const organizations = await DatabaseReads.organizations.findMany({
         where:
@@ -217,7 +204,7 @@ export const actions: Actions = {
                   UserRoles: {
                     some: {
                       RoleId: RoleId.OrgAdmin,
-                      UserId: session.user.userId
+                      UserId: event.locals.security.userId
                     }
                   }
                 },
@@ -229,8 +216,8 @@ export const actions: Actions = {
       const orgIds = organizations.map((o) => o.Id);
 
       span.setAttributes({
-        'auth.load.userId': session.user.userId,
-        'auth.load.user.roles': JSON.stringify(session.user.roles),
+        'auth.load.userId': event.locals.security.userId,
+        'auth.load.user.roles': JSON.stringify(event.locals.security.roles),
         'auth.load.user.isSuper': isSuper,
         'auth.load.user.orgIds': JSON.stringify(orgIds)
       });

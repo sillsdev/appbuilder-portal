@@ -11,6 +11,7 @@ const toggleStoreSchema = v.object({
 });
 
 export const load = (async (event) => {
+  event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
   const { organization } = await event.parent();
   const orgStores = await DatabaseReads.organizationStores.findMany({
     where: {
@@ -28,6 +29,7 @@ export const load = (async (event) => {
 
 export const actions = {
   async default(event) {
+    event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
     const form = await superValidate(event.request, valibot(toggleStoreSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.organizationStores.toggleForOrg(

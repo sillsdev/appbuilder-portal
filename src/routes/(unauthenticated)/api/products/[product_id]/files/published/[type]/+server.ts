@@ -2,7 +2,8 @@ import { error, redirect } from '@sveltejs/kit';
 import { getFileInfo } from '$lib/products';
 import { getPublishedFile } from '$lib/products/server';
 
-export async function GET({ params }) {
+export async function GET({ params, locals }) {
+  locals.security.requireNothing();
   const productArtifact = await getPublishedFile(params.product_id, params.type);
   if (!productArtifact?.Url) {
     return error(404);

@@ -7,7 +7,8 @@ import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 
 const createSchema = workflowDefinitionSchemaBase;
 
-export const load = (async ({ url }) => {
+export const load = (async ({ url, locals }) => {
+  locals.security.requireSuperAdmin();
   const form = await superValidate(valibot(createSchema));
   const options = {
     storeType: await DatabaseReads.storeTypes.findMany(),
@@ -18,7 +19,8 @@ export const load = (async ({ url }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  async new({ request }) {
+  async new({ request, locals }) {
+    locals.security.requireSuperAdmin();
     const form = await superValidate(request, valibot(createSchema));
     if (!form.valid) {
       return fail(400, { form, ok: false });

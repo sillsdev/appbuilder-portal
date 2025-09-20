@@ -7,12 +7,12 @@ import { DatabaseReads } from '$lib/server/database';
 
 const tracer = trace.getTracer('ProjectSSE');
 export type ProjectDataSSE = Awaited<ReturnType<typeof getProjectDetails>>;
-export async function getProjectDetails(id: number, userId: number) {
+export async function getProjectDetails(id: number, security: Security) {
   // permissions checked in auth
   return tracer.startActiveSpan('getProjectDetails', async (span) => {
     span.setAttributes({
       'project.id': id,
-      'project.userId': userId
+      'project.userId': security.userId
     });
     try {
       const project = await DatabaseReads.projects.findUniqueOrThrow({
@@ -197,26 +197,7 @@ export async function getProjectDetails(id: number, userId: number) {
       const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
       span.addEvent('Product definitions fetched');
 
-      const canEdit = canModifyProject(
-        {
-          user: {
-            userId,
-            roles: (
-              await DatabaseReads.userRoles.findMany({
-                where: {
-                  UserId: userId,
-                  OR: [
-                    { RoleId: RoleId.SuperAdmin },
-                    { RoleId: RoleId.OrgAdmin, OrganizationId: project.Organization.Id }
-                  ]
-                }
-              })
-            ).map(({ OrganizationId, RoleId }) => [OrganizationId, RoleId])
-          }
-        },
-        project.Owner.Id,
-        project.Organization.Id
-      );
+      const canEdit = canModifyProject(security, project.Owner.Id, project.Organization.Id);
 
       return {
         project: {
@@ -232,7 +213,7 @@ export async function getProjectDetails(id: number, userId: number) {
             ActiveTransition: strippedTransitions.find(
               (t) => (t[0] ?? t[1])?.ProductId === product.Id
             )?.[1],
-            actions: canEdit ? getProductActions(product, project.Owner.Id, userId) : []
+            actions: canEdit ? getProductActions(product, project.Owner.Id, security.userId) : []
           }))
         },
         productsToAdd: productDefinitions.filter(
@@ -286,7 +267,9 @@ export async function getProjectDetails(id: number, userId: number) {
             }
           }
         }),
-        userGroups: (await userGroupsForOrg(userId, project.Organization.Id)).map((g) => g.GroupId)
+        userGroups: (await userGroupsForOrg(security.userId, project.Organization.Id)).map(
+          (g) => g.GroupId
+        )
       };
     } catch (e) {
       span.recordException(e as Error);

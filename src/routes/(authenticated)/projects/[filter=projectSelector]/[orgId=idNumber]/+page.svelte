@@ -21,7 +21,7 @@
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
-  import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
+  import { isAdminForOrg } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
@@ -116,10 +116,10 @@
   });
 
   let canArchiveSelected = $derived(
-    selectedProjects.every((p) => canArchive(p, page.data.session, $orgActive))
+    selectedProjects.every((p) => canArchive(p, page.data.session.user, $orgActive))
   );
   let canReactivateSelected = $derived(
-    selectedProjects.every((p) => canReactivate(p, page.data.session, $orgActive))
+    selectedProjects.every((p) => canReactivate(p, page.data.session.user, $orgActive))
   );
 
   const {
@@ -150,7 +150,7 @@
 
   const canModifyProjects = $derived(
     isAdminForOrg($orgActive, data.session?.user.roles) ||
-      hasRoleForOrg(RoleId.AppBuilder, $orgActive, data.session?.user.roles)
+      data.session?.user.roles.get($orgActive)?.includes(RoleId.AppBuilder)
   );
 </script>
 
@@ -412,7 +412,7 @@
             {/if}
           {/snippet}
           {#snippet actions()}
-            {#if canModifyProjects || canClaimProject(data.session, project.OwnerId, $orgActive, project.GroupId, data.userGroups)}
+            {#if canModifyProjects || canClaimProject(data.session.user, project.OwnerId, $orgActive, project.GroupId, data.userGroups)}
               <ProjectActionMenu
                 data={data.actionForm}
                 {project}

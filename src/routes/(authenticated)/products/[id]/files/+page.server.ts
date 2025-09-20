@@ -5,8 +5,15 @@ import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads } from '$lib/server/database';
 import { paginateSchema } from '$lib/valibot';
 
-export const load = (async ({ params }) => {
-  // auth handled by hooks
+export const load = (async ({ params, locals }) => {
+  locals.security.requireProjectWriteAccess(
+    (
+      await DatabaseReads.products.findUnique({
+        where: { Id: params.id },
+        select: { Project: { select: { OwnerId: true, OrganizationId: true } }, Id: true }
+      })
+    )?.Project
+  );
   const builds = await DatabaseReads.productBuilds.findMany({
     orderBy: [
       {
@@ -72,8 +79,17 @@ export const load = (async ({ params }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  page: async ({ request, params }) => {
-    // auth handled by hooks
+  page: async ({ request, params, locals }) => {
+    locals.security.requireProjectWriteAccess(
+      (
+        await DatabaseReads.products.findUnique({
+          where: { Id: params.id },
+          select: {
+            Project: { select: { OwnerId: true, OrganizationId: true } }
+          }
+        })
+      )?.Project
+    );
     const form = await superValidate(request, valibot(paginateSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 

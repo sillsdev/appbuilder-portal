@@ -1,34 +1,36 @@
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
-import { infoSchema } from '$lib/organizations';
+import { infrastructureSchema } from '$lib/organizations';
 import { DatabaseWrites } from '$lib/server/database';
 
 export const load = (async (event) => {
+  event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
   const { organization } = await event.parent();
   const form = await superValidate(
     {
-      name: organization.Name,
-      logoUrl: organization.LogoUrl,
-      contact: organization.ContactEmail
+      buildEngineUrl: organization.BuildEngineUrl,
+      buildEngineApiAccessToken: organization.BuildEngineApiAccessToken,
+      useDefaultBuildEngine: organization.UseDefaultBuildEngine ?? false
     },
-    valibot(infoSchema)
+    valibot(infrastructureSchema)
   );
   return { form };
 }) satisfies PageServerLoad;
 
 export const actions = {
   async default(event) {
-    const form = await superValidate(event.request, valibot(infoSchema));
+    event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
+    const form = await superValidate(event.request, valibot(infrastructureSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.organizations.update({
       where: {
         Id: parseInt(event.params.id)
       },
       data: {
-        Name: form.data.name,
-        LogoUrl: form.data.logoUrl,
-        ContactEmail: form.data.contact
+        BuildEngineApiAccessToken: form.data.buildEngineApiAccessToken,
+        BuildEngineUrl: form.data.buildEngineUrl,
+        UseDefaultBuildEngine: form.data.useDefaultBuildEngine
       }
     });
     return { form, ok: true };

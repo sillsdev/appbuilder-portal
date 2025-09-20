@@ -4,6 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
+import { RoleId } from '$lib/prisma';
 import { importJSONSchema } from '$lib/projects';
 import { verifyCanCreateProject } from '$lib/projects/server';
 import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
@@ -21,8 +22,7 @@ const projectsImportSchema = v.object({
 });
 
 export const load = (async ({ locals, params }) => {
-  if (!verifyCanCreateProject((await locals.auth())!, parseInt(params.id))) return error(403);
-
+  locals.security.requireHasRole(parseInt(params.id), RoleId.AppBuilder, true);
   const organization = await DatabaseReads.organizations.findUnique({
     where: {
       Id: parseInt(params.id)
@@ -74,13 +74,13 @@ export const load = (async ({ locals, params }) => {
 
 export const actions: Actions = {
   default: async function (event) {
-    const session = (await event.locals.auth())!;
+    event.locals.security.requireHasRole(parseInt(event.params.id), RoleId.AppBuilder, true);
 
     const organizationId = parseInt(event.params.id);
 
     if (isNaN(organizationId)) return error(404);
 
-    if (!verifyCanCreateProject(session, organizationId)) return error(403);
+    if (!verifyCanCreateProject(event.locals.security, organizationId)) return error(403);
 
     if (!QueueConnected()) return error(503);
 
@@ -199,7 +199,7 @@ export const actions: Actions = {
         data: {
           ImportData: form.data.json,
           TypeId: form.data.type,
-          OwnerId: session.user.userId,
+          OwnerId: event.locals.security.userId,
           GroupId: form.data.group,
           OrganizationId: organizationId
         },
@@ -213,7 +213,7 @@ export const actions: Actions = {
             OrganizationId: organizationId,
             Name: pj.Name,
             GroupId: form.data.group,
-            OwnerId: session.user.userId,
+            OwnerId: event.locals.security.userId,
             Language: pj.Language,
             TypeId: form.data.type,
             Description: pj.Description ?? '',

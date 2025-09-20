@@ -2,15 +2,23 @@ import { stringify } from 'devalue';
 import { produce } from 'sveltekit-sse';
 import { SSEPageUpdates } from '$lib/projects/listener';
 import { getProjectDetails } from '$lib/projects/sse';
+import { DatabaseReads } from '$lib/server/database';
 
 export async function POST(request) {
-  const userId = (await request.locals.auth())!.user.userId;
+  request.locals.security.requireProjectWriteAccess(
+    await DatabaseReads.projects.findUniqueOrThrow({
+      where: { Id: parseInt(request.params.id) }
+    })
+  );
   const { id: strId } = request.params;
   return produce(async function start({ emit, lock }) {
     const id = parseInt(strId);
     // User will be allowed to see project updates until they reload
     // even if their permission is revoked during the SSE connection.
-    const { error } = emit('projectData', stringify(await getProjectDetails(id, userId)));
+    const { error } = emit(
+      'projectData',
+      stringify(await getProjectDetails(id, request.locals.security))
+    );
     if (error) {
       return;
     }
@@ -19,7 +27,7 @@ export async function POST(request) {
       // multiple times if multiple users are connected to the same project page.
       if (updateId.includes(id)) {
         // console.log(`Project page SSE update for project ${id}`);
-        const projectData = await getProjectDetails(id, userId);
+        const projectData = await getProjectDetails(id, request.locals.security);
         const { error } = emit('projectData', stringify(projectData));
         if (error) {
           SSEPageUpdates.off('projectPage', updateCb);

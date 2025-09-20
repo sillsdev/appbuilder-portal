@@ -18,6 +18,17 @@ const profileSchema = v.object({
 });
 
 export const load = (async (event) => {
+  event.locals.security.requireAuthenticated();
+  if (event.locals.security.userId !== parseInt(event.params.id)) {
+    event.locals.security.requireAdminOfOrgIn(
+      await DatabaseReads.users
+        .findUniqueOrThrow({
+          where: { Id: parseInt(event.params.id) },
+          select: { OrganizationMemberships: { select: { OrganizationId: true } } }
+        })
+        .then((u) => u.OrganizationMemberships.map((o) => o.OrganizationId))
+    );
+  }
   const subData = await DatabaseReads.users.findUniqueOrThrow({
     where: { Id: parseInt(event.params.id) }
   });
@@ -41,6 +52,17 @@ export const load = (async (event) => {
 
 export const actions = {
   async default(event) {
+    event.locals.security.requireAuthenticated();
+    if (event.locals.security.userId !== parseInt(event.params.id)) {
+      event.locals.security.requireAdminOfOrgIn(
+        await DatabaseReads.users
+          .findUniqueOrThrow({
+            where: { Id: parseInt(event.params.id) },
+            select: { OrganizationMemberships: { select: { OrganizationId: true } } }
+          })
+          .then((u) => u.OrganizationMemberships.map((o) => o.OrganizationId))
+      );
+    }
     const form = await superValidate(event, valibot(profileSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 

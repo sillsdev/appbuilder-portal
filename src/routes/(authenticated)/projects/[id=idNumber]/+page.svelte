@@ -47,14 +47,14 @@
 
   const canEdit = $derived(
     canModifyProject(
-      data.session,
+      data.session.user,
       projectData?.project.OwnerId ?? -1,
       projectData?.project.Organization.Id ?? -1
     )
   );
   const canClaim = $derived(
     canClaimProject(
-      data.session,
+      data.session.user,
       projectData?.project.OwnerId ?? -1,
       projectData?.project.Organization.Id ?? -1,
       projectData?.project.GroupId ?? -1,

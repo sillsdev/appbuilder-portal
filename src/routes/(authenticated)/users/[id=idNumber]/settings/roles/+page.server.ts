@@ -6,7 +6,6 @@ import type { Actions, PageServerLoad } from './$types';
 import { RoleId } from '$lib/prisma';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { adminOrgs } from '$lib/users/server';
-import { isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 
 const toggleRoleSchema = v.object({
@@ -18,11 +17,18 @@ const toggleRoleSchema = v.object({
 
 export const load = (async ({ params, locals }) => {
   const subjectId = parseInt(params.id);
-  const user = (await locals.auth())!.user;
+  locals.security.requireAdminOfOrgIn(
+    await DatabaseReads.users
+      .findUniqueOrThrow({
+        where: { Id: subjectId },
+        select: { OrganizationMemberships: { select: { OrganizationId: true } } }
+      })
+      .then((u) => u.OrganizationMemberships.map((o) => o.OrganizationId))
+  );
 
   return {
     rolesByOrg: await DatabaseReads.organizations.findMany({
-      where: adminOrgs(subjectId, user.userId, isSuperAdmin(user.roles)),
+      where: adminOrgs(subjectId, locals.security.userId, locals.security.isSuperAdmin),
       select: {
         Id: true,
         UserRoles: {
@@ -40,17 +46,30 @@ export const load = (async ({ params, locals }) => {
 
 export const actions = {
   async default(event) {
+    event.locals.security.requireAdminOfOrgIn(
+      await DatabaseReads.users
+        .findUniqueOrThrow({
+          where: { Id: parseInt(event.params.id) },
+          select: { OrganizationMemberships: { select: { OrganizationId: true } } }
+        })
+        .then((u) => u.OrganizationMemberships.map((o) => o.OrganizationId))
+    );
+
     const form = await superValidate(event, valibot(toggleRoleSchema));
 
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const user = (await event.locals.auth())!.user;
     // if user modified hidden values
     if (
       !(
         form.data.userId === parseInt(event.params.id) ||
         (await DatabaseReads.organizations.findFirst({
-          where: adminOrgs(form.data.userId, user.userId, isSuperAdmin(user.roles), form.data.orgId)
+          where: adminOrgs(
+            form.data.userId,
+            event.locals.security.userId,
+            event.locals.security.isSuperAdmin,
+            form.data.orgId
+          )
         }))
       )
     ) {

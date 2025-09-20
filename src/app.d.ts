@@ -3,19 +3,24 @@
 
 // Security class type because this file cannot import anything
 declare global {
-  class Security {
+  interface SecurityLike {
+    userId: number;
+    roles: Map<number, number[]>;
+  }
+  class Security implements SecurityLike {
     public readonly isSuperAdmin: boolean;
     public readonly userId: number;
     public readonly organizationMemberships: number[];
     public readonly roles: Map<number, number[]>;
     requireAuthenticated(): void | never;
     requireSuperAdmin(): this | never;
-    requireAdminForOrg(organizationId: number): this | never;
-    requireAdminForOrgIn(organizationIds: number[]): this | never;
+    requireAdminOfOrg(organizationId: number): this | never;
+    requireAdminOfOrgIn(organizationIds: number[]): this | never;
     requireAdminOfAny(): this | never;
-    requireHasRole(organizationId: number, roleId: number): this | never;
+    requireHasRole(organizationId: number, roleId: number, orOrgAdmin = true): this | never;
     requireMemberOfOrg(organizationId: number): this | never;
     requireMemberOfOrgOrSuperAdmin(organizationId: number): this | never;
+    requireProjectWriteAccess(project?: { OwnerId: number; OrganizationId: number }): this | never;
     requireMemberOfAnyOrg(): this | never;
     requireNothing(): this | never;
   }

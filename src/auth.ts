@@ -1,29 +1,16 @@
-import {
-  type DefaultSession,
-  type Session,
-  SvelteKitAuth,
-  type SvelteKitAuthConfig
-} from '@auth/sveltekit';
+import { type DefaultSession, SvelteKitAuth, type SvelteKitAuthConfig } from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { trace } from '@opentelemetry/api';
-import { type Handle, error, isHttpError, redirect } from '@sveltejs/kit';
+import { type Handle, error, redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
-import { verifyCanEdit, verifyCanView } from '$lib/projects/server';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { adminOrgs } from '$lib/users/server';
-import { ServerStatus } from '$lib/utils';
-import { isAdmin, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
 
 declare module '@auth/sveltekit' {
   interface Session {
-    user: {
-      userId: number;
-      /** [organizationId, RoleId][]*/
-      roles: [number, RoleId][];
-    } & DefaultSession['user'];
+    user: SecurityLike & DefaultSession['user'];
   }
 }
 // Stupidly hacky way to get access to the request data from the auth callbacks
@@ -130,10 +117,15 @@ const config: SvelteKitAuthConfig = {
           UserId: token.userId as number
         }
       });
-      session.user.roles = userRoles.map((role) => [role.OrganizationId, role.RoleId]);
+      const rolesMap = new Map<number, RoleId[]>();
+      for (const { OrganizationId, RoleId } of userRoles) {
+        if (!rolesMap.has(OrganizationId)) rolesMap.set(OrganizationId, []);
+        rolesMap.get(OrganizationId)!.push(RoleId);
+      }
+      session.user.roles = rolesMap;
       trace.getActiveSpan()?.addEvent('session callback completed', {
         'auth.session.userId': session.user.userId,
-        'auth.session.roles': JSON.stringify(session.user.roles)
+        'auth.session.roles': JSON.stringify([...session.user.roles.entries()])
       });
       return session;
     }
@@ -168,7 +160,7 @@ export class Security {
     return this;
   }
 
-  requireAdminForOrgIn(organizationIds: number[]) {
+  requireAdminOfOrgIn(organizationIds: number[]) {
     this.requireAuthenticated();
     if (
       !this.isSuperAdmin &&
@@ -179,9 +171,9 @@ export class Security {
     return this;
   }
 
-  requireAdminForOrg(organizationId: number) {
+  requireAdminOfOrg(organizationId: number) {
     this.requireAuthenticated();
-    this.requireAdminForOrgIn([organizationId]);
+    this.requireAdminOfOrgIn([organizationId]);
     return this;
   }
 
@@ -192,9 +184,13 @@ export class Security {
     return this;
   }
 
-  requireHasRole(organizationId: number, roleId: RoleId) {
+  requireHasRole(organizationId: number, roleId: RoleId, orOrgAdmin = true) {
     this.requireAuthenticated();
-    if (!this.isSuperAdmin && !this.roles.get(organizationId)?.includes(roleId))
+    if (
+      !this.isSuperAdmin &&
+      !this.roles.get(organizationId)?.includes(roleId) &&
+      !(orOrgAdmin && this.roles.get(organizationId)?.includes(RoleId.OrgAdmin))
+    )
       error(403, 'User does not have the required role ' + roleId);
     return this;
   }
@@ -212,6 +208,17 @@ export class Security {
     return this;
   }
 
+  requireProjectWriteAccess(project?: { OwnerId: number; OrganizationId: number }) {
+    this.requireAuthenticated();
+    if (!project) {
+      error(400, 'Project is required for write access check');
+    }
+    if (!this.isSuperAdmin && project.OwnerId !== this.userId) {
+      this.requireAdminOfOrg(project.OrganizationId);
+    }
+    return this;
+  }
+
   requireMemberOfAnyOrg() {
     this.requireAuthenticated();
     if (this.organizationMemberships.length === 0)
@@ -226,9 +233,9 @@ export class Security {
 }
 
 export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
-  const session = (await event.locals.auth())?.user;
+  const security = (await event.locals.auth())?.user;
   try {
-    if (session) {
+    if (security) {
       // If the user does not exist in the database, invalidate the login and redirect to prevent unauthorized access
       // This can happen when the user is deleted from the database but still has a valid session.
       // This should only happen when a superadmin manually deletes a user but is particularly annoying in development
@@ -236,26 +243,19 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
       // Finally, the user should be redirected if they are locked
       const user = await DatabaseReads.users.findUnique({
         where: {
-          Id: session.userId
+          Id: security.userId
         },
         include: {
           OrganizationMemberships: true
         }
       });
 
-      // Create a map of organizationId -> RoleId[]
-      const rolesMap = new Map<number, RoleId[]>();
-      for (const [orgId, roleId] of session.roles) {
-        if (!rolesMap.has(orgId)) rolesMap.set(orgId, []);
-        rolesMap.get(orgId)!.push(roleId);
-      }
-
       trace.getActiveSpan()?.addEvent('checkUserExistsHandle completed', {
-        'auth.userId': session?.userId,
+        'auth.userId': security?.userId,
         'auth.user': user ? user.Email + ' - ' + user.Id : 'null',
         'auth.user.OrganizationMemberships':
           user?.OrganizationMemberships.map((o) => o.OrganizationId).join(', ') ?? 'null',
-        'auth.user.roles': user ? JSON.stringify(rolesMap.entries()) : 'null',
+        'auth.user.roles': user ? JSON.stringify([...security.roles.entries()]) : 'null',
         'auth.user.IsLocked': user ? user.IsLocked + '' : 'null'
       });
 
@@ -272,9 +272,9 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
       }
       event.locals.security = new Security(
         event,
-        session.userId,
+        security.userId,
         user.OrganizationMemberships.map((o) => o.OrganizationId),
-        rolesMap
+        security.roles
       );
     }
   } finally {
@@ -314,125 +314,3 @@ export const organizationInviteHandle: Handle = async ({ event, resolve }) => {
   tokenStatus = null;
   return result;
 };
-
-// This is entirely unused now but will be referenced for setting up individual guards.
-// Locks down the authenticated routes by redirecting to /login
-// This guarantees a logged in user under (authenticated) but does not guarantee
-// authorization to the route. Each page must manually check in +page.server.ts or here
-export const localRouteHandle: Handle = async ({ event, resolve }) => {
-  if (
-    !event.route.id?.startsWith('/(unauthenticated)') &&
-    event.route.id !== '/' &&
-    event.route.id !== null
-  ) {
-    const session = await event.locals.auth();
-    if (!session) return redirect(302, localizeHref('/login'));
-    const status = await validateRouteForAuthenticatedUser(
-      session,
-      event.route.id,
-      event.params,
-      event.request.method
-    );
-    trace.getActiveSpan()?.addEvent('localRouteHandle completed', {
-      'auth.localRouteHandle.routeId': event.route.id ?? 'null',
-      'auth.localRouteHandle.params': JSON.stringify(event.params),
-      'auth.localRouteHandle.session.userId': session.user.userId,
-      'auth.localRouteHandle.session.roles': JSON.stringify(session.user.roles),
-      'auth.localRouteHandle.status': status
-    });
-    if (status !== ServerStatus.Ok) {
-      // error.html is extremely ugly, so we use a manual error throw
-      // event.locals.error = status;
-    }
-  }
-  return resolve(event);
-};
-
-async function validateRouteForAuthenticatedUser(
-  session: Session,
-  route: string,
-  params: Partial<Record<string, string>>,
-  method: string
-): Promise<ServerStatus> {
-  const path = route.split('/').filter((r) => !!r);
-  // Only guarding authenticated routes
-  if (path[0] === '(authenticated)') {
-    if (path[1] === 'admin' || path[1] === 'workflow-instances')
-      return isSuperAdmin(session?.user?.roles) ? ServerStatus.Ok : ServerStatus.Forbidden;
-    else if (path[1] === 'directory' || path[1] === 'open-source')
-      // Always allowed. Open pages
-      return ServerStatus.Ok;
-    else if (path[1] === 'organizations') {
-      // Must be org admin for some organization (or a super admin)
-      if (!isAdmin(session?.user?.roles)) return ServerStatus.Forbidden;
-      if (params.id) {
-        // Must be org admin for specified organization (or a super admin)
-        const Id = parseInt(params.id);
-        if (isNaN(Id) || !(await DatabaseReads.organizations.findFirst({ where: { Id } }))) {
-          return ServerStatus.NotFound;
-        }
-        return isAdminForOrg(Id, session?.user?.roles) ? ServerStatus.Ok : ServerStatus.Forbidden;
-      }
-      return ServerStatus.Ok;
-    } else if (path[1] === 'products') {
-      try {
-        const product = await DatabaseReads.products.findFirst({
-          where: {
-            Id: params.id
-          }
-        });
-        if (!product) return ServerStatus.NotFound;
-        // Must be allowed to view associated project
-        // (this route was originally part of the project page but was moved elsewhere to improve load time)
-        return await verifyCanView(session, product.ProjectId);
-      } catch {
-        return ServerStatus.NotFound;
-      }
-    } else if (path[1] === 'projects') {
-      if (path[2] === '[filter=projectSelector]') return ServerStatus.Ok;
-      else if (path[2] === '[id=idNumber]') {
-        // prevent edits and actions without breaking SSE
-        if (path[3] === 'edit' || (method !== 'GET' && path[3] !== 'sse')) {
-          return await verifyCanEdit(session, parseInt(params.id!));
-        }
-        // A project can be viewed if the user is an admin or in the project's group
-        return await verifyCanView(session, parseInt(params.id!));
-      }
-      return ServerStatus.Ok;
-    } else if (path[1] === 'tasks') {
-      // Own task list always allowed, and specific products checked manually
-      return ServerStatus.Ok;
-    } else if (path[1] === 'users') {
-      // /(invite): admin
-      if (path.length === 2 || path[2] === 'invite') {
-        return isAdmin(session?.user?.roles) ? ServerStatus.Ok : ServerStatus.Forbidden;
-      } else if (path[2] === '[id=idNumber]') {
-        // /id: not implemented yet (ISSUE #1142)
-        const subjectId = parseInt(params.id!);
-        if (!(await DatabaseReads.users.findFirst({ where: { Id: subjectId } })))
-          return ServerStatus.NotFound;
-        const admin = !!(await DatabaseReads.organizations.findFirst({
-          where: adminOrgs(subjectId, session.user.userId, isSuperAdmin(session.user.roles)),
-          select: {
-            Id: true
-          }
-        }));
-        // /id/settings/(profile): self and admin
-        if (!path.at(4) || path[4] === 'profile') {
-          return subjectId === session.user.userId || admin
-            ? ServerStatus.Ok
-            : ServerStatus.Forbidden;
-        } else {
-          // /id/settings/*: admin
-          return admin ? ServerStatus.Ok : ServerStatus.Forbidden;
-        }
-      }
-      return ServerStatus.Ok;
-    } else {
-      // Unknown route. We'll assume it's a legal route
-      return ServerStatus.Ok;
-    }
-  } else {
-    return ServerStatus.Ok;
-  }
-}

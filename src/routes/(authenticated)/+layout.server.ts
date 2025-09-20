@@ -9,19 +9,15 @@ import { getUserTasks } from '$lib/projects/sse';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
 import type { Entries } from '$lib/utils';
-import { isSuperAdmin } from '$lib/utils/roles';
 
 export const load: LayoutServerLoad = async (event) => {
-  const user = (await event.locals.auth())!.user;
+  event.locals.security.requireAuthenticated();
+  const sec = event.locals.security;
   const organizations = await DatabaseReads.organizations.findMany({
-    where: isSuperAdmin(user.roles)
+    where: sec.isSuperAdmin
       ? undefined
       : {
-          OrganizationMemberships: {
-            some: {
-              UserId: user.userId
-            }
-          }
+          Id: { in: sec.organizationMemberships }
         },
     select: {
       Id: true,
@@ -35,7 +31,7 @@ export const load: LayoutServerLoad = async (event) => {
 
   return {
     organizations,
-    userTasks: await getUserTasks(user.userId),
+    userTasks: await getUserTasks(sec.userId),
     // streaming promise
     langtags: await readFile(join(localDir, 'langtags.json'))
       .then((j) => {

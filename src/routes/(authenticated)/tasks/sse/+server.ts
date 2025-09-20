@@ -4,7 +4,8 @@ import { SSEPageUpdates } from '$lib/projects/listener';
 import { getUserTasks } from '$lib/projects/sse';
 
 export async function POST(request) {
-  const userId = (await request.locals.auth())!.user.userId;
+  request.locals.security.requireAuthenticated();
+  const userId = request.locals.security.userId;
   return produce(async function start({ emit, lock }) {
     const { error } = emit('userTasks', stringify(await getUserTasks(userId)));
     if (error) {
