@@ -4,7 +4,8 @@ import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseConnected } from '$lib/server/database';
 
 export const load: PageServerLoad = async (event) => {
-  if (await event.locals.auth()) return redirect(302, localizeHref('/tasks'));
+  event.locals.security.requireNothing();
+  if (event.locals.security.userId) redirect(302, localizeHref('/tasks'));
   return {
     serviceAvailable: DatabaseConnected()
   };

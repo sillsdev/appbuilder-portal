@@ -13,7 +13,8 @@ const editSchema = v.object({
   description: v.nullable(v.string()),
   storeType: idSchema
 });
-export const load = (async ({ url }) => {
+export const load = (async ({ url, locals }) => {
+  locals.security.requireSuperAdmin();
   const id = parseInt(url.searchParams.get('id') ?? '');
   if (isNaN(id)) {
     return redirect(302, localizeHref('/admin/settings/stores'));
@@ -38,7 +39,8 @@ export const load = (async ({ url }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  async edit({ request }) {
+  async edit({ request, locals }) {
+    locals.security.requireSuperAdmin();
     const form = await superValidate(request, valibot(editSchema));
     if (!form.valid) {
       return fail(400, { form, ok: false });

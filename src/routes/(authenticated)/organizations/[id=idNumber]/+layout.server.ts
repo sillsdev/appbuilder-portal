@@ -5,8 +5,7 @@ import { DatabaseReads } from '$lib/server/database';
 
 export const load = (async (event) => {
   const id = parseInt(event.params.id);
-  // perms checked in auth.ts
-  if (isNaN(id)) return redirect(302, localizeHref('/organizations'));
+  event.locals.security.requireAdminOfOrg(id);
   const organization = await DatabaseReads.organizations.findUnique({
     where: {
       Id: id

@@ -5,7 +5,8 @@ import { localizeHref } from '$lib/paraglide/runtime';
 import { QueueConnected } from '$lib/server/bullmq';
 
 export const load: PageServerLoad = async (event) => {
-  if ((await event.locals.auth())?.user && QueueConnected()) {
+  event.locals.security.requireNothing();
+  if (event.locals.security.userId && QueueConnected()) {
     if (event.cookies.get('inviteToken')) {
       const inviteToken = event.cookies.get('inviteToken')!;
       return redirect(302, localizeHref('/invitations/organization-membership?t=' + inviteToken));

@@ -4,17 +4,17 @@ import type { KeyObject } from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
 import { building } from '$app/environment';
 import { env } from '$env/dynamic/private';
-import { ProductTransitionType } from '$lib/prisma';
+import { ProductTransitionType, RoleId } from '$lib/prisma';
 import { BuildEngine } from '$lib/server/build-engine-api';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { isAdmin } from '$lib/utils/roles';
 
 const TOKEN_USE_HEADER = 'Use';
 const TOKEN_USE_UPLOAD = 'Upload';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TOKEN_USE_DOWNLOAD = 'Download';
 
-export async function POST({ params, request, fetch }) {
+export async function POST({ params, locals, request, fetch }) {
+  locals.security.requireNothing();
   if (!request.headers.get('Authorization')) {
     return error(401, `Unauthorized`);
   }
@@ -102,8 +102,11 @@ export async function POST({ params, request, fetch }) {
 
   // Check roles
   if (readOnly === null) {
-    if (isAdmin(user[0].UserRoles.map((ur) => [ur.OrganizationId, ur.RoleId]))) {
-      readOnly = true;
+    if (
+      locals.security.isSuperAdmin ||
+      locals.security.roles.get(project.OrganizationId)?.includes(RoleId.OrgAdmin)
+    ) {
+      readOnly = false;
     }
   }
 

@@ -6,15 +6,14 @@ import type { Actions, PageServerLoad } from './$types';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
-import { isSuperAdmin } from '$lib/utils/roles';
 import { WorkflowAction, type WorkflowState } from '$lib/workflowTypes';
 
 const jumpStateSchema = v.object({
   state: v.string()
 });
 
-export const load: PageServerLoad = async ({ params }) => {
-  // route already protected by hooks.server.ts
+export const load: PageServerLoad = async ({ params, locals }) => {
+  locals.security.requireSuperAdmin();
   const product = await DatabaseReads.products.findUnique({
     where: {
       Id: params.product_id
@@ -105,10 +104,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 export const actions = {
   default: async ({ request, params, locals }) => {
-    if (!isSuperAdmin((await locals.auth())?.user.roles)) {
-      return error(403);
-    }
-
+    locals.security.requireSuperAdmin();
     const form = await superValidate(request, valibot(jumpStateSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 

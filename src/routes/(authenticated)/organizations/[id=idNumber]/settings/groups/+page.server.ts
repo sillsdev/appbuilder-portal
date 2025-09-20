@@ -11,6 +11,7 @@ const addGroupSchema = v.object({
 });
 
 export const load = (async (event) => {
+  event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
   const { organization } = await event.parent();
   return {
     groups: await DatabaseReads.groups.findMany({ where: { OwnerId: organization.Id } }),
@@ -20,6 +21,7 @@ export const load = (async (event) => {
 
 export const actions = {
   async addGroup(event) {
+    event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
     const form = await superValidate(event.request, valibot(addGroupSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const group = await DatabaseWrites.groups.createGroup(
@@ -30,6 +32,7 @@ export const actions = {
     return { form, ok: true, createdId: group.Id };
   },
   async deleteGroup(event) {
+    event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     if (

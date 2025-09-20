@@ -3,8 +3,8 @@ import type { PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 
 export const load = (async (event) => {
-  const data = await event.parent();
-  let orgDefault = data.organizations[0]?.Id;
+  event.locals.security.requireAuthenticated();
+  let orgRedirect = event.locals.security.organizationMemberships[0];
 
   // Try to get orgLastSelected from cookie
   const cookieHeader = event.request.headers.get('cookie');
@@ -13,14 +13,17 @@ export const load = (async (event) => {
     if (match) {
       const orgLastSelected = decodeURIComponent(match[1]);
       // Only use if it matches an org in the list
-      if (data.organizations.some((org) => String(org.Id) === orgLastSelected)) {
-        orgDefault = Number(orgLastSelected);
+      if (
+        !isNaN(Number(orgLastSelected)) &&
+        event.locals.security.organizationMemberships.includes(Number(orgLastSelected))
+      ) {
+        orgRedirect = Number(orgLastSelected);
       }
     }
   }
 
-  if (data.organizations.length >= 1) {
-    return redirect(302, localizeHref(`/projects/${event.params.filter}/${orgDefault}`));
+  if (orgRedirect) {
+    return redirect(302, localizeHref(`/projects/${event.params.filter}/${orgRedirect}`));
   }
   return {};
 }) satisfies PageServerLoad;

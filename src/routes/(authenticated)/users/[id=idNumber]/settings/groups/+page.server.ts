@@ -5,7 +5,6 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { adminOrgs } from '$lib/users/server';
-import { isSuperAdmin } from '$lib/utils/roles';
 import { idSchema } from '$lib/valibot';
 
 const toggleGroupSchema = v.object({
@@ -15,12 +14,12 @@ const toggleGroupSchema = v.object({
 });
 
 export const load = (async ({ params, locals }) => {
+  locals.security.requireAuthenticated();
   const subjectId = parseInt(params.id);
-  const user = (await locals.auth())!.user;
 
   return {
     groupsByOrg: await DatabaseReads.organizations.findMany({
-      where: adminOrgs(subjectId, user.userId, isSuperAdmin(user.roles)),
+      where: adminOrgs(subjectId, locals.security.userId, locals.security.isSuperAdmin),
       select: {
         Id: true,
         Groups: {
@@ -50,18 +49,19 @@ export const actions = {
     // This way they can be added and removed in constant time and in a single command
     // https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations
 
+    event.locals.security.requireAuthenticated();
+
     const form = await superValidate(event, valibot(toggleGroupSchema));
 
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const user = (await event.locals.auth())!.user;
     const subjectId = parseInt(event.params.id);
     // if user modified hidden values
     if (
       !(await DatabaseReads.organizations.findFirst({
         where: {
           AND: [
-            adminOrgs(subjectId, user.userId, isSuperAdmin(user.roles), form.data.orgId),
+            adminOrgs(subjectId, event.locals.security.userId, event.locals.security.isSuperAdmin),
             { Groups: { some: { Id: form.data.groupId } } }
           ]
         }

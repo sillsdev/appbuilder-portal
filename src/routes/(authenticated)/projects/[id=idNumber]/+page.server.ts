@@ -34,9 +34,15 @@ const productActionSchema = v.object({
 });
 
 export const load = (async ({ locals, params }) => {
-  // permissions checked in auth
+  locals.security.requireProjectWriteAccess(
+    await DatabaseReads.projects.findUniqueOrThrow({
+      where: { Id: parseInt(params.id) },
+      select: { OwnerId: true, OrganizationId: true }
+    })
+  );
+  if (isNaN(parseInt(params.id))) throw error(404, 'Not Found');
   return {
-    projectData: await getProjectDetails(parseInt(params.id), (await locals.auth())!.user.userId),
+    projectData: await getProjectDetails(parseInt(params.id), locals.security),
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
@@ -52,7 +58,12 @@ async function verifyProduct(event: RequestEvent, Id: string) {
 
 export const actions = {
   async deleteProduct(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUniqueOrThrow({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
     if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
@@ -64,7 +75,12 @@ export const actions = {
     return { form, ok: true };
   },
   async deleteAuthor(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUniqueOrThrow({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
     if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
@@ -91,7 +107,13 @@ export const actions = {
     return { form, ok: true };
   },
   async deleteReviewer(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUniqueOrThrow({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
+    if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     if (
@@ -106,7 +128,12 @@ export const actions = {
     return { form, ok: true };
   },
   async addProduct(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUniqueOrThrow({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
     if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(addProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
@@ -131,7 +158,12 @@ export const actions = {
     return { form, ok: true };
   },
   async productAction(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUniqueOrThrow({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
     if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(productActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
@@ -144,7 +176,12 @@ export const actions = {
     return { form, ok: true };
   },
   async updateProduct(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUniqueOrThrow({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
     const form = await superValidate(event.request, valibot(updateProductPropertiesSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     // if user modified hidden values
@@ -158,7 +195,12 @@ export const actions = {
     return { form, ok: !!productId };
   },
   async addAuthor(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUniqueOrThrow({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
     if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(addAuthorSchema));
     if (!form.valid) return fail(400, { form, ok: false });
@@ -196,7 +238,12 @@ export const actions = {
     return { form, ok: true };
   },
   async addReviewer(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUniqueOrThrow({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
     const form = await superValidate(event.request, valibot(addReviewerSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     await DatabaseWrites.reviewers.create({
@@ -208,7 +255,12 @@ export const actions = {
     return { form, ok: true };
   },
   async toggleVisibility(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUniqueOrThrow({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
     const form = await superValidate(
       event.request,
       valibot(
@@ -224,7 +276,12 @@ export const actions = {
     return { form, ok: true };
   },
   async toggleDownload(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUniqueOrThrow({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
     const form = await superValidate(
       event.request,
       valibot(
@@ -240,7 +297,12 @@ export const actions = {
     return { form, ok: true };
   },
   async editOwnerGroup(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUniqueOrThrow({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
     const form = await superValidate(event.request, valibot(updateOwnerGroupSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const projectId = parseInt(event.params.id);
@@ -257,7 +319,12 @@ export const actions = {
     return { form, ok: success };
   },
   async projectAction(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUniqueOrThrow({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
     if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(projectActionSchema));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
@@ -274,15 +341,13 @@ export const actions = {
       }
     });
 
-    const session = (await event.locals.auth())!;
-
     await doProjectAction(
       form.data.operation,
       project,
-      session,
+      event.locals.security,
       project.OrganizationId,
       form.data.operation === 'claim'
-        ? (await userGroupsForOrg(session.user.userId, project.OrganizationId)).map(
+        ? (await userGroupsForOrg(event.locals.security.userId, project.OrganizationId)).map(
             (g) => g.GroupId
           )
         : []

@@ -4,6 +4,7 @@ import { acceptOrganizationInvite, checkInviteErrors } from '$lib/organizationIn
 import { localizeHref } from '$lib/paraglide/runtime';
 
 export const load = (async (event) => {
+  event.locals.security.requireNothing();
   const inviteToken = event.url.searchParams.get('t')!;
   // Clear the inviteToken cookie if it exists
   if (event.cookies.get('inviteToken')) {

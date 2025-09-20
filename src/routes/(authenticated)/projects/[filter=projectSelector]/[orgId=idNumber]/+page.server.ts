@@ -7,13 +7,7 @@ import type { PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
-import {
-  type MaybeSession,
-  bulkProjectActionSchema,
-  canModifyProject,
-  projectSearchSchema,
-  pruneProjects
-} from '$lib/projects';
+import { bulkProjectActionSchema, projectSearchSchema, pruneProjects } from '$lib/projects';
 import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/server';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
@@ -28,20 +22,20 @@ const bulkProductActionSchema = v.object({
 function whereStatements(
   paramFilter: string,
   orgId: number,
-  user: MaybeSession
+  user: SecurityLike
 ): Prisma.ProjectsWhereInput {
-  if (isAdminForOrg(orgId, user?.user.roles)) {
-    return filter(paramFilter, orgId, user?.user.userId);
+  if (isAdminForOrg(orgId, user.roles)) {
+    return filter(paramFilter, orgId, user.userId);
   } else {
     return {
       Group: {
         GroupMemberships: {
           some: {
-            UserId: user?.user.userId
+            UserId: user.userId
           }
         }
       },
-      ...filter(paramFilter, orgId, user?.user.userId)
+      ...filter(paramFilter, orgId, user.userId)
     };
   }
 }
@@ -83,18 +77,18 @@ function filter(filter: string, orgId: number, userId?: number): Prisma.Projects
 }
 
 export const load = (async ({ params, locals }) => {
-  const session = (await locals.auth())!;
-  const orgId = parseInt(params.id);
+  locals.security.requireMemberOfOrgOrSuperAdmin(parseInt(params.orgId));
+  const orgId = parseInt(params.orgId);
   if (
     isNaN(orgId) ||
-    !(orgId + '' === params.id) ||
+    !(orgId + '' === params.orgId) ||
     !(await DatabaseReads.organizations.findFirst({ where: { Id: orgId } }))
   ) {
     return redirect(302, localizeHref(`/projects/${params.filter}`));
   }
 
   const projects = await DatabaseReads.projects.findMany({
-    where: whereStatements(params.filter, orgId, session),
+    where: whereStatements(params.filter, orgId, locals.security),
     include: {
       Products: {
         include: {
@@ -126,7 +120,7 @@ export const load = (async ({ params, locals }) => {
       valibot(projectSearchSchema)
     ),
     count: await DatabaseReads.projects.count({
-      where: whereStatements(params.filter, orgId, session)
+      where: whereStatements(params.filter, orgId, locals.security)
     }),
     actionForm: await superValidate(valibot(bulkProjectActionSchema)),
     productForm: await superValidate(valibot(bulkProductActionSchema)),
@@ -134,23 +128,22 @@ export const load = (async ({ params, locals }) => {
     /** allow actions other than reactivation */
     allowActions: params.filter !== 'archived',
     allowReactivate: params.filter === 'all' || params.filter === 'archived',
-    userGroups: (await userGroupsForOrg(session.user.userId, orgId)).map((g) => g.GroupId),
+    userGroups: (await userGroupsForOrg(locals.security.userId, orgId)).map((g) => g.GroupId),
     jobsAvailable: QueueConnected()
   };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
   page: async function ({ params, request, locals }) {
-    const user = (await locals.auth())!;
-
+    locals.security.requireMemberOfOrgOrSuperAdmin(parseInt(params.orgId!));
     const form = await superValidate(request, valibot(projectSearchSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const organizationId = parseInt(params.id!);
+    const organizationId = parseInt(params.orgId!);
 
     const where: Prisma.ProjectsWhereInput = {
       ...projectFilter({ ...form.data, organizationId }),
-      ...whereStatements(params.filter!, organizationId, user)
+      ...whereStatements(params.filter!, organizationId, locals.security)
     };
 
     const projects = await DatabaseReads.projects.findMany({
@@ -181,12 +174,11 @@ export const actions: Actions = {
     return { form, ok: true, query: { data: pruneProjects(projects), count } };
   },
   projectAction: async (event) => {
-    const session = await event.locals.auth();
-    if (!session) return fail(403);
-    const orgId = parseInt(event.params.id!);
+    event.locals.security.requireAuthenticated();
+    const orgId = parseInt(event.params.orgId!);
     if (
       isNaN(orgId) ||
-      !(orgId + '' === event.params.id) ||
+      !(orgId + '' === event.params.orgId) ||
       !(await DatabaseReads.organizations.findFirst({ where: { Id: orgId } }))
     ) {
       return fail(404);
@@ -211,29 +203,30 @@ export const actions: Actions = {
         Id: true,
         DateArchived: true,
         OwnerId: true,
-        GroupId: true
+        GroupId: true,
+        OrganizationId: true
       }
     });
-    if (!projects.every((p) => canModifyProject(session, p.OwnerId, orgId))) {
+    if (!projects.every((p) => event.locals.security.requireProjectWriteAccess(p))) {
       return fail(403);
     }
 
     const groups =
       form.data.operation === 'claim'
-        ? (await userGroupsForOrg(session.user.userId, orgId)).map((g) => g.GroupId)
+        ? (await userGroupsForOrg(event.locals.security.userId, orgId)).map((g) => g.GroupId)
         : [];
     await Promise.all(
       projects.map(async (project) => {
-        await doProjectAction(form.data.operation, project, session, orgId, groups);
+        await doProjectAction(form.data.operation, project, event.locals.security, orgId, groups);
       })
     );
 
     return { form, ok: true };
   },
   productAction: async (event) => {
-    const session = await event.locals.auth();
-    const orgId = parseInt(event.params.id!);
-    if (isNaN(orgId) || !(orgId + '' === event.params.id)) return fail(404);
+    event.locals.security.requireAuthenticated();
+    const orgId = parseInt(event.params.orgId!);
+    if (isNaN(orgId) || !(orgId + '' === event.params.orgId)) return fail(404);
 
     if (!QueueConnected()) return error(503);
 
@@ -243,27 +236,26 @@ export const actions: Actions = {
     // if any associated project is inaccessible, 403
     // if user modified hidden values
     if (
-      !(
-        (await DatabaseReads.products.count({ where: { Id: { in: form.data.products } } })) ===
-          form.data.products.length &&
-        (
-          await DatabaseReads.projects.findMany({
-            where: {
-              Products: {
-                some: {
-                  Id: { in: form.data.products }
-                }
-              }
-            },
-            select: {
-              OwnerId: true
-            }
-          })
-        ).every((p) => canModifyProject(session, p.OwnerId, orgId))
-      )
+      (await DatabaseReads.products.count({ where: { Id: { in: form.data.products } } })) !==
+      form.data.products.length
     ) {
-      return fail(403);
+      throw error(403);
     }
+    (
+      await DatabaseReads.projects.findMany({
+        where: {
+          Products: {
+            some: {
+              Id: { in: form.data.products }
+            }
+          }
+        },
+        select: {
+          OwnerId: true,
+          OrganizationId: true
+        }
+      })
+    ).forEach((p) => event.locals.security.requireProjectWriteAccess(p));
 
     await Promise.all(form.data.products.map((p) => doProductAction(p, form.data.operation!)));
 

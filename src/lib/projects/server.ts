@@ -1,55 +1,9 @@
-import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
 import { RoleId } from '$lib/prisma';
-import { type ProjectForAction, canClaimProject, canModifyProject } from '$lib/projects';
+import { type ProjectForAction, canClaimProject } from '$lib/projects';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { ServerStatus } from '$lib/utils';
-import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
-
-export async function verifyCanView(user: Session, projectId: number): Promise<ServerStatus> {
-  // Viewing is allowed if the user is an admin or is in the project's group
-  // Note: being in the project's group is a prerequisite for owning it
-  if (isNaN(projectId)) return ServerStatus.NotFound;
-  const project = await DatabaseReads.projects.findUnique({
-    where: {
-      Id: projectId
-    },
-    select: {
-      Id: true,
-      OwnerId: true,
-      GroupId: true,
-      OrganizationId: true
-    }
-  });
-  if (!project) return ServerStatus.NotFound;
-  return isAdminForOrg(project.OrganizationId, user.user.roles) ||
-    (await DatabaseReads.groupMemberships.findFirst({
-      where: { UserId: user.user.userId, GroupId: project.GroupId }
-    }))
-    ? ServerStatus.Ok
-    : ServerStatus.Forbidden;
-}
-
-export async function verifyCanEdit(user: Session, projectId: number): Promise<ServerStatus> {
-  // Editing is allowed if the user owns the project, or if the user is an organization
-  // admin for the project's organization, or if the user is a super admin
-  if (isNaN(projectId)) return ServerStatus.NotFound;
-  const project = await DatabaseReads.projects.findUnique({
-    where: {
-      Id: projectId
-    },
-    select: {
-      Id: true,
-      OwnerId: true,
-      OrganizationId: true
-    }
-  });
-  if (!project) return ServerStatus.NotFound;
-  return canModifyProject(user, project.OwnerId, project.OrganizationId)
-    ? ServerStatus.Ok
-    : ServerStatus.Forbidden;
-}
+import { isAdminForOrg } from '$lib/utils/roles';
 
 export function projectFilter(args: {
   organizationId: number | null;
@@ -144,12 +98,9 @@ export function projectFilter(args: {
     ]
   };
 }
-export function verifyCanCreateProject(user: Session, orgId: number): boolean {
+export function verifyCanCreateProject(user: Security, orgId: number): boolean {
   // Creating a project is allowed if the user is an OrgAdmin or AppBuilder for the organization or a SuperAdmin
-  return (
-    isAdminForOrg(orgId, user.user.roles) ||
-    hasRoleForOrg(RoleId.AppBuilder, orgId, user.user.roles)
-  );
+  return isAdminForOrg(orgId, user.roles) || !!user.roles.get(orgId)?.includes(RoleId.AppBuilder);
 }
 
 export async function userGroupsForOrg(userId: number, orgId: number) {
@@ -171,7 +122,7 @@ export async function userGroupsForOrg(userId: number, orgId: number) {
 export async function doProjectAction(
   operation: string | null,
   project: Omit<ProjectForAction, 'Name'>,
-  session: Session,
+  security: Security,
   orgId: number,
   groups: number[]
 ) {
@@ -201,10 +152,10 @@ export async function doProjectAction(
     });
   } else if (
     operation === 'claim' &&
-    canClaimProject(session, project?.OwnerId, orgId, project?.GroupId, groups)
+    canClaimProject(security, project?.OwnerId, orgId, project?.GroupId, groups)
   ) {
     await DatabaseWrites.projects.update(project.Id, {
-      OwnerId: session.user.userId
+      OwnerId: security.userId
     });
   }
 }

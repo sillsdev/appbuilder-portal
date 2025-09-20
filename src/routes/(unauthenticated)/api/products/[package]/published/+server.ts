@@ -12,7 +12,8 @@ type ManifestResponse = {
   files: string[];
 };
 
-export async function GET({ params }) {
+export async function GET({ params, locals }) {
+  locals.security.requireNothing();
   const res = await _getManifest(params.package);
   return res
     ? new Response(JSON.stringify(res), { status: 200 })

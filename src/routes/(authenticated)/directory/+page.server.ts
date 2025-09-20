@@ -7,8 +7,8 @@ import { projectSearchSchema, pruneProjects } from '$lib/projects';
 import { projectFilter } from '$lib/projects/server';
 import { DatabaseReads } from '$lib/server/database';
 
-export const load = (async () => {
-  // auth handled by hooks
+export const load = (async (event) => {
+  event.locals.security.requireAuthenticated();
   const projects = await DatabaseReads.projects.findMany({
     where: {
       IsPublic: true
@@ -60,8 +60,8 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  page: async function ({ request }) {
-    // auth handled by hooks
+  page: async function ({ request, locals }) {
+    locals.security.requireAuthenticated();
     const form = await superValidate(request, valibot(projectSearchSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 

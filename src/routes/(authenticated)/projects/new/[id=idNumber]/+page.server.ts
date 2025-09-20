@@ -3,13 +3,14 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
+import { RoleId } from '$lib/prisma';
 import { projectCreateSchema } from '$lib/projects';
 import { verifyCanCreateProject } from '$lib/projects/server';
 import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 
 export const load = (async ({ locals, params }) => {
-  if (!verifyCanCreateProject((await locals.auth())!, parseInt(params.id))) return error(403);
+  locals.security.requireHasRole(parseInt(params.id), RoleId.AppBuilder, true);
 
   if (!QueueConnected()) error(503);
   const organization = await DatabaseReads.organizations.findUnique({
@@ -51,11 +52,11 @@ export const load = (async ({ locals, params }) => {
 
 export const actions: Actions = {
   default: async function (event) {
-    const session = (await event.locals.auth())!;
+    event.locals.security.requireHasRole(parseInt(event.params.id), RoleId.AppBuilder, true);
     const organizationId = parseInt(event.params.id);
     const form = await superValidate(event.request, valibot(projectCreateSchema));
     if (isNaN(organizationId)) return error(404);
-    if (!verifyCanCreateProject(session, organizationId)) return error(403);
+    if (!verifyCanCreateProject(event.locals.security, organizationId)) return error(403);
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
@@ -63,7 +64,7 @@ export const actions: Actions = {
       OrganizationId: organizationId,
       Name: form.data.Name,
       GroupId: form.data.group,
-      OwnerId: session.user.userId,
+      OwnerId: event.locals.security.userId,
       Language: form.data.Language,
       TypeId: form.data.type,
       Description: form.data.Description ?? '',

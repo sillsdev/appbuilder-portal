@@ -15,9 +15,13 @@ const projectPropertyEditSchema = v.object({
   description: v.nullable(v.string())
 });
 
-export const load = (async ({ params }) => {
-  // permissions checked in auth
-  // verifyCanViewAndEdit already checks if project exists
+export const load = (async ({ params, locals }) => {
+  locals.security.requireProjectWriteAccess(
+    await DatabaseReads.projects.findUniqueOrThrow({
+      where: { Id: parseInt(params.id) },
+      select: { OwnerId: true, OrganizationId: true }
+    })
+  );
   const project = await DatabaseReads.projects.findUniqueOrThrow({
     where: {
       Id: parseInt(params.id)
@@ -71,7 +75,13 @@ export const load = (async ({ params }) => {
 
 export const actions: Actions = {
   default: async function (event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUniqueOrThrow({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
+    if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(projectPropertyEditSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const projectId = parseInt(event.params.id);

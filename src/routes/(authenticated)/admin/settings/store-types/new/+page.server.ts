@@ -10,13 +10,15 @@ const createSchema = v.object({
   description: v.nullable(v.string())
 });
 
-export const load = (async ({ url }) => {
+export const load = (async ({ locals }) => {
+  locals.security.requireSuperAdmin();
   const form = await superValidate(valibot(createSchema));
   return { form };
 }) satisfies PageServerLoad;
 
 export const actions = {
-  async new({ request }) {
+  async new({ request, locals }) {
+    locals.security.requireSuperAdmin();
     const form = await superValidate(request, valibot(createSchema));
     if (!form.valid) {
       return fail(400, { form, ok: false });

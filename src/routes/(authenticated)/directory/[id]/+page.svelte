@@ -21,7 +21,7 @@
 <div class="w-full max-w-6xl mx-auto relative">
   <div class="flex flex-col p-6">
     <div>
-      {#if canModifyProject(data.session, data.project.Owner.Id, data.project.Organization.Id)}
+      {#if canModifyProject(data.session.user, data.project.Owner.Id, data.project.Organization.Id)}
         <a class="link" href={localizeHref(`/projects/${data.project.Id}`)}>
           <h1 class="p-0">
             {data.project?.Name} ({data.project.Language ?? ''})

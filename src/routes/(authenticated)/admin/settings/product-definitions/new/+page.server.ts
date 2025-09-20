@@ -16,7 +16,8 @@ const createSchema = v.object({
   properties: propertiesSchema
 });
 
-export const load = (async ({ url }) => {
+export const load = (async ({ url, locals }) => {
+  locals.security.requireSuperAdmin();
   const form = await superValidate(valibot(createSchema));
   const options = {
     applicationTypes: await DatabaseReads.applicationTypes.findMany(),
@@ -26,7 +27,8 @@ export const load = (async ({ url }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  async new({ cookies, request }) {
+  async new({ cookies, request, locals }) {
+    locals.security.requireSuperAdmin();
     const form = await superValidate(request, valibot(createSchema));
     if (!form.valid) {
       return fail(400, { form, ok: false });

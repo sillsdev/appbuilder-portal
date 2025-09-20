@@ -4,7 +4,9 @@ import { DatabaseReads } from '$lib/server/database';
 
 export const load = (async ({ params, locals }) => {
   // need this for org membership check
-  const user = (await locals.auth())!.user;
+  locals.security.requireAuthenticated();
+  // Anyone can view a public project, even if not logged in
+  // But we need to check for org membership if downloads are allowed
   if (isNaN(parseInt(params.id))) return error(400);
   const projectCheck = await DatabaseReads.projects.findUnique({
     where: {
@@ -24,7 +26,7 @@ export const load = (async ({ params, locals }) => {
   const allowDownloads = !!(
     projectCheck.AllowDownloads ||
     (await DatabaseReads.organizationMemberships.findFirst({
-      where: { OrganizationId: projectCheck.OrganizationId, UserId: user.userId }
+      where: { OrganizationId: projectCheck.OrganizationId, UserId: locals.security.userId }
     }))
   );
 
