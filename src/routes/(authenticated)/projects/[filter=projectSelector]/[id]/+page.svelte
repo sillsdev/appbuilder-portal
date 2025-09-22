@@ -19,7 +19,7 @@
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
-  import { orgActive, orgLastSelected } from '$lib/stores';
+  import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
@@ -148,9 +148,6 @@
     $productForm.products = selectedProducts.map((p) => p.Id);
   });
 
-  $effect(() => {
-    $orgActive = $pageForm.organizationId || $orgLastSelected;
-  });
   const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 
   const canModifyProjects = $derived(
@@ -179,8 +176,8 @@
         <OrganizationDropdown
           className={mobileSizing}
           organizations={data.organizations}
-          bind:value={$pageForm.organizationId}
-          onchange={() => goto($pageForm.organizationId + '')}
+          bind:value={$orgActive}
+          onchange={() => goto(localizeHref(`/projects/${page.params.filter}/${$orgActive}`))}
         />
         <Tooltip className="tooltip-bottom {mobileSizing}">
           <div class="tooltip-content text-left">
