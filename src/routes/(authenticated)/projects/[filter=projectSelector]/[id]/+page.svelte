@@ -19,7 +19,7 @@
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
-  import { orgActive, orgLastSelected } from '$lib/stores';
+  import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
@@ -69,7 +69,7 @@
     submit: actionSubmit
   } = superForm(data.actionForm, {
     dataType: 'json',
-    invalidateAll: true,
+    invalidateAll: false,
     onChange: (event) => {
       if (
         event.paths.includes('operation') &&
@@ -85,6 +85,11 @@
     onError: ({ result }) => {
       if (result.status === 503) {
         toast('error', m.system_unavailable());
+      }
+    },
+    onUpdated: ({ form }) => {
+      if (form.data.operation === 'archive' || form.data.operation === 'reactivate') {
+        pageSubmit();
       }
     }
   });
@@ -108,16 +113,13 @@
     // this way worked much better for our use case
     projects = data.projects;
     count = data.count;
-    $pageForm.organizationId = parseInt(navigation.to!.params!.id);
   });
 
-  const organizationId = $derived(parseInt(page.params.id));
-
   let canArchiveSelected = $derived(
-    selectedProjects.every((p) => canArchive(p, page.data.session, organizationId))
+    selectedProjects.every((p) => canArchive(p, page.data.session, $orgActive))
   );
   let canReactivateSelected = $derived(
-    selectedProjects.every((p) => canReactivate(p, page.data.session, organizationId))
+    selectedProjects.every((p) => canReactivate(p, page.data.session, $orgActive))
   );
 
   const {
@@ -144,14 +146,11 @@
     $productForm.products = selectedProducts.map((p) => p.Id);
   });
 
-  $effect(() => {
-    $orgActive = $pageForm.organizationId || $orgLastSelected;
-  });
   const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 
   const canModifyProjects = $derived(
-    isAdminForOrg(organizationId, data.session?.user.roles) ||
-      hasRoleForOrg(RoleId.AppBuilder, organizationId, data.session?.user.roles)
+    isAdminForOrg($orgActive, data.session?.user.roles) ||
+      hasRoleForOrg(RoleId.AppBuilder, $orgActive, data.session?.user.roles)
   );
 </script>
 
@@ -175,8 +174,8 @@
         <OrganizationDropdown
           className={mobileSizing}
           organizations={data.organizations}
-          bind:value={$pageForm.organizationId}
-          onchange={() => goto($pageForm.organizationId + '')}
+          bind:value={$orgActive}
+          onchange={() => goto(localizeHref(`/projects/${page.params.filter}/${$orgActive}`))}
         />
         <Tooltip className="tooltip-bottom {mobileSizing}">
           <div class="tooltip-content text-left">
@@ -378,7 +377,7 @@
           {/snippet}
           <a
             class="btn btn-outline {mobileSizing}"
-            href={localizeHref(`/projects/import/${$pageForm.organizationId}`)}
+            href={localizeHref(`/projects/import/${$orgActive}`)}
           >
             {@render altContent()}
           </a>
@@ -389,7 +388,7 @@
           {/snippet}
           <a
             class="btn btn-outline {mobileSizing}"
-            href={localizeHref(`/projects/new/${$pageForm.organizationId}`)}
+            href={localizeHref(`/projects/new/${$orgActive}`)}
           >
             {@render altContent()}
           </a>
@@ -413,14 +412,19 @@
             {/if}
           {/snippet}
           {#snippet actions()}
-            {#if canModifyProjects || canClaimProject(data.session, project.OwnerId, organizationId, project.GroupId, data.userGroups)}
+            {#if canModifyProjects || canClaimProject(data.session, project.OwnerId, $orgActive, project.GroupId, data.userGroups)}
               <ProjectActionMenu
                 data={data.actionForm}
                 {project}
                 allowActions={data.allowActions}
                 allowReactivate={data.allowReactivate}
                 userGroups={data.userGroups}
-                orgId={organizationId}
+                orgId={$orgActive}
+                onUpdated={(operation) => {
+                  if (operation === 'archive' || operation === 'reactivate') {
+                    pageSubmit();
+                  }
+                }}
               />
             {/if}
           {/snippet}
