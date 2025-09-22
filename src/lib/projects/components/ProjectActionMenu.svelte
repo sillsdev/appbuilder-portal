@@ -35,7 +35,7 @@
 
   const { form, enhance, submit } = superForm(data, {
     dataType: 'json',
-    invalidateAll: true,
+    invalidateAll: false,
     warnings: { duplicateId: false },
     onChange: (event) => {
       if (event.paths.includes('operation') && $form.operation) {

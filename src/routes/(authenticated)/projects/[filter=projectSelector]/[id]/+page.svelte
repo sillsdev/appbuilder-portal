@@ -69,6 +69,7 @@
     submit: actionSubmit
   } = superForm(data.actionForm, {
     dataType: 'json',
+    invalidateAll: false,
     onChange: (event) => {
       if (
         event.paths.includes('operation') &&
