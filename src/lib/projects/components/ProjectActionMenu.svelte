@@ -19,6 +19,7 @@
     userGroups: number[];
     endpoint?: string;
     orgId: number;
+    onUpdated?: (operation: string) => void;
   }
 
   let {
@@ -28,7 +29,8 @@
     allowReactivate = true,
     userGroups,
     endpoint = 'projectAction',
-    orgId
+    orgId,
+    onUpdated
   }: Props = $props();
 
   const { form, enhance, submit } = superForm(data, {
@@ -44,6 +46,9 @@
       if (result.status === 503) {
         toast('error', m.system_unavailable());
       }
+    },
+    onUpdated: ({ form }) => {
+      onUpdated?.(form.data.operation!);
     }
   });
 </script>

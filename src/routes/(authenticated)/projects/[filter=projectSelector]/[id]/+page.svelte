@@ -69,7 +69,6 @@
     submit: actionSubmit
   } = superForm(data.actionForm, {
     dataType: 'json',
-    invalidateAll: true,
     onChange: (event) => {
       if (
         event.paths.includes('operation') &&
@@ -85,6 +84,11 @@
     onError: ({ result }) => {
       if (result.status === 503) {
         toast('error', m.system_unavailable());
+      }
+    },
+    onUpdated: ({ form }) => {
+      if (form.data.operation === 'archive' || form.data.operation === 'reactivate') {
+        pageSubmit();
       }
     }
   });
@@ -421,6 +425,11 @@
                 allowReactivate={data.allowReactivate}
                 userGroups={data.userGroups}
                 orgId={organizationId}
+                onUpdated={(operation) => {
+                  if (operation === 'archive' || operation === 'reactivate') {
+                    pageSubmit();
+                  }
+                }}
               />
             {/if}
           {/snippet}
