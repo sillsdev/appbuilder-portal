@@ -219,6 +219,38 @@ export class Security {
     return this;
   }
 
+  requireProjectReadAccess(
+    userGroups: { GroupId: number }[],
+    project?: { OwnerId: number; OrganizationId: number; GroupId: number }
+  ) {
+    this.requireAuthenticated();
+    if (!project) {
+      error(400, 'Project is required for read access check');
+    }
+    if (!userGroups.find((ug) => ug.GroupId === project.GroupId)) {
+      this.requireProjectWriteAccess(project);
+    }
+    return this;
+  }
+
+  requireProjectClaimable(
+    userGroups: { GroupId: number }[],
+    project?: { OwnerId: number; OrganizationId: number; GroupId: number }
+  ) {
+    this.requireAuthenticated();
+    if (!project) {
+      error(400, 'Project is required for claimability check');
+    }
+    if (this.userId === project.OwnerId) {
+      error(400, 'Project owner cannot claim own project');
+    }
+    return this.requireHasRole(
+      project.OrganizationId,
+      RoleId.AppBuilder,
+      true
+    ).requireProjectReadAccess(userGroups, project);
+  }
+
   requireMemberOfAnyOrg() {
     this.requireAuthenticated();
     if (this.organizationMemberships.length === 0)

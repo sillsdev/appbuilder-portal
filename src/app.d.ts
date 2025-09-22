@@ -21,6 +21,22 @@ declare global {
     requireMemberOfOrg(organizationId: number): this | never;
     requireMemberOfOrgOrSuperAdmin(organizationId: number): this | never;
     requireProjectWriteAccess(project?: { OwnerId: number; OrganizationId: number }): this | never;
+    requireProjectReadAccess(
+      userGroups: { GroupId: number }[],
+      project?: {
+        OwnerId: number;
+        OrganizationId: number;
+        GroupId: number;
+      }
+    ): this | never;
+    requireProjectClaimable(
+      userGroups: { GroupId: number }[],
+      project?: {
+        OwnerId: number;
+        OrganizationId: number;
+        GroupId: number;
+      }
+    ): this | never;
     requireMemberOfAnyOrg(): this | never;
     requireNothing(): this | never;
   }

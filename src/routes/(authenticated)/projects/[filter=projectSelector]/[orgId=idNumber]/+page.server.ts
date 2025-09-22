@@ -174,15 +174,8 @@ export const actions: Actions = {
     return { form, ok: true, query: { data: pruneProjects(projects), count } };
   },
   projectAction: async (event) => {
-    event.locals.security.requireAuthenticated();
     const orgId = parseInt(event.params.orgId!);
-    if (
-      isNaN(orgId) ||
-      !(orgId + '' === event.params.orgId) ||
-      !(await DatabaseReads.organizations.findFirst({ where: { Id: orgId } }))
-    ) {
-      return fail(404);
-    }
+    event.locals.security.requireMemberOfOrgOrSuperAdmin(parseInt(event.params.orgId!));
 
     if (!QueueConnected()) return error(503);
 
@@ -207,24 +200,34 @@ export const actions: Actions = {
         OrganizationId: true
       }
     });
-    if (!projects.every((p) => event.locals.security.requireProjectWriteAccess(p))) {
+
+    const groups = await userGroupsForOrg(event.locals.security.userId, orgId);
+
+    const allowAction =
+      form.data.operation === 'claim'
+        ? (p: (typeof projects)[0]) => event.locals.security.requireProjectClaimable(groups, p)
+        : (p: (typeof projects)[0]) => event.locals.security.requireProjectWriteAccess(p);
+
+    if (!projects.every(allowAction)) {
       return fail(403);
     }
 
-    const groups =
-      form.data.operation === 'claim'
-        ? (await userGroupsForOrg(event.locals.security.userId, orgId)).map((g) => g.GroupId)
-        : [];
     await Promise.all(
       projects.map(async (project) => {
-        await doProjectAction(form.data.operation, project, event.locals.security, orgId, groups);
+        await doProjectAction(
+          form.data.operation,
+          project,
+          event.locals.security,
+          orgId,
+          groups.map((g) => g.GroupId)
+        );
       })
     );
 
     return { form, ok: true };
   },
   productAction: async (event) => {
-    event.locals.security.requireAuthenticated();
+    event.locals.security.requireMemberOfOrgOrSuperAdmin(parseInt(event.params.orgId!));
     const orgId = parseInt(event.params.orgId!);
     if (isNaN(orgId) || !(orgId + '' === event.params.orgId)) return fail(404);
 
