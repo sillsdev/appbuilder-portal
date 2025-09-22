@@ -112,16 +112,13 @@
     // this way worked much better for our use case
     projects = data.projects;
     count = data.count;
-    $pageForm.organizationId = parseInt(navigation.to!.params!.id);
   });
 
-  const organizationId = $derived(parseInt(page.params.id));
-
   let canArchiveSelected = $derived(
-    selectedProjects.every((p) => canArchive(p, page.data.session, organizationId))
+    selectedProjects.every((p) => canArchive(p, page.data.session, $orgActive))
   );
   let canReactivateSelected = $derived(
-    selectedProjects.every((p) => canReactivate(p, page.data.session, organizationId))
+    selectedProjects.every((p) => canReactivate(p, page.data.session, $orgActive))
   );
 
   const {
@@ -151,8 +148,8 @@
   const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 
   const canModifyProjects = $derived(
-    isAdminForOrg(organizationId, data.session?.user.roles) ||
-      hasRoleForOrg(RoleId.AppBuilder, organizationId, data.session?.user.roles)
+    isAdminForOrg($orgActive, data.session?.user.roles) ||
+      hasRoleForOrg(RoleId.AppBuilder, $orgActive, data.session?.user.roles)
   );
 </script>
 
@@ -379,7 +376,7 @@
           {/snippet}
           <a
             class="btn btn-outline {mobileSizing}"
-            href={localizeHref(`/projects/import/${$pageForm.organizationId}`)}
+            href={localizeHref(`/projects/import/${$orgActive}`)}
           >
             {@render altContent()}
           </a>
@@ -390,7 +387,7 @@
           {/snippet}
           <a
             class="btn btn-outline {mobileSizing}"
-            href={localizeHref(`/projects/new/${$pageForm.organizationId}`)}
+            href={localizeHref(`/projects/new/${$orgActive}`)}
           >
             {@render altContent()}
           </a>
@@ -414,14 +411,14 @@
             {/if}
           {/snippet}
           {#snippet actions()}
-            {#if canModifyProjects || canClaimProject(data.session, project.OwnerId, organizationId, project.GroupId, data.userGroups)}
+            {#if canModifyProjects || canClaimProject(data.session, project.OwnerId, $orgActive, project.GroupId, data.userGroups)}
               <ProjectActionMenu
                 data={data.actionForm}
                 {project}
                 allowActions={data.allowActions}
                 allowReactivate={data.allowReactivate}
                 userGroups={data.userGroups}
-                orgId={organizationId}
+                orgId={$orgActive}
                 onUpdated={(operation) => {
                   if (operation === 'archive' || operation === 'reactivate') {
                     pageSubmit();
