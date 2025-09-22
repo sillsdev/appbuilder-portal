@@ -34,10 +34,14 @@ const productActionSchema = v.object({
 });
 
 export const load = (async ({ locals, params }) => {
-  locals.security.requireProjectWriteAccess(
+  locals.security.requireProjectReadAccess(
+    await DatabaseReads.groupMemberships.findMany({
+      where: { UserId: locals.security.userId },
+      select: { GroupId: true }
+    }),
     await DatabaseReads.projects.findUniqueOrThrow({
       where: { Id: parseInt(params.id) },
-      select: { OwnerId: true, OrganizationId: true }
+      select: { OwnerId: true, OrganizationId: true, GroupId: true }
     })
   );
   if (isNaN(parseInt(params.id))) throw error(404, 'Not Found');
@@ -297,21 +301,26 @@ export const actions = {
     return { form, ok: true };
   },
   async editOwnerGroup(event) {
-    event.locals.security.requireProjectWriteAccess(
-      await DatabaseReads.projects.findUniqueOrThrow({
-        where: { Id: parseInt(event.params.id) },
-        select: { OwnerId: true, OrganizationId: true }
-      })
-    );
+    event.locals.security.requireAuthenticated(); // check this first, so unauthenticated can't dos db
     const form = await superValidate(event.request, valibot(updateOwnerGroupSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const projectId = parseInt(event.params.id);
     const project = await DatabaseReads.projects.findUniqueOrThrow({
       where: { Id: projectId },
-      select: { OwnerId: true }
+      select: { OwnerId: true, OrganizationId: true, GroupId: true }
     });
-    // block if changing owner
-    if (project.OwnerId !== form.data.owner && !QueueConnected()) return error(503);
+    // changing ownership
+    if (project.OwnerId !== form.data.owner) {
+      event.locals.security.requireProjectClaimable(
+        await userGroupsForOrg(form.data.owner, project.OrganizationId),
+        project
+      );
+      if (!QueueConnected()) return error(503);
+    }
+    // changing group
+    if (project.GroupId !== form.data.group) {
+      event.locals.security.requireProjectWriteAccess(project);
+    }
     const success = await DatabaseWrites.projects.update(projectId, {
       GroupId: form.data.group,
       OwnerId: form.data.owner
@@ -319,12 +328,7 @@ export const actions = {
     return { form, ok: success };
   },
   async projectAction(event) {
-    event.locals.security.requireProjectWriteAccess(
-      await DatabaseReads.projects.findUniqueOrThrow({
-        where: { Id: parseInt(event.params.id) },
-        select: { OwnerId: true, OrganizationId: true }
-      })
-    );
+    event.locals.security.requireAuthenticated(); // check this first, so unauthenticated can't dos db
     if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(projectActionSchema));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
@@ -341,16 +345,21 @@ export const actions = {
       }
     });
 
+    let groups: { GroupId: number }[] = [];
+
+    if (form.data.operation === 'claim') {
+      groups = await userGroupsForOrg(event.locals.security.userId, project.OrganizationId);
+      event.locals.security.requireProjectClaimable(groups, project);
+    } else {
+      event.locals.security.requireProjectWriteAccess(project);
+    }
+
     await doProjectAction(
       form.data.operation,
       project,
       event.locals.security,
       project.OrganizationId,
-      form.data.operation === 'claim'
-        ? (await userGroupsForOrg(event.locals.security.userId, project.OrganizationId)).map(
-            (g) => g.GroupId
-          )
-        : []
+      groups.map((g) => g.GroupId)
     );
 
     return { form, ok: true };
