@@ -206,7 +206,7 @@
     <h3>{m.products_files_title()}</h3>
     <div class="w-full overflow-x-auto">
       <SortTable
-        className="max-h-96"
+        className="max-h-none"
         data={data.files}
         columns={[
           {
@@ -253,7 +253,7 @@
     <h3>{m.reviewers_title()}</h3>
     <div class="w-full overflow-x-auto">
       <SortTable
-        className="max-h-96"
+        className="max-h-none"
         data={data.reviewers}
         columns={[
           {
