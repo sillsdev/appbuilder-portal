@@ -1,4 +1,4 @@
-FROM otel/opentelemetry-collector-contrib:0.131.1
+FROM otel/opentelemetry-collector-contrib:0.136.0
 COPY src/lib/otel/receivers_config.yml /etc/otel/receivers_config.yml
 COPY src/lib/otel/production_config.yml /etc/otel/production_config.yml
 CMD ["--config", "/etc/otel/production_config.yml", "--config", "/etc/otel/receivers_config.yml"]
