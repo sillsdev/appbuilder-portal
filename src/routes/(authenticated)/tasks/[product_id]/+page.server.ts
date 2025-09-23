@@ -1,10 +1,9 @@
 import type { Session } from '@auth/sveltekit';
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { localizeHref } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads } from '$lib/server/database';
@@ -31,7 +30,8 @@ type Fields = {
   projectLanguageCode?: string; //Product.Project.Language
 };
 
-export const load = (async ({ params, locals }) => {
+export const load = (async ({ params, locals, depends }) => {
+  depends('task:id:load');
   const session = await locals.auth();
   if (!(await verifyCanViewTask(session!, params.product_id))) return error(403);
   const snap = await Workflow.getSnapshot(params.product_id);
@@ -129,28 +129,21 @@ export const load = (async ({ params, locals }) => {
       })
     : [];
 
+  const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
+  const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
+
   return {
-    actions: Workflow.availableTransitionsFromName(snap.state, {
-      ...snap.config,
-      productId: params.product_id,
-      hasAuthors: !!product.Project.Authors.length,
-      hasReviewers: !!product.Project._count.Reviewers
-    })
-      .filter((a) => {
-        if (session?.user.userId === undefined) return false;
-        switch (a[0].meta?.user) {
-          case RoleId.AppBuilder:
-            return session.user.userId === product.Project.Owner.Id;
-          case RoleId.Author:
-            return product.Project.Authors.map((a) => a.UserId).includes(session.user.userId);
-          case RoleId.OrgAdmin:
-            return product.Project.Organization.UserRoles.map((u) => u.UserId).includes(
-              session.user.userId
-            );
-          default:
-            return false;
-        }
-      })
+    loadTime: new Date().valueOf(),
+    actions: Workflow.availableTransitionsFromName(snap.state, snap.input)
+      .filter((a) =>
+        filterAvailableActions(
+          a,
+          session?.user.userId,
+          product.Project.Owner.Id,
+          authorIds,
+          orgAdminIds
+        )
+      )
       .map((a) => a[0].eventType as WorkflowAction),
     taskTitle: snap.state,
     instructions: snap.context.instructions,
@@ -218,20 +211,85 @@ export const actions = {
       });
     }
     //double check that state matches current snapshot
-    if (form.data.state === flow.state()) {
+    const snap = (await Workflow.getSnapshot(params.product_id))!;
+    const old = flow.state()!;
+    const product = (await DatabaseReads.products.findUnique({
+      where: { Id: params.product_id },
+      select: {
+        Project: {
+          select: {
+            Id: true,
+            Owner: {
+              select: {
+                Id: true
+              }
+            },
+            Authors: {
+              select: {
+                UserId: true
+              }
+            },
+            Organization: {
+              select: {
+                UserRoles: {
+                  where: {
+                    RoleId: RoleId.OrgAdmin
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }))!;
+
+    const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
+    const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
+    const transition = Workflow.availableTransitionsFromName(old, snap.input)
+      .filter((a) =>
+        filterAvailableActions(
+          a,
+          session?.user.userId,
+          product.Project.Owner.Id,
+          authorIds,
+          orgAdminIds
+        )
+      )
+      .find((t) => t[0].eventType === form.data.flowAction)
+      ?.at(0);
+    if (transition && form.data.state === flow.state()) {
       flow.send({
         type: form.data.flowAction,
         comment: form.data.comment,
         userId: session.user.userId
       });
+
+      const targetState = transition.target;
+
+      const availableTransitions = targetState
+        ? Workflow.availableTransitionsFromNode(targetState[0], snap.input).filter((a) =>
+            filterAvailableActions(
+              a,
+              session?.user.userId,
+              product.Project.Owner.Id,
+              authorIds,
+              orgAdminIds
+            )
+          )
+        : [];
+
+      return {
+        form,
+        ok: true,
+        hasTarget: !!targetState,
+        hasTransitions: !!availableTransitions.length
+      };
+    } else {
+      return fail(400, {
+        form,
+        ok: false
+      });
     }
-
-    const product = (await DatabaseReads.products.findUnique({
-      where: { Id: params.product_id },
-      select: { ProjectId: true }
-    }))!;
-
-    redirect(302, localizeHref(`/projects/${product.ProjectId}`));
   }
 } satisfies Actions;
 
@@ -251,4 +309,24 @@ async function verifyCanViewTask(session: Session | null, productId: string): Pr
       }
     }))
   );
+}
+
+function filterAvailableActions(
+  action: ReturnType<typeof Workflow.availableTransitionsFromName>[number],
+  userId: number | undefined,
+  ownerId: number,
+  authors: Set<number>,
+  orgAdmins: Set<number>
+): boolean {
+  if (userId === undefined) return false;
+  switch (action[0].meta?.user) {
+    case RoleId.AppBuilder:
+      return userId === ownerId;
+    case RoleId.Author:
+      return authors.has(userId);
+    case RoleId.OrgAdmin:
+      return orgAdmins.has(userId);
+    default:
+      return false;
+  }
 }

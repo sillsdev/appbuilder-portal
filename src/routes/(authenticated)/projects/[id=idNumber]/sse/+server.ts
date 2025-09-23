@@ -1,6 +1,7 @@
+import { stringify } from 'devalue';
 import { produce } from 'sveltekit-sse';
-import { getProjectDetails } from '../project';
 import { SSEPageUpdates } from '$lib/projects/listener';
+import { getProjectDetails } from '$lib/projects/sse';
 
 export async function POST(request) {
   const userId = (await request.locals.auth())!.user.userId;
@@ -9,7 +10,7 @@ export async function POST(request) {
     const id = parseInt(strId);
     // User will be allowed to see project updates until they reload
     // even if their permission is revoked during the SSE connection.
-    const { error } = emit('projectData', JSON.stringify(await getProjectDetails(id, userId)));
+    const { error } = emit('projectData', stringify(await getProjectDetails(id, userId)));
     if (error) {
       return;
     }
@@ -19,7 +20,7 @@ export async function POST(request) {
       if (updateId.includes(id)) {
         // console.log(`Project page SSE update for project ${id}`);
         const projectData = await getProjectDetails(id, userId);
-        const { error } = emit('projectData', JSON.stringify(projectData));
+        const { error } = emit('projectData', stringify(projectData));
         if (error) {
           SSEPageUpdates.off('projectPage', updateCb);
           clearInterval(pingInterval);

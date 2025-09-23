@@ -6,6 +6,7 @@ import { safeParse } from 'valibot';
 import type { LayoutServerLoad } from './$types';
 import { type L10NEntries, type L10NKeys, langtagsSchema } from '$lib/locales.svelte';
 import { type Locale, locales } from '$lib/paraglide/runtime';
+import { getUserTasks } from '$lib/projects/sse';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
 import type { Entries } from '$lib/utils';
@@ -17,17 +18,6 @@ export const load: LayoutServerLoad = async (event) => {
     error(event.locals.error);
   }
   const user = (await event.locals.auth())!.user;
-  const numberOfTasks = (
-    await DatabaseReads.userTasks.findMany({
-      where: {
-        UserId: user.userId
-      },
-      select: {
-        Id: true
-      },
-      distinct: 'ProductId'
-    })
-  ).length;
   const organizations = await DatabaseReads.organizations.findMany({
     where: isSuperAdmin(user.roles)
       ? undefined
@@ -50,7 +40,7 @@ export const load: LayoutServerLoad = async (event) => {
 
   return {
     organizations,
-    numberOfTasks,
+    userTasks: await getUserTasks(user.userId),
     // streaming promise
     langtags: await readFile(join(localDir, 'langtags.json'))
       .then((j) => {

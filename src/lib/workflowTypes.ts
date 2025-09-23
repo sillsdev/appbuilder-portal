@@ -298,5 +298,5 @@ export type Snapshot = {
   definitionId: number;
   state: string;
   context: WorkflowInstanceContext;
-  config: WorkflowConfig;
+  input: WorkflowInput;
 };

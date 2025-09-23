@@ -1,5 +1,8 @@
-import { type Writable, get, writable } from 'svelte/store';
+import { parse } from 'devalue';
+import { type Readable, type Writable, get, writable } from 'svelte/store';
+import { source } from 'sveltekit-sse';
 import { browser } from '$app/environment';
+import type { UserTaskDataSSE } from '$lib/projects/sse';
 
 /**
  * A Svelte store that persists its value in localStorage.
@@ -75,3 +78,16 @@ if (browser) {
     document.cookie = `orgLastSelected=${value}; path=/; SameSite=Lax`;
   });
 }
+
+let reconnectDelay = 1000; // Initial delay for reconnection
+export const userTasksSSE: Readable<UserTaskDataSSE | undefined> = source(`/tasks/sse`, {
+  close({ connect }) {
+    setTimeout(() => {
+      console.log('Disconnected. Reconnecting...');
+      connect();
+      reconnectDelay = Math.min(reconnectDelay * 2, 30000); // Exponential backoff, max 30 seconds
+    }, reconnectDelay);
+  }
+})
+  .select('userTasks')
+  .transform((t) => (t ? parse(t) : undefined));

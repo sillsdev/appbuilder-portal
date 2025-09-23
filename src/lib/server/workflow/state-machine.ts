@@ -750,7 +750,10 @@ export const WorkflowStateMachine = setup({
         [WorkflowAction.Email_Reviewers]: {
           meta: {
             type: ActionType.User,
-            user: RoleId.AppBuilder
+            user: RoleId.AppBuilder,
+            includeWhen: {
+              guards: [hasReviewers]
+            }
           },
           guard: hasReviewers,
           actions: ({ context }) => {

@@ -13,7 +13,7 @@
   import { createl10nMapFromEntries, l10nMap } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
-  import { orgActive } from '$lib/stores';
+  import { orgActive, userTasksSSE } from '$lib/stores';
   import { isAdmin, isSuperAdmin } from '$lib/utils/roles';
 
   interface Props {
@@ -39,11 +39,13 @@
   $effect(() => {
     l10nMap.value = createl10nMapFromEntries(data.localizedNames);
   });
+
+  const userTasksLength = $derived($userTasksSSE?.length ?? data.userTasks.length);
 </script>
 
 <svelte:head>
   <title>
-    {m.tabAppName({ count: data.numberOfTasks })}{dev ? ' - SvelteKit' : ''}
+    {m.tabAppName({ count: userTasksLength })}{dev ? ' - SvelteKit' : ''}
   </title>
 </svelte:head>
 
@@ -126,7 +128,7 @@
               href={localizeHref('/tasks')}
               onclick={closeDrawer}
             >
-              {m.sidebar_myTasks({ count: data.numberOfTasks })}
+              {m.sidebar_myTasks({ count: userTasksLength })}
             </a>
           </li>
           <li>
