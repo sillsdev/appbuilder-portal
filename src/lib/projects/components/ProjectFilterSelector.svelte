@@ -44,7 +44,7 @@
           href={localizeHref(
             `/projects/${route[0]}${page.params.orgId ? '/' + page.params.orgId : ''}`
           )}
-          class:font-extrabold={page.params.filter === route[0]}
+          class:font-extrabold={filter === route[0]}
           class="p-1 text-nowrap block"
         >
           {route[1]}
