@@ -95,6 +95,7 @@
       class="input input-bordered w-full"
       bind:value={$form.description}
     />
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_scheme">
     <select class="select select-bordered" name="workflowScheme" bind:value={$form.workflowScheme}>
@@ -102,6 +103,7 @@
         <option value={scheme.Code}>{scheme.Code}</option>
       {/each}
     </select>
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_businessFlow">
     <select
@@ -113,6 +115,7 @@
         <option value={flow}>{flow}</option>
       {/each}
     </select>
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_properties">
     <PropertiesEditor
@@ -121,13 +124,14 @@
       bind:value={$form.properties}
       bind:ok={propsOk}
     />
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput
     key="flowDefs_options_title"
     classes="border border-warning p-1 my-4 rounded-lg"
   >
     {#each enumNumVals(WorkflowOptions) as option}
-      <InputWithMessage message={{ key: 'flowDefs_options', params: option }} className="my-1">
+      <InputWithMessage message={{ key: 'flowDefs_options', params: { option } }} className="my-1">
         <input
           class="toggle toggle-warning border-warning"
           type="checkbox"

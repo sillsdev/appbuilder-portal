@@ -91,6 +91,7 @@
         <option value={wf.Id}>{wf.Name}</option>
       {/each}
     </select>
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="prodDefs_republishFlow">
     <select
@@ -103,6 +104,7 @@
         <option value={wf.Id}>{wf.Name}</option>
       {/each}
     </select>
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="prodDefs_description">
     <textarea
@@ -110,6 +112,7 @@
       class="textarea textarea-bordered h-36 w-full"
       bind:value={$form.description}
     ></textarea>
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="prodDefs_properties">
     <PropertiesEditor

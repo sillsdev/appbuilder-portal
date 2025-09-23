@@ -31,7 +31,7 @@
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
-  <LabeledFormInput key="storeTypes_name">
+  <LabeledFormInput key="stores_attributes_name">
     <input
       type="text"
       name="name"
@@ -48,8 +48,9 @@
       class="input input-bordered w-full"
       bind:value={$form.description}
     />
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
-  <LabeledFormInput key="storeTypes_name">
+  <LabeledFormInput key="storeTypes_listTitle">
     <select
       class="select select-bordered validator"
       name="storeType"

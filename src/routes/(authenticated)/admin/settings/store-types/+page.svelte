@@ -15,6 +15,8 @@
   const base = '/admin/settings/store-types';
 </script>
 
+<h2>{m.storeTypes_title()}</h2>
+
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
   {m.storeTypes_add()}
 </a>

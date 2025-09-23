@@ -29,7 +29,7 @@
 <h3>{m.models_add({ name: m.stores_name() })}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput key="storeTypes_name">
+  <LabeledFormInput key="stores_attributes_name">
     <input
       type="text"
       name="name"
@@ -46,8 +46,9 @@
       class="input input-bordered w-full"
       bind:value={$form.description}
     />
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
-  <LabeledFormInput key="storeTypes_name">
+  <LabeledFormInput key="storeTypes_listTitle">
     <select
       class="select select-bordered validator"
       name="storeType"
