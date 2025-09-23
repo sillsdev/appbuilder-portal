@@ -5,6 +5,12 @@
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
 
+  interface Props {
+    filter: string;
+  }
+
+  let { filter }: Props = $props();
+
   const textsForPaths = new Map([
     ['all', m.projects_filter_all()],
     ['own', m.projects_filter_own()],
@@ -24,7 +30,7 @@
   {#snippet label()}
     <h1 class="p-4 pl-6 cursor-pointer">
       <div class="flex flex-row items-center">
-        {textsForPaths.get(page.params.filter)}
+        {textsForPaths.get(filter)}
         <div class="dropdown-icon" class:open>
           <Icon width="24" class="dropdown-icon" icon="gridicons:dropdown" />
         </div>

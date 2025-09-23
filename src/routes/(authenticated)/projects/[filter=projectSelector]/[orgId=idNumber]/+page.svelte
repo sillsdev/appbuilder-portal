@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
+  import type { PageData, RouteParams } from './$types';
   import { afterNavigate, goto } from '$app/navigation';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
@@ -166,7 +166,7 @@
   >
     <div class="flex flex-row place-content-between w-full pt-4 flex-wrap">
       <div class="inline-block">
-        <ProjectFilterSelector />
+        <ProjectFilterSelector filter={(page.params as RouteParams).filter} />
       </div>
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 gap-1 {mobileSizing}"
