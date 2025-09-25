@@ -1,11 +1,11 @@
 <script lang="ts">
   import { SignIn } from '@auth/sveltekit/components';
+  import { onDestroy } from 'svelte';
   import { browser } from '$app/environment';
   import ScriptoriaIcon from '$lib/icons/ScriptoriaIcon.svelte';
   import * as m from '$lib/paraglide/messages';
-  import { onDestroy } from 'svelte';
 
-  let timeout: NodeJS.Timeout | null = null;
+  let timeout: ReturnType<typeof setInterval> | null = null;
 
   // Add a boolean param
   let {

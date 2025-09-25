@@ -4,6 +4,8 @@ import { ESLintUtils } from '@typescript-eslint/utils';
 function walkFind(node, callback, maxDepth = 10) {
     if (maxDepth <= 0)
         return null;
+    if (node && typeof node !== 'object')
+        return null;
     if (callback(node))
         return node;
     for (const key in node) {
@@ -23,6 +25,7 @@ function walkFind(node, callback, maxDepth = 10) {
                 return result;
         }
     }
+    return null;
 }
 function blockStatementIncludesSecurityCall(block) {
     const nodeIsSecurityCall = (node) => {
@@ -160,8 +163,18 @@ export default ESLintUtils.RuleCreator(() => '')({
                 else {
                     // This is a single function (load or endpoint), so find its body
                     // There should be a block statement (function body) within a couple levels
-                    blockStatements.push(walkFind(functionExport.init ||
-                        functionExport, (n) => n.type === 'BlockStatement', 4));
+                    const blockStatement = walkFind(functionExport.init ||
+                        functionExport, (n) => n.type === 'BlockStatement', 4);
+                    if (blockStatement)
+                        blockStatements.push(blockStatement);
+                    else {
+                        context.report({
+                            node: node.declaration,
+                            data: { type: functionExport.type },
+                            messageId: 'unexpectedFunction'
+                        });
+                        return;
+                    }
                 }
                 blockStatements.forEach((bs) => {
                     if (!blockStatementIncludesSecurityCall(bs)) {

@@ -7,7 +7,6 @@ export const load = (async ({ params, locals }) => {
   // Anyone can view a public project, even if not an org member
   // But we need to check for org membership if downloads are allowed
   const projectId = Number(params.id);
-  if (isNaN(projectId)) return error(404);
   const project = await DatabaseReads.projects.findUnique({
     where: {
       Id: projectId
