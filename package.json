@@ -60,7 +60,7 @@
     "@vvo/tzdb": "^6.159.0",
     "@zerodevx/svelte-toast": "^0.9.6",
     "bullmq": "^5.52.0",
-    "commander": "^13.1.0",
+    "commander": "^14.0.0",
     "daisyui": "^5.0.0",
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.8",
