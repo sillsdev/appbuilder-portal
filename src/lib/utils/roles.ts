@@ -8,7 +8,10 @@ type ClientRolesArray = Session['user']['roles'];
  */
 export function isAdminForOrg(orgId: number, roles: ClientRolesArray): boolean {
   const orgRoles = roles.filter(([oId]) => oId === orgId).map(([, r]) => r);
-  return !!orgRoles && (orgRoles.includes(RoleId.SuperAdmin) || orgRoles.includes(RoleId.OrgAdmin));
+  return (
+    !!orgRoles &&
+    (roles.some(([_, r]) => r === RoleId.SuperAdmin) || orgRoles.includes(RoleId.OrgAdmin))
+  );
 }
 /** returns a list of organizations where the user has the specified role
  *

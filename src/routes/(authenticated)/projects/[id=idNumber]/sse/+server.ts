@@ -5,7 +5,11 @@ import { getProjectDetails } from '$lib/projects/sse';
 import { DatabaseReads } from '$lib/server/database';
 
 export async function POST(request) {
-  request.locals.security.requireProjectWriteAccess(
+  request.locals.security.requireProjectReadAccess(
+    await DatabaseReads.groupMemberships.findMany({
+      where: { UserId: request.locals.security.userId },
+      select: { GroupId: true }
+    }),
     await DatabaseReads.projects.findUnique({
       where: { Id: parseInt(request.params.id) }
     })
