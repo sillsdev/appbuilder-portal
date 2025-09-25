@@ -11,7 +11,8 @@ export const load: PageServerLoad = async (event) => {
       const inviteToken = event.cookies.get('inviteToken')!;
       return redirect(302, localizeHref('/invitations/organization-membership?t=' + inviteToken));
     }
-    return redirect(302, localizeHref('/tasks'));
+    const redirectUrl = event.url.searchParams.get('returnTo');
+    return redirect(302, localizeHref(redirectUrl || '/tasks'));
   }
   return {
     serviceAvailable: QueueConnected()

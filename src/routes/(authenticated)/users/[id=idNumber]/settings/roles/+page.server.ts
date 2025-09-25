@@ -18,12 +18,12 @@ const toggleRoleSchema = v.object({
 export const load = (async ({ params, locals }) => {
   const subjectId = parseInt(params.id);
   locals.security.requireAdminOfOrgIn(
-    await DatabaseReads.users
-      .findUniqueOrThrow({
+    (await DatabaseReads.users
+      .findUnique({
         where: { Id: subjectId },
         select: { OrganizationMemberships: { select: { OrganizationId: true } } }
       })
-      .then((u) => u.OrganizationMemberships.map((o) => o.OrganizationId))
+      .then((u) => u?.OrganizationMemberships.map((o) => o.OrganizationId))) ?? []
   );
 
   return {
@@ -47,12 +47,12 @@ export const load = (async ({ params, locals }) => {
 export const actions = {
   async default(event) {
     event.locals.security.requireAdminOfOrgIn(
-      await DatabaseReads.users
-        .findUniqueOrThrow({
+      (await DatabaseReads.users
+        .findUnique({
           where: { Id: parseInt(event.params.id) },
           select: { OrganizationMemberships: { select: { OrganizationId: true } } }
         })
-        .then((u) => u.OrganizationMemberships.map((o) => o.OrganizationId))
+        .then((u) => u?.OrganizationMemberships.map((o) => o.OrganizationId))) ?? []
     );
 
     const form = await superValidate(event, valibot(toggleRoleSchema));

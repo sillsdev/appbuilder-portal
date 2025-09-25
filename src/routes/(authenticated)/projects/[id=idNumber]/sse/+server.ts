@@ -6,7 +6,7 @@ import { DatabaseReads } from '$lib/server/database';
 
 export async function POST(request) {
   request.locals.security.requireProjectWriteAccess(
-    await DatabaseReads.projects.findUniqueOrThrow({
+    await DatabaseReads.projects.findUnique({
       where: { Id: parseInt(request.params.id) }
     })
   );

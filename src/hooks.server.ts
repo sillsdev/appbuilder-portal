@@ -123,6 +123,8 @@ export const handle: Handle = async ({ event, resolve }) => {
         },
         bullboardHandle
       )({ event, resolve });
+      // Note: if an error is thrown by the route the following is skipped
+      // handleError is called instead and logging occurs there
       if (
         // Don't enforce security checks on auth routes (handled by authRouteHandle before populateSecurityInfo)
         !event.url.pathname.startsWith('/auth/') &&

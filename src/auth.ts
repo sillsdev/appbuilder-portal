@@ -150,9 +150,9 @@ export class Security {
     this.sessionForm = {
       userId: this.userId,
       roles: [
-        ...this.roles
-          .entries()
-          .map(([orgId, roleIds]) => roleIds.map((r) => [orgId, r]) as [number, RoleId][])
+        ...(roles
+          ?.entries()
+          .map(([orgId, roleIds]) => roleIds.map((r) => [orgId, r]) as [number, RoleId][]) ?? [])
       ].flat(1)
     };
   }
@@ -162,7 +162,9 @@ export class Security {
     if (!this.userId || !this.organizationMemberships || !this.roles) {
       // Redirect to login
       // TODO: preserve the original URL to return to after login
-      throw redirect(302, localizeHref('/login'));
+      const originalUrl = this.event.url;
+      const returnTo = originalUrl.pathname + originalUrl.search;
+      throw redirect(302, localizeHref('/login?returnTo=' + encodeURIComponent(returnTo)));
     }
   }
 
@@ -220,10 +222,10 @@ export class Security {
     return this;
   }
 
-  requireProjectWriteAccess(project?: { OwnerId: number; OrganizationId: number }) {
+  requireProjectWriteAccess(project?: { OwnerId: number; OrganizationId: number } | null) {
     this.requireAuthenticated();
     if (!project) {
-      error(404, 'Project is required for write access check');
+      error(404, 'Project not found');
     }
     if (!this.isSuperAdmin && project.OwnerId !== this.userId) {
       this.requireAdminOfOrg(project.OrganizationId);
@@ -233,11 +235,11 @@ export class Security {
 
   requireProjectReadAccess(
     userGroups: { GroupId: number }[],
-    project?: { OwnerId: number; OrganizationId: number; GroupId: number }
+    project?: { OwnerId: number; OrganizationId: number; GroupId: number } | null
   ) {
     this.requireAuthenticated();
     if (!project) {
-      error(400, 'Project is required for read access check');
+      error(404, 'Project not found');
     }
     if (!userGroups.find((ug) => ug.GroupId === project.GroupId)) {
       this.requireProjectWriteAccess(project);
@@ -247,11 +249,11 @@ export class Security {
 
   requireProjectClaimable(
     userGroups: { GroupId: number }[],
-    project?: { OwnerId: number; OrganizationId: number; GroupId: number }
+    project?: { OwnerId: number; OrganizationId: number; GroupId: number } | null
   ) {
     this.requireAuthenticated();
     if (!project) {
-      error(400, 'Project is required for claimability check');
+      error(404, 'Project not found');
     }
     if (this.userId === project.OwnerId) {
       error(400, 'Project owner cannot claim own project');

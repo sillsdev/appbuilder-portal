@@ -21,14 +21,16 @@ declare global {
     requireHasRole(organizationId: number, roleId: number, orOrgAdmin?: boolean): this | never;
     requireMemberOfOrg(organizationId: number): this | never;
     requireMemberOfOrgOrSuperAdmin(organizationId: number): this | never;
-    requireProjectWriteAccess(project?: { OwnerId: number; OrganizationId: number }): this | never;
+    requireProjectWriteAccess(
+      project?: { OwnerId: number; OrganizationId: number } | null
+    ): this | never;
     requireProjectReadAccess(
       userGroups: { GroupId: number }[],
       project?: {
         OwnerId: number;
         OrganizationId: number;
         GroupId: number;
-      }
+      } | null
     ): this | never;
     requireProjectClaimable(
       userGroups: { GroupId: number }[],

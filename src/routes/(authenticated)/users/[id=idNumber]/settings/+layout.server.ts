@@ -4,11 +4,13 @@ import { adminOrgs } from '$lib/users/server';
 
 export const load = (async ({ params, locals }) => {
   locals.security.requireAuthenticated();
-  if (locals.security.userId !== parseInt(params.id!)) {
+  const userId = Number(params.id);
+  if (isNaN(userId)) return error(404);
+  if (locals.security.userId !== userId) {
     locals.security.requireAdminOfOrgIn(
       await DatabaseReads.organizationMemberships
         .findMany({
-          where: { UserId: parseInt(params.id!) },
+          where: { UserId: userId },
           select: { OrganizationId: true }
         })
         .then((orgs) => orgs.map((o) => o.OrganizationId))
@@ -16,7 +18,7 @@ export const load = (async ({ params, locals }) => {
   }
   const subject = await DatabaseReads.users.findUniqueOrThrow({
     where: {
-      Id: parseInt(params.id!)
+      Id: userId
     },
     select: {
       Id: true,

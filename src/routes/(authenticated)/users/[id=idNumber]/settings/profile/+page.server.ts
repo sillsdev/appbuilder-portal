@@ -19,31 +19,28 @@ const profileSchema = v.object({
 
 export const load = (async (event) => {
   event.locals.security.requireAuthenticated();
+  const user = await DatabaseReads.users.findUnique({
+    where: { Id: parseInt(event.params.id) },
+    include: { OrganizationMemberships: { select: { OrganizationId: true } } }
+  });
+  if (!user) return fail(404, { form: null, ok: false });
   if (event.locals.security.userId !== parseInt(event.params.id)) {
     event.locals.security.requireAdminOfOrgIn(
-      await DatabaseReads.users
-        .findUniqueOrThrow({
-          where: { Id: parseInt(event.params.id) },
-          select: { OrganizationMemberships: { select: { OrganizationId: true } } }
-        })
-        .then((u) => u.OrganizationMemberships.map((o) => o.OrganizationId))
+      user.OrganizationMemberships.map((o) => o.OrganizationId)
     );
   }
-  const subData = await DatabaseReads.users.findUniqueOrThrow({
-    where: { Id: parseInt(event.params.id) }
-  });
   return {
     form: await superValidate(
       {
-        firstName: subData.GivenName,
-        lastName: subData.FamilyName,
-        displayName: subData.Name,
-        email: subData.Email,
-        phone: subData.Phone,
-        timezone: subData.Timezone,
-        notifications: subData.EmailNotification ?? false,
-        visible: !!subData.ProfileVisibility,
-        active: !subData.IsLocked
+        firstName: user.GivenName,
+        lastName: user.FamilyName,
+        displayName: user.Name,
+        email: user.Email,
+        phone: user.Phone,
+        timezone: user.Timezone,
+        notifications: user.EmailNotification ?? false,
+        visible: !!user.ProfileVisibility,
+        active: !user.IsLocked
       },
       valibot(profileSchema)
     )
@@ -53,25 +50,22 @@ export const load = (async (event) => {
 export const actions = {
   async default(event) {
     event.locals.security.requireAuthenticated();
+    const user = await DatabaseReads.users.findUnique({
+      where: { Id: parseInt(event.params.id) },
+      include: { OrganizationMemberships: { select: { OrganizationId: true } } }
+    });
+    if (!user) return fail(404, { form: null, ok: false });
     if (event.locals.security.userId !== parseInt(event.params.id)) {
       event.locals.security.requireAdminOfOrgIn(
-        await DatabaseReads.users
-          .findUniqueOrThrow({
-            where: { Id: parseInt(event.params.id) },
-            select: { OrganizationMemberships: { select: { OrganizationId: true } } }
-          })
-          .then((u) => u.OrganizationMemberships.map((o) => o.OrganizationId))
+        user.OrganizationMemberships.map((o) => o.OrganizationId)
       );
     }
     const form = await superValidate(event, valibot(profileSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const user = (await event.locals.auth())!.user;
-    const subjectId = parseInt(event.params.id);
-
     await DatabaseWrites.users.update({
       where: {
-        Id: subjectId
+        Id: user.Id
       },
       data: {
         GivenName: form.data.firstName,
@@ -83,7 +77,7 @@ export const actions = {
         EmailNotification: form.data.notifications,
         ProfileVisibility: form.data.visible ? 1 : 0,
         // You cannot change lock state of yourself, and if you are editing someone else, you are either org admin or superadmin
-        IsLocked: subjectId === user.userId ? undefined : !form.data.active
+        IsLocked: user.Id === event.locals.security.userId ? undefined : !form.data.active
       }
     });
     return { form, ok: true };
