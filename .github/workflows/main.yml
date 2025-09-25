@@ -116,19 +116,6 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'src/lib/prisma/schema.prisma') }}
 
-      - name: Setup stg-tunnel
-        run: |
-          echo "Setting up stg-tunnel..."
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          echo "$APS_STG_SSH_CONFIG" > ~/.ssh/config
-          chmod 600 ~/.ssh/config
-          ssh aps-stg "echo 'SSH connection established successfully.'"
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.APS_STG_SSH_PRIVATE_KEY }}
-          APS_STG_SSH_CONFIG: ${{ secrets.APS_STG_SSH_CONFIG }}
-
       - name: Build, Install Playwright dependencies, and seed database
         run: |
           echo "Building .env file..."
