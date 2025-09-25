@@ -116,10 +116,10 @@
   });
 
   let canArchiveSelected = $derived(
-    selectedProjects.every((p) => canArchive(p, page.data.session.user, $orgActive))
+    selectedProjects.every((p) => canArchive(p, data.session.user, $orgActive))
   );
   let canReactivateSelected = $derived(
-    selectedProjects.every((p) => canReactivate(p, page.data.session.user, $orgActive))
+    selectedProjects.every((p) => canReactivate(p, data.session.user, $orgActive))
   );
 
   const {

@@ -257,6 +257,9 @@ export class Security {
     if (this.userId === project.OwnerId) {
       error(400, 'Project owner cannot claim own project');
     }
+    if (!this.isSuperAdmin && !userGroups.some((ug) => ug.GroupId === project.GroupId)) {
+      error(400, 'User must share a group with the project in order to claim it!');
+    }
     return this.requireHasRole(
       project.OrganizationId,
       RoleId.AppBuilder,

@@ -3,6 +3,9 @@
   import { browser } from '$app/environment';
   import ScriptoriaIcon from '$lib/icons/ScriptoriaIcon.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { onDestroy } from 'svelte';
+
+  let timeout: NodeJS.Timeout | null = null;
 
   // Add a boolean param
   let {
@@ -11,15 +14,22 @@
     serviceAvailable: boolean;
   } = $props();
   if (!serviceAvailable && browser) {
-    let timeout = setInterval(() => {
+    timeout = setInterval(() => {
       // Reload every 2 seconds to check if the service is back up
       if (serviceAvailable) {
-        clearInterval(timeout);
+        if (timeout !== null) clearInterval(timeout);
       } else {
         location.reload();
       }
     }, 2000);
   }
+
+  onDestroy(() => {
+    if (timeout !== null) {
+      clearInterval(timeout);
+      timeout = null;
+    }
+  });
 </script>
 
 <div class="card shadow-xl bg-white border p-4">

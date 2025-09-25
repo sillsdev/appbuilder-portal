@@ -68,7 +68,7 @@
     <form method="POST" action="?/{endpoint}" use:enhance>
       <input type="hidden" name="projectId" value={project.Id} />
       <ul class="menu menu-compact overflow-hidden rounded-md">
-        {#if allowActions && canArchive(project, page.data.session.user, parseInt(page.params.id))}
+        {#if allowActions && canArchive(project, page.data.session.user, orgId)}
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable className="text-nowrap">
               {#snippet altContent()}
@@ -81,7 +81,7 @@
             </BlockIfJobsUnavailable>
           </li>
         {/if}
-        {#if allowReactivate && canReactivate(project, page.data.session.user, parseInt(page.params.id))}
+        {#if allowReactivate && canReactivate(project, page.data.session.user, orgId)}
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable className="text-nowrap">
               {#snippet altContent()}

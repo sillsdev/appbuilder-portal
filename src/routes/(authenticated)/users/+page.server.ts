@@ -118,7 +118,7 @@ export const load = (async ({ locals }) => {
       });
       span.setAttributes({
         'auth.load.userId': locals.security.userId!,
-        'auth.load.user.roles': JSON.stringify(locals.security.roles),
+        'auth.load.user.roles': JSON.stringify(Array.from(locals.security.roles.entries())),
         'auth.load.user.isSuper': isSuper,
         'auth.load.user.orgIds': JSON.stringify(orgIds)
       });
