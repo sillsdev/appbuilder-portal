@@ -1,4 +1,4 @@
-import { fail } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
@@ -6,14 +6,14 @@ import { DatabaseReads } from '$lib/server/database';
 import { paginateSchema } from '$lib/valibot';
 
 export const load = (async ({ params, locals }) => {
-  locals.security.requireProjectWriteAccess(
-    (
-      await DatabaseReads.products.findUnique({
-        where: { Id: params.id },
-        select: { Project: { select: { OwnerId: true, OrganizationId: true } }, Id: true }
-      })
-    )?.Project
-  );
+  const project = (
+    await DatabaseReads.products.findUnique({
+      where: { Id: params.id },
+      select: { Project: { select: { OwnerId: true, OrganizationId: true } }, Id: true }
+    })
+  )?.Project;
+  if (!project) error(404);
+  locals.security.requireProjectWriteAccess(project);
   const builds = await DatabaseReads.productBuilds.findMany({
     orderBy: [
       {

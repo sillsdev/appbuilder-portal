@@ -5,9 +5,9 @@ import { DatabaseReads } from '$lib/server/database';
 export const load = (async ({ params, locals }) => {
   // need this for org membership check
   locals.security.requireAuthenticated();
-  // Anyone can view a public project, even if not logged in
+  // Anyone can view a public project, even if not an org member
   // But we need to check for org membership if downloads are allowed
-  if (isNaN(parseInt(params.id))) return error(400);
+  if (isNaN(parseInt(params.id))) return error(404);
   const projectCheck = await DatabaseReads.projects.findUnique({
     where: {
       Id: parseInt(params.id)
@@ -37,6 +37,7 @@ export const load = (async ({ params, locals }) => {
       },
       select: {
         Id: true,
+        GroupId: true,
         Name: true,
         Description: true,
         DateCreated: true,
@@ -101,6 +102,14 @@ export const load = (async ({ params, locals }) => {
         }
       }
     }),
-    allowDownloads
+    allowDownloads,
+    sessionGroups: (
+      await DatabaseReads.groupMemberships.findMany({
+        where: { UserId: locals.security.userId },
+        select: {
+          GroupId: true
+        }
+      })
+    ).map((gm) => gm.GroupId)
   };
 }) satisfies PageServerLoad;

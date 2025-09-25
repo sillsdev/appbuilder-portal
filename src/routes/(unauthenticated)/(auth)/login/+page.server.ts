@@ -17,4 +17,9 @@ export const load: PageServerLoad = async (event) => {
     serviceAvailable: QueueConnected()
   };
 };
-export const actions: Actions = { default: signIn };
+export const actions: Actions = {
+  async default(event) {
+    event.locals.security.requireNothing();
+    return await signIn(event);
+  }
+};

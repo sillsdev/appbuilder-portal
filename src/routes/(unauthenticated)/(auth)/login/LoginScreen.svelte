@@ -1,5 +1,6 @@
 <script lang="ts">
   import { SignIn } from '@auth/sveltekit/components';
+  import { browser } from '$app/environment';
   import ScriptoriaIcon from '$lib/icons/ScriptoriaIcon.svelte';
   import * as m from '$lib/paraglide/messages';
 
@@ -9,6 +10,16 @@
   }: {
     serviceAvailable: boolean;
   } = $props();
+  if (!serviceAvailable && browser) {
+    let timeout = setInterval(() => {
+      // Reload every 2 seconds to check if the service is back up
+      if (serviceAvailable) {
+        clearInterval(timeout);
+      } else {
+        location.reload();
+      }
+    }, 2000);
+  }
 </script>
 
 <div class="card shadow-xl bg-white border p-4">

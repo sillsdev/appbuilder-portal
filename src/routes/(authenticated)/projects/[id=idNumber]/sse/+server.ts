@@ -17,7 +17,7 @@ export async function POST(request) {
     // even if their permission is revoked during the SSE connection.
     const { error } = emit(
       'projectData',
-      stringify(await getProjectDetails(id, request.locals.security))
+      stringify(await getProjectDetails(id, request.locals.security.sessionForm))
     );
     if (error) {
       return;
@@ -27,7 +27,7 @@ export async function POST(request) {
       // multiple times if multiple users are connected to the same project page.
       if (updateId.includes(id)) {
         // console.log(`Project page SSE update for project ${id}`);
-        const projectData = await getProjectDetails(id, request.locals.security);
+        const projectData = await getProjectDetails(id, request.locals.security.sessionForm);
         const { error } = emit('projectData', stringify(projectData));
         if (error) {
           SSEPageUpdates.off('projectPage', updateCb);

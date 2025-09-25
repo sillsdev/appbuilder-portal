@@ -18,11 +18,12 @@ import { ESLintUtils } from '@typescript-eslint/utils';
 // Walk the AST to find a node that matches the callback, up to maxDepth levels deep
 // This is a depth-first search and could be improved
 function walkFind(
-  node: TSESTree.Node,
+  node: TSESTree.Node | undefined | null,
   callback: (node: TSESTree.Node) => boolean,
   maxDepth = 10
 ): TSESTree.Node | null {
   if (maxDepth <= 0) return null;
+  if (node && typeof node !== 'object') return null;
   if (callback(node)) return node;
   for (const key in node) {
     if (key === 'parent') continue;
@@ -37,6 +38,7 @@ function walkFind(
       if (result) return result;
     }
   }
+  return null;
 }
 
 function blockStatementIncludesSecurityCall(block: TSESTree.BlockStatement): boolean {
@@ -208,14 +210,21 @@ export default ESLintUtils.RuleCreator(() => '')({
         } else {
           // This is a single function (load or endpoint), so find its body
           // There should be a block statement (function body) within a couple levels
-          blockStatements.push(
-            walkFind(
-              (functionExport as TSESTree.VariableDeclaratorMaybeInit).init ||
-                (functionExport as TSESTree.FunctionDeclaration),
-              (n) => n.type === 'BlockStatement',
-              4
-            ) as TSESTree.BlockStatement
-          );
+          const blockStatement = walkFind(
+            (functionExport as TSESTree.VariableDeclaratorMaybeInit).init ||
+              (functionExport as TSESTree.FunctionDeclaration),
+            (n) => n.type === 'BlockStatement',
+            4
+          ) as TSESTree.BlockStatement;
+          if (blockStatement) blockStatements.push(blockStatement);
+          else {
+            context.report({
+              node: node.declaration,
+              data: { type: functionExport.type },
+              messageId: 'unexpectedFunction'
+            });
+            return;
+          }
         }
         blockStatements.forEach((bs) => {
           if (!blockStatementIncludesSecurityCall(bs)) {

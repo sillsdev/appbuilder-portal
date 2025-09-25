@@ -12,12 +12,13 @@ declare global {
     public readonly userId: number;
     public readonly organizationMemberships: number[];
     public readonly roles: Map<number, number[]>;
+    public readonly sessionForm: Session['user'];
     requireAuthenticated(): void | never;
     requireSuperAdmin(): this | never;
     requireAdminOfOrg(organizationId: number): this | never;
     requireAdminOfOrgIn(organizationIds: number[]): this | never;
     requireAdminOfAny(): this | never;
-    requireHasRole(organizationId: number, roleId: number, orOrgAdmin = true): this | never;
+    requireHasRole(organizationId: number, roleId: number, orOrgAdmin?: boolean): this | never;
     requireMemberOfOrg(organizationId: number): this | never;
     requireMemberOfOrgOrSuperAdmin(organizationId: number): this | never;
     requireProjectWriteAccess(project?: { OwnerId: number; OrganizationId: number }): this | never;

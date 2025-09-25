@@ -1,3 +1,4 @@
+import type { Session } from '@auth/sveltekit';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { RoleId } from '$lib/prisma';
 import { getProductActions } from '$lib/products';
@@ -7,12 +8,12 @@ import { DatabaseReads } from '$lib/server/database';
 
 const tracer = trace.getTracer('ProjectSSE');
 export type ProjectDataSSE = Awaited<ReturnType<typeof getProjectDetails>>;
-export async function getProjectDetails(id: number, security: Security) {
+export async function getProjectDetails(id: number, userSession: Session['user']) {
   // permissions checked in auth
   return tracer.startActiveSpan('getProjectDetails', async (span) => {
     span.setAttributes({
       'project.id': id,
-      'project.userId': security.userId
+      'project.userId': userSession.userId
     });
     try {
       const project = await DatabaseReads.projects.findUniqueOrThrow({
@@ -197,7 +198,7 @@ export async function getProjectDetails(id: number, security: Security) {
       const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
       span.addEvent('Product definitions fetched');
 
-      const canEdit = canModifyProject(security, project.Owner.Id, project.Organization.Id);
+      const canEdit = canModifyProject(userSession, project.Owner.Id, project.Organization.Id);
 
       return {
         project: {
@@ -213,7 +214,7 @@ export async function getProjectDetails(id: number, security: Security) {
             ActiveTransition: strippedTransitions.find(
               (t) => (t[0] ?? t[1])?.ProductId === product.Id
             )?.[1],
-            actions: canEdit ? getProductActions(product, project.Owner.Id, security.userId) : []
+            actions: canEdit ? getProductActions(product, project.Owner.Id, userSession.userId) : []
           }))
         },
         productsToAdd: productDefinitions.filter(
@@ -267,7 +268,7 @@ export async function getProjectDetails(id: number, security: Security) {
             }
           }
         }),
-        userGroups: (await userGroupsForOrg(security.userId, project.Organization.Id)).map(
+        userGroups: (await userGroupsForOrg(userSession.userId, project.Organization.Id)).map(
           (g) => g.GroupId
         )
       };

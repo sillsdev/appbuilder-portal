@@ -1,3 +1,4 @@
+import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
 import * as v from 'valibot';
 import { RoleId } from '$lib/prisma';
@@ -167,7 +168,7 @@ export type ProjectForAction = Prisma.ProjectsGetPayload<{
  * The user is the owner or is an admin for the org
  */
 export function canModifyProject(
-  security: SecurityLike,
+  security: Session['user'],
   projectOwnerId: number,
   organizationId: number
 ): boolean {
@@ -182,14 +183,14 @@ export function canModifyProject(
  * They are not the owner and are in the same group and have the AppBuilder or OrgAdmin roles (ignored if superAdmin)
  */
 export function canClaimProject(
-  security: SecurityLike,
+  security: Session['user'],
   projectOwnerId: number,
   organizationId: number,
   projectGroupId: number,
   userGroupIds: number[]
 ) {
   if (security.userId === projectOwnerId) return false;
-  if (security.roles.values().some((r) => r.includes(RoleId.SuperAdmin))) return true;
+  if (security.roles.some(([_, r]) => r === RoleId.SuperAdmin)) return true;
   return (
     canModifyProject(security, projectOwnerId, organizationId) &&
     userGroupIds.includes(projectGroupId)
@@ -198,7 +199,7 @@ export function canClaimProject(
 
 export function canArchive(
   project: Pick<ProjectForAction, 'OwnerId' | 'DateArchived'>,
-  security: SecurityLike,
+  security: Session['user'],
   orgId: number
 ): boolean {
   return !project.DateArchived && canModifyProject(security, project.OwnerId, orgId);
@@ -206,7 +207,7 @@ export function canArchive(
 
 export function canReactivate(
   project: Pick<ProjectForAction, 'OwnerId' | 'DateArchived'>,
-  security: SecurityLike,
+  security: Session['user'],
   orgId: number
 ): boolean {
   return !!project.DateArchived && canModifyProject(security, project.OwnerId, orgId);
