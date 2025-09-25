@@ -25,7 +25,7 @@
     "schema": "src/lib/prisma/schema.prisma"
   },
   "devDependencies": {
-    "@auth/core": "^0.37.4",
+    "@auth/core": "^0.40.0",
     "@auth/sveltekit": "^1.7.4",
     "@aws-sdk/client-sesv2": "^3.879.0",
     "@bull-board/api": "^6.12.0",
