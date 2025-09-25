@@ -83,7 +83,7 @@
     "svelte": "^5.19.2",
     "svelte-check": "^4.1.4",
     "svelte-flatpickr-plus": "^2.0.6",
-    "sveltekit-sse": "^0.13.19",
+    "sveltekit-sse": "^0.14.0",
     "sveltekit-superforms": "^2.23.1",
     "svelvet": "^10.0.2",
     "tailwindcss": "^4.0.6",
