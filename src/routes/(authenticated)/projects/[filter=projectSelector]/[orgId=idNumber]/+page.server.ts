@@ -199,14 +199,11 @@ export const actions: Actions = {
 
     const groups = await userGroupsForOrg(event.locals.security.userId, orgId);
 
-    const allowAction =
+    projects.forEach(
       form.data.operation === 'claim'
         ? (p: (typeof projects)[0]) => event.locals.security.requireProjectClaimable(groups, p)
-        : (p: (typeof projects)[0]) => event.locals.security.requireProjectWriteAccess(p);
-
-    if (!projects.every(allowAction)) {
-      return fail(403);
-    }
+        : (p: (typeof projects)[0]) => event.locals.security.requireProjectWriteAccess(p)
+    );
 
     await Promise.all(
       projects.map(async (project) => {

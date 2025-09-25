@@ -161,7 +161,6 @@ export class Security {
     this.securityHandled = true;
     if (!this.userId || !this.organizationMemberships || !this.roles) {
       // Redirect to login
-      // TODO: preserve the original URL to return to after login
       const originalUrl = this.event.url;
       const returnTo = originalUrl.pathname + originalUrl.search;
       throw redirect(302, localizeHref('/login?returnTo=' + encodeURIComponent(returnTo)));

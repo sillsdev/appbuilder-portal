@@ -46,7 +46,6 @@ const paraglideHandle: Handle = ({ event, resolve }) =>
     });
   });
 
-// TODO: investigate not throwing an error here and passing it to load instead
 const heartbeat: Handle = async ({ event, resolve }) => {
   // this check is important to prevent infinite redirects...
   // Also, the homepage should always be accessible

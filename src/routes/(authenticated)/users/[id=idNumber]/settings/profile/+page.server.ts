@@ -1,3 +1,4 @@
+import { error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -23,7 +24,7 @@ export const load = (async (event) => {
     where: { Id: parseInt(event.params.id) },
     include: { OrganizationMemberships: { select: { OrganizationId: true } } }
   });
-  if (!user) return fail(404, { form: null, ok: false });
+  if (!user) return error(404);
   if (event.locals.security.userId !== parseInt(event.params.id)) {
     event.locals.security.requireAdminOfOrgIn(
       user.OrganizationMemberships.map((o) => o.OrganizationId)
