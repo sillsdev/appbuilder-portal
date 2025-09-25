@@ -208,14 +208,14 @@
               {m.project_productFiles()}
             </a>
           </li>
-          {#if isAdminForOrg(project.Organization.Id, page.data.session?.user.roles)}
+          {#if isAdminForOrg(project.Organization.Id, page.data.session!.user.roles)}
             <li class="w-full rounded-none">
               <button class="text-nowrap" onclick={() => updateProductModal?.showModal()}>
                 {m.products_properties_title()}
               </button>
             </li>
           {/if}
-          {#if isSuperAdmin(page.data.session?.user.roles) && !!product.WorkflowInstance}
+          {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}
             <li class="w-full rounded-none">
               <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
                 {m.common_workflow()}

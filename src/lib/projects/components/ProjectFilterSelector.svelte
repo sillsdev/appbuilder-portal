@@ -35,7 +35,9 @@
     <div class="px-4">
       {#each textsForPaths as route}
         <a
-          href={localizeHref(`/projects/${route[0]}${page.params.orgId ? '/' + page.params.orgId : ''}`)}
+          href={localizeHref(
+            `/projects/${route[0]}${page.params.orgId ? '/' + page.params.orgId : ''}`
+          )}
           class:font-extrabold={page.params.filter === route[0]}
           class="p-1 text-nowrap block"
         >
