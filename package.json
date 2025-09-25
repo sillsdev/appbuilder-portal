@@ -35,7 +35,7 @@
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.31.0",
     "@hono/node-server": "^1.17.1",
-    "@iconify/svelte": "^4.2.0",
+    "@iconify/svelte": "^5.0.0",
     "@inlang/paraglide-js": "^2.2.0",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/exporter-logs-otlp-grpc": "^0.203.0",
