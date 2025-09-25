@@ -34,19 +34,20 @@ const productActionSchema = v.object({
 });
 
 export const load = (async ({ locals, params }) => {
+  const projectId = Number(params.id);
+  if (isNaN(projectId)) throw error(404, 'Not Found');
   locals.security.requireProjectReadAccess(
     await DatabaseReads.groupMemberships.findMany({
       where: { UserId: locals.security.userId },
       select: { GroupId: true }
     }),
-    await DatabaseReads.projects.findUniqueOrThrow({
-      where: { Id: parseInt(params.id) },
+    await DatabaseReads.projects.findUnique({
+      where: { Id: projectId },
       select: { OwnerId: true, OrganizationId: true, GroupId: true }
     })
   );
-  if (isNaN(parseInt(params.id))) throw error(404, 'Not Found');
   return {
-    projectData: await getProjectDetails(parseInt(params.id), locals.security.sessionForm),
+    projectData: await getProjectDetails(projectId, locals.security.sessionForm),
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
@@ -63,7 +64,7 @@ async function verifyProduct(event: RequestEvent, Id: string) {
 export const actions = {
   async deleteProduct(event) {
     event.locals.security.requireProjectWriteAccess(
-      await DatabaseReads.projects.findUniqueOrThrow({
+      await DatabaseReads.projects.findUnique({
         where: { Id: parseInt(event.params.id) },
         select: { OwnerId: true, OrganizationId: true }
       })
@@ -80,7 +81,7 @@ export const actions = {
   },
   async deleteAuthor(event) {
     event.locals.security.requireProjectWriteAccess(
-      await DatabaseReads.projects.findUniqueOrThrow({
+      await DatabaseReads.projects.findUnique({
         where: { Id: parseInt(event.params.id) },
         select: { OwnerId: true, OrganizationId: true }
       })
@@ -112,7 +113,7 @@ export const actions = {
   },
   async deleteReviewer(event) {
     event.locals.security.requireProjectWriteAccess(
-      await DatabaseReads.projects.findUniqueOrThrow({
+      await DatabaseReads.projects.findUnique({
         where: { Id: parseInt(event.params.id) },
         select: { OwnerId: true, OrganizationId: true }
       })
@@ -133,7 +134,7 @@ export const actions = {
   },
   async addProduct(event) {
     event.locals.security.requireProjectWriteAccess(
-      await DatabaseReads.projects.findUniqueOrThrow({
+      await DatabaseReads.projects.findUnique({
         where: { Id: parseInt(event.params.id) },
         select: { OwnerId: true, OrganizationId: true }
       })
@@ -163,7 +164,7 @@ export const actions = {
   },
   async productAction(event) {
     event.locals.security.requireProjectWriteAccess(
-      await DatabaseReads.projects.findUniqueOrThrow({
+      await DatabaseReads.projects.findUnique({
         where: { Id: parseInt(event.params.id) },
         select: { OwnerId: true, OrganizationId: true }
       })
@@ -181,7 +182,7 @@ export const actions = {
   },
   async updateProduct(event) {
     event.locals.security.requireProjectWriteAccess(
-      await DatabaseReads.projects.findUniqueOrThrow({
+      await DatabaseReads.projects.findUnique({
         where: { Id: parseInt(event.params.id) },
         select: { OwnerId: true, OrganizationId: true }
       })
@@ -200,7 +201,7 @@ export const actions = {
   },
   async addAuthor(event) {
     event.locals.security.requireProjectWriteAccess(
-      await DatabaseReads.projects.findUniqueOrThrow({
+      await DatabaseReads.projects.findUnique({
         where: { Id: parseInt(event.params.id) },
         select: { OwnerId: true, OrganizationId: true }
       })
@@ -211,18 +212,33 @@ export const actions = {
     const projectId = parseInt(event.params.id);
     if (
       // if user modified hidden values
-      !(await DatabaseReads.organizationMemberships.findFirst({
+      !(await DatabaseReads.groupMemberships.findFirst({
         where: {
           UserId: form.data.author,
-          Organization: {
-            Projects: {
-              some: { Id: projectId }
+          Group: {
+            Owner: {
+              Projects: {
+                some: { Id: projectId }
+              }
             }
           }
         }
       }))
     ) {
-      return fail(403, { form, ok: false });
+      return fail(400, { form, ok: false });
+    }
+    if (
+      (await DatabaseReads.userRoles.count({
+        where: {
+          UserId: form.data.author,
+          RoleId: RoleId.Author,
+          Organization: {
+            Projects: { some: { Id: projectId } }
+          }
+        }
+      })) === 0
+    ) {
+      return fail(400, { form, ok: false });
     }
     // ISSUE: #1101 Appears that CanUpdate is not used
     const author = await DatabaseWrites.authors.create({
@@ -243,7 +259,7 @@ export const actions = {
   },
   async addReviewer(event) {
     event.locals.security.requireProjectWriteAccess(
-      await DatabaseReads.projects.findUniqueOrThrow({
+      await DatabaseReads.projects.findUnique({
         where: { Id: parseInt(event.params.id) },
         select: { OwnerId: true, OrganizationId: true }
       })
@@ -260,7 +276,7 @@ export const actions = {
   },
   async toggleVisibility(event) {
     event.locals.security.requireProjectWriteAccess(
-      await DatabaseReads.projects.findUniqueOrThrow({
+      await DatabaseReads.projects.findUnique({
         where: { Id: parseInt(event.params.id) },
         select: { OwnerId: true, OrganizationId: true }
       })
@@ -281,7 +297,7 @@ export const actions = {
   },
   async toggleDownload(event) {
     event.locals.security.requireProjectWriteAccess(
-      await DatabaseReads.projects.findUniqueOrThrow({
+      await DatabaseReads.projects.findUnique({
         where: { Id: parseInt(event.params.id) },
         select: { OwnerId: true, OrganizationId: true }
       })
@@ -305,10 +321,11 @@ export const actions = {
     const form = await superValidate(event.request, valibot(updateOwnerGroupSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     const projectId = parseInt(event.params.id);
-    const project = await DatabaseReads.projects.findUniqueOrThrow({
+    const project = await DatabaseReads.projects.findUnique({
       where: { Id: projectId },
       select: { OwnerId: true, OrganizationId: true, GroupId: true }
     });
+    if (!project) return fail(404, { form, ok: false });
     // changing ownership
     if (project.OwnerId !== form.data.owner) {
       event.locals.security.requireProjectClaimable(
@@ -333,7 +350,7 @@ export const actions = {
     const form = await superValidate(event.request, valibot(projectActionSchema));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
     // prefer single project over array
-    const project = await DatabaseReads.projects.findUniqueOrThrow({
+    const project = await DatabaseReads.projects.findUnique({
       where: { Id: parseInt(event.params.id) },
       select: {
         Id: true,
@@ -344,7 +361,7 @@ export const actions = {
         OrganizationId: true
       }
     });
-
+    if (!project) return fail(404, { form, ok: false });
     let groups: { GroupId: number }[] = [];
 
     if (form.data.operation === 'claim') {

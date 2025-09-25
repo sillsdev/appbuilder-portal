@@ -16,13 +16,7 @@ const projectPropertyEditSchema = v.object({
 });
 
 export const load = (async ({ params, locals }) => {
-  locals.security.requireProjectWriteAccess(
-    await DatabaseReads.projects.findUniqueOrThrow({
-      where: { Id: parseInt(params.id) },
-      select: { OwnerId: true, OrganizationId: true }
-    })
-  );
-  const project = await DatabaseReads.projects.findUniqueOrThrow({
+  const project = (await DatabaseReads.projects.findUnique({
     where: {
       Id: parseInt(params.id)
     },
@@ -34,7 +28,8 @@ export const load = (async ({ params, locals }) => {
       Description: true,
       OrganizationId: true
     }
-  });
+  }))!;
+  locals.security.requireProjectWriteAccess(project);
   return {
     project,
     form: await superValidate(
@@ -75,23 +70,18 @@ export const load = (async ({ params, locals }) => {
 
 export const actions: Actions = {
   default: async function (event) {
-    event.locals.security.requireProjectWriteAccess(
-      await DatabaseReads.projects.findUniqueOrThrow({
-        where: { Id: parseInt(event.params.id) },
-        select: { OwnerId: true, OrganizationId: true }
-      })
-    );
+    const projectId = parseInt(event.params.id);
+    const project = await DatabaseReads.projects.findUnique({
+      where: { Id: projectId },
+      select: { OwnerId: true, OrganizationId: true }
+    });
+    event.locals.security.requireProjectWriteAccess(project);
     if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(projectPropertyEditSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    const projectId = parseInt(event.params.id);
-    const project = await DatabaseReads.projects.findUniqueOrThrow({
-      where: { Id: projectId },
-      select: { OwnerId: true }
-    });
     // block if changing owner
-    if (project.OwnerId !== form.data.owner && !QueueConnected()) return error(503);
-    const success = await DatabaseWrites.projects.update(parseInt(event.params.id), {
+    if (project!.OwnerId !== form.data.owner && !QueueConnected()) return error(503);
+    const success = await DatabaseWrites.projects.update(projectId, {
       Name: form.data.name,
       GroupId: form.data.group,
       OwnerId: form.data.owner,

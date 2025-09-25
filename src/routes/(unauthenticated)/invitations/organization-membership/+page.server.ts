@@ -20,6 +20,7 @@ export const load = (async (event) => {
     event.cookies.set('inviteToken', inviteToken, {
       path: '/'
     });
+    // When there is an inviteToken, returnTo is unnecessary
     return redirect(302, localizeHref('/login'));
   }
 }) satisfies PageServerLoad;
