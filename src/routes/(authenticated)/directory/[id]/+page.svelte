@@ -5,8 +5,8 @@
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { RoleId } from '$lib/prisma';
   import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
-  import { canModifyProject } from '$lib/projects';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
@@ -16,12 +16,22 @@
 
   let { data }: Props = $props();
   const time = $derived(getRelativeTime(data.project.DateCreated));
+
+  function canViewProject(project: typeof data.project) {
+    return (
+      data.session.user.roles.some(
+        ([org, role]) =>
+          (org === project.Organization.Id && role === RoleId.OrgAdmin) ||
+          role === RoleId.SuperAdmin
+      ) || data.sessionGroups.includes(project.GroupId)
+    );
+  }
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
   <div class="flex flex-col p-6">
     <div>
-      {#if canModifyProject(data.session.user, data.project.Owner.Id, data.project.Organization.Id)}
+      {#if canViewProject(data.project)}
         <a class="link" href={localizeHref(`/projects/${data.project.Id}`)}>
           <h1 class="p-0">
             {data.project?.Name} ({data.project.Language ?? ''})

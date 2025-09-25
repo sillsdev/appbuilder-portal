@@ -5,13 +5,13 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
+import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { bulkProjectActionSchema, projectSearchSchema, pruneProjects } from '$lib/projects';
 import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/server';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
-import { isAdminForOrg } from '$lib/utils/roles';
 import { stringIdSchema } from '$lib/valibot';
 
 const bulkProductActionSchema = v.object({
@@ -22,9 +22,9 @@ const bulkProductActionSchema = v.object({
 function whereStatements(
   paramFilter: string,
   orgId: number,
-  user: SecurityLike
+  user: Security
 ): Prisma.ProjectsWhereInput {
-  if (isAdminForOrg(orgId, user.roles)) {
+  if (user.isSuperAdmin || user.roles.get(orgId)?.includes(RoleId.OrgAdmin)) {
     return filter(paramFilter, orgId, user.userId);
   } else {
     return {
@@ -79,11 +79,7 @@ function filter(filter: string, orgId: number, userId?: number): Prisma.Projects
 export const load = (async ({ params, locals }) => {
   locals.security.requireMemberOfOrgOrSuperAdmin(parseInt(params.orgId));
   const orgId = parseInt(params.orgId);
-  if (
-    isNaN(orgId) ||
-    !(orgId + '' === params.orgId) ||
-    !(await DatabaseReads.organizations.findFirst({ where: { Id: orgId } }))
-  ) {
+  if (!(await DatabaseReads.organizations.findFirst({ where: { Id: orgId } }))) {
     return redirect(302, localizeHref(`/projects/${params.filter}`));
   }
 

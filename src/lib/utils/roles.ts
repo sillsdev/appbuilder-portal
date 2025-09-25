@@ -1,13 +1,13 @@
 import type { Session } from '@auth/sveltekit';
 import { RoleId } from '$lib/prisma';
 
-type RolesMap = Session['user']['roles'];
+type ClientRolesArray = Session['user']['roles'];
 
 /** returns true if user is a SuperAdmin, or is an OrgAdmin for the specified organization
  * @param roles [OrganizationId, RoleId][]
  */
-export function isAdminForOrg(orgId: number, roles: RolesMap): boolean {
-  const orgRoles = roles.get(orgId);
+export function isAdminForOrg(orgId: number, roles: ClientRolesArray): boolean {
+  const orgRoles = roles.filter(([oId]) => oId === orgId).map(([, r]) => r);
   return !!orgRoles && (orgRoles.includes(RoleId.SuperAdmin) || orgRoles.includes(RoleId.OrgAdmin));
 }
 /** returns a list of organizations where the user has the specified role
@@ -15,23 +15,18 @@ export function isAdminForOrg(orgId: number, roles: RolesMap): boolean {
  * IS NOT SHORT-CIRCUITED by SuperAdmin
  * @param roles [OrganizationId, RoleId][]
  */
-export function orgsForRole(role: RoleId, roles: RolesMap): number[] {
-  return [
-    ...roles
-      .entries()
-      .filter(([, r]) => r.includes(role))
-      .map(([orgId]) => orgId)
-  ];
+export function orgsForRole(role: RoleId, roles: ClientRolesArray): number[] {
+  return roles.filter(([, r]) => r === role).map(([orgId]) => orgId);
 }
 /** returns true if user is a SuperAdmin, or is an OrgAdmin for any organization
  * @param roles [OrganizationId, RoleId][]
  */
-export function isAdminForAny(roles: RolesMap): boolean {
-  return roles.values().some((r) => r.includes(RoleId.SuperAdmin) || r.includes(RoleId.OrgAdmin));
+export function isAdminForAny(roles: ClientRolesArray): boolean {
+  return roles.some(([_, r]) => r === RoleId.SuperAdmin || r === RoleId.OrgAdmin);
 }
 /** returns true if user is a SuperAdmin
  * @param roles [OrganizationId, RoleId][]
  */
-export function isSuperAdmin(roles: RolesMap): boolean {
-  return roles.values().some((r) => r.includes(RoleId.SuperAdmin));
+export function isSuperAdmin(roles: ClientRolesArray): boolean {
+  return roles.some(([, r]) => r === RoleId.SuperAdmin);
 }

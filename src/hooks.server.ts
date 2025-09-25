@@ -100,20 +100,35 @@ export const handle: Handle = async ({ event, resolve }) => {
         async function hookTelementry({ event, resolve }) {
           return tracer.startActiveSpan('Auth Hooks', async (span) => {
             // Call the auth sequence
-            const ret = await authSequence({
-              event,
-              resolve: (...args) => {
+            let spanEnded = false;
+            try {
+              const ret = await authSequence({
+                event,
+                resolve: (...args) => {
+                  if (!spanEnded) {
+                    span.end();
+                    spanEnded = true;
+                  }
+                  return resolve(...args);
+                }
+              });
+              return ret;
+            } finally {
+              if (!spanEnded) {
                 span.end();
-                return resolve(...args);
+                spanEnded = true;
               }
-            });
-            return ret;
+            }
           });
         },
         bullboardHandle
       )({ event, resolve });
-      // @ts-expect-error securityHandled is not in the type definition
-      if (!event.locals.security.securityHandled) {
+      if (
+        // Don't enforce security checks on auth routes (handled by authRouteHandle before populateSecurityInfo)
+        !event.url.pathname.startsWith('/auth/') &&
+        // @ts-expect-error securityHandled is not in the type definition
+        !event.locals.security.securityHandled
+      ) {
         OTEL.instance.logger.error(
           `Security checks were not performed for route ${event.url.pathname}`,
           {
@@ -133,7 +148,7 @@ export const handle: Handle = async ({ event, resolve }) => {
           'http.status_code': 500
         });
         // This is a server error because a developer misconfigured the route
-        return new Response('Internal Server Error', { status: 500 });
+        return new Response('Authorization misconfigured', { status: 500 });
       }
       span.setAttributes({
         'http.status_code': response.status

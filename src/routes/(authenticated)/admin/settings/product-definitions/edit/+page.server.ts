@@ -18,7 +18,7 @@ const editSchema = v.object({
   properties: propertiesSchema
 });
 export const load = (async ({ url, locals }) => {
-  locals.security.requireAuthenticated();
+  locals.security.requireSuperAdmin();
   const id = parseInt(url.searchParams.get('id') ?? '');
   if (isNaN(id)) {
     return redirect(302, localizeHref('/admin/settings/product-definitions'));

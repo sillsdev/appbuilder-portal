@@ -150,7 +150,7 @@
 
   const canModifyProjects = $derived(
     isAdminForOrg($orgActive, data.session?.user.roles) ||
-      data.session?.user.roles.get($orgActive)?.includes(RoleId.AppBuilder)
+      data.session?.user.roles.some(([o, r]) => r === RoleId.AppBuilder && o === $orgActive)
   );
 </script>
 

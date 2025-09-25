@@ -1,4 +1,9 @@
-import { type DefaultSession, SvelteKitAuth, type SvelteKitAuthConfig } from '@auth/sveltekit';
+import {
+  type DefaultSession,
+  type Session,
+  SvelteKitAuth,
+  type SvelteKitAuthConfig
+} from '@auth/sveltekit';
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { trace } from '@opentelemetry/api';
 import { type Handle, error, redirect } from '@sveltejs/kit';
@@ -10,7 +15,10 @@ import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 
 declare module '@auth/sveltekit' {
   interface Session {
-    user: SecurityLike & DefaultSession['user'];
+    user: DefaultSession['user'] & {
+      userId: number;
+      roles: [number, RoleId][];
+    };
   }
 }
 // Stupidly hacky way to get access to the request data from the auth callbacks
@@ -117,15 +125,10 @@ const config: SvelteKitAuthConfig = {
           UserId: token.userId as number
         }
       });
-      const rolesMap = new Map<number, RoleId[]>();
-      for (const { OrganizationId, RoleId } of userRoles) {
-        if (!rolesMap.has(OrganizationId)) rolesMap.set(OrganizationId, []);
-        rolesMap.get(OrganizationId)!.push(RoleId);
-      }
-      session.user.roles = rolesMap;
+      session.user.roles = userRoles.map(({ OrganizationId, RoleId }) => [OrganizationId, RoleId]);
       trace.getActiveSpan()?.addEvent('session callback completed', {
         'auth.session.userId': session.user.userId,
-        'auth.session.roles': JSON.stringify([...session.user.roles.entries()])
+        'auth.session.roles': JSON.stringify(session.user.roles)
       });
       return session;
     }
@@ -135,6 +138,7 @@ const config: SvelteKitAuthConfig = {
 export class Security {
   public readonly isSuperAdmin;
   public securityHandled = false;
+  public readonly sessionForm: Session['user'];
   constructor(
     public readonly event: Parameters<Handle>[0]['event'],
     // Note these three CAN be null if the user is not authenticated
@@ -143,6 +147,14 @@ export class Security {
     public readonly roles: Map<number, RoleId[]>
   ) {
     this.isSuperAdmin = roles?.values().some((r) => r.includes(RoleId.SuperAdmin)) ?? false;
+    this.sessionForm = {
+      userId: this.userId,
+      roles: [
+        ...this.roles
+          .entries()
+          .map(([orgId, roleIds]) => roleIds.map((r) => [orgId, r]) as [number, RoleId][])
+      ].flat(1)
+    };
   }
 
   requireAuthenticated() {
@@ -211,7 +223,7 @@ export class Security {
   requireProjectWriteAccess(project?: { OwnerId: number; OrganizationId: number }) {
     this.requireAuthenticated();
     if (!project) {
-      error(400, 'Project is required for write access check');
+      error(404, 'Project is required for write access check');
     }
     if (!this.isSuperAdmin && project.OwnerId !== this.userId) {
       this.requireAdminOfOrg(project.OrganizationId);
@@ -302,11 +314,16 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
         event.cookies.set('authjs.session-token', '', { path: '/' });
         return redirect(302, localizeHref('/login/locked'));
       }
+      const roleMap = new Map<number, RoleId[]>();
+      for (const [orgId, roleId] of security.roles) {
+        if (!roleMap.has(orgId)) roleMap.set(orgId, []);
+        roleMap.get(orgId)!.push(roleId);
+      }
       event.locals.security = new Security(
         event,
         security.userId,
         user.OrganizationMemberships.map((o) => o.OrganizationId),
-        security.roles
+        roleMap
       );
     }
   } finally {

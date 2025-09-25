@@ -7,4 +7,9 @@ export const load: PageServerLoad = async (event) => {
   event.locals.security.requireNothing();
   if (!event.locals.security.userId) return redirect(302, localizeHref('/'));
 };
-export const actions: Actions = { default: signOut };
+export const actions: Actions = {
+  async default(event) {
+    event.locals.security.requireNothing();
+    return await signOut(event);
+  }
+};

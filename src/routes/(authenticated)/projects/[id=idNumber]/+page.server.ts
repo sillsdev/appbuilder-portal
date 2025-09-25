@@ -46,7 +46,7 @@ export const load = (async ({ locals, params }) => {
   );
   if (isNaN(parseInt(params.id))) throw error(404, 'Not Found');
   return {
-    projectData: await getProjectDetails(parseInt(params.id), locals.security),
+    projectData: await getProjectDetails(parseInt(params.id), locals.security.sessionForm),
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),

@@ -98,9 +98,13 @@ export function projectFilter(args: {
     ]
   };
 }
+
 export function verifyCanCreateProject(user: Security, orgId: number): boolean {
   // Creating a project is allowed if the user is an OrgAdmin or AppBuilder for the organization or a SuperAdmin
-  return isAdminForOrg(orgId, user.roles) || !!user.roles.get(orgId)?.includes(RoleId.AppBuilder);
+  return (
+    isAdminForOrg(orgId, user.sessionForm.roles) ||
+    !!user.roles.get(orgId)?.includes(RoleId.AppBuilder)
+  );
 }
 
 export async function userGroupsForOrg(userId: number, orgId: number) {
@@ -152,7 +156,7 @@ export async function doProjectAction(
     });
   } else if (
     operation === 'claim' &&
-    canClaimProject(security, project?.OwnerId, orgId, project?.GroupId, groups)
+    canClaimProject(security.sessionForm, project?.OwnerId, orgId, project?.GroupId, groups)
   ) {
     await DatabaseWrites.projects.update(project.Id, {
       OwnerId: security.userId

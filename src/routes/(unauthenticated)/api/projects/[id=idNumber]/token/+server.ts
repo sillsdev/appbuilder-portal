@@ -103,8 +103,11 @@ export async function POST({ params, locals, request, fetch }) {
   // Check roles
   if (readOnly === null) {
     if (
-      locals.security.isSuperAdmin ||
-      locals.security.roles.get(project.OrganizationId)?.includes(RoleId.OrgAdmin)
+      user[0].UserRoles.some(
+        (role) =>
+          (role.OrganizationId === project.OrganizationId && role.RoleId === RoleId.OrgAdmin) ||
+          role.RoleId === RoleId.SuperAdmin
+      )
     ) {
       readOnly = false;
     }

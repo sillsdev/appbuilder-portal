@@ -1,12 +1,18 @@
-import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import { DatabaseReads } from '$lib/server/database';
 import { adminOrgs } from '$lib/users/server';
 
 export const load = (async ({ params, locals }) => {
   locals.security.requireAuthenticated();
-  if (!locals.security.isSuperAdmin && locals.security.userId !== parseInt(params.id!)) {
-    throw error(403);
+  if (locals.security.userId !== parseInt(params.id!)) {
+    locals.security.requireAdminOfOrgIn(
+      await DatabaseReads.organizationMemberships
+        .findMany({
+          where: { UserId: parseInt(params.id!) },
+          select: { OrganizationId: true }
+        })
+        .then((orgs) => orgs.map((o) => o.OrganizationId))
+    );
   }
   const subject = await DatabaseReads.users.findUniqueOrThrow({
     where: {
