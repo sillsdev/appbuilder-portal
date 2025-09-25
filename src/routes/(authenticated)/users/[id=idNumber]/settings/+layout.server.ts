@@ -5,7 +5,6 @@ import { adminOrgs } from '$lib/users/server';
 export const load = (async ({ params, locals }) => {
   locals.security.requireAuthenticated();
   const userId = Number(params.id);
-  if (isNaN(userId)) return error(404);
   if (locals.security.userId !== userId) {
     locals.security.requireAdminOfOrgIn(
       await DatabaseReads.organizationMemberships

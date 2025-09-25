@@ -61,7 +61,12 @@ export const actions = {
       !(await DatabaseReads.organizations.findFirst({
         where: {
           AND: [
-            adminOrgs(subjectId, event.locals.security.userId, event.locals.security.isSuperAdmin),
+            adminOrgs(
+              subjectId,
+              event.locals.security.userId,
+              event.locals.security.isSuperAdmin,
+              form.data.orgId
+            ),
             { Groups: { some: { Id: form.data.groupId } } }
           ]
         }

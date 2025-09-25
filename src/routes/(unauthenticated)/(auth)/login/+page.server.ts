@@ -12,7 +12,14 @@ export const load: PageServerLoad = async (event) => {
       return redirect(302, localizeHref('/invitations/organization-membership?t=' + inviteToken));
     }
     const redirectUrl = event.url.searchParams.get('returnTo');
-    return redirect(302, localizeHref(redirectUrl || '/tasks'));
+    return redirect(
+      302,
+      localizeHref(
+        redirectUrl && redirectUrl.startsWith('/') && !redirectUrl.startsWith('//')
+          ? redirectUrl
+          : '/tasks'
+      )
+    );
   }
   return {
     serviceAvailable: QueueConnected()

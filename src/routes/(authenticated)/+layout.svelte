@@ -151,7 +151,7 @@
               {m.sidebar_orgProjects()}
             </a>
           </li>
-          {#if isAdminForAny(page.data.session?.user.roles)}
+          {#if isAdminForAny(data.session.user.roles)}
             <li>
               <a
                 class="rounded-none"
@@ -183,7 +183,7 @@
               </a>
             </li>
           {/if}
-          {#if isSuperAdmin(page.data.session?.user.roles)}
+          {#if isSuperAdmin(data.session.user.roles)}
             <li>
               <a
                 class="rounded-none"
