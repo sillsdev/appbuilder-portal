@@ -54,7 +54,7 @@
     <Toggle
       title={{ key: 'project_visibility_title' }}
       message={{ key: 'project_visibility_description' }}
-      formName="isPublic"
+      name="isPublic"
       bind:checked={isPublic}
       onchange={() => {
         publicForm.requestSubmit();
@@ -87,6 +87,7 @@
   >
     <Toggle
       title={{ key: 'project_orgDownloads_title' }}
+      name="canDownload"
       message={{ key: 'project_orgDownloads_description' }}
       bind:checked={allowDownloads}
       onchange={() => {
