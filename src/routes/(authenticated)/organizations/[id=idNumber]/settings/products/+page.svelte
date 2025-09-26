@@ -3,7 +3,7 @@
   import { enhance } from '$app/forms';
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
-  import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
+  import Toggle from '$lib/components/settings/Toggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -33,7 +33,7 @@
       };
     }}
   >
-    <PublicPrivateToggle
+    <Toggle
       title={{ key: 'org_makePrivateTitle', classes: 'font-bold' }}
       message={{ key: 'org_makePrivateDescription' }}
       className="pb-2"

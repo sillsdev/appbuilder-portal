@@ -4,7 +4,7 @@
   import { goto } from '$app/navigation';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
+  import Toggle from '$lib/components/settings/Toggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -100,7 +100,7 @@
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
-  <PublicPrivateToggle
+  <Toggle
     title={{ key: 'org_publicByDefault' }}
     message={{ key: 'org_publicByDefaultDescription' }}
     className="py-1"

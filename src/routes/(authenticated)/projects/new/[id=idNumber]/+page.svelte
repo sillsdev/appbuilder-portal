@@ -5,7 +5,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
+  import Toggle from '$lib/components/settings/Toggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -84,7 +84,7 @@
             bind:value={$form.Description}
           ></textarea>
         </LabeledFormInput>
-        <PublicPrivateToggle
+        <Toggle
           title={{ key: 'project_public' }}
           message={{ key: 'project_visibilityDescription' }}
           className="py-2 md:max-w-xs"
