@@ -295,6 +295,7 @@ export const actions = {
     });
     return { form, ok: true };
   },
+
   async toggleDownload(event) {
     event.locals.security.requireProjectWriteAccess(
       await DatabaseReads.projects.findUnique({
@@ -316,6 +317,43 @@ export const actions = {
     });
     return { form, ok: true };
   },
+
+
+  async toggleAutoPublishOnRebuild(event) {
+    // permissions checked in auth
+    const form = await superValidate(
+      event.request,
+      valibot(
+        v.object({
+          autoPublishOnRebuild: v.boolean()
+        })
+      )
+    );
+    if (!form.valid) return fail(400, { form, ok: false });
+    await DatabaseWrites.projects.update(parseInt(event.params.id), {
+      AutoPublishOnRebuild: form.data.autoPublishOnRebuild
+    });
+    return { form, ok: true };
+  },
+
+  async toggleRebuildOnSoftwareUpdate(event) {
+    // permissions checked in auth
+    const form = await superValidate(
+      event.request,
+      valibot(
+        v.object({
+          rebuildOnSoftwareUpdate: v.boolean()
+        })
+      )
+    );
+    if (!form.valid) return fail(400, { form, ok: false });
+    await DatabaseWrites.projects.update(parseInt(event.params.id), {
+      RebuildOnSoftwareUpdate: form.data.rebuildOnSoftwareUpdate
+    });
+    return { form, ok: true };
+  },
+
+
   async editOwnerGroup(event) {
     event.locals.security.requireAuthenticated(); // check this first, so unauthenticated can't dos db
     const form = await superValidate(event.request, valibot(updateOwnerGroupSchema));
