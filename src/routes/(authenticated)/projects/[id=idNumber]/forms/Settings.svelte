@@ -3,7 +3,7 @@
   import type { ActionData } from '../$types';
   import { enhance } from '$app/forms';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
-  import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
+  import Toggle from '$lib/components/settings/Toggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
 
@@ -23,7 +23,8 @@
 
   let isPublic = $state(!!project.IsPublic);
   let publicForm: HTMLFormElement;
-  let downloadInput: HTMLInputElement;
+  let allowDownloads = $state(!!project.AllowDownloads);
+  let downloadForm: HTMLFormElement;
 </script>
 
 <h2 class="pl-0 pt-0">{m.project_settings_title()}</h2>
@@ -50,57 +51,47 @@
         update({ reset: false });
       }}
   >
-    <PublicPrivateToggle
+    <Toggle
       title={{ key: 'project_visibility_title' }}
       message={{ key: 'project_visibility_description' }}
       formName="isPublic"
       bind:checked={isPublic}
-      inputAttr={{
-        onchange: () => {
-          publicForm.requestSubmit();
-        },
-        disabled: !canEdit
+      onchange={() => {
+        publicForm.requestSubmit();
       }}
-      className={canEdit ? '' : 'cursor-not-allowed'}
+      onIcon="mdi:lock-open-variant"
+      offIcon="mdi:lock"
     />
   </form>
   <form
     method="POST"
     action="?/{downloadEndpoint}"
+    bind:this={downloadForm}
     use:enhance={() =>
       ({ update, result }) => {
         if (result.type === 'success') {
           const res = result.data as ActionData;
           if (res?.ok) {
-            if (downloadInput.checked) {
+            if (allowDownloads) {
               toast('success', m.project_acts_downloads_on());
             } else {
               toast('success', m.project_acts_downloads_off());
             }
           } else {
             toast('error', m.errors_generic({ errorMessage: '' }));
-            downloadInput.checked = !downloadInput.checked;
+            allowDownloads = !allowDownloads;
           }
         }
         update({ reset: false });
       }}
   >
-    <InputWithMessage
+    <Toggle
       title={{ key: 'project_orgDownloads_title' }}
       message={{ key: 'project_orgDownloads_description' }}
-      className={canEdit ? '' : 'cursor-not-allowed'}
-    >
-      <input
-        bind:this={downloadInput}
-        type="checkbox"
-        name="allowDownloads"
-        class="toggle toggle-accent ml-4"
-        checked={project.AllowDownloads}
-        onchange={() => {
-          downloadInput.form?.requestSubmit();
-        }}
-        disabled={!canEdit}
-      />
-    </InputWithMessage>
+      bind:checked={allowDownloads}
+      onchange={() => {
+        downloadForm.requestSubmit();
+      }}
+    />
   </form>
 </div>

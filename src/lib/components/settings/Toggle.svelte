@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { HTMLInputAttributes } from 'svelte/elements';
+  import type { HTMLInputAttributes, ChangeEventHandler } from 'svelte/elements';
   import IconContainer from '../IconContainer.svelte';
   import InputWithMessage from './InputWithMessage.svelte';
   import type { ValueKey } from '$lib/locales.svelte';
@@ -7,25 +7,40 @@
   interface Props {
     title?: ValueKey;
     message?: ValueKey;
-    className?: string;
-    formName?: string;
+    name?: string;
     checked: boolean;
+    canEdit?: boolean;
     inputAttr?: HTMLInputAttributes;
+    onchange: ChangeEventHandler<HTMLInputElement>;
+    onIcon?: string;
+    offIcon?: string;
   }
+
   let {
     title,
     message,
-    className = '',
-    formName,
+    name,
     checked = $bindable(),
-    inputAttr
+    canEdit = true,
+    onchange,
+    onIcon = '',
+    offIcon = ''
   }: Props = $props();
+
+  let className = $derived(canEdit ? '' : 'cursor-not-allowed');
 </script>
 
 <InputWithMessage {title} {message} {className}>
   <label class="group">
     <div class="relative">
-      <input name={formName} type="checkbox" class="sr-only group" bind:checked {...inputAttr} />
+      <input
+        {name}
+        type="checkbox"
+        class="sr-only group"
+        bind:checked
+        {onchange}
+        disabled={!canEdit}
+      />
       <div
         class="block h-8 rounded-full bg-gray-3 dark:bg-dark-2 w-14 toggle group-has-checked:border-accent"
       ></div>
@@ -34,15 +49,11 @@
       >
         <span class="hidden group-has-checked:block">
           <!-- Switch on -> public -->
-          <IconContainer
-            icon="mdi:lock-open-variant"
-            class="-translate-y-px text-white"
-            width="15"
-          />
+          <IconContainer icon={onIcon} class="-translate-y-px text-white" width="15" />
         </span>
         <span class="text-body-color dark:text-light group-has-checked:hidden">
           <!-- Switch off -> private -->
-          <IconContainer icon="mdi:lock" class="-translate-y-px text-black" width="15" />
+          <IconContainer icon={offIcon} class="-translate-y-px text-black" width="15" />
         </span>
       </div>
     </div>
