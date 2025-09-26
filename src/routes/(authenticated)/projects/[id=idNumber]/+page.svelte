@@ -239,12 +239,7 @@
       </div>
       <!-- Settings -->
       <div class="settingsarea my-4">
-        <Settings
-          project={projectData.project}
-          publicEndpoint="toggleVisibility"
-          downloadEndpoint="toggleDownload"
-          {canEdit}
-        />
+        <Settings project={projectData.project} {canEdit} />
       </div>
       <!-- Sidebar Settings -->
       <div class="space-y-2 min-w-0 flex-auto sidebararea">

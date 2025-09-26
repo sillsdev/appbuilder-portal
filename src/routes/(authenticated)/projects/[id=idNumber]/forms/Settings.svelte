@@ -1,30 +1,31 @@
 <script lang="ts">
   import type { Prisma } from '@prisma/client';
-  import type { ActionData } from '../$types';
-  import { enhance } from '$app/forms';
-  import Toggle from '$lib/components/settings/Toggle.svelte';
   import ToggleForm from '$lib/components/settings/ToggleForm.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { toast } from '$lib/utils';
 
   interface Props {
     project: Prisma.ProjectsGetPayload<{
       select: {
         IsPublic: true;
         AllowDownloads: true;
+        AutoPublishOnRebuild: true;
+        RebuildOnSoftwareUpdate: true;
       };
     }>;
-    publicEndpoint: string;
-    downloadEndpoint: string;
     canEdit: boolean;
   }
 
-  let { project, publicEndpoint, downloadEndpoint, canEdit }: Props = $props();
+  let { project, canEdit }: Props = $props();
+
+  const publicEndpoint = 'toggleVisibility';
+  const downloadEndpoint = 'toggleDownload';
+  const rebuildEndpoint = 'toggleRebuildOnSoftwareUpdate';
+  const publishEndpoint = 'toggleAutoPublishOnRebuild';
 
   let isPublic = $state(!!project.IsPublic);
-  let publicForm: HTMLFormElement;
   let allowDownloads = $state(!!project.AllowDownloads);
-  let downloadForm: HTMLFormElement;
+  let autoRebuild = $state(!!project.RebuildOnSoftwareUpdate);
+  let autoPublish = $state(!!project.AutoPublishOnRebuild);
 </script>
 
 <h2 class="pl-0 pt-0">{m.project_settings_title()}</h2>
@@ -51,5 +52,27 @@
     onmsg={m.project_acts_downloads_on()}
     offmsg={m.project_acts_downloads_off()}
     formVar={allowDownloads}
+  />
+
+  <ToggleForm
+    name="autoRebuildOnSoftwareUpdate"
+    method="POST"
+    action="?/{rebuildEndpoint}"
+    title={{ key: 'project_autoRebuild_on_update_title' }}
+    message={{ key: 'project_autoRebuild_on_update_description' }}
+    onmsg={m.project_acts_autoBuilds_on()}
+    offmsg={m.project_acts_autoBuilds_off()}
+    formVar={autoRebuild}
+  />
+
+  <ToggleForm
+    name="autoPublishOnRebuild"
+    method="POST"
+    action="?/{publishEndpoint}"
+    title={{ key: 'project_autoPublish_title' }}
+    message={{ key: 'project_autoPublish_description' }}
+    onmsg={m.project_acts_autoPublish_on()}
+    offmsg={m.project_acts_autoPublish_off()}
+    formVar={autoPublish}
   />
 </div>
