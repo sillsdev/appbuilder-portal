@@ -8,6 +8,9 @@ setup('index page has expected h1', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Scriptoria' })).toBeVisible();
 });
 setup('can login', async ({ page }) => {
+  const { CI_EMAIL, CI_PASSWORD } = process.env;
+  expect(CI_EMAIL).toBeTruthy();
+  expect(CI_PASSWORD).toBeTruthy();
   await page.goto('/');
   // Click the login button
   // Login and Login with new session
@@ -16,13 +19,6 @@ setup('can login', async ({ page }) => {
   // Wait for the login page to load
   await expect(page.getByPlaceholder('yours@example.com')).toBeVisible();
   // Fill in the email and password
-  const { CI_EMAIL, CI_PASSWORD } = process.env;
-  if (!(CI_EMAIL && CI_PASSWORD)) {
-    console.warn('CI user credentials missing from env');
-    console.log(process.env);
-  }
-  expect(CI_EMAIL).toBeTruthy();
-  expect(CI_PASSWORD).toBeTruthy();
   await page.getByPlaceholder('yours@example.com').fill(CI_EMAIL!);
   await page.getByPlaceholder('your password').fill(CI_PASSWORD!);
   // Click the login button

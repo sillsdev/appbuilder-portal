@@ -1,8 +1,12 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 import dotenv from 'dotenv';
 
-if (process.env.NODE_ENV === 'development') {
+if (!process.env.CI_EMAIL) {
   dotenv.config({ path: '.env' });
+  if (!process.env.CI_EMAIL) {
+    console.warn('CI user credentials missing from env');
+    console.log(process.env);
+  }
 }
 
 const config: PlaywrightTestConfig = {
