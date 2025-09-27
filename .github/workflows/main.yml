@@ -157,11 +157,6 @@ jobs:
       - name: Start docker-compose services
         run: |
           echo "Starting docker-compose services..."
-          export "AUTH0_CLIENT_ID=${{ vars.AUTH0_CLIENT_ID }}"
-          export "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}"
-          export "AUTH0_DOMAIN=${{ vars.AUTH0_DOMAIN }}"
-          export "AUTH0_CONNECTION=${{ vars.AUTH0_CONNECTION }}"
-          export "AUTH0_SECRET=${{ secrets.AUTH0_SECRET }}"
           ./run ci up -d
 
       - name: Run tests
@@ -179,6 +174,11 @@ jobs:
         env:
           CI_PASSWORD: ${{ secrets.CI_PASSWORD }}
           CI_EMAIL: ci@scriptoria.io
+          AWS_EMAIL_ACCESS_KEY_ID: ${{ secrets.AWS_EMAIL_ACCESS_KEY_ID }}
+          AWS_EMAIL_SECRET_ACCESS_KEY: ${{ secrets.AWS_EMAIL_SECRET_ACCESS_KEY }}
+          MAIL_SENDER: "AmazonSES"
+          ADMIN_NAME: "Scriptoria Staging"
+          ADMIN_EMAIL: "noreply@scriptoria.io"
       - name: Upload test results
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
