@@ -100,136 +100,150 @@ export default ESLintUtils.RuleCreator(() => '')({
         // export const actions = { default: async (event) => { ... } }
         // export function load(event) { ... }
         // export POST/GET/PUT/etc. function for endpoints in +server.ts files
+        // export const anything = query/command/form(async (event) => { ... }) in *.remote.ts files
 
-        // Only check .server.ts and +server.ts files
-        if (!context.filename.endsWith('.server.ts') && !context.filename.endsWith('+server.ts'))
-          return;
+        // There are two steps:
+        // 1. Identify the relevant exported functions and collect an array of their block statements
+        // 2. For each block statement, check if it includes a call to locals.security.require*()
 
-        // Find the function we are interested in
-        let functionExport:
-          | TSESTree.VariableDeclaratorMaybeInit
-          | TSESTree.VariableDeclaratorDefiniteAssignment
-          | TSESTree.FunctionDeclaration;
-
-        // load or actions in .server.ts files
-        if (context.filename.endsWith('.server.ts') && node.declaration) {
-          if (node.declaration.type === 'FunctionDeclaration') {
-            if (node.declaration.id?.name === 'load') {
-              functionExport = node.declaration;
-            }
-          } else {
-            functionExport = (node.declaration as TSESTree.VariableDeclaration).declarations?.find(
-              (decl) => {
-                return (
-                  decl.id.type === 'Identifier' &&
-                  (decl.id.name === 'load' || decl.id.name === 'actions')
-                );
-              }
-            );
-          }
-          // endpoint functions in +server.ts files
-        } else if (context.filename.endsWith('+server.ts') && node.declaration) {
-          if (node.declaration.type === 'FunctionDeclaration') {
-            // export function POST/GET/PUT/etc. ...
-            if (
-              node.declaration.id &&
-              ['POST', 'GET', 'PUT', 'DELETE', 'PATCH'].includes(node.declaration.id.name)
-            ) {
-              functionExport = node.declaration;
-            }
-          } else {
-            functionExport = (node.declaration as TSESTree.VariableDeclaration).declarations?.find(
-              (decl) => {
-                return (
-                  decl.id.type === 'Identifier' &&
-                  ['POST', 'GET', 'PUT', 'DELETE', 'PATCH'].includes(decl.id.name)
-                );
-              }
-            );
-          }
-        }
-        // This export is not a load, actions, or endpoint function
-        if (!functionExport) return;
+        // Only check .server.ts and +server.ts files, and *.remote.ts files
+        if (!/[+.](server|remote).ts$/.test(context.filename)) return;
 
         const blockStatements: TSESTree.BlockStatement[] = [];
-        if ((functionExport.id as TSESTree.Identifier).name === 'actions') {
-          // This is the actions object, so find all the functions in its properties
-          const objectExpression: TSESTree.ObjectExpression =
-            functionExport.type === 'VariableDeclarator'
-              ? (walkFind(
-                  functionExport.init,
-                  (n) => n.type === 'ObjectExpression',
-                  4
-                ) as TSESTree.ObjectExpression)
-              : null;
-          if (functionExport.type !== 'VariableDeclarator' || !objectExpression) {
-            context.report({
-              node: node.declaration,
-              data: { type: functionExport.type },
-              messageId: 'unexpectedFunction'
-            });
-            return;
-          }
-          const properties = objectExpression.properties.filter(
-            (p): p is TSESTree.Property => p.type === 'Property'
-          );
-          for (const prop of properties) {
+
+        function collectBlockStatementsFromExpression(node: TSESTree.Expression) {
+          if (['ArrowFunctionExpression', 'FunctionExpression'].includes(node.type)) {
             if (
-              prop.value.type === 'ArrowFunctionExpression' ||
-              prop.value.type === 'FunctionExpression'
+              (node as TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression).body.type ===
+              'BlockStatement'
             ) {
-              // There should be a block statement (function body) within a couple levels
-              const block = walkFind(
-                prop.value,
-                (n) => n.type === 'BlockStatement',
-                4
-              ) as TSESTree.BlockStatement | null;
-              if (block) blockStatements.push(block);
+              blockStatements.push((node as TSESTree.FunctionExpression).body);
             } else {
               context.report({
-                node: prop,
-                data: { type: prop.value.type },
-                messageId: 'unexpectedFunction'
+                node,
+                messageId: 'unexpectedFunction',
+                data: { type: node.type }
               });
             }
-          }
-        } else if (
-          (!(functionExport as TSESTree.VariableDeclaratorMaybeInit)?.init ||
-            !['ArrowFunctionExpression', 'FunctionExpression', 'TSSatisfiesExpression'].includes(
-              (functionExport as TSESTree.VariableDeclaratorMaybeInit).init.type
-            )) &&
-          node.declaration.type !== 'FunctionDeclaration'
-        ) {
-          // Unexpected type of export
-          context.report({
-            node: node.declaration,
-            data: { type: (functionExport as TSESTree.VariableDeclaratorMaybeInit).init?.type },
-            messageId: 'unexpectedFunction'
-          });
-          return;
-        } else {
-          // This is a single function (load or endpoint), so find its body
-          // There should be a block statement (function body) within a couple levels
-          const blockStatement = walkFind(
-            (functionExport as TSESTree.VariableDeclaratorMaybeInit).init ||
-              (functionExport as TSESTree.FunctionDeclaration),
-            (n) => n.type === 'BlockStatement',
-            4
-          ) as TSESTree.BlockStatement;
-          if (blockStatement) blockStatements.push(blockStatement);
-          else {
+          } else if (node.type === 'TSSatisfiesExpression') {
+            collectBlockStatementsFromExpression(node.expression);
+          } else {
             context.report({
-              node: node.declaration,
-              data: { type: functionExport.type },
-              messageId: 'unexpectedFunction'
+              node,
+              messageId: 'unexpectedFunction',
+              data: { type: node.type }
             });
-            return;
           }
         }
+
+        // Step 1: three types of files to check: *.server.ts, +server.ts, and *.remote.ts
+        if (context.filename.endsWith('.server.ts') && node.declaration) {
+          // load or actions in .server.ts files
+          if (node.declaration.type === 'FunctionDeclaration') {
+            if (node.declaration.id?.name === 'load') {
+              blockStatements.push(node.declaration.body);
+            }
+          } else if (node.declaration.type === 'VariableDeclaration') {
+            node.declaration.declarations?.forEach((decl) => {
+              if (decl.id.type === 'Identifier' && decl.id.name === 'load') {
+                collectBlockStatementsFromExpression(decl.init);
+              } else if (decl.id.type === 'Identifier' && decl.id.name === 'actions') {
+                const objectExpression: TSESTree.ObjectExpression = walkFind(
+                  decl.init,
+                  (n) => n.type === 'ObjectExpression',
+                  4
+                ) as TSESTree.ObjectExpression | null;
+                if (decl.type === 'VariableDeclarator' && objectExpression) {
+                  for (const prop of objectExpression.properties.filter(
+                    (p): p is TSESTree.Property => p.type === 'Property'
+                  )) {
+                    collectBlockStatementsFromExpression(prop.value as TSESTree.Expression);
+                  }
+                } else {
+                  context.report({
+                    node: decl,
+                    messageId: 'unexpectedFunction',
+                    data: { type: decl.type }
+                  });
+                }
+              }
+            });
+          } else {
+            context.report({
+              node: node.declaration,
+              messageId: 'unexpectedFunction',
+              data: { type: node.declaration.type }
+            });
+          }
+        } else if (context.filename.endsWith('+server.ts') && node.declaration) {
+          // endpoint functions in +server.ts files
+          if (node.declaration.type === 'FunctionDeclaration') {
+            // export function POST/GET/PUT/etc. ...
+            if (['POST', 'GET', 'PUT', 'DELETE', 'PATCH'].includes(node.declaration.id.name)) {
+              blockStatements.push(node.declaration.body);
+            }
+          } else if (node.declaration.type === 'VariableDeclaration') {
+            // export const POST/GET/PUT/etc. = ...
+            node.declaration.declarations?.forEach((decl) => {
+              if (
+                decl.id.type === 'Identifier' &&
+                ['POST', 'GET', 'PUT', 'DELETE', 'PATCH'].includes(decl.id.name)
+              ) {
+                collectBlockStatementsFromExpression(decl.init);
+              }
+            });
+          } else {
+            context.report({
+              node: node.declaration,
+              messageId: 'unexpectedFunction',
+              data: { type: node.declaration.type }
+            });
+          }
+        } else if (context.filename.endsWith('.remote.ts') && node.declaration) {
+          // remote functions in *.remote.ts files
+          if (node.declaration.type === 'VariableDeclaration') {
+            node.declaration.declarations.forEach((decl) => {
+              const callExpr = decl.init;
+              if (
+                callExpr.type === 'CallExpression' &&
+                callExpr.callee.type === 'Identifier' &&
+                ['query', 'command', 'form'].includes(callExpr.callee.name) &&
+                ['ArrowFunctionExpression', 'FunctionExpression'].includes(
+                  callExpr.arguments[callExpr.arguments.length - 1].type
+                )
+              ) {
+                const callExprAsFunc = callExpr.arguments[callExpr.arguments.length - 1] as
+                  | TSESTree.ArrowFunctionExpression
+                  | TSESTree.FunctionExpression;
+                if (callExprAsFunc.body.type === 'BlockStatement') {
+                  blockStatements.push(callExprAsFunc.body);
+                } else {
+                  context.report({
+                    node: callExprAsFunc,
+                    messageId: 'unexpectedFunction',
+                    data: {
+                      type: callExprAsFunc.type
+                    }
+                  });
+                }
+              }
+            });
+          } else {
+            context.report({
+              node: node.declaration,
+              messageId: 'unexpectedFunction',
+              data: { type: node.declaration.type }
+            });
+          }
+        }
+
+        // Step 2: Check each collected block statement for a security check
         blockStatements.forEach((bs) => {
           if (!blockStatementIncludesSecurityCall(bs)) {
             // No security check found in this function's block statement
             // Flag an error on the parent node of the block statement (the whole function)
+            const indentLevel = bs.body[0]?.loc.start.column || 2;
+            const spaceStr = ' '.repeat(indentLevel);
             context.report({
               node: bs.parent,
               messageId: 'missingSecurityCheck',
@@ -239,10 +253,7 @@ export default ESLintUtils.RuleCreator(() => '')({
                   fix: (fixer) =>
                     fixer.insertTextBefore(
                       bs.body[0] || bs,
-                      'event.locals.security.requireAuthenticated();\n' +
-                        ((functionExport.id as TSESTree.Identifier).name === 'actions'
-                          ? '    '
-                          : '  ')
+                      'event.locals.security.requireAuthenticated();\n' + spaceStr
                     )
                 },
                 {
@@ -250,10 +261,7 @@ export default ESLintUtils.RuleCreator(() => '')({
                   fix: (fixer) =>
                     fixer.insertTextBefore(
                       bs.body[0] || bs,
-                      'event.locals.security.requireNothing();\n' +
-                        ((functionExport.id as TSESTree.Identifier).name === 'actions'
-                          ? '    '
-                          : '  ')
+                      'event.locals.security.requireNothing();\n' + spaceStr
                     )
                 }
               ]
