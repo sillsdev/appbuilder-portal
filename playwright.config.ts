@@ -1,4 +1,13 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
+import dotenv from 'dotenv';
+
+if (!process.env.CI_EMAIL) {
+  dotenv.config({ path: '.env' });
+  if (!process.env.CI_EMAIL) {
+    console.warn('CI user credentials missing from env');
+    console.log(process.env);
+  }
+}
 
 const config: PlaywrightTestConfig = {
   webServer: {
@@ -20,7 +29,20 @@ const config: PlaywrightTestConfig = {
     screenshot: 'only-on-failure'
   },
   testDir: 'tests',
-  testMatch: /(.+\.)?(test|spec)\.[jt]s/
+  outputDir: 'playwright/test-results',
+  projects: [
+    // Setup Project
+    { name: 'setup', testMatch: /.*\.setup.ts/ },
+    {
+      name: 'scriptoria',
+      use: { storageState: 'playwright/.auth/user.json' },
+      testMatch: /(.+\.)?(test|spec)\.[jt]s/,
+      dependencies: ['setup']
+    }
+  ],
+  expect: {
+    timeout: 10_000 // 10s
+  }
 };
 
 export default config;
