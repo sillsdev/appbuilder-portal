@@ -14,8 +14,15 @@ const toggleGroupSchema = v.object({
 });
 
 export const load = (async ({ params, locals }) => {
-  locals.security.requireAuthenticated();
   const subjectId = parseInt(params.id);
+  locals.security.requireAdminOfOrgIn(
+    (await DatabaseReads.users
+      .findUnique({
+        where: { Id: subjectId },
+        select: { OrganizationMemberships: { select: { OrganizationId: true } } }
+      })
+      .then((u) => u?.OrganizationMemberships.map((o) => o.OrganizationId))) ?? []
+  );
 
   return {
     groupsByOrg: await DatabaseReads.organizations.findMany({
@@ -49,13 +56,20 @@ export const actions = {
     // This way they can be added and removed in constant time and in a single command
     // https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations
 
-    event.locals.security.requireAuthenticated();
+    const subjectId = parseInt(event.params.id);
+    event.locals.security.requireAdminOfOrgIn(
+      (await DatabaseReads.users
+        .findUnique({
+          where: { Id: subjectId },
+          select: { OrganizationMemberships: { select: { OrganizationId: true } } }
+        })
+        .then((u) => u?.OrganizationMemberships.map((o) => o.OrganizationId))) ?? []
+    );
 
     const form = await superValidate(event, valibot(toggleGroupSchema));
 
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const subjectId = parseInt(event.params.id);
     // if user modified hidden values
     if (
       !(await DatabaseReads.organizations.findFirst({
