@@ -123,7 +123,7 @@ export const importJSONSchema = v.pipe(
         v.strictObject({
           ...projectSchemaBase.entries,
           AllowDownloads: v.optional(v.boolean()),
-          AutomaticBuilds: v.optional(v.boolean())
+          AutomaticBuilds: v.never('AutomaticBuilds is deprecated')
         })
       ),
       v.minLength(1)
