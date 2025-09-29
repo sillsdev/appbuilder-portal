@@ -15,14 +15,12 @@ const toggleGroupSchema = v.object({
 
 export const load = (async ({ params, locals }) => {
   const subjectId = parseInt(params.id);
-  locals.security.requireAdminOfOrgIn(
-    (await DatabaseReads.users
-      .findUnique({
-        where: { Id: subjectId },
-        select: { OrganizationMemberships: { select: { OrganizationId: true } } }
-      })
-      .then((u) => u?.OrganizationMemberships.map((o) => o.OrganizationId))) ?? []
-  );
+  const user = await DatabaseReads.users.findUnique({
+    where: { Id: subjectId },
+    include: { OrganizationMemberships: { select: { OrganizationId: true } } }
+  });
+  if (!user) return error(404);
+  locals.security.requireAdminOfOrgIn(user.OrganizationMemberships.map((o) => o.OrganizationId));
 
   return {
     groupsByOrg: await DatabaseReads.organizations.findMany({
@@ -57,13 +55,13 @@ export const actions = {
     // https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations
 
     const subjectId = parseInt(event.params.id);
+    const user = await DatabaseReads.users.findUnique({
+      where: { Id: subjectId },
+      include: { OrganizationMemberships: { select: { OrganizationId: true } } }
+    });
+    if (!user) return error(404);
     event.locals.security.requireAdminOfOrgIn(
-      (await DatabaseReads.users
-        .findUnique({
-          where: { Id: subjectId },
-          select: { OrganizationMemberships: { select: { OrganizationId: true } } }
-        })
-        .then((u) => u?.OrganizationMemberships.map((o) => o.OrganizationId))) ?? []
+      user.OrganizationMemberships.map((o) => o.OrganizationId)
     );
 
     const form = await superValidate(event, valibot(toggleGroupSchema));
