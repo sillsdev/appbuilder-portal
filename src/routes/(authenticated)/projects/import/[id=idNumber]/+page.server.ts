@@ -218,6 +218,7 @@ export const actions: Actions = {
             TypeId: form.data.type,
             Description: pj.Description ?? '',
             IsPublic: pj.IsPublic,
+            // ISSUE #1303 Add new fields here
             ImportId: imp.Id
           };
         })

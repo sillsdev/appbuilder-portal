@@ -124,6 +124,7 @@ export const importJSONSchema = v.pipe(
           ...projectSchemaBase.entries,
           AllowDownloads: v.optional(v.boolean()),
           AutomaticBuilds: v.never('AutomaticBuilds is deprecated')
+          // ISSUE #1303 Add new fields here
         })
       ),
       v.minLength(1)
