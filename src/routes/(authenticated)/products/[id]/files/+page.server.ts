@@ -9,11 +9,19 @@ export const load = (async ({ params, locals }) => {
   const project = (
     await DatabaseReads.products.findUnique({
       where: { Id: params.id },
-      select: { Project: { select: { OwnerId: true, OrganizationId: true } }, Id: true }
+      select: {
+        Project: { select: { OwnerId: true, OrganizationId: true, GroupId: true } },
+        Id: true
+      }
     })
   )?.Project;
   if (!project) error(404);
-  locals.security.requireProjectWriteAccess(project);
+  locals.security.requireProjectReadAccess(
+    await DatabaseReads.groupMemberships.findMany({
+      where: { UserId: locals.security.userId, GroupId: project.GroupId }
+    }),
+    project
+  );
   const builds = await DatabaseReads.productBuilds.findMany({
     orderBy: [
       {
@@ -80,15 +88,19 @@ export const load = (async ({ params, locals }) => {
 
 export const actions = {
   page: async ({ request, params, locals }) => {
-    locals.security.requireProjectWriteAccess(
-      (
-        await DatabaseReads.products.findUnique({
-          where: { Id: params.id },
-          select: {
-            Project: { select: { OwnerId: true, OrganizationId: true } }
-          }
-        })
-      )?.Project
+    const project = (
+      await DatabaseReads.products.findUnique({
+        where: { Id: params.id },
+        select: {
+          Project: { select: { OwnerId: true, OrganizationId: true, GroupId: true } }
+        }
+      })
+    )?.Project;
+    if (!project) error(404);
+    locals.security.requireProjectReadAccess(
+      await DatabaseReads.groupMemberships.findMany({
+        where: { UserId: locals.security.userId, GroupId: project.GroupId }
+      })
     );
     const form = await superValidate(request, valibot(paginateSchema));
     if (!form.valid) return fail(400, { form, ok: false });
