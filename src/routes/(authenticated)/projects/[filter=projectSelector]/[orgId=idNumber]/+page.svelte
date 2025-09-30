@@ -175,7 +175,9 @@
           className={mobileSizing}
           organizations={data.organizations}
           bind:value={$orgActive}
-          onchange={() => goto(localizeHref(`/projects/${page.params.filter}/${$orgActive}`))}
+          selectProperties={{
+            onchange: () => goto(localizeHref(`/projects/${page.params.filter}/${$orgActive}`))
+          }}
         />
         <Tooltip className="tooltip-bottom {mobileSizing}">
           <div class="tooltip-content text-left">

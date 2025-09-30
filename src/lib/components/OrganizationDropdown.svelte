@@ -7,7 +7,7 @@
     value: number | null;
     className?: string;
     allowNull?: boolean;
-    [key: string]: unknown;
+    selectProperties?: Record<string, unknown>;
   }
 
   let {
@@ -15,11 +15,11 @@
     value = $bindable(),
     className = '',
     allowNull = false,
-    ...rest
+    selectProperties = {}
   }: Props = $props();
 </script>
 
-<select class="select select-bordered {className}" bind:value {...rest}>
+<select class="select select-bordered {className}" bind:value {...selectProperties}>
   {#if allowNull}
     <option value={null} selected>{org_allOrganizations()}</option>
   {/if}
