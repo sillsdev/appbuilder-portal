@@ -37,7 +37,8 @@ const bullboard = (() => {
 })();
 
 export const bullboardHandle: Handle = async ({ event, resolve }) => {
-  if (event.url.pathname.match(/^\/admin\/jobs($|\/)/) && event.locals.security.isSuperAdmin) {
+  if (event.url.pathname.match(/^\/admin\/jobs($|\/)/)) {
+    event.locals.security.requireSuperAdmin();
     return bullboard!.fetch(event.request);
   }
   return resolve(event);
