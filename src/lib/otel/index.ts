@@ -85,9 +85,11 @@ export default class OTEL {
     this.sdk = new NodeSDK({
       resource,
       traceExporter: new OTLPTraceExporter({ url: endpoint }),
-      metricReader: new PeriodicExportingMetricReader({
-        exporter: new OTLPMetricExporter({ url: endpoint })
-      }),
+      metricReaders: [
+        new PeriodicExportingMetricReader({
+          exporter: new OTLPMetricExporter({ url: endpoint })
+        })
+      ],
       logRecordProcessors: [logProcessor]
     });
   }
