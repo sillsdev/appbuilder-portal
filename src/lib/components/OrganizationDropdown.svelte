@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { HTMLSelectAttributes } from 'svelte/elements';
   import { org_allOrganizations } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
@@ -7,7 +8,7 @@
     value: number | null;
     className?: string;
     allowNull?: boolean;
-    selectProperties?: Record<string, unknown>;
+    selectProperties?: HTMLSelectAttributes;
   }
 
   let {
