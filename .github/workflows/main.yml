@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: 'npm'
@@ -70,7 +70,7 @@ jobs:
       AUTH0_CONNECTION: ${{ vars.AUTH0_CONNECTION }}
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
 
@@ -106,7 +106,7 @@ jobs:
       AUTH0_CONNECTION: ${{ vars.AUTH0_CONNECTION }}
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
 
@@ -195,7 +195,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 24
 
