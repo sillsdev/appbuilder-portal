@@ -67,7 +67,7 @@
         <LabeledFormInput key="project_org">
           <OrganizationDropdown
             className="w-full"
-            name="organizationId"
+            selectProperties={{ name: 'organizationId' }}
             bind:value={$form.organizationId}
             organizations={data.groupsByOrg}
           />

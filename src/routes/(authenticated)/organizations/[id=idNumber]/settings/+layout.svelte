@@ -54,15 +54,17 @@
           <OrganizationDropdown
             bind:value={$orgActive}
             organizations={data.organizations}
-            onchange={() =>
-              goto(
-                localizeUrl(
-                  page.url.pathname.replace(
-                    `/organizations/${page.params.id}`,
-                    `/organizations/${$orgActive}`
+            selectProperties={{
+              onChange: () =>
+                goto(
+                  localizeUrl(
+                    page.url.pathname.replace(
+                      `/organizations/${page.params.id}`,
+                      `/organizations/${$orgActive}`
+                    )
                   )
                 )
-              )}
+            }}
           />
         </h2>
       {:else}
