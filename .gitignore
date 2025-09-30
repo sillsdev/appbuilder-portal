@@ -8,9 +8,9 @@ node_modules
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 languages
-playwright/*
+/playwright/
 *.log
 *.swp
-out/
+/out/
 Thumbs.db
 ehthumbs.db
