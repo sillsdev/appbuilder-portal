@@ -55,7 +55,7 @@
             bind:value={$orgActive}
             organizations={data.organizations}
             selectProperties={{
-              onChange: () =>
+              onchange: () =>
                 goto(
                   localizeUrl(
                     page.url.pathname.replace(
