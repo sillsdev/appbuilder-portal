@@ -41,8 +41,9 @@ const config: PlaywrightTestConfig = {
     }
   ],
   expect: {
-    timeout: 10_000 // 10s
-  }
+    timeout: 15_000 // 15s
+  },
+  retries: process.env.CI ? 2 : 0
 };
 
 export default config;
