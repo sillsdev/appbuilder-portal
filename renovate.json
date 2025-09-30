@@ -20,5 +20,6 @@
       "enabled": true,
       "automerge": false
     }
-  ]
+  ],
+  "postUpdateOptions": ["npmInstallTwice"]
 }
