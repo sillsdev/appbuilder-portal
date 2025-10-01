@@ -10,6 +10,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
+  import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
 
   interface Props {
@@ -41,7 +42,7 @@
   );
 
   onMount(() => {
-    $form.organizationId = data.groupsByOrg[0].Id;
+    $form.organizationId = $orgActive;
   });
 </script>
 

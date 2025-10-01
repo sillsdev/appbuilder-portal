@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { type FormResult, superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import type { MinifiedUser } from './common';
@@ -10,6 +11,7 @@
   import SearchBar from '$lib/components/SearchBar.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { isAdminForAny } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
@@ -43,6 +45,18 @@
         users = data.query.data;
         count = data.query.count;
       }
+    }
+  });
+
+  $effect(() => {
+    if ($form.organizationId) {
+      $orgActive = $form.organizationId;
+    }
+  });
+
+  onMount(() => {
+    if ($form.organizationId && $orgActive) {
+      $form.organizationId = $orgActive;
     }
   });
 
