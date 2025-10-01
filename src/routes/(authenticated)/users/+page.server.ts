@@ -138,7 +138,7 @@ export const load = (async ({ locals }) => {
         organizations,
         groups: await DatabaseReads.groups.findMany({
           where: {
-            OwnerId: { in: orgIds },
+            OwnerId: locals.security.isSuperAdmin ? undefined : { in: orgIds },
             GroupMemberships: {
               some: {}
             }
