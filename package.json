@@ -103,6 +103,6 @@
   "//": "@auth/core has a peerDep on v6, but it is never used",
   "overrides": {
     "nodemailer": "^7.0.6",
-    "cookie": "^0.7.0"
+    "cookie": "^1.0.0"
   }
 }
