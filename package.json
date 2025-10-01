@@ -7,7 +7,7 @@
     "node": "22.19.0"
   },
   "scripts": {
-    "dev": "vite dev",
+    "dev": "npm run diff-db && vite dev",
     "build": "vite build",
     "preview": "vite preview",
     "test": "npm run test:integration && npm run test:unit",
@@ -18,7 +18,8 @@
     "test:integration": "playwright test",
     "test:unit": "vitest run",
     "prepare": "svelte-kit sync",
-    "fix-sourcemaps": "node --experimental-strip-types fixSourcemaps.cts"
+    "fix-sourcemaps": "node --experimental-strip-types fixSourcemaps.cts",
+    "diff-db": "prisma migrate diff --from-schema-datasource src/lib/prisma/schema.prisma --to-schema-datamodel src/lib/prisma/schema.prisma --exit-code"
   },
   "prisma": {
     "seed": "node --experimental-strip-types src/lib/prisma/seed.ts -o",
