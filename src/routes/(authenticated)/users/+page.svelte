@@ -1,12 +1,10 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { type FormResult, superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import type { MinifiedUser } from './common';
   import { enhance as svk_enhance } from '$app/forms';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
-  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -49,15 +47,7 @@
   });
 
   $effect(() => {
-    if ($form.organizationId) {
-      $orgActive = $form.organizationId;
-    }
-  });
-
-  onMount(() => {
-    if ($form.organizationId && $orgActive) {
-      $form.organizationId = $orgActive;
-    }
+    $form.organizationId = $orgActive;
   });
 
   const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
@@ -97,17 +87,6 @@
       use:enhance
       class="flex flex-row flex-wrap place-content-end items-center p-2 gap-1"
     >
-      {#if data.organizations.length > 1}
-        <label class="flex flex-row items-center gap-x-2 {mobileSizing}">
-          <span class="whitespace-nowrap">{m.filters_org_label()}:</span>
-          <OrganizationDropdown
-            organizations={data.organizations}
-            bind:value={$form.organizationId}
-            className="grow"
-            allowNull={true}
-          />
-        </label>
-      {/if}
       <SearchBar bind:value={$form.search} className={mobileSizing} />
     </form>
   </div>
