@@ -1,15 +1,14 @@
 import type { Prisma } from '@prisma/client';
-import { type Actions, error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import type { PageServerLoad } from './$types';
-import { localizeHref } from '$lib/paraglide/runtime';
+import type { Actions, PageServerLoad } from './$types';
 import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { bulkProjectActionSchema, projectSearchSchema, pruneProjects } from '$lib/projects';
-import { doProjectAction, projectFilter, userGroupsForOrg } from '$lib/projects/server';
+import { doProjectAction, projectFilter } from '$lib/projects/server';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
 import { stringIdSchema } from '$lib/valibot';
@@ -21,36 +20,50 @@ const bulkProductActionSchema = v.object({
 
 function whereStatements(
   paramFilter: string,
-  orgId: number,
-  user: Security
+  user: Security,
+  orgIds?: number[]
 ): Prisma.ProjectsWhereInput {
-  if (user.isSuperAdmin || user.roles.get(orgId)?.includes(RoleId.OrgAdmin)) {
-    return filter(paramFilter, orgId, user.userId);
+  if (user.isSuperAdmin) {
+    return filter(paramFilter, orgIds, user.userId);
   } else {
     return {
-      Group: {
-        GroupMemberships: {
-          some: {
-            UserId: user.userId
+      OR: [
+        {
+          Organization: {
+            UserRoles: {
+              some: {
+                UserId: user.userId,
+                RoleId: RoleId.OrgAdmin
+              }
+            }
+          }
+        },
+        {
+          Group: {
+            GroupMemberships: {
+              some: {
+                UserId: user.userId
+              }
+            }
           }
         }
-      },
-      ...filter(paramFilter, orgId, user.userId)
+      ],
+      ...filter(paramFilter, orgIds, user.userId)
     };
   }
 }
 
-function filter(filter: string, orgId: number, userId?: number): Prisma.ProjectsWhereInput {
+function filter(filter: string, orgIds?: number[], userId?: number): Prisma.ProjectsWhereInput {
   const selector = filter as 'organization' | 'active' | 'archived' | 'all' | 'own';
   switch (selector) {
     case 'organization':
       return {
-        OrganizationId: orgId,
+        OrganizationId: orgIds ? { in: orgIds } : undefined,
         DateArchived: null
       };
     case 'active':
       return {
-        OrganizationId: orgId,
+        OrganizationId: orgIds ? { in: orgIds } : undefined,
         DateActive: {
           not: null
         },
@@ -58,18 +71,18 @@ function filter(filter: string, orgId: number, userId?: number): Prisma.Projects
       };
     case 'archived':
       return {
-        OrganizationId: orgId,
+        OrganizationId: orgIds ? { in: orgIds } : undefined,
         DateArchived: {
           not: null
         }
       };
     case 'all':
       return {
-        OrganizationId: orgId
+        OrganizationId: orgIds ? { in: orgIds } : undefined
       };
     case 'own':
       return {
-        OrganizationId: orgId,
+        OrganizationId: orgIds ? { in: orgIds } : undefined,
         OwnerId: userId,
         DateArchived: null
       };
@@ -77,14 +90,18 @@ function filter(filter: string, orgId: number, userId?: number): Prisma.Projects
 }
 
 export const load = (async ({ params, locals }) => {
-  locals.security.requireMemberOfOrgOrSuperAdmin(parseInt(params.orgId));
-  const orgId = parseInt(params.orgId);
-  if (!(await DatabaseReads.organizations.findFirst({ where: { Id: orgId } }))) {
-    return redirect(302, localizeHref(`/projects/${params.filter}`));
+  locals.security.requireAuthenticated();
+  let orgIds: number[] | undefined = undefined;
+  if (params.orgId) {
+    const orgId = parseInt(params.orgId);
+    locals.security.requireMemberOfOrgOrSuperAdmin(orgId);
+    orgIds = [orgId];
+  } else if (!locals.security.isSuperAdmin) {
+    orgIds = locals.security.organizationMemberships;
   }
 
   const projects = await DatabaseReads.projects.findMany({
-    where: whereStatements(params.filter, orgId, locals.security),
+    where: whereStatements(params.filter, locals.security, orgIds),
     include: {
       Products: {
         include: {
@@ -116,7 +133,7 @@ export const load = (async ({ params, locals }) => {
       valibot(projectSearchSchema)
     ),
     count: await DatabaseReads.projects.count({
-      where: whereStatements(params.filter, orgId, locals.security)
+      where: whereStatements(params.filter, locals.security, orgIds)
     }),
     actionForm: await superValidate(valibot(bulkProjectActionSchema)),
     productForm: await superValidate(valibot(bulkProductActionSchema)),
@@ -124,22 +141,44 @@ export const load = (async ({ params, locals }) => {
     /** allow actions other than reactivation */
     allowActions: params.filter !== 'archived',
     allowReactivate: params.filter === 'all' || params.filter === 'archived',
-    userGroups: (await userGroupsForOrg(locals.security.userId, orgId)).map((g) => g.GroupId),
+    userGroups: (
+      await DatabaseReads.groupMemberships.findMany({
+        where: {
+          Group: orgIds
+            ? {
+                OwnerId: {
+                  in: orgIds
+                }
+              }
+            : undefined,
+          UserId: locals.security.userId
+        }
+      })
+    ).map((g) => g.GroupId),
     jobsAvailable: QueueConnected()
   };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
   page: async function ({ params, request, locals }) {
-    locals.security.requireMemberOfOrgOrSuperAdmin(parseInt(params.orgId!));
+    locals.security.requireAuthenticated();
+    let orgIds: number[] | undefined = undefined;
+    if (params.orgId) {
+      const orgId = parseInt(params.orgId);
+      locals.security.requireMemberOfOrgOrSuperAdmin(orgId);
+      orgIds = [orgId];
+    } else if (!locals.security.isSuperAdmin) {
+      orgIds = locals.security.organizationMemberships;
+    }
     const form = await superValidate(request, valibot(projectSearchSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const organizationId = parseInt(params.orgId!);
-
     const where: Prisma.ProjectsWhereInput = {
-      ...projectFilter({ ...form.data, organizationId }),
-      ...whereStatements(params.filter!, organizationId, locals.security)
+      ...projectFilter({
+        ...form.data,
+        organizationId: null
+      }),
+      ...whereStatements(params.filter, locals.security, orgIds)
     };
 
     const projects = await DatabaseReads.projects.findMany({
@@ -169,13 +208,20 @@ export const actions: Actions = {
 
     return { form, ok: true, query: { data: pruneProjects(projects), count } };
   },
-  projectAction: async (event) => {
-    const orgId = parseInt(event.params.orgId!);
-    event.locals.security.requireMemberOfOrgOrSuperAdmin(parseInt(event.params.orgId!));
+  projectAction: async ({ request, locals, params }) => {
+    locals.security.requireAuthenticated();
+    let orgIds: number[] | undefined = undefined;
+    if (params.orgId) {
+      const orgId = parseInt(params.orgId);
+      locals.security.requireMemberOfOrgOrSuperAdmin(orgId);
+      orgIds = [orgId];
+    } else if (!locals.security.isSuperAdmin) {
+      orgIds = locals.security.organizationMemberships;
+    }
 
     if (!QueueConnected()) return error(503);
 
-    const form = await superValidate(event.request, valibot(bulkProjectActionSchema));
+    const form = await superValidate(request, valibot(bulkProjectActionSchema));
     if (
       !form.valid ||
       !form.data.operation ||
@@ -197,12 +243,23 @@ export const actions: Actions = {
       }
     });
 
-    const groups = await userGroupsForOrg(event.locals.security.userId, orgId);
+    const groups = await DatabaseReads.groupMemberships.findMany({
+      where: {
+        Group: orgIds
+          ? {
+              OwnerId: {
+                in: orgIds
+              }
+            }
+          : undefined,
+        UserId: locals.security.userId
+      }
+    });
 
     projects.forEach(
       form.data.operation === 'claim'
-        ? (p: (typeof projects)[0]) => event.locals.security.requireProjectClaimable(groups, p)
-        : (p: (typeof projects)[0]) => event.locals.security.requireProjectWriteAccess(p)
+        ? (p: (typeof projects)[0]) => locals.security.requireProjectClaimable(groups, p)
+        : (p: (typeof projects)[0]) => locals.security.requireProjectWriteAccess(p)
     );
 
     await Promise.all(
@@ -210,8 +267,7 @@ export const actions: Actions = {
         await doProjectAction(
           form.data.operation,
           project,
-          event.locals.security,
-          orgId,
+          locals.security,
           groups.map((g) => g.GroupId)
         );
       })
@@ -219,14 +275,15 @@ export const actions: Actions = {
 
     return { form, ok: true };
   },
-  productAction: async (event) => {
-    event.locals.security.requireMemberOfOrgOrSuperAdmin(parseInt(event.params.orgId!));
-    const orgId = parseInt(event.params.orgId!);
-    if (isNaN(orgId) || !(orgId + '' === event.params.orgId)) return fail(404);
+  productAction: async ({ request, locals, params }) => {
+    locals.security.requireAuthenticated();
+    if (params.orgId) {
+      locals.security.requireMemberOfOrgOrSuperAdmin(parseInt(params.orgId));
+    }
 
     if (!QueueConnected()) return error(503);
 
-    const form = await superValidate(event.request, valibot(bulkProductActionSchema));
+    const form = await superValidate(request, valibot(bulkProductActionSchema));
     if (!form.valid || !form.data.operation) return fail(400, { form, ok: false });
     // if any productId doesn't exist, 403
     // if any associated project is inaccessible, 403
@@ -251,7 +308,7 @@ export const actions: Actions = {
           OrganizationId: true
         }
       })
-    ).forEach((p) => event.locals.security.requireProjectWriteAccess(p));
+    ).forEach((p) => locals.security.requireProjectWriteAccess(p));
 
     await Promise.all(form.data.products.map((p) => doProductAction(p, form.data.operation!)));
 

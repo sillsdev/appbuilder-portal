@@ -6,13 +6,12 @@
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
-  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref, localizeUrl } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
   import type { ProjectForAction, PrunedProject } from '$lib/projects';
   import { canArchive, canClaimProject, canReactivate } from '$lib/projects';
@@ -21,8 +20,9 @@
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
-  import { isAdminForOrg } from '$lib/utils/roles';
+  import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
+  import { onMount } from 'svelte';
 
   interface Props {
     data: PageData;
@@ -115,11 +115,25 @@
     count = data.count;
   });
 
+  onMount(() => {
+    if (page.params.orgId && $orgActive !== parseInt(page.params.orgId)) {
+      $orgActive = parseInt(page.params.orgId);
+    }
+  });
+
+  $effect(() => {
+    if ($orgActive) {
+      goto(localizeUrl(`/projects/${page.params.filter}/${$orgActive}`));
+    } else {
+      goto(localizeUrl(`/projects/${page.params.filter}`));
+    }
+  });
+
   let canArchiveSelected = $derived(
-    selectedProjects.every((p) => canArchive(p, data.session.user, $orgActive))
+    selectedProjects.every((p) => canArchive(p, data.session.user))
   );
   let canReactivateSelected = $derived(
-    selectedProjects.every((p) => canReactivate(p, data.session.user, $orgActive))
+    selectedProjects.every((p) => canReactivate(p, data.session.user))
   );
 
   const {
@@ -148,9 +162,15 @@
 
   const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
 
+  const allOrgIds = $derived(data.organizations.map((o) => o.Id));
+
   const canModifyProjects = $derived(
-    isAdminForOrg($orgActive, data.session?.user.roles) ||
-      data.session?.user.roles.some(([o, r]) => r === RoleId.AppBuilder && o === $orgActive)
+    isSuperAdmin(data.session.user.roles) ||
+      ($orgActive ? [$orgActive] : allOrgIds).every(
+        (orgId) =>
+          isAdminForOrg(orgId, data.session?.user.roles) ||
+          data.session?.user.roles.some(([o, r]) => r === RoleId.AppBuilder && o === orgId)
+      )
   );
 </script>
 
@@ -171,14 +191,6 @@
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 gap-1 {mobileSizing}"
       >
-        <OrganizationDropdown
-          className={mobileSizing}
-          organizations={data.organizations}
-          bind:value={$orgActive}
-          selectProperties={{
-            onchange: () => goto(localizeHref(`/projects/${page.params.filter}/${$orgActive}`))
-          }}
-        />
         <Tooltip className="tooltip-bottom {mobileSizing}">
           <div class="tooltip-content text-left">
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -414,14 +426,13 @@
             {/if}
           {/snippet}
           {#snippet actions()}
-            {#if canModifyProjects || canClaimProject(data.session.user, project.OwnerId, $orgActive, project.GroupId, data.userGroups)}
+            {#if canModifyProjects || canClaimProject(data.session.user, project.OwnerId, project.OrganizationId, project.GroupId, data.userGroups)}
               <ProjectActionMenu
                 data={data.actionForm}
                 {project}
                 allowActions={data.allowActions}
                 allowReactivate={data.allowReactivate}
                 userGroups={data.userGroups}
-                orgId={$orgActive}
                 onUpdated={(operation) => {
                   if (operation === 'archive' || operation === 'reactivate') {
                     pageSubmit();

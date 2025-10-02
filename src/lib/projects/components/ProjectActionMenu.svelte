@@ -18,7 +18,6 @@
     allowReactivate?: boolean;
     userGroups: number[];
     endpoint?: string;
-    orgId: number;
     onUpdated?: (operation: string) => void;
   }
 
@@ -29,7 +28,6 @@
     allowReactivate = true,
     userGroups,
     endpoint = 'projectAction',
-    orgId,
     onUpdated
   }: Props = $props();
 
@@ -68,7 +66,7 @@
     <form method="POST" action="?/{endpoint}" use:enhance>
       <input type="hidden" name="projectId" value={project.Id} />
       <ul class="menu menu-compact overflow-hidden rounded-md">
-        {#if allowActions && canArchive(project, page.data.session!.user, orgId)}
+        {#if allowActions && canArchive(project, page.data.session!.user)}
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable className="text-nowrap">
               {#snippet altContent()}
@@ -81,7 +79,7 @@
             </BlockIfJobsUnavailable>
           </li>
         {/if}
-        {#if allowReactivate && canReactivate(project, page.data.session!.user, orgId)}
+        {#if allowReactivate && canReactivate(project, page.data.session!.user)}
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable className="text-nowrap">
               {#snippet altContent()}
@@ -99,7 +97,7 @@
             </BlockIfJobsUnavailable>
           </li>
         {/if}
-        {#if canClaimProject(page.data.session!.user, project.OwnerId, orgId, project.GroupId, userGroups)}
+        {#if canClaimProject(page.data.session!.user, project.OwnerId, project.OrganizationId, project.GroupId, userGroups)}
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable className="text-nowrap">
               {#snippet altContent()}
