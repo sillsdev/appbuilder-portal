@@ -14,6 +14,7 @@
     onchange: ChangeEventHandler<HTMLInputElement>;
     onIcon?: string;
     offIcon?: string;
+    className?: string;
   }
 
   let {
@@ -24,10 +25,9 @@
     canEdit = true,
     onchange,
     onIcon = '',
-    offIcon = ''
+    offIcon = '',
+    className = canEdit ? '' : 'cursor-not-allowed'
   }: Props = $props();
-
-  let className = $derived(canEdit ? '' : 'cursor-not-allowed');
 </script>
 
 <InputWithMessage {title} {message} {className}>
