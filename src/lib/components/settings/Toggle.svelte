@@ -24,12 +24,12 @@
     canEdit = true,
     onIcon = '',
     offIcon = '',
-    className = canEdit ? '' : 'cursor-not-allowed',
+    className,
     inputAttr
   }: Props = $props();
 </script>
 
-<InputWithMessage {title} {message} {className}>
+<InputWithMessage {title} {message} className="{className} {canEdit ? '' : 'cursor-not-allowed'}">
   <label class="group">
     <div class="relative">
       <input
