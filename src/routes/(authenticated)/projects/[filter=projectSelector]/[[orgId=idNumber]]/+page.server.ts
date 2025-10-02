@@ -1,9 +1,9 @@
 import type { Prisma } from '@prisma/client';
-import { error } from '@sveltejs/kit';
+import { type Actions, error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import type { Actions, PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types';
 import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';

@@ -367,7 +367,7 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
         'auth.user': user ? user.Email + ' - ' + user.Id : 'null',
         'auth.user.OrganizationMemberships':
           user?.OrganizationMemberships.map((o) => o.OrganizationId).join(', ') ?? 'null',
-        'auth.user.roles': user ? JSON.stringify([...security.roles.entries()]) : 'null',
+        'auth.user.roles': user ? JSON.stringify(security.roles) : 'null',
         'auth.user.IsLocked': user ? user.IsLocked + '' : 'null'
       });
 
