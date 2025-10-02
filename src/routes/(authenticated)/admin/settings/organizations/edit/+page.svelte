@@ -104,8 +104,10 @@
     title={{ key: 'org_publicByDefault' }}
     message={{ key: 'org_publicByDefaultDescription' }}
     className="py-1"
-    formName="publicByDefault"
+    name="publicByDefault"
     bind:checked={$form.publicByDefault}
+    onIcon="mdi:lock-open-variant"
+    offIcon="mdi:lock"
   />
   <div class="my-4">
     <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>

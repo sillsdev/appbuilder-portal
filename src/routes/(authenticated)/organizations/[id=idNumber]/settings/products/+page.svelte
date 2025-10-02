@@ -37,11 +37,13 @@
       title={{ key: 'org_makePrivateTitle', classes: 'font-bold' }}
       message={{ key: 'org_makePrivateDescription' }}
       className="pb-2"
-      formName="publicByDefault"
+      name="publicByDefault"
       checked={!!data.organization.PublicByDefault}
       inputAttr={{
         onchange: (e) => e.currentTarget.form?.requestSubmit()
       }}
+      onIcon="mdi:lock-open-variant"
+      offIcon="mdi:lock"
     />
   </form>
   <MultiselectBox header={m.org_productSelectTitle()}>

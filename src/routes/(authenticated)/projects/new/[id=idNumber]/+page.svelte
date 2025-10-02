@@ -88,8 +88,11 @@
           title={{ key: 'project_public' }}
           message={{ key: 'project_visibilityDescription' }}
           className="py-2 md:max-w-xs"
-          formName="IsPublic"
+          name="IsPublic"
+          onchange={() => {}}
           bind:checked={$form.IsPublic}
+          onIcon="mdi:lock-open-variant"
+          offIcon="mdi:lock"
         />
       </div>
       <div class="flex flex-row flex-wrap place-content-center gap-4 p-4 w-full">
