@@ -27,6 +27,9 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           WorkflowProjectUrl: true,
           IsPublic: true,
           AllowDownloads: true,
+          AutoPublishOnRebuild: true,
+          RebuildOnSoftwareUpdate: true,
+
           DateCreated: true,
           DateArchived: true,
           Language: true,
