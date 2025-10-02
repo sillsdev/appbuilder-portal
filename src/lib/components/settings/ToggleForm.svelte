@@ -5,9 +5,9 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import Toggle from '$lib/components/settings/Toggle.svelte';
+  import type { ValueKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
-  import type { ValueKey } from '$lib/locales.svelte';
   type Method = 'POST' | 'GET';
 
   interface Props {

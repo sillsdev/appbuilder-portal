@@ -318,7 +318,6 @@ export const actions = {
     return { form, ok: true };
   },
 
-
   async toggleAutoPublishOnRebuild(event) {
     // permissions checked in auth
     const form = await superValidate(
@@ -351,7 +350,6 @@ export const actions = {
     });
     return { form, ok: true };
   },
-
 
   async editOwnerGroup(event) {
     event.locals.security.requireAuthenticated(); // check this first, so unauthenticated can't dos db
