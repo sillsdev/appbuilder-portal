@@ -10,11 +10,10 @@
     name?: string;
     checked: boolean;
     canEdit?: boolean;
-    inputAttr?: HTMLInputAttributes;
-    onchange: ChangeEventHandler<HTMLInputElement>;
     onIcon?: string;
     offIcon?: string;
     className?: string;
+    inputAttr?: HTMLInputAttributes;
   }
 
   let {
@@ -23,10 +22,10 @@
     name,
     checked = $bindable(),
     canEdit = true,
-    onchange,
     onIcon = '',
     offIcon = '',
-    className = canEdit ? '' : 'cursor-not-allowed'
+    className = canEdit ? '' : 'cursor-not-allowed',
+    inputAttr
   }: Props = $props();
 </script>
 
@@ -38,7 +37,7 @@
         type="checkbox"
         class="sr-only group"
         bind:checked
-        {onchange}
+        {...inputAttr}
         disabled={!canEdit}
       />
       <div

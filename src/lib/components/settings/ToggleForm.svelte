@@ -68,8 +68,10 @@
     {message}
     {name}
     bind:checked={formVar}
-    onchange={() => {
-      form.requestSubmit();
+    inputAttr={{
+      onchange: () => {
+        form.requestSubmit();
+      }
     }}
     {onIcon}
     {offIcon}

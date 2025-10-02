@@ -89,7 +89,7 @@
           message={{ key: 'project_visibilityDescription' }}
           className="py-2 md:max-w-xs"
           name="IsPublic"
-          onchange={() => {}}
+          inputAttr={{ onchange: () => {} }}
           bind:checked={$form.IsPublic}
           onIcon="mdi:lock-open-variant"
           offIcon="mdi:lock"
