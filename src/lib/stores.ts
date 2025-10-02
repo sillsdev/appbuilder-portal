@@ -66,7 +66,7 @@ export function persistedSession<T>(key: string, initial: T): Writable<T> {
   return start;
 }
 
-export const orgLastSelected = persistedLocal('orgLastSelected', 0);
+export const orgLastSelected = persistedLocal('orgLastSelected', null as number | null);
 export const orgActive = persistedSession('orgActive', get(orgLastSelected));
 orgActive.subscribe((value) => {
   orgLastSelected.set(value);
