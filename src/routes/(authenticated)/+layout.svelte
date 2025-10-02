@@ -40,6 +40,12 @@
     l10nMap.value = createl10nMapFromEntries(data.localizedNames);
   });
 
+  $effect(() => {
+    if (!data.organizations.find((o) => o.Id === $orgActive)) {
+      $orgActive = data.organizations[0].Id;
+    }
+  });
+
   const userTasksLength = $derived($userTasksSSE?.length ?? data.userTasks.length);
 </script>
 
