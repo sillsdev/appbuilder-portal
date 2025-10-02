@@ -22,10 +22,22 @@
     offIcon?: string;
     title: ValueKey;
     message: ValueKey;
+    canEdit?: boolean;
   }
 
-  let { name, method, action, formVar, onmsg, offmsg, title, message, onIcon, offIcon }: Props =
-    $props();
+  let {
+    name,
+    method,
+    action,
+    formVar,
+    onmsg,
+    offmsg,
+    title,
+    message,
+    onIcon,
+    offIcon,
+    canEdit
+  }: Props = $props();
 
   let form: HTMLFormElement;
 </script>
@@ -62,5 +74,6 @@
     }}
     {onIcon}
     {offIcon}
+    {canEdit}
   />
 </form>

@@ -41,6 +41,7 @@
     message={{ key: 'project_visibility_description' }}
     onIcon="mdi:lock-open-variant"
     offIcon="mdi:lock"
+    {canEdit}
   />
 
   <ToggleForm
@@ -52,6 +53,7 @@
     onmsg={m.project_acts_downloads_on()}
     offmsg={m.project_acts_downloads_off()}
     formVar={allowDownloads}
+    {canEdit}
   />
 
   <ToggleForm
@@ -63,6 +65,7 @@
     onmsg={m.project_acts_autoBuilds_on()}
     offmsg={m.project_acts_autoBuilds_off()}
     formVar={autoRebuild}
+    {canEdit}
   />
 
   <ToggleForm
@@ -74,5 +77,6 @@
     onmsg={m.project_acts_autoPublish_on()}
     offmsg={m.project_acts_autoPublish_off()}
     formVar={autoPublish}
+    {canEdit}
   />
 </div>
