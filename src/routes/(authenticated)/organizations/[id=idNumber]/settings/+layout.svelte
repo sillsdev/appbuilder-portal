@@ -1,13 +1,12 @@
 <script lang="ts">
-  import type { Snippet } from 'svelte';
+  import { type Snippet, onMount, untrack } from 'svelte';
   import type { LayoutData } from './$types';
   import { goto } from '$app/navigation';
   import { base } from '$app/paths';
   import { page } from '$app/state';
-  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { localizeUrl } from '$lib/paraglide/runtime';
+  import { deLocalizeUrl, localizeUrl } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
 
   interface Props {
@@ -16,6 +15,23 @@
   }
 
   let { data, children }: Props = $props();
+
+  onMount(() => {
+    if (page.params.id && $orgActive !== parseInt(page.params.id)) {
+      $orgActive = parseInt(page.params.id);
+    }
+  });
+
+  $effect(() => {
+    if ($orgActive) {
+      const url = untrack(() => page.url);
+      const current = deLocalizeUrl(url).toString().split('/');
+      current[4] = '' + $orgActive;
+      goto(localizeUrl(current.join('/')));
+    } else {
+      goto(localizeUrl(`/organizations`));
+    }
+  });
 </script>
 
 <TabbedMenu
@@ -49,27 +65,7 @@
       <h1 class="p-4 pl-3 pb-0 [text-wrap:nowrap]">
         {m.org_settingsTitle()}
       </h1>
-      {#if data.organizations.length > 1}
-        <h2>
-          <OrganizationDropdown
-            bind:value={$orgActive}
-            organizations={data.organizations}
-            selectProperties={{
-              onchange: () =>
-                goto(
-                  localizeUrl(
-                    page.url.pathname.replace(
-                      `/organizations/${page.params.id}`,
-                      `/organizations/${$orgActive}`
-                    )
-                  )
-                )
-            }}
-          />
-        </h2>
-      {:else}
-        <h2>{data.organization.Name}</h2>
-      {/if}
+      <h2>{data.organization.Name}</h2>
     </div>
   {/snippet}
   {@render children?.()}
