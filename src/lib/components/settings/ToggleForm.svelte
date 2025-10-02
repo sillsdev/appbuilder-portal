@@ -8,7 +8,6 @@
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
   import type { ValueKey } from '$lib/locales.svelte';
-  import type { ActionData } from './$types';
   type Method = 'POST' | 'GET';
 
   interface Props {
@@ -49,7 +48,7 @@
   use:enhance={() =>
     ({ update, result }) => {
       if (result.type === 'success') {
-        const res = result.data as ActionData;
+        const res = result.data as { ok: boolean };
         if (res?.ok) {
           if (formVar) {
             toast('success', onmsg);
