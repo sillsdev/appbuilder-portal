@@ -132,7 +132,7 @@
                 </div>
               </button>
             {:else}
-              <div class="rounded-none h-16 p-0 pl-2bg-base-200 grow flex items-center">
+              <div class="rounded-none h-16 p-0 pl-2 bg-base-200 grow flex items-center">
                 {@render orgDisplay(selectedOrg, 'font-bold text-sm')}
               </div>
             {/if}
