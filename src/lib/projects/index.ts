@@ -192,10 +192,11 @@ export function canClaimProject(
   userGroupIds: number[]
 ) {
   if (security.userId === projectOwnerId) return false;
-  if (security.roles.some(([_, r]) => r === RoleId.SuperAdmin)) return true;
+  if (security.roles.some(([, r]) => r === RoleId.SuperAdmin)) return true;
   return (
-    canModifyProject(security, projectOwnerId, organizationId) &&
-    userGroupIds.includes(projectGroupId)
+    canModifyProject(security, projectOwnerId, organizationId) ||
+    (userGroupIds.includes(projectGroupId) &&
+      security.roles.some(([, r]) => r === RoleId.AppBuilder))
   );
 }
 
