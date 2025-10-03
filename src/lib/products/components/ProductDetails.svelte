@@ -69,7 +69,7 @@
         <IconContainer icon="mdi:close" width={36} class="opacity-80" />
       </button>
     </div>
-    <table class="table">
+    <table class="table table-sm">
       <thead>
         <tr>
           <th>{m.transitions_storeName()}</th>
@@ -83,7 +83,7 @@
         </tr>
       </tbody>
     </table>
-    <table class="table">
+    <table class="table table-sm">
       <thead>
         <tr>
           <th>{m.transitions_state()}</th>
@@ -147,3 +147,16 @@
     <button>{m.common_close()}</button>
   </form>
 </dialog>
+
+<style>
+  td {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+  tr:not(:last-child) {
+    @supports (color: color-mix(in lab, red, red)) {
+      /* Copied from DaisyUI source. Modified opacity */
+      border-bottom: var(--border) solid color-mix(in oklch, var(--color-base-content) 25%, #0000);
+    }
+  }
+</style>
