@@ -136,7 +136,6 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
     select: {
       WorkflowJobId: true,
       WorkflowBuildId: true,
-      PublishLink: true,
       ProductDefinition: {
         select: {
           Name: true
@@ -217,7 +216,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
         if (type === 'package_name' && res.headers.get('Content-Type') === 'text/plain') {
           const PackageName = await fetchPackageName(url);
           // populate package name if publish link is not set
-          if (!product.PublishLink && PackageName) {
+          if (PackageName) {
             await DatabaseWrites.products.update(job.data.productId, { PackageName });
           }
         }

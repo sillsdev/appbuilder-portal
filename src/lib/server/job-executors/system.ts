@@ -9,7 +9,7 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { WorkflowType, WorkflowTypeString } from '$lib/prisma';
-import { extractPackageName, fetchPackageName } from '$lib/products';
+import { fetchPackageName } from '$lib/products';
 import {
   ENVKeys,
   ProductType,
@@ -621,29 +621,6 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   job.updateProgress(60);
 
   // 4. Populate Product.PackageName
-  const fromPublishLink = await Promise.all(
-    (
-      await DatabaseReads.products.findMany({
-        where: {
-          PackageName: null,
-          PublishLink: {
-            startsWith: 'https://play.google.com/store/apps/details',
-            mode: 'insensitive'
-          }
-        },
-        select: {
-          Id: true,
-          PublishLink: true
-        }
-      })
-    ).map(async (p) => {
-      const pname = extractPackageName(p.PublishLink);
-      await DatabaseWrites.products.update(p.Id, {
-        PackageName: pname
-      });
-      return pname;
-    })
-  );
 
   const artifactWhere: Prisma.ProductArtifactsWhereInput = {
     ArtifactType: 'package_name',
@@ -657,12 +634,11 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     }
   };
 
-  const fromArtifact = await Promise.all(
+  const updatedPackages = await Promise.all(
     (
       await DatabaseReads.products.findMany({
         where: {
           PackageName: null,
-          PublishLink: null,
           ProductBuilds: {
             some: buildWhere
           }
@@ -723,8 +699,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     migrationErrors,
     orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0),
     updatedWorkflowDefinitions: workflowDefsNeedUpdate,
-    fromPublishLink,
-    fromArtifact,
+    updatedPackages,
     deletedUsers: {
       users: deletedUsers,
       count: deleteCount,

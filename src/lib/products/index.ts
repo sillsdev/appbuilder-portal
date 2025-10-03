@@ -56,10 +56,6 @@ export async function getFileInfo(url: string) {
   };
 }
 
-export function extractPackageName(PublishLink: string | null) {
-  return PublishLink?.match(/[?&]id=([^&#/]+)/i)?.at(1) ?? null;
-}
-
 export async function fetchPackageName(Url: string | null) {
   if (Url) {
     const name = (await fetch(Url).then((r) => r.text())).trim();
