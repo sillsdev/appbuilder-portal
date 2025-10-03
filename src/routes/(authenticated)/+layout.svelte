@@ -73,9 +73,9 @@
   textClasses?: string
 )}
   {#if org?.LogoUrl}
-    <img class="inline-block p-2 h-16 w-16" src={org.LogoUrl} alt="Logo" />
+    <img class="inline-block p-1 h-12 w-12" src={org.LogoUrl} alt="Logo" />
   {:else}
-    <div class="inline-block p-2 h-16 w-16 align-middle">
+    <div class="inline-block p-1 h-12 w-12 align-middle">
       <div class="bg-white w-full h-full"></div>
     </div>
   {/if}
@@ -119,10 +119,10 @@
           <li class="border-y flex flex-row flex-nowrap">
             {#if data.organizations.length > 1}
               <button
-                class="rounded-none h-16 bg-base-200 hover:bg-base-300 cursor-pointer grow flex items-center"
+                class="rounded-none h-16 p-0 pl-2 bg-base-200 hover:bg-base-300 cursor-pointer grow flex items-center"
                 onclick={() => (selectingOrg = !selectingOrg)}
               >
-                {@render orgDisplay(selectedOrg, 'font-bold')}
+                {@render orgDisplay(selectedOrg, 'font-bold text-sm')}
                 <div
                   class="dropdown-icon"
                   class:open={selectingOrg}
@@ -132,8 +132,8 @@
                 </div>
               </button>
             {:else}
-              <div class="rounded-none h-16 bg-base-200 grow flex items-center">
-                {@render orgDisplay(selectedOrg, 'font-bold')}
+              <div class="rounded-none h-16 p-0 pl-2bg-base-200 grow flex items-center">
+                {@render orgDisplay(selectedOrg, 'font-bold text-sm')}
               </div>
             {/if}
             <button
