@@ -100,7 +100,10 @@
               {#if transition.TransitionType === ProductTransitionType.Activity}
                 {transition.InitialState}
               {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
-                * {transition.InitialState}
+                <IconContainer
+                  icon="material-symbols:star"
+                  width={16}
+                />&nbsp;{transition.InitialState}
               {:else}
                 {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
               {/if}
