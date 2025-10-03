@@ -25,7 +25,9 @@
 
   let drawerToggle: HTMLInputElement;
   function closeDrawer() {
-    drawerToggle.click();
+    if (drawerToggle.checked) {
+      drawerToggle.click();
+    }
   }
 
   function isUrlActive(route: string) {
