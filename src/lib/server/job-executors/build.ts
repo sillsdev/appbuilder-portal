@@ -135,6 +135,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
     select: {
       WorkflowJobId: true,
       WorkflowBuildId: true,
+      PublishLink: true,
       ProductDefinition: {
         select: {
           Name: true
@@ -209,6 +210,16 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
                 StoreLanguageId: lang.Id
               });
             }
+          }
+        }
+
+        if (type === 'package_name' && res.headers.get('Content-Type') === 'text/plain') {
+          const name = (await fetch(url).then((r) => r.text())).trim();
+          // populate package name if publish link is not set
+          // regex match just in case fetch returns an error HTML
+          // regex slightly modified from: https://stackoverflow.com/a/69168419
+          if (!product.PublishLink && name.match(/^[a-z][a-z0-9_]*(\.[a-z0-9_]+)*$/i)) {
+            await DatabaseWrites.products.update(job.data.productId, { PackageName: name });
           }
         }
 
