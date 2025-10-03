@@ -3,13 +3,13 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import DateRangePicker from '$lib/components/DateRangePicker.svelte';
-  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar from '$lib/components/SearchBar.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { orgActive } from '$lib/stores';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
@@ -43,6 +43,10 @@
   });
 
   const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
+
+  $effect(() => {
+    $form.organizationId = $orgActive;
+  });
 </script>
 
 <div class="w-full">
@@ -64,12 +68,6 @@
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 {mobileSizing}"
       >
-        <OrganizationDropdown
-          className={mobileSizing}
-          organizations={data.organizations}
-          allowNull={true}
-          bind:value={$form.organizationId}
-        />
         <SearchBar bind:value={$form.search} className={mobileSizing} />
       </div>
     </div>
