@@ -11,7 +11,7 @@ export const load = (async (event) => {
     {
       buildEngineUrl: organization.BuildEngineUrl,
       buildEngineApiAccessToken: organization.BuildEngineApiAccessToken,
-      useDefaultBuildEngine: organization.UseDefaultBuildEngine ?? false
+      useDefaultBuildEngine: organization.UseDefaultBuildEngine
     },
     valibot(infrastructureSchema)
   );

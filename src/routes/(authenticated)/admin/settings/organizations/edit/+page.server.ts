@@ -33,7 +33,7 @@ export const load = (async ({ url, locals }) => {
       buildEngineUrl: data.BuildEngineUrl,
       buildEngineApiAccessToken: data.BuildEngineApiAccessToken,
       logoUrl: data.LogoUrl,
-      useDefaultBuildEngine: data.UseDefaultBuildEngine ?? true,
+      useDefaultBuildEngine: data.UseDefaultBuildEngine,
       publicByDefault: data.PublicByDefault ?? false
     },
     valibot(editSchema)

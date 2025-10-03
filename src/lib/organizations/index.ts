@@ -17,7 +17,7 @@ export const infoSchema = v.object({
 export const infrastructureSchema = v.object({
   buildEngineUrl: v.nullable(v.string()),
   buildEngineApiAccessToken: v.nullable(v.string()),
-  useDefaultBuildEngine: v.boolean()
+  useDefaultBuildEngine: v.nullable(v.boolean(), true)
 });
 
 export const organizationBaseSchema = v.object({
