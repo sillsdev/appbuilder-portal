@@ -6,6 +6,7 @@
 </script>
 
 <script lang="ts">
+  import { onDestroy } from 'svelte';
   import IconContainer from './IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
 
@@ -24,6 +25,12 @@
   }: Props = $props();
 
   let timeout: ReturnType<typeof setTimeout> | null = $state(null);
+
+  onDestroy(() => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+  });
 </script>
 
 <div class={className} data-html="true">
