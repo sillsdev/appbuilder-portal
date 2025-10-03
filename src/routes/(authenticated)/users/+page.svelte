@@ -6,7 +6,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
-  import SearchBar from '$lib/components/SearchBar.svelte';
+  import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
@@ -42,6 +42,11 @@
       if (event.form.valid && data.query) {
         users = data.query.data;
         count = data.query.count;
+      }
+    },
+    onUpdated() {
+      if ($form.search) {
+        focusSearchBar();
       }
     }
   });

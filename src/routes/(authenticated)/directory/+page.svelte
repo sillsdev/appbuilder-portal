@@ -6,7 +6,7 @@
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
-  import SearchBar from '$lib/components/SearchBar.svelte';
+  import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
@@ -38,6 +38,11 @@
       if (event.form.valid && data.query) {
         projects = data.query.data;
         count = data.query.count;
+      }
+    },
+    onUpdated() {
+      if ($form.search) {
+        focusSearchBar();
       }
     }
   });

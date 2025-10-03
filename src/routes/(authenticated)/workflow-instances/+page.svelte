@@ -4,7 +4,7 @@
   import type { PageData } from './$types';
   import DateRangePicker from '$lib/components/DateRangePicker.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
-  import SearchBar from '$lib/components/SearchBar.svelte';
+  import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -38,6 +38,11 @@
       if (event.form.valid && data.query) {
         instances = data.query.data;
         count = data.query.count;
+      }
+    },
+    onUpdated() {
+      if ($form.search) {
+        focusSearchBar();
       }
     }
   });

@@ -1,3 +1,10 @@
+<script module lang="ts">
+  /** Make sure to call this in SuperForms onUpdate**d**() */
+  export function focusSearchBar() {
+    (document.querySelector('input[type="search"]') as HTMLInputElement)?.focus?.();
+  }
+</script>
+
 <script lang="ts">
   import IconContainer from './IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
