@@ -5,6 +5,7 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
+import { fetchPackageName } from '$lib/products';
 import { WorkflowAction } from '$lib/workflowTypes';
 
 export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> {
@@ -214,12 +215,10 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
         }
 
         if (type === 'package_name' && res.headers.get('Content-Type') === 'text/plain') {
-          const name = (await fetch(url).then((r) => r.text())).trim();
+          const PackageName = await fetchPackageName(url);
           // populate package name if publish link is not set
-          // regex match just in case fetch returns an error HTML
-          // regex slightly modified from: https://stackoverflow.com/a/69168419
-          if (!product.PublishLink && name.match(/^[a-z][a-z0-9_]*(\.[a-z0-9_]+)*$/i)) {
-            await DatabaseWrites.products.update(job.data.productId, { PackageName: name });
+          if (!product.PublishLink && PackageName) {
+            await DatabaseWrites.products.update(job.data.productId, { PackageName });
           }
         }
 

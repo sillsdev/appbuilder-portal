@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import type { Job } from 'bullmq';
 import { XMLParser } from 'fast-xml-parser';
 import { existsSync } from 'fs';
@@ -8,7 +9,7 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { WorkflowType, WorkflowTypeString } from '$lib/prisma';
-import { extractPackageName } from '$lib/products';
+import { extractPackageName, fetchPackageName } from '$lib/products';
 import {
   ENVKeys,
   ProductType,
@@ -620,7 +621,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   job.updateProgress(60);
 
   // 4. Populate Product.PackageName
-  const updatedPackages = await Promise.all(
+  const fromPublishLink = await Promise.all(
     (
       await DatabaseReads.products.findMany({
         where: {
@@ -643,8 +644,57 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       return pname;
     })
   );
+
+  const artifactWhere: Prisma.ProductArtifactsWhereInput = {
+    ArtifactType: 'package_name',
+    ContentType: 'text/plain'
+  };
+
+  const buildWhere: Prisma.ProductBuildsWhereInput = {
+    Success: true,
+    ProductArtifacts: {
+      some: artifactWhere
+    }
+  };
+
+  const fromArtifact = await Promise.all(
+    (
+      await DatabaseReads.products.findMany({
+        where: {
+          PackageName: null,
+          PublishLink: null,
+          ProductBuilds: {
+            some: buildWhere
+          }
+        },
+        select: {
+          Id: true,
+          ProductBuilds: {
+            where: buildWhere,
+            select: {
+              ProductArtifacts: {
+                where: artifactWhere,
+                take: 1
+              }
+            },
+            orderBy: { DateUpdated: 'desc' },
+            take: 1
+          }
+        }
+      })
+    ).map(async (p) => {
+      const PackageName = await fetchPackageName(p.ProductBuilds[0].ProductArtifacts[0].Url);
+      // populate package name if publish link is not set
+      if (PackageName) {
+        await DatabaseWrites.products.update(p.Id, { PackageName });
+      }
+      return PackageName;
+    })
+  );
+
   job.updateProgress(80);
 
+  // 5. delete users with no org membership
   const deletedUsers = await DatabaseReads.users.findMany({
     where: {
       NOT: { OrganizationMemberships: { some: {} } }
@@ -673,7 +723,8 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     migrationErrors,
     orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0),
     updatedWorkflowDefinitions: workflowDefsNeedUpdate,
-    updatedPackages,
+    fromPublishLink,
+    fromArtifact,
     deletedUsers: {
       users: deletedUsers,
       count: deleteCount,
