@@ -119,7 +119,7 @@
           <li class="border-y flex flex-row flex-nowrap">
             {#if data.organizations.length > 1}
               <button
-                class="rounded-none bg-base-200 hover:bg-base-300 cursor-pointer grow"
+                class="rounded-none h-16 bg-base-200 hover:bg-base-300 cursor-pointer grow flex items-center"
                 onclick={() => (selectingOrg = !selectingOrg)}
               >
                 {@render orgDisplay(selectedOrg, 'font-bold')}
@@ -132,7 +132,7 @@
                 </div>
               </button>
             {:else}
-              <div class="rounded-none bg-base-200 grow">
+              <div class="rounded-none h-16 bg-base-200 grow flex items-center">
                 {@render orgDisplay(selectedOrg, 'font-bold')}
               </div>
             {/if}
