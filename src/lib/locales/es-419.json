@@ -354,7 +354,6 @@
   "projects_filter_all": "Todos los proyecto",
   "projects_bulk_buildModal_title": "Perform Bulk Rebuild/Republish",
   "filters_allProdDefs": "Todos los proyectos que contienen...",
-  "filters_org_label": "Filter organization",
   "filters_dateRange": "Rango de Fechas",
   "projectImport_title": "Import Projects",
   "projectImport_help": "Import Projects Help",

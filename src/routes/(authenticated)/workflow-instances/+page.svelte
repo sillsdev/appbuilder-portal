@@ -68,7 +68,7 @@
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 {mobileSizing}"
       >
-        <SearchBar bind:value={$form.search} className={mobileSizing} />
+        <SearchBar bind:value={$form.search} className={mobileSizing} requestSubmit={submit} />
       </div>
     </div>
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}">

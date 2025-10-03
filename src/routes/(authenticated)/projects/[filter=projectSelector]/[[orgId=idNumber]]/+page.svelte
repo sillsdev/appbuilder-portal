@@ -196,7 +196,7 @@
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             {@html m.directory_searchHelp()}
           </div>
-          <SearchBar bind:value={$pageForm.search} />
+          <SearchBar bind:value={$pageForm.search} requestSubmit={pageSubmit} />
         </Tooltip>
       </div>
     </div>

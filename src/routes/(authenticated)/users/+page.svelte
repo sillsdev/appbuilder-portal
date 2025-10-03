@@ -87,7 +87,7 @@
       use:enhance
       class="flex flex-row flex-wrap place-content-end items-center p-2 gap-1"
     >
-      <SearchBar bind:value={$form.search} className={mobileSizing} />
+      <SearchBar bind:value={$form.search} className={mobileSizing} requestSubmit={submit} />
     </form>
   </div>
   <div class="m-4 relative mt-0">

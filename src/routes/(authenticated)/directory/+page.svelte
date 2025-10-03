@@ -75,7 +75,7 @@
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             {@html m.directory_searchHelp()}
           </div>
-          <SearchBar bind:value={$form.search} />
+          <SearchBar bind:value={$form.search} requestSubmit={submit} />
         </Tooltip>
       </div>
     </div>
