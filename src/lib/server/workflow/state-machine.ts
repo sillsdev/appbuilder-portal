@@ -842,7 +842,7 @@ export const WorkflowStateMachine = setup({
       entry: assign({
         instructions: 'evaluate_error',
         includeFields: ['storeDescription', 'listingLanguageCode'],
-        includeArtifacts: 'latestAAB'
+        includeArtifacts: 'error'
       }),
       exit: assign({ includeArtifacts: null }),
       on: {

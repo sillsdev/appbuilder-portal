@@ -134,7 +134,7 @@ export type WorkflowInstanceContext = {
   environment: Environment;
 };
 
-export type ArtifactLists = 'latestAAB' | 'latestAssetPackage' | 'all';
+export type ArtifactLists = 'latestAAB' | 'latestAssetPackage' | 'error' | 'all';
 
 export function artifactLists(listName: ArtifactLists) {
   switch (listName) {
@@ -142,6 +142,8 @@ export function artifactLists(listName: ArtifactLists) {
       return ['aab', 'data-safety-csv'];
     case 'latestAssetPackage':
       return ['asset-package', 'asset-preview'];
+    case 'error':
+      return ['aab', 'consoleText', 'arm64-apk', 'x86-apk', 'apk', 'arm-apk', 'x86_64-apk'];
     case 'all':
       return [];
   }
