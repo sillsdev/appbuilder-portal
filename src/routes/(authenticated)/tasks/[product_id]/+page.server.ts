@@ -186,7 +186,9 @@ export const load = (async ({ params, locals, depends }) => {
               Url: consoleTextUrl,
               FileSize: consoleTextUrl
                 ? await fetch(consoleTextUrl, { method: 'HEAD' }).then((r) =>
-                    parseInt(r.headers.get('Content-Length')!)
+                    r.headers.get('Content-Length')
+                      ? BigInt(r.headers.get('Content-Length')!)
+                      : null
                   )
                 : null
             }
