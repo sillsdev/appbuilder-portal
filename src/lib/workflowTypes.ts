@@ -143,7 +143,7 @@ export function artifactLists(listName: ArtifactLists) {
     case 'latestAssetPackage':
       return ['asset-package', 'asset-preview'];
     case 'error':
-      return ['aab', 'consoleText', 'arm64-apk', 'x86-apk', 'apk', 'arm-apk', 'x86_64-apk'];
+      return ['aab', 'arm64-apk', 'x86-apk', 'apk', 'arm-apk', 'x86_64-apk'];
     case 'all':
       return [];
   }

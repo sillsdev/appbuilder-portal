@@ -98,9 +98,22 @@ export const load = (async ({ params, locals, depends }) => {
           Id: true,
           Name: true
         }
-      }
+      },
+      ProductPublications:
+        snap.context.includeArtifacts === 'error'
+          ? {
+              select: {
+                LogUrl: true
+              },
+              orderBy: {
+                DateUpdated: 'desc'
+              },
+              take: 1
+            }
+          : undefined
     }
   }))!;
+  const consoleTextUrl = product.ProductPublications?.at(0)?.LogUrl ?? null;
 
   const artifacts = snap.context.includeArtifacts
     ? await DatabaseReads.productArtifacts.findMany({
@@ -164,7 +177,21 @@ export const load = (async ({ params, locals, depends }) => {
         product.Project.ApplicationType.Description,
       projectLanguageCode: product.Project.Language
     } as Fields,
-    files: artifacts,
+    files:
+      snap.context.includeArtifacts === 'error'
+        ? [
+            ...artifacts,
+            {
+              ArtifactType: 'consoleText',
+              Url: consoleTextUrl,
+              FileSize: consoleTextUrl
+                ? await fetch(consoleTextUrl, { method: 'HEAD' }).then((r) =>
+                    parseInt(r.headers.get('Content-Length')!)
+                  )
+                : null
+            }
+          ]
+        : artifacts,
     reviewers: snap.context.includeReviewers
       ? await DatabaseReads.reviewers.findMany({
           where: {
