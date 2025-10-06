@@ -185,11 +185,13 @@ export const load = (async ({ params, locals, depends }) => {
               ArtifactType: 'consoleText',
               Url: consoleTextUrl,
               FileSize: consoleTextUrl
-                ? await fetch(consoleTextUrl, { method: 'HEAD' }).then((r) =>
-                    r.headers.get('Content-Length')
-                      ? BigInt(r.headers.get('Content-Length')!)
-                      : null
-                  )
+                ? await fetch(consoleTextUrl, { method: 'HEAD' })
+                    .then((r) =>
+                      r.headers.get('Content-Length')
+                        ? BigInt(r.headers.get('Content-Length')!)
+                        : null
+                    )
+                    .catch(() => null)
                 : null
             }
           ]
