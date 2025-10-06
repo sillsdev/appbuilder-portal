@@ -156,7 +156,7 @@
     padding-top: 2px;
     padding-bottom: 2px;
   }
-  tr:not(:last-child) {
+  :where(thead tr, tbody tr:not(:last-child)) {
     @supports (color: color-mix(in lab, red, red)) {
       /* Copied from DaisyUI source. Modified opacity */
       border-bottom: var(--border) solid color-mix(in oklch, var(--color-base-content) 25%, #0000);
