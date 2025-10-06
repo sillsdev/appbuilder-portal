@@ -319,14 +319,16 @@ function filterAvailableActions(
   orgAdmins: Set<number>
 ): boolean {
   if (userId === undefined) return false;
-  switch (action[0].meta?.user) {
-    case RoleId.AppBuilder:
-      return userId === ownerId;
-    case RoleId.Author:
-      return authors.has(userId);
-    case RoleId.OrgAdmin:
-      return orgAdmins.has(userId);
-    default:
-      return false;
-  }
+  return action.some((a) => {
+    switch (a.meta?.user) {
+      case RoleId.AppBuilder:
+        return userId === ownerId;
+      case RoleId.Author:
+        return authors.has(userId);
+      case RoleId.OrgAdmin:
+        return orgAdmins.has(userId);
+      default:
+        return false;
+    }
+  });
 }
