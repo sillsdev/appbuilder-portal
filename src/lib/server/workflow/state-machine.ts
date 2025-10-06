@@ -140,6 +140,10 @@ export const WorkflowStateMachine = setup({
         jump({ target: WorkflowState.Verify_and_Publish }),
         jump({ target: WorkflowState.Product_Publish }),
         jump({
+          target: WorkflowState.Evaluate_Error,
+          filter: { productType: { is: ProductType.Android_GooglePlay } }
+        }),
+        jump({
           target: WorkflowState.Make_It_Live,
           filter: {
             productType: { is: ProductType.Android_GooglePlay },
@@ -817,7 +821,101 @@ export const WorkflowStateMachine = setup({
         [WorkflowAction.Publish_Failed]: {
           meta: { type: ActionType.Auto },
           target: WorkflowState.Synchronize_Data
+        },
+        [WorkflowAction.Google_API_Error]: {
+          meta: {
+            type: ActionType.Auto,
+            includeWhen: {
+              productType: { is: ProductType.Android_GooglePlay }
+            }
+          },
+          target: WorkflowState.Evaluate_Error
         }
+      }
+    },
+    [WorkflowState.Evaluate_Error]: {
+      meta: {
+        includeWhen: {
+          productType: { is: ProductType.Android_GooglePlay }
+        }
+      },
+      entry: assign({
+        instructions: 'evaluate_error',
+        includeFields: ['storeDescription', 'listingLanguageCode'],
+        includeArtifacts: 'latestAAB'
+      }),
+      exit: assign({ includeArtifacts: null }),
+      on: {
+        [WorkflowAction.Continue]: [
+          {
+            meta: {
+              type: ActionType.User,
+              user: RoleId.OrgAdmin,
+              includeWhen: {
+                workflowType: { is: WorkflowType.Startup }
+              }
+            },
+            guard: ({ context }) =>
+              !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] &&
+              context.workflowType === WorkflowType.Startup,
+            target: WorkflowState.Make_It_Live
+          },
+          {
+            meta: {
+              type: ActionType.User,
+              user: RoleId.AppBuilder,
+              includeWhen: {
+                workflowType: { is: WorkflowType.Startup }
+              }
+            },
+            guard: ({ context }) =>
+              !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] &&
+              context.workflowType === WorkflowType.Startup,
+            target: WorkflowState.Make_It_Live
+          },
+          {
+            meta: {
+              type: ActionType.User,
+              user: RoleId.OrgAdmin,
+              includeWhen: {
+                options: { has: WorkflowOptions.AdminStoreAccess }
+              }
+            },
+            target: WorkflowState.Published
+          },
+          {
+            meta: {
+              type: ActionType.User,
+              user: RoleId.AppBuilder,
+              includeWhen: {
+                options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
+              }
+            },
+            target: WorkflowState.Published
+          }
+        ],
+        [WorkflowAction.Reject]: [
+          {
+            meta: {
+              type: ActionType.User,
+              user: RoleId.OrgAdmin,
+              includeWhen: {
+                options: { has: WorkflowOptions.AdminStoreAccess }
+              }
+            },
+            target: WorkflowState.Synchronize_Data
+          },
+          {
+            meta: {
+              type: ActionType.User,
+              user: RoleId.AppBuilder,
+              includeWhen: {
+                options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
+              }
+            },
+            target: WorkflowState.Synchronize_Data
+          }
+        ]
       }
     },
     [WorkflowState.Make_It_Live]: {
