@@ -140,6 +140,8 @@ export const importJSONSchema = v.pipe(
   })
 );
 
+export type ProjectImportJSON = v.InferOutput<typeof importJSONSchema>;
+
 export const projectActionSchema = v.object({
   operation: v.nullable(v.picklist(['archive', 'reactivate', 'claim'])),
   // used to distinguish between single and bulk. will be null if bulk
