@@ -58,7 +58,7 @@
 <dialog bind:this={detailsModal} id="modal{product.Id}" class="modal">
   <div class="modal-box w-11/12 max-w-6xl">
     <div class="flex flex-row">
-      <h2 class="grow">{m.transitions_productDetails()}</h2>
+      <h1 class="pl-0 grow">{m.transitions_productDetails()}</h1>
       <button
         class="btn btn-ghost"
         type="button"
