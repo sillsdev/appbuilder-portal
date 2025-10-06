@@ -4,6 +4,7 @@ import Asset_Package_Verify_And_Publish from './Asset_Package_Verify_And_Publish
 import Authors_Download from './Authors_Download.svelte';
 import Authors_Upload from './Authors_Upload.svelte';
 import Create_App_Entry from './Create_App_Entry.svelte';
+import Evaluate_Error from './Evaluate_Error.svelte';
 import GooglePlay_Configuration from './GooglePlay_Configuration.svelte';
 import GooglePlay_Verify_And_Publish from './GooglePlay_Verify_And_Publish.svelte';
 import Make_It_Live from './Make_It_Live.svelte';
@@ -29,5 +30,6 @@ export const instructions: Record<string, typeof Waiting> = {
   authors_upload: Authors_Upload,
   verify_and_publish: Verify_And_Publish,
   waiting: Waiting,
-  web_verify: Web_Verify
+  web_verify: Web_Verify,
+  evaluate_error: Evaluate_Error
 };
