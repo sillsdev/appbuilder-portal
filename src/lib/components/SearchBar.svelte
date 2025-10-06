@@ -49,6 +49,11 @@
           timeout = setTimeout(requestSubmit, requestDelay);
         }
       }}
+      onfocus={(e) => {
+        const target = e.currentTarget;
+        // https://stackoverflow.com/a/10576409
+        setTimeout(() => target.setSelectionRange(value.length, value.length), 0);
+      }}
     />
     <IconContainer icon="mdi:search" class="ml-auto cursor-pointer" width={24} />
   </label>
