@@ -26,7 +26,7 @@ export function pruneProjects(
       Id,
       Language,
       Owner: { Name: OwnerName, Id: OwnerId },
-      Organization: { Name: OrganizationName },
+      Organization: { Name: OrganizationName, Id: OrganizationId },
       Group: { Name: GroupName, Id: GroupId },
       DateActive,
       DateUpdated,
@@ -39,6 +39,7 @@ export function pruneProjects(
       OwnerId,
       OwnerName,
       OrganizationName,
+      OrganizationId,
       GroupName,
       GroupId,
       DateUpdated,
@@ -160,6 +161,7 @@ export type ProjectForAction = Prisma.ProjectsGetPayload<{
     OwnerId: true;
     GroupId: true;
     DateArchived: true;
+    OrganizationId: true;
   };
 }>;
 
@@ -198,17 +200,19 @@ export function canClaimProject(
 }
 
 export function canArchive(
-  project: Pick<ProjectForAction, 'OwnerId' | 'DateArchived'>,
-  security: Session['user'],
-  orgId: number
+  project: Pick<ProjectForAction, 'OwnerId' | 'DateArchived' | 'OrganizationId'>,
+  security: Session['user']
 ): boolean {
-  return !project.DateArchived && canModifyProject(security, project.OwnerId, orgId);
+  return (
+    !project.DateArchived && canModifyProject(security, project.OwnerId, project.OrganizationId)
+  );
 }
 
 export function canReactivate(
-  project: Pick<ProjectForAction, 'OwnerId' | 'DateArchived'>,
-  security: Session['user'],
-  orgId: number
+  project: Pick<ProjectForAction, 'OwnerId' | 'DateArchived' | 'OrganizationId'>,
+  security: Session['user']
 ): boolean {
-  return !!project.DateArchived && canModifyProject(security, project.OwnerId, orgId);
+  return (
+    !!project.DateArchived && canModifyProject(security, project.OwnerId, project.OrganizationId)
+  );
 }

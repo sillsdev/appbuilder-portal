@@ -127,7 +127,6 @@ export async function doProjectAction(
   operation: string | null,
   project: Omit<ProjectForAction, 'Name'>,
   security: Security,
-  orgId: number,
   groups: number[]
 ) {
   if (operation === 'archive' && !project?.DateArchived) {
@@ -156,7 +155,13 @@ export async function doProjectAction(
     });
   } else if (
     operation === 'claim' &&
-    canClaimProject(security.sessionForm, project?.OwnerId, orgId, project?.GroupId, groups)
+    canClaimProject(
+      security.sessionForm,
+      project?.OwnerId,
+      project.OrganizationId,
+      project?.GroupId,
+      groups
+    )
   ) {
     await DatabaseWrites.projects.update(project.Id, {
       OwnerId: security.userId

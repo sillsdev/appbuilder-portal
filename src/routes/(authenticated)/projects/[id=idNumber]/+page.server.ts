@@ -375,7 +375,6 @@ export const actions = {
       form.data.operation,
       project,
       event.locals.security,
-      project.OrganizationId,
       groups.map((g) => g.GroupId)
     );
 

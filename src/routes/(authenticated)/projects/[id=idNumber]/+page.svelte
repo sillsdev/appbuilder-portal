@@ -49,14 +49,14 @@
     canModifyProject(
       data.session.user,
       projectData?.project.OwnerId ?? -1,
-      projectData?.project.Organization.Id ?? -1
+      projectData?.project.OrganizationId ?? -1
     )
   );
   const canClaim = $derived(
     canClaimProject(
       data.session.user,
       projectData?.project.OwnerId ?? -1,
-      projectData?.project.Organization.Id ?? -1,
+      projectData?.project.OrganizationId ?? -1,
       projectData?.project.GroupId ?? -1,
       projectData?.userGroups ?? []
     )
@@ -115,7 +115,6 @@
             data={data.actionForm}
             project={projectData.project}
             userGroups={projectData.userGroups}
-            orgId={projectData.project.Organization.Id}
           />
         </div>
       {/if}
@@ -253,7 +252,7 @@
           project={projectData.project}
           users={projectData.possibleProjectOwners}
           groups={projectData.possibleGroups}
-          orgName={data.organizations.find((o) => o.Id === projectData.project.Organization.Id)
+          orgName={data.organizations.find((o) => o.Id === projectData.project.OrganizationId)
             ?.Name}
           endpoint="editOwnerGroup"
           {canEdit}

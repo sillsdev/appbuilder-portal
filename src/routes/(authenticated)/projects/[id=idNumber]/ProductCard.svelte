@@ -43,11 +43,7 @@
       select: {
         Name: true;
         DateArchived: true;
-        Organization: {
-          select: {
-            Id: true;
-          };
-        };
+        OrganizationId: true;
       };
     }>;
     product: Prisma.ProductsGetPayload<{
@@ -208,7 +204,7 @@
               {m.project_productFiles()}
             </a>
           </li>
-          {#if isAdminForOrg(project.Organization.Id, page.data.session!.user.roles)}
+          {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
             <li class="w-full rounded-none">
               <button class="text-nowrap" onclick={() => updateProductModal?.showModal()}>
                 {m.products_properties_title()}

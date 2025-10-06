@@ -35,11 +35,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               Description: true
             }
           },
-          Organization: {
-            select: {
-              Id: true
-            }
-          },
+          OrganizationId: true,
           Products: {
             select: {
               Id: true,
@@ -122,7 +118,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
       span.addEvent('Project fetched');
       const organization = await DatabaseReads.organizations.findUnique({
         where: {
-          Id: project.Organization.Id
+          Id: project.OrganizationId
         },
         select: {
           OrganizationStores: {
@@ -173,7 +169,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
       const productDefinitions = (
         await DatabaseReads.organizationProductDefinitions.findMany({
           where: {
-            OrganizationId: project.Organization.Id,
+            OrganizationId: project.OrganizationId,
             ProductDefinition: {
               ApplicationTypes: project.ApplicationType
             }
@@ -198,7 +194,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
       const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
       span.addEvent('Product definitions fetched');
 
-      const canEdit = canModifyProject(userSession, project.Owner.Id, project.Organization.Id);
+      const canEdit = canModifyProject(userSession, project.Owner.Id, project.OrganizationId);
 
       return {
         project: {
@@ -225,7 +221,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           where: {
             OrganizationMemberships: {
               some: {
-                OrganizationId: project.Organization.Id
+                OrganizationId: project.OrganizationId
               }
             },
             GroupMemberships: {
@@ -238,7 +234,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         // possibleGroups are ones owned by the same org as the project and contain the project's owner
         possibleGroups: await DatabaseReads.groups.findMany({
           where: {
-            OwnerId: project.Organization.Id,
+            OwnerId: project.OrganizationId,
             GroupMemberships: {
               some: {
                 UserId: project.Owner.Id
@@ -257,7 +253,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             },
             UserRoles: {
               some: {
-                OrganizationId: project?.Organization.Id,
+                OrganizationId: project?.OrganizationId,
                 RoleId: RoleId.Author
               }
             },
@@ -268,7 +264,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             }
           }
         }),
-        userGroups: (await userGroupsForOrg(userSession.userId, project.Organization.Id)).map(
+        userGroups: (await userGroupsForOrg(userSession.userId, project.OrganizationId)).map(
           (g) => g.GroupId
         )
       };

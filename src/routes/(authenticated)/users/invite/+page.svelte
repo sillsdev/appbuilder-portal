@@ -42,7 +42,9 @@
   );
 
   onMount(() => {
-    $form.organizationId = $orgActive;
+    if ($orgActive) {
+      $form.organizationId = $orgActive;
+    }
   });
 </script>
 
