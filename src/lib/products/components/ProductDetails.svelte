@@ -89,7 +89,7 @@
           <th>{m.transitions_state()}</th>
           <th>{m.transitions_user()}</th>
           <th>{m.transitions_command()}</th>
-          <th>{m.transitions_comment()}</th>
+          <th class="hidden md:table-cell">{m.transitions_comment()}</th>
           <th>{m.transitions_date()}</th>
         </tr>
       </thead>
@@ -115,7 +115,7 @@
               {/if}
             </td>
             <td>{transition.Command ?? ''}</td>
-            <td class="w-full max-w-1/3">
+            <td class="w-full max-w-1/3 hidden md:table-cell">
               {#if transition.Comment?.startsWith('system.')}
                 {#if transition.Comment.startsWith('system.build-failed')}
                   <span>
@@ -142,6 +142,11 @@
               {getTimeDateString(transition.DateTransition)}
             </td>
           </tr>
+          {#if transition.Comment}
+          <tr class="md:hidden">
+            <td colspan="5">{transition.Comment}</td>
+          </tr>
+          {/if}
         {/each}
       </tbody>
     </table>
