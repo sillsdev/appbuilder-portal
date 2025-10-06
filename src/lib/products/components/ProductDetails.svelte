@@ -95,7 +95,7 @@
       </thead>
       <tbody>
         {#each transitions as transition}
-          <tr class:font-bold={isLandmark(transition.TransitionType)}>
+          <tr class:font-bold={isLandmark(transition.TransitionType)} class="w-full">
             <td>
               {#if transition.TransitionType === ProductTransitionType.Activity}
                 {transition.InitialState}
@@ -115,7 +115,7 @@
               {/if}
             </td>
             <td>{transition.Command ?? ''}</td>
-            <td>
+            <td class="w-full max-w-1/3">
               {#if transition.Comment?.startsWith('system.')}
                 {#if transition.Comment.startsWith('system.build-failed')}
                   <span>
