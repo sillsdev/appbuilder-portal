@@ -73,7 +73,7 @@ export default function Display({ currentOrganizationId, currentOrganization, cr
             className='item p-l-md p-r-md m-b-md'
             target='_blank'
             rel='noopener noreferrer'
-            href='https://sil-prd-aps-resources.s3.amazonaws.com/Project+Import.pdf'
+            href='https://sil-prd-scriptoria-resources.s3.amazonaws.com/Project+Import.pdf'
           >
             {t('project.importProjectsHelp')}
           </a>
