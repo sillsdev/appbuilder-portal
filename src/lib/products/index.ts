@@ -56,6 +56,20 @@ export async function getFileInfo(url: string) {
   };
 }
 
-export function extractPackageName(PublishLink: string | null) {
-  return PublishLink?.match(/[?&]id=([^&#/]+)/i)?.at(1) ?? null;
+export async function fetchPackageName(Url: string | null) {
+  if (Url) {
+    try {
+      const response = await fetch(Url);
+      if (!response.ok) {
+        return null;
+      }
+      const name = (await response.text()).trim();
+      // regex match just in case fetch returns an error HTML
+      // regex slightly modified from: https://stackoverflow.com/a/69168419
+      return name.match(/^[a-z][a-z0-9_]*(\.[a-z0-9_]+)*$/i)?.at(0) ?? null;
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }

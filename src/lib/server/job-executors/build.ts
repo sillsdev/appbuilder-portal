@@ -5,6 +5,7 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
+import { fetchPackageName } from '$lib/products';
 import { WorkflowAction } from '$lib/workflowTypes';
 
 export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> {
@@ -209,6 +210,14 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
                 StoreLanguageId: lang.Id
               });
             }
+          }
+        }
+
+        if (type === 'package_name' && res.headers.get('Content-Type') === 'text/plain') {
+          const PackageName = await fetchPackageName(url);
+          // populate package name if publish link is not set
+          if (PackageName) {
+            await DatabaseWrites.products.update(job.data.productId, { PackageName });
           }
         }
 

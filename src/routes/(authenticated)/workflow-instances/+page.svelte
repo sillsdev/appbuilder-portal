@@ -4,7 +4,7 @@
   import type { PageData } from './$types';
   import DateRangePicker from '$lib/components/DateRangePicker.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
-  import SearchBar from '$lib/components/SearchBar.svelte';
+  import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -39,6 +39,11 @@
         instances = data.query.data;
         count = data.query.count;
       }
+    },
+    onUpdated() {
+      if ($form.search) {
+        focusSearchBar();
+      }
     }
   });
 
@@ -68,7 +73,7 @@
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 {mobileSizing}"
       >
-        <SearchBar bind:value={$form.search} className={mobileSizing} />
+        <SearchBar bind:value={$form.search} className={mobileSizing} requestSubmit={submit} />
       </div>
     </div>
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}">

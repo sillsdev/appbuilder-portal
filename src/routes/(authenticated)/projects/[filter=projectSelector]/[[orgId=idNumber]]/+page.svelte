@@ -8,7 +8,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
-  import SearchBar from '$lib/components/SearchBar.svelte';
+  import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
@@ -59,6 +59,11 @@
       if (event.form.valid && returnedData.query) {
         projects = returnedData.query.data;
         count = returnedData.query.count;
+      }
+    },
+    onUpdated() {
+      if ($pageForm.search) {
+        focusSearchBar();
       }
     }
   });
@@ -196,7 +201,7 @@
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             {@html m.directory_searchHelp()}
           </div>
-          <SearchBar bind:value={$pageForm.search} />
+          <SearchBar bind:value={$pageForm.search} requestSubmit={pageSubmit} />
         </Tooltip>
       </div>
     </div>
