@@ -26,10 +26,10 @@
       <tr>
         <th>{m.publications_channel()}</th>
         <th>{m.publications_status()}</th>
-        <th>{m.publications_date()}</th>
         {#if release.DateResolved}
           <th>{m.publications_resolved()}</th>
         {/if}
+        <th>{m.publications_date()}</th>
         <th>{m.publications_url()}</th>
       </tr>
     </thead>
