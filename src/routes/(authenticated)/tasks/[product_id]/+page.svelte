@@ -22,7 +22,7 @@
   let { data }: Props = $props();
   const { form, enhance, submit } = superForm(data.taskForm, {
     onChange: ({ paths }) => {
-      if (paths.includes('flowAction') && !disableHappy) {
+      if (paths.includes('flowAction') && !($form.flowAction === data.actions[0] && checksRemaining)) {
         submit();
       }
     },
@@ -70,18 +70,18 @@
     }
   });
 
-  let currentInstructions: Element | null = $state(null);
+  let instructionContainer: HTMLDivElement | undefined = $state(undefined);
 
   const checks = $derived.by(() =>
     Array.from(
-      (currentInstructions?.querySelectorAll(
+      (instructionContainer?.querySelectorAll(
         'input[type="checkbox"]'
       ) as NodeListOf<HTMLInputElement>) ?? []
     )
   );
 
-  let triggerRecheck = $state(false); // This may be the hackiest thing I've ever written, but it works.
-  const disableHappy = $derived(
+  let triggerRecheck = $state(false); // This may be the hackiest thing I've ever written, but it works. - Aidan
+  const checksRemaining = $derived(
     (triggerRecheck || !triggerRecheck) && checks.some((e) => !e.checked)
   );
 </script>
@@ -105,8 +105,8 @@
       {#if data.actions?.length}
         <div class="flex flex-row gap-x-3">
           {#each data.actions as action, i}
-            {@const disabled = i === 0 && disableHappy}
-            <BlockIfJobsUnavailable className="btn btn-primary {disabled ? 'btn-disabled' : ''}">
+            {@const disabled = i === 0 && checksRemaining}
+            <BlockIfJobsUnavailable className="btn btn-primary">
               {#snippet altContent()}
                 {action}
               {/snippet}
@@ -263,7 +263,7 @@
     <div
       class="py-2"
       id="instructions"
-      bind:this={currentInstructions}
+      bind:this={instructionContainer}
       onclick={() => (triggerRecheck = !triggerRecheck)}
     >
       <SvelteComponent />
