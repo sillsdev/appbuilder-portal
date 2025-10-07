@@ -55,6 +55,30 @@
   let detailsModal: HTMLDialogElement;
 </script>
 
+{#snippet comment(com: (typeof transitions)[0]['Comment'])}
+  {#if com?.startsWith('system.')}
+    {#if com.startsWith('system.build-failed')}
+      <span>
+        {m.system_buildFailed()}
+      </span>
+    {:else if com.startsWith('system.publish-failed')}
+      <span>
+        {m.system_publishFailed()}
+      </span>
+    {/if}
+    <br />
+    <a
+      class="link link-info"
+      href={com.replace(/system\.(build|publish)-failed,/, '')}
+      target="_blank"
+    >
+      {m.publications_console()}
+    </a>
+  {:else}
+    {com ?? ''}
+  {/if}
+{/snippet}
+
 <dialog bind:this={detailsModal} id="modal{product.Id}" class="modal">
   <div class="modal-box w-11/12 max-w-6xl">
     <div class="flex flex-row">
@@ -116,36 +140,16 @@
             </td>
             <td>{transition.Command ?? ''}</td>
             <td class="w-full max-w-1/3 hidden md:table-cell">
-              {#if transition.Comment?.startsWith('system.')}
-                {#if transition.Comment.startsWith('system.build-failed')}
-                  <span>
-                    {m.system_buildFailed()}
-                  </span>
-                {:else if transition.Comment.startsWith('system.publish-failed')}
-                  <span>
-                    {m.system_publishFailed()}
-                  </span>
-                {/if}
-                <br />
-                <a
-                  class="link link-info"
-                  href={transition.Comment.replace(/system\.(build|publish)-failed,/, '')}
-                  target="_blank"
-                >
-                  {m.publications_console()}
-                </a>
-              {:else}
-                {transition.Comment ?? ''}
-              {/if}
+              {@render comment(transition.Comment)}
             </td>
             <td>
               {getTimeDateString(transition.DateTransition)}
             </td>
           </tr>
           {#if transition.Comment}
-          <tr class="md:hidden">
-            <td colspan="5">{transition.Comment}</td>
-          </tr>
+            <tr class="md:hidden">
+              <td colspan="5">{@render comment(transition.Comment)}</td>
+            </tr>
           {/if}
         {/each}
       </tbody>
