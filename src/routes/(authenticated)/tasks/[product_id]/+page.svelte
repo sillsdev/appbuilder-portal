@@ -22,7 +22,10 @@
   let { data }: Props = $props();
   const { form, enhance, submit } = superForm(data.taskForm, {
     onChange: ({ paths }) => {
-      if (paths.includes('flowAction') && !($form.flowAction === data.actions[0] && checksRemaining)) {
+      if (
+        paths.includes('flowAction') &&
+        !($form.flowAction === data.actions[0] && checksRemaining)
+      ) {
         submit();
       }
     },
