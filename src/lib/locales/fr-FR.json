@@ -211,6 +211,7 @@
   "publications_succeeded": "Success",
   "publications_failed": "Failure",
   "publications_console": "Console Text",
+  "publications_results": "Publish Results",
   "products_options_update": "update",
   "products_options_publish": "publish",
   "transitions_productDetails": "Product Details",

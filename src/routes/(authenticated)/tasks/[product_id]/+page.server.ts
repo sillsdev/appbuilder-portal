@@ -103,7 +103,10 @@ export const load = (async ({ params, locals, depends }) => {
         snap.context.includeArtifacts === 'error'
           ? {
               select: {
-                LogUrl: true
+                LogUrl: true,
+                Success: true,
+                Channel: true,
+                DateUpdated: true
               },
               orderBy: {
                 DateUpdated: 'desc'
@@ -113,7 +116,6 @@ export const load = (async ({ params, locals, depends }) => {
           : undefined
     }
   }))!;
-  const consoleTextUrl = product.ProductPublications?.at(0)?.LogUrl ?? null;
 
   const artifacts = snap.context.includeArtifacts
     ? await DatabaseReads.productArtifacts.findMany({
@@ -124,7 +126,7 @@ export const load = (async ({ params, locals, depends }) => {
           },
           //filter by artifact type
           ArtifactType:
-            snap.context.includeArtifacts === 'all'
+            snap.context.includeArtifacts === 'all' || snap.context.includeArtifacts === 'error'
               ? undefined
               : {
                   in: artifactLists(snap.context.includeArtifacts)
@@ -177,25 +179,8 @@ export const load = (async ({ params, locals, depends }) => {
         product.Project.ApplicationType.Description,
       projectLanguageCode: product.Project.Language
     } as Fields,
-    files:
-      snap.context.includeArtifacts === 'error'
-        ? [
-            ...artifacts,
-            {
-              ArtifactType: 'consoleText',
-              Url: consoleTextUrl,
-              FileSize: consoleTextUrl
-                ? await fetch(consoleTextUrl, { method: 'HEAD' })
-                    .then((r) =>
-                      r.headers.get('Content-Length')
-                        ? BigInt(r.headers.get('Content-Length')!)
-                        : null
-                    )
-                    .catch(() => null)
-                : null
-            }
-          ]
-        : artifacts,
+    files: artifacts,
+    release: snap.context.includeArtifacts === 'error' && product.ProductPublications?.at(0),
     reviewers: snap.context.includeReviewers
       ? await DatabaseReads.reviewers.findMany({
           where: {

@@ -11,6 +11,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import ReleaseInfo from '$lib/products/components/ReleaseInfo.svelte';
   import { userTasksSSE } from '$lib/stores';
   import { bytesToHumanSize, toast } from '$lib/utils';
   import { byName, byNumber, byString } from '$lib/utils/sorting';
@@ -271,6 +272,10 @@
     >
       <SvelteComponent />
     </div>
+  {/if}
+  {#if data.release}
+    <h3>{m.publications_results()}</h3>
+    <ReleaseInfo release={data.release} classes="border" headerClasses="bg-neutral" />
   {/if}
   {#if data?.files?.length && !waiting}
     {@const locale = getLocale()}
