@@ -106,6 +106,7 @@ export const load = (async ({ params, locals, depends }) => {
                 LogUrl: true,
                 Success: true,
                 Channel: true,
+                DateResolved: true,
                 DateUpdated: true
               },
               orderBy: {

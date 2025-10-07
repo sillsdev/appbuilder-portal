@@ -10,6 +10,7 @@
         Success: true;
         LogUrl: true;
         DateUpdated: true;
+        DateResolved: true;
       };
     }>;
     classes?: string;
@@ -38,6 +39,9 @@
         <td>
           {release.Success ? m.publications_succeeded() : m.publications_failed()}
         </td>
+        {#if release.DateResolved}
+          <td>{getTimeDateString(release.DateResolved)}</td>
+        {/if}
         <td>{getTimeDateString(release.DateUpdated)}</td>
         <td>
           <a href={release.LogUrl} class="link">{m.publications_console()}</a>

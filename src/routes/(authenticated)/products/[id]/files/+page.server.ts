@@ -49,7 +49,8 @@ export const load = (async ({ params, locals }) => {
           Channel: true,
           Success: true,
           DateUpdated: true,
-          LogUrl: true
+          LogUrl: true,
+          DateResolved: true
         },
         orderBy: {
           DateUpdated: 'desc'

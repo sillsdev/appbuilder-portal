@@ -31,6 +31,7 @@
         Success: true;
         LogUrl: true;
         DateUpdated: true;
+        DateResolved: true;
       };
     }>;
     latestBuildId: number | undefined;
