@@ -21,7 +21,7 @@ import {
   jump
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
-import { deleteWorkflow } from './dbProcedures';
+import { deleteWorkflow, markResolved } from './dbProcedures';
 
 /**
  * IMPORTANT: READ THIS BEFORE EDITING A STATE MACHINE!
@@ -855,6 +855,7 @@ export const WorkflowStateMachine = setup({
                 workflowType: { is: WorkflowType.Startup }
               }
             },
+            actions: ({ context }) => markResolved(context.productId),
             guard: ({ context }) =>
               !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] &&
               context.workflowType === WorkflowType.Startup,
@@ -868,6 +869,7 @@ export const WorkflowStateMachine = setup({
                 workflowType: { is: WorkflowType.Startup }
               }
             },
+            actions: ({ context }) => markResolved(context.productId),
             guard: ({ context }) =>
               !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] &&
               context.workflowType === WorkflowType.Startup,
@@ -881,6 +883,7 @@ export const WorkflowStateMachine = setup({
                 options: { has: WorkflowOptions.AdminStoreAccess }
               }
             },
+            actions: ({ context }) => markResolved(context.productId),
             target: WorkflowState.Published
           },
           {
@@ -891,6 +894,7 @@ export const WorkflowStateMachine = setup({
                 options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
               }
             },
+            actions: ({ context }) => markResolved(context.productId),
             target: WorkflowState.Published
           }
         ],
