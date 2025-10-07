@@ -83,10 +83,12 @@
     )
   );
 
-  let triggerRecheck = $state(false); // This may be the hackiest thing I've ever written, but it works. - Aidan
-  const checksRemaining = $derived(
-    (triggerRecheck || !triggerRecheck) && checks.some((e) => !e.checked)
-  );
+  let triggerRecheck = $state(false);
+  const checksRemaining = $derived.by(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    triggerRecheck; // depend on external variable to recheck the checkboxes
+    return checks.some((e) => !e.checked);
+  });
 </script>
 
 <div class="p-5">
