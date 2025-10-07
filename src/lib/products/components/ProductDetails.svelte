@@ -55,10 +55,44 @@
   let detailsModal: HTMLDialogElement;
 </script>
 
+{#snippet comment(com: (typeof transitions)[0]['Comment'])}
+  {#if com?.startsWith('system.')}
+    {#if com.startsWith('system.build-failed')}
+      <span>
+        {m.system_buildFailed()}
+      </span>
+    {:else if com.startsWith('system.publish-failed')}
+      <span>
+        {m.system_publishFailed()}
+      </span>
+    {/if}
+    <br />
+    <a
+      class="link link-info"
+      href={com.replace(/system\.(build|publish)-failed,/, '')}
+      target="_blank"
+    >
+      {m.publications_console()}
+    </a>
+  {:else}
+    {com ?? ''}
+  {/if}
+{/snippet}
+
+{#snippet transitionType(transition: (typeof transitions)[0])}
+  {#if transition.TransitionType === ProductTransitionType.Activity}
+    {transition.InitialState}
+  {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
+    <IconContainer icon="material-symbols:star" width={16} />&nbsp;{transition.InitialState}
+  {:else}
+    {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
+  {/if}
+{/snippet}
+
 <dialog bind:this={detailsModal} id="modal{product.Id}" class="modal">
   <div class="modal-box w-11/12 max-w-6xl">
     <div class="flex flex-row">
-      <h2 class="grow">{m.transitions_productDetails()}</h2>
+      <h1 class="pl-0 grow">{m.transitions_productDetails()}</h1>
       <button
         class="btn btn-ghost"
         type="button"
@@ -69,7 +103,7 @@
         <IconContainer icon="mdi:close" width={36} class="opacity-80" />
       </button>
     </div>
-    <table class="table">
+    <table class="table table-sm">
       <thead>
         <tr>
           <th>{m.transitions_storeName()}</th>
@@ -83,27 +117,23 @@
         </tr>
       </tbody>
     </table>
-    <table class="table">
+    <table class="hidden md:table table-sm">
       <thead>
         <tr>
           <th>{m.transitions_state()}</th>
           <th>{m.transitions_user()}</th>
           <th>{m.transitions_command()}</th>
-          <th>{m.transitions_comment()}</th>
           <th>{m.transitions_date()}</th>
         </tr>
       </thead>
       <tbody>
         {#each transitions as transition}
-          <tr class:font-bold={isLandmark(transition.TransitionType)}>
+          <tr
+            class:font-bold={isLandmark(transition.TransitionType)}
+            class:no-border={transition.Comment}
+          >
             <td>
-              {#if transition.TransitionType === ProductTransitionType.Activity}
-                {transition.InitialState}
-              {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
-                * {transition.InitialState}
-              {:else}
-                {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
-              {/if}
+              {@render transitionType(transition)}
             </td>
             <td>
               <!-- Does not include WorkflowUserId mapping. Might be needed but didn't seem like it to me -->
@@ -111,34 +141,56 @@
                 {transition.User?.Name || transition.AllowedUserNames || m.appName()}
               {/if}
             </td>
-            <td>{transition.Command ?? ''}</td>
+            <td>{transition.Command}</td>
             <td>
-              {#if transition.Comment?.startsWith('system.')}
-                {#if transition.Comment.startsWith('system.build-failed')}
-                  <span>
-                    {m.system_buildFailed()}
-                  </span>
-                {:else if transition.Comment.startsWith('system.publish-failed')}
-                  <span>
-                    {m.system_publishFailed()}
-                  </span>
-                {/if}
-                <br />
-                <a
-                  class="link link-info"
-                  href={transition.Comment.replace(/system\.(build|publish)-failed,/, '')}
-                  target="_blank"
-                >
-                  {m.publications_console()}
-                </a>
-              {:else}
-                {transition.Comment ?? ''}
-              {/if}
+              {getTimeDateString(transition.DateTransition)}
+            </td>
+          </tr>
+          {#if transition.Comment}
+            <tr>
+              <td colspan="4">
+                <div class="comment">
+                  {@render comment(transition.Comment)}
+                </div>
+              </td>
+            </tr>
+          {/if}
+        {/each}
+      </tbody>
+    </table>
+    <table class="table md:hidden table-sm">
+      <thead>
+        <tr>
+          <th>{m.transitions_state()} / {m.transitions_user()}</th>
+          <th>{m.transitions_date()} / {m.transitions_command()}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each transitions as transition}
+          <tr
+            class:font-bold={isLandmark(transition.TransitionType)}
+            class:no-border={!isLandmark(transition.TransitionType) || transition.Comment}
+          >
+            <td>
+              {@render transitionType(transition)}
             </td>
             <td>
               {getTimeDateString(transition.DateTransition)}
             </td>
           </tr>
+          {#if !isLandmark(transition.TransitionType)}
+            <tr class:no-border={transition.Comment}>
+              <td>
+                {transition.User?.Name || transition.AllowedUserNames || m.appName()}
+              </td>
+              <td>{transition.Command}</td>
+            </tr>
+          {/if}
+          {#if transition.Comment}
+            <tr>
+              <td colspan="2"><div class="comment">{@render comment(transition.Comment)}</div></td>
+            </tr>
+          {/if}
         {/each}
       </tbody>
     </table>
@@ -147,3 +199,32 @@
     <button>{m.common_close()}</button>
   </form>
 </dialog>
+
+<style>
+  td {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+  :where(thead tr, tbody tr:not(:last-child)) {
+    @supports (color: color-mix(in lab, red, red)) {
+      /* Copied from DaisyUI source. Modified opacity */
+      border-bottom: var(--border) solid color-mix(in oklch, var(--color-base-content) 25%, #0000);
+    }
+  }
+  .no-border {
+    border: none;
+  }
+  .comment {
+    border: calc(2 * var(--border)) inset var(--color-base-content);
+    margin: var(--spacing);
+    margin-left: calc(2 * var(--spacing));
+    margin-right: calc(2 * var(--spacing));
+    padding: var(--spacing);
+  }
+  .comment {
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklch, var(--color-base-content) 50%, #0000);
+      background-color: color-mix(in oklch, var(--color-base-300) 15%, #0000);
+    }
+  }
+</style>
