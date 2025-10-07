@@ -123,13 +123,15 @@
           <th>{m.transitions_state()}</th>
           <th>{m.transitions_user()}</th>
           <th>{m.transitions_command()}</th>
-          <th>{m.transitions_comment()}</th>
           <th>{m.transitions_date()}</th>
         </tr>
       </thead>
       <tbody>
         {#each transitions as transition}
-          <tr class:font-bold={isLandmark(transition.TransitionType)} class="w-full">
+          <tr
+            class:font-bold={isLandmark(transition.TransitionType)}
+            class:no-border={transition.Comment}
+          >
             <td>
               {@render transitionType(transition)}
             </td>
@@ -139,14 +141,20 @@
                 {transition.User?.Name || transition.AllowedUserNames || m.appName()}
               {/if}
             </td>
-            <td>{transition.Command ?? ''}</td>
-            <td class="w-full max-w-1/3">
-              {@render comment(transition.Comment)}
-            </td>
+            <td>{transition.Command}</td>
             <td>
               {getTimeDateString(transition.DateTransition)}
             </td>
           </tr>
+          {#if transition.Comment}
+            <tr>
+              <td colspan="4">
+                <div class="comment">
+                  {@render comment(transition.Comment)}
+                </div>
+              </td>
+            </tr>
+          {/if}
         {/each}
       </tbody>
     </table>
@@ -180,7 +188,7 @@
           {/if}
           {#if transition.Comment}
             <tr>
-              <td colspan="2">{@render comment(transition.Comment)}</td>
+              <td colspan="2"><div class="comment">{@render comment(transition.Comment)}</div></td>
             </tr>
           {/if}
         {/each}
@@ -205,5 +213,18 @@
   }
   .no-border {
     border: none;
+  }
+  .comment {
+    border: calc(2 * var(--border)) inset var(--color-base-content);
+    margin: var(--spacing);
+    margin-left: calc(2 * var(--spacing));
+    margin-right: calc(2 * var(--spacing));
+    padding: var(--spacing);
+  }
+  .comment {
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklch, var(--color-base-content) 50%, #0000);
+      background-color: color-mix(in oklch, var(--color-base-300) 15%, #0000);
+    }
   }
 </style>
