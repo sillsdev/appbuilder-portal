@@ -79,6 +79,16 @@
   {/if}
 {/snippet}
 
+{#snippet transitionType(transition: (typeof transitions)[0])}
+  {#if transition.TransitionType === ProductTransitionType.Activity}
+    {transition.InitialState}
+  {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
+    <IconContainer icon="material-symbols:star" width={16} />&nbsp;{transition.InitialState}
+  {:else}
+    {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
+  {/if}
+{/snippet}
+
 <dialog bind:this={detailsModal} id="modal{product.Id}" class="modal">
   <div class="modal-box w-11/12 max-w-6xl">
     <div class="flex flex-row">
@@ -107,13 +117,13 @@
         </tr>
       </tbody>
     </table>
-    <table class="table table-sm">
+    <table class="hidden md:table table-sm">
       <thead>
         <tr>
           <th>{m.transitions_state()}</th>
           <th>{m.transitions_user()}</th>
           <th>{m.transitions_command()}</th>
-          <th class="hidden md:table-cell">{m.transitions_comment()}</th>
+          <th>{m.transitions_comment()}</th>
           <th>{m.transitions_date()}</th>
         </tr>
       </thead>
@@ -121,16 +131,7 @@
         {#each transitions as transition}
           <tr class:font-bold={isLandmark(transition.TransitionType)} class="w-full">
             <td>
-              {#if transition.TransitionType === ProductTransitionType.Activity}
-                {transition.InitialState}
-              {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
-                <IconContainer
-                  icon="material-symbols:star"
-                  width={16}
-                />&nbsp;{transition.InitialState}
-              {:else}
-                {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
-              {/if}
+              {@render transitionType(transition)}
             </td>
             <td>
               <!-- Does not include WorkflowUserId mapping. Might be needed but didn't seem like it to me -->
@@ -139,16 +140,47 @@
               {/if}
             </td>
             <td>{transition.Command ?? ''}</td>
-            <td class="w-full max-w-1/3 hidden md:table-cell">
+            <td class="w-full max-w-1/3">
               {@render comment(transition.Comment)}
             </td>
             <td>
               {getTimeDateString(transition.DateTransition)}
             </td>
           </tr>
+        {/each}
+      </tbody>
+    </table>
+    <table class="table md:hidden table-sm">
+      <thead>
+        <tr>
+          <th>{m.transitions_state()} / {m.transitions_user()}</th>
+          <th>{m.transitions_date()} / {m.transitions_command()}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each transitions as transition}
+          <tr
+            class:font-bold={isLandmark(transition.TransitionType)}
+            class:no-border={!isLandmark(transition.TransitionType) || transition.Comment}
+          >
+            <td>
+              {@render transitionType(transition)}
+            </td>
+            <td>
+              {getTimeDateString(transition.DateTransition)}
+            </td>
+          </tr>
+          {#if !isLandmark(transition.TransitionType)}
+            <tr class:no-border={transition.Comment}>
+              <td>
+                {transition.User?.Name || transition.AllowedUserNames || m.appName()}
+              </td>
+              <td>{transition.Command}</td>
+            </tr>
+          {/if}
           {#if transition.Comment}
-            <tr class="md:hidden">
-              <td colspan="5">{@render comment(transition.Comment)}</td>
+            <tr>
+              <td colspan="2">{@render comment(transition.Comment)}</td>
             </tr>
           {/if}
         {/each}
@@ -170,5 +202,8 @@
       /* Copied from DaisyUI source. Modified opacity */
       border-bottom: var(--border) solid color-mix(in oklch, var(--color-base-content) 25%, #0000);
     }
+  }
+  .no-border {
+    border: none;
   }
 </style>
