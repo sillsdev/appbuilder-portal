@@ -72,18 +72,17 @@
 
   let currentInstructions: Element | null = $state(null);
 
-  const checks = $derived.by(
-    () =>
+  const checks = $derived.by(() =>
+    Array.from(
       (currentInstructions?.querySelectorAll(
         'input[type="checkbox"]'
       ) as NodeListOf<HTMLInputElement>) ?? []
+    )
   );
 
   let triggerRecheck = $state(false); // This may be the hackiest thing I've ever written, but it works.
   const disableHappy = $derived(
-    (triggerRecheck || !triggerRecheck) &&
-      !!checks.length &&
-      checks.values().some((e) => !e.checked)
+    (triggerRecheck || !triggerRecheck) && checks.some((e) => !e.checked)
   );
 </script>
 
