@@ -13,6 +13,7 @@ import {
 } from '../email-service/EmailTemplates';
 import { getOwnerAdminVariantKeys, translate } from '../email-service/locales/locale';
 import { RoleId } from '$lib/prisma';
+import type { ProjectImportJSON } from '$lib/projects';
 
 export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unknown> {
   const inviteInformation = await DatabaseReads.organizationMembershipInvites.findFirstOrThrow({
@@ -304,20 +305,7 @@ export async function reportProjectImport(
       ImportId: job.data.importId
     }
   });
-  const importJSON: {
-    Projects: {
-      Name: string;
-      Description: string;
-      Language: string;
-      IsPublic: boolean;
-      AllowDownloads: boolean;
-      AutomaticBuilds: boolean;
-    }[];
-    Products: {
-      Name: string;
-      Store: string;
-    }[];
-  } = JSON.parse(projectImport.ImportData!);
+  const importJSON: ProjectImportJSON = JSON.parse(projectImport.ImportData!);
   const existingProjects = await DatabaseReads.projects.findMany({
     where: {
       OrganizationId: projectImport.Organizations!.Id,

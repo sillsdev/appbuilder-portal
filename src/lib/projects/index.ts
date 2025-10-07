@@ -123,8 +123,8 @@ export const importJSONSchema = v.pipe(
       v.array(
         v.strictObject({
           ...projectSchemaBase.entries,
-          AllowDownloads: v.optional(v.boolean()),
-          AutomaticBuilds: v.optional(v.boolean())
+          AllowDownloads: v.optional(v.boolean())
+          // ISSUE #1303 Add new fields here
         })
       ),
       v.minLength(1)
@@ -140,6 +140,8 @@ export const importJSONSchema = v.pipe(
     )
   })
 );
+
+export type ProjectImportJSON = v.InferOutput<typeof importJSONSchema>;
 
 export const projectActionSchema = v.object({
   operation: v.nullable(v.picklist(['archive', 'reactivate', 'claim'])),
