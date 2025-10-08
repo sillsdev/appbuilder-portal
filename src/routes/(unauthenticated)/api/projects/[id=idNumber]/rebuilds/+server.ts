@@ -4,9 +4,9 @@ import type { KeyObject } from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
 import { building } from '$app/environment';
 import { env } from '$env/dynamic/private';
-import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { doProductAction } from '$lib/products/server';
 import { ProductActionType } from '$lib/products/index';
+import { doProductAction } from '$lib/products/server';
+import { DatabaseReads } from '$lib/server/database';
 
 export async function POST({ params, request }) {
   if (!request.headers.get('Authorization')) {
@@ -49,8 +49,7 @@ export async function POST({ params, request }) {
   // user[0] is now authenticated. Still need to check authorization
   const projectId = parseInt(params.id);
 
-
- const project = await DatabaseReads.projects.findUnique({
+  const project = await DatabaseReads.projects.findUnique({
     where: {
       Id: projectId
     },
@@ -66,10 +65,22 @@ export async function POST({ params, request }) {
       OrganizationId: true
     }
   });
+
   if (!project) {
     return new Response(
       JSON.stringify({
         errors: [{ title: `Project id=${projectId} not found` }]
+      }),
+      {
+        status: 404
+      }
+    );
+  }
+
+  if (!project.WorkflowProjectUrl) {
+    return new Response(
+      JSON.stringify({
+        errors: [{ title: `Project id=${projectId}: WorkflowProjectUrl is null` }]
       }),
       {
         status: 404
