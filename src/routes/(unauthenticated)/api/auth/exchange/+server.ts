@@ -11,7 +11,7 @@ export async function POST({ locals, request }) {
       code: v.pipe(v.string(), v.uuid()),
       verify: v.string()
     }),
-    await request.json()
+    request.body
   );
 
   if (body.success) {
