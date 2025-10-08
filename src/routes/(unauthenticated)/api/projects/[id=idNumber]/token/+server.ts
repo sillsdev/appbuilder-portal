@@ -1,9 +1,4 @@
-import { error, json } from '@sveltejs/kit';
-import { jwtVerify } from 'jose';
-import type { KeyObject } from 'node:crypto';
-import { createPublicKey } from 'node:crypto';
-import { building } from '$app/environment';
-import { env } from '$env/dynamic/private';
+import { json } from '@sveltejs/kit';
 import { ProductTransitionType, RoleId } from '$lib/prisma';
 import { BuildEngine } from '$lib/server/build-engine-api';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
@@ -13,50 +8,19 @@ const TOKEN_USE_UPLOAD = 'Upload';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TOKEN_USE_DOWNLOAD = 'Download';
 
-export async function POST({ params, locals, request, fetch }) {
-  locals.security.requireNothing();
-  if (!request.headers.get('Authorization')) {
-    return error(401, `Unauthorized`);
-  }
+export async function POST({ params, locals, request }) {
+  locals.security.requireAuthenticated();
 
-  const userId = locals.security.userId;
-
-  const authToken = request.headers.get('Authorization')?.replace('Bearer ', '');
-
-  let jwtData;
-  try {
-    if (userId === null) {
-      jwtData = await decryptJwtWithAuth0(authToken ?? '');
-    }
-  } catch {
-    // Signature verification failed
-    return error(401, `Unauthorized`);
-  }
-  const user = await DatabaseReads.users.findMany({
-    where: {
-      Id: userId === null ? undefined : userId,
-      ExternalId: userId === null ? jwtData!.payload.sub : undefined
-    },
+  const user = await DatabaseReads.users.findUniqueOrThrow({
+    where: { Id: locals.security.userId },
     select: {
       Id: true,
       Name: true,
       Email: true,
-      WorkflowUserId: true,
-      UserRoles: {
-        select: {
-          OrganizationId: true,
-          RoleId: true
-        }
-      }
+      WorkflowUserId: true
     }
   });
-  if (user.length !== 1) {
-    // Should never happen
-    // (unless the user doesn't exist?)
-    return error(500, `Internal Server Error`);
-  }
 
-  // user[0] is now authenticated. Still need to check authorization
   const projectId = parseInt(params.id);
 
   const tokenUse = request.headers.get(TOKEN_USE_HEADER);
@@ -101,37 +65,29 @@ export async function POST({ params, locals, request, fetch }) {
 
   // Check ownership
   let readOnly: boolean | null = null;
-  if (user[0].Id === project.Owner.Id) {
+  if (locals.security.userId === project.Owner.Id) {
     readOnly = false;
   }
 
   // Check roles
   if (readOnly === null) {
-    if (
-      user[0].UserRoles.some(
-        (role) =>
-          (role.OrganizationId === project.OrganizationId && role.RoleId === RoleId.OrgAdmin) ||
-          role.RoleId === RoleId.SuperAdmin
-      )
-    ) {
+    try {
+      locals.security.requireAdminOfOrg(project.OrganizationId);
       readOnly = false;
+    } catch {
+      readOnly = null;
     }
   }
 
   // Check authors
   if (readOnly === null) {
-    const authors = await DatabaseReads.authors.findMany({
-      where: {
-        ProjectId: projectId
-      },
-      select: {
-        UserId: true
-      }
-    });
-    if (authors.find((a) => a.UserId === user[0].Id)) {
+    try {
+      locals.security.requireHasRole(project.OrganizationId, RoleId.Author, false);
       // ISSUE: #1101 Kalaam now wants authors to be able to update at any time.  In the future, we can add a setting on the author to whether they are a restricted author or not. I don't have time to add the UI at the moment.
       //readOnly = !author.CanUpdate;
       readOnly = false;
+    } catch {
+      readOnly = null;
     }
   }
 
@@ -140,7 +96,7 @@ export async function POST({ params, locals, request, fetch }) {
       JSON.stringify({
         errors: [
           {
-            title: `Project id=${projectId}, user='${user[0].Name}' with email='${user[0].Email}' does not have permission to access`
+            title: `Project id=${projectId}, user='${user.Name}' with email='${user.Email}' does not have permission to access`
           }
         ]
       }),
@@ -155,7 +111,7 @@ export async function POST({ params, locals, request, fetch }) {
       JSON.stringify({
         errors: [
           {
-            title: `Project id=${projectId}, user='${user[0].Name}' with email='${user[0].Email}' does not have permission to Upload`
+            title: `Project id=${projectId}, user='${user.Name}' with email='${user.Email}' does not have permission to Upload`
           }
         ]
       }),
@@ -222,11 +178,11 @@ export async function POST({ params, locals, request, fetch }) {
     {
       data: products.map((p) => ({
         ProductId: p.Id,
-        AllowedUserNames: user[0].Name,
+        AllowedUserNames: user.Name,
         TransitionType: ProductTransitionType.ProjectAccess,
         InitialState: 'Project ' + use,
-        WorkflowUserId: user[0].WorkflowUserId,
-        UserId: user[0].Id,
+        WorkflowUserId: user.WorkflowUserId,
+        UserId: user.Id,
         DateTransition: new Date()
       }))
     },
@@ -234,38 +190,4 @@ export async function POST({ params, locals, request, fetch }) {
   );
 
   return json({ data: projectToken });
-}
-let resolve: CallableFunction = () => {};
-const secrets: Promise<Map<string, KeyObject>> = new Promise((r) => (resolve = r));
-
-if (!building) {
-  (async () => {
-    const res = await fetch('https://' + env.AUTH0_DOMAIN + '/.well-known/jwks.json');
-    const keys: {
-      kty: string;
-      use: string;
-      n: string;
-      e: string;
-      kid: string;
-      x5t: string;
-      x5c: string[];
-      alg: string;
-    }[] = (await res.json()).keys;
-    resolve(
-      new Map(
-        keys.map((key) => [
-          key.kid,
-          createPublicKey({
-            key,
-            format: 'jwk'
-          })
-        ])
-      )
-    );
-  })();
-}
-async function decryptJwtWithAuth0(jwt: string) {
-  return jwtVerify(jwt, async (header, token) => {
-    return (await secrets).get(header.kid!)!;
-  });
 }
