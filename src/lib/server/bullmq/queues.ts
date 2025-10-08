@@ -82,8 +82,14 @@ class Connection {
 
 let _workerConnection: Connection | undefined = undefined;
 let _queueConnection: Connection | undefined = undefined;
+let _authConnection: Connection | undefined = undefined;
 
 export const QueueConnected = () => _queueConnection?.IsConnected() ?? false;
+
+export const getAuthConnection = () => {
+  if (!_authConnection) _authConnection = new Connection(false);
+  return _authConnection.connection();
+};
 
 export const getWorkerConfig = () => {
   if (!_workerConnection) _workerConnection = new Connection(false);
