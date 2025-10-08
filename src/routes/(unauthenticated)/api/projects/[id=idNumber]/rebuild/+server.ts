@@ -89,11 +89,6 @@ export async function POST({ params, request, locals }) {
     );
   }
 
-  const isOwner = user[0].Id === project.Owner.Id;
-  if (!isOwner) {
-    return error(403, 'Only the project owner can rebuild');
-  }
-
   const products = await DatabaseReads.products.findMany({
     where: { ProjectId: projectId },
     select: {
@@ -109,6 +104,7 @@ export async function POST({ params, request, locals }) {
     (p) => p.DatePublished != null && p.PublishLink != null && !p.WorkflowInstance
   );
 
+  const isOwner = user[0].Id === project.Owner.Id;
   const canRebuild = isOwner && rebuildableProducts.length > 0;
   if (!canRebuild) {
     return error(400, 'Project does not meet rebuild conditions');
