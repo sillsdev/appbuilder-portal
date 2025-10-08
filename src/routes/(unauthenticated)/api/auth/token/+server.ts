@@ -2,10 +2,10 @@ import { error, redirect } from '@sveltejs/kit';
 import { randomUUID } from 'node:crypto';
 import { getAuthConnection } from '$lib/server/bullmq/queues';
 
-export async function GET({ locals, url }) {
+export async function GET({ locals, url, cookies }) {
   const challenge = url.searchParams.get('challenge');
-  const application = url.searchParams.get('application');
-  if (!challenge || !application) {
+  const redirectUrl = url.searchParams.get('redirect-url');
+  if (!challenge || !redirectUrl) {
     locals.security.requireNothing();
     error(400, 'Missing URL Search Params');
   }
@@ -15,7 +15,12 @@ export async function GET({ locals, url }) {
 
   // we may want to use IORedis key prefixes in the future (https://github.com/redis/ioredis?tab=readme-ov-file#transparent-key-prefixing)
   await getAuthConnection().set(`auth0:code:${code}`, challenge, 'EX', 300); // 5 minute (300 s) TTL
-  await getAuthConnection().set(`auth0:user:${code}`, locals.security.userId, 'EX', 301); // 5 minute (300 s) TTL
+  await getAuthConnection().set(
+    `auth0:cookie:${code}`,
+    cookies.get('authjs.session-token') ?? '',
+    'EX',
+    301
+  ); // 5 minute (300 s) TTL
 
-  redirect(302, `${application}://auth/token?code=${code}`);
+  redirect(302, `${redirectUrl}?code=${code}`);
 }

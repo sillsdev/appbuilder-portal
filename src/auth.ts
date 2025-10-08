@@ -281,27 +281,7 @@ export class Security {
 }
 
 export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
-  const tmpSecurity = (await event.locals.auth())?.user;
-  const authToken = (event.request.headers.get('Authorization') ?? '').replace('Bearer ', '');
-  let tmpUserId: number | undefined = undefined;
-  if (!tmpSecurity && authToken) {
-    const apiToken = await DatabaseReads.apiTokens.findFirst({ where: { Token: authToken } });
-    if (apiToken && apiToken.Expires.valueOf() > new Date().valueOf()) {
-      tmpUserId = apiToken.UserId;
-    } else {
-      await DatabaseWrites.apiTokens.deleteMany({ where: { Token: authToken } });
-    }
-  }
-
-  const security =
-    tmpSecurity ??
-    (tmpUserId &&
-      (await DatabaseReads.users
-        .findUniqueOrThrow({ where: { Id: tmpUserId }, include: { UserRoles: true } })
-        .then((user) => ({
-          userId: user.Id,
-          roles: user.UserRoles.map(({ OrganizationId, RoleId }) => [OrganizationId, RoleId])
-        }))));
+  const security = (await event.locals.auth())?.user;
 
   try {
     if (security) {
