@@ -8,6 +8,16 @@ const TOKEN_USE_UPLOAD = 'Upload';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TOKEN_USE_DOWNLOAD = 'Download';
 
+/** Wrapper function to return error messages for AppBuilders */
+function ErrorResponse(status: number, title: string) {
+  return new Response(
+    JSON.stringify({
+      errors: [{ title }]
+    }),
+    { status }
+  );
+}
+
 export async function POST({ params, locals, request }) {
   locals.security.requireAuthenticated();
 
@@ -41,27 +51,10 @@ export async function POST({ params, locals, request }) {
       OrganizationId: true
     }
   });
-  if (!project) {
-    return new Response(
-      JSON.stringify({
-        errors: [{ title: `Project id=${projectId} not found` }]
-      }),
-      {
-        status: 404
-      }
-    );
-  }
+  if (!project) return ErrorResponse(404, `Project id=${projectId} not found`);
 
-  if (!project.WorkflowProjectUrl) {
-    return new Response(
-      JSON.stringify({
-        errors: [{ title: `Project id=${projectId}: WorkflowProjectUrl is null` }]
-      }),
-      {
-        status: 404
-      }
-    );
-  }
+  if (!project.WorkflowProjectUrl)
+    return ErrorResponse(404, `Project id=${projectId}: WorkflowProjectUrl is null`);
 
   // Check ownership
   let readOnly: boolean | null = null;
@@ -91,35 +84,17 @@ export async function POST({ params, locals, request }) {
     }
   }
 
-  if (readOnly === null) {
-    return new Response(
-      JSON.stringify({
-        errors: [
-          {
-            title: `Project id=${projectId}, user='${user.Name}' with email='${user.Email}' does not have permission to access`
-          }
-        ]
-      }),
-      {
-        status: 403
-      }
+  if (readOnly === null)
+    return ErrorResponse(
+      403,
+      `Project id=${projectId}, user='${user.Name}' with email='${user.Email}' does not have permission to access`
     );
-  }
 
-  if (tokenUse && tokenUse === TOKEN_USE_UPLOAD && readOnly) {
-    return new Response(
-      JSON.stringify({
-        errors: [
-          {
-            title: `Project id=${projectId}, user='${user.Name}' with email='${user.Email}' does not have permission to Upload`
-          }
-        ]
-      }),
-      {
-        status: 403
-      }
+  if (tokenUse && tokenUse === TOKEN_USE_UPLOAD && readOnly)
+    return ErrorResponse(
+      403,
+      `Project id=${projectId}, user='${user.Name}' with email='${user.Email}' does not have permission to Upload`
     );
-  }
 
   const tokenResult = await BuildEngine.Requests.getProjectAccessToken(
     { type: 'query', organizationId: project.OrganizationId },
@@ -130,26 +105,10 @@ export async function POST({ params, locals, request }) {
     }
   );
 
-  if (!tokenResult || tokenResult.responseType === 'error') {
-    return new Response(
-      JSON.stringify({
-        errors: [{ title: `Project id=${projectId}: GetProjectToken returned null` }]
-      }),
-      {
-        status: 400
-      }
-    );
-  }
-  if (tokenResult.SecretAccessKey == null) {
-    return new Response(
-      JSON.stringify({
-        errors: [{ title: `Project id=${projectId}: Token.SecretAccessKey is null` }]
-      }),
-      {
-        status: 400
-      }
-    );
-  }
+  if (!tokenResult || tokenResult.responseType === 'error')
+    return ErrorResponse(400, `Project id=${projectId}: GetProjectToken returned null`);
+  if (tokenResult.SecretAccessKey == null)
+    return ErrorResponse(400, `Project id=${projectId}: Token.SecretAccessKey is null`);
   const projectToken = {
     type: 'project-tokens',
     attributes: {
