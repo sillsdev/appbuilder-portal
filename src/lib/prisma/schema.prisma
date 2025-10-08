@@ -9,6 +9,17 @@ datasource db {
   extensions = [uuidOssp(map: "uuid-ossp")]
 }
 
+model ApiTokens {
+  Id       Int      @id(map: "PK_APITokens") @default(autoincrement())
+  Token    String   @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  Expires  DateTime @default(dbgenerated("(CURRENT_DATE + 7)")) @db.Timestamp(6)
+  UserId   Int
+  User     Users    @relation(fields: [UserId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_APITokens_Users_UserId")
+
+  @@index([UserId], map: "IX_APITokens_UserId")
+  @@map("APITokens")
+}
+
 model ApplicationTypes {
   Id                 Int                  @id(map: "PK_ApplicationTypes") @default(autoincrement())
   Name               String?
@@ -484,6 +495,7 @@ model Users {
   UserRoles                     UserRoles[]
   UserTasks                     UserTasks[]
   ProductTransitions            ProductTransitions[]
+  ApiTokens                     ApiTokens[]
 
   @@index([WorkflowUserId], map: "IX_Users_WorkflowUserId")
 }
