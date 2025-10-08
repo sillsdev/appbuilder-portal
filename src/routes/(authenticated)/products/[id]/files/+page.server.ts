@@ -133,7 +133,8 @@ export const actions = {
             Channel: true,
             Success: true,
             DateUpdated: true,
-            LogUrl: true
+            LogUrl: true,
+            DateResolved: true
           },
           orderBy: {
             DateUpdated: 'desc'
