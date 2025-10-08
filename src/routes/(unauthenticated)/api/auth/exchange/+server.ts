@@ -15,8 +15,8 @@ export async function POST({ locals, request }) {
   );
 
   if (body.success) {
-    const challenge = await getAuthConnection().get(`auth0:code:${body.output.code}`);
-    const cookie = await getAuthConnection().get(`auth0:cookie:${body.output.code}`);
+    const challenge = await getAuthConnection().get(`auth:code:${body.output.code}`);
+    const cookie = await getAuthConnection().get(`auth:cookie:${body.output.code}`);
     if (!challenge || !cookie) error(400, 'Invalid or expired code'); // TODO: Is this the right error?
 
     try {
