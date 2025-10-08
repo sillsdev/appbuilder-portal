@@ -8,7 +8,8 @@ import { ProductActionType } from '$lib/products/index';
 import { doProductAction } from '$lib/products/server';
 import { DatabaseReads } from '$lib/server/database';
 
-export async function POST({ params, request }) {
+export async function POST({ params, request, locals }) {
+  locals.security.requireNothing();
   if (!request.headers.get('Authorization')) {
     return error(401, 'Unauthorized');
   }
