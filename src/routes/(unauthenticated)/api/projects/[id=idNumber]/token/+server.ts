@@ -9,7 +9,7 @@ const TOKEN_USE_UPLOAD = 'Upload';
 const TOKEN_USE_DOWNLOAD = 'Download';
 
 /** Wrapper function to return error messages for AppBuilders */
-function ErrorResponse(status: number, title: string) {
+function createAppBuildersError(status: number, title: string) {
   return new Response(
     JSON.stringify({
       errors: [{ title }]
@@ -51,10 +51,10 @@ export async function POST({ params, locals, request }) {
       OrganizationId: true
     }
   });
-  if (!project) return ErrorResponse(404, `Project id=${projectId} not found`);
+  if (!project) return createAppBuildersError(404, `Project id=${projectId} not found`);
 
   if (!project.WorkflowProjectUrl)
-    return ErrorResponse(404, `Project id=${projectId}: WorkflowProjectUrl is null`);
+    return createAppBuildersError(404, `Project id=${projectId}: WorkflowProjectUrl is null`);
 
   // Check ownership
   let readOnly: boolean | null = null;
@@ -68,7 +68,7 @@ export async function POST({ params, locals, request }) {
       locals.security.requireAdminOfOrg(project.OrganizationId);
       readOnly = false;
     } catch {
-      readOnly = null;
+      /* empty */
     }
   }
 
@@ -80,18 +80,18 @@ export async function POST({ params, locals, request }) {
       //readOnly = !author.CanUpdate;
       readOnly = false;
     } catch {
-      readOnly = null;
+      /* empty */
     }
   }
 
   if (readOnly === null)
-    return ErrorResponse(
+    return createAppBuildersError(
       403,
       `Project id=${projectId}, user='${user.Name}' with email='${user.Email}' does not have permission to access`
     );
 
   if (tokenUse && tokenUse === TOKEN_USE_UPLOAD && readOnly)
-    return ErrorResponse(
+    return createAppBuildersError(
       403,
       `Project id=${projectId}, user='${user.Name}' with email='${user.Email}' does not have permission to Upload`
     );
@@ -106,9 +106,9 @@ export async function POST({ params, locals, request }) {
   );
 
   if (!tokenResult || tokenResult.responseType === 'error')
-    return ErrorResponse(400, `Project id=${projectId}: GetProjectToken returned null`);
+    return createAppBuildersError(400, `Project id=${projectId}: GetProjectToken returned null`);
   if (tokenResult.SecretAccessKey == null)
-    return ErrorResponse(400, `Project id=${projectId}: Token.SecretAccessKey is null`);
+    return createAppBuildersError(400, `Project id=${projectId}: Token.SecretAccessKey is null`);
   const projectToken = {
     type: 'project-tokens',
     attributes: {

@@ -13,14 +13,16 @@ export async function GET({ locals, url, cookies }) {
 
   const code = randomUUID();
 
-  // we may want to use IORedis key prefixes in the future (https://github.com/redis/ioredis?tab=readme-ov-file#transparent-key-prefixing)
-  await getAuthConnection().set(`auth0:code:${code}`, challenge, 'EX', 300); // 5 minute (300 s) TTL
-  await getAuthConnection().set(
-    `auth0:cookie:${code}`,
-    cookies.get('authjs.session-token') ?? '',
-    'EX',
-    301
-  ); // 5 minute (300 s) TTL
+  const cookie = cookies.get('authjs.session-token');
+  if (!cookie) error(401, 'Missing session cookie');
+
+  try {
+    // we may want to use IORedis key prefixes in the future (https://github.com/redis/ioredis?tab=readme-ov-file#transparent-key-prefixing)
+    await getAuthConnection().set(`auth:code:${code}`, challenge, 'EX', 300); // 5 minute (300 s) TTL
+    await getAuthConnection().set(`auth:cookie:${code}`, cookie, 'EX', 301); // 5 minute (300 s) TTL
+  } catch {
+    error(500, 'Failed to generate authentication code');
+  }
 
   redirect(302, `${redirectUrl}?code=${code}`);
 }

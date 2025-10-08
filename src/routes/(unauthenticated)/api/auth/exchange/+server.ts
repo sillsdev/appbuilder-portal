@@ -17,11 +17,15 @@ export async function POST({ locals, request }) {
   if (body.success) {
     const challenge = await getAuthConnection().get(`auth0:code:${body.output.code}`);
     const cookie = await getAuthConnection().get(`auth0:cookie:${body.output.code}`);
-    if (!challenge) error(400, 'Challenge not found in DB'); // TODO: Is this the right error?
+    if (!challenge || !cookie) error(400, 'Invalid or expired code'); // TODO: Is this the right error?
 
-    //immediately invalidate
-    await getAuthConnection().del(`auth0:code:${body.output.code}`);
-    await getAuthConnection().del(`auth0:cookie:${body.output.code}`);
+    try {
+      //immediately invalidate
+      await getAuthConnection().del(`auth:code:${body.output.code}`);
+      await getAuthConnection().del(`auth:cookie:${body.output.code}`);
+    } catch {
+      /* empty */
+    }
 
     const hash = createHash('sha256');
     hash.update(body.output.verify);
