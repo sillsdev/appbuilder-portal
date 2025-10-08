@@ -19,18 +19,23 @@ export async function POST({ params, locals, request, fetch }) {
     return error(401, `Unauthorized`);
   }
 
+  const userId = locals.security.userId;
+
   const authToken = request.headers.get('Authorization')?.replace('Bearer ', '');
 
   let jwtData;
   try {
-    jwtData = await decryptJwtWithAuth0(authToken ?? '');
+    if (userId === null) {
+      jwtData = await decryptJwtWithAuth0(authToken ?? '');
+    }
   } catch {
     // Signature verification failed
     return error(401, `Unauthorized`);
   }
   const user = await DatabaseReads.users.findMany({
     where: {
-      ExternalId: jwtData.payload.sub
+      Id: userId === null ? undefined : userId,
+      ExternalId: userId === null ? jwtData!.payload.sub : undefined
     },
     select: {
       Id: true,
