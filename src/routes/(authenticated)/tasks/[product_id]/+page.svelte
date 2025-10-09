@@ -79,7 +79,9 @@
   let triggerRecheck = $state(false);
   const checksRemaining = $derived.by(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    data.instructions && waiting && triggerRecheck; // depend on external variable to recheck the checkboxes
+    data.instructions;
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    triggerRecheck; // depend on external variable to recheck the checkboxes
     return Array.from(
       (instructionContainer?.querySelectorAll(
         'input[type="checkbox"]'
