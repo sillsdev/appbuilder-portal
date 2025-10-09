@@ -276,7 +276,7 @@
     {#if data.releaseErrors && data.releaseErrors.length}
       <div id="error-box" class="text-error">
         {#each data.releaseErrors as message}
-          <div>{message}</div>
+          <div>{message.replace(/\x1b\[[^m]*m/ig, '')}</div>
         {/each}
       </div>
     {/if}
