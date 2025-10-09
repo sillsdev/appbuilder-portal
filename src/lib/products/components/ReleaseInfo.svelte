@@ -44,7 +44,7 @@
         {/if}
         <td>{getTimeDateString(release.DateUpdated)}</td>
         <td>
-          <a href={release.LogUrl} class="link">{m.publications_console()}</a>
+          <a href={release.LogUrl} class="link" target="_blank">{m.publications_console()}</a>
         </td>
       </tr>
     </tbody>
