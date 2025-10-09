@@ -76,19 +76,15 @@
 
   let instructionContainer: HTMLDivElement | undefined = $state(undefined);
 
-  const checks = $derived.by(() =>
-    Array.from(
-      (instructionContainer?.querySelectorAll(
-        'input[type="checkbox"]'
-      ) as NodeListOf<HTMLInputElement>) ?? []
-    )
-  );
-
   let triggerRecheck = $state(false);
   const checksRemaining = $derived.by(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     triggerRecheck; // depend on external variable to recheck the checkboxes
-    return checks.some((e) => !e.checked);
+    return Array.from(
+      (instructionContainer?.querySelectorAll(
+        'input[type="checkbox"]'
+      ) as NodeListOf<HTMLInputElement>) ?? []
+    ).some((e) => !e.checked);
   });
 </script>
 
