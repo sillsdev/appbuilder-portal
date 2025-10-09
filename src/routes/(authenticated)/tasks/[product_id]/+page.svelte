@@ -275,6 +275,13 @@
   {/if}
   {#if data.release}
     <h3>{m.publications_results()}</h3>
+    {#if data.releaseErrors && data.releaseErrors.length}
+      <div id="error-box" class="text-error">
+        {#each data.releaseErrors as message}
+          <div>{message}</div>
+        {/each}
+      </div>
+    {/if}
     <ReleaseInfo release={data.release} classes="border" headerClasses="bg-neutral" />
   {/if}
   {#if data?.files?.length && !waiting}
@@ -360,6 +367,18 @@
 </div>
 
 <style>
+  #error-box {
+    border: calc(2 * var(--border)) inset var(--color-base-content);
+    margin-bottom: calc(2 * var(--spacing));
+    padding: calc(2 * var(--spacing));
+  }
+  #error-box {
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklch, var(--color-base-content) 50%, #0000);
+      background-color: color-mix(in oklch, var(--color-base-300) 15%, #0000);
+    }
+  }
+
   /*this VVV technique allows css rules to break svelte scoping downwards*/
   #instructions :global(ul) {
     padding-left: calc(var(--spacing) * 10);

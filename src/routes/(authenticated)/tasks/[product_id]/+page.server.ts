@@ -182,6 +182,14 @@ export const load = (async ({ params, locals, depends }) => {
     } as Fields,
     files: artifacts,
     release: snap.context.includeArtifacts === 'error' && product.ProductPublications?.at(0),
+    releaseErrors:
+      snap.context.includeArtifacts === 'error' &&
+      product.ProductPublications?.at(0)?.LogUrl &&
+      (
+        await fetch(product.ProductPublications[0]!.LogUrl!)
+          .then((r) => r.text())
+          .catch((r) => '')
+      ).match(/^.*Google Api Error.*$/gim),
     reviewers: snap.context.includeReviewers
       ? await DatabaseReads.reviewers.findMany({
           where: {
