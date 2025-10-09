@@ -276,7 +276,13 @@
     {#if data.releaseErrors && data.releaseErrors.length}
       <div id="error-box" class="text-error">
         {#each data.releaseErrors as message}
-          <div>{message.replace(/\x1b\[[^m]*m/ig, '')}</div>
+          <div>
+            {message.replace(
+              /* eslint-disable-next-line no-control-regex */
+              /\x1b\[[^m]*m/gi,
+              ''
+            )}
+          </div>
         {/each}
       </div>
     {/if}
