@@ -33,7 +33,7 @@ export async function POST({ locals, request }) {
 
     if (digest !== challenge) error(400, 'Failed Verification'); // TODO: Is this the right error?
 
-    return new Response(cookie);
+    return new Response(null, { headers: [['Set-Cookie', cookie]] });
   } else {
     error(400, 'Bad Request');
   }
