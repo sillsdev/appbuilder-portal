@@ -228,9 +228,9 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
           Url: url,
           ContentType: res.headers.get('Content-Type'),
           FileSize:
-            res.headers.get('Content-Type') !== 'text/html'
-              ? parseInt(res.headers.get('Content-Length')!)
-              : undefined
+            res.headers.get('Content-Type') !== 'text/html' && res.headers.get('Content-Length')
+              ? BigInt(res.headers.get('Content-Length')!)
+              : null
         };
       })
     )

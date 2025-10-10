@@ -43,6 +43,7 @@ export enum WorkflowState {
   Create_App_Store_Entry = 'Create App Store Entry',
   Verify_and_Publish = 'Verify and Publish',
   Product_Publish = 'Product Publish',
+  Evaluate_Error = 'Evaluate Error',
   Make_It_Live = 'Make It Live',
   Published = 'Published'
 }
@@ -95,7 +96,8 @@ export enum WorkflowAction {
   Build_Failed = 'Build Failed',
   Email_Reviewers = 'Email Reviewers',
   Publish_Completed = 'Publish Completed',
-  Publish_Failed = 'Publish Failed'
+  Publish_Failed = 'Publish Failed',
+  Google_API_Error = 'Google API Error'
 }
 
 export type WorkflowInstanceContext = {
@@ -114,6 +116,7 @@ export type WorkflowInstanceContext = {
     | 'verify_and_publish'
     | 'waiting'
     | 'web_verify'
+    | 'evaluate_error'
     | null;
   includeFields: (
     | 'ownerName'
@@ -131,7 +134,7 @@ export type WorkflowInstanceContext = {
   environment: Environment;
 };
 
-export type ArtifactLists = 'latestAAB' | 'latestAssetPackage' | 'all';
+export type ArtifactLists = 'latestAAB' | 'latestAssetPackage' | 'error' | 'all';
 
 export function artifactLists(listName: ArtifactLists) {
   switch (listName) {
@@ -139,6 +142,7 @@ export function artifactLists(listName: ArtifactLists) {
       return ['aab', 'data-safety-csv'];
     case 'latestAssetPackage':
       return ['asset-package', 'asset-preview'];
+    case 'error':
     case 'all':
       return [];
   }

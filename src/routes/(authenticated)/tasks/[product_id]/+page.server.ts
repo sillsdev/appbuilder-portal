@@ -98,7 +98,23 @@ export const load = (async ({ params, locals, depends }) => {
           Id: true,
           Name: true
         }
-      }
+      },
+      ProductPublications:
+        snap.context.includeArtifacts === 'error'
+          ? {
+              select: {
+                LogUrl: true,
+                Success: true,
+                Channel: true,
+                DateResolved: true,
+                DateUpdated: true
+              },
+              orderBy: {
+                DateUpdated: 'desc'
+              },
+              take: 1
+            }
+          : undefined
     }
   }))!;
 
@@ -111,7 +127,7 @@ export const load = (async ({ params, locals, depends }) => {
           },
           //filter by artifact type
           ArtifactType:
-            snap.context.includeArtifacts === 'all'
+            snap.context.includeArtifacts === 'all' || snap.context.includeArtifacts === 'error'
               ? undefined
               : {
                   in: artifactLists(snap.context.includeArtifacts)
@@ -165,6 +181,15 @@ export const load = (async ({ params, locals, depends }) => {
       projectLanguageCode: product.Project.Language
     } as Fields,
     files: artifacts,
+    release: snap.context.includeArtifacts === 'error' && product.ProductPublications?.at(0),
+    releaseErrors:
+      snap.context.includeArtifacts === 'error' &&
+      product.ProductPublications?.at(0)?.LogUrl &&
+      (
+        await fetch(product.ProductPublications[0]!.LogUrl!)
+          .then((r) => r.text())
+          .catch((r) => '')
+      ).match(/^.*Google Api Error.*$/gim),
     reviewers: snap.context.includeReviewers
       ? await DatabaseReads.reviewers.findMany({
           where: {
@@ -319,14 +344,16 @@ function filterAvailableActions(
   orgAdmins: Set<number>
 ): boolean {
   if (userId === undefined) return false;
-  switch (action[0].meta?.user) {
-    case RoleId.AppBuilder:
-      return userId === ownerId;
-    case RoleId.Author:
-      return authors.has(userId);
-    case RoleId.OrgAdmin:
-      return orgAdmins.has(userId);
-    default:
-      return false;
-  }
+  return action.some((a) => {
+    switch (a.meta?.user) {
+      case RoleId.AppBuilder:
+        return userId === ownerId;
+      case RoleId.Author:
+        return authors.has(userId);
+      case RoleId.OrgAdmin:
+        return orgAdmins.has(userId);
+      default:
+        return false;
+    }
+  });
 }

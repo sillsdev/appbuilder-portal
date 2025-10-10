@@ -24,3 +24,29 @@ export async function deleteWorkflow(productId: string) {
     });
   }
 }
+
+export async function markResolved(productId: string) {
+  const product = await DatabaseReads.products.findFirst({
+    where: { Id: productId },
+    select: {
+      ProductPublications: {
+        select: {
+          Id: true
+        },
+        orderBy: {
+          DateUpdated: 'desc'
+        },
+        take: 1
+      }
+    }
+  });
+  if (product?.ProductPublications.length) {
+    const release = product.ProductPublications[0];
+    await DatabaseWrites.productPublications.update({
+      where: { Id: release.Id },
+      data: {
+        DateResolved: new Date()
+      }
+    });
+  }
+}

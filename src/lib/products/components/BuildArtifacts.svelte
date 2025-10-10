@@ -4,6 +4,7 @@
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
+  import ReleaseInfo from '$lib/products/components/ReleaseInfo.svelte';
   import { bytesToHumanSize } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
@@ -30,6 +31,7 @@
         Success: true;
         LogUrl: true;
         DateUpdated: true;
+        DateResolved: true;
       };
     }>;
     latestBuildId: number | undefined;
@@ -101,31 +103,7 @@
         </tbody>
       </table>
     {/if}
-    {#if release?.LogUrl}
-      <table class="table table-auto bg-base-100">
-        <thead>
-          <tr>
-            <th>{m.publications_channel()}</th>
-            <th>{m.publications_status()}</th>
-            <th>{m.publications_date()}</th>
-            <!-- Are we sure this is the i18n we want??? -->
-            <th>{m.publications_url()}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{release.Channel}</td>
-            <td>
-              {release.Success ? m.publications_succeeded() : m.publications_failed()}
-            </td>
-            <td>{getTimeDateString(release.DateUpdated)}</td>
-            <td>
-              <a href={release.LogUrl} class="link">{m.publications_console()}</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    {/if}
+    <ReleaseInfo {release} />
   </div>
 </div>
 

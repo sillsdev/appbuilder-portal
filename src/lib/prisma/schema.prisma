@@ -245,6 +245,7 @@ model ProductPublications {
   DateCreated    DateTime?     @default(now()) @db.Timestamp(6)
   DateUpdated    DateTime?     @updatedAt @db.Timestamp(6)
   Package        String?
+  DateResolved   DateTime?     @db.Timestamp(6)
   ProductBuild   ProductBuilds @relation(fields: [ProductBuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_ProductBuilds_ProductBuildId")
   Product        Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_Products_ProductId")
 

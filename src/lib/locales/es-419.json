@@ -231,6 +231,8 @@
   "publications_succeeded": "Success",
   "publications_failed": "Failure",
   "publications_console": "Console Text",
+  "publications_resolved": "Date Resolved",
+  "publications_results": "Publish Results",
   "products_options_update": "actualizar",
   "products_options_publish": "publicar",
   "transitions_productDetails": "Product Details",

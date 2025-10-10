@@ -233,8 +233,13 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
       }
     } else {
       await notifyFailed(job.data.publicationId, job.data.productId, product, job.data.release);
+      const text = job.data.release.artifacts['consoleText']
+        ? await fetch(job.data.release.artifacts['consoleText']).then((r) => r.text())
+        : '';
       flow.send({
-        type: WorkflowAction.Publish_Failed,
+        type: text.match(/Google Api Error/i)
+          ? WorkflowAction.Google_API_Error
+          : WorkflowAction.Publish_Failed,
         userId: null,
         comment: `system.publish-failed,${job.data.release.artifacts['consoleText'] ?? ''}`
       });
