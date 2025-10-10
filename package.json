@@ -25,6 +25,7 @@
     "seed": "node --experimental-strip-types src/lib/prisma/seed.ts -o",
     "schema": "src/lib/prisma/schema.prisma"
   },
+  "//": "sveltekit-superforms has a peerDep on zod, but it isn't installed in Docker for some reason",
   "devDependencies": {
     "@auth/core": "^0.40.0",
     "@auth/sveltekit": "^1.7.4",
@@ -94,7 +95,8 @@
     "valibot": "^1.0.0-beta.14",
     "vite": "^6.3.6",
     "vitest": "^3.0.4",
-    "xstate": "^5.20.1"
+    "xstate": "^5.20.1",
+    "zod": "^3.25.76"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.13.4",
