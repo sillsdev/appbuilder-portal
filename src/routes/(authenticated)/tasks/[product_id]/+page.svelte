@@ -91,7 +91,7 @@
 </script>
 
 <div class="p-5">
-  <div class="flex flex-row gap-x-3 p-2 flex-wrap">
+  <div class="flex flex-row gap-x-3 flex-wrap">
     <div class="breadcrumbs">
       <ul>
         <li><a class="link" href={localizeHref('/tasks')}>{m.sidebar_myTasks({ count: 0 })}</a></li>
@@ -107,7 +107,7 @@
   {#if !waiting}
     <form method="POST" use:enhance>
       {#if data.actions?.length}
-        <div class="flex flex-row gap-x-3">
+        <div class="flex flex-row gap-x-3 py-4">
           {#each data.actions as action, i}
             {@const disabled = i === 0 && checksRemaining}
             <BlockIfJobsUnavailable className="btn btn-primary">
@@ -382,6 +382,10 @@
       background-color: color-mix(in oklch, var(--color-base-300) 15%, #0000);
     }
   }
+  h2,
+  h3 {
+    padding-left: 0px;
+  }
 
   /*this VVV technique allows css rules to break svelte scoping downwards*/
   #instructions :global(ul) {
@@ -394,6 +398,9 @@
   }
   #instructions :global(h3) {
     color: var(--color-accent);
+  }
+  #instructions :global(:where(h3, h4)) {
+    padding-left: 0px;
   }
   #instructions :global(a) {
     cursor: pointer;
