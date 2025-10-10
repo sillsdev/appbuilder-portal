@@ -398,6 +398,8 @@
   }
   #instructions :global(h3) {
     color: var(--color-accent);
+  }
+  #instructions :global(:where(h3, h4)) {
     padding-left: 0px;
   }
   #instructions :global(a) {
