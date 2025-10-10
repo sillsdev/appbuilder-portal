@@ -4,12 +4,22 @@ import type { RequestHandler } from './$types.js';
 import { getAuthConnection } from '$lib/server/bullmq/queues';
 
 export const GET: RequestHandler = async ({ locals, url, cookies }) => {
+  locals.security.requireNothing();
   const challenge = url.searchParams.get('challenge');
   const redirectUrl = url.searchParams.get('redirect-url');
-  if (!challenge || !redirectUrl) {
-    locals.security.requireNothing();
-    error(400, 'Missing URL Search Params');
+  if (!challenge || !redirectUrl) error(400, 'Missing URL Search Params');
+  let urlValid = !!redirectUrl.match(/^org\.sil\.[srdk]ab:/);
+  if (!urlValid) {
+    try {
+      const url = new URL(redirectUrl);
+      urlValid = ['localhost', '127.0.0.1'].includes(url.hostname);
+    } catch {
+      /*empty*/
+    }
   }
+
+  if (!urlValid) error(400, 'Invalid redirect url');
+
   locals.security.requireAuthenticated();
 
   const code = randomUUID();
