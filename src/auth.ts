@@ -299,10 +299,20 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
         });
         if (users.length === 1) {
           tmpUserId = users[0].Id;
+        } else if (users.length > 1) {
+          trace.getActiveSpan()?.addEvent('Multiple users with same ExternalId', {
+            'auth.externalId': extId,
+            'auth.userCount': users.length
+          });
         }
       }
-    } catch {
-      /* empty */
+    } catch (e) {
+      // Suppress auth failures but log for debugging
+      trace.getActiveSpan()?.addEvent('API auth failed', {
+        'auth.route': event.route.id,
+        'auth.hasToken': !!authToken,
+        'auth.validationError': e instanceof Error ? e.message : String(e)
+      });
     }
   }
 
