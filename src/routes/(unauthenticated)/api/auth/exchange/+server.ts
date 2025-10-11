@@ -16,13 +16,13 @@ export async function POST({ locals, request }) {
 
   if (body.success) {
     const challenge = await getAuthConnection().get(`auth:code:${body.output.code}`);
-    const cookie = await getAuthConnection().get(`auth:cookie:${body.output.code}`);
-    if (!challenge || !cookie) error(400, 'Invalid or expired code'); // TODO: Is this the right error?
+    const token = await getAuthConnection().get(`auth:token:${body.output.code}`);
+    if (!challenge || !token) error(400, 'Invalid or expired code');
 
     try {
       //immediately invalidate
       await getAuthConnection().del(`auth:code:${body.output.code}`);
-      await getAuthConnection().del(`auth:cookie:${body.output.code}`);
+      await getAuthConnection().del(`auth:token:${body.output.code}`);
     } catch {
       /* empty */
     }
@@ -31,9 +31,15 @@ export async function POST({ locals, request }) {
     hash.update(body.output.verify);
     const digest = hash.digest('hex');
 
-    if (digest !== challenge) error(400, 'Failed Verification'); // TODO: Is this the right error?
+    if (digest !== challenge) error(400, 'Failed Verification');
 
-    return new Response(null, { headers: [['Set-Cookie', cookie]] });
+    return new Response(
+      JSON.stringify({
+        access_token: '',
+        id_token: token,
+        expires_in: (24 * 60 - 5) * 60 // 24 hrs - up to 5 minutes for code expiration
+      })
+    );
   } else {
     error(400, 'Bad Request');
   }

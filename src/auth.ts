@@ -7,6 +7,7 @@ import {
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { trace } from '@opentelemetry/api';
 import { type Handle, error, redirect } from '@sveltejs/kit';
+import { jwtVerify } from 'jose';
 import { env } from '$env/dynamic/private';
 import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
@@ -281,7 +282,39 @@ export class Security {
 }
 
 export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
-  const security = (await event.locals.auth())?.user;
+  const tmpSecurity = (await event.locals.auth())?.user;
+  let tmpUserId: number | undefined = undefined;
+  if (!tmpSecurity && event.route.id?.split('/')[2] === 'api') {
+    const authToken = (event.request.headers.get('Authorization') ?? '').replace('Bearer ', '');
+    try {
+      const secret = new TextEncoder().encode(process.env.AUTH0_SECRET);
+      const parsed = await jwtVerify(authToken, secret);
+      const extId = parsed.payload.sub;
+      if (extId) {
+        const users = await DatabaseReads.users.findMany({
+          where: {
+            ExternalId: extId
+          },
+          select: { Id: true }
+        });
+        if (users.length === 1) {
+          tmpUserId = users[0].Id;
+        }
+      }
+    } catch {
+      /* empty */
+    }
+  }
+
+  const security =
+    tmpSecurity ??
+    (tmpUserId &&
+      (await DatabaseReads.users
+        .findUniqueOrThrow({ where: { Id: tmpUserId }, include: { UserRoles: true } })
+        .then((user) => ({
+          userId: user.Id,
+          roles: user.UserRoles.map(({ OrganizationId, RoleId }) => [OrganizationId, RoleId])
+        }))));
 
   try {
     if (security) {
