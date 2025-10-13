@@ -53,21 +53,18 @@ export const GET: RequestHandler = async ({ locals, url }) => {
   }
 
   try {
+    const token = await new SignJWT({ email: user.Email })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setSubject(user.ExternalId ?? '')
+      .setExpirationTime('24h')
+      .sign(secret);
+
     // we may want to use IORedis key prefixes in the future (https://github.com/redis/ioredis?tab=readme-ov-file#transparent-key-prefixing)
     await getAuthConnection()
       .pipeline()
       .set(`auth:code:${code}`, challenge, 'EX', 300)
-      .set(
-        `auth:token:${code}`,
-        await new SignJWT({ email: user.Email })
-          .setProtectedHeader({ alg: 'HS256' })
-          .setIssuedAt()
-          .setSubject(user.ExternalId ?? '')
-          .setExpirationTime('24h')
-          .sign(secret),
-        'EX',
-        300
-      )
+      .set(`auth:token:${code}`, token, 'EX', 300)
       .exec(); // 5 minute (300 s) TTL
   } catch {
     error(500, 'Failed to generate authentication code');
