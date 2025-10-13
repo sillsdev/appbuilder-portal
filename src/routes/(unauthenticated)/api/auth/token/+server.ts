@@ -17,6 +17,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
   const challenge = url.searchParams.get('challenge');
   const redirectUri = url.searchParams.get('redirect_uri');
   if (!challenge || !redirectUri) error(400, 'Missing URL Search Params');
+  if (!/^[A-Za-z0-9_-]{43}$/.test(challenge)) {
+    error(400, 'Invalid challenge format: Base64URL (no padding) required');
+  }
   let urlValid = !!redirectUri.match(/^org\.sil\.[srdk]ab:/);
   if (!urlValid) {
     try {
