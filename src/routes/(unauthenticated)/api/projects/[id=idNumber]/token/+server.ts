@@ -19,7 +19,7 @@ function createAppBuildersError(status: number, title: string) {
 }
 
 export async function POST({ params, locals, request }) {
-  locals.security.requireAuthenticated();
+  locals.security.requireApiToken();
 
   const user = await DatabaseReads.users.findUniqueOrThrow({
     where: { Id: locals.security.userId },

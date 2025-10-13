@@ -145,7 +145,8 @@ export class Security {
     // Note these three CAN be null if the user is not authenticated
     public readonly userId: number,
     public readonly organizationMemberships: number[],
-    public readonly roles: Map<number, RoleId[]>
+    public readonly roles: Map<number, RoleId[]>,
+    public readonly usedApiToken: boolean
   ) {
     this.isSuperAdmin = roles?.values().some((r) => r.includes(RoleId.SuperAdmin)) ?? false;
     this.sessionForm = {
@@ -158,8 +159,16 @@ export class Security {
     };
   }
 
+  requireApiToken() {
+    this.securityHandled = this.usedApiToken;
+    this.requireAuthenticated();
+  }
+
   requireAuthenticated() {
-    this.securityHandled = true;
+    // if handled is false and apitoken is false, ok
+    // if handled is false and apitoken is true, bad
+    // if handled is true, ok
+    this.securityHandled ||= !this.usedApiToken;
     if (!this.userId || !this.organizationMemberships || !this.roles) {
       // Redirect to login
       const originalUrl = this.event.url;
@@ -373,13 +382,14 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
         event,
         security.userId,
         user.OrganizationMemberships.map((o) => o.OrganizationId),
-        roleMap
+        roleMap,
+        !!tmpUserId
       );
     }
   } finally {
     if (!event.locals.security) {
       // @ts-expect-error Not typed as null but null is allowed
-      event.locals.security = new Security(event, null, null, null);
+      event.locals.security = new Security(event, null, null, null, false);
     }
   }
   return await resolve(event);
