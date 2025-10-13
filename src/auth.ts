@@ -306,7 +306,7 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
   if (!userFromCookie) {
     const authToken = (event.request.headers.get('Authorization') ?? '').replace('Bearer ', '');
     try {
-      const secret = new TextEncoder().encode(process.env.AUTH0_SECRET);
+      const secret = new TextEncoder().encode(env.AUTH0_SECRET);
       const jwt = await jwtVerify(authToken, secret);
       const extId = jwt.payload.sub;
       const expires = (jwt.payload.exp ?? 0) * 1000; // exp field is in seconds, Date.valueOf() is milliseconds
