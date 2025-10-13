@@ -23,8 +23,11 @@ export async function POST({ locals, request }) {
 
     try {
       //immediately invalidate
-      await getAuthConnection().del(`auth:code:${body.output.code}`);
-      await getAuthConnection().del(`auth:token:${body.output.code}`);
+      await getAuthConnection()
+        .pipeline()
+        .del(`auth:code:${body.output.code}`)
+        .del(`auth:token:${body.output.code}`)
+        .exec();
     } catch {
       /* empty */
     }
