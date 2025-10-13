@@ -164,6 +164,9 @@ export class Security {
   requireApiToken() {
     this.isApiRoute = true;
     this.requireAuthenticated();
+    if (!this.usedApiToken) {
+      error(401, 'API token required');
+    }
   }
 
   requireAuthenticated() {
@@ -173,9 +176,13 @@ export class Security {
     }
     if (!this.userId || !this.organizationMemberships || !this.roles) {
       // Redirect to login
-      const originalUrl = this.event.url;
-      const returnTo = originalUrl.pathname + originalUrl.search;
-      throw redirect(302, localizeHref('/login?returnTo=' + encodeURIComponent(returnTo)));
+      if (this.isApiRoute) {
+        error(401, 'API token required');
+      } else {
+        const originalUrl = this.event.url;
+        const returnTo = originalUrl.pathname + originalUrl.search;
+        throw redirect(302, localizeHref('/login?returnTo=' + encodeURIComponent(returnTo)));
+      }
     }
   }
 
