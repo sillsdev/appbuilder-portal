@@ -46,8 +46,11 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
   try {
     // we may want to use IORedis key prefixes in the future (https://github.com/redis/ioredis?tab=readme-ov-file#transparent-key-prefixing)
-    await getAuthConnection().set(`auth:code:${code}`, challenge, 'EX', 300); // 5 minute (300 s) TTL
-    await getAuthConnection().set(
+    await getAuthConnection().mset(
+      `auth:code:${code}`,
+      challenge,
+      'EX',
+      300,
       `auth:token:${code}`,
       await new SignJWT({ email: user.Email })
         .setProtectedHeader({ alg: 'HS256' })
@@ -56,7 +59,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
         .setExpirationTime('24h')
         .sign(secret),
       'EX',
-      301
+      300
     ); // 5 minute (300 s) TTL
   } catch {
     error(500, 'Failed to generate authentication code');

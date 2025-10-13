@@ -15,8 +15,10 @@ export async function POST({ locals, request }) {
   );
 
   if (body.success) {
-    const challenge = await getAuthConnection().get(`auth:code:${body.output.code}`);
-    const token = await getAuthConnection().get(`auth:token:${body.output.code}`);
+    const [challenge, token] = await getAuthConnection().mget(
+      `auth:code:${body.output.code}`,
+      `auth:token:${body.output.code}`
+    );
     if (!challenge || !token) error(400, 'Invalid or expired code');
 
     try {
