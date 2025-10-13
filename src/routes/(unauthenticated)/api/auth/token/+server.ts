@@ -40,6 +40,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       ExternalId: true
     }
   });
+  if (!user.ExternalId) {
+    error(500, 'User ExternalId is required for token generation');
+  }
 
   try {
     // we may want to use IORedis key prefixes in the future (https://github.com/redis/ioredis?tab=readme-ov-file#transparent-key-prefixing)
