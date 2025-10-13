@@ -147,6 +147,7 @@ export class Security {
     public readonly userId: number,
     public readonly organizationMemberships: number[],
     public readonly roles: Map<number, RoleId[]>,
+    /** this will only be set if the auth token is present and valid, and no cookie was present */
     public readonly usedApiToken: boolean
   ) {
     this.isSuperAdmin = roles?.values().some((r) => r.includes(RoleId.SuperAdmin)) ?? false;
@@ -175,7 +176,7 @@ export class Security {
       error(403, 'API Token cannot be used on this route!');
     }
     if (!this.userId || !this.organizationMemberships || !this.roles) {
-      // Redirect to login
+      // Redirect to login if not API route
       if (this.isApiRoute) {
         error(401, 'API token required');
       } else {
@@ -306,9 +307,9 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
     const authToken = (event.request.headers.get('Authorization') ?? '').replace('Bearer ', '');
     try {
       const secret = new TextEncoder().encode(process.env.AUTH0_SECRET);
-      const parsed = await jwtVerify(authToken, secret);
-      const extId = parsed.payload.sub;
-      const expires = (parsed.payload.exp ?? 0) * 1000; // exp field is in seconds, Date.valueOf() is milliseconds
+      const jwt = await jwtVerify(authToken, secret);
+      const extId = jwt.payload.sub;
+      const expires = (jwt.payload.exp ?? 0) * 1000; // exp field is in seconds, Date.valueOf() is milliseconds
       // don't use expired tokens, handle no expiry date as expired
       if (extId && new Date().valueOf() < expires) {
         const users = await DatabaseReads.users.findMany({
@@ -391,7 +392,7 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
         security.userId,
         user.OrganizationMemberships.map((o) => o.OrganizationId),
         roleMap,
-        !!userIdFromApiToken
+        !!userIdFromApiToken // used api token?
       );
     }
   } finally {

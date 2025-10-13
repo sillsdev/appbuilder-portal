@@ -12,8 +12,16 @@ export const HEAD: RequestHandler = async ({ locals }) => {
   return new Response(null, { status: 200 });
 };
 
+/**
+ * Returns a short-lived code that can be used only once to request a token from /api/auth/exchange
+ *
+ * Required URL Params:
+ * challenge: base64URL-encodeded, sha256 hash of a string that will be used in /api/auth/exchange
+ * redirect_uri: location to send the code to, allowed to start with localhost, 127.0.0.1 or org.sil.{sab,dab,rab,kab}: (for desktop apps)
+ */
 export const GET: RequestHandler = async ({ locals, url }) => {
   locals.security.requireNothing();
+  // validate url params before trying login
   const challenge = url.searchParams.get('challenge');
   const redirectUri = url.searchParams.get('redirect_uri');
   if (!challenge || !redirectUri) error(400, 'Missing URL Search Params');
@@ -31,16 +39,16 @@ export const GET: RequestHandler = async ({ locals, url }) => {
   }
 
   if (!urlValid) error(400, 'Invalid redirect url');
-
+  // params are valid, now do login prompt
   locals.security.requireAuthenticated();
 
-  const code = randomUUID();
-
+  // create key from AUTH0_SECRET
   if (!env.AUTH0_SECRET) {
     error(500, 'Could not sign token');
   }
-
   const secret = new TextEncoder().encode(env.AUTH0_SECRET);
+
+  // find user in database
   const user = await DatabaseReads.users.findUniqueOrThrow({
     where: { Id: locals.security.userId },
     select: {
@@ -52,14 +60,18 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     error(500, 'User ExternalId is required for token generation');
   }
 
+  // code to use for exchange
+  const code = randomUUID();
+
   try {
     const token = await new SignJWT({ email: user.Email })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
-      .setSubject(user.ExternalId ?? '')
+      .setSubject(user.ExternalId)
       .setExpirationTime('24h')
       .sign(secret);
 
+    // store challenge and token in redis for up to 5 minutes with generated code as the key
     // we may want to use IORedis key prefixes in the future (https://github.com/redis/ioredis?tab=readme-ov-file#transparent-key-prefixing)
     await getAuthConnection()
       .pipeline()
@@ -70,6 +82,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     error(500, 'Failed to generate authentication code');
   }
 
+  // redirect to return code
   const sep = redirectUri.includes('?') ? '&' : '?';
   redirect(302, `${redirectUri}${sep}code=${code}`);
 };

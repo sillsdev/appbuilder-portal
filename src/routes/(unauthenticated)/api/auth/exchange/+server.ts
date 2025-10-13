@@ -3,6 +3,13 @@ import { createHash } from 'node:crypto';
 import * as v from 'valibot';
 import { getAuthConnection } from '$lib/server/bullmq/queues';
 
+/**
+ * Returns JSON object with API token (`id_token`), adjusted expiry time (`expires_in`), and empty `access_token`
+ *
+ * Required Body Params:
+ * code: code received by querying /api/auth/token
+ * verify: string whose hash had been used as the challenge for /api/auth/token
+ */
 export async function POST({ locals, request }) {
   locals.security.requireNothing();
 
@@ -15,6 +22,7 @@ export async function POST({ locals, request }) {
   );
 
   if (body.success) {
+    // get cached challenge and token
     const [challenge, token] = await getAuthConnection().mget(
       `auth:code:${body.output.code}`,
       `auth:token:${body.output.code}`
@@ -32,6 +40,7 @@ export async function POST({ locals, request }) {
       /* empty */
     }
 
+    // verify challenge
     const hash = createHash('sha256');
     hash.update(body.output.verify);
     // client uses base64url encoder without padding
