@@ -293,9 +293,9 @@ export class Security {
 }
 
 export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
-  const tmpSecurity = (await event.locals.auth())?.user;
-  let tmpUserId: number | undefined = undefined;
-  if (!tmpSecurity) {
+  const userFromCookie = (await event.locals.auth())?.user;
+  let userIdFromApiToken: number | undefined = undefined;
+  if (!userFromCookie) {
     const authToken = (event.request.headers.get('Authorization') ?? '').replace('Bearer ', '');
     try {
       const secret = new TextEncoder().encode(process.env.AUTH0_SECRET);
@@ -311,7 +311,7 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
           select: { Id: true }
         });
         if (users.length === 1) {
-          tmpUserId = users[0].Id;
+          userIdFromApiToken = users[0].Id;
         } else if (users.length > 1) {
           trace.getActiveSpan()?.addEvent('Multiple users with same ExternalId', {
             'auth.externalId': extId,
@@ -329,10 +329,10 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
   }
 
   const security =
-    tmpSecurity ??
-    (tmpUserId &&
+    userFromCookie ??
+    (userIdFromApiToken &&
       (await DatabaseReads.users
-        .findUniqueOrThrow({ where: { Id: tmpUserId }, include: { UserRoles: true } })
+        .findUniqueOrThrow({ where: { Id: userIdFromApiToken }, include: { UserRoles: true } })
         .then((user) => ({
           userId: user.Id,
           roles: user.UserRoles.map(({ OrganizationId, RoleId }) => [OrganizationId, RoleId])
@@ -384,7 +384,7 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
         security.userId,
         user.OrganizationMemberships.map((o) => o.OrganizationId),
         roleMap,
-        !!tmpUserId
+        !!userIdFromApiToken
       );
     }
   } finally {
