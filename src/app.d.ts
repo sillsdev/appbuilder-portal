@@ -13,6 +13,7 @@ declare global {
     public readonly organizationMemberships: number[];
     public readonly roles: Map<number, number[]>;
     public readonly sessionForm: Session['user'];
+    requireApiToken(): void | never;
     requireAuthenticated(): void | never;
     requireSuperAdmin(): this | never;
     requireAdminOfOrg(organizationId: number): this | never;

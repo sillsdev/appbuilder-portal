@@ -7,6 +7,7 @@ import {
 import Auth0Provider from '@auth/sveltekit/providers/auth0';
 import { trace } from '@opentelemetry/api';
 import { type Handle, error, redirect } from '@sveltejs/kit';
+import { jwtVerify } from 'jose';
 import { env } from '$env/dynamic/private';
 import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
@@ -139,12 +140,15 @@ export class Security {
   public readonly isSuperAdmin;
   public securityHandled = false;
   public readonly sessionForm: Session['user'];
+  private isApiRoute;
   constructor(
     public readonly event: Parameters<Handle>[0]['event'],
     // Note these three CAN be null if the user is not authenticated
     public readonly userId: number,
     public readonly organizationMemberships: number[],
-    public readonly roles: Map<number, RoleId[]>
+    public readonly roles: Map<number, RoleId[]>,
+    /** this will only be set if the auth token is present and valid, and no cookie was present */
+    public readonly usedApiToken: boolean
   ) {
     this.isSuperAdmin = roles?.values().some((r) => r.includes(RoleId.SuperAdmin)) ?? false;
     this.sessionForm = {
@@ -155,15 +159,31 @@ export class Security {
           .map(([orgId, roleIds]) => roleIds.map((r) => [orgId, r]) as [number, RoleId][]) ?? [])
       ].flat(1)
     };
+    this.isApiRoute = false;
+  }
+
+  requireApiToken() {
+    this.isApiRoute = true;
+    this.requireAuthenticated();
+    if (!this.usedApiToken) {
+      error(401, 'API token required');
+    }
   }
 
   requireAuthenticated() {
     this.securityHandled = true;
+    if (!this.isApiRoute && this.usedApiToken) {
+      error(403, 'API Token cannot be used on this route!');
+    }
     if (!this.userId || !this.organizationMemberships || !this.roles) {
-      // Redirect to login
-      const originalUrl = this.event.url;
-      const returnTo = originalUrl.pathname + originalUrl.search;
-      throw redirect(302, localizeHref('/login?returnTo=' + encodeURIComponent(returnTo)));
+      // Redirect to login if not API route
+      if (this.isApiRoute) {
+        error(401, 'API token required');
+      } else {
+        const originalUrl = this.event.url;
+        const returnTo = originalUrl.pathname + originalUrl.search;
+        throw redirect(302, localizeHref('/login?returnTo=' + encodeURIComponent(returnTo)));
+      }
     }
   }
 
@@ -281,7 +301,51 @@ export class Security {
 }
 
 export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
-  const security = (await event.locals.auth())?.user;
+  const userFromCookie = (await event.locals.auth())?.user;
+  let userIdFromApiToken: number | undefined = undefined;
+  if (!userFromCookie) {
+    const authToken = (event.request.headers.get('Authorization') ?? '').replace('Bearer ', '');
+    try {
+      const secret = new TextEncoder().encode(env.AUTH0_SECRET);
+      const jwt = await jwtVerify(authToken, secret);
+      const extId = jwt.payload.sub;
+      const expires = (jwt.payload.exp ?? 0) * 1000; // exp field is in seconds, Date.valueOf() is milliseconds
+      // don't use expired tokens, handle no expiry date as expired
+      if (extId && new Date().valueOf() < expires) {
+        const users = await DatabaseReads.users.findMany({
+          where: {
+            ExternalId: extId
+          },
+          select: { Id: true }
+        });
+        if (users.length === 1) {
+          userIdFromApiToken = users[0].Id;
+        } else if (users.length > 1) {
+          trace.getActiveSpan()?.addEvent('Multiple users with same ExternalId', {
+            'auth.externalId': extId,
+            'auth.userCount': users.length
+          });
+        }
+      }
+    } catch (e) {
+      // Suppress auth failures but log for debugging
+      trace.getActiveSpan()?.addEvent('API auth failed', {
+        'auth.hasToken': !!authToken,
+        'auth.validationError': e instanceof Error ? e.message : String(e)
+      });
+    }
+  }
+
+  const security =
+    userFromCookie ??
+    (userIdFromApiToken &&
+      (await DatabaseReads.users
+        .findUniqueOrThrow({ where: { Id: userIdFromApiToken }, include: { UserRoles: true } })
+        .then((user) => ({
+          userId: user.Id,
+          roles: user.UserRoles.map(({ OrganizationId, RoleId }) => [OrganizationId, RoleId])
+        }))));
+
   try {
     if (security) {
       // If the user does not exist in the database, invalidate the login and redirect to prevent unauthorized access
@@ -327,13 +391,14 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
         event,
         security.userId,
         user.OrganizationMemberships.map((o) => o.OrganizationId),
-        roleMap
+        roleMap,
+        !!userIdFromApiToken // used api token?
       );
     }
   } finally {
     if (!event.locals.security) {
       // @ts-expect-error Not typed as null but null is allowed
-      event.locals.security = new Security(event, null, null, null);
+      event.locals.security = new Security(event, null, null, null, false);
     }
   }
   return await resolve(event);
