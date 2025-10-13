@@ -5,15 +5,21 @@ import type { RequestHandler } from './$types.js';
 import { getAuthConnection } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database/prisma.js';
 
+export const HEAD: RequestHandler = async ({ locals }) => {
+  locals.security.requireNothing();
+  // Return 200 OK to indicate the endpoint exists
+  return new Response(null, { status: 200 });
+};
+
 export const GET: RequestHandler = async ({ locals, url }) => {
   locals.security.requireNothing();
   const challenge = url.searchParams.get('challenge');
-  const redirectUrl = url.searchParams.get('redirect-url');
-  if (!challenge || !redirectUrl) error(400, 'Missing URL Search Params');
-  let urlValid = !!redirectUrl.match(/^org\.sil\.[srdk]ab:/);
+  const redirectUri = url.searchParams.get('redirect_uri');
+  if (!challenge || !redirectUri) error(400, 'Missing URL Search Params');
+  let urlValid = !!redirectUri.match(/^org\.sil\.[srdk]ab:/);
   if (!urlValid) {
     try {
-      const url = new URL(redirectUrl);
+      const url = new URL(redirectUri);
       urlValid = ['localhost', '127.0.0.1'].includes(url.hostname);
     } catch {
       /*empty*/
@@ -53,5 +59,5 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     error(500, 'Failed to generate authentication code');
   }
 
-  redirect(302, `${redirectUrl}?code=${code}`);
+  redirect(302, `${redirectUri}?code=${code}`);
 };

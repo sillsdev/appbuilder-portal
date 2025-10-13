@@ -29,7 +29,8 @@ export async function POST({ locals, request }) {
 
     const hash = createHash('sha256');
     hash.update(body.output.verify);
-    const digest = hash.digest('hex');
+    // client uses base64url encoder without padding
+    const digest = hash.digest('base64url').replace(/=+$/, '');
 
     if (digest !== challenge) error(400, 'Failed Verification');
 
