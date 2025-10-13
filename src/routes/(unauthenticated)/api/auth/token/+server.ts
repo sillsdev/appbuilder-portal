@@ -62,5 +62,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     error(500, 'Failed to generate authentication code');
   }
 
-  redirect(302, `${redirectUri}?code=${code}`);
+  const sep = redirectUri.includes('?') ? '&' : '?';
+  redirect(302, `${redirectUri}${sep}code=${code}`);
 };
