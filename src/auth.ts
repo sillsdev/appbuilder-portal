@@ -140,6 +140,7 @@ export class Security {
   public readonly isSuperAdmin;
   public securityHandled = false;
   public readonly sessionForm: Session['user'];
+  private isApiRoute;
   constructor(
     public readonly event: Parameters<Handle>[0]['event'],
     // Note these three CAN be null if the user is not authenticated
@@ -157,18 +158,19 @@ export class Security {
           .map(([orgId, roleIds]) => roleIds.map((r) => [orgId, r]) as [number, RoleId][]) ?? [])
       ].flat(1)
     };
+    this.isApiRoute = false;
   }
 
   requireApiToken() {
-    this.securityHandled = this.usedApiToken;
+    this.isApiRoute = true;
     this.requireAuthenticated();
   }
 
   requireAuthenticated() {
-    // if handled is false and apitoken is false, ok
-    // if handled is false and apitoken is true, bad
-    // if handled is true, ok
-    this.securityHandled ||= !this.usedApiToken;
+    this.securityHandled = true;
+    if (!this.isApiRoute && this.usedApiToken) {
+      error(403, 'API Token cannot be used on this route!');
+    }
     if (!this.userId || !this.organizationMemberships || !this.roles) {
       // Redirect to login
       const originalUrl = this.event.url;
