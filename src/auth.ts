@@ -290,7 +290,9 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
       const secret = new TextEncoder().encode(process.env.AUTH0_SECRET);
       const parsed = await jwtVerify(authToken, secret);
       const extId = parsed.payload.sub;
-      if (extId) {
+      const expires = (parsed.payload.exp ?? 0) * 1000; // exp field is in seconds, Date.valueOf() is milliseconds
+      // don't use expired tokens, handle no expiry date as expired
+      if (extId && new Date().valueOf() < expires) {
         const users = await DatabaseReads.users.findMany({
           where: {
             ExternalId: extId
