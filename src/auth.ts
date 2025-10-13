@@ -293,7 +293,7 @@ export class Security {
 export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
   const tmpSecurity = (await event.locals.auth())?.user;
   let tmpUserId: number | undefined = undefined;
-  if (!tmpSecurity && event.route.id?.split('/')[2] === 'api') {
+  if (!tmpSecurity) {
     const authToken = (event.request.headers.get('Authorization') ?? '').replace('Bearer ', '');
     try {
       const secret = new TextEncoder().encode(process.env.AUTH0_SECRET);
@@ -320,7 +320,6 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
     } catch (e) {
       // Suppress auth failures but log for debugging
       trace.getActiveSpan()?.addEvent('API auth failed', {
-        'auth.route': event.route.id,
         'auth.hasToken': !!authToken,
         'auth.validationError': e instanceof Error ? e.message : String(e)
       });
