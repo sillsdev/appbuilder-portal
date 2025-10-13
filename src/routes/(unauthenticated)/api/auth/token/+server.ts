@@ -2,6 +2,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { SignJWT } from 'jose';
 import { randomUUID } from 'node:crypto';
 import type { RequestHandler } from './$types.js';
+import { env } from '$env/dynamic/private';
 import { getAuthConnection } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database/prisma.js';
 
@@ -32,7 +33,11 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
   const code = randomUUID();
 
-  const secret = new TextEncoder().encode(process.env.AUTH0_SECRET);
+  if (!env.AUTH0_SECRET) {
+    error(500, 'Could not sign token');
+  }
+
+  const secret = new TextEncoder().encode(env.AUTH0_SECRET);
   const user = await DatabaseReads.users.findUniqueOrThrow({
     where: { Id: locals.security.userId },
     select: {
