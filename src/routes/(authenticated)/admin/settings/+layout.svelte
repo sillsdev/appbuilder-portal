@@ -5,7 +5,6 @@
 -->
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { base } from '$app/paths';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
   import { m } from '$lib/paraglide/messages';
 
@@ -26,8 +25,7 @@
 </script>
 
 <TabbedMenu
-  routeId="/(authenticated)/admin/settings"
-  base="{base}/admin/settings"
+  baseRouteId="/(authenticated)/admin/settings"
   titleString={m.admin_title()}
   menuItems={adminLinks}
 >

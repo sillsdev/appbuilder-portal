@@ -4,7 +4,6 @@
   import { type Snippet, onMount } from 'svelte';
   import type { LayoutData } from './$types';
   import { dev } from '$app/environment';
-  import { base } from '$app/paths';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
@@ -33,7 +32,8 @@
   }
 
   function isUrlActive(route: string) {
-    return deLocalizeUrl(page.url).pathname?.startsWith(`${base}${route}`);
+    // originally prefixed with deprecated import base. Not neccessary unless we change config.kit.paths.base from default
+    return deLocalizeUrl(page.url).pathname?.startsWith(route);
   }
 
   function activeOrgUrl(route: string) {
