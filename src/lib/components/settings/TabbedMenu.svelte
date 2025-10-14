@@ -1,7 +1,9 @@
-<script lang="ts">
+<script lang="ts" generics="Route extends RouteId">
   import type { Snippet } from 'svelte';
   import IconContainer from '../IconContainer.svelte';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
+  import type { RouteId, RouteParams } from '$app/types';
   import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Props {
@@ -9,8 +11,8 @@
       route: string;
       text: string;
     }[];
-    base: string;
-    routeId: string;
+    baseRouteId: Route;
+    routeParams?: RouteParams<Route>;
     titleString?: string;
     allowTitleWrap?: boolean;
     children?: Snippet;
@@ -19,16 +21,24 @@
 
   let {
     menuItems = [],
-    base,
-    routeId,
+    baseRouteId,
+    routeParams,
     titleString,
     allowTitleWrap = false,
     children,
     title
   }: Props = $props();
 
+  const base = $derived.by(() =>
+    resolve(
+      //@ts-expect-error this is the best I can do with the types I have been granted access to
+      baseRouteId,
+      routeParams
+    )
+  );
+
   function isActive(menuRoute: string) {
-    return page.route.id?.replace(routeId, '').startsWith('/' + menuRoute);
+    return page.route.id?.replace(baseRouteId, '').startsWith('/' + menuRoute);
   }
 </script>
 
@@ -46,7 +56,7 @@
           <div class="flex place-content-between">
             <span>
               {menuItems.find((item) =>
-                page.route.id?.split(routeId + '/')[1]?.startsWith(item.route)
+                page.route.id?.split(baseRouteId + '/')[1]?.startsWith(item.route)
               )?.text}
             </span>
             <IconContainer icon="gridicons:dropdown" width="24" />
