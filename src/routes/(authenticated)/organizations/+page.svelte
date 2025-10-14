@@ -27,7 +27,7 @@
       <tbody>
         {#each data.organizations.toSorted((a, b) => byName(a, b, getLocale())) as org}
           <tr
-            class="h-16 border-y hover:bg-base-200 cursor-pointer"
+            class="dark:border-gray-600 h-16 border-y hover:bg-base-200 cursor-pointer"
             onclick={() => goto(page.url.pathname + '/' + org.Id + '/settings/info')}
           >
             <td>

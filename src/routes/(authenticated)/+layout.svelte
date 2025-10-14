@@ -113,10 +113,10 @@
     <div class="h-full drawer-side shrink-0 z-10">
       <label for="primary-content-drawer" class="drawer-overlay"></label>
       <div
-        class="h-full mt-0 overflow-hidden w-full lg:w-72 lg:border-r min-[480px]:w-1/2 min-[720px]:w-1/3"
+        class="dark:border-gray-600 h-full mt-0 overflow-hidden w-full lg:w-72 lg:border-r min-[480px]:w-1/2 min-[720px]:w-1/3"
       >
         <ul class="menu menu-lg p-0 w-full bg-base-100 text-base-content h-full overflow-y-auto">
-          <li class="border-y flex flex-row flex-nowrap">
+          <li class="dark:border-gray-600 border-y flex flex-row flex-nowrap">
             {#if data.organizations.length > 1}
               <button
                 class="rounded-none h-16 p-0 pl-2 bg-base-200 hover:bg-base-300 cursor-pointer grow flex items-center"
@@ -246,7 +246,7 @@
                 </a>
               </li>
             {/if}
-            <li class="menu-item-divider-top menu-item-divider-bottom">
+            <li class="dark:border-gray-600 border-y-2">
               <a
                 class="rounded-none"
                 class:active-menu-item={isUrlActive('/directory')}
@@ -345,13 +345,6 @@
     height: 4rem;
     min-height: 3rem;
   }
-  .menu-item-divider-bottom {
-    border-bottom: 2px solid #e5e5e5;
-  }
-  .menu-item-divider-top {
-    border-top: 2px solid #e5e5e5;
-  }
-
   .active-menu-item {
     border-left: 5px solid var(--color-accent); /* Adjust the border color and width to your preferences */
     font-weight: bold;

@@ -178,7 +178,7 @@ export const actions: Actions = {
         ...form.data,
         organizationId: null
       }),
-      ...whereStatements(params.filter, locals.security, orgIds)
+      ...whereStatements(params.filter!, locals.security, orgIds)
     };
 
     const projects = await DatabaseReads.projects.findMany({
