@@ -12,6 +12,7 @@ RUN npm i
 
 # Run prisma generate to rebuild with the correct target, also caching
 COPY src/lib/prisma /build/src/lib/prisma
+COPY prisma.config.ts /build/
 RUN npx prisma generate
 
 # Copy all source and run a build
