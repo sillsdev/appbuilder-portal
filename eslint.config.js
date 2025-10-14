@@ -38,7 +38,7 @@ export default ts.config(
     languageOptions: {
       parserOptions: {
         projectService: {
-          allowDefaultProject: ["playwright.config.ts"]
+          allowDefaultProject: ['playwright.config.ts', 'prisma.config.ts']
         },
         extraFileExtensions: ['.svelte'],
         parser: ts.parser,
