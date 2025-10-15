@@ -5,10 +5,7 @@ import { DatabaseReads } from '$lib/server/database';
 
 /** Wrapper function to return error messages for AppBuilders */
 function createAppBuildersError(status: number, title: string) {
-  return new Response(
-    JSON.stringify({ errors: [{ title }] }),
-    { status }
-  );
+  return new Response(JSON.stringify({ errors: [{ title }] }), { status });
 }
 
 export async function POST({ params, locals }) {
