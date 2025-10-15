@@ -119,8 +119,7 @@ export async function POST({ params, locals, request }) {
       'access-key-id': tokenResult.AccessKeyId,
       expiration: tokenResult.Expiration,
       region: tokenResult.Region,
-      'read-only': tokenResult.ReadOnly,
-      'can-rebuild': canRebuild
+      'read-only': tokenResult.ReadOnly
     }
   };
 
@@ -129,6 +128,10 @@ export async function POST({ params, locals, request }) {
   if (tokenUse) {
     use = tokenUse;
   }
+  const products = await DatabaseReads.products.findMany({
+    where: { ProjectId: projectId },
+    select: { Id: true }
+  });
 
   await DatabaseWrites.productTransitions.createMany(
     {
