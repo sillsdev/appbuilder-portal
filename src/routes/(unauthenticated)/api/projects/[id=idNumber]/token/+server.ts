@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { createAppBuildersError } from '../common';
 import { ProductTransitionType, RoleId } from '$lib/prisma';
 import { BuildEngine } from '$lib/server/build-engine-api';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
@@ -7,16 +8,6 @@ const TOKEN_USE_HEADER = 'Use';
 const TOKEN_USE_UPLOAD = 'Upload';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TOKEN_USE_DOWNLOAD = 'Download';
-
-/** Wrapper function to return error messages for AppBuilders */
-function createAppBuildersError(status: number, title: string) {
-  return new Response(
-    JSON.stringify({
-      errors: [{ title }]
-    }),
-    { status }
-  );
-}
 
 export async function POST({ params, locals, request }) {
   locals.security.requireApiToken();

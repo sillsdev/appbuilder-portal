@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { createAppBuildersError, rebuildableProductsWhere } from './common';
 import { DatabaseReads } from '$lib/server/database';
 
 export async function GET({ params, locals }) {
@@ -7,32 +8,17 @@ export async function GET({ params, locals }) {
   const projectId = parseInt(params.id);
   const userId = locals.security.userId;
 
-  const project = await DatabaseReads.projects.findUnique({
-    where: { Id: projectId },
-    select: {
-      Id: true,
-      Owner: { select: { Id: true } },
-      Products: {
-        select: {
-          Id: true,
-          DatePublished: true,
-          PublishLink: true,
-          WorkflowInstance: { select: { Id: true } }
-        }
-      }
-    }
+  // Count rebuildable products for this project + owner
+  const productCount = await DatabaseReads.products.count({
+    where: rebuildableProductsWhere(projectId, userId)
   });
 
-  if (!project) {
-    return json({ error: `Project id=${projectId} not found` }, { status: 404 });
+  // at least one matching product
+  const canRebuild = productCount > 0;
+
+  if (canRebuild) {
+    return createAppBuildersError(400, 'Project does not meet rebuild conditions');
   }
-
-  const isOwner = userId === project.Owner.Id;
-  const rebuildableProducts = project.Products.filter(
-    (p) => p.DatePublished && p.PublishLink && !p.WorkflowInstance
-  );
-
-  const canRebuild = isOwner && rebuildableProducts.length > 0;
 
   return json({ id: projectId, 'can-rebuild': canRebuild });
 }
