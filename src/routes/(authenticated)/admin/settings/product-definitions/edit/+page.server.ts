@@ -5,6 +5,7 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { WorkflowStateMachine } from '$lib/server/workflow/state-machine';
 import { idSchema, propertiesSchema } from '$lib/valibot';
 
 const editSchema = v.object({
@@ -13,6 +14,7 @@ const editSchema = v.object({
   applicationType: idSchema,
   workflow: idSchema,
   rebuildWorkflow: v.nullable(idSchema),
+  startManualRebuildAt: v.nullable(v.string()),
   republishWorkflow: v.nullable(idSchema),
   description: v.nullable(v.string()),
   properties: propertiesSchema
@@ -25,7 +27,8 @@ export const load = (async ({ url, locals }) => {
   }
   const options = {
     applicationTypes: await DatabaseReads.applicationTypes.findMany(),
-    workflows: await DatabaseReads.workflowDefinitions.findMany()
+    workflows: await DatabaseReads.workflowDefinitions.findMany(),
+    startAt: Object.keys(WorkflowStateMachine.states)
   };
   const data = await DatabaseReads.productDefinitions.findFirst({
     where: {
@@ -40,6 +43,7 @@ export const load = (async ({ url, locals }) => {
       applicationType: data.TypeId,
       workflow: data.WorkflowId,
       rebuildWorkflow: data.RebuildWorkflowId,
+      startManualRebuildAt: data.StartManualRebuildAt,
       republishWorkflow: data.RepublishWorkflowId,
       description: data.Description,
       properties: data.Properties
@@ -65,6 +69,7 @@ export const actions = {
         Name: form.data.name,
         WorkflowId: form.data.workflow,
         RebuildWorkflowId: form.data.rebuildWorkflow,
+        StartManualRebuildAt: form.data.startManualRebuildAt,
         RepublishWorkflowId: form.data.republishWorkflow,
         Description: form.data.description,
         Properties: form.data.properties

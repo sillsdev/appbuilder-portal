@@ -95,6 +95,21 @@
     </select>
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
+  {#if $form.rebuildWorkflow}
+    <LabeledFormInput key="prodDefs_startAt">
+      <select
+        class="select select-bordered"
+        name="startManualRebuildAt"
+        bind:value={$form.startManualRebuildAt}
+      >
+        <option value={null}>{m.common_default()}</option>
+        {#each data.options.startAt as startAt}
+          <option value={startAt}>{startAt}</option>
+        {/each}
+      </select>
+      <span class="validator-hint">&nbsp;</span>
+    </LabeledFormInput>
+  {/if}
   <LabeledFormInput key="prodDefs_republishFlow">
     <select
       class="select select-bordered"
