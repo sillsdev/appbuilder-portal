@@ -219,7 +219,6 @@ model ProductDefinitions {
   WorkflowId                     Int
   RebuildWorkflowId              Int?
   StartManualRebuildAt           String?
-  AutoRebuildWorkflowId          Int?
   RepublishWorkflowId            Int?
   Properties                     String?
   OrganizationProductDefinitions OrganizationProductDefinitions[]
