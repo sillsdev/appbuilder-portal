@@ -5,8 +5,8 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { WorkflowStateMachine } from '$lib/server/workflow/state-machine';
 import { idSchema, propertiesSchema } from '$lib/valibot';
+import { WorkflowState } from '$lib/workflowTypes';
 
 const editSchema = v.object({
   id: idSchema,
@@ -14,7 +14,7 @@ const editSchema = v.object({
   applicationType: idSchema,
   workflow: idSchema,
   rebuildWorkflow: v.nullable(idSchema),
-  startManualRebuildAt: v.nullable(v.string()),
+  startManualRebuildAt: v.nullable(v.literal(String(WorkflowState.Synchronize_Data))),
   republishWorkflow: v.nullable(idSchema),
   description: v.nullable(v.string()),
   properties: propertiesSchema
@@ -27,8 +27,7 @@ export const load = (async ({ url, locals }) => {
   }
   const options = {
     applicationTypes: await DatabaseReads.applicationTypes.findMany(),
-    workflows: await DatabaseReads.workflowDefinitions.findMany(),
-    startAt: Object.keys(WorkflowStateMachine.states)
+    workflows: await DatabaseReads.workflowDefinitions.findMany()
   };
   const data = await DatabaseReads.productDefinitions.findFirst({
     where: {

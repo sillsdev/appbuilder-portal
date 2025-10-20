@@ -4,15 +4,15 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { WorkflowStateMachine } from '$lib/server/workflow/state-machine';
 import { propertiesSchema } from '$lib/valibot';
+import { WorkflowState } from '$lib/workflowTypes';
 
 const createSchema = v.object({
   name: v.nullable(v.string()),
   applicationType: v.pipe(v.number(), v.minValue(1), v.integer()),
   workflow: v.pipe(v.number(), v.minValue(1), v.integer()),
   rebuildWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
-  startManualRebuildAt: v.nullable(v.string()),
+  startManualRebuildAt: v.nullable(v.literal(String(WorkflowState.Synchronize_Data))),
   republishWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
   description: v.nullable(v.string()),
   properties: propertiesSchema
@@ -23,8 +23,7 @@ export const load = (async ({ url, locals }) => {
   const form = await superValidate(valibot(createSchema));
   const options = {
     applicationTypes: await DatabaseReads.applicationTypes.findMany(),
-    workflows: await DatabaseReads.workflowDefinitions.findMany(),
-    startAt: Object.keys(WorkflowStateMachine.states)
+    workflows: await DatabaseReads.workflowDefinitions.findMany()
   };
   return { form, options };
 }) satisfies PageServerLoad;
