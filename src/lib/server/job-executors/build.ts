@@ -188,6 +188,16 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
               });
             }
           }
+          if (version['appbuilderVersion']) {
+            await DatabaseWrites.productBuilds.update({
+              where: {
+                Id: job.data.productBuildId
+              },
+              data: {
+                AppBuilderVersion: version['appbuilderVersion']
+              }
+            });
+          }
         }
 
         // On play-listing-manifest.json, update the Project.DefaultLanguage
