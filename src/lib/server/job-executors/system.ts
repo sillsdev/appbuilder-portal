@@ -745,6 +745,9 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   });
 
   const builtVersions = new Set<string>();
+  const vnum = /\d+\.\d+(\.\d+)?/;
+  const preferredRgx = new RegExp(`APPBUILDER_SCRIPT_VERSION=(${vnum.source})`);
+  const altRgx = new RegExp(`Version (${vnum.source})`);
 
   const updatedBuilds = await Promise.all(
     mostRecentBuilds
@@ -765,8 +768,8 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
             // if appbuilderVersion not present, try parsing console.
             if (!appVersion) {
               const log = await fetch(logUrl).then((r) => r.text());
-              const preferred = log.match(/APPBUILDER_SCRIPT_VERSION=(\d+\.\d+(\.\d)?)/)?.at(1);
-              const alts = log.match(/Version (\d+\.\d+(\.\d)?)/)?.at(1);
+              const preferred = log.match(preferredRgx)?.at(1);
+              const alts = log.match(altRgx)?.at(1);
 
               appVersion ||= preferred ?? alts ?? '';
             }
