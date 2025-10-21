@@ -43,8 +43,8 @@
 </script>
 
 <div class="w-full max-w-6xl mx-auto">
-  <div class="flex sm:flex-row flex-col">
-    <div class="p-4 sm:pr-0 sm:sticky top-0 sm:self-start">
+  <div class="flex flex-col">
+    <div class="p-4 sm:pr-0 sm:sticky top-0 sm:self-start z-10 bg-base-100">
       {#if title}
         {@render title()}
       {:else}
@@ -75,7 +75,9 @@
           </div>
         </div>
       </div>
-      <ul class="menu p-0 rounded-sm border border-slate-600 sm:flex hidden">
+    </div>
+    <div class="flex flex-row">
+      <ul class="menu mx-2 p-0 rounded-sm border border-slate-600 sm:flex hidden max-h-fit top-24 sticky">
         <!-- Desktop side menu -->
         {#key page.route.id}
           {#each menuItems as item}
@@ -91,9 +93,9 @@
           {/each}
         {/key}
       </ul>
-    </div>
-    <div class="flex flex-col grow sm:mt-16 overflow-auto">
-      {@render children?.()}
+      <div class="flex flex-col grow overflow-auto">
+        {@render children?.()}
+      </div>
     </div>
   </div>
 </div>
