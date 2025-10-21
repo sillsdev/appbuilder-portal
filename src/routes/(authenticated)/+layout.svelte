@@ -115,158 +115,169 @@
       <div
         class="dark:border-gray-600 h-full mt-0 overflow-hidden w-full lg:w-72 lg:border-r min-[480px]:w-1/2 min-[720px]:w-1/3"
       >
-        <ul class="menu menu-lg p-0 w-full bg-base-100 text-base-content h-full overflow-y-auto">
-          <li class="dark:border-gray-600 border-y flex flex-row flex-nowrap">
-            {#if data.organizations.length > 1}
-              <button
-                class="rounded-none h-16 p-0 pl-2 bg-base-200 hover:bg-base-300 cursor-pointer grow flex items-center"
-                onclick={() => (selectingOrg = !selectingOrg)}
-              >
-                {@render orgDisplay(selectedOrg, 'font-bold text-sm')}
-                <div
-                  class="dropdown-icon"
-                  class:open={selectingOrg}
-                  class:hidden={data.organizations.length <= 1}
-                >
-                  <IconContainer icon="gridicons:dropdown" width={24} />
-                </div>
-              </button>
-            {:else}
-              <div class="rounded-none h-16 p-0 pl-2 bg-base-200 grow flex items-center">
-                {@render orgDisplay(selectedOrg, 'font-bold text-sm')}
-              </div>
-            {/if}
-            <button
-              class="btn btn-ghost h-full lg:hidden"
-              type="button"
-              onclick={() => closeDrawer()}
+        <ul class="menu menu-lg p-0 w-full bg-base-100 text-base-content h-full">
+          <div class="min-h-full overflow-y-auto">
+            <li
+              class="dark:border-gray-600 border-y top-0 sticky z-10 bg-base-200 hover:bg-base-300"
             >
-              <IconContainer icon="mdi:close" width={16} class="opacity-80" />
-            </button>
-          </li>
-          {#if selectingOrg}
-            {@render orgListItem()}
-            <hr class="pt-2" />
-            {#each data.organizations.toSorted((a, b) => byName(a, b, getLocale())) as org}
-              {@render orgListItem(org)}
-            {/each}
-          {:else}
-            <li>
-              <a
-                class="rounded-none"
-                class:active-menu-item={isUrlActive('/tasks')}
-                href={localizeHref('/tasks')}
-                onclick={closeDrawer}
-              >
-                {m.sidebar_myTasks({ count: userTasksLength })}
-              </a>
+              <div class="flex flex-row flex-nowrap">
+                {#if data.organizations.length > 1}
+                  <button
+                    class="rounded-none h-16 p-0 pl-2 cursor-pointer grow flex items-center"
+                    onclick={() => (selectingOrg = !selectingOrg)}
+                  >
+                    {@render orgDisplay(selectedOrg, 'font-bold text-sm')}
+                    <div
+                      class="dropdown-icon"
+                      class:open={selectingOrg}
+                      class:hidden={data.organizations.length <= 1}
+                    >
+                      <IconContainer icon="gridicons:dropdown" width={24} />
+                    </div>
+                  </button>
+                {:else}
+                  <div class="rounded-none h-16 p-0 pl-2 grow flex items-center">
+                    {@render orgDisplay(selectedOrg, 'font-bold text-sm')}
+                  </div>
+                {/if}
+                <button
+                  class="btn btn-ghost h-full lg:hidden"
+                  type="button"
+                  onclick={() => closeDrawer()}
+                >
+                  <IconContainer icon="mdi:close" width={16} class="opacity-80" />
+                </button>
+              </div>
             </li>
-            <li>
-              <a
-                class="rounded-none"
-                class:active-menu-item={isUrlActive('/projects/own')}
-                href={activeOrgUrl(`/projects/own`)}
-                onclick={closeDrawer}
-              >
-                {m.sidebar_myProjects()}
-              </a>
-            </li>
-            <li>
-              <a
-                class="rounded-none"
-                class:active-menu-item={isUrlActive('/projects/organization')}
-                href={activeOrgUrl('/projects/organization')}
-                onclick={closeDrawer}
-              >
-                {m.sidebar_orgProjects()}
-              </a>
-            </li>
-            {#if isAdminForAny(data.session.user.roles)}
+            {#if selectingOrg}
+              {@render orgListItem()}
+              <hr class="pt-2" />
+              {#each data.organizations.toSorted((a, b) => byName(a, b, getLocale())) as org}
+                {@render orgListItem(org)}
+              {/each}
+            {:else}
               <li>
                 <a
                   class="rounded-none"
-                  class:active-menu-item={isUrlActive('/projects/active')}
-                  href={activeOrgUrl('/projects/active')}
+                  class:active-menu-item={isUrlActive('/tasks')}
+                  href={localizeHref('/tasks')}
                   onclick={closeDrawer}
                 >
-                  {m.sidebar_activeProjects()}
+                  {m.sidebar_myTasks({ count: userTasksLength })}
                 </a>
               </li>
               <li>
                 <a
                   class="rounded-none"
-                  class:active-menu-item={isUrlActive('/users')}
-                  href={localizeHref('/users')}
+                  class:active-menu-item={isUrlActive('/projects/own')}
+                  href={activeOrgUrl(`/projects/own`)}
                   onclick={closeDrawer}
                 >
-                  {m.sidebar_users()}
+                  {m.sidebar_myProjects()}
                 </a>
               </li>
               <li>
                 <a
                   class="rounded-none"
-                  class:active-menu-item={isUrlActive('/organizations')}
-                  href={activeOrgUrl('/organizations')}
+                  class:active-menu-item={isUrlActive('/projects/organization')}
+                  href={activeOrgUrl('/projects/organization')}
                   onclick={closeDrawer}
                 >
-                  {m.sidebar_orgSettings()}
+                  {m.sidebar_orgProjects()}
                 </a>
               </li>
-            {/if}
-            {#if isSuperAdmin(data.session.user.roles)}
-              <li>
-                <a
-                  class="rounded-none"
-                  class:active-menu-item={isUrlActive('/admin/settings')}
-                  href={localizeHref('/admin/settings/organizations')}
-                  onclick={closeDrawer}
-                >
-                  {m.sidebar_adminSettings()}
-                </a>
-              </li>
-              <li>
-                <BlockIfJobsUnavailable className="rounded-none">
-                  {#snippet altContent()}
-                    {m.sidebar_jobAdministration()}
-                    <IconContainer icon="mdi:open-in-new" width="18" />
-                  {/snippet}
-                  <a class="rounded-none" href="/admin/jobs" onclick={closeDrawer} target="_blank">
-                    {@render altContent?.()}
+              {#if isAdminForAny(data.session.user.roles)}
+                <li>
+                  <a
+                    class="rounded-none"
+                    class:active-menu-item={isUrlActive('/projects/active')}
+                    href={activeOrgUrl('/projects/active')}
+                    onclick={closeDrawer}
+                  >
+                    {m.sidebar_activeProjects()}
                   </a>
-                </BlockIfJobsUnavailable>
+                </li>
+                <li>
+                  <a
+                    class="rounded-none"
+                    class:active-menu-item={isUrlActive('/users')}
+                    href={localizeHref('/users')}
+                    onclick={closeDrawer}
+                  >
+                    {m.sidebar_users()}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="rounded-none"
+                    class:active-menu-item={isUrlActive('/organizations')}
+                    href={activeOrgUrl('/organizations')}
+                    onclick={closeDrawer}
+                  >
+                    {m.sidebar_orgSettings()}
+                  </a>
+                </li>
+              {/if}
+              {#if isSuperAdmin(data.session.user.roles)}
+                <li>
+                  <a
+                    class="rounded-none"
+                    class:active-menu-item={isUrlActive('/admin/settings')}
+                    href={localizeHref('/admin/settings/organizations')}
+                    onclick={closeDrawer}
+                  >
+                    {m.sidebar_adminSettings()}
+                  </a>
+                </li>
+                <li>
+                  <BlockIfJobsUnavailable className="rounded-none">
+                    {#snippet altContent()}
+                      {m.sidebar_jobAdministration()}
+                      <IconContainer icon="mdi:open-in-new" width="18" />
+                    {/snippet}
+                    <a
+                      class="rounded-none"
+                      href="/admin/jobs"
+                      onclick={closeDrawer}
+                      target="_blank"
+                    >
+                      {@render altContent?.()}
+                    </a>
+                  </BlockIfJobsUnavailable>
+                </li>
+                <li>
+                  <a
+                    class="rounded-none"
+                    class:active-menu-item={isUrlActive('/workflow-instances')}
+                    href={localizeHref('/workflow-instances')}
+                    onclick={closeDrawer}
+                  >
+                    {m.workflowInstances_title()}
+                  </a>
+                </li>
+              {/if}
+              <li class="dark:border-gray-600 border-y-2">
+                <a
+                  class="rounded-none"
+                  class:active-menu-item={isUrlActive('/directory')}
+                  href={localizeHref('/directory')}
+                  onclick={closeDrawer}
+                >
+                  {m.sidebar_projectDirectory()}
+                </a>
               </li>
               <li>
                 <a
-                  class="rounded-none"
-                  class:active-menu-item={isUrlActive('/workflow-instances')}
-                  href={localizeHref('/workflow-instances')}
+                  class="rounded-none mt-10"
+                  class:active-menu-item={isUrlActive('/open-source')}
+                  href={localizeHref('/open-source')}
                   onclick={closeDrawer}
                 >
-                  {m.workflowInstances_title()}
+                  {m.opensource()}
                 </a>
               </li>
             {/if}
-            <li class="dark:border-gray-600 border-y-2">
-              <a
-                class="rounded-none"
-                class:active-menu-item={isUrlActive('/directory')}
-                href={localizeHref('/directory')}
-                onclick={closeDrawer}
-              >
-                {m.sidebar_projectDirectory()}
-              </a>
-            </li>
-            <li>
-              <a
-                class="rounded-none mt-10"
-                class:active-menu-item={isUrlActive('/open-source')}
-                href={localizeHref('/open-source')}
-                onclick={closeDrawer}
-              >
-                {m.opensource()}
-              </a>
-            </li>
-          {/if}
+          </div>
         </ul>
       </div>
     </div>
