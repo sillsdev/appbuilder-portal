@@ -96,13 +96,13 @@
     </form>
   </div>
   <div class="m-4 relative mt-0">
-    <table class="w-full">
+    <table class="w-full table-fixed">
       <thead>
         <tr class="border-b-2 text-left">
           <th>{m.users_table_name()}</th>
           <th>{m.users_table_role()}</th>
           <th>{m.users_table_groups()}</th>
-          <th>{m.users_table_active()}</th>
+          <th class="w-20">{m.users_table_active()}</th>
         </tr>
       </thead>
       <tbody>
@@ -113,14 +113,16 @@
           )}
           <tr class="align-top">
             <td class="p-2">
-              <p>
-                <a href={localizeHref(`/users/${user.I}/settings`)} class="link pb-2">
-                  {user.N}
-                </a>
-              </p>
-              <p class="text-sm overflow-hidden">
-                {user.E?.replace('@', '\u200b@')}
-              </p>
+              <div class="overflow-x-auto">
+                <p>
+                  <a href={localizeHref(`/users/${user.I}/settings`)} class="link pb-2">
+                    {user.N}
+                  </a>
+                </p>
+                <p class="text-sm overflow-hidden">
+                  {user.E?.replace('@', '\u200b@')}
+                </p>
+              </div>
             </td>
             <td class="py-2">
               {#each userOrgs as org}
