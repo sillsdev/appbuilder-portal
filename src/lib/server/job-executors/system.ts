@@ -402,6 +402,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
    * 3. Migrate data from DWKit tables to WorkflowInstances
    * 4. Populate Product.PackageName
    * 5. Remove users with no org membership
+   * 6. Populate ProductBuild.AppBuilderVersion
    */
 
   // 1. Delete UserTasks for archived projects
@@ -414,7 +415,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       }
     }
   });
-  job.updateProgress(20);
+  job.updateProgress(10);
 
   // 2. Add UserId to transitions with a WorkflowUserId but no UserId
   const updatedTransitions = (
@@ -461,7 +462,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     })
   ).map(({ WorkflowUserId }) => WorkflowUserId);
 
-  job.updateProgress(40);
+  job.updateProgress(20);
 
   // 3. Migrate data from DWKit tables to WorkflowInstances
 
@@ -539,7 +540,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     ).map(({ Id }) => DatabaseWrites.workflowInstances.markProcessFinalized(Id))
   );
 
-  job.updateProgress(70);
+  job.updateProgress(40);
   // Update WorkflowDefinitions ProductType and WorkflowOptions
   const workflowDefsNeedUpdate =
     (await DatabaseReads.workflowDefinitions.count({
@@ -618,7 +619,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       await DatabaseWrites.workflowDefinitions.updateMany(def);
     }
   }
-  job.updateProgress(60);
+  job.updateProgress(50);
 
   // 4. Populate Product.PackageName
 
@@ -668,7 +669,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     })
   );
 
-  job.updateProgress(80);
+  job.updateProgress(70);
 
   // 5. delete users with no org membership
   const deletedUsers = await DatabaseReads.users.findMany({
@@ -689,6 +690,101 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     job.log(`User prune failed: ${e instanceof Error ? e.message : String(e)}`);
   }
 
+  job.updateProgress(80);
+
+  // 6. Populate ProductBuilds.AppBuilderVersion
+
+  const recentBuildFilter: Prisma.ProductBuildsWhereInput = {
+    Success: true,
+    AND: [
+      {
+        ProductArtifacts: {
+          some: {
+            ArtifactType: 'consoleText'
+          }
+        }
+      },
+      {
+        ProductArtifacts: {
+          some: {
+            ArtifactType: 'version'
+          }
+        }
+      }
+    ]
+  };
+
+  const mostRecentBuilds = await DatabaseReads.products.findMany({
+    where: {
+      ProductBuilds: {
+        some: recentBuildFilter
+      }
+    },
+    select: {
+      Id: true,
+      ProductBuilds: {
+        where: recentBuildFilter,
+        orderBy: { DateCreated: 'desc' },
+        take: 1,
+        select: {
+          Id: true,
+          AppBuilderVersion: true,
+          ProductArtifacts: {
+            where: {
+              ArtifactType: { in: ['consoleText', 'version'] }
+            },
+            select: {
+              Id: true,
+              ArtifactType: true,
+              Url: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  const builtVersions = new Set<string>();
+
+  const updatedBuilds = await Promise.all(
+    mostRecentBuilds
+      .filter((p) => !p.ProductBuilds[0].AppBuilderVersion)
+      .map(async (p) => {
+        try {
+          const logUrl = p.ProductBuilds[0].ProductArtifacts.find(
+            (pa) => pa.ArtifactType === 'consoleText'
+          )?.Url;
+          const versionJSON = p.ProductBuilds[0].ProductArtifacts.find(
+            (pa) => pa.ArtifactType === 'version'
+          );
+          if (logUrl && versionJSON?.Url) {
+            // fetch version.json first
+            const parsedJSON = JSON.parse(await fetch(versionJSON.Url).then((r) => r.text()));
+            let appVersion: string = parsedJSON['appbuilderVersion'] ?? '';
+
+            // if appbuilderVersion not present, try parsing console.
+            if (!appVersion) {
+              const log = await fetch(logUrl).then((r) => r.text());
+              const preferred = log.match(/APPBUILDER_SCRIPT_VERSION=(\d+\.\d+(\.\d)?)/)?.at(1);
+              const alts = log.match(/Version (\d+\.\d+(\.\d)?)/)?.at(1);
+
+              appVersion ||= preferred ?? alts ?? '';
+            }
+
+            if (appVersion) {
+              builtVersions.add(appVersion);
+              await DatabaseWrites.productBuilds.update({
+                where: { Id: p.ProductBuilds[0].Id },
+                data: { AppBuilderVersion: appVersion }
+              });
+            }
+          }
+        } catch (e) {
+          job.log(`Update Build for Product ${p.Id} Error: ${e}`);
+        }
+      })
+  );
+
   job.updateProgress(100);
 
   return {
@@ -704,6 +800,11 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       users: deletedUsers,
       count: deleteCount,
       success: deleteCount === deletedUsers.length
+    },
+    updatedBuilds: {
+      recent: mostRecentBuilds.length,
+      updated: updatedBuilds.length,
+      versions: Array.from(builtVersions).sort((a, b) => a.localeCompare(b, 'en-US'))
     }
   };
 }
