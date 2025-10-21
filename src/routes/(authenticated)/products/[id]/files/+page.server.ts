@@ -36,6 +36,7 @@ export const load = (async ({ params, locals }) => {
       Version: true,
       BuildId: true,
       Success: true,
+      AppBuilderVersion: true,
       ProductArtifacts: {
         select: {
           ArtifactType: true,
