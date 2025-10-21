@@ -319,7 +319,13 @@ export const actions = {
   },
 
   async toggleAutoPublishOnRebuild(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUnique({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
+
     const form = await superValidate(
       event.request,
       valibot(
@@ -335,7 +341,13 @@ export const actions = {
     return { form, ok: true };
   },
   async toggleRebuildOnSoftwareUpdate(event) {
-    // permissions checked in auth
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUnique({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
+
     const form = await superValidate(
       event.request,
       valibot(
