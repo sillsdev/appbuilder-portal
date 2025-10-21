@@ -403,6 +403,7 @@
   "projectTable_language": "Language",
   "projectTable_group": "Group",
   "projectTable_buildVersion": "Build Version",
+  "projectTable_appBuilderVersion": "AppBuilder Version",
   "projectTable_buildDate": "Build Date",
   "projectTable_createdOn": "Created On",
   "projectTable_updatedOn": "Updated On",
