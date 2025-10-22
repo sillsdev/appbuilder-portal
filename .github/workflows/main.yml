@@ -116,6 +116,13 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'src/lib/prisma/schema.prisma') }}
 
+      - name: Setup Mock Build-Engine
+        run: |
+          # This step may need to be reordered.
+          # I have no idea how much actually needs to be done here or if this should be multiple steps.
+          # Just adding this here for now so there is a diff so I can open a draft PR for all to work on.
+          # - Aidan
+
       - name: Build, Install Playwright dependencies, and seed database
         run: |
           echo "Building .env file..."
