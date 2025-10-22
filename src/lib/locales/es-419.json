@@ -535,7 +535,7 @@
   "prodDefs_emptyType": "Necesita seleccionar un tipo de aplicación",
   "prodDefs_emptyFlow": "Need to select a Workflow definition",
   "prodDefs_noFlow": "No Workflow Required",
-  "prodDefs_startAt": "Start Manual Rebuilds at",
+  "prodDefs_startAt": "Iniciar reconstrucciones manuales en",
   "storeTypes_title": "Tipos de tienda",
   "storeTypes_name": "Store Type Name",
   "storeTypes_add": "Añadir tipo de tienda",
