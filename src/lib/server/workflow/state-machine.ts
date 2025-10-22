@@ -16,12 +16,13 @@ import {
   WorkflowState,
   hasAuthors,
   hasReviewers,
+  autoPublishOnRebuild,
   isAuthorState,
   isDeprecated,
   jump
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
-import { deleteWorkflow, markResolved } from './dbProcedures';
+import { deleteWorkflow, markResolved, notifyAutoPublishOwner } from './dbProcedures';
 
 /**
  * IMPORTANT: READ THIS BEFORE EDITING A STATE MACHINE!
@@ -56,12 +57,14 @@ export const WorkflowStateMachine = setup({
     /** Reset to null on exit */
     includeArtifacts: null,
     environment: {},
+    isAutomatic: input.isAutomatic,
     workflowType: input.workflowType,
     productType: input.productType,
     options: input.options,
     productId: input.productId,
     hasAuthors: input.hasAuthors,
-    hasReviewers: input.hasReviewers
+    hasReviewers: input.hasReviewers,
+    autoPublishOnRebuild: input.autoPublishOnRebuild
   }),
   states: {
     [WorkflowState.Start]: {
@@ -544,6 +547,16 @@ export const WorkflowStateMachine = setup({
             target: WorkflowState.App_Store_Preview
           },
           {
+            meta: {
+              type: ActionType.Auto,
+              includeWhen: {
+                guards: [autoPublishOnRebuild]
+              }
+            },
+            guard: autoPublishOnRebuild,
+            target: WorkflowState.Product_Publish
+          },
+          {
             // this is the normal transition for a successful build
             meta: { type: ActionType.Auto },
             target: WorkflowState.Verify_and_Publish
@@ -703,39 +716,50 @@ export const WorkflowStateMachine = setup({
       }
     },
     [WorkflowState.Verify_and_Publish]: {
-      entry: assign({
-        instructions: ({ context }) => {
-          switch (context.productType) {
-            case ProductType.Android_GooglePlay:
-              return 'googleplay_verify_and_publish';
-            case ProductType.Android_S3:
-              return 'verify_and_publish';
-            case ProductType.AssetPackage:
-              return 'asset_package_verify_and_publish';
-            case ProductType.Web:
-              return 'web_verify';
+      entry: [
+        assign({
+          instructions: ({ context }) => {
+            switch (context.productType) {
+              case ProductType.Android_GooglePlay:
+                return 'googleplay_verify_and_publish';
+              case ProductType.Android_S3:
+                return 'verify_and_publish';
+              case ProductType.AssetPackage:
+                return 'asset_package_verify_and_publish';
+              case ProductType.Web:
+                return 'web_verify';
+            }
+          },
+          includeFields: ({ context }) => {
+            switch (context.productType) {
+              case ProductType.Android_GooglePlay:
+              case ProductType.Android_S3:
+                return ['storeDescription', 'listingLanguageCode'];
+              case ProductType.AssetPackage:
+              case ProductType.Web:
+                return ['storeDescription'];
+            }
+          },
+          includeReviewers: true,
+          includeArtifacts: ({ context }) => {
+            switch (context.productType) {
+              case ProductType.AssetPackage:
+                return 'latestAssetPackage';
+              default:
+                return 'all';
+            }
           }
-        },
-        includeFields: ({ context }) => {
-          switch (context.productType) {
-            case ProductType.Android_GooglePlay:
-            case ProductType.Android_S3:
-              return ['storeDescription', 'listingLanguageCode'];
-            case ProductType.AssetPackage:
-            case ProductType.Web:
-              return ['storeDescription'];
+        }),
+        ({ context }) => {
+          if (!context.isAutomatic) {
+            return;
           }
-        },
-        includeReviewers: true,
-        includeArtifacts: ({ context }) => {
-          switch (context.productType) {
-            case ProductType.AssetPackage:
-              return 'latestAssetPackage';
-            default:
-              return 'all';
-          }
+          void getQueues().Emails.add(`Email reviewers for Product #${context.productId}`, {
+            type: BullMQ.JobType.Email_SendNotificationToReviewers,
+            productId: context.productId
+          });
         }
-      }),
+      ],
       exit: assign({
         includeReviewers: false,
         includeArtifacts: null
@@ -808,6 +832,11 @@ export const WorkflowStateMachine = setup({
                 workflowType: { is: WorkflowType.Startup }
               }
             },
+            actions: ({ context }) => {
+              if (context.autoPublishOnRebuild && context.isAutomatic) {
+                void notifyAutoPublishOwner(context.productId);
+              }
+            },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
               !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] &&
@@ -816,6 +845,14 @@ export const WorkflowStateMachine = setup({
           },
           {
             meta: { type: ActionType.Auto },
+            actions: ({ context }) => {
+              if (context.autoPublishOnRebuild && context.isAutomatic) {
+                void notifyAutoPublishOwner(context.productId);
+              }
+            },
+            guard: ({ context }) =>
+              context.productType !== ProductType.Android_GooglePlay ||
+              context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] === '1',
             target: WorkflowState.Published
           }
         ],
