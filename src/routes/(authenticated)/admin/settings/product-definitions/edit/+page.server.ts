@@ -6,6 +6,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { idSchema, propertiesSchema } from '$lib/valibot';
+import { WorkflowState } from '$lib/workflowTypes';
 
 const editSchema = v.object({
   id: idSchema,
@@ -13,6 +14,7 @@ const editSchema = v.object({
   applicationType: idSchema,
   workflow: idSchema,
   rebuildWorkflow: v.nullable(idSchema),
+  startManualRebuildAt: v.nullable(v.literal(String(WorkflowState.Synchronize_Data))),
   republishWorkflow: v.nullable(idSchema),
   description: v.nullable(v.string()),
   properties: propertiesSchema
@@ -40,6 +42,7 @@ export const load = (async ({ url, locals }) => {
       applicationType: data.TypeId,
       workflow: data.WorkflowId,
       rebuildWorkflow: data.RebuildWorkflowId,
+      startManualRebuildAt: data.StartManualRebuildAt,
       republishWorkflow: data.RepublishWorkflowId,
       description: data.Description,
       properties: data.Properties
@@ -65,6 +68,7 @@ export const actions = {
         Name: form.data.name,
         WorkflowId: form.data.workflow,
         RebuildWorkflowId: form.data.rebuildWorkflow,
+        StartManualRebuildAt: form.data.startManualRebuildAt,
         RepublishWorkflowId: form.data.republishWorkflow,
         Description: form.data.description,
         Properties: form.data.properties

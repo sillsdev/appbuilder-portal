@@ -2,6 +2,7 @@ import { ProductTransitionType, WorkflowType } from '$lib/prisma';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
+import type { WorkflowState } from '$lib/workflowTypes';
 import { ProductActionType } from '.';
 
 export async function doProductAction(productId: string, action: ProductActionType) {
@@ -21,6 +22,7 @@ export async function doProductAction(productId: string, action: ProductActionTy
               WorkflowOptions: true
             }
           },
+          StartManualRebuildAt: true,
           RepublishWorkflow: {
             select: {
               Type: true,
@@ -49,7 +51,12 @@ export async function doProductAction(productId: string, action: ProductActionTy
           await Workflow.create(productId, {
             productType: product.ProductDefinition[flowType].ProductType,
             options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
-            workflowType: product.ProductDefinition[flowType].Type
+            workflowType: product.ProductDefinition[flowType].Type,
+            // ISSUE #1324 use isAutomatic here
+            start:
+              (action === 'rebuild' &&
+                (product.ProductDefinition.StartManualRebuildAt as WorkflowState)) ||
+              undefined
           });
         }
         break;

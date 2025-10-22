@@ -539,7 +539,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     ).map(({ Id }) => DatabaseWrites.workflowInstances.markProcessFinalized(Id))
   );
 
-  job.updateProgress(70);
+  job.updateProgress(50);
   // Update WorkflowDefinitions ProductType and WorkflowOptions
   const workflowDefsNeedUpdate =
     (await DatabaseReads.workflowDefinitions.count({
@@ -616,6 +616,36 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     ];
     for (const def of workflowDefs) {
       await DatabaseWrites.workflowDefinitions.updateMany(def);
+    }
+  }
+  job.updateProgress(55);
+  const prodDefsNeedUpdate = await DatabaseReads.productDefinitions.findMany({
+    where: { Properties: { contains: '"ShouldExecute":' } },
+    select: { Id: true, Properties: true }
+  });
+  if (prodDefsNeedUpdate.length) {
+    for (const prodDef of prodDefsNeedUpdate) {
+      const prefix = `ProductDefinition Id=${prodDef.Id}`;
+      try {
+        const parsed = JSON.parse(prodDef.Properties!);
+        const targets = Object.keys(parsed['ShouldExecute']);
+        if (targets.length === 1) {
+          await DatabaseWrites.productDefinitions.update({
+            where: { Id: prodDef.Id },
+            data: {
+              StartManualRebuildAt: targets[0],
+              // Remove ShouldExecute from Properties
+              Properties: JSON.stringify({ ...parsed, ShouldExecute: undefined })
+            }
+          });
+        } else {
+          job.log(
+            `${prefix} Multiple ShouldExecute targets: ${JSON.stringify(parsed['ShouldExecute'], null, 2)}`
+          );
+        }
+      } catch (e) {
+        job.log(`${prefix} Error: ${e}`);
+      }
     }
   }
   job.updateProgress(60);
@@ -699,6 +729,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     migrationErrors,
     orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0),
     updatedWorkflowDefinitions: workflowDefsNeedUpdate,
+    updatedProductDefinitions: !!prodDefsNeedUpdate,
     updatedPackages,
     deletedUsers: {
       users: deletedUsers,

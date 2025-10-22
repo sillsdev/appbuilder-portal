@@ -218,6 +218,7 @@ model ProductDefinitions {
   Description                    String?
   WorkflowId                     Int
   RebuildWorkflowId              Int?
+  StartManualRebuildAt           String?
   RepublishWorkflowId            Int?
   Properties                     String?
   OrganizationProductDefinitions OrganizationProductDefinitions[]

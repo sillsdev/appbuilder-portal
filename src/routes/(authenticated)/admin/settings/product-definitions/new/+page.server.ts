@@ -5,12 +5,14 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { propertiesSchema } from '$lib/valibot';
+import { WorkflowState } from '$lib/workflowTypes';
 
 const createSchema = v.object({
   name: v.nullable(v.string()),
   applicationType: v.pipe(v.number(), v.minValue(1), v.integer()),
   workflow: v.pipe(v.number(), v.minValue(1), v.integer()),
   rebuildWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
+  startManualRebuildAt: v.nullable(v.literal(String(WorkflowState.Synchronize_Data))),
   republishWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
   description: v.nullable(v.string()),
   properties: propertiesSchema
@@ -39,6 +41,7 @@ export const actions = {
         TypeId: form.data.applicationType,
         WorkflowId: form.data.workflow,
         RebuildWorkflowId: form.data.rebuildWorkflow,
+        StartManualRebuildAt: form.data.startManualRebuildAt,
         RepublishWorkflowId: form.data.republishWorkflow,
         Description: form.data.description,
         Properties: form.data.properties

@@ -130,7 +130,7 @@ export type WorkflowInstanceContext = {
   )[];
   includeReviewers: boolean;
   includeArtifacts: ArtifactLists | null;
-  start?: WorkflowState;
+  start?: WorkflowState; // keep here too so it is still persisted in DB
   environment: Environment;
 };
 
@@ -181,6 +181,7 @@ export type WorkflowConfig = {
   options: Set<WorkflowOptions>;
   productType: ProductType;
   workflowType: WorkflowType;
+  start?: WorkflowState;
 };
 
 export type WorkflowInput = WorkflowConfig & {

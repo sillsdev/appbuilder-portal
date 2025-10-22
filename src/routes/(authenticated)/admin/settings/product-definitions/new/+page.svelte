@@ -8,6 +8,7 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
+  import { WorkflowState } from '$lib/workflowTypes';
 
   interface Props {
     data: PageData;
@@ -93,6 +94,19 @@
     </select>
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
+  {#if $form.rebuildWorkflow}
+    <LabeledFormInput key="prodDefs_startAt">
+      <select
+        class="select select-bordered"
+        name="startManualRebuildAt"
+        bind:value={$form.startManualRebuildAt}
+      >
+        <option value={null}>{WorkflowState.Product_Build}</option>
+        <option value={WorkflowState.Synchronize_Data}>{WorkflowState.Synchronize_Data}</option>
+      </select>
+      <span class="validator-hint">&nbsp;</span>
+    </LabeledFormInput>
+  {/if}
   <LabeledFormInput key="prodDefs_republishFlow">
     <select
       class="select select-bordered"
