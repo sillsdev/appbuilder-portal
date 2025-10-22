@@ -16,7 +16,7 @@ export async function GET({ params, locals }) {
   // at least one matching product
   const canRebuild = productCount > 0;
 
-  if (canRebuild) {
+  if (!canRebuild) {
     return createAppBuildersError(400, 'Project does not meet rebuild conditions');
   }
 
