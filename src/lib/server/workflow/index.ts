@@ -56,6 +56,7 @@ export class Workflow {
       select: {
         Project: {
           select: {
+            AutoPublishOnRebuild: true,
             _count: {
               select: {
                 Authors: true,
@@ -70,6 +71,7 @@ export class Workflow {
       ...config,
       hasAuthors: !!check?.Project._count.Authors,
       hasReviewers: !!check?.Project._count.Reviewers,
+      autoPublishOnRebuild: !!check?.Project.AutoPublishOnRebuild,
       productId
     });
     flow.flow = createActor(WorkflowStateMachine, {
@@ -165,6 +167,7 @@ export class Workflow {
           select: {
             Project: {
               select: {
+                AutoPublishOnRebuild: true,
                 _count: {
                   select: {
                     Authors: true,
@@ -180,17 +183,21 @@ export class Workflow {
     if (!instance) {
       return null;
     }
+    const context = JSON.parse(instance.Context) as WorkflowInstanceContext;
+    context.isAutomatic ??= false;
     return {
       instanceId: instance.Id,
       definitionId: instance.WorkflowDefinition.Id,
       state: instance.State,
-      context: JSON.parse(instance.Context) as WorkflowInstanceContext,
+      context,
       input: {
         workflowType: instance.WorkflowDefinition.Type,
         productType: instance.WorkflowDefinition.ProductType,
         options: new Set(instance.WorkflowDefinition.WorkflowOptions),
         hasAuthors: !!instance.Product.Project._count.Authors,
         hasReviewers: !!instance.Product.Project._count.Reviewers,
+        autoPublishOnRebuild: !!instance.Product.Project.AutoPublishOnRebuild,
+        isAutomatic: context.isAutomatic ?? false,
         productId
       }
     };
@@ -361,6 +368,7 @@ export class Workflow {
       productId: undefined,
       hasAuthors: undefined,
       hasReviewers: undefined,
+      autoPublishOnRebuild: undefined,
       productType: undefined,
       options: undefined
     } as WorkflowInstanceContext;
