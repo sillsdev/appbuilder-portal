@@ -19,7 +19,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      AUTH0_SECRET: ${{ steps.set-vars.outputs.AUTH0_SECRET }}
+      BACKUP_AUTH0_SECRET: ${{ steps.set-vars.outputs.BACKUP_AUTH0_SECRET }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -40,12 +40,8 @@ jobs:
           echo
           echo Environment variables
           env
-          AUTH0_SECRET="${{ secrets.AUTH0_SECRET }}"
-          if [ -z "$AUTH0_SECRET" ]; then
-            echo "AUTH0_SECRET is not set. Generating for testing."
-            AUTH0_SECRET=$(hexdump -vn32 -e'8/4 "%08x" 1 "\n"' /dev/urandom)
-          fi
-          echo "AUTH0_SECRET=${{ secrets.AUTH0_SECRET }}" >> $GITHUB_OUTPUT
+          BACKUP_AUTH0_SECRET=$(hexdump -vn32 -e'8/4 "%08x" 1 "\n"' /dev/urandom)
+          echo "BACKUP_AUTH0_SECRET=${BACKUP_AUTH0_SECRET}" >> $GITHUB_OUTPUT
 
       - name: Restore node_modules cache
         id: restore-cache
@@ -103,7 +99,7 @@ jobs:
       CI: true
       BUILDENGINE_TOKEN: ${{ secrets.BUILD_ENGINE_TOKEN }}
       AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
-      AUTH0_SECRET: ${{ needs.setup.outputs.AUTH0_SECRET }}
+      AUTH0_SECRET: ${{ secrets.AUTH0_SECRET || needs.setup.outputs.BACKUP_AUTH0_SECRET }}
       AUTH0_CLIENT_ID: ${{ vars.AUTH0_CLIENT_ID }}
       AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
       AUTH0_CONNECTION: ${{ vars.AUTH0_CONNECTION }}
