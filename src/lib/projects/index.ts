@@ -134,8 +134,8 @@ export const importJSONSchema = v.pipe(
         v.strictObject({
           ...projectSchemaBase.entries,
           AllowDownloads: v.optional(v.boolean()),
-          autoPublishAfterRebuild: v.optional(v.boolean()),
-          triggerRebuildOnSoftwareUpdate: v.optional(v.boolean())
+          AutoPublishAfterRebuild: v.optional(v.boolean()),
+          TriggerRebuildOnSoftwareUpdate: v.optional(v.boolean())
         })
       ),
       v.minLength(1)
