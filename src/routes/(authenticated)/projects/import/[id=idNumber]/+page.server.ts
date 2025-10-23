@@ -218,7 +218,8 @@ export const actions: Actions = {
             TypeId: form.data.type,
             Description: pj.Description ?? '',
             IsPublic: pj.IsPublic,
-            // ISSUE #1303 Add new fields here
+            autoPublishAfterRebuild: pj.autoPublishAfterRebuild ?? false,
+            triggerRebuildOnSoftwareUpdate: pj.triggerRebuildOnSoftwareUpdate ?? false,
             ImportId: imp.Id
           };
         })
