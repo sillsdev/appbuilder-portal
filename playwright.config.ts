@@ -1,12 +1,10 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
-import dotenv from 'dotenv';
+import { randomBytes } from 'crypto';
 
-if (!process.env.CI_EMAIL) {
-  dotenv.config({ path: '.env' });
-  if (!process.env.CI_EMAIL) {
-    console.warn('CI user credentials missing from env');
-    console.log(process.env);
-  }
+const signingSecret = randomBytes(32).toString('hex');
+
+if (!process.env.AUTH0_SECRET) {
+  process.env.AUTH0_SECRET = signingSecret;
 }
 
 const config: PlaywrightTestConfig = {
@@ -20,7 +18,9 @@ const config: PlaywrightTestConfig = {
     port: 6173,
     reuseExistingServer: true,
     env: {
-      NODE_ENV: 'development'
+      NODE_ENV: 'development',
+      // Generate a random secret for local testing
+      AUTH0_SECRET: signingSecret
     }
   },
   use: {
