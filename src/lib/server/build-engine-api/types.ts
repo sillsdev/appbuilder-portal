@@ -35,15 +35,27 @@ export type ErrorResponse = {
   type: string;
 };
 
+export function toErrorResponse(json: Record<string, unknown>): ErrorResponse {
+  return { ...json, responseType: 'error' } as ErrorResponse;
+}
+
 export type StatusResponse = {
   responseType: 'status';
   status: number;
 };
 
+export function toStatusResponse(status: number): StatusResponse {
+  return { responseType: 'status', status } as StatusResponse;
+}
+
 export type DeleteResponse = {
   responseType: 'delete';
   status: number;
 };
+
+export function toDeleteResponse(status: number): DeleteResponse {
+  return { responseType: 'delete', status } as DeleteResponse;
+}
 
 type SuccessResponse = {
   responseType: 'project' | 'token' | 'job' | 'build' | 'release';
@@ -80,6 +92,9 @@ export type ProjectResponse = SuccessResponse &
     user_id: string;
     group_id: string;
   };
+export function toProjectResponse(json: Record<string, unknown>): ProjectResponse {
+  return { ...json, responseType: 'project' } as ProjectResponse;
+}
 
 export type TokenConfig = {
   name: string;
@@ -95,6 +110,10 @@ export type TokenResponse = {
   ReadOnly: boolean;
 };
 
+export function toTokenResponse(json: Record<string, unknown>): TokenResponse {
+  return { ...json, responseType: 'token' } as TokenResponse;
+}
+
 export type JobConfig = {
   request_id: string;
   git_url: string;
@@ -105,6 +124,10 @@ export type JobResponse = SuccessResponse &
   JobConfig & {
     responseType: 'job';
   };
+
+export function toJobResponse(json: Record<string, unknown>): JobResponse {
+  return { ...json, responseType: 'job' } as JobResponse;
+}
 
 type BuildOrReleaseStatus = 'active' | 'expired' | 'postprocessing';
 
@@ -123,6 +146,10 @@ export type BuildResponse = SuccessResponse &
     error: string | null;
     artifacts: Record<string, string>;
   };
+
+export function toBuildResponse(json: Record<string, unknown>): BuildResponse {
+  return { ...json, responseType: 'build' } as BuildResponse;
+}
 
 export type Channels = 'production' | 'beta' | 'alpha';
 
@@ -143,3 +170,7 @@ export type ReleaseResponse = SuccessResponse &
     consoleText: string;
     artifacts: Record<string, string>;
   };
+
+export function toReleaseResponse(json: Record<string, unknown>): ReleaseResponse {
+  return { ...json, responseType: 'release' } as ReleaseResponse;
+}
