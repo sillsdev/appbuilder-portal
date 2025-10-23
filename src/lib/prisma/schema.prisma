@@ -201,6 +201,7 @@ model ProductBuilds {
   DateCreated         DateTime?             @default(now()) @db.Timestamp(6)
   DateUpdated         DateTime?             @updatedAt @db.Timestamp(6)
   Success             Boolean?
+  AppBuilderVersion   String?
   ProductArtifacts    ProductArtifacts[]
   Product             Products              @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductBuilds_Products_ProductId")
   ProductPublications ProductPublications[]

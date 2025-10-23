@@ -15,6 +15,7 @@
         Version: true;
         Success: true;
         BuildId: true;
+        AppBuilderVersion: true;
       };
     }>;
     artifacts: Prisma.ProductArtifactsGetPayload<{
@@ -60,8 +61,11 @@
 
 <div class="rounded-md border border-slate-400 w-full my-2">
   <div class="bg-neutral p-2 flex flex-row rounded-t-md place-content-between">
-    <span class="font-bold text-lg text-accent grow">
+    <span class="font-bold text-lg text-accent">
       {versionString(build)}
+    </span>
+    <span class="ml-2 text-lg grow opacity-75">
+      {m.projectTable_appBuilderVersion()}:&nbsp;{build.AppBuilderVersion ?? '-'}
     </span>
     <span>
       {m.products_numArtifacts({ amount: artifacts.length })}

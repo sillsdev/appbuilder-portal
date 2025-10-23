@@ -429,6 +429,7 @@
   "projectTable_group": "Group",
   "projectTable_buildVersion": "Build Version",
   "projectTable_buildDate": "Build Date",
+  "projectTable_appBuilderVersion": "AppBuilder Version",
   "projectTable_createdOn": "Created On",
   "projectTable_updatedOn": "Updated On",
   "projectTable_archivedOn": "Archived On",

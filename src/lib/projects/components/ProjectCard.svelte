@@ -98,6 +98,7 @@
             <th>{m.projectTable_products()}</th>
             <th>{m.projectTable_buildVersion()}</th>
             <th>{m.projectTable_buildDate()}</th>
+            <th>{m.projectTable_appBuilderVersion()}</th>
           </tr>
         </thead>
         <tbody>
@@ -114,6 +115,9 @@
               </td>
               <td>
                 {getTimeDateString(product.DateBuilt)}
+              </td>
+              <td>
+                {product.AppBuilderVersion ?? '-'}
               </td>
             </tr>
           {/each}

@@ -12,6 +12,7 @@ export function pruneProjects(
         include: {
           ProductDefinition: true;
           WorkflowInstance: true;
+          ProductBuilds: true;
         };
       };
       Owner: true;
@@ -46,11 +47,20 @@ export function pruneProjects(
       DateActive,
       DateArchived,
       Products: Products.map(
-        ({ Id, ProductDefinition, VersionBuilt, DateBuilt, WorkflowInstance, DatePublished }) => ({
+        ({
+          Id,
+          ProductDefinition,
+          VersionBuilt,
+          DateBuilt,
+          WorkflowInstance,
+          DatePublished,
+          ProductBuilds
+        }) => ({
           Id: Id,
           ProductDefinitionId: ProductDefinition.Id,
           ProductDefinitionName: ProductDefinition.Name,
           VersionBuilt,
+          AppBuilderVersion: ProductBuilds.at(0)?.AppBuilderVersion ?? null,
           DateBuilt,
           CanRebuild: !!(
             !WorkflowInstance &&

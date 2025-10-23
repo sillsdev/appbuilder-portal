@@ -428,6 +428,7 @@
   "projectTable_language": "Idioma",
   "projectTable_group": "Grupo",
   "projectTable_buildVersion": "Versión de compilación",
+  "projectTable_appBuilderVersion": "Versión de AppBuilder",
   "projectTable_buildDate": "Fecha de compilación",
   "projectTable_createdOn": "Fecha de creación",
   "projectTable_updatedOn": "Fecha de actualización",
