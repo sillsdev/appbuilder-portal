@@ -6,7 +6,7 @@ on:
 
 jobs:
   check:
-    uses: ./.github/workflows/jobs/setup.yml
+    uses: ./.github/workflows/setup.yml
     secrets:
       BUILD_ENGINE_TOKEN: ${{ secrets.BUILD_ENGINE_TOKEN }}
       AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
