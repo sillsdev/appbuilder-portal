@@ -95,6 +95,7 @@ export const getWorkerConfig = () => {
   if (!_workerConnection) _workerConnection = new Connection(false);
   return {
     connection: _workerConnection!.connection(),
+    prefix: 'scriptoria',
     telemetry: new BullMQOtel('scriptoria')
   } as const;
 };
@@ -103,6 +104,7 @@ export const getQueueConfig = () => {
   if (!_queueConnection) _queues = createQueues();
   return {
     connection: _queueConnection!.connection(),
+    prefix: 'scriptoria',
     telemetry: new BullMQOtel('scriptoria')
   } as const;
 };
