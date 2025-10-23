@@ -173,7 +173,11 @@ jobs:
           }
           npx svelte-kit sync
           echo "Running tests..."
-          npm run test
+          npm run test || {
+            echo "Tests failed"
+            ./run ci logs portal
+            exit 1
+          }
         env:
           CI_PASSWORD: ${{ secrets.CI_PASSWORD }}
           CI_EMAIL: ci@scriptoria.io
