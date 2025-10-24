@@ -1,0 +1,190 @@
+on:
+  workflow_call:
+    secrets:
+      BUILD_ENGINE_TOKEN:
+        required: false
+      AUTH0_CLIENT_SECRET:
+        required: false
+      AUTH0_SECRET:
+        required: false
+      CI_PASSWORD:
+        required: false
+      AWS_EMAIL_ACCESS_KEY_ID:
+        required: false
+      AWS_EMAIL_SECRET_ACCESS_KEY:
+        required: false
+
+jobs:
+  # Install dependencies once and cache for other jobs
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      BACKUP_AUTH0_SECRET: ${{ steps.set-vars.outputs.BACKUP_AUTH0_SECRET }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Get environment info
+        id: set-vars
+        run: |
+          echo Node version
+          node --version
+          npm --version
+          echo
+          echo Docker version
+          docker --version
+          echo
+          echo Environment variables
+          env
+          BACKUP_AUTH0_SECRET=$(hexdump -vn32 -e'8/4 "%08x" 1 "\n"' /dev/urandom)
+          echo "BACKUP_AUTH0_SECRET=${BACKUP_AUTH0_SECRET}" >> $GITHUB_OUTPUT
+
+      - name: Restore node_modules cache
+        id: restore-cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'src/lib/prisma/schema.prisma') }}
+
+      - name: Install dependencies
+        if: steps.restore-cache.outputs.cache-hit != 'true'
+        run: |
+          echo "Installing dependencies..."
+          npm ci
+
+      - name: Cache node_modules
+        if: steps.restore-cache.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'src/lib/prisma/schema.prisma') }}
+
+  # Type checking and linting
+  typecheck-lint:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'src/lib/prisma/schema.prisma') }}
+
+      - name: Compile paraglide messages and run svelte-check
+        run: |
+          echo "Compiling paraglide messages..."
+          npx @inlang/paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide
+          echo "Running svelte-check..."
+          npm run check
+
+      - name: Run lint
+        run: |
+          echo "Running lint..."
+          npm run lint
+
+  # Build and run a smoke test
+  build-and-test:
+    runs-on: ubuntu-latest
+    needs: setup
+    env:
+      CI: true
+      BUILDENGINE_TOKEN: ${{ secrets.BUILD_ENGINE_TOKEN }}
+      AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
+      AUTH0_SECRET: ${{ secrets.AUTH0_SECRET || needs.setup.outputs.BACKUP_AUTH0_SECRET }}
+      AUTH0_CLIENT_ID: ${{ vars.AUTH0_CLIENT_ID }}
+      AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+      AUTH0_CONNECTION: ${{ vars.AUTH0_CONNECTION }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'src/lib/prisma/schema.prisma') }}
+
+      - name: Build, Install Playwright dependencies, and seed database
+        run: |
+          echo "Building .env file..."
+          echo "AUTH0_CLIENT_ID=" > .env
+          echo "AUTH0_CLIENT_SECRET=" >> .env
+          echo "AUTH0_DOMAIN=" >> .env
+          echo "AUTH0_CONNECTION=" >> .env
+          echo "AUTH0_SECRET=" >> .env
+          echo "Building the docker project..."
+          mkdir -p command-output
+          (./run ci build > command-output/build-output.txt 2>&1 || echo $? > command-output/build-exit-code.txt) &
+          echo "Installing Playwright dependencies..."
+          (npx playwright install --with-deps > command-output/playwright-output.txt 2>&1 || echo $? > command-output/playwright-exit-code.txt) &
+          echo "Beginning pull of images"
+          ./run ci pull valkey > /dev/null &
+          echo "Starting database..."
+          ./run ci up -d db
+          sleep 1
+          echo "Seeding the database..."
+          npx prisma migrate reset -f --skip-seed --skip-generate && npx prisma db seed
+          echo "Waiting for build and Playwright installation to finish..."
+          wait
+          if [ -f command-output/build-exit-code.txt ]; then
+            BUILD_EXIT_CODE=$(cat command-output/build-exit-code.txt)
+            echo "Build failed with exit code $BUILD_EXIT_CODE"
+            cat command-output/build-output.txt
+            exit $BUILD_EXIT_CODE
+          fi
+          if [ -f command-output/playwright-exit-code.txt ]; then
+            PLAYWRIGHT_EXIT_CODE=$(cat command-output/playwright-exit-code.txt)
+            echo "Playwright installation failed with exit code $PLAYWRIGHT_EXIT_CODE"
+            cat command-output/playwright-output.txt
+            exit $PLAYWRIGHT_EXIT_CODE
+          fi
+          echo "Build and Playwright installation completed."
+        env:
+          DATABASE_URL: "postgresql://db-user:1234@localhost:5432/development?schema=public"
+
+      - name: Start docker-compose services
+        run: |
+          echo "Starting docker-compose services..."
+          ./run ci up -d
+
+      - name: Run tests
+        run: |
+          # Is the port open
+          sleep 1
+          nc -zv localhost 6173 || {
+            echo "Port 6173 is not open"
+            ./run ci logs portal
+            exit 1
+          }
+          npx svelte-kit sync
+          echo "Running tests..."
+          npm run test || {
+            echo "Tests failed"
+            ./run ci logs portal
+            exit 1
+          }
+        env:
+          CI_PASSWORD: ${{ secrets.CI_PASSWORD }}
+          CI_EMAIL: ci@scriptoria.io
+          AWS_EMAIL_ACCESS_KEY_ID: ${{ secrets.AWS_EMAIL_ACCESS_KEY_ID }}
+          AWS_EMAIL_SECRET_ACCESS_KEY: ${{ secrets.AWS_EMAIL_SECRET_ACCESS_KEY }}
+          MAIL_SENDER: "AmazonSES"
+          ADMIN_NAME: "Scriptoria Staging"
+          ADMIN_EMAIL: "noreply@scriptoria.io"
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: playwright/test-results

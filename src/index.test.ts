@@ -8,13 +8,16 @@ describe('sum test', () => {
 });
 
 describe('email test', () => {
-  it('send test email', async () => {
-    expect(
-      await sendEmail(
-        [{ email: 'success@simulator.amazonses.com', name: 'SES Simulator' }],
-        'Test Email',
-        'This is a test email.'
-      )
-    ).toBeTruthy();
-  });
+  it.skipIf(!process.env.AWS_EMAIL_ACCESS_KEY_ID || !process.env.AWS_EMAIL_SECRET_ACCESS_KEY)(
+    'send test email',
+    async () => {
+      expect(
+        await sendEmail(
+          [{ email: 'success@simulator.amazonses.com', name: 'SES Simulator' }],
+          'Test Email',
+          'This is a test email.'
+        )
+      ).toBeTruthy();
+    }
+  );
 });
