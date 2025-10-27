@@ -67,7 +67,7 @@
   </div>
 </div>
 
-<div class="my-4 text-center">
+<div class="my-4 text-center text-white">
   <span>
     {m.invitations_orgPrompt()}
   </span>
