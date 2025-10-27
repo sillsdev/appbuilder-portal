@@ -107,17 +107,22 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
 
 // This shouldn't need any notifications
 export async function deleteProduct(job: Job<BullMQ.Product.Delete>): Promise<unknown> {
-  const response = await BuildEngine.Requests.deleteJob(
-    { type: 'query', organizationId: job.data.organizationId },
-    job.data.workflowJobId
-  );
-  job.updateProgress(50);
-  if (response.responseType === 'error') {
-    job.log(response.message);
-    throw new Error(response.message);
+  if (job.data.workflowJobId > 0) {
+    const response = await BuildEngine.Requests.deleteJob(
+      { type: 'query', organizationId: job.data.organizationId },
+      job.data.workflowJobId
+    );
+    job.updateProgress(50);
+    if (response.responseType === 'error') {
+      job.log(response.message);
+      throw new Error(response.message);
+    } else {
+      job.updateProgress(100);
+      return response.status;
+    }
   } else {
     job.updateProgress(100);
-    return response.status;
+    return 'No Job to delete from BuildEngine (WorkflowJobId === 0)';
   }
 }
 
