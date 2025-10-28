@@ -71,7 +71,9 @@
       </div>
     </div>
     <div class="flex flex-row">
-      <ul class="menu mx-2 p-0 rounded-sm border border-slate-600 sm:flex hidden max-h-fit top-24 sticky">
+      <ul
+        class="menu mx-2 p-0 rounded-sm border border-slate-600 sm:flex hidden max-h-fit top-24 sticky"
+      >
         <!-- Desktop side menu -->
         {#key page.route.id}
           {#each menuItems as item}
