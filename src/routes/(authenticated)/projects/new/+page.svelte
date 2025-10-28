@@ -17,7 +17,7 @@
   <div class="w-full px-4">
     <OrganizationTable
       organizations={data.organizations}
-      onOrgSelected={(orgId) => goto(page.url.pathname + '/' + orgId)}
+      onOrgSelected={(orgId) => goto(`${page.url.pathname}/${orgId}`)}
     />
   </div>
 </div>
