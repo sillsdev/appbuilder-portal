@@ -7,10 +7,15 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref, localizeUrl } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
   import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
+  import { onMount, untrack } from 'svelte';
+  import { orgActive } from '$lib/stores';
+  import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
+  import type { RouteId } from '$app/types';
 
   interface Props {
     data: PageData;
@@ -28,6 +33,20 @@
       if (result.status === 503) {
         toast('error', m.system_unavailable());
       }
+    }
+  });
+
+  onMount(() => {
+    if (page.params.id && $orgActive !== parseInt(page.params.id)) {
+      $orgActive = parseInt(page.params.id);
+    }
+  });
+
+  $effect(() => {
+    if ($orgActive) {
+      goto(localizeUrl(resolve('/(authenticated)/projects/new/[id=idNumber]', { id: String($orgActive) })));
+    } else {
+      goto(localizeUrl(`/projects/new`));
     }
   });
 </script>
