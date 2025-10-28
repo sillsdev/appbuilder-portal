@@ -396,7 +396,7 @@
           {/snippet}
           <a
             class="btn btn-outline {mobileSizing}"
-            href={localizeHref(`/projects/import/${$orgActive}`)}
+            href={localizeHref(`/projects/import/${$orgActive ?? ''}`)}
           >
             {@render altContent()}
           </a>
@@ -407,7 +407,7 @@
           {/snippet}
           <a
             class="btn btn-outline {mobileSizing}"
-            href={localizeHref(`/projects/new/${$orgActive}`)}
+            href={localizeHref(`/projects/new/${$orgActive ?? ''}`)}
           >
             {@render altContent()}
           </a>
