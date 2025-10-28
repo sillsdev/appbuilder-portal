@@ -1,6 +1,9 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
@@ -8,14 +11,10 @@
   import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref, localizeUrl } from '$lib/paraglide/runtime';
+  import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
   import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
-  import { onMount, untrack } from 'svelte';
-  import { orgActive } from '$lib/stores';
-  import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
-  import type { RouteId } from '$app/types';
 
   interface Props {
     data: PageData;
@@ -44,7 +43,11 @@
 
   $effect(() => {
     if ($orgActive) {
-      goto(localizeUrl(resolve('/(authenticated)/projects/new/[id=idNumber]', { id: String($orgActive) })));
+      goto(
+        localizeUrl(
+          resolve('/(authenticated)/projects/new/[id=idNumber]', { id: String($orgActive) })
+        )
+      );
     } else {
       goto(localizeUrl(`/projects/new`));
     }
