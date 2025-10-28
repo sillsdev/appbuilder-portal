@@ -31,7 +31,16 @@
     {#each organizations.toSorted((a, b) => byName(a, b, getLocale())) as org}
       <tr
         class="dark:border-gray-600 h-16 border-y hover:bg-base-200 cursor-pointer"
+        role="button"
+        tabindex="0"
         onclick={() => onOrgSelected?.(org.Id)}
+        onkeydown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onOrgSelected?.(org.Id);
+          }
+        }}
+        aria-label={m.project_org() + ': ' + org.Name}
       >
         <td>
           {#if org.LogoUrl}
