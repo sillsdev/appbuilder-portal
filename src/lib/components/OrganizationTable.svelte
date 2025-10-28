@@ -47,7 +47,9 @@
         </td>
         <td>
           {#if org.ContactEmail}
-            <a class="link" href="mailto:{org.ContactEmail}">{org.ContactEmail}</a>
+            <a class="link" href="mailto:{org.ContactEmail}" onclick={(e) => e.stopPropagation()}>
+              {org.ContactEmail}
+            </a>
           {:else}
             {m.common_notAvailable()}
           {/if}
