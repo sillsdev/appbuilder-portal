@@ -37,7 +37,7 @@
         <h3>{data.joinedOrganization?.name}</h3>
       </div>
     </div>
-    <a href={localizeHref('/tasks')} class="btn btn-primary">
+    <a href={localizeHref('/tasks')} class="btn btn-primary" data-sveltekit-reload>
       {m.orgMembership_returnToDashboard()}
     </a>
   {:else}
