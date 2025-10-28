@@ -200,5 +200,6 @@
 <style>
   tr:not(:last-child) {
     border-bottom: 1px solid;
+    border-color: var(--color-base-content);
   }
 </style>
