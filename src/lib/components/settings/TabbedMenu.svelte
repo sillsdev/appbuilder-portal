@@ -83,7 +83,7 @@
           {#each menuItems as item}
             <li class="border-t border-slate-600 w-full [top:-1px]">
               <a
-                class="rounded-none bg-base-200 p-3"
+                class="rounded-none bg-base-200 p-3 text-nowrap"
                 class:active={isActive(item.route)}
                 href={localizeHref(`${base}/${item.route}`)}
               >
