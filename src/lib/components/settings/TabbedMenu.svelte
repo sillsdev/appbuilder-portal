@@ -44,7 +44,7 @@
 
 <div class="w-full max-w-6xl mx-auto">
   <div class="flex flex-col">
-    <div class="p-4 sm:pr-0 sm:sticky top-0 sm:self-start z-10 bg-base-100">
+    <div class="p-4 sm:pr-0 sm:sticky top-0 sm:self-start z-[5] bg-base-100">
       {#if title}
         {@render title()}
       {:else}
