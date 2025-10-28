@@ -1,14 +1,9 @@
 <script lang="ts">
-  import { type Snippet, onMount, untrack } from 'svelte';
+  import { type Snippet } from 'svelte';
   import type { LayoutData } from './$types';
-  import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
   import { page } from '$app/state';
-  import type { RouteId } from '$app/types';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { localizeUrl } from '$lib/paraglide/runtime';
-  import { orgActive } from '$lib/stores';
 
   interface Props {
     data: LayoutData;
@@ -16,27 +11,10 @@
   }
 
   let { data, children }: Props = $props();
-
-  onMount(() => {
-    if (page.params.id && $orgActive !== parseInt(page.params.id)) {
-      $orgActive = parseInt(page.params.id);
-    }
-  });
-
-  const baseRouteId = '/(authenticated)/organizations/[id=idNumber]/settings' satisfies RouteId;
-
-  $effect(() => {
-    if ($orgActive) {
-      const id = untrack(() => page.route.id!);
-      goto(localizeUrl(resolve(id as typeof baseRouteId, { id: String($orgActive) })));
-    } else {
-      goto(localizeUrl(`/organizations`));
-    }
-  });
 </script>
 
 <TabbedMenu
-  {baseRouteId}
+  baseRouteId={'/(authenticated)/organizations/[id=idNumber]/settings'}
   routeParams={{ id: page.params.id! }}
   menuItems={[
     {
