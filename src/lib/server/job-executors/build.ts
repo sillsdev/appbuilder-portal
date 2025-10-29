@@ -161,95 +161,89 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
   let latestArtifactDate = new Date(0);
   job.log('ARTIFACTS:');
   const artifacts = await DatabaseWrites.productArtifacts.createManyAndReturn({
-    data: (
-      await Promise.all(
-        Object.entries(job.data.build.artifacts).map(async ([type, url]) => {
-          job.log(`${type}: ${url}`);
-          if (url) {
-            const res = await fetch(url, { method: 'HEAD' });
-            const lastModified = new Date(res.headers.get('Last-Modified')!);
-            if (lastModified > latestArtifactDate) {
-              latestArtifactDate = lastModified;
-            }
+    data: await Promise.all(
+      Object.entries(job.data.build.artifacts).map(async ([type, url]) => {
+        job.log(`${type}: ${url}`);
+        const res = await fetch(url, { method: 'HEAD' });
+        const lastModified = new Date(res.headers.get('Last-Modified')!);
+        if (lastModified > latestArtifactDate) {
+          latestArtifactDate = lastModified;
+        }
 
-            // On version.json, update the ProductBuild.Version
-            if (type === 'version' && res.headers.get('Content-Type') === 'application/json') {
-              const version = JSON.parse(await fetch(url).then((r) => r.text()));
-              if (version['version']) {
-                await DatabaseWrites.productBuilds.update({
-                  where: {
-                    Id: job.data.productBuildId
-                  },
-                  data: {
-                    Version: version['version']
-                  }
-                });
-                if (job.data.build.result === 'SUCCESS') {
-                  await DatabaseWrites.products.update(job.data.productId, {
-                    VersionBuilt: version['version']
-                  });
-                }
+        // On version.json, update the ProductBuild.Version
+        if (type === 'version' && res.headers.get('Content-Type') === 'application/json') {
+          const version = JSON.parse(await fetch(url).then((r) => r.text()));
+          if (version['version']) {
+            await DatabaseWrites.productBuilds.update({
+              where: {
+                Id: job.data.productBuildId
+              },
+              data: {
+                Version: version['version']
               }
-              if (version['appbuilderVersion']) {
-                await DatabaseWrites.productBuilds.update({
-                  where: {
-                    Id: job.data.productBuildId
-                  },
-                  data: {
-                    AppBuilderVersion: version['appbuilderVersion']
-                  }
-                });
-              }
+            });
+            if (job.data.build.result === 'SUCCESS') {
+              await DatabaseWrites.products.update(job.data.productId, {
+                VersionBuilt: version['version']
+              });
             }
-
-            // On play-listing-manifest.json, update the Project.DefaultLanguage
-            if (
-              type == 'play-listing-manifest' &&
-              res.headers.get('Content-Type') === 'application/json'
-            ) {
-              const manifest = JSON.parse(await fetch(url).then((r) => r.text()));
-              if (manifest['default-language']) {
-                const lang = await DatabaseReads.storeLanguages.findFirst({
-                  where: {
-                    Name: manifest['default-language']
-                  },
-                  select: {
-                    Id: true
-                  }
-                });
-                if (lang !== null) {
-                  await DatabaseWrites.products.update(job.data.productId, {
-                    StoreLanguageId: lang.Id
-                  });
-                }
-              }
-            }
-
-            if (type === 'package_name' && res.headers.get('Content-Type') === 'text/plain') {
-              const PackageName = await fetchPackageName(url);
-              // populate package name if publish link is not set
-              if (PackageName) {
-                await DatabaseWrites.products.update(job.data.productId, { PackageName });
-              }
-            }
-
-            return {
-              ProductId: job.data.productId,
-              ProductBuildId: job.data.productBuildId,
-              ArtifactType: type,
-              Url: url,
-              ContentType: res.headers.get('Content-Type'),
-              FileSize:
-                res.headers.get('Content-Type') !== 'text/html' && res.headers.get('Content-Length')
-                  ? BigInt(res.headers.get('Content-Length')!)
-                  : null
-            };
-          } else {
-            return null;
           }
-        })
-      )
-    ).filter((pa) => !!pa)
+          if (version['appbuilderVersion']) {
+            await DatabaseWrites.productBuilds.update({
+              where: {
+                Id: job.data.productBuildId
+              },
+              data: {
+                AppBuilderVersion: version['appbuilderVersion']
+              }
+            });
+          }
+        }
+
+        // On play-listing-manifest.json, update the Project.DefaultLanguage
+        if (
+          type == 'play-listing-manifest' &&
+          res.headers.get('Content-Type') === 'application/json'
+        ) {
+          const manifest = JSON.parse(await fetch(url).then((r) => r.text()));
+          if (manifest['default-language']) {
+            const lang = await DatabaseReads.storeLanguages.findFirst({
+              where: {
+                Name: manifest['default-language']
+              },
+              select: {
+                Id: true
+              }
+            });
+            if (lang !== null) {
+              await DatabaseWrites.products.update(job.data.productId, {
+                StoreLanguageId: lang.Id
+              });
+            }
+          }
+        }
+
+        if (type === 'package_name' && res.headers.get('Content-Type') === 'text/plain') {
+          const PackageName = await fetchPackageName(url);
+          // populate package name if publish link is not set
+          if (PackageName) {
+            await DatabaseWrites.products.update(job.data.productId, { PackageName });
+          }
+        }
+
+        return {
+          ProductId: job.data.productId,
+          ProductBuildId: job.data.productBuildId,
+          ArtifactType: type,
+          Url: url,
+          ContentType: res.headers.get('Content-Type'),
+          FileSize:
+            res.headers.get('Content-Type') !== 'text/html' && res.headers.get('Content-Length')
+              ? BigInt(res.headers.get('Content-Length')!)
+              : null
+        };
+      })
+    )
   });
   await DatabaseWrites.products.update(job.data.productId, {
     DateBuilt: latestArtifactDate
