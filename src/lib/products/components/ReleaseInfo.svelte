@@ -80,3 +80,9 @@
     </tbody>
   </table>
 {/if}
+
+<style>
+  .sm\:hidden > tbody > tr > th {
+    opacity: 60%;
+  }
+</style>
