@@ -11,7 +11,7 @@ const profileSchema = v.object({
   lastName: v.nullable(v.string()),
   displayName: v.nullable(v.string()),
   email: v.nullable(v.pipe(v.string(), v.email())),
-  phone: v.nullable(v.pipe(v.string(), v.regex(phoneRegex))),
+  phone: v.nullable(v.pipe(v.string(), v.maxLength(24), v.regex(phoneRegex))),
   timezone: v.nullable(v.string()),
   notifications: v.boolean(),
   visible: v.boolean(),

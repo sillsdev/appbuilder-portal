@@ -102,6 +102,7 @@
         bind:value={$form.phone}
         pattern={regExpToInputPattern(phoneRegex)}
       />
+      <span class="validator-hint">&nbsp;</span>
     </LabeledFormInput>
     <LabeledFormInput key="profile_timezone">
       <TypeaheadInput
