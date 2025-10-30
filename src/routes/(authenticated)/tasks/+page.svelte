@@ -8,6 +8,7 @@
   import { localizeHref } from '$lib/paraglide/runtime';
   import { userTasksSSE } from '$lib/stores';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
+  import TaskComment from '$lib/products/components/TaskComment.svelte';
 
   interface Props {
     data: PageData;
@@ -68,27 +69,7 @@
             {#if task.Comment}
               <tr>
                 <td class="pl-7 pt-0" colspan="3">
-                  {#if task.Comment.startsWith('system.')}
-                    {#if task.Comment.startsWith('system.build-failed')}
-                      <span>
-                        {m.system_buildFailed()}
-                      </span>
-                    {:else if task.Comment.startsWith('system.publish-failed')}
-                      <span>
-                        {m.system_publishFailed()}
-                      </span>
-                    {/if}
-                    <span>—</span>
-                    <a
-                      class="link link-info"
-                      href={task.Comment.replace(/system\.(build|publish)-failed,/, '')}
-                      target="_blank"
-                    >
-                      {m.publications_console()}
-                    </a>
-                  {:else}
-                    {task.Comment}
-                  {/if}
+                  <TaskComment comment={task.Comment} />
                 </td>
               </tr>
             {/if}
