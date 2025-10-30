@@ -104,6 +104,58 @@
             id: 'project',
             header: m.project_title(),
             compare: () => 0
+          }
+        ]}
+        serverSide={true}
+        className="max-h-full sm:hidden"
+        onSort={(field, direction) =>
+          form.update((data) => ({ ...data, sort: { field, direction } }))}
+        fixedLayout={false}
+      >
+        {#snippet row(instance)}
+          {@const project = instance.Product.Project}
+          {@const org = project.Organization}
+          {@const prodDef = instance.Product.ProductDefinition}
+          <tr>
+            <td class="border">
+              <Tooltip className="text-left" tip={getTimeDateString(instance.DateUpdated)}>
+                {$instanceUpdated[instance.i]}
+              </Tooltip>
+            </td>
+            <td class="border">
+              <a class="link" href={localizeHref(`/projects/${project.Id}`)}>{project.Name}</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="border">{instance.State}</td>
+            <td class="border">
+              <a class="link" href={localizeHref(`/projects/organization/${org.Id}`)}>
+                {org.Name}
+              </a>
+            </td>
+          </tr>
+          <tr class="cursor-pointer hover:bg-neutral row">
+            <td class="border border-b-base-content/50" colspan="2">
+              <a class="link" href={localizeHref(`/workflow-instances/${instance.Product.Id}`)}>
+                {prodDef.Name}
+              </a>
+            </td>
+          </tr>
+        {/snippet}
+      </SortTable>
+      <SortTable
+        data={instances.map((instance, index) => ({ ...instance, i: index }))}
+        columns={[
+          // This will not sort by locale... need a good solution...
+          {
+            id: 'date',
+            header: m.common_updated(),
+            compare: () => 0
+          },
+          {
+            id: 'project',
+            header: m.project_title(),
+            compare: () => 0
           },
           {
             id: 'definition',
@@ -122,7 +174,7 @@
           }
         ]}
         serverSide={true}
-        className="max-h-full"
+        className="max-h-full hidden sm:block"
         onSort={(field, direction) =>
           form.update((data) => ({ ...data, sort: { field, direction } }))}
         fixedLayout={false}

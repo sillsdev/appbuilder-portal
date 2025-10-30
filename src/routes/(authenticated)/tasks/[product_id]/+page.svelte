@@ -339,7 +339,7 @@
         {/snippet}
       </SortTable>
       <SortTable
-        className="max-h-none hidden sm:table"
+        className="max-h-none hidden sm:block"
         data={data.files}
         columns={[
           {
