@@ -81,9 +81,9 @@
           {m.orgMembership_rolesAndGroups()}
         </span>
         <div class="grow border border-opacity-15 border-gray-50 rounded-lg p-4">
-          <div class="flex flex-row space-x-2">
+          <div class="flex flex-col sm:flex-row space-x-2 space-y-2">
             <div>
-              {m.users_userRoles()}
+              <span class="font-bold opacity-75">{m.users_userRoles()}</span>
               <RolesSelector>
                 {#snippet selector(role)}
                   <input
@@ -96,7 +96,7 @@
               </RolesSelector>
             </div>
             <div>
-              {m.users_userGroups()}
+              <span class="font-bold opacity-75">{m.users_userGroups()}</span>
               <GroupsSelector groups={currentGroups}>
                 {#snippet selector(group)}
                   <input
