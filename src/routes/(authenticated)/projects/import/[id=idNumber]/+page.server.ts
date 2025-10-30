@@ -218,7 +218,9 @@ export const actions: Actions = {
             TypeId: form.data.type,
             Description: pj.Description ?? '',
             IsPublic: pj.IsPublic,
-            // ISSUE #1303 Add new fields here
+            AllowDownloads: pj.AllowDownloads ?? true,
+            AutoPublishOnRebuild: pj.AutoPublishOnRebuild ?? false,
+            RebuildOnSoftwareUpdate: pj.RebuildOnSoftwareUpdate ?? false,
             ImportId: imp.Id
           };
         })

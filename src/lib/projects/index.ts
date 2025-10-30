@@ -133,8 +133,9 @@ export const importJSONSchema = v.pipe(
       v.array(
         v.strictObject({
           ...projectSchemaBase.entries,
-          AllowDownloads: v.optional(v.boolean())
-          // ISSUE #1303 Add new fields here
+          AllowDownloads: v.optional(v.boolean()),
+          AutoPublishOnRebuild: v.optional(v.boolean()),
+          RebuildOnSoftwareUpdate: v.optional(v.boolean())
         })
       ),
       v.minLength(1)
