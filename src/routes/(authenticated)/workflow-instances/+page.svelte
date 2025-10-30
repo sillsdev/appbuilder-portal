@@ -94,10 +94,10 @@
       <SortTable
         data={instances.map((instance, index) => ({ ...instance, i: index }))}
         columns={[
+          // This will not sort by locale... need a good solution...
           {
-            // This will not sort by locale... need a good solution...
-            id: 'organization',
-            header: m.project_org(),
+            id: 'date',
+            header: m.common_updated(),
             compare: () => 0
           },
           {
@@ -116,8 +116,8 @@
             compare: () => 0
           },
           {
-            id: 'date',
-            header: m.common_updated(),
+            id: 'organization',
+            header: m.project_org(),
             compare: () => 0
           }
         ]}
@@ -133,9 +133,9 @@
           {@const prodDef = instance.Product.ProductDefinition}
           <tr class="cursor-pointer hover:bg-neutral">
             <td class="border">
-              <a class="link" href={localizeHref(`/projects/organization/${org.Id}`)}>
-                {org.Name}
-              </a>
+              <Tooltip className="text-left" tip={getTimeDateString(instance.DateUpdated)}>
+                {$instanceUpdated[instance.i]}
+              </Tooltip>
             </td>
             <td class="border">
               <a class="link" href={localizeHref(`/projects/${project.Id}`)}>{project.Name}</a>
@@ -147,9 +147,9 @@
             </td>
             <td class="border">{instance.State}</td>
             <td class="border">
-              <Tooltip className="text-left" tip={getTimeDateString(instance.DateUpdated)}>
-                {$instanceUpdated[instance.i]}
-              </Tooltip>
+              <a class="link" href={localizeHref(`/projects/organization/${org.Id}`)}>
+                {org.Name}
+              </a>
             </td>
           </tr>
         {/snippet}
