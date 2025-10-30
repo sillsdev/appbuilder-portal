@@ -125,6 +125,7 @@
         className="max-h-full"
         onSort={(field, direction) =>
           form.update((data) => ({ ...data, sort: { field, direction } }))}
+        fixedLayout={false}
       >
         {#snippet row(instance)}
           {@const project = instance.Product.Project}

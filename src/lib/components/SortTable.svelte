@@ -26,6 +26,7 @@
     serverSide?: boolean;
     onSort?: (field: string, direction: 'asc' | 'desc') => void;
     row: Snippet<[RowItem]>;
+    fixedLayout?: boolean;
   }
 
   let {
@@ -34,7 +35,8 @@
     className = '',
     serverSide = false,
     onSort,
-    row
+    row,
+    fixedLayout = true
   }: Props = $props();
 
   let firstSortable = $derived(columns.find((c) => c.compare !== undefined)!);
@@ -75,7 +77,7 @@
 </script>
 
 <div class="overflow-y {className}">
-  <table class="table table-fixed">
+  <table class="table" class:table-fixed={fixedLayout}>
     <thead>
       <tr>
         {#each columns as c}
