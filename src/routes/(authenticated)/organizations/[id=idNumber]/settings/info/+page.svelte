@@ -22,7 +22,7 @@
 
 <form action="" class="m-4" method="post" use:enhance>
   <div class="flex flex-row">
-    <div>
+    <div class="w-full">
       <LabeledFormInput key="org_name">
         <input
           type="text"
@@ -51,8 +51,11 @@
         />
         <span>{m.org_logoURL_note()}</span>
       </LabeledFormInput>
+      <div class="w-1/3 mx-auto sm:hidden">
+        <img src={$form.logoUrl} alt="Logo" class="object-contain" />
+      </div>
     </div>
-    <div class="w-1/3 ml-4">
+    <div class="w-1/3 ml-4 hidden sm:block">
       <img src={$form.logoUrl} alt="Logo" class="object-contain" />
     </div>
   </div>
