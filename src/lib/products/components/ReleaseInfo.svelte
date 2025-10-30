@@ -21,7 +21,37 @@
 </script>
 
 {#if release?.LogUrl}
-  <table class="table table-auto bg-base-100 {classes}">
+  <table class="table table-auto bg-base-100 sm:hidden {classes}">
+    <tbody>
+      <tr>
+        <th class={headerClasses}>{m.publications_channel()}</th>
+        <td>{release.Channel}</td>
+      </tr>
+      <tr>
+        <th class={headerClasses}>{m.publications_status()}</th>
+        <td>
+          {release.Success ? m.publications_succeeded() : m.publications_failed()}
+        </td>
+      </tr>
+      {#if release.DateResolved}
+        <tr>
+          <th class={headerClasses}>{m.publications_resolved()}</th>
+          <td>{getTimeDateString(release.DateResolved)}</td>
+        </tr>
+      {/if}
+      <tr>
+        <th class={headerClasses}>{m.publications_date()}</th>
+        <td>{getTimeDateString(release.DateUpdated)}</td>
+      </tr>
+      <tr>
+        <th class={headerClasses}>{m.publications_url()}</th>
+        <td>
+          <a href={release.LogUrl} class="link" target="_blank">{m.publications_console()}</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="hidden sm:table table-auto bg-base-100 {classes}">
     <thead class={headerClasses}>
       <tr>
         <th>{m.publications_channel()}</th>
