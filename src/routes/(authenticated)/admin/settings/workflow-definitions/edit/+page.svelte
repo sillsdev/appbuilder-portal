@@ -33,7 +33,7 @@
   let propsOk = $state(true);
 </script>
 
-<h3>{m.flowDefs_edit()}</h3>
+<h3 class="pl-4">{m.flowDefs_edit()}</h3>
 
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
@@ -42,7 +42,7 @@
     <input
       type="text"
       name="name"
-      class="input input-bordered w-full validator"
+      class="input input-bordered validator"
       bind:value={$form.name}
       required
     />
@@ -80,7 +80,7 @@
     <input
       type="text"
       name="description"
-      class="input input-bordered w-full"
+      class="input input-bordered"
       bind:value={$form.description}
     />
     <span class="validator-hint">&nbsp;</span>
@@ -150,6 +150,11 @@
   input[type='text'],
   select {
     width: 100%;
-    max-width: var(--container-xs);
+  }
+  @media (width >= 40rem) {
+    input[type='text'],
+    select {
+      max-width: var(--container-xs);
+    }
   }
 </style>

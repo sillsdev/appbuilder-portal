@@ -25,7 +25,7 @@
   });
 </script>
 
-<h3>{m.storeTypes_edit()}</h3>
+<h3 class="pl-4">{m.storeTypes_edit()}</h3>
 
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
