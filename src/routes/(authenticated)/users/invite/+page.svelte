@@ -80,7 +80,7 @@
         <span class="fieldset-label my-2">
           {m.orgMembership_rolesAndGroups()}
         </span>
-        <div class="grow border border-opacity-15 border-gray-50 rounded-lg p-4">
+        <div class="grow border border-black/20 dark:border-gray-50/20 rounded-lg p-4">
           <div class="flex flex-col sm:flex-row space-x-2 space-y-2">
             <div>
               <span class="font-bold opacity-75">{m.users_userRoles()}</span>
