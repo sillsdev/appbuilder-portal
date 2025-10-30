@@ -218,8 +218,9 @@ export const actions: Actions = {
             TypeId: form.data.type,
             Description: pj.Description ?? '',
             IsPublic: pj.IsPublic,
-            AutoPublishAfterRebuild: pj.AutoPublishAfterRebuild ?? false,
-            TriggerRebuildOnSoftwareUpdate: pj.TriggerRebuildOnSoftwareUpdate ?? false,
+            AllowDownloads: pj.AllowDownloads ?? true,
+            AutoPublishOnRebuild: pj.AutoPublishOnRebuild ?? false,
+            RebuildOnSoftwareUpdate: pj.RebuildOnSoftwareUpdate ?? false,
             ImportId: imp.Id
           };
         })
