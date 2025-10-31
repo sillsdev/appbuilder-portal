@@ -13,11 +13,11 @@
 </script>
 
 <div class="w-full max-w-6xl mx-auto">
-  <h1 class="pl-7">{m.org_settingsTitle()}</h1>
+  <h1 class="pl-7">{m.projectImport_title()}</h1>
   <div class="w-full px-4">
     <OrganizationTable
       organizations={data.organizations}
-      onOrgSelected={(orgId) => goto(`${page.url.pathname}/${orgId}/settings/info`)}
+      onOrgSelected={(orgId) => goto(`${page.url.pathname}/${orgId}`)}
     />
   </div>
 </div>

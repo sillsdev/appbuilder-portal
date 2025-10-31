@@ -4,12 +4,15 @@
   import { superForm } from 'sveltekit-superforms';
   import { flatten, safeParse } from 'valibot';
   import type { PageData } from './$types';
+  import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref, localizeUrl } from '$lib/paraglide/runtime';
   import { importJSONSchema } from '$lib/projects';
+  import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
 
@@ -70,6 +73,22 @@
         parseErrors = flatten<typeof importJSONSchema>(res.issues);
       }
     };
+
+    if (page.params.id && $orgActive !== parseInt(page.params.id)) {
+      $orgActive = parseInt(page.params.id);
+    }
+  });
+
+  $effect(() => {
+    if ($orgActive) {
+      goto(
+        localizeUrl(
+          resolve('/(authenticated)/projects/import/[id=idNumber]', { id: String($orgActive) })
+        )
+      );
+    } else {
+      goto(localizeUrl(`/projects/import`));
+    }
   });
 </script>
 
