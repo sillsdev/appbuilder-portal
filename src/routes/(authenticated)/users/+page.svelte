@@ -192,7 +192,7 @@
             </td>
           </tr>
           <tr class="align-top">
-            <td class="py-2" colspan="2">
+            <td class="py-2 pl-1" colspan="2">
               {#each userOrgs as org}
                 {@render roles(org, locale)}
               {/each}
