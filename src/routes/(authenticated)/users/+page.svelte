@@ -258,7 +258,7 @@
     border-bottom: 1px solid;
     border-color: var(--color-base-content);
   }
-  @media (width >= 400px) {
+  @media (width >= 40rem) {
     .sm\:d-table {
       display: table;
     }
