@@ -324,16 +324,13 @@
               {bytesToHumanSize(file.FileSize)}
             </td>
           </tr>
-          <tr
-            class="cursor-pointer hover:bg-neutral"
-            onclick={() => {
-              if (file.Url) {
-                window.open(file.Url, '_blank')?.focus();
-              }
-            }}
-          >
+          <tr class="cursor-pointer hover:bg-neutral">
             <td class="border wrap-break-word" colspan="2">
-              <a class="link" href={file.Url} target="_blank">{file.Url}</a>
+              {#if file.Url}
+                <a class="link" href={file.Url} target="_blank">{file.Url}</a>
+              {:else}
+                -
+              {/if}
             </td>
           </tr>
         {/snippet}
@@ -375,7 +372,18 @@
               {bytesToHumanSize(file.FileSize)}
             </td>
             <td class="border wrap-break-word">
-              <a class="link" href={file.Url} target="_blank">{file.Url}</a>
+              {#if file.Url}
+                <a
+                  class="link"
+                  href={file.Url}
+                  target="_blank"
+                  onclick={(e) => e.stopPropagation()}
+                >
+                  {file.Url}
+                </a>
+              {:else}
+                -
+              {/if}
             </td>
           </tr>
         {/snippet}
