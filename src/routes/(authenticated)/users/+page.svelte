@@ -131,6 +131,7 @@
       disabled={data.session?.user.userId === user.I}
       type="checkbox"
       name="active"
+      aria-label={m.users_table_active()}
       bind:checked={user.A}
       onchange={(e) => {
         if (data.session?.user.userId !== user.I) {
