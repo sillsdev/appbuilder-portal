@@ -47,7 +47,7 @@
     }
   });
 
-  const mobileSizing = 'w-full md:w-auto md:max-w-none';
+  const mobileSizing = 'w-full md:w-auto';
 
   $effect(() => {
     $form.organizationId = $orgActive;

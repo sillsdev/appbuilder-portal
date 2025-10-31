@@ -55,7 +55,6 @@
     $form.organizationId = $orgActive;
   });
 
-  const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
   function getUserLockMessage(locked: boolean, success: boolean): string {
     if (success) {
       if (locked) {
@@ -163,9 +162,9 @@
       method="POST"
       action="?/page"
       use:enhance
-      class="flex flex-row flex-wrap place-content-end items-center p-2 gap-1"
+      class="flex flex-row flex-wrap place-content-end items-center p-2 gap-1 w-full md:w-auto"
     >
-      <SearchBar bind:value={$form.search} className={mobileSizing} requestSubmit={submit} />
+      <SearchBar bind:value={$form.search} className='w-full md:w-auto' requestSubmit={submit} />
     </form>
   </div>
   <div class="m-4 relative mt-0">

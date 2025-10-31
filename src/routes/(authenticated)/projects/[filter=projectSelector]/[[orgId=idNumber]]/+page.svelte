@@ -165,7 +165,7 @@
     $productForm.products = selectedProducts.map((p) => p.Id);
   });
 
-  const mobileSizing = 'w-full md:w-auto md:max-w-none';
+  const mobileSizing = 'w-full md:w-auto';
 
   const allOrgIds = $derived(data.organizations.map((o) => o.Id));
 

@@ -47,7 +47,7 @@
     }
   });
 
-  const mobileSizing = 'w-full md:w-auto md:max-w-none';
+  const mobileSizing = 'w-full md:w-auto';
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2 pt-4">
