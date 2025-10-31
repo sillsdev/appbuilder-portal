@@ -81,7 +81,7 @@
           {m.orgMembership_rolesAndGroups()}
         </span>
         <div class="grow border border-black/20 dark:border-gray-50/20 rounded-lg p-4">
-          <div class="flex flex-col sm:flex-row space-x-2 space-y-2">
+          <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
             <div>
               <span class="font-bold opacity-75">{m.users_userRoles()}</span>
               <RolesSelector>
