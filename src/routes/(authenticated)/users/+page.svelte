@@ -76,8 +76,8 @@
         {user.N}
       </a>
     </p>
-    <p class="text-sm overflow-hidden">
-      {user.E?.replace('@', '\u200b@')}
+    <p class="text-sm wrap-break-word">
+      {user.E}
     </p>
   </div>
 {/snippet}
