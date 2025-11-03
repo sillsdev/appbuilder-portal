@@ -75,6 +75,7 @@
               <option value={group.Id}>{group.Name}</option>
             {/each}
           </select>
+          <span class="validator-hint">&nbsp;</span>
         </LabeledFormInput>
       </div>
       <div class="row">
@@ -96,6 +97,7 @@
               <option value={type.Id}>{type.Description}</option>
             {/each}
           </select>
+          <span class="validator-hint">&nbsp;</span>
         </LabeledFormInput>
       </div>
       <div class="row">
@@ -105,6 +107,7 @@
             class="textarea textarea-bordered h-48 w-full"
             bind:value={$form.Description}
           ></textarea>
+          <span class="validator-hint">&nbsp;</span>
         </LabeledFormInput>
         <PublicPrivateToggle
           title={{ key: 'project_public' }}
@@ -147,5 +150,10 @@
     column-gap: calc(var(--spacing) * 4);
     width: 100%;
     justify-content: center;
+  }
+
+  input,
+  select {
+    width: 100%;
   }
 </style>

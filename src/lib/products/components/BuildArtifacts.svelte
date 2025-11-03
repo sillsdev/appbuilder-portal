@@ -60,15 +60,18 @@
 </script>
 
 <div class="rounded-md border border-slate-400 w-full my-2">
-  <div class="bg-neutral p-2 flex flex-row rounded-t-md place-content-between">
+  <div class="bg-neutral p-2 flex flex-row flex-wrap rounded-t-md place-content-between">
     <span class="font-bold text-lg text-accent">
       {versionString(build)}
     </span>
-    <span class="ml-2 text-lg grow opacity-75">
+    <span class="ml-2 text-lg grow opacity-75 hidden sm:inline">
       {m.projectTable_appBuilderVersion()}:&nbsp;{build.AppBuilderVersion ?? '-'}
     </span>
-    <span>
+    <span class="ml-2">
       {m.products_numArtifacts({ amount: artifacts.length })}
+    </span>
+    <span class="text-lg opacity-75 sm:hidden">
+      {m.projectTable_appBuilderVersion()}:&nbsp;{build.AppBuilderVersion ?? '-'}
     </span>
   </div>
   <div class="p-2 overflow-x-auto">
@@ -107,8 +110,8 @@
         </tbody>
       </table>
     {/if}
-    <ReleaseInfo {release} />
   </div>
+  <div class="p-2"><ReleaseInfo {release} /></div>
 </div>
 
 <style>
@@ -116,6 +119,13 @@
   tr > td:first-child {
     position: sticky;
     left: 0;
+    z-index: 0;
+  }
+  tr > th:not(:first-child),
+  tr > td:not(:first-child) {
+    position: sticky;
+    left: 0;
+    z-index: 1;
   }
 
   tr td,

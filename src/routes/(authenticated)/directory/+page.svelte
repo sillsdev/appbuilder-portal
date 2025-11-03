@@ -47,7 +47,7 @@
     }
   });
 
-  const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
+  const mobileSizing = 'w-full md:w-auto';
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative px-2 pt-4">
@@ -84,15 +84,17 @@
         </Tooltip>
       </div>
     </div>
-    <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}">
+    <div
+      class="flex flex-col md:flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}"
+    >
       <div class={mobileSizing}>
         <LanguageCodeTypeahead
           bind:langCode={$form.langCode}
           onLangCodeSelected={() => submit()}
-          inputClasses="w-full max-w-xs"
+          inputClasses="w-full md:max-w-xs"
         />
       </div>
-      <select class="select select-bordered max-w-full" bind:value={$form.productDefinitionId}>
+      <select class="select select-bordered {mobileSizing}" bind:value={$form.productDefinitionId}>
         <option value={null} selected>{m.filters_allProdDefs()}</option>
         {#each data.productDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as pD}
           <option value={pD.Id}>{pD.Name}</option>

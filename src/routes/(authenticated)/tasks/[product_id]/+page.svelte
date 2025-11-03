@@ -293,7 +293,7 @@
     <h3>{m.products_files_title()}</h3>
     <div class="w-full overflow-x-auto">
       <SortTable
-        className="max-h-none"
+        className="max-h-none w-full sm:hidden"
         data={data.files}
         columns={[
           {
@@ -305,10 +305,6 @@
             id: 'fileSize',
             header: m.products_size(),
             compare: (a, b) => byNumber(a.FileSize, b.FileSize)
-          },
-          {
-            id: 'url',
-            header: m.tasks_downloadURL()
           }
         ]}
       >
@@ -327,8 +323,67 @@
             <td class="border">
               {bytesToHumanSize(file.FileSize)}
             </td>
+          </tr>
+          <tr class="cursor-pointer hover:bg-neutral">
+            <td class="border wrap-break-word" colspan="2">
+              {#if file.Url}
+                <a class="link" href={file.Url} target="_blank">{file.Url}</a>
+              {:else}
+                -
+              {/if}
+            </td>
+          </tr>
+        {/snippet}
+      </SortTable>
+      <SortTable
+        className="max-h-none hidden sm:block"
+        data={data.files}
+        columns={[
+          {
+            id: 'artifactType',
+            header: m.project_type(),
+            compare: (a, b) => byString(a.ArtifactType, b.ArtifactType, locale)
+          },
+          {
+            id: 'fileSize',
+            header: m.products_size(),
+            compare: (a, b) => byNumber(a.FileSize, b.FileSize)
+          },
+          {
+            id: 'url',
+            header: m.tasks_downloadURL(),
+            className: 'w-1/2'
+          }
+        ]}
+      >
+        {#snippet row(file)}
+          <tr
+            class="cursor-pointer hover:bg-neutral"
+            onclick={() => {
+              if (file.Url) {
+                window.open(file.Url, '_blank')?.focus();
+              }
+            }}
+          >
             <td class="border">
-              <a class="link" href={file.Url} target="_blank">{file.Url}</a>
+              {file.ArtifactType}
+            </td>
+            <td class="border">
+              {bytesToHumanSize(file.FileSize)}
+            </td>
+            <td class="border wrap-break-word">
+              {#if file.Url}
+                <a
+                  class="link"
+                  href={file.Url}
+                  target="_blank"
+                  onclick={(e) => e.stopPropagation()}
+                >
+                  {file.Url}
+                </a>
+              {:else}
+                -
+              {/if}
             </td>
           </tr>
         {/snippet}

@@ -38,14 +38,7 @@
       route: 'infrastructure'
     }
   ]}
+  titleString={m.org_settingsTitle() + ': ' + data.organization.Name}
 >
-  {#snippet title()}
-    <div class="w-full">
-      <h1 class="p-4 pl-3 pb-0 [text-wrap:nowrap]">
-        {m.org_settingsTitle()}
-      </h1>
-      <h2>{data.organization.Name}</h2>
-    </div>
-  {/snippet}
   {@render children?.()}
 </TabbedMenu>

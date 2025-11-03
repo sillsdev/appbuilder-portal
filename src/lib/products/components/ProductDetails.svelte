@@ -8,6 +8,7 @@
 
 <script lang="ts">
   import type { Prisma } from '@prisma/client';
+  import TaskComment from './TaskComment.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { ProductTransitionType } from '$lib/prisma';
@@ -54,30 +55,6 @@
 
   let detailsModal: HTMLDialogElement;
 </script>
-
-{#snippet comment(com: (typeof transitions)[0]['Comment'])}
-  {#if com?.startsWith('system.')}
-    {#if com.startsWith('system.build-failed')}
-      <span>
-        {m.system_buildFailed()}
-      </span>
-    {:else if com.startsWith('system.publish-failed')}
-      <span>
-        {m.system_publishFailed()}
-      </span>
-    {/if}
-    <br />
-    <a
-      class="link link-info"
-      href={com.replace(/system\.(build|publish)-failed,/, '')}
-      target="_blank"
-    >
-      {m.publications_console()}
-    </a>
-  {:else}
-    {com ?? ''}
-  {/if}
-{/snippet}
 
 {#snippet transitionType(transition: (typeof transitions)[0])}
   {#if transition.TransitionType === ProductTransitionType.Activity}
@@ -149,9 +126,7 @@
           {#if transition.Comment}
             <tr>
               <td colspan="4">
-                <div class="comment">
-                  {@render comment(transition.Comment)}
-                </div>
+                <TaskComment comment={transition.Comment} />
               </td>
             </tr>
           {/if}
@@ -188,7 +163,7 @@
           {/if}
           {#if transition.Comment}
             <tr>
-              <td colspan="2"><div class="comment">{@render comment(transition.Comment)}</div></td>
+              <td colspan="2"><TaskComment comment={transition.Comment} /></td>
             </tr>
           {/if}
         {/each}
@@ -213,18 +188,5 @@
   }
   .no-border {
     border: none;
-  }
-  .comment {
-    border: calc(2 * var(--border)) inset var(--color-base-content);
-    margin: var(--spacing);
-    margin-left: calc(2 * var(--spacing));
-    margin-right: calc(2 * var(--spacing));
-    padding: var(--spacing);
-  }
-  .comment {
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklch, var(--color-base-content) 50%, #0000);
-      background-color: color-mix(in oklch, var(--color-base-300) 15%, #0000);
-    }
   }
 </style>

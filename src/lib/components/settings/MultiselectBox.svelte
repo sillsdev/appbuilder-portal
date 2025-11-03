@@ -9,7 +9,7 @@
   let { header, children }: Props = $props();
 </script>
 
-<div class="border border-opacity-15 border-gray-50 rounded-lg p-2">
+<div class="border border-black/20 dark:border-gray-50/20 rounded-lg p-2">
   <div>
     <span>{header}</span>
   </div>

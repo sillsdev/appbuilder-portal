@@ -19,12 +19,14 @@
        * If `serverSide` is `true`, just use a dummy function like `() => 0`
        */
       compare?: (a: RowItem, b: RowItem) => number;
+      className?: string;
     }[];
     className?: string;
     /** If this is true, will defer sorting to the server instead */
     serverSide?: boolean;
     onSort?: (field: string, direction: 'asc' | 'desc') => void;
     row: Snippet<[RowItem]>;
+    fixedLayout?: boolean;
   }
 
   let {
@@ -33,7 +35,8 @@
     className = '',
     serverSide = false,
     onSort,
-    row
+    row,
+    fixedLayout = true
   }: Props = $props();
 
   let firstSortable = $derived(columns.find((c) => c.compare !== undefined)!);
@@ -74,11 +77,12 @@
 </script>
 
 <div class="overflow-y {className}">
-  <table class="table">
+  <table class="table" class:table-fixed={fixedLayout}>
     <thead>
       <tr>
         {#each columns as c}
           <th
+            class={c.className ?? ''}
             onclick={() => {
               if (c.compare) {
                 sortColByDirection(c);

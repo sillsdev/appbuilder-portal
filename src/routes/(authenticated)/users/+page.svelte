@@ -55,7 +55,6 @@
     $form.organizationId = $orgActive;
   });
 
-  const mobileSizing = 'w-full max-w-xs md:w-auto md:max-w-none';
   function getUserLockMessage(locked: boolean, success: boolean): string {
     if (success) {
       if (locked) {
@@ -69,6 +68,79 @@
     return m.users_acts_unlock_error();
   }
 </script>
+
+{#snippet name(user: (typeof users)[0])}
+  <div class="overflow-x-auto">
+    <p>
+      <a href={localizeHref(`/users/${user.I}/settings`)} class="link pb-2">
+        {user.N}
+      </a>
+    </p>
+    <p class="text-sm overflow-hidden">
+      {user.E?.replace('@', '\u200b@')}
+    </p>
+  </div>
+{/snippet}
+
+{#snippet roles(org: (typeof users)[0]['O'][0], locale: string)}
+  <div class="p-1">
+    <span>
+      <b>
+        {orgMap.get(org.I)}
+      </b>
+    </span>
+    <br />
+    {org.R.map((role) => m.users_roles({ role }))
+      .sort((a, b) => byString(a, b, locale))
+      .join(', ') || m.users_noRoles()}
+  </div>
+{/snippet}
+
+{#snippet groups(org: (typeof users)[0]['O'][0], locale: string)}
+  <div class="p-1">
+    <span>
+      <b>
+        {orgMap.get(org.I)}
+      </b>
+    </span>
+    <br />
+    {org.G.map((g) => groupMap.get(g))
+      .sort((a, b) => byString(a, b, locale))
+      .join(', ') || m.common_none()}
+  </div>
+{/snippet}
+
+{#snippet lock(user: (typeof users)[0])}
+  <form
+    method="POST"
+    action="?/lock"
+    use:svk_enhance={() => {
+      return async ({ result, update }) => {
+        await update({ reset: false, invalidateAll: false });
+        toast(
+          result.type === 'success' ? 'success' : 'error',
+          getUserLockMessage(!user.A, result.type === 'success')
+        );
+      };
+    }}
+  >
+    <input class="hidden" type="hidden" name="user" value={user.I} />
+    <input
+      class="toggle"
+      disabled={data.session?.user.userId === user.I}
+      type="checkbox"
+      name="active"
+      aria-label={m.users_table_active()}
+      bind:checked={user.A}
+      onchange={(e) => {
+        if (data.session?.user.userId !== user.I) {
+          // @ts-expect-error Just submit the form
+          e.currentTarget.parentElement?.requestSubmit();
+        }
+      }}
+    />
+  </form>
+{/snippet}
 
 <div class="w-full">
   <div class="flex flex-row place-content-between w-full flex-wrap items-center">
@@ -90,19 +162,57 @@
       method="POST"
       action="?/page"
       use:enhance
-      class="flex flex-row flex-wrap place-content-end items-center p-2 gap-1"
+      class="flex flex-row flex-wrap place-content-end items-center p-2 gap-1 w-full md:w-auto"
     >
-      <SearchBar bind:value={$form.search} className={mobileSizing} requestSubmit={submit} />
+      <SearchBar bind:value={$form.search} className="w-full md:w-auto" requestSubmit={submit} />
     </form>
   </div>
   <div class="m-4 relative mt-0">
-    <table class="w-full">
+    <table class="w-full table-fixed sm:hidden">
+      <thead>
+        <tr class="border-b-2 text-left">
+          <th>{m.users_table_name()}</th>
+          <th></th>
+          <th></th>
+          <th class="w-20">{m.users_table_active()}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each users as user}
+          {@const locale = getLocale()}
+          {@const userOrgs = user.O.map((o) => ({ ...o, Name: orgMap.get(o.I) })).sort((a, b) =>
+            byName(a, b, locale)
+          )}
+          <tr class="align-top no-border">
+            <td class="p-2" colspan="3">
+              {@render name(user)}
+            </td>
+            <td class="py-2">
+              {@render lock(user)}
+            </td>
+          </tr>
+          <tr class="align-top">
+            <td class="py-2 pl-1" colspan="2">
+              {#each userOrgs as org}
+                {@render roles(org, locale)}
+              {/each}
+            </td>
+            <td class="py-2" colspan="2">
+              {#each userOrgs as org}
+                {@render groups(org, locale)}
+              {/each}
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+    <table class="w-full hidden sm:d-table table-fixed">
       <thead>
         <tr class="border-b-2 text-left">
           <th>{m.users_table_name()}</th>
           <th>{m.users_table_role()}</th>
           <th>{m.users_table_groups()}</th>
-          <th>{m.users_table_active()}</th>
+          <th class="w-20">{m.users_table_active()}</th>
         </tr>
       </thead>
       <tbody>
@@ -113,74 +223,20 @@
           )}
           <tr class="align-top">
             <td class="p-2">
-              <p>
-                <a href={localizeHref(`/users/${user.I}/settings`)} class="link pb-2">
-                  {user.N}
-                </a>
-              </p>
-              <p class="text-sm overflow-hidden">
-                {user.E?.replace('@', '\u200b@')}
-              </p>
+              {@render name(user)}
             </td>
             <td class="py-2">
               {#each userOrgs as org}
-                <div class="p-1">
-                  <span>
-                    <b>
-                      {orgMap.get(org.I)}
-                    </b>
-                  </span>
-                  <br />
-                  {org.R.map((role) => m.users_roles({ role }))
-                    .sort((a, b) => byString(a, b, locale))
-                    .join(', ') || m.users_noRoles()}
-                </div>
+                {@render roles(org, locale)}
               {/each}
             </td>
             <td class="py-2">
               {#each userOrgs as org}
-                <div class="p-1">
-                  <span>
-                    <b>
-                      {orgMap.get(org.I)}
-                    </b>
-                  </span>
-                  <br />
-                  {org.G.map((g) => groupMap.get(g))
-                    .sort((a, b) => byString(a, b, locale))
-                    .join(', ') || m.common_none()}
-                </div>
+                {@render groups(org, locale)}
               {/each}
             </td>
             <td class="py-2">
-              <form
-                method="POST"
-                action="?/lock"
-                use:svk_enhance={() => {
-                  return async ({ result, update }) => {
-                    await update({ reset: false, invalidateAll: false });
-                    toast(
-                      result.type === 'success' ? 'success' : 'error',
-                      getUserLockMessage(!user.A, result.type === 'success')
-                    );
-                  };
-                }}
-              >
-                <input class="hidden" type="hidden" name="user" value={user.I} />
-                <input
-                  class="toggle"
-                  disabled={data.session?.user.userId === user.I}
-                  type="checkbox"
-                  name="active"
-                  bind:checked={user.A}
-                  onchange={(e) => {
-                    if (data.session?.user.userId !== user.I) {
-                      // @ts-expect-error Just submit the form
-                      e.currentTarget.parentElement?.requestSubmit();
-                    }
-                  }}
-                />
-              </form>
+              {@render lock(user)}
             </td>
           </tr>
         {/each}
@@ -201,5 +257,13 @@
   tr:not(:last-child) {
     border-bottom: 1px solid;
     border-color: var(--color-base-content);
+  }
+  @media (width >= 40rem) {
+    .sm\:d-table {
+      display: table;
+    }
+  }
+  tr.no-border {
+    border: none;
   }
 </style>

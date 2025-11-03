@@ -30,7 +30,7 @@
 
 <div class="flex flex-row flex-wrap gap-1 w-full">
   {#if pageCount > 1}
-    <div class="join max-w-xs overflow-x-auto md:max-w-none">
+    <div class="join overflow-x-auto overflow-y-hidden">
       <label class="join-item btn btn-square" class:btn-disabled={!hasPreviousPage}>
         <span>«</span>
         <input class="hidden" type="radio" bind:group={page} name="page" value={page - 1} />

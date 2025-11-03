@@ -25,7 +25,7 @@
   });
 </script>
 
-<h3>{m.models_add({ name: m.storeTypes_add() })}</h3>
+<h3 class="pl-4">{m.models_add({ name: m.storeTypes_add() })}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
   <LabeledFormInput key="storeTypes_name">

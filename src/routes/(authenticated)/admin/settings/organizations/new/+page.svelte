@@ -26,7 +26,7 @@
   });
 </script>
 
-<h3>{m.newOrganization_title()}</h3>
+<h3 class="pl-4">{m.newOrganization_title()}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
   <LabeledFormInput key="org_name">

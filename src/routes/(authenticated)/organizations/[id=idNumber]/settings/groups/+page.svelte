@@ -71,7 +71,7 @@
 {/each}
 <form
   action="?/addGroup"
-  class="m-2"
+  class="m-2 fieldset border border-black/20 dark:border-gray-50/20 rounded-lg p-2"
   method="post"
   use:enhance
   onreset={(e) => {
@@ -82,8 +82,8 @@
     }
   }}
 >
-  {m.org_addGroupButton()}
-  <div class="my-4 flex flex-row w-full space-x-2 items-center">
+  <div class="fieldset-legend">{m.org_addGroupButton()}</div>
+  <div class="flex flex-col sm:flex-row w-full sm:space-x-2 items-center">
     <LabeledFormInput key="common_name">
       <input
         class="w-full input input-bordered validator"
@@ -104,6 +104,6 @@
       />
       <span class="validator-hint">{m.org_abbreviationError()}</span>
     </LabeledFormInput>
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <input type="submit" class="btn btn-primary w-full sm:w-auto" value={m.common_save()} />
   </div>
 </form>

@@ -26,14 +26,14 @@
   });
 </script>
 
-<h3>{m.models_add({ name: m.stores_name() })}</h3>
+<h3 class="pl-4">{m.models_add({ name: m.stores_name() })}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
   <LabeledFormInput key="stores_attributes_name">
     <input
       type="text"
       name="name"
-      class="input input-bordered w-full validator"
+      class="input input-bordered validator"
       bind:value={$form.name}
       required
     />
@@ -43,7 +43,7 @@
     <input
       type="text"
       name="description"
-      class="input input-bordered w-full"
+      class="input input-bordered"
       bind:value={$form.description}
     />
     <span class="validator-hint">&nbsp;</span>
@@ -66,3 +66,16 @@
     <input type="submit" class="btn btn-primary" value={m.common_save()} />
   </div>
 </form>
+
+<style>
+  input[type='text'],
+  select {
+    width: 100%;
+  }
+  @media (width >= 40rem) {
+    input[type='text'],
+    select {
+      max-width: var(--container-xs);
+    }
+  }
+</style>
