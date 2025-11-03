@@ -118,12 +118,12 @@
         <ul class="menu menu-lg p-0 w-full bg-base-100 text-base-content h-full">
           <div class="min-h-full overflow-y-auto">
             <li
-              class="dark:border-gray-600 border-y top-0 sticky z-10 bg-base-200 hover:bg-base-300"
+              class="dark:border-gray-600 border-y top-0 sticky z-10 bg-base-200 hover:bg-base-300 h-16"
             >
               <div class="flex flex-row flex-nowrap">
                 {#if data.organizations.length > 1}
                   <button
-                    class="rounded-none h-16 p-0 pl-2 cursor-pointer grow flex items-center"
+                    class="rounded-none p-0 pl-2 cursor-pointer grow flex items-center"
                     onclick={() => (selectingOrg = !selectingOrg)}
                   >
                     {@render orgDisplay(selectedOrg, 'font-bold text-sm')}
