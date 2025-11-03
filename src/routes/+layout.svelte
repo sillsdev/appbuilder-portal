@@ -12,7 +12,7 @@
 
 <div class="h-screen w-full flex flex-col">
   {@render children?.()}
-  <div class="toast toast-top toast-end">
+  <div class="toast toast-top toast-end z-[10]">
     <SvelteToast />
   </div>
 </div>
