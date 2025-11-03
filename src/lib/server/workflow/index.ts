@@ -79,8 +79,8 @@ export class Workflow {
       input: flow.input
     });
 
-    flow.flow.start();
     await flow.createSnapshot(flow.flow.getSnapshot().context);
+    flow.flow.start();
     await DatabaseWrites.productTransitions.create({
       data: {
         ProductId: productId,
@@ -380,7 +380,7 @@ export class Workflow {
     }))!.ProductDefinition;
     return DatabaseWrites.workflowInstances.upsert(this.productId, {
       create: {
-        State: Workflow.stateName(this.currentState!),
+        State: Workflow.stateName(this.currentState ?? { id: 'Start' }),
         Context: JSON.stringify(context),
         WorkflowDefinitionId:
           context.workflowType === WorkflowType.Rebuild
@@ -390,7 +390,7 @@ export class Workflow {
               : prodDefinition.WorkflowId!
       },
       update: {
-        State: Workflow.stateName(this.currentState!),
+        State: Workflow.stateName(this.currentState ?? { id: 'Start' }),
         Context: JSON.stringify(filtered)
       }
     });
@@ -551,7 +551,7 @@ export class Workflow {
     }
   }
 
-  private static stateName(s: XStateNode<WorkflowContext, WorkflowEvent>): string {
+  private static stateName(s: Pick<XStateNode<WorkflowContext, WorkflowEvent>, 'id'>): string {
     return s.id.replace(WorkflowStateMachine.id + '.', '');
   }
 
