@@ -72,11 +72,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       .sign(secret);
 
     // store challenge and token in redis for up to 5 minutes with generated code as the key
-    // we may want to use IORedis key prefixes in the future (https://github.com/redis/ioredis?tab=readme-ov-file#transparent-key-prefixing)
     await getAuthConnection()
       .pipeline()
-      .set(`auth:code:${code}`, challenge, 'EX', 300)
-      .set(`auth:token:${code}`, token, 'EX', 300)
+      .set(`code:${code}`, challenge, 'EX', 300)
+      .set(`token:${code}`, token, 'EX', 300)
       .exec(); // 5 minute (300 s) TTL
   } catch {
     error(500, 'Failed to generate authentication code');

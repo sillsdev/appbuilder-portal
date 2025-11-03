@@ -19,10 +19,11 @@ import OTEL from '$lib/otel';
 class Connection {
   private conn: Redis;
   private connected: boolean;
-  constructor(isQueueConnection = false) {
+  constructor(isQueueConnection = false, keyPrefix?: string) {
     this.conn = new Redis({
       host: process.env.NODE_ENV === 'development' ? 'localhost' : process.env.VALKEY_HOST,
-      maxRetriesPerRequest: isQueueConnection ? undefined : null
+      maxRetriesPerRequest: isQueueConnection ? undefined : null,
+      keyPrefix
     });
     this.connected = false;
     this.conn.on('close', () => {
@@ -87,7 +88,7 @@ let _authConnection: Connection | undefined = undefined;
 export const QueueConnected = () => _queueConnection?.IsConnected() ?? false;
 
 export const getAuthConnection = () => {
-  if (!_authConnection) _authConnection = new Connection(false);
+  if (!_authConnection) _authConnection = new Connection(false, 'auth');
   return _authConnection.connection();
 };
 
