@@ -14,9 +14,9 @@ import {
   WorkflowAction,
   WorkflowOptions,
   WorkflowState,
+  autoPublishOnRebuild,
   hasAuthors,
   hasReviewers,
-  autoPublishOnRebuild,
   isAuthorState,
   isDeprecated,
   jump
@@ -716,50 +716,39 @@ export const WorkflowStateMachine = setup({
       }
     },
     [WorkflowState.Verify_and_Publish]: {
-      entry: [
-        assign({
-          instructions: ({ context }) => {
-            switch (context.productType) {
-              case ProductType.Android_GooglePlay:
-                return 'googleplay_verify_and_publish';
-              case ProductType.Android_S3:
-                return 'verify_and_publish';
-              case ProductType.AssetPackage:
-                return 'asset_package_verify_and_publish';
-              case ProductType.Web:
-                return 'web_verify';
-            }
-          },
-          includeFields: ({ context }) => {
-            switch (context.productType) {
-              case ProductType.Android_GooglePlay:
-              case ProductType.Android_S3:
-                return ['storeDescription', 'listingLanguageCode'];
-              case ProductType.AssetPackage:
-              case ProductType.Web:
-                return ['storeDescription'];
-            }
-          },
-          includeReviewers: true,
-          includeArtifacts: ({ context }) => {
-            switch (context.productType) {
-              case ProductType.AssetPackage:
-                return 'latestAssetPackage';
-              default:
-                return 'all';
-            }
+      entry: assign({
+        instructions: ({ context }) => {
+          switch (context.productType) {
+            case ProductType.Android_GooglePlay:
+              return 'googleplay_verify_and_publish';
+            case ProductType.Android_S3:
+              return 'verify_and_publish';
+            case ProductType.AssetPackage:
+              return 'asset_package_verify_and_publish';
+            case ProductType.Web:
+              return 'web_verify';
           }
-        }),
-        ({ context }) => {
-          if (!context.isAutomatic) {
-            return;
+        },
+        includeFields: ({ context }) => {
+          switch (context.productType) {
+            case ProductType.Android_GooglePlay:
+            case ProductType.Android_S3:
+              return ['storeDescription', 'listingLanguageCode'];
+            case ProductType.AssetPackage:
+            case ProductType.Web:
+              return ['storeDescription'];
           }
-          void getQueues().Emails.add(`Email reviewers for Product #${context.productId}`, {
-            type: BullMQ.JobType.Email_SendNotificationToReviewers,
-            productId: context.productId
-          });
+        },
+        includeReviewers: true,
+        includeArtifacts: ({ context }) => {
+          switch (context.productType) {
+            case ProductType.AssetPackage:
+              return 'latestAssetPackage';
+            default:
+              return 'all';
+          }
         }
-      ],
+      }),
       exit: assign({
         includeReviewers: false,
         includeArtifacts: null
