@@ -271,13 +271,14 @@ export class Security {
 
   requireProjectClaimable(
     userGroups: { GroupId: number }[],
-    project?: { OwnerId: number; OrganizationId: number; GroupId: number } | null
+    project?: { OwnerId: number; OrganizationId: number; GroupId: number } | null,
+    userId?: number
   ) {
     this.requireAuthenticated();
     if (!project) {
       error(404, 'Project not found');
     }
-    if (this.userId === project.OwnerId) {
+    if ((userId ?? this.userId) === project.OwnerId) {
       error(400, 'Project owner cannot claim own project');
     }
     if (!this.isSuperAdmin && !userGroups.some((ug) => ug.GroupId === project.GroupId)) {
