@@ -98,13 +98,13 @@ export async function getWorkflowParameters(
   const result: Record<string, string> = {};
   const scoped: Record<string, string> = {};
   Object.entries(JSON.parse(instance.WorkflowDefinition.Properties || '{}')).forEach(([k, v]) => {
-    const strValue = JSON.stringify(v);
+    const stringifiedValue = JSON.stringify(v);
     let strKey = k;
     if (strKey === 'environment') {
       // merge environment
       environment = {
         ...environment,
-        ...JSON.parse(strValue)
+        ...JSON.parse(stringifiedValue)
       };
     }
     // Allow for scoped names so "build:targets" will become "targets"
@@ -113,21 +113,25 @@ export async function getWorkflowParameters(
       // Use scoped values for this scope and ignore others
       if (scope && strKey.startsWith(scope + ':')) {
         strKey = strKey.split(':')[1];
-        scoped[strKey] = strValue;
+        if (strKey === 'environment') {
+          scoped[strKey] = stringifiedValue;
+        } else {
+          scoped[strKey] = JSON.parse(stringifiedValue);
+        }
       }
     } else {
-      result[strKey] = strValue;
+      result[strKey] = JSON.parse(stringifiedValue);
     }
   });
-  Object.entries(JSON.parse(instance.Product.ProductDefinition.Properties ?? '{}')).forEach(
+  Object.entries(JSON.parse(instance.Product.ProductDefinition.Properties || '{}')).forEach(
     ([k, v]) => {
-      const strValue = JSON.stringify(v);
+      const stringifiedValue = JSON.stringify(v);
       let strKey = k;
       if (strKey === 'environment') {
         // merge environment
         environment = {
           ...environment,
-          ...JSON.parse(strValue)
+          ...JSON.parse(stringifiedValue)
         };
       }
       // Allow for scoped names so "build:targets" will become "targets"
@@ -136,10 +140,14 @@ export async function getWorkflowParameters(
         // Use scoped values for this scope and ignore others
         if (scope && strKey.startsWith(scope + ':')) {
           strKey = strKey.split(':')[1];
-          scoped[strKey] = strValue;
+          if (strKey === 'environment') {
+            scoped[strKey] = stringifiedValue;
+          } else {
+            scoped[strKey] = JSON.parse(stringifiedValue);
+          }
         }
       } else {
-        result[strKey] = strValue;
+        result[strKey] = JSON.parse(stringifiedValue);
       }
     }
   );
@@ -154,5 +162,5 @@ export async function getWorkflowParameters(
     }
   });
 
-  return { environment: environment };
+  return { ...result, environment: environment };
 }
