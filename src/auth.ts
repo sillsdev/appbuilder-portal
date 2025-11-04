@@ -19,6 +19,7 @@ declare module '@auth/sveltekit' {
     user: DefaultSession['user'] & {
       userId: number;
       roles: [number, RoleId][];
+      userImpersonating?: number;
     };
   }
 }
@@ -127,6 +128,7 @@ const config: SvelteKitAuthConfig = {
         }
       });
       session.user.roles = userRoles.map(({ OrganizationId, RoleId }) => [OrganizationId, RoleId]);
+      session.user.userImpersonating = token.userImpersonating as number | undefined;
       trace.getActiveSpan()?.addEvent('session callback completed', {
         'auth.session.userId': session.user.userId,
         'auth.session.roles': JSON.stringify(session.user.roles)
@@ -148,7 +150,8 @@ export class Security {
     public readonly organizationMemberships: number[],
     public readonly roles: Map<number, RoleId[]>,
     /** this will only be set if the auth token is present and valid, and no cookie was present */
-    public readonly usedApiToken: boolean
+    public readonly usedApiToken: boolean,
+    public readonly userImpersonating?: number
   ) {
     this.isSuperAdmin = roles?.values().some((r) => r.includes(RoleId.SuperAdmin)) ?? false;
     this.sessionForm = {
@@ -343,7 +346,8 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
         .findUniqueOrThrow({ where: { Id: userIdFromApiToken }, include: { UserRoles: true } })
         .then((user) => ({
           userId: user.Id,
-          roles: user.UserRoles.map(({ OrganizationId, RoleId }) => [OrganizationId, RoleId])
+          roles: user.UserRoles.map(({ OrganizationId, RoleId }) => [OrganizationId, RoleId]),
+          userImpersonating: undefined
         }))));
 
   try {
@@ -392,7 +396,8 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
         security.userId,
         user.OrganizationMemberships.map((o) => o.OrganizationId),
         roleMap,
-        !!userIdFromApiToken // used api token?
+        !!userIdFromApiToken, // used api token?
+        security.userImpersonating
       );
     }
   } finally {
