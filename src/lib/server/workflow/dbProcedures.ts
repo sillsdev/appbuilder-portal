@@ -1,7 +1,7 @@
 import { ProductTransitionType } from '../../prisma';
+import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseWrites } from '../database';
 import { DatabaseReads } from '../database/prisma';
-import { BullMQ, getQueues } from '../bullmq';
 
 export async function deleteWorkflow(productId: string) {
   const product = await DatabaseReads.products.findUnique({

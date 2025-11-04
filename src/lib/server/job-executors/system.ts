@@ -973,6 +973,7 @@ async function tryCreateInstance(
           includeFields: [],
           includeArtifacts: null,
           includeReviewers: false,
+          isAutomatic: false,
           environment: mergedEnv,
           start: ActivityName as WorkflowState
         } satisfies WorkflowInstanceContext),
