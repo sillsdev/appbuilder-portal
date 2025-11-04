@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
+import { RoleId } from '$lib/prisma';
 import { DatabaseReads } from '$lib/server/database';
 
 export const load = (async (event) => {
@@ -10,9 +11,10 @@ export const load = (async (event) => {
     where: event.locals.security.isSuperAdmin
       ? {}
       : {
-          OrganizationMemberships: {
+          UserRoles: {
             some: {
-              UserId: event.locals.security.userId
+              UserId: event.locals.security.userId,
+              RoleId: RoleId.OrgAdmin
             }
           }
         },

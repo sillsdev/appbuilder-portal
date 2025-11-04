@@ -7,13 +7,14 @@
   import type { RouteId } from '$app/types';
   import { localizeUrl } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
+  import { isAdminForOrg } from '$lib/utils/roles';
 
   interface Props {
     data: LayoutData;
     children?: Snippet;
   }
 
-  let { children }: Props = $props();
+  let { data, children }: Props = $props();
 
   onMount(() => {
     if (page.params.id && $orgActive !== parseInt(page.params.id)) {
@@ -24,7 +25,7 @@
   type baseRouteId = '/(authenticated)/organizations/[id=idNumber]' & RouteId;
 
   $effect(() => {
-    if ($orgActive) {
+    if ($orgActive && isAdminForOrg($orgActive, data.session.user.roles)) {
       const id = untrack(() => page.route.id!);
       goto(localizeUrl(resolve(id as baseRouteId, { id: String($orgActive) })), {
         invalidate: ['org:id:layout']
