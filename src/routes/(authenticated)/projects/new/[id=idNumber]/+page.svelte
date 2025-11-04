@@ -2,17 +2,16 @@
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-  import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref, localizeUrl } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
+  import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
   import { byName, byString } from '$lib/utils/sorting';
   import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
 
@@ -36,20 +35,12 @@
   });
 
   onMount(() => {
-    if (page.params.id && $orgActive !== parseInt(page.params.id)) {
-      $orgActive = parseInt(page.params.id);
-    }
+    setOrgFromParams($orgActive, page.params.id);
   });
 
   $effect(() => {
-    if ($orgActive) {
-      goto(
-        localizeUrl(
-          resolve('/(authenticated)/projects/new/[id=idNumber]', { id: String($orgActive) })
-        )
-      );
-    } else {
-      goto(localizeUrl(`/projects/new`));
+    if (!selectGotoFromOrg(!!$orgActive, `/projects/new/${$orgActive}`, `/projects/new`)) {
+      setOrgFromParams($orgActive, page.params.id);
     }
   });
 </script>

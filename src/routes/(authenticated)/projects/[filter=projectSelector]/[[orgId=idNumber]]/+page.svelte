@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData, RouteParams } from './$types';
-  import { afterNavigate, goto } from '$app/navigation';
+  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
@@ -12,7 +11,7 @@
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref, localizeUrl } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
   import type { ProjectForAction, PrunedProject } from '$lib/projects';
   import { canArchive, canClaimProject, canReactivate } from '$lib/projects';
@@ -21,6 +20,7 @@
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
+  import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
 
@@ -120,17 +120,15 @@
     count = data.count;
   });
 
-  onMount(() => {
-    if (page.params.orgId && $orgActive !== parseInt(page.params.orgId)) {
-      $orgActive = parseInt(page.params.orgId);
-    }
-  });
-
   $effect(() => {
-    if ($orgActive) {
-      goto(localizeUrl(`/projects/${page.params.filter}/${$orgActive}`));
-    } else {
-      goto(localizeUrl(`/projects/${page.params.filter}`));
+    if (
+      !selectGotoFromOrg(
+        !!$orgActive,
+        `/projects/${page.params.filter}/${$orgActive}`,
+        `/projects/${page.params.filter}`
+      )
+    ) {
+      setOrgFromParams($orgActive, page.params.orgId);
     }
   });
 
