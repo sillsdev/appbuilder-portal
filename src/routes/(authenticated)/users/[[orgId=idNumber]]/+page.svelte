@@ -1,17 +1,20 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { type FormResult, superForm } from 'sveltekit-superforms';
+  import type { MinifiedUser } from '../common';
   import type { PageData } from './$types';
-  import type { MinifiedUser } from './common';
   import { enhance as svk_enhance } from '$app/forms';
+  import { goto } from '$app/navigation';
+  import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref, localizeUrl } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
-  import { isAdminForAny } from '$lib/utils/roles';
+  import { isAdminForAny, isAdminForOrg } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
@@ -51,8 +54,18 @@
     }
   });
 
+  onMount(() => {
+    if (page.params.orgId && $orgActive !== parseInt(page.params.orgId)) {
+      $orgActive = parseInt(page.params.orgId);
+    }
+  });
+
   $effect(() => {
-    $form.organizationId = $orgActive;
+    if ($orgActive && isAdminForOrg($orgActive, data.session.user.roles)) {
+      goto(localizeUrl(`/users/${$orgActive}`));
+    } else {
+      goto(localizeUrl(`/users`));
+    }
   });
 
   function getUserLockMessage(locked: boolean, success: boolean): string {

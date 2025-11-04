@@ -3,8 +3,8 @@ import type { Prisma } from '@prisma/client';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
+import { minifyUser } from '../common';
 import type { Actions, PageServerLoad } from './$types';
-import { minifyUser } from './common';
 import { RoleId } from '$lib/prisma';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
@@ -19,8 +19,7 @@ const tracer = trace.getTracer('/users');
 
 const searchFilterSchema = v.object({
   page: paginateSchema,
-  search: v.string(),
-  organizationId: v.nullable(idSchema)
+  search: v.string()
 });
 
 function select(orgIds?: number[]) {
@@ -55,7 +54,7 @@ function select(orgIds?: number[]) {
 
 // If we are a superadmin, collect all users, otherwise
 // collect every user in one of our organizations
-function adminOrDefaultWhere(isSuper: boolean, orgIds: number[]) {
+function userFilter(isSuper: boolean, orgIds: number[]) {
   return isSuper
     ? {
         // Get all users that are locked or are a member of at least one organization
@@ -82,40 +81,47 @@ function adminOrDefaultWhere(isSuper: boolean, orgIds: number[]) {
       };
 }
 
-export const load = (async ({ locals }) => {
+function orgFilter(sec: Security): Prisma.OrganizationsWhereInput | undefined {
+  return sec.isSuperAdmin
+    ? undefined
+    : {
+        UserRoles: {
+          some: {
+            RoleId: RoleId.OrgAdmin,
+            UserId: sec.userId
+          }
+        }
+      };
+}
+
+export const load = (async ({ locals, params }) => {
   locals.security.requireAdminOfAny();
+  if (params.orgId) {
+    locals.security.requireAdminOfOrg(Number(params.orgId));
+  }
   return await tracer.startActiveSpan('load', async (span) => {
     try {
       const isSuper = locals.security.isSuperAdmin;
       const organizations = await DatabaseReads.organizations.findMany({
-        where: locals.security.isSuperAdmin
-          ? undefined
-          : {
-              Id: {
-                in: [
-                  ...locals.security.roles
-                    .entries()
-                    .filter(([_, role]) => role.includes(RoleId.OrgAdmin))
-                    .map(([orgId]) => orgId)
-                ]
-              }
-            },
+        where: orgFilter(locals.security),
         select: {
           Id: true,
           Name: true
         }
       });
 
-      const orgIds = locals.security.organizationMemberships;
+      // this filters for OrgAdmin, using the Security object does not
+      const orgIds = organizations.map((o) => o.Id);
 
       const users = await DatabaseReads.users.findMany({
         orderBy: {
           Name: 'asc'
         },
         select: select(isSuper ? undefined : orgIds),
-        where: adminOrDefaultWhere(isSuper, orgIds),
+        where: userFilter(isSuper, orgIds),
         take: 50
       });
+
       span.setAttributes({
         'auth.load.userId': locals.security.userId!,
         'auth.load.user.roles': JSON.stringify(Array.from(locals.security.roles.entries())),
@@ -146,7 +152,6 @@ export const load = (async ({ locals }) => {
         }),
         form: await superValidate(
           {
-            organizationId: organizations.length !== 1 ? null : organizations[0].Id,
             page: {
               page: 0,
               size: 50
@@ -165,6 +170,9 @@ export const load = (async ({ locals }) => {
 export const actions: Actions = {
   async lock(event) {
     event.locals.security.requireAdminOfAny();
+    if (event.params.orgId) {
+      event.locals.security.requireAdminOfOrg(Number(event.params.orgId));
+    }
     const form = await superValidate(event, valibot(lockSchema));
     if (!form.valid || event.locals.security.userId === form.data.user) return { form, ok: false };
     event.locals.security.requireAdminOfOrgIn(
@@ -188,26 +196,19 @@ export const actions: Actions = {
 
   async page(event) {
     event.locals.security.requireAdminOfAny();
+    if (event.params.orgId) {
+      event.locals.security.requireAdminOfOrg(Number(event.params.orgId));
+    }
     const form = await superValidate(event, valibot(searchFilterSchema));
     if (!form.valid) return { form, ok: false };
+
+    const orgId = event.params.orgId ? Number(event.params.orgId) : undefined;
 
     return await tracer.startActiveSpan('page action', async (span) => {
       const isSuper = event.locals.security.isSuperAdmin;
 
       const organizations = await DatabaseReads.organizations.findMany({
-        where:
-          form.data.organizationId !== null
-            ? { Id: form.data.organizationId }
-            : isSuper
-              ? undefined
-              : {
-                  UserRoles: {
-                    some: {
-                      RoleId: RoleId.OrgAdmin,
-                      UserId: event.locals.security.userId
-                    }
-                  }
-                },
+        where: orgId ? { Id: orgId } : orgFilter(event.locals.security),
         select: {
           Id: true
         }
@@ -224,9 +225,9 @@ export const actions: Actions = {
 
       const where: Prisma.UsersWhereInput = {
         AND: [
-          form.data.organizationId !== null
-            ? { OrganizationMemberships: { some: { OrganizationId: form.data.organizationId } } }
-            : adminOrDefaultWhere(isSuper, orgIds),
+          orgId
+            ? { OrganizationMemberships: { some: { OrganizationId: orgId } } }
+            : userFilter(isSuper, orgIds),
           {
             OR: form.data.search
               ? [
