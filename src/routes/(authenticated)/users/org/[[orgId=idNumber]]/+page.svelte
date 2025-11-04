@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { type FormResult, superForm } from 'sveltekit-superforms';
-  import type { MinifiedUser } from '../common';
+  import type { MinifiedUser } from '../../common';
   import type { PageData } from './$types';
   import { enhance as svk_enhance } from '$app/forms';
   import { goto } from '$app/navigation';
@@ -62,9 +62,9 @@
 
   $effect(() => {
     if ($orgActive && isAdminForOrg($orgActive, data.session.user.roles)) {
-      goto(localizeUrl(`/users/${$orgActive}`));
+      goto(localizeUrl(`/users/org/${$orgActive}`));
     } else {
-      goto(localizeUrl(`/users`));
+      goto(localizeUrl(`/users/org`));
     }
   });
 

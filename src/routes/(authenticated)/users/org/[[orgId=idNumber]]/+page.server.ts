@@ -3,7 +3,7 @@ import type { Prisma } from '@prisma/client';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import { minifyUser } from '../common';
+import { minifyUser } from '../../common';
 import type { Actions, PageServerLoad } from './$types';
 import { RoleId } from '$lib/prisma';
 import { QueueConnected } from '$lib/server/bullmq';

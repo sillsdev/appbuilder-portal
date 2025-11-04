@@ -201,7 +201,7 @@
                   <a
                     class="rounded-none"
                     class:active-menu-item={isUrlActive('/users')}
-                    href={activeOrgUrl('/users')}
+                    href={activeOrgUrl('/users/org')}
                     onclick={closeDrawer}
                   >
                     {m.sidebar_users()}
