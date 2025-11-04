@@ -13,6 +13,7 @@
   let { data }: Props = $props();
   const { form, enhance } = superForm(data.form, {
     resetForm: false,
+    dataType: 'json',
     onUpdated({ form }) {
       if (form.valid) {
         toast('success', m.common_updated());
