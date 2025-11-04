@@ -35,8 +35,19 @@ export type ErrorResponse = {
   type: string;
 };
 
-export function toErrorResponse(json: Record<string, unknown>): ErrorResponse {
-  return { ...json, responseType: 'error' } as ErrorResponse;
+export function toErrorResponse(
+  json: Record<string, unknown> | Record<string, unknown>[]
+): ErrorResponse {
+  const _json = Array.isArray(json) ? json[0] : json;
+  return {
+    name: '',
+    message: '<empty error message>',
+    code: 500,
+    status: 500,
+    type: '',
+    ..._json,
+    responseType: 'error'
+  } as ErrorResponse;
 }
 
 export type StatusResponse = {
