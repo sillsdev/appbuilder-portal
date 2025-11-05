@@ -305,7 +305,11 @@ export const WorkflowStateMachine = setup({
               type: BullMQ.JobType.Product_Create,
               productId: context.productId
             },
-            BullMQ.Retry0f600
+            {
+              ...BullMQ.Retry0f600,
+              // prevent duplicate jobs
+              jobId: `${BullMQ.JobType.Product_Create}_${context.productId}`
+            }
           );
         }
       ],
