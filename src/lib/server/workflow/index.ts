@@ -81,6 +81,7 @@ export class Workflow {
 
     await flow.createSnapshot(flow.flow.getSnapshot().context);
     flow.flow.start();
+    await flow.createSnapshot(flow.flow.getSnapshot().context);
     await DatabaseWrites.productTransitions.create({
       data: {
         ProductId: productId,
