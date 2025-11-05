@@ -302,7 +302,7 @@ export const actions: Actions = {
     event.cookies.set('authjs.session-token', newToken!, {
       path: '/',
       httpOnly: true,
-      secure: process.env.APP_ENV === 'prd',
+      secure: !!process.env.APP_ENV,
       maxAge: 60 * 60 * 24 // 24 hours
     });
     // client will redirect to home
