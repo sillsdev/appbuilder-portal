@@ -110,7 +110,7 @@
       bind:this={drawerToggle}
     />
 
-    <div class="h-full drawer-side shrink-0 z-10">
+    <aside class="h-full drawer-side shrink-0 z-10">
       <label for="primary-content-drawer" class="drawer-overlay"></label>
       <div
         class="dark:border-gray-600 h-full mt-0 overflow-hidden w-full lg:w-72 lg:border-r min-[480px]:w-1/2 min-[720px]:w-1/3"
@@ -120,7 +120,7 @@
             <li
               class="dark:border-gray-600 border-y top-0 sticky z-10 bg-base-200 hover:bg-base-300 h-16"
             >
-              <div class="flex flex-row flex-nowrap">
+              <div class="flex flex-row flex-nowrap" role="heading" aria-level="1">
                 {#if data.organizations.length > 1}
                   <button
                     class="rounded-none p-0 pl-2 cursor-pointer grow flex items-center"
@@ -136,7 +136,7 @@
                     </div>
                   </button>
                 {:else}
-                  <div class="rounded-none h-16 p-0 pl-2 grow flex items-center">
+                  <div class="rounded-none p-0 pl-2 grow flex items-center">
                     {@render orgDisplay(selectedOrg, 'font-bold text-sm')}
                   </div>
                 {/if}
@@ -280,7 +280,7 @@
           </div>
         </ul>
       </div>
-    </div>
+    </aside>
     <div class="drawer-content grow items-start justify-start">
       <div class="navbar bg-[#1c3258]">
         <div class="navbar-start">
