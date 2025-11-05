@@ -13,6 +13,8 @@ declare global {
     public readonly organizationMemberships: number[];
     public readonly roles: Map<number, number[]>;
     public readonly sessionForm: Session['user'];
+    public readonly usedApiToken: boolean;
+    public readonly userImpersonating?: number;
     requireApiToken(): void | never;
     requireAuthenticated(): void | never;
     requireSuperAdmin(): this | never;
@@ -39,7 +41,9 @@ declare global {
         OwnerId: number;
         OrganizationId: number;
         GroupId: number;
-      }
+      },
+      // leave blank to use security userId
+      userId?: number
     ): this | never;
     requireMemberOfAnyOrg(): this | never;
     requireNothing(): this | never;

@@ -115,6 +115,7 @@
   "header_community": "Community",
   "header_help": "Help",
   "header_signOut": "Sign out",
+  "header_impersonating": "Impersonating {user}",
   "sidebar_myTasks": [
     {
       "match": {
@@ -433,6 +434,7 @@
   "users_table_role": "Role",
   "users_table_groups": "Groups",
   "users_table_active": "Active",
+  "users_table_impersonate": "Impersonate",
   "users_acts_lock_success": "User is locked. A locked user will not be able to log in to Scriptoria.",
   "users_acts_lock_error": "There was an error locking the user",
   "users_acts_unlock_success": "User is active. The user will now be able to log in to Scriptoria.",

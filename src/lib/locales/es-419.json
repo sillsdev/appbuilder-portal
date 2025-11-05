@@ -135,6 +135,7 @@
   "header_community": "Community",
   "header_help": "Ayuda",
   "header_signOut": "Salir",
+  "header_impersonating": "Impersonating {user}",
   "sidebar_myTasks": [
     {
       "match": {
@@ -458,6 +459,7 @@
   "users_table_role": "Rol",
   "users_table_groups": "Grupos",
   "users_table_active": "Activo",
+  "users_table_impersonate": "Impersonate",
   "users_acts_lock_success": "Usuario bloqueado. Un usuario bloqueado no podrá iniciar sesión en Scriptoria.",
   "users_acts_lock_error": "Ocurrió un error al bloquear el usuario",
   "users_acts_unlock_success": "Usuario activo. El usuario ahora podrá iniciar sesión en Scriptoria.",

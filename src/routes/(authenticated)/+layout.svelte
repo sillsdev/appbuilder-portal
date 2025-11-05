@@ -291,9 +291,24 @@
             <HamburgerIcon color="white" />
           </label>
           <p class="uppercase text-white lg:ps-4">{m.appName()}</p>
-          <!-- <p>SCRIPTORIA</p> -->
         </div>
         <div class="navbar-end">
+          {#if data.session.user.userImpersonating}
+            <div class="alert alert-warning mr-4 h-full flex p-1 items-center">
+              <span class="hidden md:inline">
+                {m.header_impersonating({ user: data.session.user.name! })}
+              </span>
+              <span class="md:hidden ml-2">
+                <IconContainer icon="mdi:account-eye" width="20" class="opacity-80 mr-1" />
+              </span>
+              <button
+                class="btn btn-sm btn-outline signOutButton"
+                onclick={() => signOut({ redirectTo: '/', redirect: true })}
+              >
+                <IconContainer icon="mdi:logout" width="20" class="opacity-80 mr-1" />
+              </button>
+            </div>
+          {/if}
           <LocaleSelector />
           <Dropdown
             dropdownClasses="dropdown-end"
@@ -301,12 +316,16 @@
             contentClasses="w-36 overflow-y-auto"
           >
             {#snippet label()}
-              <img
-                src={page.data.session?.user?.image}
-                alt="User profile"
-                referrerpolicy="no-referrer"
-                class="h-full rounded-xl"
-              />
+              {#if data.session.user.userImpersonating}
+                <IconContainer icon="mdi:account-eye" width="24" class="opacity-80 mr-1" />
+              {:else}
+                <img
+                  src={page.data.session?.user?.image}
+                  alt="User profile"
+                  referrerpolicy="no-referrer"
+                  class="h-full rounded-xl"
+                />
+              {/if}
             {/snippet}
             {#snippet content()}
               <ul class="menu menu-compact gap-1 p-2">
