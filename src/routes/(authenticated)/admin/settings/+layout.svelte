@@ -23,6 +23,8 @@
       icon: Icons.Workflow
     },
     { text: m.admin_nav_prodDefs(), route: 'product-definitions', icon: Icons.Product },
+    // TODO Get icon for software update
+    { text: m.admin_nav_software_update(), route: 'software-update', icon: Icons.Product },
     { text: m.admin_nav_stores(), route: 'stores', icon: Icons.StoreMenu },
     { text: m.admin_nav_storeTypes(), route: 'store-types', icon: Icons.StoreTypeMenu },
     { text: m.admin_nav_buildEngines(), route: 'build-engines', icon: Icons.BuildEngine }
