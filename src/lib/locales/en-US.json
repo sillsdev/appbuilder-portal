@@ -599,5 +599,10 @@
   "system_buildFailed": "Build failed",
   "system_publishFailed": "Publish failed",
   "system_unavailable": "Scriptoria is currently unable to process background tasks",
-  "downloads_title": "Downloads"
+  "downloads_title": "Downloads",
+  "admin_nav_software_update": "Software Update",
+  "admin_nav_software_update_description": "Initiate a rebuild of all the projects that have the \"Rebuild on software update\" setting enabled, have a product that has completed the initial publication, and are not currently being rebuilt. All products in this state will be rebuilt.",
+  "admin_nav_software_update_comment": "Comment",
+  "admin_software_update_rebuild_start": "Start Rebuilds"
 }
+
