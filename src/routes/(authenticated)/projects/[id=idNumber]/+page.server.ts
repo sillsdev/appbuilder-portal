@@ -14,6 +14,7 @@ import { getProjectDetails } from '$lib/projects/sse';
 import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { deleteSchema, idSchema, propertiesSchema, stringIdSchema } from '$lib/valibot';
+import { APP_ENV } from '$env/static/private';
 
 const updateOwnerGroupSchema = v.object({
   owner: idSchema,
@@ -51,7 +52,8 @@ export const load = (async ({ locals, params }) => {
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
-    jobsAvailable: QueueConnected()
+    jobsAvailable: QueueConnected(),
+    showRebuildToggles: APP_ENV === "development"
   };
 }) satisfies PageServerLoad;
 

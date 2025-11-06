@@ -13,9 +13,10 @@
       };
     }>;
     canEdit: boolean;
+    showRebuildToggles: boolean;
   }
 
-  let { project, canEdit }: Props = $props();
+  let { project, canEdit, showRebuildToggles }: Props = $props();
 
   const publicEndpoint = 'toggleVisibility';
   const downloadEndpoint = 'toggleDownload';
@@ -56,27 +57,29 @@
     {canEdit}
   />
 
-  <ToggleForm
-    name="autoRebuildOnSoftwareUpdate"
-    method="POST"
-    action="?/{rebuildEndpoint}"
-    title={{ key: 'project_autoRebuild_on_update_title' }}
-    message={{ key: 'project_autoRebuild_on_update_description' }}
-    onmsg={m.project_acts_autoBuilds_on()}
-    offmsg={m.project_acts_autoBuilds_off()}
-    formVar={autoRebuild}
-    {canEdit}
-  />
+  {#if showRebuildToggles}
+    <ToggleForm
+      name="autoRebuildOnSoftwareUpdate"
+      method="POST"
+      action="?/{rebuildEndpoint}"
+      title={{ key: 'project_autoRebuild_on_update_title' }}
+      message={{ key: 'project_autoRebuild_on_update_description' }}
+      onmsg={m.project_acts_autoBuilds_on()}
+      offmsg={m.project_acts_autoBuilds_off()}
+      formVar={autoRebuild}
+      {canEdit}
+    />
 
-  <ToggleForm
-    name="autoPublishOnRebuild"
-    method="POST"
-    action="?/{publishEndpoint}"
-    title={{ key: 'project_autoPublish_title' }}
-    message={{ key: 'project_autoPublish_description' }}
-    onmsg={m.project_acts_autoPublish_on()}
-    offmsg={m.project_acts_autoPublish_off()}
-    formVar={autoPublish}
-    {canEdit}
-  />
+    <ToggleForm
+      name="autoPublishOnRebuild"
+      method="POST"
+      action="?/{publishEndpoint}"
+      title={{ key: 'project_autoPublish_title' }}
+      message={{ key: 'project_autoPublish_description' }}
+      onmsg={m.project_acts_autoPublish_on()}
+      offmsg={m.project_acts_autoPublish_off()}
+      formVar={autoPublish}
+      {canEdit}
+    />
+  {/if}
 </div>
