@@ -87,6 +87,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
           select: {
             Name: true
           }
+        },
+        QueueRecords: {
+          select: {
+            Queue: true,
+            JobId: true,
+            JobType: true
+          }
         }
       },
       orderBy: [

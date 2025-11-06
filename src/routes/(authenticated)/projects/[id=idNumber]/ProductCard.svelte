@@ -14,29 +14,13 @@
   import { localizeHref } from '$lib/paraglide/runtime';
   import type { ProductActionType } from '$lib/products';
   import ProductDetails, {
+    type Transition,
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
   import { sanitizeInput, toast } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
   import { ProductType } from '$lib/workflowTypes';
-
-  type Transition = Prisma.ProductTransitionsGetPayload<{
-    select: {
-      TransitionType: true;
-      InitialState: true;
-      WorkflowType: true;
-      AllowedUserNames: true;
-      Command: true;
-      Comment: true;
-      DateTransition: true;
-      User: {
-        select: {
-          Name: true;
-        };
-      };
-    };
-  }>;
 
   interface Props {
     project: Prisma.ProjectsGetPayload<{
