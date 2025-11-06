@@ -39,7 +39,9 @@ declare global {
         OwnerId: number;
         OrganizationId: number;
         GroupId: number;
-      }
+      },
+      // leave blank to use security userId
+      userId?: number
     ): this | never;
     requireMemberOfAnyOrg(): this | never;
     requireNothing(): this | never;

@@ -330,7 +330,8 @@ export const actions = {
     if (project.OwnerId !== form.data.owner) {
       event.locals.security.requireProjectClaimable(
         await userGroupsForOrg(form.data.owner, project.OrganizationId),
-        project
+        project,
+        form.data.owner
       );
       if (!QueueConnected()) return error(503);
     }
