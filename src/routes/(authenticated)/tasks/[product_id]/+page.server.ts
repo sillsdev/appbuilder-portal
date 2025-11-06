@@ -286,7 +286,7 @@ export const actions = {
       flow.send({
         type: form.data.flowAction,
         comment: form.data.comment,
-        userId: locals.security.userId
+        userId: locals.security.userImpersonating ?? locals.security.userId
       });
 
       const targetState = transition.target;
