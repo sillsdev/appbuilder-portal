@@ -4,6 +4,26 @@
     // optional chaining for if element isn't found or isn't actually a Dialog Element
     (document.getElementById('modal' + productId) as HTMLDialogElement)?.showModal?.();
   }
+
+  export type Transition = Prisma.ProductTransitionsGetPayload<{
+    select: {
+      TransitionType: true;
+      InitialState: true;
+      WorkflowType: true;
+      AllowedUserNames: true;
+      Command: true;
+      Comment: true;
+      DateTransition: true;
+      User: { select: { Name: true } };
+      QueueRecords: {
+        select: {
+          Queue: true;
+          JobId: true;
+          JobType: true;
+        };
+      };
+    };
+  }>;
 </script>
 
 <script lang="ts">
@@ -21,18 +41,7 @@
         Store: { select: { Description: true } };
       };
     }>;
-    transitions: Prisma.ProductTransitionsGetPayload<{
-      select: {
-        TransitionType: true;
-        InitialState: true;
-        WorkflowType: true;
-        AllowedUserNames: true;
-        Command: true;
-        Comment: true;
-        DateTransition: true;
-        User: { select: { Name: true } };
-      };
-    }>[];
+    transitions: Transition[];
   }
 
   let { product, transitions }: Props = $props();
@@ -107,7 +116,7 @@
         {#each transitions as transition}
           <tr
             class:font-bold={isLandmark(transition.TransitionType)}
-            class:no-border={transition.Comment}
+            class:no-border={transition.Comment || transition.QueueRecords?.length}
           >
             <td>
               {@render transitionType(transition)}
@@ -123,6 +132,28 @@
               {getTimeDateString(transition.DateTransition)}
             </td>
           </tr>
+          {#if transition.QueueRecords?.length}
+            <tr class:no-border={transition.Comment}>
+              <td colspan="4">
+                <details>
+                  <summary>{m.products_jobRecords()} ({transition.QueueRecords.length})</summary>
+                  <ul>
+                    {#each transition.QueueRecords as rec}
+                      <li>
+                        <a
+                          class="link"
+                          href="/admin/jobs/queue/{rec.Queue}/{encodeURI(rec.JobId)}"
+                          target="_blank"
+                        >
+                          {rec.Queue}: {rec.JobType}
+                        </a>
+                      </li>
+                    {/each}
+                  </ul>
+                </details>
+              </td>
+            </tr>
+          {/if}
           {#if transition.Comment}
             <tr>
               <td colspan="4">
