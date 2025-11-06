@@ -816,9 +816,6 @@ export const WorkflowStateMachine = setup({
           },
           {
             meta: { type: ActionType.Auto },
-            guard: ({ context }) =>
-              context.productType !== ProductType.Android_GooglePlay ||
-              context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] === '1',
             target: WorkflowState.Published
           }
         ],
