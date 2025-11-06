@@ -70,15 +70,20 @@ export enum JobType {
   SvelteSSE_UpdateUserTasks = 'Update UserTasks'
 }
 
+interface BaseJob {
+  type: JobType;
+  transitions?: number[];
+}
+
 export namespace Build {
-  export interface Product {
+  export interface Product extends BaseJob {
     type: JobType.Build_Product;
     productId: string;
     defaultTargets: string;
     environment: Record<string, string>;
   }
 
-  export interface PostProcess {
+  export interface PostProcess extends BaseJob {
     type: JobType.Build_PostProcess;
     productId: string;
     productBuildId: number;
@@ -87,7 +92,7 @@ export namespace Build {
 }
 
 export namespace Polling {
-  export interface Build {
+  export interface Build extends BaseJob {
     type: JobType.Poll_Build;
     organizationId: number;
     productId: string;
@@ -96,14 +101,14 @@ export namespace Polling {
     productBuildId: number;
   }
 
-  export interface Project {
+  export interface Project extends BaseJob {
     type: JobType.Poll_Project;
     workflowProjectId: number;
     organizationId: number;
     projectId: number;
   }
 
-  export interface Publish {
+  export interface Publish extends BaseJob {
     type: JobType.Poll_Publish;
     organizationId: number;
     productId: string;
@@ -115,20 +120,20 @@ export namespace Polling {
 }
 
 export namespace Product {
-  export interface Create {
+  export interface Create extends BaseJob {
     type: JobType.Product_Create;
     productId: string;
   }
-  export interface Delete {
+  export interface Delete extends BaseJob {
     type: JobType.Product_Delete;
     organizationId: number;
     workflowJobId: number;
   }
-  export interface GetVersionCode {
+  export interface GetVersionCode extends BaseJob {
     type: JobType.Product_GetVersionCode;
     productId: string;
   }
-  export interface CreateLocal {
+  export interface CreateLocal extends BaseJob {
     type: JobType.Product_CreateLocal;
     projectId: number;
     productDefinitionId: number;
@@ -137,12 +142,12 @@ export namespace Product {
 }
 
 export namespace Project {
-  export interface Create {
+  export interface Create extends BaseJob {
     type: JobType.Project_Create;
     projectId: number;
   }
 
-  export interface ImportProducts {
+  export interface ImportProducts extends BaseJob {
     type: JobType.Project_ImportProducts;
     organizationId: number;
     importId: number;
@@ -151,7 +156,7 @@ export namespace Project {
 }
 
 export namespace Publish {
-  export interface Product {
+  export interface Product extends BaseJob {
     type: JobType.Publish_Product;
     productId: string;
     defaultChannel: Channels;
@@ -159,7 +164,7 @@ export namespace Publish {
     environment: Record<string, string>;
   }
 
-  export interface PostProcess {
+  export interface PostProcess extends BaseJob {
     type: JobType.Publish_PostProcess;
     productId: string;
     publicationId: number;
@@ -168,13 +173,13 @@ export namespace Publish {
 }
 
 export namespace System {
-  export interface CheckEngineStatuses {
+  export interface CheckEngineStatuses extends BaseJob {
     type: JobType.System_CheckEngineStatuses;
   }
-  export interface RefreshLangTags {
+  export interface RefreshLangTags extends BaseJob {
     type: JobType.System_RefreshLangTags;
   }
-  export interface Migrate {
+  export interface Migrate extends BaseJob {
     type: JobType.System_Migrate;
   }
 }
@@ -211,38 +216,39 @@ export namespace UserTasks {
       }
   ) & {
     type: JobType.UserTasks_Modify;
+    transitions?: number[];
     comment?: string; // just ignore comment for Delete and Reassign
     operation: Config;
   };
 }
 
 export namespace Email {
-  export interface InviteUser {
+  export interface InviteUser extends BaseJob {
     type: JobType.Email_InviteUser;
     email: string;
     inviteToken: string;
     inviteLink: string;
   }
-  export interface SendNotificationToUser {
+  export interface SendNotificationToUser extends BaseJob {
     type: JobType.Email_SendNotificationToUser;
     userId: number;
     messageKey: string;
     messageProperties: Record<string, string>;
     link?: string;
   }
-  export interface SendNotificationToReviewers {
+  export interface SendNotificationToReviewers extends BaseJob {
     type: JobType.Email_SendNotificationToReviewers;
     productId: string;
     comment?: string;
   }
-  export interface SendNotificationToOrgAdminsAndOwner {
+  export interface SendNotificationToOrgAdminsAndOwner extends BaseJob {
     type: JobType.Email_SendNotificationToOrgAdminsAndOwner;
     projectId: number;
     messageKey: string;
     messageProperties: Record<string, string>;
     link?: string;
   }
-  export interface SendBatchUserTaskNotifications {
+  export interface SendBatchUserTaskNotifications extends BaseJob {
     type: JobType.Email_SendBatchUserTaskNotifications;
     notifications: {
       userId: number;
@@ -254,36 +260,36 @@ export namespace Email {
       comment: string;
     }[];
   }
-  export interface NotifySuperAdminsOfNewOrganizationRequest {
+  export interface NotifySuperAdminsOfNewOrganizationRequest extends BaseJob {
     type: JobType.Email_NotifySuperAdminsOfNewOrganizationRequest;
     organizationName: string;
     email: string;
     url: string;
   }
 
-  export interface NotifySuperAdminsOfOfflineSystems {
+  export interface NotifySuperAdminsOfOfflineSystems extends BaseJob {
     type: JobType.Email_NotifySuperAdminsOfOfflineSystems;
   }
 
-  export interface NotifySuperAdminsLowPriority {
+  export interface NotifySuperAdminsLowPriority extends BaseJob {
     type: JobType.Email_NotifySuperAdminsLowPriority;
     messageKey: string;
     messageProperties: Record<string, string>;
     link?: string;
   }
-  export interface ProjectImportReport {
+  export interface ProjectImportReport extends BaseJob {
     type: JobType.Email_ProjectImportReport;
     importId: number;
   }
 }
 
 export namespace SvelteProjectSSE {
-  export interface UpdateProject {
+  export interface UpdateProject extends BaseJob {
     type: JobType.SvelteSSE_UpdateProject;
     projectIds: number[];
   }
 
-  export interface UpdateUserTasks {
+  export interface UpdateUserTasks extends BaseJob {
     type: JobType.SvelteSSE_UpdateUserTasks;
     userIds: number[];
   }
