@@ -1,8 +1,9 @@
 <script lang="ts">
   import { type FormResult, superForm } from 'sveltekit-superforms';
+  import type { MinifiedUser } from '../../common';
   import type { PageData } from './$types';
-  import type { MinifiedUser } from './common';
   import { enhance as svk_enhance } from '$app/forms';
+  import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
@@ -11,7 +12,8 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
-  import { isAdminForAny } from '$lib/utils/roles';
+  import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
+  import { isAdminForAny, isAdminForOrg } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
@@ -52,7 +54,15 @@
   });
 
   $effect(() => {
-    $form.organizationId = $orgActive;
+    if (
+      !selectGotoFromOrg(
+        !!$orgActive && isAdminForOrg($orgActive, data.session.user.roles),
+        `/users/org/${$orgActive}`,
+        `/users/org`
+      )
+    ) {
+      setOrgFromParams($orgActive, page.params.orgId);
+    }
   });
 
   function getUserLockMessage(locked: boolean, success: boolean): string {
