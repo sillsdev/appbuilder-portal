@@ -1,3 +1,4 @@
+import { encode } from '@auth/core/jwt';
 import { trace } from '@opentelemetry/api';
 import type { Prisma } from '@prisma/client';
 import { superValidate } from 'sveltekit-superforms';
@@ -272,5 +273,39 @@ export const actions: Actions = {
         }
       };
     });
+  },
+  async impersonate(event) {
+    event.locals.security.requireSuperAdmin();
+    const form = await superValidate(event, valibot(v.object({ user: idSchema })));
+    if (!form.valid) return { form, ok: false };
+
+    const user = await DatabaseReads.users.findUnique({
+      where: { Id: form.data.user },
+      select: {
+        Id: true,
+        Name: true
+      }
+    });
+    if (!user) return { form, ok: false };
+
+    const newToken = await encode({
+      token: {
+        userId: form.data.user,
+        userImpersonating: event.locals.security.userId,
+        name: user.Name
+      },
+      secret: process.env.AUTH0_SECRET!,
+      salt: 'authjs.session-token',
+      maxAge: 60 * 60 // 1 hour
+    });
+
+    event.cookies.set(`${process.env.APP_ENV ? '__Secure-' : ''}authjs.session-token`, newToken!, {
+      path: '/',
+      httpOnly: true,
+      secure: !!process.env.APP_ENV,
+      maxAge: 60 * 60 * 24 // 24 hours
+    });
+    // client will redirect to home
+    return { form, ok: true };
   }
 };

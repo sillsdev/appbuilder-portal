@@ -38,7 +38,8 @@ setup.describe('login setup', () => {
         // email: 'ci@scriptoria.io',
         picture: 'https://cdn.auth0.com/avatars/ci.png',
         // NOTE: this userId is correct in seed.ts but could be incorrect in personal dbs
-        userId: 6
+        userId: 6,
+        userImpersonating: false
       },
       secret: process.env.AUTH0_SECRET!,
       salt: 'authjs.session-token'
@@ -48,7 +49,8 @@ setup.describe('login setup', () => {
         name: 'authjs.session-token',
         value: token!,
         domain: 'localhost',
-        path: '/'
+        path: '/',
+        httpOnly: true
       }
     ]);
     // Reload the page to apply the cookie
