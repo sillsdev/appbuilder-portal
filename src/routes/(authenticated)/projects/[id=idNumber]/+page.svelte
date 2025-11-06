@@ -52,7 +52,7 @@
       projectData?.project.OrganizationId ?? -1
     )
   );
-  const showRebuildToggles = $derived(data.showRebuildToggles);
+  const showRebuildToggles = data.showRebuildToggles;
   const canClaim = $derived(
     canClaimProject(
       data.session.user,
