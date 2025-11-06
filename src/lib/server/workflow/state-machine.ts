@@ -22,6 +22,7 @@ import {
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
 import { deleteWorkflow, markResolved } from './dbProcedures';
+import { Workflow } from './index';
 
 /**
  * IMPORTANT: READ THIS BEFORE EDITING A STATE MACHINE!
@@ -298,12 +299,16 @@ export const WorkflowStateMachine = setup({
       },
       entry: [
         assign({ instructions: 'waiting' }),
-        ({ context }) => {
+        async ({ context }) => {
           getQueues().Products.add(
             `Create Product #${context.productId}`,
             {
               type: BullMQ.JobType.Product_Create,
-              productId: context.productId
+              productId: context.productId,
+              transitions: await Workflow.currentProductTransition(
+                context.productId,
+                WorkflowState.Product_Creation
+              ).then((pt) => (pt ? [pt.Id] : undefined))
             },
             {
               ...BullMQ.Retry0f600,
@@ -496,7 +501,7 @@ export const WorkflowStateMachine = setup({
         assign({
           instructions: 'waiting'
         }),
-        ({ context }) => {
+        async ({ context }) => {
           getQueues().Builds.add(
             `Build Product #${context.productId}`,
             {
@@ -515,7 +520,11 @@ export const WorkflowStateMachine = setup({
                           //default
                           'apk play-listing',
               // extra env handled in getWorkflowParameters
-              environment: context.environment
+              environment: context.environment,
+              transitions: await Workflow.currentProductTransition(
+                context.productId,
+                WorkflowState.Product_Build
+              ).then((pt) => (pt ? [pt.Id] : undefined))
             },
             BullMQ.Retry0f600
           );
@@ -652,11 +661,15 @@ export const WorkflowStateMachine = setup({
                 options: { has: WorkflowOptions.AdminStoreAccess }
               }
             },
-            actions: ({ context }) => {
+            actions: async ({ context }) => {
               // Given that the Set Google Play Uploaded action in S1 require DB and BuildEngine queries, this is probably the best way to do this
               getQueues().Products.add(`Get VersionCode for Product #${context.productId}`, {
                 type: BullMQ.JobType.Product_GetVersionCode,
-                productId: context.productId
+                productId: context.productId,
+                transitions: await Workflow.currentProductTransition(
+                  context.productId,
+                  WorkflowState.Create_App_Store_Entry
+                ).then((pt) => (pt ? [pt.Id] : undefined))
               });
             },
             target: WorkflowState.Verify_and_Publish
@@ -669,10 +682,14 @@ export const WorkflowStateMachine = setup({
                 options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
               }
             },
-            actions: ({ context }) => {
+            actions: async ({ context }) => {
               getQueues().Products.add(`Get VersionCode for Product #${context.productId}`, {
                 type: BullMQ.JobType.Product_GetVersionCode,
-                productId: context.productId
+                productId: context.productId,
+                transitions: await Workflow.currentProductTransition(
+                  context.productId,
+                  WorkflowState.Create_App_Store_Entry
+                ).then((pt) => (pt ? [pt.Id] : undefined))
               });
             },
             target: WorkflowState.Verify_and_Publish
@@ -764,10 +781,14 @@ export const WorkflowStateMachine = setup({
             }
           },
           guard: hasReviewers,
-          actions: ({ context }) => {
+          actions: async ({ context }) => {
             getQueues().Emails.add(`Email reviewers for Product #${context.productId}`, {
               type: BullMQ.JobType.Email_SendNotificationToReviewers,
-              productId: context.productId
+              productId: context.productId,
+              transitions: await Workflow.currentProductTransition(
+                context.productId,
+                WorkflowState.Verify_and_Publish
+              ).then((pt) => (pt ? [pt.Id] : undefined))
             });
           }
         }
@@ -776,7 +797,7 @@ export const WorkflowStateMachine = setup({
     [WorkflowState.Product_Publish]: {
       entry: [
         assign({ instructions: 'waiting' }),
-        ({ context }) => {
+        async ({ context }) => {
           getQueues().Publishing.add(
             `Publish Product #${context.productId}`,
             {
@@ -792,7 +813,11 @@ export const WorkflowStateMachine = setup({
                       //ProductType.AssetPackage
                       //default
                       's3-bucket',
-              environment: context.environment
+              environment: context.environment,
+              transitions: await Workflow.currentProductTransition(
+                context.productId,
+                WorkflowState.Product_Publish
+              ).then((pt) => (pt ? [pt.Id] : undefined))
             },
             BullMQ.Retry0f600
           );
@@ -1026,11 +1051,15 @@ export const WorkflowStateMachine = setup({
               ? { ...context.environment, [ENVKeys.GOOGLE_PLAY_EXISTING]: '1' }
               : context.environment
         }),
-        ({ event, context }) => {
+        async ({ event, context }) => {
           if (isDeprecated(event.target) && event.target === 'Set Google Play Uploaded') {
             getQueues().Products.add(`Get VersionCode for Migrated Product #${context.productId}`, {
               type: BullMQ.JobType.Product_GetVersionCode,
-              productId: context.productId
+              productId: context.productId,
+              transitions: await Workflow.currentProductTransition(
+                context.productId,
+                WorkflowState.Create_App_Store_Entry
+              ).then((pt) => (pt ? [pt.Id] : undefined))
             });
           }
         }
