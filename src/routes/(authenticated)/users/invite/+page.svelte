@@ -24,7 +24,7 @@
     resetForm: false,
     onUpdated(event) {
       if (event.form.valid) {
-        goto(localizeHref('/users'));
+        goto(localizeHref(redirectUrl));
         toast('success', m.orgMembership_success({ email: event.form.data.email }));
       } else {
         toast('error', m.orgMembership_error());
@@ -46,6 +46,10 @@
       $form.organizationId = $orgActive;
     }
   });
+
+  const redirectOrg = $derived($form.organizationId ?? $orgActive);
+
+  const redirectUrl = $derived(`/users/org${redirectOrg ? `/${redirectOrg}` : ''}`);
 </script>
 
 <div class="w-full max-w-6xl mx-auto">
@@ -113,7 +117,7 @@
       </div>
     </div>
     <div class="my-4 flex justify-end gap-2">
-      <a class="btn btn-secondary" href={localizeHref('/users')}>{m.common_cancel()}</a>
+      <a class="btn btn-secondary" href={localizeHref(redirectUrl)}>{m.common_cancel()}</a>
       <BlockIfJobsUnavailable className="btn btn-primary">
         {#snippet altContent()}
           {m.orgMembership_send()}
