@@ -492,6 +492,35 @@ export class Workflow {
     return ret;
   }
 
+  public static async currentProductTransition(ProductId: string, InitialState?: string) {
+    const noDate = await DatabaseReads.productTransitions.findFirst({
+      where: {
+        ProductId,
+        InitialState,
+        DateTransition: null
+      },
+      select: {
+        Id: true,
+        DateTransition: true
+      }
+    });
+
+    const withDate = await DatabaseReads.productTransitions.findMany({
+      where: {
+        ProductId,
+        InitialState
+      },
+      select: {
+        Id: true,
+        DateTransition: true
+      },
+      orderBy: { DateTransition: 'desc' },
+      take: 1
+    });
+
+    return noDate ?? withDate.at(0) ?? null;
+  }
+
   /**
    * Update or create product transition
    */
