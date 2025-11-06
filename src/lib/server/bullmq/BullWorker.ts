@@ -1,6 +1,7 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import type { Exception, Job } from 'bullmq';
 import { Worker } from 'bullmq';
+import { DatabaseWrites } from '../database';
 import * as Executor from '../job-executors';
 import { getQueues, getWorkerConfig } from './queues';
 import * as BullMQ from './types';
@@ -27,6 +28,23 @@ export abstract class BullWorker<T extends BullMQ.Job> {
         'job.data': JSON.stringify(job.data)
       });
       try {
+        if (job.id && job.data.transitions?.length) {
+          const records = await DatabaseWrites.queueRecords.createManyAndReturn({
+            data: job.data.transitions.map((t) => ({
+              ProductTransitionId: t,
+              Queue: job.queueName,
+              JobType: job.data.type,
+              JobId: job.id! // this is in fact defined (checked in above if)
+            })),
+            select: {
+              Id: true
+            }
+          });
+          span.setAttribute(
+            'job.records',
+            records.map((r) => r.Id)
+          );
+        }
         return await this.run(job);
       } catch (error) {
         span.recordException(error as Exception);
