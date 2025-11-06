@@ -4,6 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
+import { APP_ENV } from '$env/static/private';
 import { baseLocale } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
@@ -14,7 +15,6 @@ import { getProjectDetails } from '$lib/projects/sse';
 import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { deleteSchema, idSchema, propertiesSchema, stringIdSchema } from '$lib/valibot';
-import { APP_ENV } from '$env/static/private';
 
 const updateOwnerGroupSchema = v.object({
   owner: idSchema,
@@ -53,7 +53,7 @@ export const load = (async ({ locals, params }) => {
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
     jobsAvailable: QueueConnected(),
-    showRebuildToggles: APP_ENV === "development"
+    showRebuildToggles: APP_ENV === 'development'
   };
 }) satisfies PageServerLoad;
 
