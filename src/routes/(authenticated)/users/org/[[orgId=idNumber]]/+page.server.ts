@@ -299,7 +299,7 @@ export const actions: Actions = {
       maxAge: 60 * 60 // 1 hour
     });
 
-    event.cookies.set('authjs.session-token', newToken!, {
+    event.cookies.set(`${process.env.APP_ENV ? '__Secure-' : ''}authjs.session-token`, newToken!, {
       path: '/',
       httpOnly: true,
       secure: !!process.env.APP_ENV,
