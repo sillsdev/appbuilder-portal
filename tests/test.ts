@@ -123,12 +123,14 @@ test.describe('No admin perms in other org', () => {
     await expect(page.getByRole('heading', { name: 'My Tasks' })).toBeVisible();
     const orgSelector = page
       .getByRole('complementary')
-      .getByRole('heading', { name: /(SIL International|Kalaam Media|All Organizations)/ });
+      .getByRole('button', { name: /(SIL International|Kalaam Media|All Organizations)/ });
     await expect(orgSelector).toBeVisible();
     // $orgActive is set to 1 by Create a Test Project, switch just in case
     if (!(await orgSelector.textContent())?.match(/SIL International/)) {
       await orgSelector.click();
-      await page.getByRole('button', { name: 'SIL International' }).click();
+      const button = page.getByRole('button', { name: 'SIL International' });
+      await expect(button).toBeVisible();
+      await button.click();
     }
 
     await expect(orgSelector).toContainText('SIL International');
