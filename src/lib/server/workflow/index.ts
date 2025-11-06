@@ -57,6 +57,7 @@ export class Workflow {
       select: {
         Project: {
           select: {
+            Id: true,
             _count: {
               select: {
                 Authors: true,
@@ -82,8 +83,6 @@ export class Workflow {
     });
 
     await flow.createSnapshot(flow.flow.getSnapshot().context);
-    flow.flow.start();
-    await flow.createSnapshot(flow.flow.getSnapshot().context);
     await DatabaseWrites.productTransitions.create({
       data: {
         ProductId: productId,
@@ -92,6 +91,18 @@ export class Workflow {
         WorkflowType: config.workflowType
       }
     });
+    await DatabaseWrites.productTransitions.createMany(
+      {
+        data: await Workflow.transitionEntriesFromState(
+          WorkflowState.Start,
+          flow.productId,
+          flow.input
+        )
+      },
+      check!.Project.Id
+    );
+    flow.flow.start();
+    await flow.createSnapshot(flow.flow.getSnapshot().context);
     await getQueues().UserTasks.add(`Create UserTasks for Product #${productId}`, {
       type: BullMQ.JobType.UserTasks_Modify,
       scope: 'Product',
@@ -469,6 +480,22 @@ export class Workflow {
         })
       ).map((u) => [u.Name, allUsers[u.Id]])
     );
+
+    const noDateWithRecords = new Set(
+      (
+        await DatabaseReads.productTransitions.findMany({
+          where: {
+            ProductId: productId,
+            DateTransition: null,
+            QueueRecords: { some: {} }
+          },
+          select: {
+            InitialState: true
+          }
+        })
+      ).map((pt) => pt.InitialState)
+    );
+
     const ret: Prisma.ProductTransitionsCreateManyInput[] = [
       Workflow.transitionFromState(
         stateName === WorkflowState.Start
@@ -489,7 +516,7 @@ export class Workflow {
         )
       );
     }
-    return ret;
+    return ret.filter((r) => !noDateWithRecords.has(r.InitialState ?? ''));
   }
 
   public static async currentProductTransition(ProductId: string, InitialState?: string) {
