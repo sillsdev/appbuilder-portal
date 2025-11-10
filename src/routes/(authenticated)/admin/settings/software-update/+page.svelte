@@ -22,7 +22,7 @@
     onUpdated({ form }) {
       if (form.valid) {
         goto(localizeHref(base));
-        toast('success', m.models_updateSuccess({ name: m.stores_name() }));
+        toast('success', m.admin_software_update_toast_success());
       }
     }
     });
@@ -32,8 +32,11 @@
     let propsOk = $state(true);
 </script>
 
+<h3 class="pl-4">{m.admin_nav_software_update()}</h3>
+<p class="pl-4">{m.admin_nav_software_update_description()}</p>
+
 <form class="m-4" method="post" action="?/start" use:enhance>
-  <p>{m.admin_nav_software_update_description()}</p>
+  
   <LabeledFormInput key="admin_nav_software_update_comment">
     <input
       type="text"
@@ -42,8 +45,8 @@
       bind:value={$form.comment}
       required
     />
-    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
+    <span class="validator-hint">{m.admin_software_update_comment_required()}</span>
   </LabeledFormInput>
-  <input type="submit" class="btn btn-primary" value={m.admin_software_update_rebuild_start} disabled={!propsOk}/>
+  <input type="submit" class="btn btn-primary" value={m.admin_software_update_rebuild_start()} disabled={!propsOk}/>
     
 </form>
