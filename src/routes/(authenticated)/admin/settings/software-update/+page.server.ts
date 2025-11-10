@@ -3,6 +3,9 @@ import type { Actions, PageServerLoad } from './$types';
 import { getLocale, localizeHref } from '$lib/paraglide/runtime';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
+import { doProductAction } from '$lib/products/server';
+import { DatabaseReads } from '$lib/server/database';
+import { ProductActionType } from '$lib/products';
 import * as v from 'valibot';
 import { propertiesSchema } from '$lib/valibot';
 
@@ -13,24 +16,61 @@ const formSchema = v.object({
 
 export const load = (async ({ url, locals }) => {
     locals.security.requireSuperAdmin();
-    const id = parseInt(url.searchParams.get('id') ?? '');
     const form = await superValidate(valibot(formSchema));
-    if (isNaN(id)) {
-        return redirect(302, localizeHref('/admin/settings/software-update'));
-    }
     return {form};
 }) satisfies PageServerLoad;
 
 export const actions = {
     async start({ cookies, request, locals }){
+        // This page required users to be an administrator
         locals.security.requireSuperAdmin();
+        // Check that form is valid upon submission
         const form = await superValidate(request, valibot(formSchema));
         if (!form.valid){
             return fail(400, {form, ok: false});
         }
-        // TODO: Whatever needs to be done with the post goes here. Need to figure out what this is...
-        // The comment value is at form.data.commnet
+
+        // TODO: Initiate product rebuilds for projects where setting is selected
+
+        //// Get all products
+        // Get what organizations the admin is in
+        let orgIds: number[] = locals.security.organizationMemberships;
+        // Get list of projects
+        const projects = await DatabaseReads.projects.findMany({
+            where: {
+                OrganizationId: orgIds ? { in: orgIds } : undefined,
+                DateArchived: null,
+                RebuildOnSoftwareUpdate: true
+            },
+            include: {
+            Products: {
+                include: {
+                ProductDefinition: true,
+                WorkflowInstance: true,
+                ProductBuilds: {
+                    orderBy: { DateUpdated: 'desc' },
+                    take: 1
+                }
+                }
+            },
+            Owner: true,
+            Group: true,
+            Organization: true
+            }
+        });
+
+        // Await promises for all products running a doProductAction.
+        await Promise.all(
+            projects.map(
+                (project) => project.Products.forEach (
+                    (p) => doProductAction(p.Id, ProductActionType.Rebuild)
+                )
+            )
+        );
+
+        // TODO: The comment still needs to be stored somewhere.
+        // The comment value is at form.data.comment
 
         return {ok: true, form};
     }
-} satisfies Actions
+} satisfies Actions;

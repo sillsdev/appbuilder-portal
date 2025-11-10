@@ -564,6 +564,13 @@
   "admin_nav_software_update": "Software Update",
   "admin_nav_software_update_description": "Initiate a rebuild of all the projects that have the \"Rebuild on software update\" setting enabled, have a product that has completed the initial publication, and are not currently being rebuilt. All products in this state will be rebuilt.",
   "admin_nav_software_update_comment": "Comment",
+<<<<<<< HEAD
   "admin_software_update_rebuild_start": "Start Rebuilds"
 }
 >>>>>>> 09bb94be (Initial commit on software update rebuild page. The general code is there, need to track why I am getting an internal error when trying to visit the page.)
+=======
+  "admin_software_update_rebuild_start": "Start Rebuilds",
+  "admin_software_update_comment_required": "A comment is required to start builds.",
+  "admin_software_update_toast_success": "Successfully started rebuilds!"
+}
+>>>>>>> 51776d36 (Updated navigation with page-specific translations and implemented logic to call doProductAction. Unable to determine where to store the comment made by user however.)
