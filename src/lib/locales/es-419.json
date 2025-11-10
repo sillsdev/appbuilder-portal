@@ -603,5 +603,7 @@
   "admin_nav_software_update": "Actualización de Software",
   "admin_nav_software_update_description": "Inicie una reconstrucción de todos los proyectos que tengan habilitada la configuración de \"Reconstrucción en la actualización de software\", tengan un producto que haya completado la publicación inicial y que actualmente no se estén reconstruyendo. Todos los productos en este estado serán reconstruidos.",
   "admin_nav_software_update_comment": "Comentario",
-  "admin_software_update_rebuild_start": "Empezar a Reconstruir"
+  "admin_software_update_rebuild_start": "Empezar a Reconstruir",
+  "admin_software_update_comment_required": "Se requiere un comentario para iniciar las compilaciones.",
+  "admin_software_update_toast_success": "¡Comenzó con éxito las reconstrucciones!"
 }
