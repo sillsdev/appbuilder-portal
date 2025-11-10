@@ -559,5 +559,7 @@
   "admin_nav_software_update": "Mise à jour du logiciel",
   "admin_nav_software_update_description": "Initier une reconstruction de tous les projets qui ont activé le paramètre \"Reconstruire sur la mise à jour du logiciel\", qui ont un produit qui a terminé la publication initiale et qui ne sont pas actuellement en cours de reconstruction. Tous les produits dans cet état seront reconstruits.",
   "admin_nav_software_update_comment": "Comment",
-  "admin_software_update_rebuild_start": "Commencer les Reconstructions"
+  "admin_software_update_rebuild_start": "Commencer les Reconstructions",
+  "admin_software_update_comment_required": "Un commentaire est requis pour commencer les constructions.",
+  "admin_software_update_toast_success": "Les reconstructions ont commencé avec succès !"
 }
