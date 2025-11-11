@@ -7,5 +7,11 @@ export const load = (async (event) => {
   event.locals.security.requireSuperAdmin();
   const buildEngines = await DatabaseReads.systemStatuses.findMany();
 
-  return { buildEngines };
+  const versions = await DatabaseReads.systemVersions.findMany();
+
+  const applications = await DatabaseReads.applicationTypes.findMany({
+    select: { Id: true, Name: true }
+  });
+
+  return { buildEngines, versions, applications };
 }) satisfies PageServerLoad;
