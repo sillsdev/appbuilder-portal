@@ -143,7 +143,9 @@ export async function getURLandToken(organizationId: number) {
 
 export async function systemCheck(auth: Types.Auth) {
   const res = await request('system/check', auth, { checkStatusFirst: false });
-  return res.ok ? Types.toStatusResponse(res.status) : Types.toErrorResponse(await res.json);
+  return res.ok
+    ? Types.toStatusResponse(res.status, await res.json)
+    : Types.toErrorResponse(await res.json);
 }
 
 export async function createProject(

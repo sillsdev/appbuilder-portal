@@ -121,10 +121,80 @@ export async function checkSystemStatuses(
         status: res.status,
         error: res.responseType === 'error' ? res : undefined,
         minutes: Math.floor((Date.now() - new Date(s.DateUpdated!).valueOf()) / 60000),
-        updating: available !== s.SystemAvailable
+        updating: available !== s.SystemAvailable,
+        versionInfo: res.responseType === 'status' ? res : undefined
       };
     })
   );
+
+  job.updateProgress(65);
+
+  const applications = new Map<string, number>(
+    (
+      await DatabaseReads.applicationTypes.findMany({
+        select: {
+          Id: true,
+          Name: true
+        }
+      })
+    ).map((a) => [a.Name!, a.Id])
+  );
+
+  const versionInfo = statuses.flatMap((s) =>
+    s.versionInfo
+      ? Object.keys(s.versionInfo)
+          .filter(([key]) => applications.get(key) && s.url)
+          .map(([Name, Version]) => ({
+            BuildEngineUrl: s.url!,
+            ApplicationTypeId: applications.get(Name)!,
+            Name,
+            Version,
+            DateUpdated: new Date(s.versionInfo!.updated!)
+          }))
+      : []
+  );
+
+  const existingSystemVersions = await DatabaseReads.systemVersions.findMany();
+
+  const versions = (
+    await Promise.all(
+      versionInfo.map(async (vi) => {
+        const existing = existingSystemVersions.find(
+          (esv) =>
+            esv.BuildEngineUrl === vi.BuildEngineUrl &&
+            esv.ApplicationTypeId === vi.ApplicationTypeId
+        );
+
+        if (
+          existing &&
+          existing.Version !== vi.Version &&
+          (existing.DateUpdated?.valueOf() ?? 0) < vi.DateUpdated.valueOf()
+        ) {
+          return await DatabaseWrites.systemVersions.update({
+            where: {
+              BuildEngineUrl_ApplicationTypeId: {
+                BuildEngineUrl: vi.BuildEngineUrl,
+                ApplicationTypeId: vi.ApplicationTypeId
+              }
+            },
+            data: {
+              Version: vi.Version
+            }
+          });
+        } else if (!existing) {
+          return await DatabaseWrites.systemVersions.create({
+            data: {
+              BuildEngineUrl: vi.BuildEngineUrl,
+              ApplicationTypeId: vi.ApplicationTypeId,
+              Version: vi.Version
+            }
+          });
+        }
+        return null;
+      })
+    )
+  ).filter((v) => !!v);
+
   job.updateProgress(80);
   // If there are offline systems, send an email to the super admins
   const offlineSystems = statuses.filter((s) => s.status !== 200);
@@ -158,7 +228,8 @@ export async function checkSystemStatuses(
     removed: removed.count,
     added: filteredOrgs.length,
     total: statuses.length,
-    statuses
+    statuses,
+    versions
   };
 }
 
