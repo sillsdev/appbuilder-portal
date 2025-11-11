@@ -135,7 +135,7 @@
           {#if transition.QueueRecords?.length}
             <tr class:no-border={transition.Comment}>
               <td colspan="4">
-                <details>
+                <details class="cursor-pointer">
                   <summary>{m.products_jobRecords()} ({transition.QueueRecords.length})</summary>
                   <ul>
                     {#each transition.QueueRecords as rec}
