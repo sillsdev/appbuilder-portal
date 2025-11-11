@@ -47,7 +47,8 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
           type: BullMQ.JobType.Build_PostProcess,
           productId: job.data.productId,
           productBuildId: job.data.productBuildId,
-          build: response
+          build: response,
+          transitions: job.data.transitions
         }
       );
     }
@@ -102,7 +103,8 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
           type: BullMQ.JobType.Publish_PostProcess,
           productId: job.data.productId,
           publicationId: job.data.publicationId,
-          release: response
+          release: response,
+          transitions: job.data.transitions
         }
       );
     }
