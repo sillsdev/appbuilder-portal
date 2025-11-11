@@ -53,10 +53,22 @@ export function toErrorResponse(
 export type StatusResponse = {
   responseType: 'status';
   status: number;
+  // these should be left optional until BuildEngine supports version info
+  versions?: {
+    scriptureappbuilder?: string;
+    readingappbuilder?: string;
+    dictionaryappbuilder?: string;
+    keyboardappbuilder?: string;
+  };
+  created?: string;
+  updated?: string;
 };
 
-export function toStatusResponse(status: number): StatusResponse {
-  return { responseType: 'status', status } as StatusResponse;
+export function toStatusResponse(
+  status: number,
+  body: Record<string, unknown> = {}
+): StatusResponse {
+  return { responseType: 'status', status, ...body } as StatusResponse;
 }
 
 export type DeleteResponse = {
