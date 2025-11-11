@@ -1,12 +1,11 @@
 -- CreateTable
 CREATE TABLE "QueueRecords" (
-    "Id" SERIAL NOT NULL,
     "ProductTransitionId" INTEGER NOT NULL,
     "Queue" TEXT NOT NULL,
     "JobType" TEXT NOT NULL,
     "JobId" TEXT NOT NULL,
 
-    CONSTRAINT "PK_QueueRecords" PRIMARY KEY ("Id")
+    CONSTRAINT "IX_QueueRecords_Queue_JobId" PRIMARY KEY ("Queue", "JobId")
 );
 
 -- CreateIndex

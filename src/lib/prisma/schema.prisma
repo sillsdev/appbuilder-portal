@@ -279,7 +279,6 @@ model ProductTransitions {
 }
 
 model QueueRecords {
-  Id                  Int    @id(map: "PK_QueueRecords") @default(autoincrement())
   ProductTransitionId Int
   Queue               String
   JobType             String
@@ -287,6 +286,7 @@ model QueueRecords {
   ProductTransition ProductTransitions @relation(fields: [ProductTransitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_QueueRecords_ProductTransitions_ProductTransitionId")
 
   @@index([ProductTransitionId], map: "IX_QueueRecords_ProductTransitionId")
+  @@id([Queue, JobId], map: "IX_QueueRecords_Queue_JobId")
 }
 
 model Products {
