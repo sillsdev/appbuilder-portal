@@ -91,14 +91,16 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
             job.data.productId,
             productData.Project.Id,
             productData.Project.Name!,
-            productData.ProductDefinition.Name!
+            productData.ProductDefinition.Name!,
+            job.data.transitions
           );
         } else {
           await notifyUnableToCreate(
             job.data.productId,
             productData.Project.Id,
             productData.Project.Name!,
-            productData.ProductDefinition.Name!
+            productData.ProductDefinition.Name!,
+            job.data.transitions
           );
         }
         const flow = await Workflow.restore(job.data.productId);
@@ -137,7 +139,8 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
           jobId: productData.WorkflowJobId,
           buildId: productData.WorkflowBuildId,
           releaseId: response.id,
-          publicationId: pub.Id
+          publicationId: pub.Id,
+          transitions: job.data.transitions
         }
       });
     }
@@ -203,7 +206,8 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
         job.data.productId,
         product.Project.OwnerId,
         product.Project.Name!,
-        product.ProductDefinition.Name!
+        product.ProductDefinition.Name!,
+        job.data.transitions
       );
       flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
       const packageFile = await DatabaseReads.productPublications.findUnique({
@@ -232,7 +236,13 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
         );
       }
     } else {
-      await notifyFailed(job.data.publicationId, job.data.productId, product, job.data.release);
+      await notifyFailed(
+        job.data.publicationId,
+        job.data.productId,
+        product,
+        job.data.release,
+        job.data.transitions
+      );
       const text = job.data.release.artifacts['consoleText']
         ? await fetch(job.data.release.artifacts['consoleText']).then((r) => r.text())
         : '';
@@ -264,7 +274,8 @@ async function notifyConnectionFailed(
   productId: string,
   projectId: number,
   projectName: string,
-  productName: string
+  productName: string,
+  transitions?: number[]
 ) {
   return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Release for Product #${productId}`,
@@ -275,7 +286,8 @@ async function notifyConnectionFailed(
       messageProperties: {
         projectName,
         productName
-      }
+      },
+      transitions
     }
   );
 }
@@ -283,7 +295,8 @@ async function notifyUnableToCreate(
   productId: string,
   projectId: number,
   projectName: string,
-  productName: string
+  productName: string,
+  transitions?: number[]
 ) {
   return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Release for Product #${productId}`,
@@ -294,7 +307,8 @@ async function notifyUnableToCreate(
       messageProperties: {
         projectName,
         productName
-      }
+      },
+      transitions
     }
   );
 }
@@ -303,7 +317,8 @@ async function notifyCompleted(
   productId: string,
   userId: number,
   projectName: string,
-  productName: string
+  productName: string,
+  transitions?: number[]
 ) {
   return getQueues().Emails.add(
     `Notify Owner of Successful Completion of Release #${publicationId} for Product #${productId}`,
@@ -314,7 +329,8 @@ async function notifyCompleted(
       messageProperties: {
         projectName,
         productName
-      }
+      },
+      transitions
     }
   );
 }
@@ -339,7 +355,8 @@ async function notifyFailed(
       };
     };
   }>,
-  release: BuildEngine.Types.ReleaseResponse
+  release: BuildEngine.Types.ReleaseResponse,
+  transitions?: number[]
 ) {
   const endpoint = await BuildEngine.Requests.getURLandToken(product.Project.OrganizationId);
   return getQueues().Emails.add(
@@ -361,7 +378,8 @@ async function notifyFailed(
         projectId: '' + product.Project.Id,
         projectUrl: product.Project.WorkflowAppProjectUrl!
       },
-      link: release.artifacts['consoleText'] ?? ''
+      link: release.artifacts['consoleText'] ?? '',
+      transitions
     }
   );
 }
