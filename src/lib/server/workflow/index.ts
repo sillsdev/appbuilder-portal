@@ -535,7 +535,8 @@ export class Workflow {
     const withDate = await DatabaseReads.productTransitions.findMany({
       where: {
         ProductId,
-        InitialState
+        InitialState,
+        DateTransition: { not: null }
       },
       select: {
         Id: true,
