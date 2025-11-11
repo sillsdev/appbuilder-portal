@@ -30,7 +30,7 @@
   <ul>
     {#each data.versions
       .filter((v) => v.BuildEngineUrl === engine?.BuildEngineUrl)
-      .map((v) => ({ ...v, Name: applications.get(v.ApplicationTypeId)?.Name }))
+      .map((v) => ({ ...v, Name: applications.get(v.ApplicationTypeId)?.Description }))
       .toSorted((a, b) => byName(a, b, getLocale())) as version}
       <li>{version.Name}: {version.Version} ({version.DateUpdated?.toLocaleDateString()})</li>
     {/each}

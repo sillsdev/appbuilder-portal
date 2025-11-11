@@ -10,7 +10,7 @@ export const load = (async (event) => {
   const versions = await DatabaseReads.systemVersions.findMany();
 
   const applications = await DatabaseReads.applicationTypes.findMany({
-    select: { Id: true, Name: true }
+    select: { Id: true, Description: true }
   });
 
   return { buildEngines, versions, applications };
