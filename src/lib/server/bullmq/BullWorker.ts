@@ -37,12 +37,17 @@ export abstract class BullWorker<T extends BullMQ.Job> {
               JobId: job.id! // this is in fact defined (checked in above if)
             })),
             select: {
-              Id: true
-            }
+              Queue: true,
+              JobId: true
+            },
+            skipDuplicates: true
           });
           span.setAttribute(
             'job.records',
-            records.map((r) => r.Id)
+            records.map(
+              (r) =>
+                `${encodeURIComponent(r.Queue)}/${encodeURIComponent(r.JobId).replace(/#/g, '%23')}`
+            )
           );
         }
         return await this.run(job);
