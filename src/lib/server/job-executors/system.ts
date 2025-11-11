@@ -141,8 +141,8 @@ export async function checkSystemStatuses(
   );
 
   const versionInfo = statuses.flatMap((s) =>
-    s.versionInfo
-      ? Object.keys(s.versionInfo)
+    s.versionInfo?.versions
+      ? Object.entries(s.versionInfo.versions)
           .filter(([key]) => applications.get(key) && s.url)
           .map(([Name, Version]) => ({
             BuildEngineUrl: s.url!,
