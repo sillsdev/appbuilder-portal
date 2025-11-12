@@ -1,7 +1,6 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import type { Exception, Job } from 'bullmq';
 import { Worker } from 'bullmq';
-import { DatabaseWrites } from '../database';
 import * as Executor from '../job-executors';
 import { getQueues, getWorkerConfig } from './queues';
 import * as BullMQ from './types';
@@ -30,20 +29,11 @@ export abstract class BullWorker<T extends BullMQ.Job> {
       try {
         job.updateProgress(0);
         if (job.id && job.data.transition) {
-          await DatabaseWrites.queueRecords.create({
-            data: {
-              ProductTransitionId: job.data.transition,
-              Queue: job.queueName,
-              JobType: job.data.type,
-              JobId: job.id! // this is in fact defined (checked in above if)
-            }
-          });
           span.setAttribute(
             'job.record',
             `${encodeURIComponent(job.queueName)}/${encodeURIComponent(job.id)}`
           );
         }
-        job.updateProgress(1);
         return await this.run(job);
       } catch (error) {
         span.recordException(error as Exception);
