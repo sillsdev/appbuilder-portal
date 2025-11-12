@@ -2,8 +2,7 @@ import { Queue } from 'bullmq';
 import type { Job, QueueOptions } from 'bullmq';
 import { BullMQOtel } from 'bullmq-otel';
 import { Redis } from 'ioredis';
-import { DatabaseWrites } from '../database';
-import prismaInternal, { DatabaseReads } from '../database/prisma';
+import prismaInternal from '../database/prisma';
 import { Workflow } from '../workflow';
 import type {
   BaseJob,
@@ -132,8 +131,8 @@ let _queues: ReturnType<typeof createQueues> | undefined = undefined;
 async function createJobRecord(job: Job<BaseJob>) {
   try {
     if (job.id && job.data.transition) {
-      await prismaInternal.$transaction(async () => {
-        const existing = await DatabaseReads.productTransitions.findFirst({
+      await prismaInternal.$transaction(async (tx) => {
+        const existing = await tx.productTransitions.findFirst({
           where: { Id: job.data.transition }
         });
 
@@ -152,7 +151,7 @@ async function createJobRecord(job: Job<BaseJob>) {
           }
         }
 
-        return await DatabaseWrites.queueRecords.create({
+        return await tx.queueRecords.create({
           data: {
             ProductTransitionId: job.data.transition!,
             Queue: job.queueName,
