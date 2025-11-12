@@ -566,7 +566,6 @@ export class Workflow {
       where: {
         ProductId: this.productId,
         InitialState: initialState,
-        DestinationState: destinationState,
         DateTransition: null
       },
       select: {
@@ -597,7 +596,8 @@ export class Workflow {
           AllowedUserNames: user?.Name ?? null,
           Command: command ?? null,
           DateTransition: new Date(),
-          Comment: comment ?? null
+          Comment: comment ?? null,
+          DestinationState: destinationState
         }
       });
     } else {
