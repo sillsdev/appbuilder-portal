@@ -28,6 +28,7 @@ export abstract class BullWorker<T extends BullMQ.Job> {
         'job.data': JSON.stringify(job.data)
       });
       try {
+        job.updateProgress(0);
         if (job.id && job.data.transitions?.length) {
           const records = await DatabaseWrites.queueRecords.createManyAndReturn({
             data: job.data.transitions.map((t) => ({
@@ -47,6 +48,7 @@ export abstract class BullWorker<T extends BullMQ.Job> {
             records.map((r) => `${encodeURIComponent(r.Queue)}/${encodeURIComponent(r.JobId)}`)
           );
         }
+        job.updateProgress(1);
         return await this.run(job);
       } catch (error) {
         span.recordException(error as Exception);
@@ -55,7 +57,7 @@ export abstract class BullWorker<T extends BullMQ.Job> {
           message: (error as Error).message
         });
         console.error(error);
-        job.log(`${error}`);
+        throw error;
       } finally {
         span.end();
       }
