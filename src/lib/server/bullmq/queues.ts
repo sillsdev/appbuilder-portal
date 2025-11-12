@@ -3,6 +3,8 @@ import type { Job, QueueOptions } from 'bullmq';
 import { BullMQOtel } from 'bullmq-otel';
 import { Redis } from 'ioredis';
 import { DatabaseWrites } from '../database';
+import prismaInternal, { DatabaseReads } from '../database/prisma';
+import { Workflow } from '../workflow';
 import type {
   BaseJob,
   BuildJob,
@@ -130,13 +132,34 @@ let _queues: ReturnType<typeof createQueues> | undefined = undefined;
 async function createJobRecord(job: Job<BaseJob>) {
   try {
     if (job.id && job.data.transition) {
-      await DatabaseWrites.queueRecords.create({
-        data: {
-          ProductTransitionId: job.data.transition,
-          Queue: job.queueName,
-          JobType: job.data.type,
-          JobId: job.id! // this is in fact defined (checked in above if)
+      await prismaInternal.$transaction(async () => {
+        const existing = await DatabaseReads.productTransitions.findFirst({
+          where: { Id: job.data.transition }
+        });
+
+        if (!existing) {
+          let found: number | undefined = undefined;
+          if ('productId' in job.data && job.data.productId) {
+            found = (await Workflow.currentProductTransition(job.data.productId))?.Id;
+          }
+          if (!found) {
+            job.log('Error recovering transition. No job record created.');
+            console.error(`Error recovering transition ${job.data.transition}`);
+            return;
+          } else {
+            job.log(`Transition ${job.data.transition} not found. Replacing with ${found}`);
+            job.updateData({ ...job.data, transition: found });
+          }
         }
+
+        return await DatabaseWrites.queueRecords.create({
+          data: {
+            ProductTransitionId: job.data.transition!,
+            Queue: job.queueName,
+            JobType: job.data.type,
+            JobId: job.id! // this is in fact defined (checked in above if)
+          }
+        });
       });
     }
   } catch (e) {
