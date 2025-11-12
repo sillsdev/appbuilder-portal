@@ -142,10 +142,7 @@
                       <li>
                         <a
                           class="link"
-                          href="/admin/jobs/queue/{rec.Queue}/{encodeURI(rec.JobId).replace(
-                            /#/g,
-                            '%23'
-                          )}"
+                          href="/admin/jobs/queue/{rec.Queue}/{encodeURIComponent(rec.JobId)}"
                           target="_blank"
                         >
                           {rec.Queue}: {rec.JobType}
