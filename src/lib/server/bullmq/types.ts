@@ -21,7 +21,7 @@ export const RepeatEveryMinute: RepeatOptions = {
 
 interface BaseJob {
   type: JobType;
-  transitions?: number[];
+  transition?: number;
 }
 
 export namespace Build {
@@ -165,7 +165,7 @@ export namespace UserTasks {
       }
   ) & {
     type: JobType.UserTasks_Modify;
-    transitions?: number[];
+    transition?: number; // added for compatibility with JobBase
     comment?: string; // just ignore comment for Delete and Reassign
     operation: Config;
   };

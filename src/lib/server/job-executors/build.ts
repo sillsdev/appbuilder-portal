@@ -69,7 +69,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
             productData.Project.Id,
             productData.Project.Name!,
             productData.ProductDefinition.Name!,
-            job.data.transitions
+            job.data.transition
           );
         } else {
           await notifyUnableToCreate(
@@ -77,7 +77,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
             productData.Project.Id,
             productData.Project.Name!,
             productData.ProductDefinition.Name!,
-            job.data.transitions
+            job.data.transition
           );
         }
         const flow = await Workflow.restore(job.data.productId);
@@ -113,7 +113,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
           jobId: productData.WorkflowJobId,
           buildId: response.id,
           productBuildId: productBuild.Id,
-          transitions: job.data.transitions
+          transition: job.data.transition
         }
       });
     }
@@ -277,7 +277,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
         product.Project.OwnerId,
         product.Project.Name!,
         product.ProductDefinition.Name!,
-        job.data.transitions
+        job.data.transition
       );
       flow.send({ type: WorkflowAction.Build_Successful, userId: null });
     } else {
@@ -309,7 +309,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
           job.data.productId,
           product,
           job.data.build,
-          job.data.transitions
+          job.data.transition
         );
         flow.send({
           type: action,
@@ -322,7 +322,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
           job.data.productId,
           product,
           job.data.build,
-          job.data.transitions
+          job.data.transition
         );
         flow.send({
           type: action,
@@ -345,7 +345,7 @@ async function notifyConnectionFailed(
   projectId: number,
   projectName: string,
   productName: string,
-  transitions?: number[]
+  transition?: number
 ) {
   return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Build for Product #${productId}`,
@@ -357,7 +357,7 @@ async function notifyConnectionFailed(
         projectName,
         productName
       },
-      transitions
+      transition
     }
   );
 }
@@ -366,7 +366,7 @@ async function notifyUnableToCreate(
   projectId: number,
   projectName: string,
   productName: string,
-  transitions?: number[]
+  transition?: number
 ) {
   return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Build for Product #${productId}`,
@@ -378,7 +378,7 @@ async function notifyUnableToCreate(
         projectName,
         productName
       },
-      transitions
+      transition
     }
   );
 }
@@ -388,7 +388,7 @@ async function notifyCompleted(
   userId: number,
   projectName: string,
   productName: string,
-  transitions?: number[]
+  transition?: number
 ) {
   return getQueues().Emails.add(
     `Notify Owner of Successful Completion of Build #${productBuildId} for Product #${productId}`,
@@ -400,7 +400,7 @@ async function notifyCompleted(
         projectName,
         productName
       },
-      transitions
+      transition
     }
   );
 }
@@ -425,7 +425,7 @@ async function notifyFailed(
     };
   }>,
   buildResponse: BuildEngine.Types.BuildResponse,
-  transitions?: number[]
+  transition?: number
 ) {
   const endpoint = await BuildEngine.Requests.getURLandToken(product.Project.OrganizationId);
   return getQueues().Emails.add(
@@ -447,7 +447,7 @@ async function notifyFailed(
         projectUrl: product.Project.WorkflowAppProjectUrl!
       },
       link: buildResponse.artifacts['consoleText'] ?? '',
-      transitions
+      transition
     }
   );
 }
@@ -478,7 +478,7 @@ async function notifyRetrying(
     };
   }>,
   buildResponse: BuildEngine.Types.BuildResponse,
-  transitions?: number[]
+  transition?: number
 ) {
   return getQueues().Emails.add(
     `Notify Admins of Retry with Medium Compute for Build #${productBuildId} for Product #${productId}`,
@@ -491,7 +491,7 @@ async function notifyRetrying(
         projectUrl: product.Project.WorkflowAppProjectUrl!
       },
       link: buildResponse.artifacts['consoleText'] ?? '',
-      transitions
+      transition
     }
   );
 }

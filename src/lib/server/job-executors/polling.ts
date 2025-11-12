@@ -48,7 +48,7 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
           productId: job.data.productId,
           productBuildId: job.data.productBuildId,
           build: response,
-          transitions: job.data.transitions
+          transition: job.data.transition
         }
       );
     }
@@ -104,7 +104,7 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
           productId: job.data.productId,
           publicationId: job.data.publicationId,
           release: response,
-          transitions: job.data.transitions
+          transition: job.data.transition
         }
       );
     }

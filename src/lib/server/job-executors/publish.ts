@@ -92,7 +92,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
             productData.Project.Id,
             productData.Project.Name!,
             productData.ProductDefinition.Name!,
-            job.data.transitions
+            job.data.transition
           );
         } else {
           await notifyUnableToCreate(
@@ -100,7 +100,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
             productData.Project.Id,
             productData.Project.Name!,
             productData.ProductDefinition.Name!,
-            job.data.transitions
+            job.data.transition
           );
         }
         const flow = await Workflow.restore(job.data.productId);
@@ -140,7 +140,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
           buildId: productData.WorkflowBuildId,
           releaseId: response.id,
           publicationId: pub.Id,
-          transitions: job.data.transitions
+          transition: job.data.transition
         }
       });
     }
@@ -207,7 +207,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
         product.Project.OwnerId,
         product.Project.Name!,
         product.ProductDefinition.Name!,
-        job.data.transitions
+        job.data.transition
       );
       flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
       const packageFile = await DatabaseReads.productPublications.findUnique({
@@ -241,7 +241,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
         job.data.productId,
         product,
         job.data.release,
-        job.data.transitions
+        job.data.transition
       );
       const text = job.data.release.artifacts['consoleText']
         ? await fetch(job.data.release.artifacts['consoleText']).then((r) => r.text())
@@ -275,7 +275,7 @@ async function notifyConnectionFailed(
   projectId: number,
   projectName: string,
   productName: string,
-  transitions?: number[]
+  transition?: number
 ) {
   return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Release for Product #${productId}`,
@@ -287,7 +287,7 @@ async function notifyConnectionFailed(
         projectName,
         productName
       },
-      transitions
+      transition
     }
   );
 }
@@ -296,7 +296,7 @@ async function notifyUnableToCreate(
   projectId: number,
   projectName: string,
   productName: string,
-  transitions?: number[]
+  transition?: number
 ) {
   return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Release for Product #${productId}`,
@@ -308,7 +308,7 @@ async function notifyUnableToCreate(
         projectName,
         productName
       },
-      transitions
+      transition
     }
   );
 }
@@ -318,7 +318,7 @@ async function notifyCompleted(
   userId: number,
   projectName: string,
   productName: string,
-  transitions?: number[]
+  transition?: number
 ) {
   return getQueues().Emails.add(
     `Notify Owner of Successful Completion of Release #${publicationId} for Product #${productId}`,
@@ -330,7 +330,7 @@ async function notifyCompleted(
         projectName,
         productName
       },
-      transitions
+      transition
     }
   );
 }
@@ -356,7 +356,7 @@ async function notifyFailed(
     };
   }>,
   release: BuildEngine.Types.ReleaseResponse,
-  transitions?: number[]
+  transition?: number
 ) {
   const endpoint = await BuildEngine.Requests.getURLandToken(product.Project.OrganizationId);
   return getQueues().Emails.add(
@@ -379,7 +379,7 @@ async function notifyFailed(
         projectUrl: product.Project.WorkflowAppProjectUrl!
       },
       link: release.artifacts['consoleText'] ?? '',
-      transitions
+      transition
     }
   );
 }
