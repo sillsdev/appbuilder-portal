@@ -19,9 +19,10 @@ export const RepeatEveryMinute: RepeatOptions = {
   pattern: '*/1 * * * *' // every minute
 } as const;
 
-interface BaseJob {
+export interface BaseJob {
   type: JobType;
   transition?: number;
+  productId?: string;
 }
 
 export namespace Build {
