@@ -75,6 +75,25 @@
   {/if}
 {/snippet}
 
+{#snippet queueRecords(records: Transition['QueueRecords'])}
+  <details class="cursor-pointer">
+    <summary>{m.products_jobRecords()} ({records.length})</summary>
+    <ul>
+      {#each records as rec}
+        <li>
+          <a
+            class="link"
+            href="/admin/jobs/queue/{rec.Queue}/{encodeURIComponent(rec.JobId)}"
+            target="_blank"
+          >
+            {rec.Queue}: {rec.JobType}
+          </a>
+        </li>
+      {/each}
+    </ul>
+  </details>
+{/snippet}
+
 <dialog bind:this={detailsModal} id="modal{product.Id}" class="modal">
   <div class="modal-box w-11/12 max-w-6xl">
     <div class="flex flex-row">
@@ -135,22 +154,7 @@
           {#if transition.QueueRecords?.length}
             <tr class:no-border={transition.Comment}>
               <td colspan="4">
-                <details class="cursor-pointer">
-                  <summary>{m.products_jobRecords()} ({transition.QueueRecords.length})</summary>
-                  <ul>
-                    {#each transition.QueueRecords as rec}
-                      <li>
-                        <a
-                          class="link"
-                          href="/admin/jobs/queue/{rec.Queue}/{encodeURIComponent(rec.JobId)}"
-                          target="_blank"
-                        >
-                          {rec.Queue}: {rec.JobType}
-                        </a>
-                      </li>
-                    {/each}
-                  </ul>
-                </details>
+                {@render queueRecords(transition.QueueRecords)}
               </td>
             </tr>
           {/if}
@@ -175,7 +179,9 @@
         {#each transitions as transition}
           <tr
             class:font-bold={isLandmark(transition.TransitionType)}
-            class:no-border={!isLandmark(transition.TransitionType) || transition.Comment}
+            class:no-border={!isLandmark(transition.TransitionType) ||
+              transition.Comment ||
+              transition.QueueRecords?.length}
           >
             <td>
               {@render transitionType(transition)}
@@ -185,11 +191,18 @@
             </td>
           </tr>
           {#if !isLandmark(transition.TransitionType)}
-            <tr class:no-border={transition.Comment}>
+            <tr class:no-border={transition.Comment || transition.QueueRecords?.length}>
               <td>
                 {transition.User?.Name || transition.AllowedUserNames || m.appName()}
               </td>
               <td>{transition.Command}</td>
+            </tr>
+          {/if}
+          {#if transition.QueueRecords?.length}
+            <tr class:no-border={transition.Comment}>
+              <td colspan="2">
+                {@render queueRecords(transition.QueueRecords)}
+              </td>
             </tr>
           {/if}
           {#if transition.Comment}
