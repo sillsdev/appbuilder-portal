@@ -335,7 +335,10 @@ export class Workflow {
             ProductId: this.productId,
             DateTransition: null,
             WorkflowUserId: null,
-            UserId: null
+            UserId: null,
+            QueueRecords: {
+              none: {}
+            }
           }
         },
         (await DatabaseReads.products.findUnique({
