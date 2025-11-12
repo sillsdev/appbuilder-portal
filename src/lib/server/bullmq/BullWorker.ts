@@ -29,23 +29,18 @@ export abstract class BullWorker<T extends BullMQ.Job> {
       });
       try {
         job.updateProgress(0);
-        if (job.id && job.data.transitions?.length) {
-          const records = await DatabaseWrites.queueRecords.createManyAndReturn({
-            data: job.data.transitions.map((t) => ({
-              ProductTransitionId: t,
+        if (job.id && job.data.transition) {
+          await DatabaseWrites.queueRecords.create({
+            data: {
+              ProductTransitionId: job.data.transition,
               Queue: job.queueName,
               JobType: job.data.type,
               JobId: job.id! // this is in fact defined (checked in above if)
-            })),
-            select: {
-              Queue: true,
-              JobId: true
-            },
-            skipDuplicates: true
+            }
           });
           span.setAttribute(
-            'job.records',
-            records.map((r) => `${encodeURIComponent(r.Queue)}/${encodeURIComponent(r.JobId)}`)
+            'job.record',
+            `${encodeURIComponent(job.queueName)}/${encodeURIComponent(job.id)}`
           );
         }
         job.updateProgress(1);
