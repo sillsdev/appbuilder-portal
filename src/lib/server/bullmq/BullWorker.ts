@@ -55,6 +55,7 @@ export abstract class BullWorker<T extends BullMQ.Job> {
           message: (error as Error).message
         });
         console.error(error);
+        job.log(`${error}`);
       } finally {
         span.end();
       }
