@@ -87,7 +87,13 @@ export const actions = {
     await Promise.all(
       projects.flatMap((project) =>
         project.Products.map((p) =>
-          doProductAction(p.Id, ProductActionType.Rebuild, form.data.comment)
+          doProductAction(
+            p.Id,
+            ProductActionType.Rebuild,
+            locals.security.userId,
+            form.data.comment,
+            true
+          )
         )
       )
     );

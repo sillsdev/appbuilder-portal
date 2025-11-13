@@ -12,6 +12,7 @@ export async function doProductAction(
   productId: string,
   action: ProductActionType,
   userId: number,
+  comment?: string,
   isAutomatic = false
 ) {
   const product = await DatabaseReads.products.findUnique({
@@ -64,7 +65,8 @@ export async function doProductAction(
               workflowType: product.ProductDefinition[flowType].Type,
               isAutomatic
             },
-            userId
+            userId,
+            comment
           );
         }
         break;
@@ -91,6 +93,7 @@ export async function doProductAction(
               // This is how S1 does it. May want to change later
               AllowedUserNames: '',
               DateTransition: new Date(),
+              Comment: comment,
               TransitionType: ProductTransitionType.CancelWorkflow,
               WorkflowType: product.WorkflowInstance.WorkflowDefinition.Type,
               UserId: userId
