@@ -141,15 +141,14 @@ export async function checkSystemStatuses(
   );
 
   const versionInfo = statuses.flatMap((s) =>
-    s.versionInfo?.versions
+    s.versionInfo
       ? Object.entries(s.versionInfo.versions)
           .filter(([key]) => applications.get(key) && s.url)
           .map(([Name, Version]) => ({
             BuildEngineUrl: s.url!,
             ApplicationTypeId: applications.get(Name)!,
-            Name,
             Version,
-            DateUpdated: new Date(s.versionInfo!.updated!)
+            ImageHash: s.versionInfo!.imageHash
           }))
       : []
   );
@@ -165,11 +164,7 @@ export async function checkSystemStatuses(
             esv.ApplicationTypeId === vi.ApplicationTypeId
         );
 
-        if (
-          existing &&
-          existing.Version !== vi.Version &&
-          (existing.DateUpdated?.valueOf() ?? 0) < vi.DateUpdated.valueOf()
-        ) {
+        if (existing && existing.ImageHash !== vi.ImageHash) {
           return await DatabaseWrites.systemVersions.update({
             where: {
               BuildEngineUrl_ApplicationTypeId: {
@@ -178,7 +173,8 @@ export async function checkSystemStatuses(
               }
             },
             data: {
-              Version: vi.Version
+              Version: vi.Version,
+              ImageHash: vi.ImageHash
             }
           });
         } else if (!existing) {
@@ -186,7 +182,8 @@ export async function checkSystemStatuses(
             data: {
               BuildEngineUrl: vi.BuildEngineUrl,
               ApplicationTypeId: vi.ApplicationTypeId,
-              Version: vi.Version
+              Version: vi.Version,
+              ImageHash: vi.ImageHash
             }
           });
         }
