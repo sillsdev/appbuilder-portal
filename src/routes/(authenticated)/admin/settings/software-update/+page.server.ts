@@ -8,7 +8,9 @@ import { doProductAction } from '$lib/products/server';
 import { DatabaseReads } from '$lib/server/database';
 
 const formSchema = v.object({
-  comment: v.nullable(v.string())
+  comment: v.pipe(v.string(), v.minLength(1, 'Comment is required'))
+  //comment: v.nullable(v.string()) /// Use this if you choose to have comment be optional. UI would need to be updated with no validator as well.
+
   // Since we are only getting a comment, I do not believe we need a properties: propertiesSchema here.
 });
 
@@ -42,6 +44,9 @@ export const actions = {
       },
       include: {
         Products: {
+          where: {
+            WorkflowInstance: null
+          },
           include: {
             ProductDefinition: true,
             WorkflowInstance: true,
@@ -57,15 +62,14 @@ export const actions = {
       }
     });
 
-    // Await promises for all products running a doProductAction.
+    // Await promises for all products running a doProductAction, and stores the comment.
     await Promise.all(
-      projects.map((project) =>
-        project.Products.forEach((p) => doProductAction(p.Id, ProductActionType.Rebuild))
+      projects.flatMap((project) =>
+        project.Products.map((p) =>
+          doProductAction(p.Id, ProductActionType.Rebuild, form.data.comment)
+        )
       )
     );
-
-    // TODO: The comment still needs to be stored somewhere.
-    // The comment value is at form.data.comment
 
     return { ok: true, form };
   }
