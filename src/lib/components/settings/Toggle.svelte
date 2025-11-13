@@ -9,7 +9,6 @@
     message?: ValueKey;
     name?: string;
     checked: boolean;
-    canEdit?: boolean;
     onIcon?: string;
     offIcon?: string;
     className?: string;
@@ -21,7 +20,6 @@
     message,
     name,
     checked = $bindable(),
-    canEdit = true,
     onIcon = '',
     offIcon = '',
     className,
@@ -29,15 +27,19 @@
   }: Props = $props();
 </script>
 
-<InputWithMessage {title} {message} className="{className} {canEdit ? '' : 'cursor-not-allowed'} ">
+<InputWithMessage
+  {title}
+  {message}
+  className="{className} {inputAttr.disabled ? 'cursor-not-allowed' : ''} "
+>
   <label
     class="toggle {checked ? 'border-accent' : ''} text-base-content
-           {canEdit ? '' : 'cursor-not-allowed opacity-50 pointer-events-none'}"
+           {inputAttr.disabled ? 'cursor-not-allowed opacity-50 pointer-events-none' : ''}"
   >
     <input
       {name}
       type="checkbox"
-      disabled={!canEdit}
+      disabled={inputAttr.disabled}
       bind:checked
       {...inputAttr}
       class="checked:bg-accent checked:border-accent rounded-full"

@@ -71,10 +71,10 @@
     inputAttr={{
       onchange: () => {
         form.requestSubmit();
-      }
+      },
+      disabled: !canEdit
     }}
     {onIcon}
     {offIcon}
-    {canEdit}
   />
 </form>
