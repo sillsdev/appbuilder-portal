@@ -1,42 +1,34 @@
 <script lang="ts">
-    import type { PageData } from './$types';
-    import { superForm } from 'sveltekit-superforms';
-    import { toast } from '$lib/utils';
-    import { goto } from '$app/navigation';
-    import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-    import { m } from '$lib/paraglide/messages';
-    import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
+  import { goto } from '$app/navigation';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
+  import { toast } from '$lib/utils';
 
-    interface Props {
-        data: PageData;
-    }
+  interface Props {
+    data: PageData;
+  }
 
-    let { data }: Props = $props();
-    
+  let { data }: Props = $props();
 
-    const base = '/admin/settings/software-update';
+  const base = '/admin/settings/software-update';
 
-
-    
-    const { form, enhance } = superForm(data.form, {
+  const { form, enhance } = superForm(data.form, {
     onUpdated({ form }) {
       if (form.valid) {
         goto(localizeHref(base));
         toast('success', m.admin_software_update_toast_success());
       }
     }
-    });
-    
-
-
-    let propsOk = $state(true);
+  });
 </script>
 
 <h3 class="pl-4">{m.admin_nav_software_update()}</h3>
 <p class="pl-4">{m.admin_nav_software_update_description()}</p>
 
 <form class="m-4" method="post" action="?/start" use:enhance>
-  
   <LabeledFormInput key="admin_nav_software_update_comment">
     <input
       type="text"
@@ -47,6 +39,5 @@
     />
     <span class="validator-hint">{m.admin_software_update_comment_required()}</span>
   </LabeledFormInput>
-  <input type="submit" class="btn btn-primary" value={m.admin_software_update_rebuild_start()} disabled={!propsOk}/>
-    
+  <input type="submit" class="btn btn-primary" value={m.admin_software_update_rebuild_start()} />
 </form>
