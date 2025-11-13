@@ -8,7 +8,8 @@ import { ProductActionType } from '.';
 export async function doProductAction(
   productId: string,
   action: ProductActionType,
-  userId: number
+  userId: number,
+  comment?: string
 ) {
   const product = await DatabaseReads.products.findUnique({
     where: {
@@ -59,7 +60,8 @@ export async function doProductAction(
               options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
               workflowType: product.ProductDefinition[flowType].Type
             },
-            userId
+            userId,
+            comment
           );
         }
         break;
@@ -86,6 +88,7 @@ export async function doProductAction(
               // This is how S1 does it. May want to change later
               AllowedUserNames: '',
               DateTransition: new Date(),
+              Comment: comment,
               TransitionType: ProductTransitionType.CancelWorkflow,
               WorkflowType: product.WorkflowInstance.WorkflowDefinition.Type,
               UserId: userId
