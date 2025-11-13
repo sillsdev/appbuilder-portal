@@ -23,7 +23,7 @@
     onIcon = '',
     offIcon = '',
     className,
-    inputAttr
+    inputAttr = {}
   }: Props = $props();
 </script>
 
