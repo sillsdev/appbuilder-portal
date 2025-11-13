@@ -4,6 +4,26 @@
     // optional chaining for if element isn't found or isn't actually a Dialog Element
     (document.getElementById('modal' + productId) as HTMLDialogElement)?.showModal?.();
   }
+
+  export type Transition = Prisma.ProductTransitionsGetPayload<{
+    select: {
+      TransitionType: true;
+      InitialState: true;
+      WorkflowType: true;
+      AllowedUserNames: true;
+      Command: true;
+      Comment: true;
+      DateTransition: true;
+      User: { select: { Name: true } };
+      QueueRecords: {
+        select: {
+          Queue: true;
+          JobId: true;
+          JobType: true;
+        };
+      };
+    };
+  }>;
 </script>
 
 <script lang="ts">
@@ -21,18 +41,7 @@
         Store: { select: { Description: true } };
       };
     }>;
-    transitions: Prisma.ProductTransitionsGetPayload<{
-      select: {
-        TransitionType: true;
-        InitialState: true;
-        WorkflowType: true;
-        AllowedUserNames: true;
-        Command: true;
-        Comment: true;
-        DateTransition: true;
-        User: { select: { Name: true } };
-      };
-    }>[];
+    transitions: Transition[];
   }
 
   let { product, transitions }: Props = $props();
@@ -64,6 +73,25 @@
   {:else}
     {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
   {/if}
+{/snippet}
+
+{#snippet queueRecords(records: Transition['QueueRecords'])}
+  <details class="cursor-pointer">
+    <summary>{m.products_jobRecords()} ({records.length})</summary>
+    <ul>
+      {#each records as rec}
+        <li>
+          <a
+            class="link"
+            href="/admin/jobs/queue/{rec.Queue}/{encodeURIComponent(rec.JobId)}"
+            target="_blank"
+          >
+            {rec.Queue}: {rec.JobType}
+          </a>
+        </li>
+      {/each}
+    </ul>
+  </details>
 {/snippet}
 
 <dialog bind:this={detailsModal} id="modal{product.Id}" class="modal">
@@ -107,7 +135,7 @@
         {#each transitions as transition}
           <tr
             class:font-bold={isLandmark(transition.TransitionType)}
-            class:no-border={transition.Comment}
+            class:no-border={transition.Comment || transition.QueueRecords?.length}
           >
             <td>
               {@render transitionType(transition)}
@@ -123,6 +151,13 @@
               {getTimeDateString(transition.DateTransition)}
             </td>
           </tr>
+          {#if transition.QueueRecords?.length}
+            <tr class:no-border={transition.Comment}>
+              <td colspan="4">
+                {@render queueRecords(transition.QueueRecords)}
+              </td>
+            </tr>
+          {/if}
           {#if transition.Comment}
             <tr>
               <td colspan="4">
@@ -144,7 +179,9 @@
         {#each transitions as transition}
           <tr
             class:font-bold={isLandmark(transition.TransitionType)}
-            class:no-border={!isLandmark(transition.TransitionType) || transition.Comment}
+            class:no-border={!isLandmark(transition.TransitionType) ||
+              transition.Comment ||
+              transition.QueueRecords?.length}
           >
             <td>
               {@render transitionType(transition)}
@@ -154,11 +191,18 @@
             </td>
           </tr>
           {#if !isLandmark(transition.TransitionType)}
-            <tr class:no-border={transition.Comment}>
+            <tr class:no-border={transition.Comment || transition.QueueRecords?.length}>
               <td>
                 {transition.User?.Name || transition.AllowedUserNames || m.appName()}
               </td>
               <td>{transition.Command}</td>
+            </tr>
+          {/if}
+          {#if transition.QueueRecords?.length}
+            <tr class:no-border={transition.Comment}>
+              <td colspan="2">
+                {@render queueRecords(transition.QueueRecords)}
+              </td>
             </tr>
           {/if}
           {#if transition.Comment}

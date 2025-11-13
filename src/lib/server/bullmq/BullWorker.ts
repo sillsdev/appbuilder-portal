@@ -27,6 +27,13 @@ export abstract class BullWorker<T extends BullMQ.Job> {
         'job.data': JSON.stringify(job.data)
       });
       try {
+        job.updateProgress(0);
+        if (job.id && job.data.transition) {
+          span.setAttribute(
+            'job.record',
+            `${encodeURIComponent(job.queueName)}/${encodeURIComponent(job.id)}`
+          );
+        }
         return await this.run(job);
       } catch (error) {
         span.recordException(error as Exception);
@@ -35,6 +42,7 @@ export abstract class BullWorker<T extends BullMQ.Job> {
           message: (error as Error).message
         });
         console.error(error);
+        throw error;
       } finally {
         span.end();
       }
