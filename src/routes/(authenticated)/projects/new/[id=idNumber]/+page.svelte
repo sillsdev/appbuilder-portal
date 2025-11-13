@@ -6,7 +6,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
+  import Toggle from '$lib/components/settings/Toggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
@@ -100,12 +100,15 @@
           ></textarea>
           <span class="validator-hint">&nbsp;</span>
         </LabeledFormInput>
-        <PublicPrivateToggle
+        <Toggle
           title={{ key: 'project_public' }}
           message={{ key: 'project_visibilityDescription' }}
           className="py-2 md:max-w-xs"
-          formName="IsPublic"
+          name="IsPublic"
+          inputAttr={{ onchange: () => {} }}
           bind:checked={$form.IsPublic}
+          onIcon="mdi:lock-open-variant"
+          offIcon="mdi:lock"
         />
       </div>
       <div class="flex flex-row flex-wrap place-content-center gap-4 p-4 w-full">

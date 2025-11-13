@@ -1,106 +1,85 @@
 <script lang="ts">
   import type { Prisma } from '@prisma/client';
-  import type { ActionData } from '../$types';
-  import { enhance } from '$app/forms';
-  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
-  import PublicPrivateToggle from '$lib/components/settings/PublicPrivateToggle.svelte';
+  import ToggleForm from '$lib/components/settings/ToggleForm.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { toast } from '$lib/utils';
 
   interface Props {
     project: Prisma.ProjectsGetPayload<{
       select: {
         IsPublic: true;
         AllowDownloads: true;
+        AutoPublishOnRebuild: true;
+        RebuildOnSoftwareUpdate: true;
       };
     }>;
-    publicEndpoint: string;
-    downloadEndpoint: string;
     canEdit: boolean;
+    showRebuildToggles: boolean;
   }
 
-  let { project, publicEndpoint, downloadEndpoint, canEdit }: Props = $props();
+  let { project, canEdit, showRebuildToggles }: Props = $props();
+
+  const publicEndpoint = 'toggleVisibility';
+  const downloadEndpoint = 'toggleDownload';
+  const rebuildEndpoint = 'toggleRebuildOnSoftwareUpdate';
+  const publishEndpoint = 'toggleAutoPublishOnRebuild';
 
   let isPublic = $state(!!project.IsPublic);
-  let publicForm: HTMLFormElement;
-  let downloadInput: HTMLInputElement;
+  let allowDownloads = $state(!!project.AllowDownloads);
+  let autoRebuild = $state(!!project.RebuildOnSoftwareUpdate);
+  let autoPublish = $state(!!project.AutoPublishOnRebuild);
 </script>
 
 <h2 class="pl-0 pt-0">{m.project_settings_title()}</h2>
 <div class="space-y-2">
-  <form
-    bind:this={publicForm}
+  <ToggleForm
+    name="isPublic"
     method="POST"
     action="?/{publicEndpoint}"
-    use:enhance={() =>
-      ({ update, result }) => {
-        if (result.type === 'success') {
-          const res = result.data as ActionData;
-          if (res?.ok) {
-            if (isPublic) {
-              toast('success', m.project_acts_isPublic_on());
-            } else {
-              toast('success', m.project_acts_isPublic_off());
-            }
-          } else {
-            toast('error', m.errors_generic({ errorMessage: '' }));
-            isPublic = !isPublic;
-          }
-        }
-        update({ reset: false });
-      }}
-  >
-    <PublicPrivateToggle
-      title={{ key: 'project_visibility_title' }}
-      message={{ key: 'project_visibility_description' }}
-      formName="isPublic"
-      bind:checked={isPublic}
-      inputAttr={{
-        onchange: () => {
-          publicForm.requestSubmit();
-        },
-        disabled: !canEdit
-      }}
-      className={canEdit ? '' : 'cursor-not-allowed'}
-    />
-  </form>
-  <form
+    formVar={isPublic}
+    onmsg={m.project_acts_isPublic_on()}
+    offmsg={m.project_acts_isPublic_off()}
+    title={{ key: 'project_visibility_title' }}
+    message={{ key: 'project_visibility_description' }}
+    onIcon="mdi:lock-open-variant"
+    offIcon="mdi:lock"
+    {canEdit}
+  />
+
+  <ToggleForm
+    name="allowDownloads"
     method="POST"
     action="?/{downloadEndpoint}"
-    use:enhance={() =>
-      ({ update, result }) => {
-        if (result.type === 'success') {
-          const res = result.data as ActionData;
-          if (res?.ok) {
-            if (downloadInput.checked) {
-              toast('success', m.project_acts_downloads_on());
-            } else {
-              toast('success', m.project_acts_downloads_off());
-            }
-          } else {
-            toast('error', m.errors_generic({ errorMessage: '' }));
-            downloadInput.checked = !downloadInput.checked;
-          }
-        }
-        update({ reset: false });
-      }}
-  >
-    <InputWithMessage
-      title={{ key: 'project_orgDownloads_title' }}
-      message={{ key: 'project_orgDownloads_description' }}
-      className={canEdit ? '' : 'cursor-not-allowed'}
-    >
-      <input
-        bind:this={downloadInput}
-        type="checkbox"
-        name="allowDownloads"
-        class="toggle toggle-accent ml-4"
-        checked={project.AllowDownloads}
-        onchange={() => {
-          downloadInput.form?.requestSubmit();
-        }}
-        disabled={!canEdit}
-      />
-    </InputWithMessage>
-  </form>
+    title={{ key: 'project_orgDownloads_title' }}
+    message={{ key: 'project_orgDownloads_description' }}
+    onmsg={m.project_acts_downloads_on()}
+    offmsg={m.project_acts_downloads_off()}
+    formVar={allowDownloads}
+    {canEdit}
+  />
+
+  {#if showRebuildToggles}
+    <ToggleForm
+      name="autoRebuildOnSoftwareUpdate"
+      method="POST"
+      action="?/{rebuildEndpoint}"
+      title={{ key: 'project_autoRebuild_on_update_title' }}
+      message={{ key: 'project_autoRebuild_on_update_description' }}
+      onmsg={m.project_acts_autoBuilds_on()}
+      offmsg={m.project_acts_autoBuilds_off()}
+      formVar={autoRebuild}
+      {canEdit}
+    />
+
+    <ToggleForm
+      name="autoPublishOnRebuild"
+      method="POST"
+      action="?/{publishEndpoint}"
+      title={{ key: 'project_autoPublish_title' }}
+      message={{ key: 'project_autoPublish_description' }}
+      onmsg={m.project_acts_autoPublish_on()}
+      offmsg={m.project_acts_autoPublish_off()}
+      formVar={autoPublish}
+      {canEdit}
+    />
+  {/if}
 </div>
