@@ -52,7 +52,6 @@
       projectData?.project.OrganizationId ?? -1
     )
   );
-  const showRebuildToggles = data.showRebuildToggles;
   const canClaim = $derived(
     canClaimProject(
       data.session.user,
@@ -240,7 +239,11 @@
       </div>
       <!-- Settings -->
       <div class="settingsarea my-4">
-        <Settings project={projectData.project} {canEdit} {showRebuildToggles} />
+        <Settings
+          project={projectData.project}
+          {canEdit}
+          showRebuildToggles={data.showRebuildToggles}
+        />
       </div>
       <!-- Sidebar Settings -->
       <div class="space-y-2 min-w-0 flex-auto sidebararea">

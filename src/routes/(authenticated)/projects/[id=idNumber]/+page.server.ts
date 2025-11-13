@@ -4,7 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
-import { APP_ENV } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { baseLocale } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
@@ -53,7 +53,7 @@ export const load = (async ({ locals, params }) => {
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
     jobsAvailable: QueueConnected(),
-    showRebuildToggles: APP_ENV === 'development'
+    showRebuildToggles: env.NODE_ENV === 'development'
   };
 }) satisfies PageServerLoad;
 
