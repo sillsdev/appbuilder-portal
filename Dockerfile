@@ -29,8 +29,12 @@ WORKDIR /docs
 
 COPY ./docs /docs/
 RUN mkdir /docs/pdf
+
 # Convert fodt files to pdf
 RUN libreoffice --headless --convert-to pdf /docs/*.fodt --outdir /docs/pdf
+
+RUN libreoffice --headless --convert-to pdf /docs/*.odt --outdir /docs/pdf
+RUN ls -l /docs/pdf/
 
 # Real container that will run
 FROM node:24-alpine3.21
