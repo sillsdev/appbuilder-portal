@@ -1,8 +1,8 @@
 name: Scriptoria v2 Test and Deploy
 
 on:
-  push:
-  workflow_dispatch:
+  # push:
+  # workflow_dispatch:
 
 jobs:
   check:
