@@ -1,0 +1,24 @@
+# Generate markdown docs to static/docs/ pdfs
+name: MD Docs PDF Conversion
+on:
+    push:
+        paths:
+            - 'docs/**.md'
+            - 'docs/images/**'
+
+jobs:
+    md-to-pdf:
+        name: Convert MD Docs to PDF
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: baileyjm02/markdown-to-pdf@v1
+              with:
+                input_dir: docs
+                output_dir: static/docs
+                images_dir: docs/images
+                build_html: false
+            - uses: actions/upload-artifact@v3
+              with:
+                name: docs
+                path: static/docs
