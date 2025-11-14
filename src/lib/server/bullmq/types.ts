@@ -34,6 +34,9 @@ export enum JobType {
   // Build Jobs
   Build_Product = 'Build Product',
   Build_PostProcess = 'Postprocess Build',
+  // Parent job for admin-initiated rebuild
+  // Children (build jobs) can be linked to this parent.
+  Rebuild_Parent = 'Rebuild Parent',
   // Polling Jobs
   Poll_Build = 'Check Product Build',
   Poll_Project = 'Check Project Creation',
@@ -83,6 +86,14 @@ export namespace Build {
     productId: string;
     productBuildId: number;
     build: BuildResponse;
+  }
+
+  //Parent type for grouping admin-initiated rebuilds
+  // Not processed by build workers
+  export interface Parent {
+    type: JobType.Rebuild_Parent;
+    projectId: number;
+    initiatedBy?: number | null;
   }
 }
 
@@ -290,7 +301,10 @@ export namespace SvelteProjectSSE {
 
 export type Job = JobTypeMap[keyof JobTypeMap];
 
-export type BuildJob = JobTypeMap[JobType.Build_Product | JobType.Build_PostProcess];
+export type BuildJob = JobTypeMap[
+  | JobType.Build_Product
+  | JobType.Build_PostProcess
+  | JobType.Rebuild_Parent];
 export type RecurringJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags];
@@ -324,6 +338,7 @@ export type ProjectJob = JobTypeMap[JobType.Project_Create | JobType.Project_Imp
 export type JobTypeMap = {
   [JobType.Build_Product]: Build.Product;
   [JobType.Build_PostProcess]: Build.PostProcess;
+  [JobType.Rebuild_Parent]: Build.Parent;
   [JobType.Poll_Build]: Polling.Build;
   [JobType.Poll_Project]: Polling.Project;
   [JobType.Poll_Publish]: Polling.Publish;

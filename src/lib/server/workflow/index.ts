@@ -48,7 +48,10 @@ export class Workflow {
 
   /* PUBLIC METHODS */
   /** Create a new workflow instance and populate the database tables. */
-  public static async create(productId: string, config: WorkflowConfig): Promise<Workflow> {
+  public static async create(
+    productId: string,
+    config: WorkflowConfig & { parentJobId?: string }
+  ): Promise<Workflow> {
     const check = await DatabaseReads.products.findUnique({
       where: {
         Id: productId
@@ -70,7 +73,8 @@ export class Workflow {
       ...config,
       hasAuthors: !!check?.Project._count.Authors,
       hasReviewers: !!check?.Project._count.Reviewers,
-      productId
+      productId,
+      parentJobId: config.parentJobId
     });
     flow.flow = createActor(WorkflowStateMachine, {
       inspect: (e) => {

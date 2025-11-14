@@ -187,6 +187,8 @@ export type WorkflowInput = WorkflowConfig & {
   productId: string;
   hasAuthors: boolean;
   hasReviewers: boolean;
+  /** Optional parent job id to link build jobs to (used for pausing admin-initiated batches) */
+  parentJobId?: string;
 };
 
 /** Used for filtering based on specified WorkflowOptions and/or ProductType */
