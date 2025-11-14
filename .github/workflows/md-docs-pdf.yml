@@ -24,3 +24,4 @@ jobs:
         with:
           name: docs
           path: static/docs/*.pdf
+          overwrite: true
