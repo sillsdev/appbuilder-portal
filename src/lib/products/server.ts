@@ -54,7 +54,7 @@ export async function doProductAction(
             productType: product.ProductDefinition[flowType].ProductType,
             options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
             workflowType: product.ProductDefinition[flowType].Type,
-            // pass through optional parent job id so child builds become children of that parent
+            // pass optional parent job id so child builds become children of that parent
             parentJobId: parentJobId
           });
         }
