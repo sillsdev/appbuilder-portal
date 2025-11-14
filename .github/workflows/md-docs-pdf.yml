@@ -17,7 +17,7 @@ jobs:
         with:
           input_dir: docs
           output_dir: static/docs
-          images_dir: docs/images
+          image_import: ./images
           build_html: true # set to true to debug html output
       - uses: actions/upload-artifact@v4
         with:
