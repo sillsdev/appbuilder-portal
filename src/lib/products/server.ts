@@ -4,7 +4,11 @@ import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
 import { ProductActionType } from '.';
 
-export async function doProductAction(productId: string, action: ProductActionType) {
+export async function doProductAction(
+  productId: string,
+  action: ProductActionType,
+  isAutomatic = false
+) {
   const product = await DatabaseReads.products.findUnique({
     where: {
       Id: productId
@@ -50,7 +54,7 @@ export async function doProductAction(productId: string, action: ProductActionTy
             productType: product.ProductDefinition[flowType].ProductType,
             options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
             workflowType: product.ProductDefinition[flowType].Type,
-            isAutomatic: false
+            isAutomatic
           });
         }
         break;
