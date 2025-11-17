@@ -70,7 +70,7 @@ export async function notifyAutoPublishOwner(productId: string) {
     }
   });
   if (!product?.Project.OwnerId) return;
-  void getQueues().Emails.add(`Notify Owner of Auto Publish for Product #${productId}`, {
+  await getQueues().Emails.add(`Notify Owner of Auto Publish for Product #${productId}`, {
     type: BullMQ.JobType.Email_SendNotificationToUser,
     userId: product.Project.OwnerId,
     messageKey: 'autoPublishOnRebuildCompleted',
