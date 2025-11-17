@@ -11,7 +11,8 @@ import { ProductActionType, getFileInfo } from '.';
 export async function doProductAction(
   productId: string,
   action: ProductActionType,
-  userId: number
+  userId: number,
+  isAutomatic = false
 ) {
   const product = await DatabaseReads.products.findUnique({
     where: {
@@ -61,7 +62,7 @@ export async function doProductAction(
               productType: product.ProductDefinition[flowType].ProductType,
               options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
               workflowType: product.ProductDefinition[flowType].Type,
-              isAutomatic: false
+              isAutomatic
             },
             userId
           );
