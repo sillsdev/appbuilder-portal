@@ -32,7 +32,7 @@ To create a project:
 
 2. In the **Select a project** dialog, click on the **NEW PROJECT** link
 
-![Select New project in select a project dialog](./images/creating_google_key_ima3.png)
+![Select New project in select a project dialog](./images/creating_google_key_ima3.png) 
 
 3. In the **New Project** page, enter a Project name (e.g. Google Play Console Developer). You may select an organization or not assign an organization. It is up to you.
 
