@@ -19,7 +19,7 @@ jobs:
           output_dir: static/docs
           images_dir: docs/images
           image_import: ./images
-          build_html: true # set to true to debug html output
+          build_html: false # set to true to debug html output
 
       - uses: stefanzweifel/git-auto-commit-action@v7
         with:
