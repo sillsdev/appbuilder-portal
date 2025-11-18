@@ -9,10 +9,14 @@ on:
 
 jobs:
   md-to-pdf:
+    permissions:
+      contents: write
     name: Convert MD Docs to PDF
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref}}
       - uses: baileyjm02/markdown-to-pdf@v1
         with:
           input_path: docs
