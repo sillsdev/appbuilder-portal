@@ -53,7 +53,7 @@ export const load = (async ({ locals, params }) => {
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
     jobsAvailable: QueueConnected(),
-    showRebuildToggles: env.NODE_ENV === 'development'
+    showRebuildToggles: env.APP_ENV !== 'prd'
   };
 }) satisfies PageServerLoad;
 
