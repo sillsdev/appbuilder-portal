@@ -172,10 +172,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
       const productDefinitions = (
         await DatabaseReads.organizationProductDefinitions.findMany({
           where: {
-            OrganizationId: project.OrganizationId,
-            ProductDefinition: {
-              ApplicationTypes: project.ApplicationType
-            }
+            OrganizationId: project.OrganizationId
           },
           select: {
             ProductDefinition: {
