@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
+  import { QueueName } from '$lib/bullmq';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -41,7 +42,15 @@
 
 <div class="flex flex-col w-full">
   {#if buildEngines.length === 0}
-    <i>No build engine information. Check the "Check System Statuses" recurring BullMQ job</i>
+    <i>
+      No build engine information. Check the <a
+        class="link"
+        target="_blank"
+        href="/admin/jobs/queue/{encodeURIComponent(QueueName.System_Recurring)}"
+      >
+        "Check System Statuses" recurring BullMQ job
+      </a>
+    </i>
   {/if}
   {#each buildEngines.toSorted( (a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, getLocale()) ) as buildEngine, i}
     <DataDisplayBox

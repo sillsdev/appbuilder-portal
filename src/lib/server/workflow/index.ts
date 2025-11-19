@@ -56,6 +56,7 @@ export class Workflow {
       select: {
         Project: {
           select: {
+            Id: true,
             _count: {
               select: {
                 Authors: true,
@@ -80,8 +81,6 @@ export class Workflow {
     });
 
     await flow.createSnapshot(flow.flow.getSnapshot().context);
-    flow.flow.start();
-    await flow.createSnapshot(flow.flow.getSnapshot().context);
     await DatabaseWrites.productTransitions.create({
       data: {
         ProductId: productId,
@@ -90,6 +89,18 @@ export class Workflow {
         WorkflowType: config.workflowType
       }
     });
+    await DatabaseWrites.productTransitions.createMany(
+      {
+        data: await Workflow.transitionEntriesFromState(
+          WorkflowState.Start,
+          flow.productId,
+          flow.input
+        )
+      },
+      check!.Project.Id
+    );
+    flow.flow.start();
+    await flow.createSnapshot(flow.flow.getSnapshot().context);
     await getQueues().UserTasks.add(`Create UserTasks for Product #${productId}`, {
       type: BullMQ.JobType.UserTasks_Modify,
       scope: 'Product',
@@ -324,7 +335,10 @@ export class Workflow {
             ProductId: this.productId,
             DateTransition: null,
             WorkflowUserId: null,
-            UserId: null
+            UserId: null,
+            QueueRecords: {
+              none: {}
+            }
           }
         },
         (await DatabaseReads.products.findUnique({
@@ -463,6 +477,22 @@ export class Workflow {
         })
       ).map((u) => [u.Name, allUsers[u.Id]])
     );
+
+    const noDateWithRecords = new Set(
+      (
+        await DatabaseReads.productTransitions.findMany({
+          where: {
+            ProductId: productId,
+            DateTransition: null,
+            QueueRecords: { some: {} }
+          },
+          select: {
+            InitialState: true
+          }
+        })
+      ).map((pt) => pt.InitialState)
+    );
+
     const ret: Prisma.ProductTransitionsCreateManyInput[] = [
       Workflow.transitionFromState(
         stateName === WorkflowState.Start
@@ -483,7 +513,37 @@ export class Workflow {
         )
       );
     }
-    return ret;
+    return ret.filter((r) => !noDateWithRecords.has(r.InitialState ?? ''));
+  }
+
+  public static async currentProductTransition(ProductId: string, InitialState?: string) {
+    const noDate = await DatabaseReads.productTransitions.findFirst({
+      where: {
+        ProductId,
+        InitialState,
+        DateTransition: null
+      },
+      select: {
+        Id: true,
+        DateTransition: true
+      }
+    });
+
+    const withDate = await DatabaseReads.productTransitions.findMany({
+      where: {
+        ProductId,
+        InitialState,
+        DateTransition: { not: null }
+      },
+      select: {
+        Id: true,
+        DateTransition: true
+      },
+      orderBy: { DateTransition: 'desc' },
+      take: 1
+    });
+
+    return noDate ?? withDate.at(0) ?? null;
   }
 
   /**
@@ -500,7 +560,6 @@ export class Workflow {
       where: {
         ProductId: this.productId,
         InitialState: initialState,
-        DestinationState: destinationState,
         DateTransition: null
       },
       select: {
@@ -531,7 +590,8 @@ export class Workflow {
           AllowedUserNames: user?.Name ?? null,
           Command: command ?? null,
           DateTransition: new Date(),
-          Comment: comment ?? null
+          Comment: comment ?? null,
+          DestinationState: destinationState
         }
       });
     } else {
