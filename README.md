@@ -37,6 +37,7 @@ AUTH0_CLIENT_ID=n8IAE2O17FBrlQ667x5mydhpqelCBUWG
 AUTH0_DOMAIN=sil-appbuilder.auth0.com
 AUTH0_CONNECTION=Username-Password-Authentication
 DEFAULT_BUILDENGINE_URL=http://stg-tunnel:8443
+APP_ENV=dev
 
 AUTH0_SECRET=
 AUTH0_CLIENT_SECRET=
