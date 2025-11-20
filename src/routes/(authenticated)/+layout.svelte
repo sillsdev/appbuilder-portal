@@ -217,6 +217,16 @@
                     {m.sidebar_orgSettings()}
                   </a>
                 </li>
+                <li>
+                  <a
+                    class="rounded-none"
+                    class:active-menu-item={isUrlActive('/software-update')}
+                    href={activeOrgUrl('/software-update')}
+                    onclick={closeDrawer}
+                  >
+                    {m.admin_nav_software_update()}
+                  </a>
+                </li>
               {/if}
               {#if isSuperAdmin(data.session.user.roles)}
                 <li>
