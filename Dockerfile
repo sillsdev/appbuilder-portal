@@ -23,11 +23,22 @@ RUN npm run build
 RUN npm run fix-sourcemaps
 
 # Generate PDF docs
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    font-noto-cjk
+
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
 RUN mkdir -p ./static/docs
 COPY docs/ /build/docs/
 RUN npm install -g mdpdf
-RUN mdpdf --help
-RUN mdpdf /build/docs/'Creating Your First App.md' -o /build/docs/'Creating Your First App.pdf' --format=Letter 
+RUN mdpdf --format=Letter '/build/docs/Help Guide for Scriptoria.md'
+
 
 # Real container that will run
 FROM node:24-alpine3.21

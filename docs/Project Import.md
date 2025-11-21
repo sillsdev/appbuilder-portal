@@ -1,18 +1,17 @@
-
+<style type="text/css" rel="stylesheet">
+    #toc ul {list-style-type: none;}
+</style>
 ![SIL Logo](./images/SIL_logo.png)
 # ![Scriptoria Logo](./images/quill_ink.png)Scriptoria Project Import
 
 Updated: 2025-11-3
-
-[**Introduction	1**](#introduction)
-
-[**Import Process	1**](#import-process)
-
-[**Import JSON File Format	3**](#import-json-file-format)
-
-[Projects Attributes	3](#projects-attributes)
-
-[Product Attributes	4](#product-attributes)
+<span id="toc">
+- [**Introduction	1**](#introduction)
+- [**Import Process	1**](#import-process)
+- [**Import JSON File Format	3**](#import-json-file-format)
+    - [Projects Attributes	3](#projects-attributes)
+    - [Product Attributes	4](#product-attributes)
+</span>
 
 # Introduction
 
@@ -33,7 +32,7 @@ The owner will specify: Project Group, Application Type, and the Import JSON Fil
 
 ![Import Projects](./images/project_import_img2.png)
 
-# 
+
 
 # Import JSON File Format 
 
