@@ -7,33 +7,33 @@
 
 Updated: 2025-11-3
 <span id="toc">
-- [**Introduction**](#introduction)	**[2](#introduction)**
-  - [Roles](#roles)	[2](#roles)
-- [**Project setup**](#project-setup)	**[3](#project-setup)**
-- [**Project Detail Overview**](#project-detail-overview)	**[6](#project-detail-overview)**
-- [**Project Directory**](#project-directory)	**[8](#project-directory)**
-  - [Settings](#settings)	[9](#settings)
-- [**Publishing Workflow**](#publishing-workflow)	**[9](#publishing-workflow)**
-  - [Google Play Workflows](#google-play-workflows)	[10](#google-play-workflows)
-  - [Product Approval](#product-approval)	[10](#product-approval)
-  - [App Builder Configuration](#app-builder-configuration)	[11](#app-builder-configuration)
+* [**Introduction**](#introduction)	**[2](#introduction)**
+  * [Roles](#roles)	[2](#roles)
+* [**Project setup**](#project-setup)	**[3](#project-setup)**
+* [**Project Detail Overview**](#project-detail-overview)	**[6](#project-detail-overview)**
+* [**Project Directory**](#project-directory)	**[8](#project-directory)**
+  * [Settings](#settings)	[9](#settings)
+* [**Publishing Workflow**](#publishing-workflow)	**[9](#publishing-workflow)**
+  * [Google Play Workflows](#google-play-workflows)	[10](#google-play-workflows)
+  * [Product Approval](#product-approval)	[10](#product-approval)
+  * [App Builder Configuration](#app-builder-configuration)	[11](#app-builder-configuration)
     - [Google Play](#google-play)	[11](#google-play)
     - [Authors](#authors)	[11](#authors)
-  - [App Store Preview](#app-store-preview)	[12](#app-store-preview)
-  - [Create App Entry](#create-app-entry)	[13](#create-app-entry)
-  - [Verify and Publish](#verify-and-publish)	[14](#verify-and-publish)
-  - [Make it Live\!](#make-it-live!)	[15](#make-it-live!)
-  - [Rebuild and Republish](#rebuild-and-republish)	[16](#rebuild-and-republish)
-  - [Product Workflow Details](#product-workflow-details)	[17](#product-workflow-details)
-- [**Administration**](#administration)	**[19](#administration)**
-  - [Permission Levels](#permission-levels)	[19](#permission-levels)
-  - [Super Admin](#super-admin)	[19](#super-admin)
-  - [Org Admin](#org-admin)	[20](#org-admin)
-  - [App Builders](#app-builders)	[20](#app-builders)
-- [**Set up an organization**](#set-up-an-organization)	**[20](#set-up-an-organization)**
-- [**Add User**](#add-user)	**[23](#add-user)**
-- [**Manage Users**](#manage-users)	**[24](#manage-users)**
-  - [Modifying a User](#modifying-a-user)	[25](#modifying-a-user)
+  * [App Store Preview](#app-store-preview)	[12](#app-store-preview)
+  * [Create App Entry](#create-app-entry)	[13](#create-app-entry)
+  * [Verify and Publish](#verify-and-publish)	[14](#verify-and-publish)
+  * [Make it Live\!](#make-it-live!)	[15](#make-it-live!)
+  * [Rebuild and Republish](#rebuild-and-republish)	[16](#rebuild-and-republish)
+  * [Product Workflow Details](#product-workflow-details)	[17](#product-workflow-details)
+* [**Administration**](#administration)	**[19](#administration)**
+  * [Permission Levels](#permission-levels)	[19](#permission-levels)
+  * [Super Admin](#super-admin)	[19](#super-admin)
+  * [Org Admin](#org-admin)	[20](#org-admin)
+  * [App Builders](#app-builders)	[20](#app-builders)
+* [**Set up an organization**](#set-up-an-organization)	**[20](#set-up-an-organization)**
+* [**Add User**](#add-user)	**[23](#add-user)**
+* [**Manage Users**](#manage-users)	**[24](#manage-users)**
+  * [Modifying a User](#modifying-a-user)	[25](#modifying-a-user)
     - [Setting User Roles](#setting-user-roles)	[26](#setting-user-roles)
     - [Setting User Groups](#setting-user-groups)	[26](#setting-user-groups)
 </span>

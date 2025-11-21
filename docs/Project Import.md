@@ -1,16 +1,16 @@
 <style type="text/css" rel="stylesheet">
-    #toc ul {list-style-type: none;}
+    .toc {list-style-type: none;}
 </style>
 ![SIL Logo](./images/SIL_logo.png)
 # ![Scriptoria Logo](./images/quill_ink.png)Scriptoria Project Import
 
 Updated: 2025-11-3
-<span id="toc">
-- [**Introduction	1**](#introduction)
-- [**Import Process	1**](#import-process)
-- [**Import JSON File Format	3**](#import-json-file-format)
-    - [Projects Attributes	3](#projects-attributes)
-    - [Product Attributes	4](#product-attributes)
+<span class="toc">
+* {.toc} [**Introduction	1**](#introduction)
+* {.toc} [**Import Process	1**](#import-process)
+* {.toc} [**Import JSON File Format	3**](#import-json-file-format)
+    * {.toc} [Projects Attributes	3](#projects-attributes)
+    * {.toc} [Product Attributes	4](#product-attributes)
 </span>
 
 # Introduction
