@@ -1,6 +1,4 @@
-# 
 
-# 
 ![SIL Logo](./images/SIL_logo.png)
 # ![Scriptoria Logo](./images/quill_ink.png)Scriptoria New Organizations
 

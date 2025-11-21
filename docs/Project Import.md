@@ -1,6 +1,4 @@
-# 
 
-# 
 ![SIL Logo](./images/SIL_logo.png)
 # ![Scriptoria Logo](./images/quill_ink.png)Scriptoria Project Import
 
@@ -16,7 +14,7 @@ Updated: 2025-11-3
 
 [Product Attributes	4](#product-attributes)
 
-# Introduction {#introduction}
+# Introduction
 
 If you have created many apps and want to use Scriptoria to manage the publishing of the apps, you can import the projects and products into Scriptoria. In Scriptoria, a project is associated with an app project in one of the App Builders (Scripture App Builder, Reading App Builder, or Dictionary App Builder). A project can have multiple products.  A product is defined as the execution of a workflow with the result being published to a store.  Here are a few examples:
 
@@ -26,7 +24,7 @@ Android App to S3 Bucket \= build an Android app from an app builder project wit
 
 HTML to S3 Bucket \= generate HTML from an app builder project with the result HTML, CSS, and JavaScript being published to an S3 Bucket
 
-# Import Process {#import-process}
+# Import Process 
 
 To import projects and products into Scriptoria, the project owner should go to the *My Projects* page and click on *Import Projects*. 
   
@@ -37,7 +35,7 @@ The owner will specify: Project Group, Application Type, and the Import JSON Fil
 
 # 
 
-# Import JSON File Format {#import-json-file-format}
+# Import JSON File Format 
 
 The Import JSON File Format consists of two arrays of JSON objects: Projects and Products.  For each Project in the Projects array, there will be a Product added (and the workflow started) for each entry in the Products array.  Here is an example JSON file:
 
@@ -57,7 +55,7 @@ The Import JSON File Format consists of two arrays of JSON objects: Projects and
 }
 ```
 
-## Projects Attributes {#projects-attributes}
+## Projects Attributes 
 
 The project attributes are the same that would be set when adding a new project (Name, Description, Language, and IsPublic) or the settings can be edited when viewing a project (AllowDownloads, IsPublic). The Language attribute should be the BCP-47 language tag. 
 
@@ -68,6 +66,6 @@ Settings Attributes
 
 ![Settings Attibute](./images/project_import_img4.png)
 
-## Product Attributes {#product-attributes}
+## Product Attributes
 
 The product attributes are the names associated with the Products and Stores that are available to the organization in the Organization Settings. Please contact the Organization Admin or Scriptoria Admin to determine the available values.

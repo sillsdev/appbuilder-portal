@@ -1,6 +1,3 @@
-# 
-
-# 
 
 ![SIL Logo](./images/SIL_logo.png)
 # ![Scriptoria Icon](./images/quill_ink.png) Scriptoria Help Guide
@@ -65,7 +62,7 @@ Updated: 2025-11-3
 
 [Setting User Groups](#setting-user-groups)	[26](#setting-user-groups)
 
-# Introduction {#introduction}
+# Introduction
 
 Scriptoria is a workflow-based system to manage the publishing of apps to stores and content to websites. The goal is to enable apps to be available to end users to download and use. There are different tasks involved delivering an app to an app store:
 
@@ -77,7 +74,7 @@ Scriptoria is a workflow-based system to manage the publishing of apps to stores
 
 Depending on the organization, these tasks might be done by different people or they might all be done by the same person. The workflows in Scriptoria have been designed to meet the needs of different organizations. As the workflow progresses, tasks will be assigned to users in different roles to accomplish the process of publishing the app.
 
-## Roles {#roles}
+## Roles
 
 Users in Scriptoria can have different roles which controls which tasks can be assigned to them.
 
@@ -85,7 +82,7 @@ Users in Scriptoria can have different roles which controls which tasks can be a
 * App Builder \- create and manage projects   
 * Organization Admin \- approve projects, perform admin functions, and help if something goes wrong
 
-# Project setup {#project-setup}
+# Project setup
 
 In order to create a project, you will need to be a member of a group. If the save button is grayed out after completing all required fields, contact your org administrator to add you to a group. 
 
@@ -113,7 +110,7 @@ To remove a product, click the “delete product" button in the kebab menu for t
 Once you have typed “delete” in the text input of the confirmation dialog, the “delete” button will be enabled. When the “delete” button is clicked, the product is immediately removed.  
 ![Confirm delete](./images/help_guide_img7.png)
 
-# Project Detail Overview {#project-detail-overview}
+# Project Detail Overview
 
 As a user, when you click into your project, the view shown below will be displayed. From this view you can view information about your project, view open tasks in the workflow, assign project ownership, move your project to another group, and add reviewers. 
 
@@ -136,11 +133,11 @@ As a user, when you click into your project, the view shown below will be displa
 
 *1\. These toggles may not be visible until the features they control are fully implemented.*
 
-# Project Directory {#project-directory}
+# Project Directory
 
 The project directory is where all projects across all organizations will appear that are set to public visibility. The project directory can be searched, and additional filters are available. 
 
-## Settings {#settings}
+## Settings
 
 The Project Directory columns can be customized to see additional information about each project and product. See below.   
 ![Layout of UI](./images/help_guide_img9.png)
@@ -152,11 +149,11 @@ The Project Directory columns can be customized to see additional information ab
 | 4 | Search | Users can search over the following: Project Name, Language, Owner Name, Org Name, Group Name, and Package Name |
 | 5 | Date range | Search projects by “last updated” date range |
 
-# Publishing Workflow {#publishing-workflow}
+# Publishing Workflow 
 
 Once you have added a product to your project, you will begin to be led through a series of steps to complete the workflow resulting in a published product. Tasks will appear both on the “My Tasks” screen, and as individual tasks below your product on the Project Detail page.  
 
-## Google Play Workflows {#google-play-workflows}
+## Google Play Workflows 
 
 Scriptoria was started to simplify the process of publishing Android Apps to Google Play. The original workflow includes all of the workflow steps below. As more organizations started using Scriptoria, there were alternative workflows created to meet the different requirements.
 
@@ -174,7 +171,7 @@ Scriptoria was started to simplify the process of publishing Android Apps to Goo
 
 These workflows use some or all of the following forms. The workflow for your organization and product may be different.
 
-## Product Approval {#product-approval}
+## Product Approval 
 
 Product approval is the first step in the workflow. An Org Admin must approve your product build request prior to proceeding to the next step.   
 *Note, currently if you are an App Builder you would not see the task listed below.  It is only displayed to the assigned user (the Org Admin).*  
@@ -184,33 +181,33 @@ Product approval is the first step in the workflow. An Org Admin must approve yo
 ![Approval Screen](./images/help_guide_img11.png)
 An Org administrator may include a note on your project approval, and if your project is rejected, a note will be required as to why. If the Org Admin selects “hold”, approval is pending.
 
-## App Builder Configuration {#app-builder-configuration}
+## App Builder Configuration
 
 The next step in the workflow is app builder configuration. The Project Owner will copy the App Project URL to the App Builder desktop app (i.e. Scripture App Builder, Reading App Builder, or Dictionary App Builder) and follow the instructions on the form.
 
-### Google Play {#google-play}
+### Google Play 
 
 When adding a project that will be published to Google Play, the app might already exist in Google Play and the workflow has to be slightly different. If so, click "Existing App" to continue. If the app is being added to Google Play for the first time, then click "New App" to continue. With an existing app, the App Store Preview, Create App Store Entry and Make It Live steps are skipped.
 
-### Authors {#authors}
+### Authors 
 
 The Project Owner can have the Author of the project upload the project by clicking on "Transfer to Authors". The project will be present on the Author's task list. The project will still be present on Project Owner's task list and they will be able to "Take Back" the product if necessary.
 
 ![Authors](./images/help_guide_img12.png)
 
-## App Store Preview {#app-store-preview}
+## App Store Preview 
 
 The next step in the workflow is the App Store Preview, which will be completed by an Org Admin. The Org Admin will check the product files (apk, about, play-listing preview, etc) to verify that everything is good.  They may reject the project at this point and provide a comment indicating what changes should be made by the Project Owner. ![][image14]
 
 If the Org Admin rejects the current build, then the Project Owner will receive an email and the comment will display in My Tasks. The workflow will be taken back to the Synchronize Data step.  
 ![My tasks](./images/help_guide_img14.png)
 
-## Create App Entry {#create-app-entry}
+## Create App Entry
 
 The next step in the workflow is creating the app store entry, which will be completed by an Org Admin. In order for apps to be published to Google Play, the Org Admin has to manually enter information into the Google Play Developer Console.  Once this is entered in, Scriptoria can publish updates to the app directly.  
 ![Create App entry](./images/help_guide_img15.png)
 
-## Verify and Publish {#verify-and-publish}
+## Verify and Publish 
 
 The Project Owner is responsible for the next step in the workflow, verifying and publishing the product. At this step, the Project Owner should download the built app (for Android apps, that would be the apk) and try it out on their own device.  They should also view the play-listing to preview what the Google Play listing would look like (Note: currently, it is a little behind and needs updating).  
 ![Verify and Publish](./images/help_guide_img16.png)
@@ -220,13 +217,13 @@ At this step, you can click on the Email Reviewers button which will send them a
 
 If the Project Owner finds an issue with the build, they can click the Reject button (and add a comment) and the workflow will return to the Synchronize Data step.  Then the Project Owner can make changes in the App Builder desktop application, send the project data to Scriptoria, and continue with the workflow.
 
-## Make it Live\! {#make-it-live!}
+## Make it Live\! 
 
 This is the final step of the workflow to have your app published, and will be completed by an Org Admin. There are many configuration settings for the app in the Google Play Developer Console that have to be completed before the app can be made available on the Google Play Store.
 
 ![Make it Live](./images/help_guide_img17.png)
 
-## Rebuild and Republish {#rebuild-and-republish}
+## Rebuild and Republish 
 
 Once the app has been published on Google Play, there is a link icon next to the product.  You can click on that link to take you to the app listing on Google Play.
 
@@ -239,7 +236,7 @@ The Rebuild and Republish workflows are a subset of the main workflow and do not
 *For additional help, please contact Chris Hubbard.*   
 [Chris\_Hubbard@SIL.org](mailto:Chris_Hubbard@SIL.org)
 
-## Product Workflow Details {#product-workflow-details}
+## Product Workflow Details
 
 A current history of workflow steps for a product can be obtained from the Project Detail Window.  This can be accessed by selecting the “Details” option from the product’s drop down menu..  
 ![Product Workflow Details](./images/help_guide_img19.png)
@@ -252,13 +249,13 @@ Here is an example of a workflow that is almost completed. When performing a ste
 
 ![Workflow example of product details](./images/help_guide_img21.png)
 
-# Administration {#administration}
+# Administration 
 
-## Permission Levels {#permission-levels}
+## Permission Levels 
 
 There are 3 user permissions levels inside of Scriptoria. The Super Administrator (Super Admin), Organizational Administrator (Org Admin), and App Builders. 
 
-## Super Admin {#super-admin}
+## Super Admin 
 
 Super Admin is the highest level role. They differ in that they are able to make users Org Admins, and are able to:
 
@@ -270,7 +267,7 @@ Super Admin is the highest level role. They differ in that they are able to make
 
 Super admins have all capabilities as Org Admins and App Builders as well. 
 
-## Org Admin {#org-admin}
+## Org Admin 
 
 The majority of Scriptoria users will be App Builders, but every organization will have at least one assigned Org Admin. Organizations may have more than one Org Admin. Org Admins differ from App Builders in that they are able to:
 
@@ -288,7 +285,7 @@ The majority of Scriptoria users will be App Builders, but every organization wi
 
 Org Admins have all access to all other functionality as app builders do. 
 
-## App Builders {#app-builders}
+## App Builders 
 
 App builders are the primary day to day users of Scriptoria. Inside of Scriptoria they can:
 
@@ -300,7 +297,7 @@ App builders are the primary day to day users of Scriptoria. Inside of Scriptori
 * Search for projects  
 * And more\!
 
-# Set up an organization {#set-up-an-organization}
+# Set up an organization 
 
 Any organization can request access to Scriptoria by clicking the “Contact Us” button on the login screen of Scriptoria. An organization must be set up by a Super Administrator (the highest permission level). 
 
@@ -330,7 +327,7 @@ Before your organization’s users will be able to create projects, the Org Admi
 
 ![Organization settings](./images/help_guide_img25.png)
 
-# Add User {#add-user}
+# Add User 
 
 The Org Admin should navigate to “Users” then click “Invite User”.  
 ![Manage Users screen](./images/help_guide_img26.png)
@@ -338,7 +335,7 @@ The Org Admin should navigate to “Users” then click “Invite User”.
 The Org Admin will be shown an Invite User page where they can input an email address, organization, roles, and groups for the invited user.  
 ![Org Admin](./images/help_guide_img27.png)
 
-# Manage Users {#manage-users}
+# Manage Users 
 
 On the Manage Users screen, users can be invited, user roles/permissions can be changed, users can be added to groups, and users can be disabled. 
 
@@ -350,7 +347,7 @@ On the Manage Users screen, users can be invited, user roles/permissions can be 
 | 3 | Groups | This column displays the groups to which a user is assigned for each organization of which the user is a member.  Users are not assigned to groups automatically when they are added as a user. A user must be assigned a group in order to begin the workflow. Users may be in multiple groups. |
 | 4 | Active | When the “active” toggle is turned off, the user will not be able to access Scriptoria. The user will receive a message upon trying to log in to Scriptoria again that they are able to do so, and prompting them to contact their Org Admin. Users who are inactive will not be deleted, and can be reactivated at any time. Users are prevented from locking themselves out of Scriptoria. |
 
-## Modifying a User {#modifying-a-user}
+## Modifying a User 
 
 To modify a user’s profile, roles, or group assignments, click on the user’s name in the Manage User screen.  The following screen will be displayed:
 
@@ -359,13 +356,13 @@ This screen contains three tabs that update the profile, roles and groups associ
 
 On this initial tab, the administrator can enter the user’s name, email address, phone number and time zone information.  The toggles specify whether the user wishes to be sent email notifications of outstanding tasks and whether their profile is to be viewable by all users.  The information on this tab may also be entered via the “My Profile” option that displays when the user’s icon is clicked on the top right of the screen.
 
-### Setting User Roles  {#setting-user-roles}
+### Setting User Roles 
 
 Selecting the “Organization Roles” tab from the above screen displays the role selection tab shown below:  
 ![Organization roles tab](./images/help_guide_img30.png)
 A list as shown above shows the roles to which the user is assigned  for each organization which he is a member of.  The toggle in front of the role may be selected to add or remove that role for this user.
 
-### Setting User Groups {#setting-user-groups}
+### Setting User Groups 
 
 Selecting the “Group Memberships” tab from this screen displays the group selection tab shown below:  
 ![Group membership](./images/help_guide_img31.png)

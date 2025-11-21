@@ -1,6 +1,4 @@
-# 
 
-# 
 ![SIL Logo](./images/SIL_logo.png)
 
 # ![Quill and ink](./images/quill_ink.png) Creating a Google Play API Key
