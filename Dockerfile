@@ -22,23 +22,15 @@ RUN npm run build
 # Fix sourcemaps
 RUN npm run fix-sourcemaps
 
-# Generate PDF docs
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont \
-    font-noto-cjk
+# Docs Container
+FROM iroachie/headless-libreoffice:latest AS docs-builder
 
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+WORKDIR /docs 
 
-RUN mkdir -p ./static/docs
-COPY docs/ /build/docs/
-RUN npm install -g mdpdf
-RUN mdpdf --format=Letter '/build/docs/Help Guide for Scriptoria.md'
-
+COPY ./docs /docs/
+RUN mkdir /docs/pdf
+RUN libreoffice --headless --convert-to pdf /docs/*.odt --outdir /docs/pdf
+RUN ls -l /docs/pdf/
 
 # Real container that will run
 FROM node:24-alpine3.21
@@ -51,7 +43,7 @@ COPY --from=builder /build/package*.json /app/
 
 # Bring docs into /app/static/docs
 RUN mkdir -p /app/static/docs
-COPY --from=builder /build/docs/*.pdf /app/static/docs
+COPY --from=docs-builder /docs/pdf/*.pdf /app/static/docs
 
 # Install production dependencies
 RUN npm ci
