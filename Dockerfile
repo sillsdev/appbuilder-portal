@@ -22,6 +22,13 @@ RUN npm run build
 # Fix sourcemaps
 RUN npm run fix-sourcemaps
 
+# Generate PDF docs
+RUN mkdir -p ./static/docs
+COPY docs/ /build/docs/
+RUN npm install -g mdpdf
+RUN mdpdf --help
+RUN mdpdf /build/docs/'Creating Your First App.md' -o /build/docs/'Creating Your First App.pdf' --format=Letter 
+
 # Real container that will run
 FROM node:24-alpine3.21
 
@@ -30,6 +37,10 @@ RUN apk add --no-cache openssl
 
 # Bring in package.json and install deps
 COPY --from=builder /build/package*.json /app/
+
+# Bring docs into /app/static/docs
+RUN mkdir -p /app/static/docs
+COPY --from=builder /build/docs/*.pdf /app/static/docs
 
 # Install production dependencies
 RUN npm ci
