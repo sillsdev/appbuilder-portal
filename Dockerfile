@@ -22,6 +22,18 @@ RUN npm run build
 # Fix sourcemaps
 RUN npm run fix-sourcemaps
 
+# Docs Container
+FROM iroachie/headless-libreoffice:latest AS docs-builder
+
+WORKDIR /docs 
+
+COPY ./docs /docs/
+RUN mkdir /docs/pdf
+
+# Convert fodt files to pdf
+RUN libreoffice --headless --convert-to pdf /docs/*.fodt --outdir /docs/pdf
+RUN ls -l /docs/pdf/
+
 # Real container that will run
 FROM node:24-alpine3.21
 
@@ -30,6 +42,10 @@ RUN apk add --no-cache openssl
 
 # Bring in package.json and install deps
 COPY --from=builder /build/package*.json /app/
+
+# Bring docs into /app/static/docs
+RUN mkdir -p /app/static/docs
+COPY --from=docs-builder /docs/pdf/*.pdf /app/static/docs
 
 # Install production dependencies
 RUN npm ci
