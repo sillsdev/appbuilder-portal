@@ -57,26 +57,48 @@ export async function sendNotificationToReviewers(
     where: {
       Id: job.data.productId
     },
-    include: {
+    select: {
       Project: {
-        include: {
-          Organization: true,
+        select: {
+          Name: true,
           Reviewers: true,
-          Owner: true
+          Owner: {
+            select: {
+              Name: true,
+              Email: true,
+              Locale: true
+            }
+          }
         }
       },
-      ProductArtifacts: true,
-      ProductDefinition: true
+      ProductBuilds: {
+        select: {
+          ProductArtifacts: {
+            select: {
+              ArtifactType: true,
+              Url: true
+            }
+          }
+        },
+        orderBy: {
+          DateUpdated: 'desc'
+        },
+        take: 1
+      },
+      ProductDefinition: {
+        select: {
+          Name: true
+        }
+      }
     }
   });
-  const apkUrl = product.ProductArtifacts.find((a) => a.ArtifactType === 'apk')?.Url;
-  const pwaUrl = product.ProductArtifacts.find((a) => a.ArtifactType === 'pwa')?.Url;
-  const playListingUrl = product.ProductArtifacts.find(
-    (a) => a.ArtifactType === 'play-listing'
-  )?.Url;
-  const assetPreviewUrl = product.ProductArtifacts.find(
-    (a) => a.ArtifactType === 'asset-preview'
-  )?.Url;
+
+  const artifacts = product.ProductBuilds.at(0)?.ProductArtifacts ?? [];
+
+  const apkUrl = artifacts.find((a) => a.ArtifactType === 'apk')?.Url;
+  const pwaUrl = artifacts.find((a) => a.ArtifactType === 'pwa')?.Url;
+  const playListingUrl = artifacts.find((a) => a.ArtifactType === 'play-listing')?.Url;
+  const assetPreviewUrl = artifacts.find((a) => a.ArtifactType === 'asset-preview')?.Url;
   let messageId = 'reviewProduct';
   if (assetPreviewUrl) messageId = 'reviewAssetPackage';
   else if (pwaUrl) messageId = 'reviewPwaProduct';
