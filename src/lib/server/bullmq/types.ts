@@ -233,6 +233,7 @@ export namespace Email {
   export interface SendNotificationToReviewers {
     type: JobType.Email_SendNotificationToReviewers;
     productId: string;
+    comment?: string;
   }
   export interface SendNotificationToOrgAdminsAndOwner {
     type: JobType.Email_SendNotificationToOrgAdminsAndOwner;
