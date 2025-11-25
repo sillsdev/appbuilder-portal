@@ -764,10 +764,11 @@ export const WorkflowStateMachine = setup({
             }
           },
           guard: hasReviewers,
-          actions: ({ context }) => {
-            getQueues().Emails.add(`Email reviewers for Product #${context.productId}`, {
+          actions: async ({ context, event: { comment } }) => {
+            await getQueues().Emails.add(`Email reviewers for Product #${context.productId}`, {
               type: BullMQ.JobType.Email_SendNotificationToReviewers,
-              productId: context.productId
+              productId: context.productId,
+              comment
             });
           }
         }

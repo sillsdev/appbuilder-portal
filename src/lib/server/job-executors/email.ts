@@ -81,7 +81,7 @@ export async function sendNotificationToReviewers(
   if (assetPreviewUrl) messageId = 'reviewAssetPackage';
   else if (pwaUrl) messageId = 'reviewPwaProduct';
   else if (!playListingUrl) messageId = 'reviewProductNoPlayListing';
-  if (product.WorkflowComment) messageId += 'WithComment';
+  if (job.data.comment) messageId += 'WithComment';
   const properties = {
     productName: product.ProductDefinition.Name,
     projectName: product.Project.Name,
@@ -91,7 +91,7 @@ export async function sendNotificationToReviewers(
     pwaUrl,
     playListingUrl,
     assetPreviewUrl,
-    comment: product.WorkflowComment
+    comment: job.data.comment
   };
 
   const owner = product.Project.Owner;
