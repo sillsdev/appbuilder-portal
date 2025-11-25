@@ -434,6 +434,7 @@ model SystemVersions {
   Version           String?          @default("13.2") // defaulting to 13.2 because this is what BuildEngine supports at this time
   DateCreated       DateTime?        @default(now()) @db.Timestamp(6)
   DateUpdated       DateTime?        @updatedAt @db.Timestamp(6)
+  ImageHash         String?
   ApplicationType   ApplicationTypes @relation(fields: [ApplicationTypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_SystemVersions_ApplicationTypes_ ApplicationTypeId")
 
   @@id([BuildEngineUrl, ApplicationTypeId], map: "PK_SystemVersions_BuildEngineUrl_ApplicationTypeId")
