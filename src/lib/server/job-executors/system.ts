@@ -153,41 +153,27 @@ export async function checkSystemStatuses(
       : []
   );
 
-  const existingSystemVersions = await DatabaseReads.systemVersions.findMany();
-
   const versions = (
     await Promise.all(
       versionInfo.map(async (vi) => {
-        const existing = existingSystemVersions.find(
-          (esv) =>
-            esv.BuildEngineUrl === vi.BuildEngineUrl &&
-            esv.ApplicationTypeId === vi.ApplicationTypeId
-        );
-
-        if (existing && existing.ImageHash !== vi.ImageHash) {
-          return await DatabaseWrites.systemVersions.update({
-            where: {
-              BuildEngineUrl_ApplicationTypeId: {
-                BuildEngineUrl: vi.BuildEngineUrl,
-                ApplicationTypeId: vi.ApplicationTypeId
-              }
-            },
-            data: {
-              Version: vi.Version,
-              ImageHash: vi.ImageHash
-            }
-          });
-        } else if (!existing) {
-          return await DatabaseWrites.systemVersions.create({
-            data: {
+        return await DatabaseWrites.systemVersions.upsert({
+          where: {
+            BuildEngineUrl_ApplicationTypeId: {
               BuildEngineUrl: vi.BuildEngineUrl,
-              ApplicationTypeId: vi.ApplicationTypeId,
-              Version: vi.Version,
-              ImageHash: vi.ImageHash
+              ApplicationTypeId: vi.ApplicationTypeId
             }
-          });
-        }
-        return null;
+          },
+          create: {
+            BuildEngineUrl: vi.BuildEngineUrl,
+            ApplicationTypeId: vi.ApplicationTypeId,
+            Version: vi.Version,
+            ImageHash: vi.ImageHash
+          },
+          update: {
+            Version: vi.Version,
+            ImageHash: vi.ImageHash
+          }
+        });
       })
     )
   ).filter((v) => !!v);
