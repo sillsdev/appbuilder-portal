@@ -94,9 +94,13 @@ export async function sendNotificationToReviewers(
     comment: product.WorkflowComment
   };
 
+  const owner = product.Project.Owner;
+
+  const reviewers = product.Project.Reviewers.filter((r) => r.Email !== owner.Email);
+
   return {
     reviewerEmails: await Promise.all(
-      product.Project.Reviewers.map((r) =>
+      reviewers.map((r) =>
         sendEmail(
           [{ email: r.Email!, name: r.Name! }],
           translate(r.Locale!, 'notifications.subject.' + messageId, properties),
@@ -110,17 +114,19 @@ export async function sendNotificationToReviewers(
       )
     ),
     ownerEmail: await sendEmail(
-      [{ email: product.Project.Owner.Email!, name: product.Project.Owner.Name! }],
-      translate(product.Project.Owner.Locale!, 'notifications.subject.' + messageId, properties),
+      [{ email: owner.Email!, name: owner.Name! }],
+      translate(owner.Locale!, 'notifications.subject.' + messageId, properties),
       addProperties(ReviewProductTemplate, {
-        Message: translate(product.Project.Owner.Locale!, 'notifications.body.' + messageId, {
-          ...properties,
-          ownerName: product.Project.Owner.Name,
-          reviewerNames: product.Project.Reviewers.map((r) => r.Name + ' (' + r.Email + ')').join(
-            ', '
-          ),
-          reviewerName: 'REVIEWER_NAME'
-        })
+        Message:
+          translate(owner.Locale!, 'notifications.body.reviewOwnerPrefix', {
+            ...properties,
+            ownerName: owner.Name,
+            reviewerNames: reviewers.map((r) => r.Name + ' (' + r.Email + ')').join(', ')
+          }) +
+          translate(owner.Locale!, 'notifications.body.' + messageId, {
+            ...properties,
+            reviewerName: 'REVIEWER_NAME'
+          })
       })
     )
   };
