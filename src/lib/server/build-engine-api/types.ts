@@ -77,7 +77,6 @@ type SuccessResponse = {
 export type StatusResponse = SuccessResponse & {
   responseType: 'status';
   id: never;
-  updated: never;
   status: number;
   versions: Record<string, string>;
   imageHash: string;
