@@ -25,11 +25,14 @@
   });
 </script>
 
-<h3 class="pl-4">{m.admin_nav_software_update()}</h3>
+<div class="w-full">
+<h1>{m.admin_nav_software_update()}</h1>
+<div class="m-4">
 <p class="pl-4">{m.admin_nav_software_update_description()}</p>
-<p class="pl-4">This will affect the following organizations: {data.organizations}</p>
-
-<form class="m-4" method="post" action="?/start" use:enhance>
+<br/>
+<p class="pl-4"><b>This will affect the following organizations: {data.organizations}</b></p>
+<br/>
+<form class="pl-4" method="post" action="?/start" use:enhance>
   <LabeledFormInput key="admin_nav_software_update_comment">
     <input
       type="text"
@@ -42,3 +45,5 @@
   </LabeledFormInput>
   <input type="submit" class="btn btn-primary" value={m.admin_software_update_rebuild_start()} />
 </form>
+</div>
+</div>
