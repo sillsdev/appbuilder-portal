@@ -556,21 +556,11 @@
   "system_buildFailed": "Build failed",
   "system_publishFailed": "Publish failed",
   "system_unavailable": "Scriptoria actualmente no puede procesar tareas",
-<<<<<<< HEAD
-  "downloads_title": "Downloads"
-}
-=======
   "downloads_title": "Downloads",
   "admin_nav_software_update": "Actualización de Software",
   "admin_nav_software_update_description": "Inicie una reconstrucción de todos los proyectos que tengan habilitada la configuración de \"Reconstrucción en la actualización de software\", tengan un producto que haya completado la publicación inicial y que actualmente no se estén reconstruyendo. Todos los productos en este estado serán reconstruidos.",
   "admin_nav_software_update_comment": "Comentario",
-<<<<<<< HEAD
-  "admin_software_update_rebuild_start": "Empezar a Reconstruir"
-}
->>>>>>> 09bb94be (Initial commit on software update rebuild page. The general code is there, need to track why I am getting an internal error when trying to visit the page.)
-=======
   "admin_software_update_rebuild_start": "Empezar a Reconstruir",
   "admin_software_update_comment_required": "Se requiere un comentario para iniciar las compilaciones.",
   "admin_software_update_toast_success": "¡Comenzó con éxito las reconstrucciones!"
 }
->>>>>>> 51776d36 (Updated navigation with page-specific translations and implemented logic to call doProductAction. Unable to determine where to store the comment made by user however.)
