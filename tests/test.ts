@@ -107,3 +107,23 @@ test.describe('Create a Test Project', () => {
 
   // TODO: test BuildEngine stuff
 });
+
+test('Cannot impersonate', async ({ page }) => {
+  // ci user is org admin but not superadmin
+  await page.goto('/users/org/1');
+  await expect(page.locator('form[action$="/impersonate"]')).toHaveCount(0);
+  // get first user id from user list
+  const firstUserId = await page
+    .locator('table tbody tr')
+    .first()
+    .locator('input[type="hidden"][name="user"]')
+    .getAttribute('value');
+
+  expect(firstUserId).not.toBeNull();
+
+  // try to impersonate first user via direct POST
+  const response = await page.request.post('/users/org/1?/impersonate', {
+    form: { user: firstUserId! }
+  });
+  expect(response.status()).toBe(403);
+});

@@ -13,7 +13,7 @@
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
-  import { isAdminForAny, isAdminForOrg } from '$lib/utils/roles';
+  import { isAdminForAny, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
@@ -151,6 +151,31 @@
     />
   </form>
 {/snippet}
+{#snippet impersonate(user: (typeof users)[0])}
+  <form
+    method="POST"
+    action="?/impersonate"
+    use:svk_enhance={() => {
+      return async ({ result, update }) => {
+        await update({ reset: false, invalidateAll: false });
+        if (result.type === 'success' && result.data?.ok) {
+          window.location.href = localizeHref('/');
+        } else {
+          toast('error', 'Cannot impersonate user');
+        }
+      };
+    }}
+  >
+    <input class="hidden" type="hidden" name="user" value={user.I} />
+    <button
+      type="submit"
+      class="btn btn-outline btn-sm"
+      disabled={data.session?.user.userId === user.I}
+    >
+      <IconContainer icon="mdi:account-eye" width="20" />
+    </button>
+  </form>
+{/snippet}
 
 <div class="w-full">
   <div class="flex flex-row place-content-between w-full flex-wrap items-center">
@@ -223,6 +248,9 @@
           <th>{m.users_table_role()}</th>
           <th>{m.users_table_groups()}</th>
           <th class="w-20">{m.users_table_active()}</th>
+          {#if isSuperAdmin(data.session?.user.roles)}
+            <th class="w-20 text-xs">{m.users_table_impersonate()}</th>
+          {/if}
         </tr>
       </thead>
       <tbody>
@@ -248,6 +276,11 @@
             <td class="py-2">
               {@render lock(user)}
             </td>
+            {#if isSuperAdmin(data.session?.user.roles)}
+              <td class="py-2">
+                {@render impersonate(user)}
+              </td>
+            {/if}
           </tr>
         {/each}
       </tbody>
