@@ -1,3 +1,18 @@
+<h3>Introduction</h3>
+<p>
+  Scriptoria manages the Google Play listing for the app. This information is stored in the project
+  in the
+  <strong>Publishing &gt; App Store &gt; Google Play Store Listing</strong>
+  page. If you are publishing an existing app, you have already uploaded all this information throught
+  the Google Play Developer Console. You can download the Play Listing information from Google Play and
+  import it into this page so that you don't have to re-enter it manually.
+  <br />
+  When uploading the project to Scriptoria, normally you need to include the Google Play Store Listing
+  information. If you are going to download the Play Listing from Google Play during the build, you will
+  need to uncheck the
+  <strong>Verify Google Play Store listing when sending app data</strong>
+  checkbox on the Scriptoria page. Please re-check this box after the Play Listing has been downloaded.
+</p>
 <h3>Instructions</h3>
 <ul>
   <li>
@@ -31,24 +46,9 @@
         to the name of a keystore not used to publish APKs.
       </li>
       <li>
-        For existing apps, if you have previously manually uploaded Play Listing information to
-        Google Play
-        <br />
-        and the Play Listing information is not in the Google Play Store Listing configuration page,
-        <br />
-        set
+        For existing apps, to download the Play Listing from Google Play, set
         <strong>BUILD_DOWNLOAD_PLAY_LISTING</strong>
         to the value 1.
-        <br />
-        During the build, the Play Listing information will be downloaded from Google Play
-        <br />
-        and will be available to import into the Google Play Store Listing configuration page.
-        <br />
-        On the Scriptoria page, you will need to uncheck the
-        <strong>Verify Google Play Store listing when sending app data</strong>
-        .
-        <br />
-        The downloaded Play Listing will be used during the publishing process.
       </li>
       <li>
         See the <a href="https://app.scriptoria.io/docs/Publishing+Properties.pdf" target="_blank">
