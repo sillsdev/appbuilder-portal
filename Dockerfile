@@ -42,15 +42,15 @@ RUN apk add --no-cache openssl
 # Bring in package.json and install deps
 COPY --from=builder /build/package*.json /app/
 
-# Bring docs into /app/static/docs
-RUN mkdir -p /app/static/docs
-COPY --from=docs-builder /docs/pdf/*.pdf /app/static/docs
-
 # Install production dependencies
 RUN npm ci
 
 # Bring in source code
 COPY --from=builder /build/out/build /app
+
+# Bring docs into /app/client/docs (SvelteKit serves static files from client/)
+RUN mkdir -p /app/client/docs
+COPY --from=docs-builder /docs/pdf/*.pdf /app/client/docs/
 
 # Copy prisma data (npm ci nukes node_modules, so this must be last)
 COPY --from=builder /build/node_modules/.prisma /app/node_modules/.prisma
