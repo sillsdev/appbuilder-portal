@@ -3,7 +3,7 @@ import type { Job } from 'bullmq';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
-import type { RoleId } from '$lib/prisma';
+import { RoleId } from '$lib/prisma';
 import { ActionType } from '$lib/workflowTypes';
 
 export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown> {
@@ -25,7 +25,11 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
 
   const project = await DatabaseReads.projects.findUniqueOrThrow({
     where: { Id: projectId },
-    select: { DateArchived: true, _count: { select: { Reviewers: true, Authors: true } } }
+    select: {
+      DateArchived: true,
+      OrganizationId: true,
+      _count: { select: { Reviewers: true, Authors: true } }
+    }
   });
 
   const productIds = products.map((p) => p.Id);
@@ -59,32 +63,48 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     const timestamp = new Date();
 
     mapping = await Promise.all(
-      job.data.operation.userMapping.map(async (u) => ({
-        from: (
-          await DatabaseReads.users.findUniqueOrThrow({
-            where: { Id: u.from },
-            select: { Name: true }
-          })
-        ).Name!,
-        to: (
-          await DatabaseReads.users.findUniqueOrThrow({
-            where: { Id: u.to },
-            select: { Name: true }
-          })
-        ).Name!,
-        count: (
-          await DatabaseWrites.userTasks.updateMany({
-            where: {
-              UserId: u.from,
-              ProductId: { in: productIds }
-            },
-            data: {
-              UserId: u.to,
-              DateUpdated: timestamp
-            }
-          })
-        ).count
-      }))
+      job.data.operation.userMapping.map(async (u) => {
+        const to = await DatabaseReads.users.findUniqueOrThrow({
+          where: { Id: u.to },
+          select: {
+            Name: true,
+            UserRoles: true
+          }
+        });
+
+        const targetHasSpecifiedRole = !!(
+          !u.withRole ||
+          to.UserRoles.find(
+            ({ OrganizationId: o, RoleId: r }) =>
+              r === RoleId.SuperAdmin || (o === project.OrganizationId && r === u.withRole)
+          )
+        );
+
+        return {
+          from: (
+            await DatabaseReads.users.findUniqueOrThrow({
+              where: { Id: u.from },
+              select: { Name: true }
+            })
+          ).Name!,
+          to: to.Name!,
+          count: targetHasSpecifiedRole
+            ? (
+                await DatabaseWrites.userTasks.updateMany({
+                  where: {
+                    Role: u.withRole,
+                    UserId: u.from,
+                    ProductId: { in: productIds }
+                  },
+                  data: {
+                    UserId: u.to,
+                    DateUpdated: timestamp
+                  }
+                })
+              ).count
+            : 0
+        };
+      })
     );
     job.updateProgress(40);
     for (let i = 0; i < products.length; i++) {

@@ -194,7 +194,7 @@ export namespace UserTasks {
       }
     | {
         type: OpType.Reassign;
-        userMapping: { from: number; to: number }[];
+        userMapping: { from: number; to: number; withRole?: RoleId }[];
         roles?: never;
         users?: never;
       };
