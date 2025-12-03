@@ -1,22 +1,31 @@
 <h3>Introduction</h3>
-<p>
-  Scriptoria manages the Google Play listing for the app. This information is stored in the project
-  in the
-  <strong>Publishing &gt; App Store &gt; Google Play Store Listing</strong>
-  page. If you are publishing an existing app, you have already uploaded all this information throught
-  the Google Play Developer Console. You can download the Play Listing information from Google Play and
-  import it into this page so that you don't have to re-enter it manually.
-  <br />
-  When uploading the project to Scriptoria, normally you need to include the Google Play Store Listing
-  information. If you are going to download the Play Listing from Google Play during the build, you will
-  need to uncheck the
-  <strong>Verify Google Play Store listing when sending app data</strong>
-  checkbox on the Scriptoria page. Please re-check this box after the Play Listing has been downloaded.
-</p>
+<div class="space-y-2">
+  <p>
+    Scriptoria manages the Google Play Store Listing for the app. This information is stored in the
+    project in the
+    <strong>Publishing &gt; App Store &gt; Google Play Store Listing</strong>
+    page.
+  </p>
+  <p>
+    For existing apps, this information has already been entered into the Google Play Developer
+    Console. If you have the information available, you can manually re-enter it. Alternatively,
+    Scriptoria can download the Google Play Store Listing information from Google Play for you, and
+    you can import it into this page during the first build of the app in Scriptoria.
+  </p>
+  <p>
+    When uploading the project to Scriptoria, normally the App Builder will verify that everything
+    is correct. If you are going to download the Google Play Store Listing from Google Play during
+    the first build, you will need to uncheck the
+    <strong>Verify Google Play Store listing when sending app data</strong>
+    checkbox on the
+    <strong>Publishing &gt; App Store &gt; Scriptoria</strong>
+    page. Please re-check this box after the Play Listing has been imported.
+  </p>
+</div>
 <h3>Instructions</h3>
 <ul>
   <li>
-    In the <strong>Publishing &gt; App Publishing</strong>
+    In the <strong>Publishing &gt; App Store &gt; App Publishing</strong>
     configuration page:
     <ul>
       <li>
@@ -26,14 +35,18 @@
     </ul>
   </li>
   <li>
-    In the <strong>Publishing &gt; Google Play Store Listing</strong>
+    In the <strong>Publishing &gt; App Store &gt; Google Play Store Listing</strong>
     configuration page:
     <ul>
-      <li>Fill out the Play Listing information.</li>
+      <li>Fill out the Google Play Store Listing information.</li>
+      <li>
+        For existing apps, Scriptoria can download the Google Play Store Listing from Google Play
+        (in the next step).
+      </li>
     </ul>
   </li>
   <li>
-    In the <strong>Publishing &gt; Publishing Properties</strong>
+    In the <strong>Publishing &gt; App Store &gt; Publishing Properties</strong>
     configuration page:
     <ul>
       <li>Fill out any needed publishing properties.</li>
@@ -42,8 +55,8 @@
         to the value 1.
       </li>
       <li>
-        For new apps, set <strong>BUILD_KEYSTORE</strong>
-        to the name of a keystore not used to publish APKs.
+        You may need to set <strong>BUILD_KEYSTORE</strong>
+        to the name of a keystore. Check with the Organization Administrator if you are unsure.
       </li>
       <li>
         For existing apps, to download the Play Listing from Google Play, set
@@ -59,7 +72,7 @@
     </ul>
   </li>
   <li>
-    In the <strong>Publishing &gt; Scriptoria</strong>
+    In the <strong>Publishing &gt; App Store &gt; Scriptoria</strong>
     configuration page:
     <ul>
       <li>
