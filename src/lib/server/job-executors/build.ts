@@ -300,6 +300,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
           comment: `system.build-failed,${job.data.build.artifacts['consoleText'] ?? ''}`
         });
       } else {
+        await notifyRetrying(job.data.productBuildId, job.data.productId, product, job.data.build);
         flow.send({
           type: action,
           userId: null,
@@ -428,4 +429,36 @@ export async function notifyProductNotFound(productId: string) {
     }
   });
   return { message: 'Product Not Found' };
+}
+async function notifyRetrying(
+  productBuildId: number,
+  productId: string,
+  product: Prisma.ProductsGetPayload<{
+    select: {
+      ProductDefinition: {
+        select: { Name: true };
+      };
+      Project: {
+        select: {
+          Name: true;
+          WorkflowAppProjectUrl: true;
+        };
+      };
+    };
+  }>,
+  buildResponse: BuildEngine.Types.BuildResponse
+) {
+  return getQueues().Emails.add(
+    `Notify Admins of Retry with Medium Compute for Build #${productBuildId} for Product #${productId}`,
+    {
+      type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
+      messageKey: 'retryBuild',
+      messageProperties: {
+        projectName: product.Project.Name!,
+        productName: product.ProductDefinition.Name!,
+        projectUrl: product.Project.WorkflowAppProjectUrl!
+      },
+      link: buildResponse.artifacts['consoleText'] ?? ''
+    }
+  );
 }

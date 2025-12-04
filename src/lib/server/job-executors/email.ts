@@ -267,12 +267,14 @@ export async function notifySuperAdminsLowPriority(
       email: await sendEmail(
         superAdmins.map((admin) => ({ email: admin.Email!, name: admin.Name! })),
         translate('en', 'notifications.subject.' + job.data.messageKey, job.data.messageProperties),
-        addProperties(NotificationTemplate, {
+        addProperties(job.data.link ? NotificationWithLinkTemplate : NotificationTemplate, {
           Message: translate(
             'en',
             'notifications.body.' + job.data.messageKey,
             job.data.messageProperties
-          )
+          ),
+          LinkUrl: job.data.link!,
+          UrlText: translate('en', 'notifications.body.log')
         })
       )
     };
