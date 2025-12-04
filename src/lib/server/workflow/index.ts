@@ -279,7 +279,8 @@ export class Workflow {
       `#${WorkflowStateMachine.id}.${xSnap.value}`
     );
 
-    const stateChange = !!old && Workflow.stateName(old) !== xSnap.value;
+    const stateChange =
+      !!old && (Workflow.stateName(old) !== xSnap.value || event.type === WorkflowAction.Retry);
     const migration = event.type === WorkflowAction.Migrate;
     const jump = event.type === WorkflowAction.Jump;
 
