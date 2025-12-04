@@ -73,3 +73,37 @@ export async function fetchPackageName(Url: string | null) {
   }
   return null;
 }
+
+export const computeTypes = ['small', 'medium'] as const;
+export type ComputeType = (typeof computeTypes)[number];
+export const BUILD_COMPUTE_TYPE = 'BUILD_COMPUTE_TYPE';
+
+export function updateComputeType(properties: string | null, type?: ComputeType) {
+  const toAdd = type
+    ? { [BUILD_COMPUTE_TYPE]: type }
+    : {
+        // default value
+        [BUILD_COMPUTE_TYPE]: 'small',
+        BUILD_IMAGE_TAG: 'latest'
+      };
+  try {
+    const parsed = JSON.parse(properties || '{}');
+    if (parsed['environment']) {
+      parsed['environment'] = {
+        ...parsed['environment'],
+        ...toAdd
+      };
+    } else {
+      parsed['environment'] = { ...toAdd };
+    }
+    return JSON.stringify(parsed, null, 4);
+  } catch {
+    /* empty */
+  }
+  return properties;
+}
+
+export function getComputeType(properties: string | null) {
+  const parsed = JSON.parse(properties || '{}');
+  return (parsed['environment']?.[BUILD_COMPUTE_TYPE] as ComputeType | null) ?? null;
+}

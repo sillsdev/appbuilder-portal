@@ -4,6 +4,13 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
+  import {
+    BUILD_COMPUTE_TYPE,
+    type ComputeType,
+    computeTypes,
+    getComputeType,
+    updateComputeType
+  } from '$lib/products';
 
   interface Props {
     modal?: HTMLDialogElement;
@@ -21,37 +28,11 @@
   let ok = $state(true);
   let value = $state(product.Properties);
 
-  const computeTypes = ['small', 'medium'] as const;
-  type ComputeType = (typeof computeTypes)[number];
-
   let computeType: ComputeType | null = $state(null);
 
   $effect(() => {
-    const parsed = JSON.parse(value || '{}');
-    computeType = (parsed['environment']?.['BUILD_COMPUTE_TYPE'] as ComputeType) ?? null;
+    computeType = getComputeType(value);
   });
-
-  function updateComputeType(type?: ComputeType) {
-    const toAdd = type
-      ? { BUILD_COMPUTE_TYPE: type }
-      : {
-          // default value
-          BUILD_COMPUTE_TYPE: 'small',
-          BUILD_IMAGE_TAG: 'latest'
-        };
-    if (ok) {
-      const parsed = JSON.parse(value || '{}');
-      if (parsed['environment']) {
-        parsed['environment'] = {
-          ...parsed['environment'],
-          ...toAdd
-        };
-      } else {
-        parsed['environment'] = { ...toAdd };
-      }
-      value = JSON.stringify(parsed, null, 4);
-    }
-  }
 </script>
 
 <dialog bind:this={modal} class="modal">
@@ -77,7 +58,9 @@
             class="select select-bordered w-full"
             placeholder={m.products_properties_selectComputeType()}
             onchange={(e) => {
-              updateComputeType(e.currentTarget.value as ComputeType);
+              if (ok) {
+                value = updateComputeType(value, e.currentTarget.value as ComputeType);
+              }
             }}
             bind:value={computeType}
           >
@@ -110,7 +93,9 @@
             class="btn btn-primary"
             type="button"
             onclick={() => {
-              updateComputeType();
+              if (ok) {
+                value = updateComputeType(value);
+              }
             }}
           >
             {m.common_default()}
