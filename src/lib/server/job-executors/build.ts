@@ -283,10 +283,15 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
         try {
           const text = await fetch(job.data.build.artifacts['consoleText']).then((r) => r.text());
           if (text.match('Gradle build daemon disappeared unexpectedly')) {
-            await DatabaseWrites.products.update(job.data.productId, {
-              Properties: updateComputeType(product.Properties, 'medium')
-            });
-            action = WorkflowAction.Retry;
+            const newProps = updateComputeType(product.Properties, 'medium');
+            // make sure props are actually updated...
+            // we don't want infinite retries if this somehow fails...
+            if (newProps !== product.Properties) {
+              await DatabaseWrites.products.update(job.data.productId, {
+                Properties: updateComputeType(product.Properties, 'medium')
+              });
+              action = WorkflowAction.Retry;
+            }
           }
         } catch {
           /* empty */
