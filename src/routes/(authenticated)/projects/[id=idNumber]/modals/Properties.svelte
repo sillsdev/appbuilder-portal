@@ -5,7 +5,6 @@
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
   import {
-    BUILD_COMPUTE_TYPE,
     type ComputeType,
     computeTypes,
     getComputeType,
