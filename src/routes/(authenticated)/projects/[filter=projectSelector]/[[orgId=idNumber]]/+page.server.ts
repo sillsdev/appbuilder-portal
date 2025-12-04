@@ -83,8 +83,19 @@ function filter(filter: string, orgIds?: number[], userId?: number): Prisma.Proj
     case 'own':
       return {
         OrganizationId: orgIds ? { in: orgIds } : undefined,
-        OwnerId: userId,
-        DateArchived: null
+        DateArchived: null,
+        OR: [
+          {
+            OwnerId: userId
+          },
+          {
+            Authors: {
+              some: {
+                UserId: userId
+              }
+            }
+          }
+        ]
       };
   }
 }
