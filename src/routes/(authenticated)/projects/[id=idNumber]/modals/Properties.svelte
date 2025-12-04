@@ -4,12 +4,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import { m } from '$lib/paraglide/messages';
-  import {
-    type ComputeType,
-    computeTypes,
-    getComputeType,
-    updateComputeType
-  } from '$lib/products';
+  import { type ComputeType, computeTypes, getComputeType, updateComputeType } from '$lib/products';
 
   interface Props {
     modal?: HTMLDialogElement;
