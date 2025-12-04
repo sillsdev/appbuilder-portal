@@ -5,7 +5,7 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
-import { fetchPackageName } from '$lib/products';
+import { fetchPackageName, getComputeType, updateComputeType } from '$lib/products';
 import { WorkflowAction } from '$lib/workflowTypes';
 
 export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> {
@@ -149,7 +149,8 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
           WorkflowAppProjectUrl: true,
           OrganizationId: true
         }
-      }
+      },
+      Properties: true
     }
   });
   if (!product) {
@@ -276,12 +277,36 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
       );
       flow.send({ type: WorkflowAction.Build_Successful, userId: null });
     } else {
-      await notifyFailed(job.data.productBuildId, job.data.productId, product, job.data.build);
-      flow.send({
-        type: WorkflowAction.Build_Failed,
-        userId: null,
-        comment: `system.build-failed,${job.data.build.artifacts['consoleText'] ?? ''}`
-      });
+      let action = WorkflowAction.Build_Failed;
+      const currentCompute = getComputeType(product.Properties);
+      if (currentCompute !== 'medium') {
+        try {
+          const text = await fetch(job.data.build.artifacts['consoleText']).then((r) => r.text());
+          if (text.match('Gradle build daemon disappeared unexpectedly')) {
+            await DatabaseWrites.products.update(job.data.productId, {
+              Properties: updateComputeType(product.Properties, 'medium')
+            });
+            action = WorkflowAction.Retry;
+          }
+        } catch {
+          /* empty */
+        }
+      }
+      if (action === WorkflowAction.Build_Failed) {
+        await notifyFailed(job.data.productBuildId, job.data.productId, product, job.data.build);
+        flow.send({
+          type: action,
+          userId: null,
+          comment: `system.build-failed,${job.data.build.artifacts['consoleText'] ?? ''}`
+        });
+      } else {
+        flow.send({
+          type: action,
+          userId: null,
+          comment:
+            'Build may have failed due to insufficient memory. Retrying with medium compute type.'
+        });
+      }
     }
   }
   job.updateProgress(100);
