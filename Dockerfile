@@ -28,7 +28,7 @@ FROM iroachie/headless-libreoffice:latest AS docs-builder
 WORKDIR /docs 
 
 COPY ./docs /docs/
-RUN mkdir /docs/pdf
+RUN mkdir -p /docs/pdf
 
 # Convert fodt files to pdf
 RUN libreoffice --headless --convert-to pdf /docs/*.fodt --outdir /docs/pdf
