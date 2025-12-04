@@ -104,6 +104,11 @@ export function updateComputeType(properties: string | null, type?: ComputeType)
 }
 
 export function getComputeType(properties: string | null) {
-  const parsed = JSON.parse(properties || '{}');
-  return (parsed['environment']?.[BUILD_COMPUTE_TYPE] as ComputeType | null) ?? null;
+  try {
+    const parsed = JSON.parse(properties || '{}');
+    return (parsed['environment']?.[BUILD_COMPUTE_TYPE] as ComputeType | null) ?? null;
+  } catch {
+    /* empty */
+  }
+  return null;
 }
