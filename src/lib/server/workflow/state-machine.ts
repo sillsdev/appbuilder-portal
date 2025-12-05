@@ -127,7 +127,8 @@ export const WorkflowStateMachine = setup({
           target: WorkflowState.App_Store_Preview,
           filter: {
             productType: { is: ProductType.Android_GooglePlay },
-            workflowType: { is: WorkflowType.Startup }
+            workflowType: { is: WorkflowType.Startup },
+            options: { has: WorkflowOptions.ApprovalProcess }
           }
         }),
         jump({
@@ -528,18 +529,21 @@ export const WorkflowStateMachine = setup({
               type: ActionType.Auto,
               includeWhen: {
                 productType: { is: ProductType.Android_GooglePlay },
-                workflowType: { is: WorkflowType.Startup }
+                workflowType: { is: WorkflowType.Startup },
+                options: { has: WorkflowOptions.ApprovalProcess }
               }
             },
             /*
              * This transition is valid iff:
              * The product type is google play AND
              * The workflow type is startup AND
+             * The workflow requires admin approval AND
              * The project has NOT been uploaded to google play
              */
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
               context.workflowType === WorkflowType.Startup &&
+              context.options.has(WorkflowOptions.ApprovalProcess) &&
               !context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID],
             target: WorkflowState.App_Store_Preview
           },
@@ -567,7 +571,8 @@ export const WorkflowStateMachine = setup({
       meta: {
         includeWhen: {
           productType: { is: ProductType.Android_GooglePlay },
-          workflowType: { is: WorkflowType.Startup }
+          workflowType: { is: WorkflowType.Startup },
+          options: { has: WorkflowOptions.ApprovalProcess }
         }
       },
       entry: assign({
@@ -589,22 +594,7 @@ export const WorkflowStateMachine = setup({
           {
             meta: {
               type: ActionType.User,
-              user: RoleId.OrgAdmin,
-              includeWhen: {
-                options: {
-                  has: WorkflowOptions.AdminStoreAccess
-                }
-              }
-            },
-            target: WorkflowState.Create_App_Store_Entry
-          },
-          {
-            meta: {
-              type: ActionType.User,
-              user: RoleId.AppBuilder,
-              includeWhen: {
-                options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
-              }
+              user: RoleId.OrgAdmin
             },
             target: WorkflowState.Create_App_Store_Entry
           }
@@ -613,20 +603,7 @@ export const WorkflowStateMachine = setup({
           {
             meta: {
               type: ActionType.User,
-              user: RoleId.OrgAdmin,
-              includeWhen: {
-                options: { has: WorkflowOptions.AdminStoreAccess }
-              }
-            },
-            target: WorkflowState.Synchronize_Data
-          },
-          {
-            meta: {
-              type: ActionType.User,
-              user: RoleId.AppBuilder,
-              includeWhen: {
-                options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
-              }
+              user: RoleId.OrgAdmin
             },
             target: WorkflowState.Synchronize_Data
           }
