@@ -11,6 +11,7 @@ import type { RoleId } from '../../prisma';
 import { ProductTransitionType, WorkflowType } from '../../prisma';
 import {
   ActionType,
+  ENVKeys,
   WorkflowAction,
   WorkflowState,
   includeStateOrTransition,
@@ -70,7 +71,8 @@ export class Workflow {
       ...config,
       hasAuthors: !!check?.Project._count.Authors,
       hasReviewers: !!check?.Project._count.Reviewers,
-      productId
+      productId,
+      existingApp: false
     });
     flow.flow = createActor(WorkflowStateMachine, {
       inspect: (e) => {
@@ -181,18 +183,20 @@ export class Workflow {
     if (!instance) {
       return null;
     }
+    const context = JSON.parse(instance.Context) as WorkflowInstanceContext;
     return {
       instanceId: instance.Id,
       definitionId: instance.WorkflowDefinition.Id,
       state: instance.State,
-      context: JSON.parse(instance.Context) as WorkflowInstanceContext,
+      context,
       input: {
         workflowType: instance.WorkflowDefinition.Type,
         productType: instance.WorkflowDefinition.ProductType,
         options: new Set(instance.WorkflowDefinition.WorkflowOptions),
         hasAuthors: !!instance.Product.Project._count.Authors,
         hasReviewers: !!instance.Product.Project._count.Reviewers,
-        productId
+        productId,
+        existingApp: !!context.environment[ENVKeys.GOOGLE_PLAY_EXISTING]
       }
     };
   }
@@ -364,7 +368,8 @@ export class Workflow {
       hasAuthors: undefined,
       hasReviewers: undefined,
       productType: undefined,
-      options: undefined
+      options: undefined,
+      existingApp: undefined
     } as WorkflowInstanceContext;
     const prodDefinition = (await DatabaseReads.products.findUnique({
       where: {

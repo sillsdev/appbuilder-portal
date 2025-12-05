@@ -18,7 +18,8 @@ import {
   hasReviewers,
   isAuthorState,
   isDeprecated,
-  jump
+  jump,
+  newGPApp
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
 import { deleteWorkflow, markResolved } from './dbProcedures';
@@ -61,7 +62,8 @@ export const WorkflowStateMachine = setup({
     options: input.options,
     productId: input.productId,
     hasAuthors: input.hasAuthors,
-    hasReviewers: input.hasReviewers
+    hasReviewers: input.hasReviewers,
+    existingApp: input.existingApp
   }),
   states: {
     [WorkflowState.Start]: {
@@ -126,16 +128,14 @@ export const WorkflowStateMachine = setup({
         jump({
           target: WorkflowState.App_Store_Preview,
           filter: {
-            productType: { is: ProductType.Android_GooglePlay },
-            workflowType: { is: WorkflowType.Startup },
-            options: { has: WorkflowOptions.ApprovalProcess }
+            options: { has: WorkflowOptions.ApprovalProcess },
+            guards: [newGPApp]
           }
         }),
         jump({
           target: WorkflowState.Create_App_Store_Entry,
           filter: {
-            productType: { is: ProductType.Android_GooglePlay },
-            workflowType: { is: WorkflowType.Startup }
+            guards: [newGPApp]
           }
         }),
         jump({ target: WorkflowState.Verify_and_Publish }),
@@ -364,6 +364,7 @@ export const WorkflowStateMachine = setup({
             }
           },
           actions: assign({
+            existingApp: true,
             environment: ({ context }) => ({
               ...context.environment,
               [ENVKeys.GOOGLE_PLAY_EXISTING]: '1'
@@ -528,9 +529,8 @@ export const WorkflowStateMachine = setup({
             meta: {
               type: ActionType.Auto,
               includeWhen: {
-                productType: { is: ProductType.Android_GooglePlay },
-                workflowType: { is: WorkflowType.Startup },
-                options: { has: WorkflowOptions.ApprovalProcess }
+                options: { has: WorkflowOptions.ApprovalProcess },
+                guards: [newGPApp]
               }
             },
             /*
@@ -541,8 +541,7 @@ export const WorkflowStateMachine = setup({
              * The project has NOT been uploaded to google play
              */
             guard: ({ context }) =>
-              context.productType === ProductType.Android_GooglePlay &&
-              context.workflowType === WorkflowType.Startup &&
+              newGPApp({ context }) &&
               context.options.has(WorkflowOptions.ApprovalProcess) &&
               !context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID],
             target: WorkflowState.App_Store_Preview
@@ -570,9 +569,8 @@ export const WorkflowStateMachine = setup({
     [WorkflowState.App_Store_Preview]: {
       meta: {
         includeWhen: {
-          productType: { is: ProductType.Android_GooglePlay },
-          workflowType: { is: WorkflowType.Startup },
-          options: { has: WorkflowOptions.ApprovalProcess }
+          options: { has: WorkflowOptions.ApprovalProcess },
+          guards: [newGPApp]
         }
       },
       entry: assign({
@@ -613,8 +611,7 @@ export const WorkflowStateMachine = setup({
     [WorkflowState.Create_App_Store_Entry]: {
       meta: {
         includeWhen: {
-          productType: { is: ProductType.Android_GooglePlay },
-          workflowType: { is: WorkflowType.Startup }
+          guards: [newGPApp]
         }
       },
       entry: assign({
@@ -794,10 +791,7 @@ export const WorkflowStateMachine = setup({
                 workflowType: { is: WorkflowType.Startup }
               }
             },
-            guard: ({ context }) =>
-              context.productType === ProductType.Android_GooglePlay &&
-              !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] &&
-              context.workflowType === WorkflowType.Startup,
+            guard: newGPApp,
             target: WorkflowState.Make_It_Live
           },
           {
@@ -839,13 +833,11 @@ export const WorkflowStateMachine = setup({
               type: ActionType.User,
               user: RoleId.OrgAdmin,
               includeWhen: {
-                workflowType: { is: WorkflowType.Startup }
+                guards: [newGPApp]
               }
             },
             actions: ({ context }) => markResolved(context.productId),
-            guard: ({ context }) =>
-              !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] &&
-              context.workflowType === WorkflowType.Startup,
+            guard: newGPApp,
             target: WorkflowState.Make_It_Live
           },
           {
@@ -853,13 +845,11 @@ export const WorkflowStateMachine = setup({
               type: ActionType.User,
               user: RoleId.AppBuilder,
               includeWhen: {
-                workflowType: { is: WorkflowType.Startup }
+                guards: [newGPApp]
               }
             },
             actions: ({ context }) => markResolved(context.productId),
-            guard: ({ context }) =>
-              !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] &&
-              context.workflowType === WorkflowType.Startup,
+            guard: newGPApp,
             target: WorkflowState.Make_It_Live
           },
           {
