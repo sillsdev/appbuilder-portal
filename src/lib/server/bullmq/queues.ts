@@ -136,8 +136,9 @@ async function createJobRecord(job: Job<BaseJob>) {
           where: { Id: job.data.transition }
         });
 
+        let found: number | undefined = undefined;
+
         if (!existing) {
-          let found: number | undefined = undefined;
           if ('productId' in job.data && job.data.productId) {
             found = (await Workflow.currentProductTransition(job.data.productId))?.Id;
           }
@@ -151,9 +152,11 @@ async function createJobRecord(job: Job<BaseJob>) {
           }
         }
 
+        const transitionId = existing ? job.data.transition! : found!;
+
         return await tx.queueRecords.create({
           data: {
-            ProductTransitionId: job.data.transition!,
+            ProductTransitionId: transitionId,
             Queue: job.queueName,
             JobType: job.data.type,
             JobId: job.id! // this is in fact defined (checked in above if)
