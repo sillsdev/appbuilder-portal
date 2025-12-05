@@ -258,23 +258,35 @@ model ProductPublications {
 }
 
 model ProductTransitions {
-  Id               Int       @id(map: "PK_ProductTransitions") @default(autoincrement())
-  ProductId        String    @db.Uuid
+  Id               Int            @id(map: "PK_ProductTransitions") @default(autoincrement())
+  ProductId        String         @db.Uuid
   // Since users are never deleted, only locked, this should be fine
   UserId           Int?
-  WorkflowUserId   String?   @db.Uuid // ISSUE: #1102 remove when DWKit is replaced
+  WorkflowUserId   String?        @db.Uuid // ISSUE: #1102 remove when DWKit is replaced
   AllowedUserNames String?
   InitialState     String?
   DestinationState String?
   Command          String?
-  DateTransition   DateTime? @db.Timestamp(6)
+  DateTransition   DateTime?      @db.Timestamp(6)
   Comment          String?
-  TransitionType   Int       @default(1)
+  TransitionType   Int            @default(1)
   WorkflowType     Int?
-  Product          Products  @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductTransitions_Products_ProductId")
-  User             Users?    @relation(fields: [UserId], references: [Id])
+  Product          Products       @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductTransitions_Products_ProductId")
+  User             Users?         @relation(fields: [UserId], references: [Id])
+  QueueRecords     QueueRecords[]
 
   @@index([ProductId], map: "IX_ProductTransitions_ProductId")
+}
+
+model QueueRecords {
+  ProductTransitionId Int
+  Queue               String
+  JobType             String
+  JobId               String
+  ProductTransition ProductTransitions @relation(fields: [ProductTransitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_QueueRecords_ProductTransitions_ProductTransitionId")
+
+  @@index([ProductTransitionId], map: "IX_QueueRecords_ProductTransitionId")
+  @@id([Queue, JobId], map: "IX_QueueRecords_Queue_JobId")
 }
 
 model Products {

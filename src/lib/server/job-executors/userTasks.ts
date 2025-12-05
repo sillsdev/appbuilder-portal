@@ -45,7 +45,10 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
           WorkflowUserId: null,
           UserId: null,
           ProductId: { in: productIds },
-          DateTransition: null
+          DateTransition: null,
+          QueueRecords: {
+            none: {}
+          }
         }
       },
       projectId

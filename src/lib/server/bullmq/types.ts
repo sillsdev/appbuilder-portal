@@ -2,6 +2,8 @@
 import type { RepeatOptions } from 'bullmq';
 import type { RoleId } from '../../prisma';
 import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-api/types';
+import type { JobType } from '$lib/bullmq';
+export { JobSchedulerId, JobType, QueueName } from '$lib/bullmq';
 
 /** Retry a job for 72 hours every 10 minutes. Useful for build engine tasks */
 export const Retry0f600 = {
@@ -17,68 +19,21 @@ export const RepeatEveryMinute: RepeatOptions = {
   pattern: '*/1 * * * *' // every minute
 } as const;
 
-export enum QueueName {
-  Builds = 'Builds',
-  System_Recurring = 'System (Recurring)',
-  System_Startup = 'System (Startup)',
-  Products = 'Products',
-  Projects = 'Projects',
-  Publishing = 'Publishing',
-  Polling = 'Polling',
-  UserTasks = 'User Tasks',
-  Emails = 'Emails',
-  SvelteSSE = 'Svelte SSE'
-}
-
-export enum JobType {
-  // Build Jobs
-  Build_Product = 'Build Product',
-  Build_PostProcess = 'Postprocess Build',
-  // Polling Jobs
-  Poll_Build = 'Check Product Build',
-  Poll_Project = 'Check Project Creation',
-  Poll_Publish = 'Check Product Publish',
-  // Product Jobs
-  Product_Create = 'Create Product - BuildEngine',
-  Product_Delete = 'Delete Product - BuildEngine',
-  Product_GetVersionCode = 'Get VersionCode for Uploaded Product',
-  Product_CreateLocal = 'Create Local Product',
-  // Project Jobs
-  Project_Create = 'Create Project',
-  Project_ImportProducts = 'Import Products for Project',
-  // Publishing Jobs
-  Publish_Product = 'Publish Product',
-  Publish_PostProcess = 'Postprocess Publish',
-  // System Jobs
-  System_CheckEngineStatuses = 'Check BuildEngine Statuses',
-  System_RefreshLangTags = 'Refresh langtags.json',
-  System_Migrate = 'Migrate Features from S1 to S2',
-  // UserTasks Job
-  UserTasks_Modify = 'Modify UserTasks',
-  // Email Jobs
-  Email_InviteUser = 'Invite User',
-  Email_SendNotificationToUser = 'Send Notification to User',
-  Email_SendNotificationToReviewers = 'Send Notification to Product Reviewers',
-  Email_SendNotificationToOrgAdminsAndOwner = 'Send Notification to Org Admins and Owners',
-  Email_SendBatchUserTaskNotifications = 'Send Batch User Task Notifications',
-  Email_NotifySuperAdminsOfNewOrganizationRequest = 'Notify Super Admins of New Organization Request',
-  Email_NotifySuperAdminsOfOfflineSystems = 'Notify Super Admins of Offline Systems',
-  Email_NotifySuperAdminsLowPriority = 'Notify Super Admins (Low Priority)',
-  Email_ProjectImportReport = 'Project Import Report',
-  // Svelte Project SSE
-  SvelteSSE_UpdateProject = 'Update Project',
-  SvelteSSE_UpdateUserTasks = 'Update UserTasks'
+export interface BaseJob {
+  type: JobType;
+  transition?: number;
+  productId?: string;
 }
 
 export namespace Build {
-  export interface Product {
+  export interface Product extends BaseJob {
     type: JobType.Build_Product;
     productId: string;
     defaultTargets: string;
     environment: Record<string, string>;
   }
 
-  export interface PostProcess {
+  export interface PostProcess extends BaseJob {
     type: JobType.Build_PostProcess;
     productId: string;
     productBuildId: number;
@@ -87,7 +42,7 @@ export namespace Build {
 }
 
 export namespace Polling {
-  export interface Build {
+  export interface Build extends BaseJob {
     type: JobType.Poll_Build;
     organizationId: number;
     productId: string;
@@ -96,14 +51,14 @@ export namespace Polling {
     productBuildId: number;
   }
 
-  export interface Project {
+  export interface Project extends BaseJob {
     type: JobType.Poll_Project;
     workflowProjectId: number;
     organizationId: number;
     projectId: number;
   }
 
-  export interface Publish {
+  export interface Publish extends BaseJob {
     type: JobType.Poll_Publish;
     organizationId: number;
     productId: string;
@@ -115,20 +70,20 @@ export namespace Polling {
 }
 
 export namespace Product {
-  export interface Create {
+  export interface Create extends BaseJob {
     type: JobType.Product_Create;
     productId: string;
   }
-  export interface Delete {
+  export interface Delete extends BaseJob {
     type: JobType.Product_Delete;
     organizationId: number;
     workflowJobId: number;
   }
-  export interface GetVersionCode {
+  export interface GetVersionCode extends BaseJob {
     type: JobType.Product_GetVersionCode;
     productId: string;
   }
-  export interface CreateLocal {
+  export interface CreateLocal extends BaseJob {
     type: JobType.Product_CreateLocal;
     projectId: number;
     productDefinitionId: number;
@@ -137,12 +92,12 @@ export namespace Product {
 }
 
 export namespace Project {
-  export interface Create {
+  export interface Create extends BaseJob {
     type: JobType.Project_Create;
     projectId: number;
   }
 
-  export interface ImportProducts {
+  export interface ImportProducts extends BaseJob {
     type: JobType.Project_ImportProducts;
     organizationId: number;
     importId: number;
@@ -151,7 +106,7 @@ export namespace Project {
 }
 
 export namespace Publish {
-  export interface Product {
+  export interface Product extends BaseJob {
     type: JobType.Publish_Product;
     productId: string;
     defaultChannel: Channels;
@@ -159,7 +114,7 @@ export namespace Publish {
     environment: Record<string, string>;
   }
 
-  export interface PostProcess {
+  export interface PostProcess extends BaseJob {
     type: JobType.Publish_PostProcess;
     productId: string;
     publicationId: number;
@@ -168,13 +123,13 @@ export namespace Publish {
 }
 
 export namespace System {
-  export interface CheckEngineStatuses {
+  export interface CheckEngineStatuses extends BaseJob {
     type: JobType.System_CheckEngineStatuses;
   }
-  export interface RefreshLangTags {
+  export interface RefreshLangTags extends BaseJob {
     type: JobType.System_RefreshLangTags;
   }
-  export interface Migrate {
+  export interface Migrate extends BaseJob {
     type: JobType.System_Migrate;
   }
 }
@@ -211,38 +166,39 @@ export namespace UserTasks {
       }
   ) & {
     type: JobType.UserTasks_Modify;
+    transition?: number; // added for compatibility with JobBase
     comment?: string; // just ignore comment for Delete and Reassign
     operation: Config;
   };
 }
 
 export namespace Email {
-  export interface InviteUser {
+  export interface InviteUser extends BaseJob {
     type: JobType.Email_InviteUser;
     email: string;
     inviteToken: string;
     inviteLink: string;
   }
-  export interface SendNotificationToUser {
+  export interface SendNotificationToUser extends BaseJob {
     type: JobType.Email_SendNotificationToUser;
     userId: number;
     messageKey: string;
     messageProperties: Record<string, string>;
     link?: string;
   }
-  export interface SendNotificationToReviewers {
+  export interface SendNotificationToReviewers extends BaseJob {
     type: JobType.Email_SendNotificationToReviewers;
     productId: string;
     comment?: string;
   }
-  export interface SendNotificationToOrgAdminsAndOwner {
+  export interface SendNotificationToOrgAdminsAndOwner extends BaseJob {
     type: JobType.Email_SendNotificationToOrgAdminsAndOwner;
     projectId: number;
     messageKey: string;
     messageProperties: Record<string, string>;
     link?: string;
   }
-  export interface SendBatchUserTaskNotifications {
+  export interface SendBatchUserTaskNotifications extends BaseJob {
     type: JobType.Email_SendBatchUserTaskNotifications;
     notifications: {
       userId: number;
@@ -254,36 +210,36 @@ export namespace Email {
       comment: string;
     }[];
   }
-  export interface NotifySuperAdminsOfNewOrganizationRequest {
+  export interface NotifySuperAdminsOfNewOrganizationRequest extends BaseJob {
     type: JobType.Email_NotifySuperAdminsOfNewOrganizationRequest;
     organizationName: string;
     email: string;
     url: string;
   }
 
-  export interface NotifySuperAdminsOfOfflineSystems {
+  export interface NotifySuperAdminsOfOfflineSystems extends BaseJob {
     type: JobType.Email_NotifySuperAdminsOfOfflineSystems;
   }
 
-  export interface NotifySuperAdminsLowPriority {
+  export interface NotifySuperAdminsLowPriority extends BaseJob {
     type: JobType.Email_NotifySuperAdminsLowPriority;
     messageKey: string;
     messageProperties: Record<string, string>;
     link?: string;
   }
-  export interface ProjectImportReport {
+  export interface ProjectImportReport extends BaseJob {
     type: JobType.Email_ProjectImportReport;
     importId: number;
   }
 }
 
 export namespace SvelteProjectSSE {
-  export interface UpdateProject {
+  export interface UpdateProject extends BaseJob {
     type: JobType.SvelteSSE_UpdateProject;
     projectIds: number[];
   }
 
-  export interface UpdateUserTasks {
+  export interface UpdateUserTasks extends BaseJob {
     type: JobType.SvelteSSE_UpdateUserTasks;
     userIds: number[];
   }
@@ -353,10 +309,3 @@ export type JobTypeMap = {
   [JobType.SvelteSSE_UpdateUserTasks]: SvelteProjectSSE.UpdateUserTasks;
   // Add more mappings here as needed
 };
-
-export enum JobSchedulerId {
-  SystemStatusEmail = 'SystemStatusEmail',
-  RefreshLangTags = 'RefreshLangTags',
-  CheckSystemStatuses = 'CheckSystemStatuses',
-  PruneUsers = 'PruneUsers'
-}
