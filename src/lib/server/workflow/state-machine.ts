@@ -896,8 +896,7 @@ export const WorkflowStateMachine = setup({
     [WorkflowState.Make_It_Live]: {
       meta: {
         includeWhen: {
-          productType: { is: ProductType.Android_GooglePlay },
-          workflowType: { is: WorkflowType.Startup }
+          guards: [newGPApp]
         }
       },
       entry: assign({
