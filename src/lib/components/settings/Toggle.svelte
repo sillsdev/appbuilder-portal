@@ -44,7 +44,7 @@
       {...inputAttr}
       class="checked:bg-accent checked:border-accent rounded-full"
     />
-    <Icon icon={onIcon} width={20} height={20} />
-    <Icon icon={offIcon} width={20} height={20} color="white" />
+    <Icon icon={offIcon} width={20} height={20} />
+    <Icon icon={onIcon} width={20} height={20} color="white" />
   </label>
 </InputWithMessage>

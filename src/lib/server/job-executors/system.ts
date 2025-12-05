@@ -141,56 +141,39 @@ export async function checkSystemStatuses(
   );
 
   const versionInfo = statuses.flatMap((s) =>
-    s.versionInfo?.versions
+    s.versionInfo
       ? Object.entries(s.versionInfo.versions)
           .filter(([key]) => applications.get(key) && s.url)
           .map(([Name, Version]) => ({
             BuildEngineUrl: s.url!,
             ApplicationTypeId: applications.get(Name)!,
-            Name,
             Version,
-            DateUpdated: new Date(s.versionInfo!.updated!)
+            ImageHash: s.versionInfo!.imageHash
           }))
       : []
   );
 
-  const existingSystemVersions = await DatabaseReads.systemVersions.findMany();
-
   const versions = (
     await Promise.all(
       versionInfo.map(async (vi) => {
-        const existing = existingSystemVersions.find(
-          (esv) =>
-            esv.BuildEngineUrl === vi.BuildEngineUrl &&
-            esv.ApplicationTypeId === vi.ApplicationTypeId
-        );
-
-        if (
-          existing &&
-          existing.Version !== vi.Version &&
-          (existing.DateUpdated?.valueOf() ?? 0) < vi.DateUpdated.valueOf()
-        ) {
-          return await DatabaseWrites.systemVersions.update({
-            where: {
-              BuildEngineUrl_ApplicationTypeId: {
-                BuildEngineUrl: vi.BuildEngineUrl,
-                ApplicationTypeId: vi.ApplicationTypeId
-              }
-            },
-            data: {
-              Version: vi.Version
-            }
-          });
-        } else if (!existing) {
-          return await DatabaseWrites.systemVersions.create({
-            data: {
+        return await DatabaseWrites.systemVersions.upsert({
+          where: {
+            BuildEngineUrl_ApplicationTypeId: {
               BuildEngineUrl: vi.BuildEngineUrl,
-              ApplicationTypeId: vi.ApplicationTypeId,
-              Version: vi.Version
+              ApplicationTypeId: vi.ApplicationTypeId
             }
-          });
-        }
-        return null;
+          },
+          create: {
+            BuildEngineUrl: vi.BuildEngineUrl,
+            ApplicationTypeId: vi.ApplicationTypeId,
+            Version: vi.Version,
+            ImageHash: vi.ImageHash
+          },
+          update: {
+            Version: vi.Version,
+            ImageHash: vi.ImageHash
+          }
+        });
       })
     )
   ).filter((v) => !!v);

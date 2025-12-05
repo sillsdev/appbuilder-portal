@@ -74,7 +74,7 @@ export async function update(
         projectId: id,
         operation: {
           type: BullMQ.UserTasks.OpType.Reassign,
-          userMapping: [{ from: existing!.OwnerId, to: ownerId }]
+          userMapping: [{ from: existing!.OwnerId, to: ownerId, withRole: RoleId.AppBuilder }]
         }
       });
     }
