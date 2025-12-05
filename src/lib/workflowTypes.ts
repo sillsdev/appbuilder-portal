@@ -1,4 +1,3 @@
-import { type TransitionConfig, and } from 'xstate';
 import { type TransitionConfig } from 'xstate';
 import { type RoleId, WorkflowType } from './prisma';
 import type { SetFilter, ValueFilter } from './utils';
@@ -275,8 +274,7 @@ export type Guards = typeof hasAuthors | typeof hasReviewers | typeof newGPApp;
  * @returns A properly configured object for the `always` array of the `Start` state for jumping to an arbitrary state.
  */
 export function jump(
-  params: JumpParams,
-  optionalGuards?: Guards[]
+  params: JumpParams
 ):
   | TransitionConfig<
       WorkflowContext,
@@ -290,9 +288,8 @@ export function jump(
       WorkflowStateMeta | WorkflowTransitionMeta
     >
   | string {
-  const j = (args: { context: WorkflowContext }) => canJump(args, params);
   return {
-    guard: optionalGuards ? and(optionalGuards.concat([j as Guards])) : j,
+    guard: (args: { context: WorkflowContext }) => canJump(args, params),
     target: params.target
   };
 }

@@ -101,29 +101,23 @@ export const WorkflowStateMachine = setup({
             workflowType: { is: WorkflowType.Startup }
           }
         }),
-        jump(
-          {
-            target: WorkflowState.Author_Configuration,
-            filter: {
-              workflowType: { is: WorkflowType.Startup }
-            }
-          },
-          [hasAuthors]
-        ),
+        jump({
+          target: WorkflowState.Author_Configuration,
+          filter: {
+            workflowType: { is: WorkflowType.Startup },
+            guards: [hasAuthors]
+          }
+        }),
         jump({ target: WorkflowState.Synchronize_Data }),
-        jump(
-          {
-            target: WorkflowState.Author_Download
-          },
-          [hasAuthors]
-        ),
+        jump({
+          target: WorkflowState.Author_Download,
+          filter: { guards: [hasAuthors] }
+        }),
         //note: authors can upload at any time, this state is just to prompt an upload
-        jump(
-          {
-            target: WorkflowState.Author_Upload
-          },
-          [hasAuthors]
-        ),
+        jump({
+          target: WorkflowState.Author_Upload,
+          filter: { guards: [hasAuthors] }
+        }),
         jump({ target: WorkflowState.Product_Build }),
         jump({
           target: WorkflowState.App_Store_Preview,
