@@ -8,7 +8,7 @@
   </li>
   <li>
     Test the app. See <a
-      href="https://scriptoria.io/docs/Installing+Android+Apps+For+Testing.pdf"
+      href="https://app.scriptoria.io/docs/Installing+Android+Apps+For+Testing.pdf"
       target="_blank"
     >
       Installing Android Apps For Testing
