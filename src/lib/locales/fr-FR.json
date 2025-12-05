@@ -561,5 +561,6 @@
   "admin_nav_software_update_comment": "Comment",
   "admin_software_update_rebuild_start": "Commencer les Reconstructions",
   "admin_software_update_comment_required": "Un commentaire est requis pour commencer les constructions.",
-  "admin_software_update_toast_success": "Les reconstructions ont commencé avec succès !"
+  "admin_software_update_toast_success": "Les reconstructions ont commencé avec succès !",
+  "admin_software_update_affected_organizations": "Cela affectera les organisations suivantes :"
 }

@@ -562,5 +562,6 @@
   "admin_nav_software_update_comment": "Comment",
   "admin_software_update_rebuild_start": "Start Rebuilds",
   "admin_software_update_comment_required": "A comment is required to start builds.",
-  "admin_software_update_toast_success": "Successfully started rebuilds!"
+  "admin_software_update_toast_success": "Successfully started rebuilds!",
+  "admin_software_update_affected_organizations": "This will affect the following organizations:"
 }

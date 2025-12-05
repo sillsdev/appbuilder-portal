@@ -30,7 +30,9 @@
   <div class="m-4">
     <p class="pl-4">{m.admin_nav_software_update_description()}</p>
     <br />
-    <p class="pl-4"><b>This will affect the following organizations: {data.organizations}</b></p>
+    <p class="pl-4">
+      <b>{m.admin_software_update_affected_organizations()} {data.organizations}</b>
+    </p>
     <br />
     <form class="pl-4" method="post" action="?/start" use:enhance>
       <LabeledFormInput key="admin_nav_software_update_comment">
