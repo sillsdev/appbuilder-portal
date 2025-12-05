@@ -231,7 +231,7 @@ export class Workflow {
           label: k,
           connections: Workflow.filterTransitions(v.on, this.input).map((o) => {
             let target = Workflow.targetStringFromEvent(o[0]);
-            if (!target) {
+            if (!target || target === k) {
               target = o[0].eventType;
               lookup.push(target);
               actions.push({

@@ -557,6 +557,8 @@ export const WorkflowStateMachine = setup({
           meta: {
             type: ActionType.Auto
           },
+          // It looks like a target is necessary for reentry to work??
+          target: WorkflowState.Product_Build,
           reenter: true
         }
       }
