@@ -148,7 +148,7 @@ async function createJobRecord(job: Job<BaseJob>) {
             return;
           } else {
             job.log(`Transition ${job.data.transition} not found. Replacing with ${found}`);
-            job.updateData({ ...job.data, transition: found });
+            await job.updateData({ ...job.data, transition: found });
           }
         }
 
