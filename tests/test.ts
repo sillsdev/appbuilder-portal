@@ -21,7 +21,7 @@ test.describe('Create a Test Project', () => {
 
   test('Go to New Projects', async () => {
     // go to new projects page
-    await page.goto('/projects/new/1');
+    await page.goto('/projects/new/1'); // this will set $orgActive to 1
     await expect(page.getByRole('heading', { name: 'New Project' })).toBeVisible();
   });
 
@@ -106,4 +106,33 @@ test.describe('Create a Test Project', () => {
   });
 
   // TODO: test BuildEngine stuff
+});
+
+// see issue #1368
+test.describe('No admin perms in other org', () => {
+  // skip tests if earlier one fails
+  test.describe.configure({ mode: 'serial' });
+  let page: Page;
+  test.beforeAll(async ({ browser }) => {
+    page = await browser.newPage();
+  });
+
+  test('Select Org', async () => {
+    await page.goto('/');
+    // Wait for the page to load
+    await expect(page.getByRole('heading', { name: 'My Tasks' })).toBeVisible();
+    const orgSelector = page
+      .getByRole('complementary')
+      .getByRole('button', { name: /(SIL International|Kalaam Media|All Organizations)/ });
+    await expect(orgSelector).toBeVisible();
+    // $orgActive is set to 1 by Create a Test Project, switch just in case
+    if (!(await orgSelector.textContent())?.match(/SIL International/)) {
+      await orgSelector.click();
+      const button = page.getByRole('button', { name: 'SIL International' });
+      await expect(button).toBeVisible();
+      await button.click();
+    }
+
+    await expect(orgSelector).toContainText('SIL International');
+  });
 });
