@@ -23,15 +23,15 @@ RUN npm run build
 RUN npm run fix-sourcemaps
 
 # Docs Container
-FROM iroachie/headless-libreoffice:latest AS docs-builder
-
+FROM lscr.io/linuxserver/libreoffice:25.2.5 AS docs-builder
 WORKDIR /docs 
 
 COPY ./docs /docs/
 RUN mkdir -p /docs/pdf
 
-# Convert fodt files to pdf
-RUN libreoffice --headless --convert-to pdf /docs/*.fodt --outdir /docs/pdf
+# Convert fodt and fodg files to pdf
+RUN libreoffice --headless --convert-to pdf /docs/*.fodt --outdir /docs/pdf && \
+  libreoffice --headless --convert-to pdf /docs/*.fodg --outdir /docs/pdf
 
 # Real container that will run
 FROM node:24-alpine3.21

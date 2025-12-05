@@ -31,7 +31,7 @@
         to the name of a keystore not used to publish APKs.
       </li>
       <li>
-        See the <a href="https://scriptoria.io/docs/Publishing+Properties.pdf" target="_blank">
+        See the <a href="https://app.scriptoria.io/docs/Publishing+Properties.pdf" target="_blank">
           Publishing Properties Documentation
         </a>
         for more details.
