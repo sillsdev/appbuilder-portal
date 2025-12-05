@@ -231,7 +231,7 @@ export class Workflow {
           label: k,
           connections: Workflow.filterTransitions(v.on, this.input).map((o) => {
             let target = Workflow.targetStringFromEvent(o[0]);
-            if (!target) {
+            if (!target || target === k) {
               target = o[0].eventType;
               lookup.push(target);
               actions.push({
@@ -279,7 +279,8 @@ export class Workflow {
       `#${WorkflowStateMachine.id}.${xSnap.value}`
     );
 
-    const stateChange = !!old && Workflow.stateName(old) !== xSnap.value;
+    const stateChange =
+      !!old && (Workflow.stateName(old) !== xSnap.value || event.type === WorkflowAction.Retry);
     const migration = event.type === WorkflowAction.Migrate;
     const jump = event.type === WorkflowAction.Jump;
 
