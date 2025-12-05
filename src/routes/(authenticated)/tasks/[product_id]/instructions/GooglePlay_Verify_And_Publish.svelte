@@ -12,7 +12,10 @@
     Test the app
     <sup>1</sup>
     . See
-    <a href="https://app.scriptoria.io/docs/Installing+Android+Apps+For+Testing.pdf" target="_blank">
+    <a
+      href="https://app.scriptoria.io/docs/Installing+Android+Apps+For+Testing.pdf"
+      target="_blank"
+    >
       Installing Android Apps For Testing
     </a>
     for help.
