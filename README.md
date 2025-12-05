@@ -23,13 +23,15 @@ Common scripts are in the `run` file, so be sure to check that for reference.
 ## First-time setup
 
 1. **Clone the repository.**
+
 ```bash
 git clone https://github.com/sillsdev/appbuilder-portal
 cd appbuilder-portal
 ```
 
 2. **Create environment file**
-Create a `.env` file in the root directory with the following variables: 
+   Create a `.env` file in the root directory with the following variables:
+
 ```env
 DATABASE_URL="postgresql://db-user:1234@localhost:5432/development?schema=public"
 MAIL_SENDER=LogEmail
@@ -47,6 +49,7 @@ ADMIN_EMAIL=
 > **Note:** Contact [@sillsdev/scriptoria-developers](https://github.com/orgs/sillsdev/teams/scriptoria-developers/members) for help obtaining the secret values.
 
 3. **Install and bootstrap**
+
 ```bash
 # Install dependencies
 npm i
@@ -55,12 +58,13 @@ npm i
 ```
 
 4. **Start development server**
+
 ```bash
 # Start the local dev server and create a user invite link
 ADD_USER=true npm run dev
 ```
 
-Visit [http://localhost:6173](http://localhost:6173) to see the homepage of the site, then click the invite link in the console to setup your admin account. 
+Visit [http://localhost:6173](http://localhost:6173) to see the homepage of the site, then click the invite link in the console to setup your admin account.
 
 ## Running in Docker
 
@@ -78,7 +82,7 @@ Visit [http://localhost:6173/admin/jobs](http://localhost:6173/admin/jobs) to ac
 
 ## Running in the Host OS
 
-This is important for local development. You still need the `db` and `valkey` docker images running. 
+This is important for local development. You still need the `db` and `valkey` docker images running.
 
 Start database and adminer
 
@@ -96,9 +100,9 @@ npm run build; NODE_ENV=development npm run preview
 
 ## Connecting to BuildEngine
 
-You can connect to a staging instance of BuildEngine using the `stg-tunnel` docker container, accessed from Scriptoria by the URL `http://stg-tunnel:8443`. 
-Configure your host OS `.ssh/config` file to connect to a remote server named `aps-stg` using key authentication. 
-The `stg-tunnel` container can establish a tunnel to the build engine in your local environment. This step is not necessary if you have direct access to a BuildEngine instance through a different URL. 
+You can connect to a staging instance of BuildEngine using the `stg-tunnel` docker container, accessed from Scriptoria by the URL `http://stg-tunnel:8443`.
+Configure your host OS `.ssh/config` file to connect to a remote server named `aps-stg` using key authentication.
+The `stg-tunnel` container can establish a tunnel to the build engine in your local environment. This step is not necessary if you have direct access to a BuildEngine instance through a different URL.
 
 # Testing and linting
 
@@ -108,7 +112,7 @@ npm run lint
 ```
 
 Currently tests check that the page comes online and that a user is able to login.
-The `CI_EMAIL` and `CI_PASSWORD` environment variables are required to test login functionality. They should be set to the Auth0 credentials the test runner should login with. 
+The `CI_EMAIL` and `CI_PASSWORD` environment variables are required to test login functionality. They should be set to the Auth0 credentials the test runner should login with.
 
 # Deployment
 
@@ -122,7 +126,7 @@ The `CI_EMAIL` and `CI_PASSWORD` environment variables are required to test logi
 
 ### Database configuration
 
-Before starting the docker container in production, make sure to deploy Prisma migrations using `npx prisma migrate deploy`. 
+Before starting the docker container in production, make sure to deploy Prisma migrations using `npx prisma migrate deploy`.
 
 # Special Thanks
 
@@ -133,4 +137,3 @@ For authentication and authorization services:
 For localization management:
 
 [<img src="readme_images/crowdin-logo.png" width="200">](https://crowdin.com)
-

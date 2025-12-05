@@ -22,13 +22,8 @@
   "localePicker_placeholder": "Search by Language...",
   "localePicker_region": [
     {
-      "declarations": [
-        "input count",
-        "local countPlural = count: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "countPlural=one": "Region",
         "countPlural=other": "Regions"
@@ -37,13 +32,8 @@
   ],
   "localePicker_name": [
     {
-      "declarations": [
-        "input count",
-        "local countPlural = count: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "countPlural=one": "Name",
         "countPlural=other": "Names"
@@ -52,13 +42,8 @@
   ],
   "localePicker_tag": [
     {
-      "declarations": [
-        "input count",
-        "local countPlural = count: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "countPlural=one": "Tag",
         "countPlural=other": "Tags"
@@ -67,13 +52,8 @@
   ],
   "localePicker_variant": [
     {
-      "declarations": [
-        "input count",
-        "local countPlural = count: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "countPlural=one": "Variant",
         "countPlural=other": "Variants"
@@ -266,12 +246,8 @@
   "products_unpublished": "Unpublished",
   "products_numArtifacts": [
     {
-      "declarations": [
-        "local countPlural = amount: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["local countPlural = amount: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "amount=0": "No Product Files",
         "countPlural=one": "{amount} Product File",

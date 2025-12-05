@@ -9,14 +9,8 @@
 
 import type { JobsOptions } from 'bullmq';
 import { getQueues } from './queues';
+import type { BuildJob } from './types';
 import OTEL from '$lib/otel';
-
-interface RemovedChildJobData {
-    name: string;
-    data: any;
-    opts?: JobsOptions;
-}
-
 
 /**
  * Pauses a batch rebuild by:
@@ -25,91 +19,80 @@ interface RemovedChildJobData {
  * 3. Storing metadata so they can be recreated
  */
 export async function pauseRebuild(parentJobId: string) {
-    const { Builds } = getQueues();
-    const parentJob = await Builds.getJob(parentJobId);
-    if (!parentJob) throw new Error(`Parent job ${parentJobId} not found`);
-    const metadata = (parentJob.data as Record<string, any>)._metadata ?? {};
+  const { Builds } = getQueues();
+  const parentJob = await Builds.getJob(parentJobId);
+  if (!parentJob) throw new Error(`Parent job ${parentJobId} not found`);
 
+  OTEL.instance.logger.info(`Pausing rebuild for parent job ${parentJobId}`);
 
-    OTEL.instance.logger.info(`Pausing rebuild for parent job ${parentJobId}`);
+  // --- 1. Read children BEFORE removing them ---
+  const children = await parentJob.getChildrenValues<{
+    name: string;
+    data: BuildJob;
+    opts?: JobsOptions;
+  }>();
 
-    // Get all potential child jobs
-    const allJobs = await Builds.getJobs(['waiting', 'delayed']); // active not included as it's being processed
-    const childJobs = allJobs.filter(job => job.opts?.parent?.id === parentJobId);
+  // children is an object keyed by childJobId → { name, data, opts }
+  const removedChildren = Object.values(children);
 
-    const removedChildren: RemovedChildJobData[] = [];
+  // --- 2. Remove all unprocessed child jobs ---
+  const allJobs = await Builds.getJobs(['waiting', 'delayed']);
+  const childJobs = allJobs.filter((job) => job.opts?.parent?.id === parentJobId);
 
-    for (const job of childJobs) {
-        removedChildren.push({
-            name: job.name,
-            data: job.data,
-            opts: job.opts
-        });
-        await job.remove();
-    }
+  for (const job of childJobs) {
+    await job.remove();
+  }
 
-    await parentJob.updateData({
-        ...(parentJob.data as any),
-        _metadata: {
-            ...((parentJob.data as any)._metadata ?? {}),
-            removedChildren
-        }
-    } as any);
+  // --- 3. Move parent to delayed ---
+  await parentJob.moveToDelayed(Date.now() + 24 * 3600 * 1000);
 
+  OTEL.instance.logger.info(`Paused rebuild: removed ${removedChildren.length} children`);
 
-
-
-    // Move to delayed state (24h)
-    await parentJob.moveToDelayed(Date.now() + 24 * 3600 * 1000);
-
-    OTEL.instance.logger.info(`Paused rebuild: removed ${removedChildren.length} child jobs`);
+  return removedChildren; // return so unpauseRebuild can accept it
 }
-
 
 /**
  * Unpauses a batch rebuild by:
  * 1. Promoting parent to waiting
  * 2. Recreating child jobs using stored metadata
  */
-export async function unpauseRebuild(parentJobId: string) {
-    const { Builds } = getQueues();
-    const parentJob = await Builds.getJob(parentJobId);
+export async function unpauseRebuild(
+  parentJobId: string,
+  removedChildren: {
+    name: string;
+    data: BuildJob;
+    opts?: JobsOptions;
+  }[]
+) {
+  const { Builds } = getQueues();
+  const parentJob = await Builds.getJob(parentJobId);
+  if (!parentJob) throw new Error(`Parent job ${parentJobId} not found`);
 
-    if (!parentJob) throw new Error(`Parent job ${parentJobId} not found`);
+  OTEL.instance.logger.info(
+    `Unpausing rebuild for ${parentJobId} – recreating ${removedChildren.length} children`
+  );
 
-    const removedChildren: RemovedChildJobData[] =
-        ((parentJob.data as Record<string, any>)._metadata?.removedChildren) ?? [];
+  // --- 1. Promote parent ---
+  await parentJob.promote();
 
-    OTEL.instance.logger.info(
-        `Unpausing rebuild for ${parentJobId} – recreating ${removedChildren.length} child jobs`
+  // --- 2. Recreate child jobs ---
+  if (removedChildren.length > 0) {
+    await Builds.addBulk(
+      removedChildren.map((c) => ({
+        name: c.name,
+        data: c.data,
+        opts: {
+          ...c.opts,
+          parent: {
+            id: parentJobId,
+            queue: Builds.name
+          }
+        }
+      }))
     );
+  }
 
-    await parentJob.promote();
+  OTEL.instance.logger.info(`Unpaused rebuild: restored ${removedChildren.length} child jobs`);
 
-    if (removedChildren.length > 0) {
-        await Builds.addBulk(
-            removedChildren.map(c => ({
-                name: c.name,
-                data: c.data,
-                opts: {
-                    ...c.opts,
-                    parent: {
-                        id: parentJobId,
-                        queue: Builds.name
-                    }
-                }
-            }))
-        );
-
-        // Clear metadata to avoid repeated restores
-        await parentJob.updateData({
-            ...(parentJob.data as any),
-            _metadata: {}  // safely clear metadata
-        } as any);
-
-    }
-
-
-    OTEL.instance.logger.info(`Unpaused rebuild: restored ${removedChildren.length} child jobs`);
-    return removedChildren.length;
+  return removedChildren.length;
 }
