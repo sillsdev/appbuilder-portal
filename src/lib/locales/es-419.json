@@ -605,5 +605,6 @@
   "admin_nav_software_update_comment": "Comentario",
   "admin_software_update_rebuild_start": "Empezar a Reconstruir",
   "admin_software_update_comment_required": "Se requiere un comentario para iniciar las compilaciones.",
-  "admin_software_update_toast_success": "¡Comenzó con éxito las reconstrucciones!"
+  "admin_software_update_toast_success": "¡Comenzó con éxito las reconstrucciones!",
+  "admin_software_update_affected_organizations": "Esto afectará a las siguientes organizaciones:"
 }
