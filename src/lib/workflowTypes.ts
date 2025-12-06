@@ -1,5 +1,5 @@
-import { type TransitionConfig, and } from 'xstate';
-import type { RoleId, WorkflowType } from './prisma';
+import { type TransitionConfig } from 'xstate';
+import { type RoleId, WorkflowType } from './prisma';
 import type { SetFilter, ValueFilter } from './utils';
 import { filterSet, filterValue } from './utils';
 
@@ -188,6 +188,7 @@ export type WorkflowInput = WorkflowConfig & {
   productId: string;
   hasAuthors: boolean;
   hasReviewers: boolean;
+  existingApp: boolean;
 };
 
 /** Used for filtering based on specified WorkflowOptions and/or ProductType */
@@ -259,15 +260,21 @@ export function hasAuthors(args: { context: WorkflowInput }): boolean {
 export function hasReviewers(args: { context: WorkflowInput }): boolean {
   return args.context.hasReviewers;
 }
-export type Guards = typeof hasAuthors | typeof hasReviewers;
+export function newGPApp(args: { context: WorkflowInput }): boolean {
+  return (
+    args.context.productType === ProductType.Android_GooglePlay &&
+    args.context.workflowType === WorkflowType.Startup &&
+    !args.context.existingApp
+  );
+}
+export type Guards = typeof hasAuthors | typeof hasReviewers | typeof newGPApp;
 /**
  * @param params expected params of `canJump` guard from StartupWorkflow
  * @param optionalGuards other guards that can optionally be added.
  * @returns A properly configured object for the `always` array of the `Start` state for jumping to an arbitrary state.
  */
 export function jump(
-  params: JumpParams,
-  optionalGuards?: Guards[]
+  params: JumpParams
 ):
   | TransitionConfig<
       WorkflowContext,
@@ -281,9 +288,8 @@ export function jump(
       WorkflowStateMeta | WorkflowTransitionMeta
     >
   | string {
-  const j = (args: { context: WorkflowContext }) => canJump(args, params);
   return {
-    guard: optionalGuards ? and(optionalGuards.concat([j as Guards])) : j,
+    guard: (args: { context: WorkflowContext }) => canJump(args, params),
     target: params.target
   };
 }
