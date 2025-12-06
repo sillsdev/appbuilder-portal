@@ -241,9 +241,8 @@
       <div class="settingsarea my-4">
         <Settings
           project={projectData.project}
-          publicEndpoint="toggleVisibility"
-          downloadEndpoint="toggleDownload"
           {canEdit}
+          showRebuildToggles={data.showRebuildToggles}
         />
       </div>
       <!-- Sidebar Settings -->

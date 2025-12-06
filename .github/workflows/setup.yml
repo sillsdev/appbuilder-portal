@@ -14,6 +14,9 @@ on:
       AWS_EMAIL_SECRET_ACCESS_KEY:
         required: false
 
+env:
+  APP_ENV: ci
+
 jobs:
   # Install dependencies once and cache for other jobs
   setup:

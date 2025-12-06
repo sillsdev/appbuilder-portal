@@ -4,6 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
+import { env } from '$env/dynamic/private';
 import { baseLocale } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
@@ -51,7 +52,8 @@ export const load = (async ({ locals, params }) => {
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
-    jobsAvailable: QueueConnected()
+    jobsAvailable: QueueConnected(),
+    showRebuildToggles: env.APP_ENV !== 'prd'
   };
 }) satisfies PageServerLoad;
 
@@ -295,6 +297,7 @@ export const actions = {
     });
     return { form, ok: true };
   },
+
   async toggleDownload(event) {
     event.locals.security.requireProjectWriteAccess(
       await DatabaseReads.projects.findUnique({
@@ -316,6 +319,52 @@ export const actions = {
     });
     return { form, ok: true };
   },
+
+  async toggleAutoPublishOnRebuild(event) {
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUnique({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
+
+    const form = await superValidate(
+      event.request,
+      valibot(
+        v.object({
+          autoPublishOnRebuild: v.boolean()
+        })
+      )
+    );
+    if (!form.valid) return fail(400, { form, ok: false });
+    await DatabaseWrites.projects.update(parseInt(event.params.id), {
+      AutoPublishOnRebuild: form.data.autoPublishOnRebuild
+    });
+    return { form, ok: true };
+  },
+  async toggleRebuildOnSoftwareUpdate(event) {
+    event.locals.security.requireProjectWriteAccess(
+      await DatabaseReads.projects.findUnique({
+        where: { Id: parseInt(event.params.id) },
+        select: { OwnerId: true, OrganizationId: true }
+      })
+    );
+
+    const form = await superValidate(
+      event.request,
+      valibot(
+        v.object({
+          autoRebuildOnSoftwareUpdate: v.boolean()
+        })
+      )
+    );
+    if (!form.valid) return fail(400, { form, ok: false });
+    await DatabaseWrites.projects.update(parseInt(event.params.id), {
+      RebuildOnSoftwareUpdate: form.data.autoRebuildOnSoftwareUpdate
+    });
+    return { form, ok: true };
+  },
+
   async editOwnerGroup(event) {
     event.locals.security.requireAuthenticated(); // check this first, so unauthenticated can't dos db
     const form = await superValidate(event.request, valibot(updateOwnerGroupSchema));

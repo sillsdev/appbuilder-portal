@@ -22,6 +22,17 @@ RUN npm run build
 # Fix sourcemaps
 RUN npm run fix-sourcemaps
 
+# Docs Container
+FROM lscr.io/linuxserver/libreoffice:25.2.5 AS docs-builder
+WORKDIR /docs 
+
+COPY ./docs /docs/
+RUN mkdir -p /docs/pdf
+
+# Convert fodt and fodg files to pdf
+RUN libreoffice --headless --convert-to pdf /docs/*.fodt --outdir /docs/pdf && \
+  libreoffice --headless --convert-to pdf /docs/*.fodg --outdir /docs/pdf
+
 # Real container that will run
 FROM node:24-alpine3.21
 
@@ -36,6 +47,10 @@ RUN npm ci
 
 # Bring in source code
 COPY --from=builder /build/out/build /app
+
+# Bring docs into /app/client/docs (SvelteKit serves static files from client/)
+RUN mkdir -p /app/client/docs
+COPY --from=docs-builder /docs/pdf/*.pdf /app/client/docs/
 
 # Copy prisma data (npm ci nukes node_modules, so this must be last)
 COPY --from=builder /build/node_modules/.prisma /app/node_modules/.prisma

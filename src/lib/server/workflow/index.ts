@@ -59,6 +59,7 @@ export class Workflow {
       select: {
         Project: {
           select: {
+            AutoPublishOnRebuild: true,
             _count: {
               select: {
                 Authors: true,
@@ -73,8 +74,9 @@ export class Workflow {
       ...config,
       hasAuthors: !!check?.Project._count.Authors,
       hasReviewers: !!check?.Project._count.Reviewers,
-      productId,
-      parentJobId: config.parentJobId
+      parentJobId: config.parentJobId,
+      autoPublishOnRebuild: !!check?.Project.AutoPublishOnRebuild,
+      productId
     });
     flow.flow = createActor(WorkflowStateMachine, {
       inspect: (e) => {
@@ -170,6 +172,7 @@ export class Workflow {
           select: {
             Project: {
               select: {
+                AutoPublishOnRebuild: true,
                 _count: {
                   select: {
                     Authors: true,
@@ -185,17 +188,21 @@ export class Workflow {
     if (!instance) {
       return null;
     }
+    const context = JSON.parse(instance.Context) as WorkflowInstanceContext;
+    context.isAutomatic ??= false;
     return {
       instanceId: instance.Id,
       definitionId: instance.WorkflowDefinition.Id,
       state: instance.State,
-      context: JSON.parse(instance.Context) as WorkflowInstanceContext,
+      context,
       input: {
         workflowType: instance.WorkflowDefinition.Type,
         productType: instance.WorkflowDefinition.ProductType,
         options: new Set(instance.WorkflowDefinition.WorkflowOptions),
         hasAuthors: !!instance.Product.Project._count.Authors,
         hasReviewers: !!instance.Product.Project._count.Reviewers,
+        autoPublishOnRebuild: !!instance.Product.Project.AutoPublishOnRebuild,
+        isAutomatic: context.isAutomatic ?? false,
         productId
       }
     };
@@ -235,7 +242,7 @@ export class Workflow {
           label: k,
           connections: Workflow.filterTransitions(v.on, this.input).map((o) => {
             let target = Workflow.targetStringFromEvent(o[0]);
-            if (!target) {
+            if (!target || target === k) {
               target = o[0].eventType;
               lookup.push(target);
               actions.push({
@@ -283,7 +290,8 @@ export class Workflow {
       `#${WorkflowStateMachine.id}.${xSnap.value}`
     );
 
-    const stateChange = !!old && Workflow.stateName(old) !== xSnap.value;
+    const stateChange =
+      !!old && (Workflow.stateName(old) !== xSnap.value || event.type === WorkflowAction.Retry);
     const migration = event.type === WorkflowAction.Migrate;
     const jump = event.type === WorkflowAction.Jump;
 
@@ -366,6 +374,7 @@ export class Workflow {
       productId: undefined,
       hasAuthors: undefined,
       hasReviewers: undefined,
+      autoPublishOnRebuild: undefined,
       productType: undefined,
       options: undefined
     } as WorkflowInstanceContext;

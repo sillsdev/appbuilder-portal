@@ -57,31 +57,53 @@ export async function sendNotificationToReviewers(
     where: {
       Id: job.data.productId
     },
-    include: {
+    select: {
       Project: {
-        include: {
-          Organization: true,
+        select: {
+          Name: true,
           Reviewers: true,
-          Owner: true
+          Owner: {
+            select: {
+              Name: true,
+              Email: true,
+              Locale: true
+            }
+          }
         }
       },
-      ProductArtifacts: true,
-      ProductDefinition: true
+      ProductBuilds: {
+        select: {
+          ProductArtifacts: {
+            select: {
+              ArtifactType: true,
+              Url: true
+            }
+          }
+        },
+        orderBy: {
+          DateUpdated: 'desc'
+        },
+        take: 1
+      },
+      ProductDefinition: {
+        select: {
+          Name: true
+        }
+      }
     }
   });
-  const apkUrl = product.ProductArtifacts.find((a) => a.ArtifactType === 'apk')?.Url;
-  const pwaUrl = product.ProductArtifacts.find((a) => a.ArtifactType === 'pwa')?.Url;
-  const playListingUrl = product.ProductArtifacts.find(
-    (a) => a.ArtifactType === 'play-listing'
-  )?.Url;
-  const assetPreviewUrl = product.ProductArtifacts.find(
-    (a) => a.ArtifactType === 'asset-preview'
-  )?.Url;
+
+  const artifacts = product.ProductBuilds.at(0)?.ProductArtifacts ?? [];
+
+  const apkUrl = artifacts.find((a) => a.ArtifactType === 'apk')?.Url;
+  const pwaUrl = artifacts.find((a) => a.ArtifactType === 'pwa')?.Url;
+  const playListingUrl = artifacts.find((a) => a.ArtifactType === 'play-listing')?.Url;
+  const assetPreviewUrl = artifacts.find((a) => a.ArtifactType === 'asset-preview')?.Url;
   let messageId = 'reviewProduct';
   if (assetPreviewUrl) messageId = 'reviewAssetPackage';
   else if (pwaUrl) messageId = 'reviewPwaProduct';
   else if (!playListingUrl) messageId = 'reviewProductNoPlayListing';
-  if (product.WorkflowComment) messageId += 'WithComment';
+  if (job.data.comment) messageId += 'WithComment';
   const properties = {
     productName: product.ProductDefinition.Name,
     projectName: product.Project.Name,
@@ -91,12 +113,16 @@ export async function sendNotificationToReviewers(
     pwaUrl,
     playListingUrl,
     assetPreviewUrl,
-    comment: product.WorkflowComment
+    comment: job.data.comment
   };
+
+  const owner = product.Project.Owner;
+
+  const reviewers = product.Project.Reviewers.filter((r) => r.Email !== owner.Email);
 
   return {
     reviewerEmails: await Promise.all(
-      product.Project.Reviewers.map((r) =>
+      reviewers.map((r) =>
         sendEmail(
           [{ email: r.Email!, name: r.Name! }],
           translate(r.Locale!, 'notifications.subject.' + messageId, properties),
@@ -110,17 +136,19 @@ export async function sendNotificationToReviewers(
       )
     ),
     ownerEmail: await sendEmail(
-      [{ email: product.Project.Owner.Email!, name: product.Project.Owner.Name! }],
-      translate(product.Project.Owner.Locale!, 'notifications.subject.' + messageId, properties),
+      [{ email: owner.Email!, name: owner.Name! }],
+      translate(owner.Locale!, 'notifications.subject.' + messageId, properties),
       addProperties(ReviewProductTemplate, {
-        Message: translate(product.Project.Owner.Locale!, 'notifications.body.' + messageId, {
-          ...properties,
-          ownerName: product.Project.Owner.Name,
-          reviewerNames: product.Project.Reviewers.map((r) => r.Name + ' (' + r.Email + ')').join(
-            ', '
-          ),
-          reviewerName: 'REVIEWER_NAME'
-        })
+        Message:
+          translate(owner.Locale!, 'notifications.body.reviewOwnerPrefix', {
+            ...properties,
+            ownerName: owner.Name,
+            reviewerNames: reviewers.map((r) => r.Name + ' (' + r.Email + ')').join(', ')
+          }) +
+          translate(owner.Locale!, 'notifications.body.' + messageId, {
+            ...properties,
+            reviewerName: 'REVIEWER_NAME'
+          })
       })
     )
   };
@@ -239,12 +267,14 @@ export async function notifySuperAdminsLowPriority(
       email: await sendEmail(
         superAdmins.map((admin) => ({ email: admin.Email!, name: admin.Name! })),
         translate('en', 'notifications.subject.' + job.data.messageKey, job.data.messageProperties),
-        addProperties(NotificationTemplate, {
+        addProperties(job.data.link ? NotificationWithLinkTemplate : NotificationTemplate, {
           Message: translate(
             'en',
             'notifications.body.' + job.data.messageKey,
             job.data.messageProperties
-          )
+          ),
+          LinkUrl: job.data.link!,
+          UrlText: translate('en', 'notifications.body.log')
         })
       )
     };

@@ -121,10 +121,63 @@ export async function checkSystemStatuses(
         status: res.status,
         error: res.responseType === 'error' ? res : undefined,
         minutes: Math.floor((Date.now() - new Date(s.DateUpdated!).valueOf()) / 60000),
-        updating: available !== s.SystemAvailable
+        updating: available !== s.SystemAvailable,
+        versionInfo: res.responseType === 'status' ? res : undefined
       };
     })
   );
+
+  job.updateProgress(65);
+
+  const applications = new Map<string, number>(
+    (
+      await DatabaseReads.applicationTypes.findMany({
+        select: {
+          Id: true,
+          Name: true
+        }
+      })
+    ).map((a) => [a.Name!, a.Id])
+  );
+
+  const versionInfo = statuses.flatMap((s) =>
+    s.versionInfo
+      ? Object.entries(s.versionInfo.versions)
+          .filter(([key]) => applications.get(key) && s.url)
+          .map(([Name, Version]) => ({
+            BuildEngineUrl: s.url!,
+            ApplicationTypeId: applications.get(Name)!,
+            Version,
+            ImageHash: s.versionInfo!.imageHash
+          }))
+      : []
+  );
+
+  const versions = (
+    await Promise.all(
+      versionInfo.map(async (vi) => {
+        return await DatabaseWrites.systemVersions.upsert({
+          where: {
+            BuildEngineUrl_ApplicationTypeId: {
+              BuildEngineUrl: vi.BuildEngineUrl,
+              ApplicationTypeId: vi.ApplicationTypeId
+            }
+          },
+          create: {
+            BuildEngineUrl: vi.BuildEngineUrl,
+            ApplicationTypeId: vi.ApplicationTypeId,
+            Version: vi.Version,
+            ImageHash: vi.ImageHash
+          },
+          update: {
+            Version: vi.Version,
+            ImageHash: vi.ImageHash
+          }
+        });
+      })
+    )
+  ).filter((v) => !!v);
+
   job.updateProgress(80);
   // If there are offline systems, send an email to the super admins
   const offlineSystems = statuses.filter((s) => s.status !== 200);
@@ -158,7 +211,8 @@ export async function checkSystemStatuses(
     removed: removed.count,
     added: filteredOrgs.length,
     total: statuses.length,
-    statuses
+    statuses,
+    versions
   };
 }
 
@@ -902,6 +956,7 @@ async function tryCreateInstance(
           includeFields: [],
           includeArtifacts: null,
           includeReviewers: false,
+          isAutomatic: false,
           environment: mergedEnv,
           start: ActivityName as WorkflowState
         } satisfies WorkflowInstanceContext),

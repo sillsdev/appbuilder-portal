@@ -254,7 +254,7 @@ export class Security {
 
   requireProjectReadAccess(
     userGroups: { GroupId: number }[],
-    project?: { OwnerId: number; OrganizationId: number; GroupId: number } | null
+    project: { OwnerId: number; OrganizationId: number; GroupId: number } | null
   ) {
     this.requireAuthenticated();
     if (!project) {

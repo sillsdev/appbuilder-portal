@@ -8,6 +8,7 @@ export async function doProductAction(
   productId: string,
   action: ProductActionType,
   parentJobId?: string
+  isAutomatic = false
 ) {
   const product = await DatabaseReads.products.findUnique({
     where: {
@@ -56,6 +57,7 @@ export async function doProductAction(
             workflowType: product.ProductDefinition[flowType].Type,
             // pass optional parent job id so child builds become children of that parent
             parentJobId: parentJobId
+            isAutomatic
           });
         }
         break;

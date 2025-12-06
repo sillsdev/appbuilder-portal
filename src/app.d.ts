@@ -27,7 +27,7 @@ declare global {
     ): this | never;
     requireProjectReadAccess(
       userGroups: { GroupId: number }[],
-      project?: {
+      project: {
         OwnerId: number;
         OrganizationId: number;
         GroupId: number;

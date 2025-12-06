@@ -41,7 +41,8 @@
       "reviewPwaProduct": "<p>{{reviewerName}},</p><p>You have been asked to review the following app:<br>Project: {{projectName}}<br>Product: {{productName}}</p><p>Here are the product files to be reviewed:<br><a href = {{pwaUrl}}>pwa</a><br></p><p>Send feedback to: {{ownerName}} ({{ownerEmail}})</p>",
       "reviewPwaProductWithComment": "<p>{{reviewerName}},</p><p>You have been asked to review the following app:<br>Project: {{projectName}}<br>Product: {{productName}}<br>Comment: {{comment}}</p><p>Here are the product files to be reviewed:<br><a href = {{pwaUrl}}>pwa</a><br></p><p>Send feedback to: {{ownerName}} ({{ownerEmail}})</p>",
       "rejectionEmail": "<p>The organization administrator has returned {{projectName}} to state {{newState}} from state {{previousState}} with the following comment:<br><br>{{comment}}</p>",
-      "recordNotFound": "<p>Task {{taskName}} Failed: Unable to find record:</p><ul><li>recordName={{recordName}}</li><li>id={{recordId}}</li></ul>"
+      "recordNotFound": "<p>Task {{taskName}} Failed: Unable to find record:</p><ul><li>recordName={{recordName}}</li><li>id={{recordId}}</li></ul>",
+      "retryBuild": "<p>Build for product: {{productName}} project {{projectName}} failed.</p><p>Project URL: {{projectUrl}}</p><p>Retrying build with compute type set to 'medium'.</p>"
     },
     "subject": {
       "userTaskAdded": "Scriptoria: {{activityName}} Assigned For {{productName}} - {{project}}",
@@ -73,6 +74,7 @@
       "releaseFailedOwner": "Scriptoria: Publish {{projectName}} {{productName}} Failed",
       "releaseFailedAdmin": "Scriptoria: Publish {{projectName}} {{productName}} Failed",
       "releaseProductRecordNotFound": "Scriptoria: Release Failed: Product {{productId}}",
+      "autoPublishOnRebuildCompleted": "Scriptoria: Auto publish {{projectName}} {{productName}} Successful",
       "reviewProduct": "{{projectName}} app - ready for review",
       "reviewProductWithComment": "{{projectName}} app - ready for review",
       "reviewProductNoPlayListing": "{{projectName}} app - ready for review",
@@ -82,7 +84,8 @@
       "reviewPwaProduct": "{{projectName}} app - ready for review",
       "reviewPwaProductWithComment": "{{projectName}} app - ready for review",
       "rejectionEmail": "Scriptoria: {{projectName}} {{productName}} Returned",
-      "recordNotFound": "Scriptoria: Task {{taskName}} Failed"
+      "recordNotFound": "Scriptoria: Task {{taskName}} Failed",
+      "retryBuild": "Scriptoria: Retrying Build {{projectName}} {{productName}} With Medium Compute"
     },
     "notification": {
       "userTaskAdded": "Task {{activityName}} assigned for {{productName}} - {{project}}.",
@@ -113,7 +116,8 @@
       "releaseCompletedSuccessfully": "Release for product: {{productName}} project: {{projectName}} completed successfully",
       "releaseFailedOwner": "Publish for product {{productName}} project {{projectName}} failed. The organization administrator has been notified of this issue.",
       "releaseFailedAdmin": "Publish for product {{productName}} project {{projectName}} failed. Review logs in email for details.",
-      "releaseProductRecordNotFound": "Release Failed: Unable to find product record with id: {{productId}}"
+      "releaseProductRecordNotFound": "Release Failed: Unable to find product record with id: {{productId}}",
+      "autoPublishOnRebuildCompleted": "Automatic publish for product {{productName}} in project {{projectName}} completed successfully"
     }
   },
   "organizationInvites": {

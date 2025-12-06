@@ -5,7 +5,7 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
-import { fetchPackageName } from '$lib/products';
+import { fetchPackageName, getComputeType, updateComputeType } from '$lib/products';
 import { WorkflowAction } from '$lib/workflowTypes';
 
 export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> {
@@ -149,7 +149,8 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
           WorkflowAppProjectUrl: true,
           OrganizationId: true
         }
-      }
+      },
+      Properties: true
     }
   });
   if (!product) {
@@ -276,12 +277,44 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
       );
       flow.send({ type: WorkflowAction.Build_Successful, userId: null });
     } else {
-      await notifyFailed(job.data.productBuildId, job.data.productId, product, job.data.build);
-      flow.send({
-        type: WorkflowAction.Build_Failed,
-        userId: null,
-        comment: `system.build-failed,${job.data.build.artifacts['consoleText'] ?? ''}`
-      });
+      let action = WorkflowAction.Build_Failed;
+      const currentCompute = getComputeType(product.Properties);
+      if (currentCompute !== 'medium') {
+        try {
+          const text = await fetch(job.data.build.artifacts['consoleText']).then((r) => r.text());
+          if (text.match('Gradle build daemon disappeared unexpectedly')) {
+            const newProps = updateComputeType(product.Properties, 'medium');
+            // make sure props are actually updated...
+            // we don't want infinite retries if this somehow fails...
+            if (
+              newProps !== product.Properties &&
+              (await DatabaseWrites.products.update(job.data.productId, {
+                Properties: newProps
+              }))
+            ) {
+              action = WorkflowAction.Retry;
+            }
+          }
+        } catch {
+          /* empty */
+        }
+      }
+      if (action === WorkflowAction.Build_Failed) {
+        await notifyFailed(job.data.productBuildId, job.data.productId, product, job.data.build);
+        flow.send({
+          type: action,
+          userId: null,
+          comment: `system.build-failed,${job.data.build.artifacts['consoleText'] ?? ''}`
+        });
+      } else {
+        await notifyRetrying(job.data.productBuildId, job.data.productId, product, job.data.build);
+        flow.send({
+          type: action,
+          userId: null,
+          comment:
+            'Build may have failed due to insufficient memory. Retrying with medium compute type.'
+        });
+      }
     }
   }
   job.updateProgress(100);
@@ -403,4 +436,36 @@ export async function notifyProductNotFound(productId: string) {
     }
   });
   return { message: 'Product Not Found' };
+}
+async function notifyRetrying(
+  productBuildId: number,
+  productId: string,
+  product: Prisma.ProductsGetPayload<{
+    select: {
+      ProductDefinition: {
+        select: { Name: true };
+      };
+      Project: {
+        select: {
+          Name: true;
+          WorkflowAppProjectUrl: true;
+        };
+      };
+    };
+  }>,
+  buildResponse: BuildEngine.Types.BuildResponse
+) {
+  return getQueues().Emails.add(
+    `Notify Admins of Retry with Medium Compute for Build #${productBuildId} for Product #${productId}`,
+    {
+      type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
+      messageKey: 'retryBuild',
+      messageProperties: {
+        projectName: product.Project.Name!,
+        productName: product.ProductDefinition.Name!,
+        projectUrl: product.Project.WorkflowAppProjectUrl!
+      },
+      link: buildResponse.artifacts['consoleText'] ?? ''
+    }
+  );
 }

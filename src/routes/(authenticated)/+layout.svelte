@@ -330,7 +330,7 @@
                 <li>
                   <a
                     target="_blank"
-                    href="https://scriptoria.io/docs/Help+Guide+for+Scriptoria.pdf"
+                    href="https://app.scriptoria.io/docs/Help+Guide+for+Scriptoria.pdf"
                   >
                     {m.header_help()}
                   </a>

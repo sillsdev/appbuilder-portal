@@ -27,6 +27,9 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           WorkflowProjectUrl: true,
           IsPublic: true,
           AllowDownloads: true,
+          AutoPublishOnRebuild: true,
+          RebuildOnSoftwareUpdate: true,
+
           DateCreated: true,
           DateArchived: true,
           Language: true,
@@ -169,10 +172,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
       const productDefinitions = (
         await DatabaseReads.organizationProductDefinitions.findMany({
           where: {
-            OrganizationId: project.OrganizationId,
-            ProductDefinition: {
-              ApplicationTypes: project.ApplicationType
-            }
+            OrganizationId: project.OrganizationId
           },
           select: {
             ProductDefinition: {

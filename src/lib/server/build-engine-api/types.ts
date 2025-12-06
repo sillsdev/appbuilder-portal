@@ -50,15 +50,6 @@ export function toErrorResponse(
   } as ErrorResponse;
 }
 
-export type StatusResponse = {
-  responseType: 'status';
-  status: number;
-};
-
-export function toStatusResponse(status: number): StatusResponse {
-  return { responseType: 'status', status } as StatusResponse;
-}
-
 export type DeleteResponse = {
   responseType: 'delete';
   status: number;
@@ -69,10 +60,10 @@ export function toDeleteResponse(status: number): DeleteResponse {
 }
 
 type SuccessResponse = {
-  responseType: 'project' | 'token' | 'job' | 'build' | 'release';
+  responseType: 'project' | 'token' | 'job' | 'build' | 'release' | 'status';
   id: number;
-  created: Date;
-  updated: Date;
+  created: string;
+  updated: string;
   _links: {
     self?: {
       href: string;
@@ -82,6 +73,21 @@ type SuccessResponse = {
     };
   };
 } & Record<string, unknown>;
+
+export type StatusResponse = SuccessResponse & {
+  responseType: 'status';
+  id: never;
+  status: number;
+  versions: Record<string, string>;
+  imageHash: string;
+};
+
+export function toStatusResponse(
+  status: number,
+  body: Record<string, unknown> = {}
+): StatusResponse {
+  return { responseType: 'status', status, ...body } as StatusResponse;
+}
 
 type CommonStatus = 'initialized' | 'accepted' | 'completed';
 type CommonResult = 'SUCCESS' | 'FAILURE' | null;
