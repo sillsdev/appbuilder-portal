@@ -565,6 +565,14 @@ export const WorkflowStateMachine = setup({
         [WorkflowAction.Build_Failed]: {
           meta: { type: ActionType.Auto },
           target: WorkflowState.Synchronize_Data
+        },
+        [WorkflowAction.Retry]: {
+          meta: {
+            type: ActionType.Auto
+          },
+          // It looks like a target is necessary for reentry to work??
+          target: WorkflowState.Product_Build,
+          reenter: true
         }
       }
     },

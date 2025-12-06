@@ -102,7 +102,8 @@ export const actions = {
     locals.security.requireProjectReadAccess(
       await DatabaseReads.groupMemberships.findMany({
         where: { UserId: locals.security.userId, GroupId: project.GroupId }
-      })
+      }),
+      project
     );
     const form = await superValidate(request, valibot(paginateSchema));
     if (!form.valid) return fail(400, { form, ok: false });

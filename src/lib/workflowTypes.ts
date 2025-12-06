@@ -95,6 +95,7 @@ export enum WorkflowAction {
   Take_Back = 'Take Back',
   Build_Successful = 'Build Successful',
   Build_Failed = 'Build Failed',
+  Retry = 'Retry',
   Email_Reviewers = 'Email Reviewers',
   Publish_Completed = 'Publish Completed',
   Publish_Failed = 'Publish Failed',
