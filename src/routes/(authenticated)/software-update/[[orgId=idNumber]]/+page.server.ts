@@ -6,6 +6,9 @@ import type { Actions, PageServerLoad, RouteParams } from './$types';
 import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
+import { BullMQ, getQueues } from '$lib/server/bullmq';
+import { pauseRebuild, unpauseRebuild } from '$lib/server/bullmq/pause';
+import { getAuthConnection } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
 
 /// HELPERS
@@ -150,9 +153,6 @@ export const load = (async ({ url, locals, params }) => {
   });
   const organizationsReadable = names.map((n) => n.Name ?? 'Unknown Organization');
 
-  // TODO: @becca-perk? Use information to determine whether to show 'start' or 'pause' on button and action being called.
-  // Check for rebuild status...
-
   const form = await superValidate(valibot(formSchema));
   return { form, organizations: organizationsReadable.join(', ') };
 }) satisfies PageServerLoad;
@@ -176,12 +176,72 @@ export const actions = {
 
     const productsToRebuild = await getProductsForRebuild(searchOrgs);
 
+    // Create a parent marker job for this rebuild batch so we can pause/unpause it
+    const buildsQueue = getQueues().Builds;
+    // Use the projectId from the first product to rebuild, or fallback to 0 if none
+    const parentJob = await buildsQueue.add(
+      `Rebuild - Software Update (${Date.now()})`,
+      {
+        type: BullMQ.JobType.Rebuild_Parent,
+        projectId:
+          productsToRebuild.length > 0
+            ? ((
+                await DatabaseReads.products.findUnique({
+                  where: { Id: productsToRebuild[0].id },
+                  select: { ProjectId: true }
+                })
+              )?.ProjectId ?? 0)
+            : 0,
+        initiatedBy: locals.security.userId
+      },
+      { removeOnComplete: false, removeOnFail: false }
+    );
+
     await Promise.all(
       productsToRebuild.map((p) =>
-        doProductAction(p.id, ProductActionType.Rebuild, form.data.comment)
+        doProductAction(p.id, ProductActionType.Rebuild, form.data.comment, parentJob.id)
       )
     );
 
-    return { form, ok: true };
+    return { form, ok: true, parentJobId: parentJob.id };
+  },
+
+  async pause({ request, locals }) {
+    locals.security.requireAdminOfAny();
+    const form = await request.formData();
+    const parentJobId = String(form.get('parentJobId') ?? '');
+    if (!parentJobId) return fail(400, { error: 'missing_parent' });
+
+    const removed = await pauseRebuild(parentJobId);
+
+    const redis = getAuthConnection();
+    const key = `rebuild:pausedChildren:${parentJobId}`;
+    await redis.set(key, JSON.stringify({ storedAt: Date.now(), children: removed }));
+    await redis.pexpire(key, 7 * 24 * 60 * 60 * 1000);
+
+    return { ok: true, removedCount: removed.length };
+  },
+
+  async resume({ request, locals }) {
+    locals.security.requireAdminOfAny();
+    const form = await request.formData();
+    const parentJobId = String(form.get('parentJobId') ?? '');
+    if (!parentJobId) return fail(400, { error: 'missing_parent' });
+
+    const redis = getAuthConnection();
+    const key = `rebuild:pausedChildren:${parentJobId}`;
+    const stored = await redis.get(key);
+    if (!stored) return fail(404, { error: 'no_stored_children' });
+    let parsed;
+    try {
+      parsed = JSON.parse(stored);
+    } catch {
+      return fail(500, { error: 'malformed' });
+    }
+    const children = parsed.children ?? [];
+
+    const restored = await unpauseRebuild(parentJobId, children);
+    await redis.del(key);
+    return { ok: true, restored };
   }
 } satisfies Actions;
