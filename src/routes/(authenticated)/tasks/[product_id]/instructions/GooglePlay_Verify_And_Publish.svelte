@@ -28,7 +28,7 @@
   </li>
   <li>
     If you set <strong>BUILD_DOWNLOAD_PLAY_LISTING</strong>
-    to have Scriptoria down the Google Play Store Listing information during the buid, it is available
+    to have Scriptoria download the Google Play Store Listing information during the buid, it is available
     in the
     <strong>Product Files</strong>
     as

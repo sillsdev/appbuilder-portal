@@ -77,7 +77,6 @@
         <strong>Enter App Project URL</strong>
         field.
       </li>
-      <li>For existing apps, if you have previously</li>
       <li>
         Click <strong>Login...</strong>
         to connect to Scriptoria.
