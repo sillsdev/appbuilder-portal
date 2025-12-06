@@ -4,7 +4,13 @@ import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
 import { ProductActionType } from '.';
 
-export async function doProductAction(productId: string, action: ProductActionType) {
+export async function doProductAction(
+  productId: string,
+  action: ProductActionType,
+  comment?: string
+  parentJobId?: string,
+  isAutomatic = false
+) {
   const product = await DatabaseReads.products.findUnique({
     where: {
       Id: productId
@@ -46,11 +52,18 @@ export async function doProductAction(productId: string, action: ProductActionTy
       case ProductActionType.Republish: {
         const flowType = action === 'rebuild' ? 'RebuildWorkflow' : 'RepublishWorkflow';
         if (product.ProductDefinition[flowType] && !product.WorkflowInstance) {
-          await Workflow.create(productId, {
-            productType: product.ProductDefinition[flowType].ProductType,
-            options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
-            workflowType: product.ProductDefinition[flowType].Type
-          });
+          await Workflow.create(
+            productId,
+            {
+              productType: product.ProductDefinition[flowType].ProductType,
+              options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
+              workflowType: product.ProductDefinition[flowType].Type,
+              // pass optional parent job id so child builds become children of that parent
+              parentJobId: parentJobId,
+              isAutomatic
+            },
+            comment
+          );
         }
         break;
       }
@@ -76,6 +89,7 @@ export async function doProductAction(productId: string, action: ProductActionTy
               // This is how S1 does it. May want to change later
               AllowedUserNames: '',
               DateTransition: new Date(),
+              Comment: comment,
               TransitionType: ProductTransitionType.CancelWorkflow,
               WorkflowType: product.WorkflowInstance.WorkflowDefinition.Type
             }

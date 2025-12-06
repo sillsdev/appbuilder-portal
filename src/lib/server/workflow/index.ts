@@ -48,7 +48,11 @@ export class Workflow {
 
   /* PUBLIC METHODS */
   /** Create a new workflow instance and populate the database tables. */
-  public static async create(productId: string, config: WorkflowConfig): Promise<Workflow> {
+  public static async create(
+    productId: string,
+    config: WorkflowConfig & { parentJobId?: string },
+    comment?: string
+  ): Promise<Workflow> {
     const check = await DatabaseReads.products.findUnique({
       where: {
         Id: productId
@@ -56,6 +60,7 @@ export class Workflow {
       select: {
         Project: {
           select: {
+            AutoPublishOnRebuild: true,
             _count: {
               select: {
                 Authors: true,
@@ -70,6 +75,8 @@ export class Workflow {
       ...config,
       hasAuthors: !!check?.Project._count.Authors,
       hasReviewers: !!check?.Project._count.Reviewers,
+      parentJobId: config.parentJobId,
+      autoPublishOnRebuild: !!check?.Project.AutoPublishOnRebuild,
       productId
     });
     flow.flow = createActor(WorkflowStateMachine, {
@@ -86,6 +93,7 @@ export class Workflow {
       data: {
         ProductId: productId,
         DateTransition: new Date(),
+        Comment: comment,
         TransitionType: ProductTransitionType.StartWorkflow,
         WorkflowType: config.workflowType
       }
@@ -166,6 +174,7 @@ export class Workflow {
           select: {
             Project: {
               select: {
+                AutoPublishOnRebuild: true,
                 _count: {
                   select: {
                     Authors: true,
@@ -181,17 +190,21 @@ export class Workflow {
     if (!instance) {
       return null;
     }
+    const context = JSON.parse(instance.Context) as WorkflowInstanceContext;
+    context.isAutomatic ??= false;
     return {
       instanceId: instance.Id,
       definitionId: instance.WorkflowDefinition.Id,
       state: instance.State,
-      context: JSON.parse(instance.Context) as WorkflowInstanceContext,
+      context,
       input: {
         workflowType: instance.WorkflowDefinition.Type,
         productType: instance.WorkflowDefinition.ProductType,
         options: new Set(instance.WorkflowDefinition.WorkflowOptions),
         hasAuthors: !!instance.Product.Project._count.Authors,
         hasReviewers: !!instance.Product.Project._count.Reviewers,
+        autoPublishOnRebuild: !!instance.Product.Project.AutoPublishOnRebuild,
+        isAutomatic: context.isAutomatic ?? false,
         productId
       }
     };
@@ -363,6 +376,7 @@ export class Workflow {
       productId: undefined,
       hasAuthors: undefined,
       hasReviewers: undefined,
+      autoPublishOnRebuild: undefined,
       productType: undefined,
       options: undefined
     } as WorkflowInstanceContext;

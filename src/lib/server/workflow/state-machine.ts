@@ -14,6 +14,7 @@ import {
   WorkflowAction,
   WorkflowOptions,
   WorkflowState,
+  autoPublishOnRebuild,
   hasAuthors,
   hasReviewers,
   isAuthorState,
@@ -21,7 +22,8 @@ import {
   jump
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
-import { deleteWorkflow, markResolved } from './dbProcedures';
+import type { Build } from '../bullmq/types';
+import { deleteWorkflow, markResolved, notifyAutoPublishOwner } from './dbProcedures';
 
 /**
  * IMPORTANT: READ THIS BEFORE EDITING A STATE MACHINE!
@@ -56,12 +58,14 @@ export const WorkflowStateMachine = setup({
     /** Reset to null on exit */
     includeArtifacts: null,
     environment: {},
+    isAutomatic: input.isAutomatic,
     workflowType: input.workflowType,
     productType: input.productType,
     options: input.options,
     productId: input.productId,
     hasAuthors: input.hasAuthors,
-    hasReviewers: input.hasReviewers
+    hasReviewers: input.hasReviewers,
+    autoPublishOnRebuild: input.autoPublishOnRebuild
   }),
   states: {
     [WorkflowState.Start]: {
@@ -497,28 +501,34 @@ export const WorkflowStateMachine = setup({
           instructions: 'waiting'
         }),
         ({ context }) => {
-          getQueues().Builds.add(
-            `Build Product #${context.productId}`,
-            {
-              type: BullMQ.JobType.Build_Product,
-              productId: context.productId,
-              defaultTargets:
-                context.workflowType === WorkflowType.Republish
-                  ? 'play-listing'
-                  : context.productType === ProductType.Android_S3
-                    ? 'apk'
-                    : context.productType === ProductType.AssetPackage
-                      ? 'asset-package'
-                      : context.productType === ProductType.Web
-                        ? 'html'
-                        : //ProductType.Android_GooglePlay
-                          //default
-                          'apk play-listing',
-              // extra env handled in getWorkflowParameters
-              environment: context.environment
-            },
-            BullMQ.Retry0f600
-          );
+          const data: Build.Product = {
+            type: BullMQ.JobType.Build_Product,
+            productId: context.productId,
+            defaultTargets:
+              context.workflowType === WorkflowType.Republish
+                ? 'play-listing'
+                : context.productType === ProductType.Android_S3
+                  ? 'apk'
+                  : context.productType === ProductType.AssetPackage
+                    ? 'asset-package'
+                    : context.productType === ProductType.Web
+                      ? 'html'
+                      : //ProductType.Android_GooglePlay
+                        //default
+                        'apk play-listing',
+            // extra env handled in getWorkflowParameters
+            environment: context.environment
+          };
+
+          // Merge retry options with parent linking when provided
+          const opts: Record<string, unknown> = {
+            ...(BullMQ.Retry0f600 as Record<string, unknown>)
+          };
+          if (context.parentJobId) {
+            opts.parent = { id: context.parentJobId, queue: getQueues().Builds.name };
+          }
+
+          getQueues().Builds.add(`Build Product #${context.productId}`, data, opts);
         }
       ],
       on: {
@@ -542,6 +552,16 @@ export const WorkflowStateMachine = setup({
               context.workflowType === WorkflowType.Startup &&
               !context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID],
             target: WorkflowState.App_Store_Preview
+          },
+          {
+            meta: {
+              type: ActionType.Auto,
+              includeWhen: {
+                guards: [autoPublishOnRebuild]
+              }
+            },
+            guard: autoPublishOnRebuild,
+            target: WorkflowState.Product_Publish
           },
           {
             // this is the normal transition for a successful build
@@ -817,6 +837,11 @@ export const WorkflowStateMachine = setup({
                 workflowType: { is: WorkflowType.Startup }
               }
             },
+            actions: ({ context }) => {
+              if (context.autoPublishOnRebuild && context.isAutomatic) {
+                void notifyAutoPublishOwner(context.productId);
+              }
+            },
             guard: ({ context }) =>
               context.productType === ProductType.Android_GooglePlay &&
               !context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] &&
@@ -825,6 +850,14 @@ export const WorkflowStateMachine = setup({
           },
           {
             meta: { type: ActionType.Auto },
+            actions: ({ context }) => {
+              if (context.autoPublishOnRebuild && context.isAutomatic) {
+                void notifyAutoPublishOwner(context.productId);
+              }
+            },
+            guard: ({ context }) =>
+              context.productType !== ProductType.Android_GooglePlay ||
+              context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] === '1',
             target: WorkflowState.Published
           }
         ],

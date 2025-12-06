@@ -1,4 +1,5 @@
 import { ProductTransitionType } from '../../prisma';
+import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseWrites } from '../database';
 import { DatabaseReads } from '../database/prisma';
 
@@ -49,4 +50,33 @@ export async function markResolved(productId: string) {
       }
     });
   }
+}
+
+export async function notifyAutoPublishOwner(productId: string) {
+  const product = await DatabaseReads.products.findUnique({
+    where: { Id: productId },
+    select: {
+      ProductDefinition: {
+        select: {
+          Name: true
+        }
+      },
+      Project: {
+        select: {
+          Name: true,
+          OwnerId: true
+        }
+      }
+    }
+  });
+  if (!product?.Project.OwnerId) return;
+  await getQueues().Emails.add(`Notify Owner of Auto Publish for Product #${productId}`, {
+    type: BullMQ.JobType.Email_SendNotificationToUser,
+    userId: product.Project.OwnerId,
+    messageKey: 'autoPublishOnRebuildCompleted',
+    messageProperties: {
+      projectName: product.Project.Name ?? '',
+      productName: product.ProductDefinition.Name ?? ''
+    }
+  });
 }
