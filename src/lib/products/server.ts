@@ -7,7 +7,7 @@ import { ProductActionType } from '.';
 export async function doProductAction(
   productId: string,
   action: ProductActionType,
-  comment?: string
+  comment?: string,
   parentJobId?: string,
   isAutomatic = false
 ) {
