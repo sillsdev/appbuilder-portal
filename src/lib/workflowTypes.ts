@@ -1,5 +1,6 @@
 import { type TransitionConfig, and } from 'xstate';
-import type { RoleId, WorkflowType } from './prisma';
+import { WorkflowType } from './prisma';
+import type { RoleId } from './prisma';
 import type { SetFilter, ValueFilter } from './utils';
 import { filterSet, filterValue } from './utils';
 
@@ -94,6 +95,7 @@ export enum WorkflowAction {
   Take_Back = 'Take Back',
   Build_Successful = 'Build Successful',
   Build_Failed = 'Build Failed',
+  Retry = 'Retry',
   Email_Reviewers = 'Email Reviewers',
   Publish_Completed = 'Publish Completed',
   Publish_Failed = 'Publish Failed',
@@ -132,6 +134,7 @@ export type WorkflowInstanceContext = {
   includeArtifacts: ArtifactLists | null;
   start?: WorkflowState;
   environment: Environment;
+  isAutomatic: boolean;
 };
 
 export type ArtifactLists = 'latestAAB' | 'latestAssetPackage' | 'error' | 'all';
@@ -181,12 +184,16 @@ export type WorkflowConfig = {
   options: Set<WorkflowOptions>;
   productType: ProductType;
   workflowType: WorkflowType;
+  isAutomatic: boolean;
 };
 
 export type WorkflowInput = WorkflowConfig & {
   productId: string;
   hasAuthors: boolean;
   hasReviewers: boolean;
+  // Optional parent job id to link build jobs to
+  parentJobId?: string;
+  autoPublishOnRebuild: boolean;
 };
 
 /** Used for filtering based on specified WorkflowOptions and/or ProductType */
@@ -258,7 +265,14 @@ export function hasAuthors(args: { context: WorkflowInput }): boolean {
 export function hasReviewers(args: { context: WorkflowInput }): boolean {
   return args.context.hasReviewers;
 }
-export type Guards = typeof hasAuthors | typeof hasReviewers;
+export function autoPublishOnRebuild(args: { context: WorkflowInput }): boolean {
+  return (
+    args.context.autoPublishOnRebuild &&
+    args.context.isAutomatic &&
+    args.context.workflowType === WorkflowType.Rebuild
+  );
+}
+export type Guards = typeof hasAuthors | typeof hasReviewers | typeof autoPublishOnRebuild;
 /**
  * @param params expected params of `canJump` guard from StartupWorkflow
  * @param optionalGuards other guards that can optionally be added.

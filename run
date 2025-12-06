@@ -47,6 +47,25 @@ function runstuff {
       npx prisma migrate reset --force --schema src/lib/prisma/schema.prisma
     ;;
 
+    db:show)
+      local adminer_url="http://localhost:18080/?pgsql=db&db=development&username=db-user"
+      echo "Opening Adminer database interface..."
+      if command -v open &> /dev/null; then
+        open "$adminer_url"
+      elif command -v xdg-open &> /dev/null; then
+        xdg-open "$adminer_url"
+      elif command -v start &> /dev/null; then
+        start "$adminer_url"
+      else
+        echo "Please open $adminer_url in your browser"
+      fi
+    ;;
+
+    db:studio)
+      echo "Starting Prisma Studio..."
+      npm run diff-db && (set -a; source .env; set +a; npx prisma studio --schema src/lib/prisma/schema.prisma)
+    ;;
+
     ##################
     # Testing
     ci:build)
@@ -91,6 +110,8 @@ function print_help {
   echo "bootstrap      : runs initial scripts for project setup"
   echo "db:migrate     : run prisma migrate dev command"
   echo "db:reset       : run prisma migrate reset command"
+  echo "db:show        : open Adminer database interface in browser"
+  echo "db:studio      : start Prisma Studio for database browsing"
   echo ""
   echo "clean:all      : recursively removes out, dist, node_modules, and tmp directories"
 }

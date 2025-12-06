@@ -17,6 +17,7 @@ model ApplicationTypes {
   ProjectImports     ProjectImports[]
   Projects           Projects[]
   SystemVersions     SystemVersions[]
+  SoftwareUpdates    SoftwareUpdates[]
 }
 
 model Authors {
@@ -305,6 +306,7 @@ model Products {
   UserTasks           UserTasks[]
   WorkflowInstance    WorkflowInstances?
   ProductUserChanges  ProductUserChanges[]
+  SoftwareUpdates     SoftwareUpdates[]
 
   @@index([ProductDefinitionId], map: "IX_Products_ProductDefinitionId")
   @@index([ProjectId], map: "IX_Products_ProjectId")
@@ -434,9 +436,28 @@ model SystemVersions {
   Version           String?          @default("13.2") // defaulting to 13.2 because this is what BuildEngine supports at this time
   DateCreated       DateTime?        @default(now()) @db.Timestamp(6)
   DateUpdated       DateTime?        @updatedAt @db.Timestamp(6)
+  ImageHash         String?
   ApplicationType   ApplicationTypes @relation(fields: [ApplicationTypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_SystemVersions_ApplicationTypes_ ApplicationTypeId")
 
   @@id([BuildEngineUrl, ApplicationTypeId], map: "PK_SystemVersions_BuildEngineUrl_ApplicationTypeId")
+}
+
+model SoftwareUpdates {
+  Id                Int              @id(map: "PK_SoftwareUpdates") @default(autoincrement())
+  InitiatedById     Int
+  Comment           String
+  Paused            Boolean          @default(false)
+  DateCreated       DateTime?        @default(now()) @db.Timestamp(6)
+  DateUpdated       DateTime?        @updatedAt @db.Timestamp(6)
+  DateCompleted     DateTime?        @db.Timestamp(6)
+  // Version information
+  BuildEngineUrl    String
+  ApplicationTypeId Int
+  Version           String
+  InitiatedBy       Users            @relation(fields: [InitiatedById], references: [Id])
+  ApplicationType   ApplicationTypes @relation(fields: [ApplicationTypeId], references: [Id])
+  // Implicit m-n table. Org and project reachable through this relation
+  Products          Products[]
 }
 
 model UserRoles {
@@ -497,6 +518,7 @@ model Users {
   UserRoles                     UserRoles[]
   UserTasks                     UserTasks[]
   ProductTransitions            ProductTransitions[]
+  SoftwareUpdates               SoftwareUpdates[]
 
   @@index([WorkflowUserId], map: "IX_Users_WorkflowUserId")
 }
