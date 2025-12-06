@@ -191,6 +191,8 @@ export type WorkflowInput = WorkflowConfig & {
   productId: string;
   hasAuthors: boolean;
   hasReviewers: boolean;
+  // Optional parent job id to link build jobs to
+  parentJobId?: string;
   autoPublishOnRebuild: boolean;
 };
 

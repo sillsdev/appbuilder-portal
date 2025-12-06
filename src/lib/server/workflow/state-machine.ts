@@ -22,6 +22,7 @@ import {
   jump
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
+import type { Build } from '../bullmq/types';
 import { deleteWorkflow, markResolved, notifyAutoPublishOwner } from './dbProcedures';
 
 /**
@@ -500,28 +501,34 @@ export const WorkflowStateMachine = setup({
           instructions: 'waiting'
         }),
         ({ context }) => {
-          getQueues().Builds.add(
-            `Build Product #${context.productId}`,
-            {
-              type: BullMQ.JobType.Build_Product,
-              productId: context.productId,
-              defaultTargets:
-                context.workflowType === WorkflowType.Republish
-                  ? 'play-listing'
-                  : context.productType === ProductType.Android_S3
-                    ? 'apk'
-                    : context.productType === ProductType.AssetPackage
-                      ? 'asset-package'
-                      : context.productType === ProductType.Web
-                        ? 'html'
-                        : //ProductType.Android_GooglePlay
-                          //default
-                          'apk play-listing',
-              // extra env handled in getWorkflowParameters
-              environment: context.environment
-            },
-            BullMQ.Retry0f600
-          );
+          const data: Build.Product = {
+            type: BullMQ.JobType.Build_Product,
+            productId: context.productId,
+            defaultTargets:
+              context.workflowType === WorkflowType.Republish
+                ? 'play-listing'
+                : context.productType === ProductType.Android_S3
+                  ? 'apk'
+                  : context.productType === ProductType.AssetPackage
+                    ? 'asset-package'
+                    : context.productType === ProductType.Web
+                      ? 'html'
+                      : //ProductType.Android_GooglePlay
+                        //default
+                        'apk play-listing',
+            // extra env handled in getWorkflowParameters
+            environment: context.environment
+          };
+
+          // Merge retry options with parent linking when provided
+          const opts: Record<string, unknown> = {
+            ...(BullMQ.Retry0f600 as Record<string, unknown>)
+          };
+          if (context.parentJobId) {
+            opts.parent = { id: context.parentJobId, queue: getQueues().Builds.name };
+          }
+
+          getQueues().Builds.add(`Build Product #${context.productId}`, data, opts);
         }
       ],
       on: {
