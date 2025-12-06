@@ -1,10 +1,8 @@
 <script lang="ts">
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-  import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
 
   interface Props {
@@ -13,12 +11,9 @@
 
   let { data }: Props = $props();
 
-  const base = '/software-update';
-
   const { form, enhance } = superForm(data.form, {
     onUpdated({ form }) {
       if (form.valid) {
-        goto(localizeHref(base));
         toast('success', m.admin_software_update_toast_success());
       }
     }
