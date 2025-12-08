@@ -50,7 +50,10 @@ export const actions = {
         Id: form.data.id
       },
       data: {
-        Name: form.data.name,
+        // Don't write name to database here.
+        // The publishing process requires the name to stay the same.
+        // Changing the name of the store will require a more involved UI.
+        // See #1383 and #1378
         StoreTypeId: form.data.storeType,
         Description: form.data.description
       }

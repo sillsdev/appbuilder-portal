@@ -36,10 +36,10 @@
       type="text"
       name="name"
       class="input input-bordered validator"
-      bind:value={$form.name}
-      required
+      value={$form.name}
+      readonly
     />
-    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="stores_attributes_description">
     <input
