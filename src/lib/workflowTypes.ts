@@ -157,6 +157,7 @@ export enum ENVKeys {
   PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE = 'PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE',
   GOOGLE_PLAY_EXISTING = 'google_play_existing',
   GOOGLE_PLAY_DRAFT = 'PUBLISH_GOOGLE_PLAY_DRAFT',
+  BUILD_DOWNLOAD_PLAY_LISTING = 'BUILD_DOWNLOAD_PLAY_LISTING',
   // Before Build
   ORIGIN = 'ORIGIN',
   PRODUCT_ID = 'PRODUCT_ID',
@@ -237,6 +238,7 @@ export type WorkflowEvent =
       type: Exclude<WorkflowAction, WorkflowAction.Jump | WorkflowAction.Migrate>;
       userId: number | null;
       comment?: string;
+      options?: string[];
     }
   | {
       type: WorkflowAction.Jump;
