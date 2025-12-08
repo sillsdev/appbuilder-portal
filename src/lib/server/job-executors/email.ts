@@ -110,7 +110,7 @@ export async function sendNotificationToReviewers(
     ownerEmail: product.Project.Owner.Email,
     files: Object.entries(files)
       .filter((e) => !!e[1])
-      .map(([name, url]) => `<a href = ${url}>${name}</a>`)
+      .map(([name, url]) => `<a href="${url}">${name}</a>`)
       .join('<br>'),
     comment: job.data.comment
   };
