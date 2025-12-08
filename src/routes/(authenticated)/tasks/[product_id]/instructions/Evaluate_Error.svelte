@@ -39,7 +39,7 @@
 <br />
 <p>
   <span class="flex flex-row">
-    <input type="checkbox" class="checkbox checkbox-accent" />
+    <input type="checkbox" class="checkbox checkbox-accent" required />
     <span>
       &nbsp; I confirm that I have taken the necessary steps to manually upload the apk/aab and
       resolved the error in the

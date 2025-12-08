@@ -84,7 +84,7 @@
     triggerRecheck; // depend on external variable to recheck the checkboxes
     return Array.from(
       (instructionContainer?.querySelectorAll(
-        'input[type="checkbox"]'
+        'input[type="checkbox"]:required'
       ) as NodeListOf<HTMLInputElement>) ?? []
     ).some((e) => !e.checked);
   });
