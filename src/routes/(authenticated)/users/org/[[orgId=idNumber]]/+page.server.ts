@@ -54,44 +54,51 @@ function select(orgIds?: number[]) {
 
 // If we are a superadmin, collect all users, otherwise
 // collect every user in one of our organizations
-function userFilter(isSuper: boolean, orgIds: number[]) {
-  return isSuper
-    ? {
-        // Get all users that are locked or are a member of at least one organization
-        // (Users that are not in an organization and are not locked are not interesting
-        // because they can't login and behave essentially as locked users or as users
-        // who have never logged in before)
-        OR: [
-          {
-            OrganizationMemberships: {
-              some: {}
+function userFilter(isSuper: boolean, orgIds: number[], specificOrg: number | undefined) {
+  return specificOrg
+    ? { OrganizationMemberships: { some: { OrganizationId: specificOrg } } }
+    : isSuper
+      ? {
+          // Get all users that are locked or are a member of at least one organization
+          // (Users that are not in an organization and are not locked are not interesting
+          // because they can't login and behave essentially as locked users or as users
+          // who have never logged in before)
+          OR: [
+            {
+              OrganizationMemberships: {
+                some: {}
+              }
+            },
+            {
+              IsLocked: true
             }
-          },
-          {
-            IsLocked: true
-          }
-        ]
-      }
-    : {
-        OrganizationMemberships: {
-          some: {
-            OrganizationId: { in: orgIds }
-          }
+          ]
         }
-      };
+      : {
+          OrganizationMemberships: {
+            some: {
+              OrganizationId: { in: orgIds }
+            }
+          }
+        };
 }
 
-function orgFilter(sec: Security): Prisma.OrganizationsWhereInput | undefined {
-  return sec.isSuperAdmin
-    ? undefined
-    : {
-        UserRoles: {
-          some: {
-            RoleId: RoleId.OrgAdmin,
-            UserId: sec.userId
+function orgFilter(
+  sec: Security,
+  orgId: number | undefined
+): Prisma.OrganizationsWhereInput | undefined {
+  return orgId
+    ? { Id: orgId }
+    : sec.isSuperAdmin
+      ? undefined
+      : {
+          UserRoles: {
+            some: {
+              RoleId: RoleId.OrgAdmin,
+              UserId: sec.userId
+            }
           }
-        }
-      };
+        };
 }
 
 export const load = (async ({ locals, params }) => {
@@ -99,11 +106,14 @@ export const load = (async ({ locals, params }) => {
   if (params.orgId) {
     locals.security.requireAdminOfOrg(Number(params.orgId));
   }
+
+  const orgId = params.orgId ? Number(params.orgId) : undefined;
+
   return await tracer.startActiveSpan('load', async (span) => {
     try {
       const isSuper = locals.security.isSuperAdmin;
       const organizations = await DatabaseReads.organizations.findMany({
-        where: orgFilter(locals.security),
+        where: orgFilter(locals.security, orgId),
         select: {
           Id: true,
           Name: true
@@ -118,7 +128,7 @@ export const load = (async ({ locals, params }) => {
           Name: 'asc'
         },
         select: select(isSuper ? undefined : orgIds),
-        where: userFilter(isSuper, orgIds),
+        where: userFilter(isSuper, orgIds, orgId),
         take: 50
       });
 
@@ -208,7 +218,7 @@ export const actions: Actions = {
       const isSuper = event.locals.security.isSuperAdmin;
 
       const organizations = await DatabaseReads.organizations.findMany({
-        where: orgId ? { Id: orgId } : orgFilter(event.locals.security),
+        where: orgFilter(event.locals.security, orgId),
         select: {
           Id: true
         }
@@ -225,9 +235,7 @@ export const actions: Actions = {
 
       const where: Prisma.UsersWhereInput = {
         AND: [
-          orgId
-            ? { OrganizationMemberships: { some: { OrganizationId: orgId } } }
-            : userFilter(isSuper, orgIds),
+          userFilter(isSuper, orgIds, orgId),
           {
             OR: form.data.search
               ? [
