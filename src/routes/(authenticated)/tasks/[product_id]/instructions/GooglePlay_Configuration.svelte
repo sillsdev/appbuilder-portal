@@ -1,6 +1,13 @@
 <h3>Introduction</h3>
 <div class="space-y-2">
   <p>
+    The App Builders can use Scriptoria to manage the publishing of the app to Google Play. Go to
+    the <strong>Publishing &gt; App Store &gt; App Publishing</strong>
+    configuration page and select
+    <strong>We would like to use Scriptoria</strong>
+    radio button. This will enable the Scriptoria integration and display additional configuration pages.
+  </p>
+  <p>
     Scriptoria manages the Google Play Store Listing for the app. This information is stored in the
     project in the
     <strong>Publishing &gt; App Store &gt; Google Play Store Listing</strong>
@@ -48,16 +55,6 @@
 </ul>
 <h3>Instructions</h3>
 <ul>
-  <li>
-    In the <strong>Publishing &gt; App Store &gt; App Publishing</strong>
-    configuration page:
-    <ul>
-      <li>
-        Enable Scriptoria by selecting the <strong>We would like to use Scriptoria</strong>
-        option.
-      </li>
-    </ul>
-  </li>
   <li>
     In the <strong>Publishing &gt; App Store &gt; Publishing Properties</strong>
     configuration page:
