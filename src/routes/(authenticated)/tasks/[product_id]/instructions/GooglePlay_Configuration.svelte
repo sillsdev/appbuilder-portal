@@ -29,7 +29,7 @@
     configuration page:
     <div class="flex flex-col space-y-1 py-1">
       <label class="flex flex-row space-x-1">
-        <input type="radio" class="radio radio-accent" name="play-listing" />
+        <input type="radio" class="radio radio-accent" name="play-listing" checked />
         <span>I have filled out the Google Play Store Listing information</span>
       </label>
       <label class="flex flex-row space-x-1">
