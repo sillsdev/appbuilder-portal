@@ -95,24 +95,23 @@ export async function sendNotificationToReviewers(
 
   const artifacts = product.ProductBuilds.at(0)?.ProductArtifacts ?? [];
 
-  const apkUrl = artifacts.find((a) => a.ArtifactType === 'apk')?.Url;
-  const pwaUrl = artifacts.find((a) => a.ArtifactType === 'pwa')?.Url;
-  const playListingUrl = artifacts.find((a) => a.ArtifactType === 'play-listing')?.Url;
-  const assetPreviewUrl = artifacts.find((a) => a.ArtifactType === 'asset-preview')?.Url;
+  const files = {
+    apk: artifacts.find((a) => a.ArtifactType === 'apk')?.Url,
+    pwa: artifacts.find((a) => a.ArtifactType === 'pwa')?.Url,
+    'play-listing': artifacts.find((a) => a.ArtifactType === 'play-listing')?.Url,
+    'asset-preview': artifacts.find((a) => a.ArtifactType === 'asset-preview')?.Url
+  };
   let messageId = 'reviewProduct';
-  if (assetPreviewUrl) messageId = 'reviewAssetPackage';
-  else if (pwaUrl) messageId = 'reviewPwaProduct';
-  else if (!playListingUrl) messageId = 'reviewProductNoPlayListing';
   if (job.data.comment) messageId += 'WithComment';
   const properties = {
     productName: product.ProductDefinition.Name,
     projectName: product.Project.Name,
     ownerName: product.Project.Owner.Name,
     ownerEmail: product.Project.Owner.Email,
-    apkUrl,
-    pwaUrl,
-    playListingUrl,
-    assetPreviewUrl,
+    files: Object.entries(files)
+      .filter((e) => !!e[1])
+      .map(([name, url]) => `<a href = ${url}>${name}</a>`)
+      .join('<br>'),
     comment: job.data.comment
   };
 
