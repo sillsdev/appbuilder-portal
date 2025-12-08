@@ -27,9 +27,8 @@
     grid view.
   </li>
   <li>
-    If you set <strong>BUILD_DOWNLOAD_PLAY_LISTING</strong>
-    to have Scriptoria download the Google Play Store Listing information during the buid, it is available
-    in the
+    If you requested Scriptoria to download the Google Play Store Listing information during the
+    buid, it is available in the
     <strong>Product Files</strong>
     as
     <strong>play-listing-download</strong>
@@ -39,13 +38,14 @@
     <strong>Import From Google Play...</strong>
     button. This will start a wizard where you can select
     <strong>Import from a download of the Google Play listing from Scriptoria</strong>
-    .
+    and complete the wizard.
   </li>
   <li>
-    <strong>IMPORTANT!</strong>
-    Make sure to remove the
-    <strong>BUILD_DOWNLOAD_PLAY_LISTING</strong>
-    entry from the Publishing Properties to avoid downloading the listing on every build.
+    Make sure to re-enable the
+    <strong>Verify Google Play Store listing when sending app data</strong>
+    checkbox on the
+    <strong>Publishing &gt; App Store &gt; Scriptoria</strong>
+    configuration page.
   </li>
   <li>
     Click <strong>Approve</strong>
