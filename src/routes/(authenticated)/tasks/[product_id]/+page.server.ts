@@ -12,7 +12,8 @@ import { WorkflowAction, WorkflowState, artifactLists } from '$lib/workflowTypes
 const sendActionSchema = v.object({
   state: v.enum(WorkflowState),
   flowAction: v.enum(WorkflowAction),
-  comment: v.string()
+  comment: v.string(),
+  options: v.optional(v.array(v.string()))
 });
 
 type Fields = {
@@ -286,7 +287,8 @@ export const actions = {
       flow.send({
         type: form.data.flowAction,
         comment: form.data.comment,
-        userId: locals.security.userId
+        userId: locals.security.userId,
+        options: form.data.options
       });
 
       const targetState = transition.target;

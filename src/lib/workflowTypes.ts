@@ -237,6 +237,7 @@ export type WorkflowEvent =
       type: Exclude<WorkflowAction, WorkflowAction.Jump | WorkflowAction.Migrate>;
       userId: number | null;
       comment?: string;
+      options?: string[];
     }
   | {
       type: WorkflowAction.Jump;

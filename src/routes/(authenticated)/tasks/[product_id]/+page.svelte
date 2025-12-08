@@ -88,6 +88,21 @@
       ) as NodeListOf<HTMLInputElement>) ?? []
     ).some((e) => !e.checked);
   });
+
+  const options = $derived.by(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    data.instructions;
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    triggerRecheck; // depend on external variable to recheck the checkboxes
+    return Array.from(
+      (instructionContainer?.querySelectorAll(
+        'input[type="checkbox"]:optional, input[type="radio"]'
+      ) as NodeListOf<HTMLInputElement>) ?? []
+    )
+      .filter((e) => e.checked && e.value)
+      .flatMap((e) => [e.value, e.name])
+      .filter(Boolean);
+  });
 </script>
 
 <div class="p-5">
@@ -136,7 +151,8 @@
           bind:value={$form.comment}
         ></textarea>
       </LabeledFormInput>
-      <input type="hidden" name="state" bind:value={$form.state} />
+      <input type="hidden" name="state" value={$form.state} />
+      <input type="hidden" name="options" value={options} />
     </form>
   {/if}
   <hr class="border-t-4 my-2" />
