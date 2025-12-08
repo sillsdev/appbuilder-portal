@@ -141,8 +141,7 @@ export const WorkflowStateMachine = setup({
         jump({
           target: WorkflowState.Make_It_Live,
           filter: {
-            productType: { is: ProductType.Android_GooglePlay },
-            workflowType: { is: WorkflowType.Startup }
+            guards: [newGPApp]
           }
         }),
         jump({ target: WorkflowState.Published }),
@@ -781,8 +780,7 @@ export const WorkflowStateMachine = setup({
             meta: {
               type: ActionType.Auto,
               includeWhen: {
-                productType: { is: ProductType.Android_GooglePlay },
-                workflowType: { is: WorkflowType.Startup }
+                guards: [newGPApp]
               }
             },
             guard: newGPApp,
