@@ -70,12 +70,6 @@
       "releaseProductRecordNotFound": "Scriptoria: Release Failed: Product {{productId}}",
       "reviewProduct": "{{projectName}} app - ready for review",
       "reviewProductWithComment": "{{projectName}} app - ready for review",
-      "reviewProductNoPlayListing": "{{projectName}} app - ready for review",
-      "reviewProductNoPlayListingWithComment": "{{projectName}} app - ready for review",
-      "reviewAssetPackage": "{{projectName}} app - ready for review",
-      "reviewAssetPackageWithComment": "{{projectName}} app - ready for review",
-      "reviewPwaProduct": "{{projectName}} app - ready for review",
-      "reviewPwaProductWithComment": "{{projectName}} app - ready for review",
       "rejectionEmail": "Scriptoria: {{projectName}} {{productName}} Returned",
       "recordNotFound": "Scriptoria: Task {{taskName}} Failed",
       "retryBuild": "Scriptoria: Retrying Build {{projectName}} {{productName}} With Medium Compute"
