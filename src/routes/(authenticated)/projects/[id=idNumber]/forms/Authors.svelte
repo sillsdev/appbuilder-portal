@@ -4,6 +4,7 @@
   import type { AuthorSchema } from './valibot';
   import { enhance as svk_enhance } from '$app/forms';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
+  import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
@@ -44,16 +45,22 @@
     canEdit
   }: Props = $props();
 
-  const { form, enhance } = superForm(formData, {
+  const { enhance } = superForm(formData, {
     onError: ({ result }) => {
       if (result.status === 503) {
         toast('error', m.system_unavailable());
       }
+    },
+    onUpdated: () => {
+      selectedAuthor = null;
     }
   });
+
+  let selectOpen = $state(false);
+  let selectedAuthor: (typeof availableAuthors)[number] | null = $state(null);
 </script>
 
-<div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
+<div class="card card-bordered border-slate-400 rounded-md max-w-full">
   <div class="bg-neutral">
     <h2>{m.authors_title()}</h2>
   </div>
@@ -98,25 +105,52 @@
   <div class="bg-neutral p-2">
     {#if canEdit}
       <form action="?/{createEndpoint}" method="post" use:enhance>
-        <div class="flex place-content-between space-x-2">
-          <select
-            class="grow select select-bordered"
-            name="author"
-            bind:value={$form.author}
-            required
-          >
-            {#if availableAuthors.length}
-              {#each availableAuthors.sort((a, b) => byName(a, b, getLocale())) as author}
-                <option value={author.Id}>
-                  {author.Name}
-                </option>
-              {/each}
-            {:else}
-              <option disabled selected value="">
-                {m.authors_emptyGroup()}
-              </option>
-            {/if}
-          </select>
+        <div class="flex space-x-2">
+          <div class="grow">
+            <input type="hidden" name="author" value={selectedAuthor?.Id} />
+            <Dropdown
+              dropdownClasses="dropdown-start w-full"
+              labelClasses="select select-bordered flex-nowrap grow w-full pl-1 {availableAuthors.length
+                ? ''
+                : 'btn-disabled'}"
+              contentClasses="menu"
+              bind:open={selectOpen}
+            >
+              {#snippet label()}
+                <span class="px-1 w-full text-left">
+                  {#if availableAuthors.length}
+                    {selectedAuthor?.Name ?? ' '}
+                  {:else}
+                    {m.authors_emptyGroup()}
+                  {/if}
+                </span>
+              {/snippet}
+              {#snippet content()}
+                <ul class="menu menu-compact overflow-hidden rounded-md">
+                  {#if availableAuthors.length}
+                    {#each availableAuthors.toSorted((a, b) => byName(a, b, getLocale())) as author}
+                      <li class="w-full rounded-none">
+                        <button
+                          type="button"
+                          class="text-nowrap"
+                          class:font-bold={author.Id === selectedAuthor?.Id}
+                          onclick={() => {
+                            selectedAuthor = author;
+                          }}
+                        >
+                          {author.Name}
+                        </button>
+                      </li>
+                    {/each}
+                  {:else}
+                    <li class="w-full rounded-none">
+                      {m.authors_emptyGroup()}
+                    </li>
+                  {/if}
+                </ul>
+              {/snippet}
+            </Dropdown>
+          </div>
           <BlockIfJobsUnavailable className="btn btn-primary">
             {#snippet altContent()}
               {m.authors_submit()}
