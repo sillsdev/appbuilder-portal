@@ -152,7 +152,9 @@
         ></textarea>
       </LabeledFormInput>
       <input type="hidden" name="state" value={$form.state} />
-      <input type="hidden" name="options" value={options} />
+      {#each options as opt}
+        <input type="hidden" name="options" value={opt} />
+      {/each}
     </form>
   {/if}
   <hr class="border-t-4 my-2" />
