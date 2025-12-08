@@ -528,8 +528,7 @@ export const WorkflowStateMachine = setup({
             },
             /*
              * This transition is valid iff:
-             * The product type is google play AND
-             * The workflow type is startup AND
+             * The product is a *new* Google Play app
              * The workflow requires admin approval AND
              * The project has NOT been uploaded to google play
              */
@@ -538,6 +537,23 @@ export const WorkflowStateMachine = setup({
               context.options.has(WorkflowOptions.ApprovalProcess) &&
               !context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID],
             target: WorkflowState.App_Store_Preview
+          },
+          {
+            meta: {
+              type: ActionType.Auto,
+              includeWhen: {
+                guards: [newGPApp]
+              }
+            },
+            /*
+             * This transition is valid iff:
+             * The product is a *new* Google Play app
+             * The project has NOT been uploaded to google play
+             */
+            guard: ({ context }) =>
+              newGPApp({ context }) &&
+              !context.environment[ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID],
+            target: WorkflowState.Create_App_Store_Entry
           },
           {
             // this is the normal transition for a successful build
