@@ -358,10 +358,16 @@ export const WorkflowStateMachine = setup({
           },
           actions: assign({
             existingApp: true,
-            environment: ({ context }) => ({
-              ...context.environment,
-              [ENVKeys.GOOGLE_PLAY_EXISTING]: '1'
-            })
+            environment: ({ context, event }) => {
+              const o = {
+                ...context.environment,
+                [ENVKeys.GOOGLE_PLAY_EXISTING]: '1'
+              };
+
+              return event.options?.includes(ENVKeys.BUILD_DOWNLOAD_PLAY_LISTING)
+                ? { ...o, [ENVKeys.BUILD_DOWNLOAD_PLAY_LISTING]: '1' }
+                : o;
+            }
           }),
           target: WorkflowState.Product_Build
         },

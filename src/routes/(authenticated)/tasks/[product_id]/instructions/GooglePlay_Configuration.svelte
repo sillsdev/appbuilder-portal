@@ -22,6 +22,30 @@
     configuration page. Please re-check this box after the Google Play Store Listing has been imported.
   </p>
 </div>
+<h3>Options</h3>
+<ul>
+  <li>
+    In the <strong>Publishing &gt; App Store &gt; Google Play Store Listing</strong>
+    configuration page:
+    <div class="flex flex-col space-y-1 py-1">
+      <label class="flex flex-row space-x-1">
+        <input type="radio" class="radio radio-accent" name="play-listing" />
+        <span>I have filled out the Google Play Store Listing information</span>
+      </label>
+      <label class="flex flex-row space-x-1">
+        <input
+          type="radio"
+          class="radio radio-accent"
+          name="play-listing"
+          value="BUILD_DOWNLOAD_PLAY_LISTING"
+        />
+        <span>
+          Have Scriptoria download and use the existing Google Play Store Listing information
+        </span>
+      </label>
+    </div>
+  </li>
+</ul>
 <h3>Instructions</h3>
 <ul>
   <li>
@@ -32,13 +56,6 @@
         Enable Scriptoria by selecting the <strong>We would like to use Scriptoria</strong>
         option.
       </li>
-    </ul>
-  </li>
-  <li>
-    In the <strong>Publishing &gt; App Store &gt; Google Play Store Listing</strong>
-    configuration page:
-    <ul>
-      <li>Fill out the Google Play Store Listing information.</li>
     </ul>
   </li>
   <li>
@@ -53,11 +70,6 @@
       <li>
         You may need to set <strong>BUILD_KEYSTORE</strong>
         to the name of a keystore. Check with the Organization Administrator if you are unsure.
-      </li>
-      <li>
-        For existing apps, to download the Google Play Store Listing from Google Play, set
-        <strong>BUILD_DOWNLOAD_PLAY_LISTING</strong>
-        to the value 1.
       </li>
       <li>
         See the <a href="https://app.scriptoria.io/docs/Publishing+Properties.pdf" target="_blank">
