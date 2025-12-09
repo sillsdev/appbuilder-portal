@@ -4,6 +4,11 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  PORTAL_BUILD_TAG: 'scriptoria-portal:${{ github.run_number }}'
+  OTEL_BUILD_TAG: 'scriptoria-otel:${{ github.run_number }}'
+  BUILD_NUMBER: ${{ github.run_number }}
+
 jobs:
   check:
     uses: ./.github/workflows/setup.yml
@@ -53,22 +58,22 @@ jobs:
       - name: Build Docker images
         run: |
           echo "Building Docker images..."
-          docker build -t scriptoria-portal:${{ github.sha }} .
-          docker build -t scriptoria-otel:${{ github.sha }} -f Dockerfile.otel .
+          docker build -t ${{ env.PORTAL_BUILD_TAG}} .
+          docker build -t ${{ env.OTEL_BUILD_TAG}} -f Dockerfile.otel .
           echo "Docker images built successfully."
-          docker tag scriptoria-portal:${{ github.sha }} ${{ steps.vars.outputs.IMAGE_URL }}:${{ steps.vars.outputs.DEPLOY_LEVEL }}
-          docker tag scriptoria-portal:${{ github.sha }} ${{ steps.vars.outputs.IMAGE_URL }}:${{ github.sha }}
-          docker tag scriptoria-otel:${{ github.sha }} ${{ steps.vars.outputs.OTEL_URL }}:${{ steps.vars.outputs.DEPLOY_LEVEL }}
-          docker tag scriptoria-otel:${{ github.sha }} ${{ steps.vars.outputs.OTEL_URL }}:${{ github.sha }}
-          echo "Docker images tagged as ${{ steps.vars.outputs.DEPLOY_LEVEL }} and ${{ github.sha }}"
+          docker tag ${{ env.PORTAL_BUILD_TAG}} ${{ steps.vars.outputs.IMAGE_URL }}:${{ steps.vars.outputs.DEPLOY_LEVEL }}
+          docker tag ${{ env.PORTAL_BUILD_TAG}} ${{ steps.vars.outputs.IMAGE_URL }}:${{ env.BUILD_NUMBER }}
+          docker tag ${{ env.OTEL_BUILD_TAG}} ${{ steps.vars.outputs.OTEL_URL }}:${{ steps.vars.outputs.DEPLOY_LEVEL }}
+          docker tag ${{ env.OTEL_BUILD_TAG}} ${{ steps.vars.outputs.OTEL_URL }}:${{ env.BUILD_NUMBER }}
+          echo "Docker images tagged as ${{ steps.vars.outputs.DEPLOY_LEVEL }} and ${{ env.BUILD_NUMBER }}"
 
       - name: Push Docker image to ECR
         run: |
           echo "Pushing Docker image to ECR..."
           docker push ${{ steps.vars.outputs.IMAGE_URL }}:${{ steps.vars.outputs.DEPLOY_LEVEL }}
-          docker push ${{ steps.vars.outputs.IMAGE_URL }}:${{ github.sha }}
+          docker push ${{ steps.vars.outputs.IMAGE_URL }}:${{ env.BUILD_NUMBER }}
           docker push ${{ steps.vars.outputs.OTEL_URL }}:${{ steps.vars.outputs.DEPLOY_LEVEL }}
-          docker push ${{ steps.vars.outputs.OTEL_URL }}:${{ github.sha }}
+          docker push ${{ steps.vars.outputs.OTEL_URL }}:${{ env.BUILD_NUMBER }}
           echo "Docker images pushed successfully to ${{ steps.vars.outputs.IMAGE_URL }}"
 
       - name: Deploy to ECS
@@ -77,9 +82,9 @@ jobs:
           mkdir -p $HOME/.local/bin
           curl -o $HOME/.local/bin/ecs-deploy https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy
           chmod +x $HOME/.local/bin/ecs-deploy
-          echo "Deploying ${{ github.sha }} to ${{ steps.vars.outputs.ECS_CLUSTER }}..."
+          echo "Deploying ${{ env.BUILD_NUMBER }} to ${{ steps.vars.outputs.ECS_CLUSTER }}..."
           # Deploy the ECS cluster with service name 'portal', setting all images to the latest tag
-          ecs-deploy -c ${{ steps.vars.outputs.ECS_CLUSTER }} -n portal -i ignore -to ${{ github.sha }} --max-definitions 20 --timeout 600
+          ecs-deploy -c ${{ steps.vars.outputs.ECS_CLUSTER }} -n portal -i ignore -to ${{ env.BUILD_NUMBER }} --max-definitions 20 --timeout 600
           echo "Deployment initiated successfully."
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.DEPLOY__AWS_ACCESS_KEY_ID }}
