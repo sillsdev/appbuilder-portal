@@ -11,7 +11,7 @@
     checked: boolean;
     onIcon?: string;
     offIcon?: string;
-    className?: string;
+    class?: string;
     inputAttr?: HTMLInputAttributes;
   }
 
@@ -22,19 +22,18 @@
     checked = $bindable(),
     onIcon = '',
     offIcon = '',
-    className,
+    class: classes,
     inputAttr = {}
   }: Props = $props();
 </script>
 
-<InputWithMessage
-  {title}
-  {message}
-  className="{className} {inputAttr.disabled ? 'cursor-not-allowed' : ''} "
->
+<InputWithMessage {title} {message} class={[classes, inputAttr.disabled && 'cursor-not-allowed']}>
   <label
-    class="toggle {checked ? 'border-accent' : ''} text-base-content
-           {inputAttr.disabled ? 'cursor-not-allowed opacity-50 pointer-events-none' : ''}"
+    class={[
+      'toggle text-base-content',
+      checked && 'border-accent',
+      inputAttr.disabled && 'cursor-not-allowed opacity-50 pointer-events-none'
+    ]}
   >
     <input
       {name}

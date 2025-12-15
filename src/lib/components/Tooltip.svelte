@@ -1,18 +1,19 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import type { ClassValue } from 'svelte/elements';
 
   interface Props {
     tip?: string | null | undefined;
-    className?: string;
+    class?: ClassValue;
     // tooltip-content can also be handled in the children snippet
     children?: Snippet;
   }
 
-  let { tip, className = '', children }: Props = $props();
+  let { tip, class: classes, children }: Props = $props();
 </script>
 
 <span
-  class="tooltip [--tt-bg:var(--color-white)] dark:tooltip-secondary {className}"
+  class={['tooltip [--tt-bg:var(--color-white)] dark:tooltip-secondary', classes]}
   data-tip={tip}
 >
   {@render children?.()}

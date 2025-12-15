@@ -16,6 +16,7 @@
 
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import type { ClassValue } from 'svelte/elements';
   import Dropdown from './Dropdown.svelte';
   import IconContainer from './IconContainer.svelte';
   import { LanguageIcon } from '$lib/icons';
@@ -24,16 +25,17 @@
 
   interface Props {
     label?: Snippet;
-    dropdownClasses?: string;
-    labelClasses?: string;
+    class?: {
+      dropdown?: ClassValue;
+      label?: ClassValue;
+    };
     currentLocale?: () => Locale;
     onselect?: (lang: Locale) => void;
   }
 
   let {
     label = globe,
-    dropdownClasses = '',
-    labelClasses = '',
+    class: classes = {},
     currentLocale = getLocale,
     onselect = setLocale
   }: Props = $props();
@@ -53,9 +55,10 @@
 {#key getLocale()}
   {@const langMap = l10nMap.value.get(getLocale())?.get('languages')}
   <Dropdown
-    {dropdownClasses}
-    {labelClasses}
-    contentClasses="overflow-y-auto min-w-52"
+    class={{
+      ...classes,
+      content: 'overflow-y-auto min-w-52'
+    }}
     bind:open
     {label}
   >
@@ -64,9 +67,10 @@
         {#each locales as locale}
           <li class="w-full">
             <div
-              class="btn flex-nowrap justify-start pl-2 pr-1"
-              class:bg-accent={locale === currentLocale()}
-              class:text-accent-content={locale === currentLocale()}
+              class={[
+                'btn flex-nowrap justify-start pl-2 pr-1',
+                locale === currentLocale() && 'bg-accent text-accent-content'
+              ]}
               onclick={() => onclick(locale)}
               onkeypress={() => onclick(locale)}
               role="button"

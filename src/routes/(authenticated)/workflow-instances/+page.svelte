@@ -73,7 +73,7 @@
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 {mobileSizing}"
       >
-        <SearchBar bind:value={$form.search} className={mobileSizing} requestSubmit={submit} />
+        <SearchBar bind:value={$form.search} class={mobileSizing} requestSubmit={submit} />
       </div>
     </div>
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}">
@@ -107,7 +107,7 @@
           }
         ]}
         serverSide={true}
-        className="max-h-full sm:hidden"
+        class="max-h-full sm:hidden"
         onSort={(field, direction) =>
           form.update((data) => ({ ...data, sort: { field, direction } }))}
         fixedLayout={false}
@@ -118,7 +118,7 @@
           {@const prodDef = instance.Product.ProductDefinition}
           <tr>
             <td class="border">
-              <Tooltip className="text-left" tip={getTimeDateString(instance.DateUpdated)}>
+              <Tooltip class="text-left" tip={getTimeDateString(instance.DateUpdated)}>
                 {$instanceUpdated[instance.i]}
               </Tooltip>
             </td>
@@ -174,7 +174,7 @@
           }
         ]}
         serverSide={true}
-        className="max-h-full hidden sm:block"
+        class="max-h-full hidden sm:block"
         onSort={(field, direction) =>
           form.update((data) => ({ ...data, sort: { field, direction } }))}
         fixedLayout={false}
@@ -185,7 +185,7 @@
           {@const prodDef = instance.Product.ProductDefinition}
           <tr class="cursor-pointer hover:bg-neutral">
             <td class="border">
-              <Tooltip className="text-left" tip={getTimeDateString(instance.DateUpdated)}>
+              <Tooltip class="text-left" tip={getTimeDateString(instance.DateUpdated)}>
                 {$instanceUpdated[instance.i]}
               </Tooltip>
             </td>

@@ -125,7 +125,7 @@
         <div class="flex flex-row gap-x-3 py-4">
           {#each data.actions as action, i}
             {@const disabled = i === 0 && checksRemaining}
-            <BlockIfJobsUnavailable className="btn btn-primary">
+            <BlockIfJobsUnavailable class="btn btn-primary">
               {#snippet altContent()}
                 {action}
               {/snippet}
@@ -165,7 +165,7 @@
     <div>
       {#if data.fields.ownerName && data.fields.ownerEmail}
         <div class="flex flex-col gap-x-3 w-full md:flex-row">
-          <LabeledFormInput key="projectTable_owner" classes="md:w-2/4">
+          <LabeledFormInput key="projectTable_owner" class="md:w-2/4">
             <input
               type="text"
               class="input input-bordered w-full"
@@ -173,7 +173,7 @@
               value={data.fields.ownerName}
             />
           </LabeledFormInput>
-          <LabeledFormInput key="profile_email" classes="md:w-2/4">
+          <LabeledFormInput key="profile_email" class="md:w-2/4">
             <input
               type="text"
               class="input input-bordered w-full"
@@ -184,7 +184,7 @@
         </div>
       {/if}
       <div class="flex flex-col gap-x-3 w-full md:flex-row">
-        <LabeledFormInput key="project_name" classes="md:w-2/4">
+        <LabeledFormInput key="project_name" class="md:w-2/4">
           <input
             type="text"
             class="input input-bordered w-full"
@@ -192,7 +192,7 @@
             value={data.fields.projectName}
           />
         </LabeledFormInput>
-        <LabeledFormInput key="project_description" classes="md:w-2/4">
+        <LabeledFormInput key="project_description" class="md:w-2/4">
           <input
             type="text"
             class="input input-bordered w-full"
@@ -203,7 +203,7 @@
       </div>
       {#if data.fields.storeDescription}
         <div class="flex flex-col gap-x-3 md:flex-row">
-          <LabeledFormInput key="stores_name" classes="md:w-2/4">
+          <LabeledFormInput key="stores_name" class="md:w-2/4">
             <input
               type="text"
               class="input input-bordered w-full"
@@ -212,7 +212,7 @@
             />
           </LabeledFormInput>
           {#if data.fields.listingLanguageCode}
-            <LabeledFormInput key="tasks_storeLanguage" classes="md:w-2/4">
+            <LabeledFormInput key="tasks_storeLanguage" class="md:w-2/4">
               <input
                 type="text"
                 class="input input-bordered w-full"
@@ -304,14 +304,14 @@
         {/each}
       </div>
     {/if}
-    <ReleaseInfo release={data.release} classes="border" headerClasses="bg-neutral" />
+    <ReleaseInfo release={data.release} class={{ default: 'border', header: 'bg-neutral' }} />
   {/if}
   {#if data?.files?.length && !waiting}
     {@const locale = getLocale()}
     <h3>{m.products_files_title()}</h3>
     <div class="w-full overflow-x-auto">
       <SortTable
-        className="max-h-none w-full sm:hidden"
+        class="max-h-none w-full sm:hidden"
         data={data.files}
         columns={[
           {
@@ -354,7 +354,7 @@
         {/snippet}
       </SortTable>
       <SortTable
-        className="max-h-none hidden sm:block"
+        class="max-h-none hidden sm:block"
         data={data.files}
         columns={[
           {
@@ -370,7 +370,7 @@
           {
             id: 'url',
             header: m.tasks_downloadURL(),
-            className: 'w-1/2'
+            class: 'w-1/2'
           }
         ]}
       >
@@ -413,7 +413,7 @@
     <h3>{m.reviewers_title()}</h3>
     <div class="w-full overflow-x-auto">
       <SortTable
-        className="max-h-none"
+        class="max-h-none"
         data={data.reviewers}
         columns={[
           {

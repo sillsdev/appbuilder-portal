@@ -99,7 +99,7 @@
 
       <div class="grow">
         {#if canEdit}
-          <Tooltip className="tooltip-bottom" tip={m.project_editProject()}>
+          <Tooltip class="tooltip-bottom" tip={m.project_editProject()}>
             <a
               href={localizeHref(`/projects/${projectData.project.Id}/edit`)}
               title={m.project_editProject()}
@@ -193,7 +193,7 @@
               <span class="italic">{m.products_definition()}</span>
             </div>
           </div>
-          <BlockIfJobsUnavailable className="btn btn-outline">
+          <BlockIfJobsUnavailable class="btn btn-outline">
             {#snippet altContent()}
               {m.products_add()}
             {/snippet}

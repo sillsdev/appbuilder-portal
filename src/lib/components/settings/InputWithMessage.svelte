@@ -6,28 +6,29 @@
 <script lang="ts">
   /* eslint-disable @typescript-eslint/no-explicit-any */
   import type { Snippet } from 'svelte';
+  import type { ClassValue } from 'svelte/elements';
   import type { ValueKey } from '$lib/locales.svelte';
   import * as m from '$lib/paraglide/messages';
 
   interface Props {
     title?: ValueKey;
     message?: ValueKey;
-    className?: string;
+    class?: ClassValue;
     children?: Snippet;
   }
 
-  let { title, message, className = '', children }: Props = $props();
+  let { title, message, class: classes, children }: Props = $props();
 </script>
 
-<div class="flex flex-row items-center gap-2 {className}">
+<div class={['flex flex-row items-center gap-2', classes]}>
   <div class="fieldset-label flex-col items-start grow text-base-content">
     {#if title}
-      <span class="title {title.classes ?? ''}">
+      <span class={['title', title.class]}>
         {m[title.key](title.params as any)}
       </span>
     {/if}
     {#if message}
-      <span class="text-sm {message.classes ?? ''}">
+      <span class={['text-sm', message.class]}>
         {m[message.key](message.params as any)}
       </span>
     {/if}

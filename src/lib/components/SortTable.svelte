@@ -4,6 +4,7 @@
 -->
 <script lang="ts" generics="RowItem extends Record<string, unknown>">
   import type { Snippet } from 'svelte';
+  import type { ClassValue } from 'svelte/elements';
   import { ArrowDownIcon, ArrowUpIcon } from '$lib/icons';
 
   interface Props {
@@ -19,9 +20,9 @@
        * If `serverSide` is `true`, just use a dummy function like `() => 0`
        */
       compare?: (a: RowItem, b: RowItem) => number;
-      className?: string;
+      class?: ClassValue;
     }[];
-    className?: string;
+    class?: ClassValue;
     /** If this is true, will defer sorting to the server instead */
     serverSide?: boolean;
     onSort?: (field: string, direction: 'asc' | 'desc') => void;
@@ -32,7 +33,7 @@
   let {
     data = $bindable(),
     columns,
-    className = '',
+    class: classes,
     serverSide = false,
     onSort,
     row,
@@ -76,13 +77,13 @@
   }
 </script>
 
-<div class="overflow-y {className}">
+<div class={['overflow-y', classes]}>
   <table class="table" class:table-fixed={fixedLayout}>
     <thead>
       <tr>
         {#each columns as c}
           <th
-            class={c.className ?? ''}
+            class={[c.class]}
             onclick={() => {
               if (c.compare) {
                 sortColByDirection(c);

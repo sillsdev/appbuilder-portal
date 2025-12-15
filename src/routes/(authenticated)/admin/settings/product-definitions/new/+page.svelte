@@ -117,7 +117,7 @@
   <LabeledFormInput key="prodDefs_properties">
     <PropertiesEditor
       name="properties"
-      className="w-full"
+      class="w-full"
       bind:value={$form.properties}
       bind:ok={propsOk}
     />

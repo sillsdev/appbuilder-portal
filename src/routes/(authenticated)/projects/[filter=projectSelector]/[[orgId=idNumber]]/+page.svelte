@@ -194,7 +194,7 @@
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 gap-1 {mobileSizing}"
       >
-        <Tooltip className="tooltip-bottom {mobileSizing}">
+        <Tooltip class="tooltip-bottom {mobileSizing}">
           <div class="tooltip-content text-left">
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             {@html m.directory_searchHelp()}
@@ -214,7 +214,7 @@
       >
         <input type="hidden" name="projectId" value={null} />
         {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
-          <BlockIfJobsUnavailable className="btn btn-outline {mobileSizing}">
+          <BlockIfJobsUnavailable class="btn btn-outline {mobileSizing}">
             {#snippet altContent()}
               {m.common_archive()}
             {/snippet}
@@ -234,7 +234,7 @@
           </BlockIfJobsUnavailable>
         {/if}
         {#if data.allowReactivate && (canReactivateSelected || !selectedProjects.length)}
-          <BlockIfJobsUnavailable className="btn btn-outline {mobileSizing}">
+          <BlockIfJobsUnavailable class="btn btn-outline {mobileSizing}">
             {#snippet altContent()}
               {m.common_reactivate()}
             {/snippet}
@@ -254,7 +254,7 @@
           </BlockIfJobsUnavailable>
         {/if}
         {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
-          <BlockIfJobsUnavailable className="btn btn-outline {mobileSizing}">
+          <BlockIfJobsUnavailable class="btn btn-outline {mobileSizing}">
             {#snippet altContent()}
               {m.common_rebuild()}
             {/snippet}
@@ -337,7 +337,7 @@
             >
               {m.common_cancel()}
             </button>
-            <BlockIfJobsUnavailable className="btn btn-primary">
+            <BlockIfJobsUnavailable class="btn btn-primary">
               {#snippet altContent()}
                 {m.products_acts_rebuild()}
               {/snippet}
@@ -359,7 +359,7 @@
                 />
               </label>
             </BlockIfJobsUnavailable>
-            <BlockIfJobsUnavailable className="btn btn-primary">
+            <BlockIfJobsUnavailable class="btn btn-primary">
               {#snippet altContent()}
                 {m.products_acts_republish()}
               {/snippet}
@@ -388,7 +388,7 @@
         </form>
       </dialog>
       <div class="flex flex-row flex-wrap gap-1 mx-4 {mobileSizing}">
-        <BlockIfJobsUnavailable className="btn btn-outline {mobileSizing}">
+        <BlockIfJobsUnavailable class="btn btn-outline {mobileSizing}">
           {#snippet altContent()}
             {m.projectImport_title()}
           {/snippet}
@@ -399,7 +399,7 @@
             {@render altContent()}
           </a>
         </BlockIfJobsUnavailable>
-        <BlockIfJobsUnavailable className="btn btn-outline {mobileSizing}">
+        <BlockIfJobsUnavailable class="btn btn-outline {mobileSizing}">
           {#snippet altContent()}
             {m.sidebar_addProject()}
           {/snippet}

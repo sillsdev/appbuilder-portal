@@ -117,7 +117,7 @@
               </option>
             {/if}
           </select>
-          <BlockIfJobsUnavailable className="btn btn-primary">
+          <BlockIfJobsUnavailable class="btn btn-primary">
             {#snippet altContent()}
               {m.authors_submit()}
             {/snippet}

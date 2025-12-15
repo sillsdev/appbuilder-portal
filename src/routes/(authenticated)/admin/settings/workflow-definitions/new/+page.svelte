@@ -120,18 +120,15 @@
   <LabeledFormInput key="flowDefs_properties">
     <PropertiesEditor
       name="properties"
-      className="w-full"
+      class="w-full"
       bind:value={$form.properties}
       bind:ok={propsOk}
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
-  <LabeledFormInput
-    key="flowDefs_options_title"
-    classes="border border-warning p-1 my-4 rounded-lg"
-  >
+  <LabeledFormInput key="flowDefs_options_title" class="border border-warning p-1 my-4 rounded-lg">
     {#each enumNumVals(WorkflowOptions) as option}
-      <InputWithMessage message={{ key: 'flowDefs_options', params: { option } }} className="my-1">
+      <InputWithMessage message={{ key: 'flowDefs_options', params: { option } }} class="my-1">
         <input
           class="toggle toggle-warning border-warning"
           type="checkbox"

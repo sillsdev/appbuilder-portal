@@ -95,8 +95,10 @@
           <div class="flex flex-row space-x-2">
             <input type="hidden" name="locale" value={$form.language} />
             <LocaleSelector
-              dropdownClasses="dropdown-start w-full"
-              labelClasses="select select-bordered bg-none flex-nowrap grow w-full pl-1"
+              class={{
+                dropdown: 'dropdown-start w-full',
+                label: 'select select-bordered bg-none flex-nowrap grow w-full pl-1'
+              }}
               currentLocale={() => $form.language}
               onselect={(lang) => ($form.language = lang)}
             >

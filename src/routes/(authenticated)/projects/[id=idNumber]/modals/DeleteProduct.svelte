@@ -93,7 +93,7 @@
           >
             {m.common_cancel()}
           </button>
-          <BlockIfJobsUnavailable className="btn btn-error">
+          <BlockIfJobsUnavailable class="btn btn-error">
             {#snippet altContent()}
               {m.common_delete()}
             {/snippet}

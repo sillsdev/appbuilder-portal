@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { HTMLSelectAttributes } from 'svelte/elements';
+  import type { ClassValue, HTMLSelectAttributes } from 'svelte/elements';
   import { org_allOrganizations } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
   interface Props {
     organizations: { Id: number; Name: string | null }[];
     value: number | null;
-    className?: string;
+    class?: ClassValue;
     allowNull?: boolean;
     selectProperties?: HTMLSelectAttributes;
   }
@@ -14,7 +14,7 @@
   let {
     organizations,
     value = $bindable(),
-    className = '',
+    class: classes,
     allowNull = false,
     selectProperties = {}
   }: Props = $props();
@@ -26,7 +26,7 @@
   });
 </script>
 
-<select class="select select-bordered {className}" bind:value {...selectProperties}>
+<select class={['select select-bordered', classes]} bind:value {...selectProperties}>
   {#if organizations.length === 1}
     <option selected value={organizations[0].Id}>{organizations[0].Name}</option>
   {:else}

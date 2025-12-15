@@ -47,7 +47,7 @@
       <hr />
       <div class="flex flex-col gap-2 items-center w-full pt-2 text-left">
         <input type="hidden" name="productId" value={product.Id} />
-        <LabeledFormInput key="products_properties_computeType" classes="w-full">
+        <LabeledFormInput key="products_properties_computeType" class="w-full">
           <select
             class="select select-bordered w-full"
             placeholder={m.products_properties_selectComputeType()}
@@ -70,7 +70,7 @@
           </select>
         </LabeledFormInput>
         <LabeledFormInput key="products_properties_title">
-          <PropertiesEditor name="properties" className="w-full" bind:value bind:ok />
+          <PropertiesEditor name="properties" class="w-full" bind:value bind:ok />
         </LabeledFormInput>
         <div class="flex flex-row gap-2">
           <button

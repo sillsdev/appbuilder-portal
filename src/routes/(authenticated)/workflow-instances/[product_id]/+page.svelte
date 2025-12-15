@@ -136,7 +136,7 @@
       </ul>
     </div>
     <span class="navbar-end w-auto">
-      <Dropdown labelClasses="px-1" contentClasses="top-12 right-0 p-1 min-w-36 w-auto">
+      <Dropdown class={{ label: 'px-1', content: 'top-12 right-0 p-1 min-w-36 w-auto' }}>
         {#snippet label()}
           <IconContainer icon="charm:menu-kebab" width="20" />
         {/snippet}
@@ -148,7 +148,7 @@
               </button>
             </li>
             <li class="w-full rounded-none">
-              <BlockIfJobsUnavailable className="text-nowrap">
+              <BlockIfJobsUnavailable class="text-nowrap">
                 {#snippet altContent()}
                   {m.workflowInstances_jump({ state: $form.state })}
                 {/snippet}

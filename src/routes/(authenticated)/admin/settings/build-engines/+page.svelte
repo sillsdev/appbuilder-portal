@@ -21,7 +21,7 @@
 </script>
 
 {#snippet date(engine?: (typeof buildEngines)[0] & { i: number })}
-  <Tooltip className="indent-0" tip={getTimeDateString(engine?.DateUpdated ?? null)}>
+  <Tooltip class="indent-0" tip={getTimeDateString(engine?.DateUpdated ?? null)}>
     {engine ? $dates[engine.i] : '-'}
   </Tooltip>
 {/snippet}

@@ -57,7 +57,7 @@
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
-  <InputWithMessage title={{ key: 'org_useDefaultBuildEngine' }} className="py-2">
+  <InputWithMessage title={{ key: 'org_useDefaultBuildEngine' }} class="py-2">
     <input
       name="useDefaultBuildEngine"
       class="toggle toggle-accent"
@@ -99,7 +99,7 @@
   <InputWithMessage
     title={{ key: 'org_publicByDefault' }}
     message={{ key: 'org_publicByDefaultDescription' }}
-    className="py-1"
+    class="py-1"
   >
     <input
       name="publicByDefault"
