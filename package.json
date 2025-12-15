@@ -75,7 +75,7 @@
     "prettier": "^3.6.2",
     "prettier-eslint": "^17.0.0-alpha.1",
     "prettier-plugin-prisma": "^5.0.0",
-    "prettier-plugin-svelte": "^3.4.0",
+    "prettier-plugin-svelte": "^3.4.1",
     "prisma": "^6.15.0",
     "sorcery": "^1.0.0",
     "svelte": "^5.19.2",
