@@ -317,7 +317,7 @@
               />
             {/snippet}
             {#snippet content()}
-              <ul class="menu menu-compact gap-1 p-2">
+              <ul class="menu menu-sm gap-1 p-2">
                 <li>
                   <a
                     href={localizeHref(

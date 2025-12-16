@@ -63,7 +63,7 @@
     {label}
   >
     {#snippet content()}
-      <ul class="menu menu-compact gap-1 p-2">
+      <ul class="menu menu-sm gap-1 p-2">
         {#each locales as locale}
           <li class="w-full">
             <div

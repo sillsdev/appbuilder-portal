@@ -174,7 +174,7 @@
         <IconContainer icon="charm:menu-kebab" width="20" />
       {/snippet}
       {#snippet content()}
-        <ul class="menu menu-compact overflow-hidden rounded-md">
+        <ul class="menu menu-sm overflow-hidden rounded-md">
           {#each product.actions as action}
             {@const message =
               //@ts-expect-error this is in fact correct

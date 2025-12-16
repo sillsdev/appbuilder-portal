@@ -141,7 +141,7 @@
           <IconContainer icon="charm:menu-kebab" width="20" />
         {/snippet}
         {#snippet content()}
-          <ul class="menu menu-compact overflow-hidden rounded-md">
+          <ul class="menu menu-sm overflow-hidden rounded-md">
             <li class="w-full rounded-none">
               <button class="text-nowrap" onclick={() => showProductDetails(data.product.Id)}>
                 {m.products_details()}

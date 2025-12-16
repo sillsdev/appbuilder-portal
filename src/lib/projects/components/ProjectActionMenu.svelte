@@ -67,7 +67,7 @@
   {#snippet content()}
     <form method="POST" action="?/{endpoint}" use:enhance>
       <input type="hidden" name="projectId" value={project.Id} />
-      <ul class="menu menu-compact overflow-hidden rounded-md">
+      <ul class="menu menu-sm overflow-hidden rounded-md">
         {#if allowActions && canArchive(project, page.data.session!.user)}
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable class="text-nowrap">
