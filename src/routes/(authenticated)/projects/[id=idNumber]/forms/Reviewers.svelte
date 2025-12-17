@@ -4,8 +4,9 @@
   import type { ReviewerSchema } from './valibot';
   import { enhance as svk_enhance } from '$app/forms';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import LocaleSelector, { getFlag } from '$lib/components/LocaleSelector.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, locales } from '$lib/paraglide/runtime';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
 
   interface Props {
@@ -34,7 +35,7 @@
   });
 </script>
 
-<div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
+<div class="card card-bordered border-slate-400 rounded-md max-w-full">
   <div class="bg-neutral">
     <h2>{m.reviewers_title()}</h2>
   </div>
@@ -92,11 +93,23 @@
             />
           </div>
           <div class="flex flex-row space-x-2">
-            <select name="locale" class="grow select select-bordered" bind:value={$form.language}>
-              {#each locales as locale}
-                <option value={locale}>{locale.split('-')[0]}</option>
-              {/each}
-            </select>
+            <input type="hidden" name="locale" value={$form.language} />
+            <LocaleSelector
+              dropdownClasses="dropdown-start w-full"
+              labelClasses="select select-bordered bg-none flex-nowrap grow w-full pl-1"
+              currentLocale={() => $form.language}
+              onselect={(lang) => ($form.language = lang)}
+            >
+              {#snippet label()}
+                <span class="flex items-center pl-1 w-full">
+                  <span class="grow">
+                    <IconContainer icon="circle-flags:{getFlag($form.language)}" width="24" />
+                    {$form.language?.split('-')[0]}
+                  </span>
+                  <IconContainer icon="gridicons:dropdown" width="20" />
+                </span>
+              {/snippet}
+            </LocaleSelector>
             <button type="submit" class="btn btn-primary">
               {m.reviewers_submit()}
             </button>

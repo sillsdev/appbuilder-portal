@@ -294,7 +294,10 @@
           <!-- <p>SCRIPTORIA</p> -->
         </div>
         <div class="navbar-end">
-          <LocaleSelector />
+          <LocaleSelector
+            dropdownClasses="dropdown-end"
+            labelClasses="m-2 p-2 rounded-xl items-middle justify-center flex-nowrap"
+          />
           <Dropdown
             dropdownClasses="dropdown-end"
             labelClasses="m-2 p-2 rounded-xl"

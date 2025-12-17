@@ -1,11 +1,5 @@
-<script lang="ts">
-  import Dropdown from './Dropdown.svelte';
-  import IconContainer from './IconContainer.svelte';
-  import { LanguageIcon } from '$lib/icons';
-  import { l10nMap } from '$lib/locales.svelte';
-  import { type Locale, getLocale, locales, setLocale } from '$lib/paraglide/runtime';
-
-  function getFlag(locale: Locale) {
+<script lang="ts" module>
+  export function getFlag(locale: Locale) {
     switch (locale) {
       case 'en-US':
         return 'us';
@@ -20,26 +14,61 @@
   }
 </script>
 
+<script lang="ts">
+  import type { Snippet } from 'svelte';
+  import Dropdown from './Dropdown.svelte';
+  import IconContainer from './IconContainer.svelte';
+  import { LanguageIcon } from '$lib/icons';
+  import { l10nMap } from '$lib/locales.svelte';
+  import { type Locale, getLocale, locales, setLocale } from '$lib/paraglide/runtime';
+
+  interface Props {
+    label?: Snippet;
+    dropdownClasses?: string;
+    labelClasses?: string;
+    currentLocale?: () => Locale;
+    onselect?: (lang: Locale) => void;
+  }
+
+  let {
+    label = globe,
+    dropdownClasses = '',
+    labelClasses = '',
+    currentLocale = getLocale,
+    onselect = setLocale
+  }: Props = $props();
+
+  let open = $state(false);
+
+  function onclick(locale: Locale) {
+    open = false;
+    onselect?.(locale);
+  }
+</script>
+
+{#snippet globe()}
+  <LanguageIcon color="white" />
+{/snippet}
+
 {#key getLocale()}
+  {@const langMap = l10nMap.value.get(getLocale())?.get('languages')}
   <Dropdown
-    dropdownClasses="dropdown-end"
-    labelClasses="m-2 p-2 rounded-xl items-middle justify-center flex-nowrap"
+    {dropdownClasses}
+    {labelClasses}
     contentClasses="overflow-y-auto min-w-52"
+    bind:open
+    {label}
   >
-    {#snippet label()}
-      <LanguageIcon color="white" />
-    {/snippet}
     {#snippet content()}
       <ul class="menu menu-compact gap-1 p-2">
         {#each locales as locale}
-          {@const langMap = l10nMap.value.get(getLocale())?.get('languages')}
           <li class="w-full">
             <div
               class="btn flex-nowrap justify-start pl-2 pr-1"
-              class:bg-accent={locale === getLocale()}
-              class:text-accent-content={locale === getLocale()}
-              onclick={() => setLocale(locale)}
-              onkeypress={() => setLocale(locale)}
+              class:bg-accent={locale === currentLocale()}
+              class:text-accent-content={locale === currentLocale()}
+              onclick={() => onclick(locale)}
+              onkeypress={() => onclick(locale)}
               role="button"
               tabindex="0"
             >
