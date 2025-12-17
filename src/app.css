@@ -37,7 +37,7 @@
   --size-selector: 0.25rem;
   --size-field: 0.28125rem;
   --border: 1px;
-  --depth: 0;
+  --depth: 1;
   --noise: 0;
 }
 @plugin "daisyui/theme" {
@@ -71,7 +71,7 @@
   --size-selector: 0.25rem;
   --size-field: 0.28125rem;
   --border: 1px;
-  --depth: 0;
+  --depth: 1;
   --noise: 0;
 }
 
