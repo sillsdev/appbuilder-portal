@@ -54,7 +54,7 @@
       </tr>
     </tbody>
   </table>
-  <table class="hidden sm:table table-auto bg-base-100 {classes}">
+  <table class={['hidden sm:table table-auto bg-base-100', classes]}>
     <thead class={[classes?.header]}>
       <tr>
         <th>{m.publications_channel()}</th>

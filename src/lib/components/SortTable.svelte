@@ -77,7 +77,7 @@
   }
 </script>
 
-<div class={['overflow-y', classes]}>
+<div class={[classes]}>
   <table class="table" class:table-fixed={fixedLayout}>
     <thead>
       <tr>
