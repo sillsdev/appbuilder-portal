@@ -127,6 +127,15 @@
   * {
     font-size: 15px;
   }
+  @media (prefers-color-scheme: dark) {
+    .select {
+      &, & select {
+        &::picker(select) {
+          border: var(--border) solid var(--color-base-content);
+        }
+      }
+    }
+  }
 }
 
 .dropdown-content {

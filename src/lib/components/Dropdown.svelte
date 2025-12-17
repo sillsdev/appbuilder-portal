@@ -47,7 +47,12 @@ A simple dropdown menu from DaisyUI.
   <summary class={['btn btn-ghost', classes?.label]} onclick={() => onclick?.()}>
     {@render label()}
   </summary>
-  <div class={['dropdown-content z-10 drop-shadow-lg rounded-md bg-base-200', classes?.content]}>
+  <div
+    class={[
+      'dropdown-content z-10 drop-shadow-lg rounded-md bg-base-200 dark:border dark:border-base-content',
+      classes?.content
+    ]}
+  >
     {@render content()}
   </div>
 </details>
