@@ -97,7 +97,7 @@
             <LocaleSelector
               class={{
                 dropdown: 'dropdown-start w-full',
-                label: 'select select-bordered bg-none flex-nowrap grow w-full pl-1'
+                label: 'select bg-none flex-nowrap grow w-full pl-1'
               }}
               currentLocale={() => $form.language}
               onselect={(lang) => ($form.language = lang)}

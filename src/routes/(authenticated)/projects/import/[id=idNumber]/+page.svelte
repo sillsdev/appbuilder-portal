@@ -95,14 +95,14 @@
     </a>
     <div class="flex flex-row gap-4 flex-wrap place-content-center sm:place-content-start p-4">
       <LabeledFormInput key="project_group" class="max-w-xs">
-        <select name="group" class="select select-bordered" bind:value={$form.group}>
+        <select name="group" class="select" bind:value={$form.group}>
           {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
             <option value={group.Id}>{group.Name}</option>
           {/each}
         </select>
       </LabeledFormInput>
       <LabeledFormInput key="project_type" class="max-w-xs">
-        <select name="type" class="select select-bordered" bind:value={$form.type}>
+        <select name="type" class="select" bind:value={$form.type}>
           {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
             <option value={type.Id}>{type.Description}</option>
           {/each}

@@ -58,7 +58,7 @@
   </LabeledFormInput>
   <LabeledFormInput key="prodDefs_type">
     <select
-      class="select select-bordered validator"
+      class="select validator"
       name="applicationType"
       bind:value={$form.applicationType}
       required
@@ -70,12 +70,7 @@
     <span class="validator-hint">{m.prodDefs_emptyType()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="prodDefs_flow">
-    <select
-      class="select select-bordered validator"
-      name="workflow"
-      bind:value={$form.workflow}
-      required
-    >
+    <select class="select validator" name="workflow" bind:value={$form.workflow} required>
       {#each workflows as wf}
         <option value={wf.Id}>{wf.Name}</option>
       {/each}
@@ -83,11 +78,7 @@
     <span class="validator-hint">{m.prodDefs_emptyFlow()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="prodDefs_rebuildFlow">
-    <select
-      class="select select-bordered"
-      name="rebuildWorkflow"
-      bind:value={$form.rebuildWorkflow}
-    >
+    <select class="select" name="rebuildWorkflow" bind:value={$form.rebuildWorkflow}>
       <option value={null}>{m.prodDefs_noFlow()}</option>
       {#each rebuildWorkflows as workflow}
         <option value={workflow.Id}>{workflow.Name}</option>
@@ -96,11 +87,7 @@
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="prodDefs_republishFlow">
-    <select
-      class="select select-bordered"
-      name="republishWorkflow"
-      bind:value={$form.republishWorkflow}
-    >
+    <select class="select" name="republishWorkflow" bind:value={$form.republishWorkflow}>
       <option value={null}>{m.prodDefs_noFlow()}</option>
       {#each republishWorkflows as workflow}
         <option value={workflow.Id}>{workflow.Name}</option>

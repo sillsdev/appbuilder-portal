@@ -61,7 +61,7 @@
           <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
         </LabeledFormInput>
         <LabeledFormInput key="project_group" class="md:max-w-xs">
-          <select name="group" class="select select-bordered" bind:value={$form.group}>
+          <select name="group" class="select" bind:value={$form.group}>
             {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
               <option value={group.Id}>{group.Name}</option>
             {/each}
@@ -85,7 +85,7 @@
           </LanguageCodeTypeahead>
         </LabeledFormInput>
         <LabeledFormInput key="project_type" class="md:max-w-xs">
-          <select name="type" class="select select-bordered" bind:value={$form.type}>
+          <select name="type" class="select" bind:value={$form.type}>
             {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
               <option value={type.Id}>{type.Description}</option>
             {/each}

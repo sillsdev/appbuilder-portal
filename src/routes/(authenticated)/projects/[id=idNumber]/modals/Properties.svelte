@@ -49,7 +49,7 @@
         <input type="hidden" name="productId" value={product.Id} />
         <LabeledFormInput key="products_properties_computeType" class="w-full">
           <select
-            class="select select-bordered w-full"
+            class="select w-full"
             placeholder={m.products_properties_selectComputeType()}
             onchange={(e) => {
               if (ok) {

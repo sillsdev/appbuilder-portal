@@ -48,11 +48,11 @@
           <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
         </LabeledFormInput>
         <LabeledFormInput key="project_owner" class="md:max-w-xs">
-          <BlockIfJobsUnavailable class="select select-bordered">
+          <BlockIfJobsUnavailable class="select">
             {#snippet altContent()}
               {data.owners.find((o) => o.Id === $form.owner)?.Name}
             {/snippet}
-            <select name="owner" class="select select-bordered" bind:value={$form.owner}>
+            <select name="owner" class="select" bind:value={$form.owner}>
               {#each data.owners.toSorted((a, b) => byName(a, b, getLocale())) as owner}
                 <option value={owner.Id}>{owner.Name}</option>
               {/each}
@@ -62,7 +62,7 @@
       </div>
       <div class="row">
         <LabeledFormInput key="project_group" class="md:max-w-xs grow">
-          <select name="group" class="select select-bordered" bind:value={$form.group}>
+          <select name="group" class="select" bind:value={$form.group}>
             {#each data.groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
               <option value={group.Id}>{group.Name}</option>
             {/each}
