@@ -17,7 +17,12 @@ export const HEAD: RequestHandler = async ({ locals }) => {
  *
  * Required URL Params:
  * challenge: base64URL-encodeded, sha256 hash of a string that will be used in /api/auth/exchange
- * redirect_uri: location to send the code to, allowed to start with localhost, 127.0.0.1 or org.sil.{sab,dab,rab,kab}: (for desktop apps)
+ * redirect_uri: location to send the code to
+ * - restrictions:
+ *  - may start with: 'org.sil.{sab,dab,rab,kab}:' (for desktop apps)
+ *  - may have hostname:
+ *    - equal to 'localhost' or '127.0.0.1' (for dev and desktop apps)
+ *    - ending with 'buildengine.scriptoria.io' (for buildengine auth)
  *
  * Optional URL Params:
  * scope: minimum permissions requested
@@ -36,7 +41,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
   if (!urlValid) {
     try {
       const url = new URL(redirectUri);
-      urlValid = ['localhost', '127.0.0.1'].includes(url.hostname);
+      console.log(url.hostname);
+      urlValid =
+        ['localhost', '127.0.0.1'].includes(url.hostname) ||
+        !!url.hostname.match(/buildengine\.scriptoria\.io$/);
     } catch {
       /*empty*/
     }
