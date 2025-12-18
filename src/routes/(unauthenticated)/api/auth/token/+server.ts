@@ -18,6 +18,10 @@ export const HEAD: RequestHandler = async ({ locals }) => {
  * Required URL Params:
  * challenge: base64URL-encodeded, sha256 hash of a string that will be used in /api/auth/exchange
  * redirect_uri: location to send the code to, allowed to start with localhost, 127.0.0.1 or org.sil.{sab,dab,rab,kab}: (for desktop apps)
+ *
+ * Optional URL Params:
+ * scope: minimum permissions requested
+ * - admin: checks if user is SuperAdmin
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
   locals.security.requireNothing();
@@ -41,6 +45,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
   if (!urlValid) error(400, 'Invalid redirect url');
   // params are valid, now do login prompt
   locals.security.requireAuthenticated();
+
+  if (url.searchParams.get('scope') === 'admin') {
+    locals.security.requireSuperAdmin();
+  }
 
   // create key from AUTH0_SECRET
   if (!env.AUTH0_SECRET) {
