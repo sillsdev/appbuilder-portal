@@ -41,7 +41,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
   if (!urlValid) {
     try {
       const url = new URL(redirectUri);
-      console.log(url.hostname);
       urlValid =
         ['localhost', '127.0.0.1'].includes(url.hostname) ||
         !!url.hostname.match(/buildengine\.scriptoria\.io$/);
