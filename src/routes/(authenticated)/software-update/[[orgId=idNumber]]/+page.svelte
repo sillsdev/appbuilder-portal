@@ -1,8 +1,8 @@
 <script lang="ts">
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
 
