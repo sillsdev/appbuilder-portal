@@ -150,11 +150,46 @@ export const load = (async ({ url, locals, params }) => {
   });
   const organizationsReadable = names.map((n) => n.Name ?? 'Unknown Organization');
 
-  // TODO: @becca-perk? Use information to determine whether to show 'start' or 'pause' on button and action being called.
-  // Check for rebuild status...
+  // Get products that would be rebuilt
+  const productsToRebuild = await getProductsForRebuild(searchOrgs);
+
+  // Get detailed info about affected projects and products
+  const affectedProducts = await DatabaseReads.products.findMany({
+    where: {
+      Id: { in: productsToRebuild.map((p) => p.id) }
+    },
+    select: {
+      Id: true,
+      Project: {
+        select: {
+          Id: true,
+          Name: true
+        }
+      }
+    }
+  });
+
+  // Get unique projects
+  const projectIds = Array.from(new Set(affectedProducts.map((p) => p.Project.Id)));
+  const projects = await DatabaseReads.projects.findMany({
+    where: {
+      Id: { in: projectIds }
+    },
+    select: {
+      Id: true,
+      Name: true
+    }
+  });
 
   const form = await superValidate(valibot(formSchema));
-  return { form, organizations: organizationsReadable.join(', ') };
+  return {
+    form,
+    organizations: organizationsReadable.join(', '),
+    affectedProductCount: productsToRebuild.length,
+    affectedProjectCount: projects.length,
+    affectedProjects: projects.map((p) => p.Name).sort(),
+    affectedVersions: Array.from(new Set(productsToRebuild.map((p) => p.requiredVersion))).sort()
+  };
 }) satisfies PageServerLoad;
 
 /// ACTIONS
@@ -162,7 +197,7 @@ export const actions = {
   //
   /// START: Starts rebuilds for affected organizations.
   //
-  async start({ cookies, request, locals, params }) {
+  async start({ request, locals, params }) {
     // Check that form is valid upon submission
     const form = await superValidate(request, valibot(formSchema));
     if (!form.valid) {
@@ -176,12 +211,25 @@ export const actions = {
 
     const productsToRebuild = await getProductsForRebuild(searchOrgs);
 
+    // Get user info for display
+    const user = await DatabaseReads.users.findUnique({
+      where: { Id: locals.security.userId },
+      select: { Name: true, Email: true }
+    });
+
     await Promise.all(
       productsToRebuild.map((p) =>
         doProductAction(p.id, ProductActionType.Rebuild, form.data.comment)
       )
     );
 
-    return { form, ok: true };
+    return {
+      form,
+      ok: true,
+      initiatedBy: user?.Name || user?.Email || 'Unknown User',
+      comment: form.data.comment,
+      productCount: productsToRebuild.length,
+      timestamp: new Date().toISOString()
+    };
   }
 } satisfies Actions;
