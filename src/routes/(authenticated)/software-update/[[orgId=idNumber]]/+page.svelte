@@ -10,13 +10,21 @@
     data: PageData;
   }
 
+  interface SoftwareUpdateResponse {
+    ok?: boolean;
+    initiatedBy?: string;
+    comment?: string;
+    productCount?: number;
+    timestamp?: string;
+  }
+
   let { data }: Props = $props();
 
   const { form, enhance, reset } = superForm(data.form, {
     resetForm: false,
     onUpdated({ form }) {
       // Type assertion to access server action response properties
-      const response = form.data as any;
+      const response = form.data as SoftwareUpdateResponse;
       if (form.valid && response.ok) {
         toast('success', m.admin_software_update_toast_success());
         summary = {
