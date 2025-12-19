@@ -11,7 +11,8 @@ export async function GET({ params, locals }) {
   return redirect(302, productArtifact.Url);
 }
 
-export async function HEAD({ params, request }) {
+export async function HEAD({ params, request, locals }) {
+  locals.security.requireNothing();
   const ifModifiedSince = request.headers.get('If-Modified-Since') ?? '';
 
   const res = await _getHeaders(params.product_id, params.type);
