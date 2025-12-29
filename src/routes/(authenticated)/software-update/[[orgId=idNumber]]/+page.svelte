@@ -23,9 +23,8 @@
   const { form, enhance, reset } = superForm(data.form, {
     resetForm: false,
     onUpdated({ form }) {
-      // Type assertion to access server action response properties
-      const response = form.data as SoftwareUpdateResponse;
-      if (form.valid && response.ok) {
+      const response = form.message as SoftwareUpdateResponse;
+      if (response?.ok) {
         toast('success', m.admin_software_update_toast_success());
         summary = {
           initiatedBy: response.initiatedBy,
@@ -57,7 +56,7 @@
 
     <!-- Summary Information -->
     <DataDisplayBox
-      title="Update Summary"
+      title={m.admin_software_update_summary_title()}
       fields={[
         {
           key: 'admin_software_update_affected_organizations',
@@ -66,30 +65,35 @@
       ]}
     >
       <p style="padding-left: 1rem; text-indent: -1rem">
-        <b>Projects:</b>
+        <b>{m.admin_software_update_projects_label()}:</b>
         {data.affectedProjectCount} project{data.affectedProjectCount !== 1 ? 's' : ''}
       </p>
       <p style="padding-left: 1rem; text-indent: -1rem">
-        <b>Products:</b>
+        <b>{m.admin_software_update_products_label()}:</b>
         {data.affectedProductCount} product{data.affectedProductCount !== 1 ? 's' : ''}
       </p>
       {#if data.affectedProjects && data.affectedProjects.length > 0}
         <p style="padding-left: 1rem; text-indent: -1rem" class="text-sm opacity-75">
-          <b>Project Names:</b>
+          <b>{m.admin_software_update_project_names_label()}:</b>
           {data.affectedProjects.join(', ')}
         </p>
       {/if}
       {#if data.affectedVersions && data.affectedVersions.length > 0}
         <p style="padding-left: 1rem; text-indent: -1rem" class="text-sm opacity-75">
-          <b>Target Versions:</b>
+          <b>{m.admin_software_update_target_versions_label()}:</b>
           {data.affectedVersions.join(', ')}
+        </p>
+      {/if}
+      {#if data.affectedProductCount === 0}
+        <p style="padding-left: 1rem; text-indent: -1rem" class="text-info font-bold mt-2">
+          {m.admin_software_update_no_products_message()}
         </p>
       {/if}
     </DataDisplayBox>
 
     <br />
 
-    {#if !showSummary}
+    {#if !showSummary && data.affectedProductCount > 0}
       <form class="pl-4" method="post" action="?/start" use:enhance>
         <LabeledFormInput key="admin_nav_software_update_comment">
           <input
@@ -105,16 +109,21 @@
           type="submit"
           class="btn btn-primary"
           value={m.admin_software_update_rebuild_start()}
+          disabled={data.affectedProductCount === 0}
         />
       </form>
     {/if}
 
     {#if showSummary && summary}
       <DataDisplayBox
-        title="Rebuild Started"
+        title={m.admin_software_update_rebuild_started_title()}
         fields={[
           {
             key: 'admin_software_update_affected_organizations',
+            value: data.organizations
+          },
+          {
+            key: 'admin_software_update_initiated_by',
             value: summary.initiatedBy
           },
           {
@@ -124,7 +133,7 @@
         ]}
       >
         <p style="padding-left: 1rem; text-indent: -1rem">
-          <b>Products Rebuilding:</b>
+          <b>{m.admin_software_update_products_rebuilding_label()}:</b>
           {summary.productCount ?? 0}
         </p>
       </DataDisplayBox>
