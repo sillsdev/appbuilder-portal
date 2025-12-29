@@ -606,5 +606,14 @@
   "admin_software_update_rebuild_start": "Empezar a Reconstruir",
   "admin_software_update_comment_required": "Se requiere un comentario para iniciar las compilaciones.",
   "admin_software_update_toast_success": "¡Comenzó con éxito las reconstrucciones!",
-  "admin_software_update_affected_organizations": "Esto afectará a las siguientes organizaciones:"
+  "admin_software_update_affected_organizations": "Esto afectará a las siguientes organizaciones:",
+  "admin_software_update_initiated_by": "Iniciado por",
+  "admin_software_update_summary_title": "Resumen de la actualización",
+  "admin_software_update_projects_label": "Proyectos",
+  "admin_software_update_products_label": "Productos",
+  "admin_software_update_project_names_label": "Nombres de proyectos",
+  "admin_software_update_target_versions_label": "Versiones objetivo",
+  "admin_software_update_rebuild_started_title": "Reconstrucción iniciada",
+  "admin_software_update_products_rebuilding_label": "Productos en reconstrucción",
+  "admin_software_update_no_products_message": "No hay productos elegibles para reconstruir en este momento."
 }

@@ -28,12 +28,12 @@ async function determineTargetOrgs(locals: App.Locals): Promise<number[]> {
   const roles = await DatabaseReads.userRoles.findMany({
     where: {
       UserId: locals.security.userId,
-      RoleId: { in: [RoleId.SuperAdmin, RoleId.OrgAdmin] }
+      RoleId: RoleId.OrgAdmin
     },
     select: { OrganizationId: true }
   });
 
-  return Array.from(new Set(roles.map((r) => r.OrganizationId)));
+  return roles.map((r) => r.OrganizationId);
 }
 
 async function getOrganizations(locals: App.Locals, params: RouteParams): Promise<number[]> {
@@ -49,6 +49,8 @@ interface ProductToRebuild {
   id: string; // Product ID (UUID)
   latestVersion: string | null;
   requiredVersion: string | null;
+  projectId: number;
+  projectName: string;
 }
 
 /**
@@ -66,7 +68,8 @@ async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToReb
         OrganizationId: { in: searchOrgs },
         DateArchived: null, // Project has not been archived
         RebuildOnSoftwareUpdate: true // Project setting is true
-      }
+      },
+      WorkflowInstance: null // Only products without active workflows
     },
     select: {
       Id: true,
@@ -83,6 +86,7 @@ async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToReb
       Project: {
         select: {
           TypeId: true,
+          Name: true,
           Organization: {
             select: {
               BuildEngineUrl: true
@@ -121,7 +125,9 @@ async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToReb
       productsForRebuild.push({
         id: product.Id,
         latestVersion: latestVersion,
-        requiredVersion: requiredVersion
+        requiredVersion: requiredVersion,
+        projectId: product.ProjectId,
+        projectName: product.Project.Name ?? 'Unknown Project'
       });
     }
   }
@@ -137,8 +143,8 @@ const formSchema = v.object({
 export const load = (async ({ url, locals, params }) => {
   // Determine what organizations are being affected
   const searchOrgs = await getOrganizations(locals, params);
-  if (Number(params.orgId)) locals.security.requireAdminOfOrgIn(searchOrgs);
-  else locals.security.requireAdminOfOrg(Number(params.orgId));
+  if (params.orgId) locals.security.requireAdminOfOrg(Number(params.orgId));
+  else locals.security.requireAdminOfOrgIn(searchOrgs);
   // Translate organization IDs to names for readability
   const names = await DatabaseReads.organizations.findMany({
     where: {
@@ -153,33 +159,12 @@ export const load = (async ({ url, locals, params }) => {
   // Get products that would be rebuilt
   const productsToRebuild = await getProductsForRebuild(searchOrgs);
 
-  // Get detailed info about affected projects and products
-  const affectedProducts = await DatabaseReads.products.findMany({
-    where: {
-      Id: { in: productsToRebuild.map((p) => p.id) }
-    },
-    select: {
-      Id: true,
-      Project: {
-        select: {
-          Id: true,
-          Name: true
-        }
-      }
-    }
-  });
-
-  // Get unique projects
-  const projectIds = Array.from(new Set(affectedProducts.map((p) => p.Project.Id)));
-  const projects = await DatabaseReads.projects.findMany({
-    where: {
-      Id: { in: projectIds }
-    },
-    select: {
-      Id: true,
-      Name: true
-    }
-  });
+  // Extract unique project information from products
+  const projectMap = new Map<number, string>();
+  for (const product of productsToRebuild) {
+    projectMap.set(product.projectId, product.projectName);
+  }
+  const projects = Array.from(projectMap.entries()).map(([id, name]) => ({ Id: id, Name: name }));
 
   const form = await superValidate(valibot(formSchema));
   return {
@@ -200,14 +185,15 @@ export const actions = {
   async start({ request, locals, params }) {
     // Check that form is valid upon submission
     const form = await superValidate(request, valibot(formSchema));
+
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
 
     // Determine what organizations are being affected and check security
     const searchOrgs = await getOrganizations(locals, params);
-    if (isNaN(Number(params.orgId))) locals.security.requireAdminOfOrgIn(searchOrgs);
-    else locals.security.requireAdminOfOrg(Number(params.orgId));
+    if (params.orgId) locals.security.requireAdminOfOrg(Number(params.orgId));
+    else locals.security.requireAdminOfOrgIn(searchOrgs);
 
     const productsToRebuild = await getProductsForRebuild(searchOrgs);
 
@@ -217,19 +203,43 @@ export const actions = {
       select: { Name: true, Email: true }
     });
 
-    await Promise.all(
-      productsToRebuild.map((p) =>
-        doProductAction(p.id, ProductActionType.Rebuild, form.data.comment)
-      )
+    const results = await Promise.allSettled(
+      productsToRebuild.map((p) => {
+        return doProductAction(p.id, ProductActionType.Rebuild, form.data.comment);
+      })
     );
 
-    return {
-      form,
+    const successCount = results.filter((r) => r.status === 'fulfilled').length;
+    const failureCount = results.filter((r) => r.status === 'rejected').length;
+
+    // Log results for debugging
+    console.log('Rebuild action results:', {
+      productsToRebuild: productsToRebuild.length,
+      successCount,
+      failureCount,
+      results: results.map((r, i) => ({
+        index: i,
+        status: r.status,
+        reason:
+          r.status === 'rejected'
+            ? r.reason instanceof Error
+              ? r.reason.message
+              : String(r.reason)
+            : 'fulfilled'
+      }))
+    });
+
+    // Attach extra data to the form object so it survives Superforms serialization
+    form.message = {
       ok: true,
       initiatedBy: user?.Name || user?.Email || 'Unknown User',
       comment: form.data.comment,
-      productCount: productsToRebuild.length,
+      productCount: successCount,
+      totalProducts: productsToRebuild.length,
+      failureCount,
       timestamp: new Date().toISOString()
     };
+
+    return { form };
   }
 } satisfies Actions;
