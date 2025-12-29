@@ -99,25 +99,44 @@ async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToReb
 
   const productsForRebuild: ProductToRebuild[] = [];
 
+  // Batch fetch required SystemVersions for unique (BuildEngineUrl, ApplicationTypeId) pairs
+  const uniqueKeys = new Set(
+    eligibleProducts.map(
+      (p) => `${p.Project.Organization.BuildEngineUrl ?? ''}|${p.Project.TypeId}`
+    )
+  );
+
+  const systemVersionsRaw = uniqueKeys.size
+    ? await DatabaseReads.systemVersions.findMany({
+        where: {
+          OR: Array.from(uniqueKeys).map((key) => {
+            const [BuildEngineUrl, typeId] = key.split('|');
+            return {
+              BuildEngineUrl,
+              ApplicationTypeId: Number(typeId)
+            };
+          })
+        },
+        select: {
+          BuildEngineUrl: true,
+          ApplicationTypeId: true,
+          Version: true
+        }
+      })
+    : [];
+
+  const systemVersionsMap = new Map(
+    systemVersionsRaw.map((sv) => [`${sv.BuildEngineUrl}|${sv.ApplicationTypeId}`, sv.Version])
+  );
+
   // 2. Iterate through eligible products to perform the cross-model version check.
   for (const product of eligibleProducts) {
     const latestProductBuild = product.ProductBuilds[0];
     const latestVersion = latestProductBuild?.AppBuilderVersion ?? null;
 
-    // Get the required SystemVersion for this specific project's type and organization's build engine URL.
-    const requiredSystemVersion = await DatabaseReads.systemVersions.findUnique({
-      where: {
-        BuildEngineUrl_ApplicationTypeId: {
-          BuildEngineUrl: product.Project.Organization.BuildEngineUrl ?? '',
-          ApplicationTypeId: product.Project.TypeId
-        }
-      },
-      select: {
-        Version: true
-      }
-    });
-
-    const requiredVersion = requiredSystemVersion?.Version ?? null;
+    // Look up the required SystemVersion from the pre-fetched map
+    const key = `${product.Project.Organization.BuildEngineUrl ?? ''}|${product.Project.TypeId}`;
+    const requiredVersion = systemVersionsMap.get(key) ?? null;
 
     // 3. Apply the final filtering logic:
     // Is the latest build version NOT equal to the required system version?
