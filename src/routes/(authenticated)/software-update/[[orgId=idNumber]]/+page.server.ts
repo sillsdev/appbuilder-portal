@@ -58,7 +58,7 @@ interface ProductToRebuild {
  * Checks to make sure the product is part of a project that has rebuildOnSoftwareUpdate enabled,
  * and that the latest product build's AppBuilderVersion does not match the required SystemVersion.
  * @param searchOrgs An array or organizations to include products from.
- * @returns Array of Pro
+ * @returns Array of Products
  */
 async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToRebuild[]> {
   // 1. Fetch all products that meet the initial Project/Organization criteria.
@@ -230,23 +230,6 @@ export const actions = {
 
     const successCount = results.filter((r) => r.status === 'fulfilled').length;
     const failureCount = results.filter((r) => r.status === 'rejected').length;
-
-    // Log results for debugging
-    console.log('Rebuild action results:', {
-      productsToRebuild: productsToRebuild.length,
-      successCount,
-      failureCount,
-      results: results.map((r, i) => ({
-        index: i,
-        status: r.status,
-        reason:
-          r.status === 'rejected'
-            ? r.reason instanceof Error
-              ? r.reason.message
-              : String(r.reason)
-            : 'fulfilled'
-      }))
-    });
 
     // Attach extra data to the form object so it survives Superforms serialization
     form.message = {
