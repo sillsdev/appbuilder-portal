@@ -107,11 +107,17 @@ export const getQueueConfig = () => {
     prefix: 'scriptoria',
     telemetry: new BullMQOtel('scriptoria'),
     defaultJobOptions: {
-      // default # jobs to keep
       // https://docs.bullmq.io/guide/queues/auto-removal-of-jobs#keep-a-certain-number-of-jobs
-      // we probably don't need to keep more than this number of jobs
-      removeOnComplete: 500,
-      removeOnFail: 1000
+      removeOnComplete: {
+        // 2 weeks
+        age: 2 * 7 * 24 * 60 * 60,
+        count: 1000
+      },
+      removeOnFail: {
+        // 2 weeks
+        age: 2 * 7 * 24 * 60 * 60,
+        count: 2000
+      }
     }
   } as QueueOptions;
 };
