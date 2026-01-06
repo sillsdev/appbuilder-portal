@@ -160,6 +160,7 @@ export async function sendBatchUserTaskNotifications(
     const user = await DatabaseReads.users.findUnique({
       where: {
         Id: notification.userId,
+        IsLocked: false,
         EmailNotification: true
       }
     });
@@ -292,6 +293,8 @@ export async function sendNotificationToUser(
     }
   });
   if (!user) return `User ${job.data.userId} has disabled Email Notifications`;
+  if (user.IsLocked)
+    return `User ${job.data.userId} is locked and will not be sent Email Notifications`;
   return await sendEmail(
     [{ email: user.Email!, name: user.Name! }],
     translate(
@@ -435,6 +438,7 @@ export async function sendNotificationToOrgAdminsAndOwner(
   });
   const orgAdmins = await DatabaseReads.users.findMany({
     where: {
+      IsLocked: false,
       UserRoles: {
         some: {
           RoleId: RoleId.OrgAdmin,
