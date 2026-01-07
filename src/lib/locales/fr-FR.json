@@ -605,7 +605,7 @@
   "admin_software_update_rebuild_start": "Commencer les Reconstructions",
   "admin_software_update_comment_required": "Un commentaire est requis pour commencer les constructions.",
   "admin_software_update_toast_success": "Les reconstructions ont commencé avec succès !",
-  "admin_software_update_affected_organizations": "Cela affectera les organisations suivantes :",
+  "admin_software_update_affected_organizations": "Cela affectera les organisations suivantes",
   "admin_software_update_initiated_by": "Lancé par",
   "admin_software_update_summary_title": "Résumé de la mise à jour",
   "admin_software_update_projects_label": "Projets",

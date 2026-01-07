@@ -606,7 +606,7 @@
   "admin_software_update_rebuild_start": "Start Rebuilds",
   "admin_software_update_comment_required": "A comment is required to start builds.",
   "admin_software_update_toast_success": "Successfully started rebuilds!",
-  "admin_software_update_affected_organizations": "This will affect the following organizations:",
+  "admin_software_update_affected_organizations": "This will affect the following organizations",
   "admin_software_update_initiated_by": "Initiated by",
   "admin_software_update_summary_title": "Update Summary",
   "admin_software_update_projects_label": "Projects",

@@ -10,7 +10,9 @@ import * as products from './Products';
 import * as projects from './Projects';
 import type { WRITE_METHODS } from './ReadonlyPrisma';
 import * as reviewers from './Reviewers';
+import * as softwareUpdates from './SoftwareUpdates';
 import * as stores from './Stores';
+import * as userRoles from './UserRoles';
 import * as userTasks from './UserTasks';
 import * as users from './Users';
 import * as workflowInstances from './WorkflowInstances';
@@ -50,6 +52,9 @@ const handlers = {
   organizations,
   productTransitions,
   users,
+  softwareUpdates,
+  userRoles,
+  utility,
   workflowInstances
 };
 // @ts-expect-error this is in fact immediately populated
