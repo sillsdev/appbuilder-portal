@@ -1,12 +1,12 @@
 <script lang="ts">
+  import { onDestroy, onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { toast } from '$lib/utils';
-  import { onDestroy, onMount } from 'svelte';
   import { persistedSession } from '$lib/stores';
+  import { toast } from '$lib/utils';
 
   interface Props {
     data: PageData;
@@ -122,41 +122,41 @@
 
     <!-- Summary Information -->
     {#if !showSummary}
-    <DataDisplayBox
-      title={m.admin_software_update_summary_title()}
-      fields={[
-        {
-          key: 'admin_software_update_affected_organizations',
-          value: data.organizations
-        }
-      ]}
-    >
-      <p style="padding-left: 1rem; text-indent: -1rem">
-        <b>{m.admin_software_update_projects_label()}:</b>
-        {data.affectedProjectCount} project{data.affectedProjectCount !== 1 ? 's' : ''}
-      </p>
-      <p style="padding-left: 1rem; text-indent: -1rem">
-        <b>{m.admin_software_update_products_label()}:</b>
-        {data.affectedProductCount} product{data.affectedProductCount !== 1 ? 's' : ''}
-      </p>
-      {#if data.affectedProjects && data.affectedProjects.length > 0}
-        <p style="padding-left: 1rem; text-indent: -1rem" class="text-sm opacity-75">
-          <b>{m.admin_software_update_project_names_label()}:</b>
-          {data.affectedProjects.join(', ')}
+      <DataDisplayBox
+        title={m.admin_software_update_summary_title()}
+        fields={[
+          {
+            key: 'admin_software_update_affected_organizations',
+            value: data.organizations
+          }
+        ]}
+      >
+        <p style="padding-left: 1rem; text-indent: -1rem">
+          <b>{m.admin_software_update_projects_label()}:</b>
+          {data.affectedProjectCount} project{data.affectedProjectCount !== 1 ? 's' : ''}
         </p>
-      {/if}
-      {#if data.affectedVersions && data.affectedVersions.length > 0}
-        <p style="padding-left: 1rem; text-indent: -1rem" class="text-sm opacity-75">
-          <b>{m.admin_software_update_target_versions_label()}:</b>
-          {data.affectedVersions.join(', ')}
+        <p style="padding-left: 1rem; text-indent: -1rem">
+          <b>{m.admin_software_update_products_label()}:</b>
+          {data.affectedProductCount} product{data.affectedProductCount !== 1 ? 's' : ''}
         </p>
-      {/if}
-      {#if data.affectedProductCount === 0}
-        <p style="padding-left: 1rem; text-indent: -1rem" class="text-info font-bold mt-2">
-          {m.admin_software_update_no_products_message()}
-        </p>
-      {/if}
-    </DataDisplayBox>
+        {#if data.affectedProjects && data.affectedProjects.length > 0}
+          <p style="padding-left: 1rem; text-indent: -1rem" class="text-sm opacity-75">
+            <b>{m.admin_software_update_project_names_label()}:</b>
+            {data.affectedProjects.join(', ')}
+          </p>
+        {/if}
+        {#if data.affectedVersions && data.affectedVersions.length > 0}
+          <p style="padding-left: 1rem; text-indent: -1rem" class="text-sm opacity-75">
+            <b>{m.admin_software_update_target_versions_label()}:</b>
+            {data.affectedVersions.join(', ')}
+          </p>
+        {/if}
+        {#if data.affectedProductCount === 0}
+          <p style="padding-left: 1rem; text-indent: -1rem" class="text-info font-bold mt-2">
+            {m.admin_software_update_no_products_message()}
+          </p>
+        {/if}
+      </DataDisplayBox>
     {/if}
 
     <br />
@@ -206,11 +206,16 @@
         </p>
         {#if (summary.productCount ?? 0) > 0}
           <p style="padding-left: 1rem; text-indent: -1rem; margin-top: 1rem">
-            <b>Progress:</b> {completedCount} / {summary.productCount}
+            <b>Progress:</b>
+            {completedCount} / {summary.productCount}
           </p>
-          <div style="width: 100%; margin-top: 0.5rem; border-style: solid; border-color: white; border-width: 1px; border-radius: 4px; overflow: hidden; height: 24px;">
-            <div style="width: {(completedCount / (summary.productCount ?? 1)) * 100}%; background: white; height: 100%; display: flex; align-items: center; justify-content: center;">
-            </div>
+          <div
+            style="width: 100%; margin-top: 0.5rem; border-style: solid; border-color: white; border-width: 1px; border-radius: 4px; overflow: hidden; height: 24px;"
+          >
+            <div
+              style="width: {(completedCount / (summary.productCount ?? 1)) *
+                100}%; background: white; height: 100%; display: flex; align-items: center; justify-content: center;"
+            ></div>
           </div>
         {/if}
       </DataDisplayBox>
