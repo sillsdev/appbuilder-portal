@@ -5,6 +5,8 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
+  import { onDestroy, onMount } from 'svelte';
+  import { persistedSession } from '$lib/stores';
 
   interface Props {
     data: PageData;
@@ -16,9 +18,20 @@
     comment?: string;
     productCount?: number;
     timestamp?: string;
+    updateIds?: number[];
   }
 
+  type Summary = {
+    initiatedBy?: string;
+    comment?: string;
+    productCount?: number;
+    timestamp?: string;
+  };
+
   let { data }: Props = $props();
+
+  const activeUpdateIds = persistedSession<number[]>('software-update-active-ids', []);
+  const persistedSummary = persistedSession<Summary | null>('software-update-summary', null);
 
   const { form, enhance, reset } = superForm(data.form, {
     resetForm: false,
@@ -32,7 +45,12 @@
           productCount: response.productCount,
           timestamp: response.timestamp
         };
+        persistedSummary.set(summary);
         showSummary = true;
+        if (response.updateIds?.length) {
+          activeUpdateIds.set(response.updateIds);
+          startPolling(response.updateIds);
+        }
         // Clear the form after showing summary
         reset();
       }
@@ -40,12 +58,60 @@
   });
 
   let showSummary = $state(false);
-  let summary = $state<{
-    initiatedBy?: string;
-    comment?: string;
-    productCount?: number;
-    timestamp?: string;
-  } | null>(null);
+  let summary = $state<Summary | null>(null);
+
+  let pollHandle: ReturnType<typeof setInterval> | null = null;
+  let completedCount = $state(0);
+
+  async function startPolling(ids: number[]) {
+    // Clear existing poll
+    if (pollHandle) clearInterval(pollHandle);
+    const qs = encodeURIComponent(ids.join(','));
+    // Poll every 10s
+    pollHandle = setInterval(async () => {
+      try {
+        const res = await fetch(`status?ids=${qs}`);
+        if (!res.ok) return;
+        const json = (await res.json()) as {
+          paused: boolean;
+          allCompleted: boolean;
+          completedProducts?: number;
+        };
+        if (json.completedProducts !== undefined) {
+          completedCount = json.completedProducts;
+        }
+        if (json.paused) {
+          toast('info', 'Software update paused');
+          clearInterval(pollHandle!);
+          pollHandle = null;
+          // Keep state persisted so user can see what was paused and potentially resume
+        } else if (json.allCompleted) {
+          toast('success', 'All rebuilds completed');
+          clearInterval(pollHandle!);
+          pollHandle = null;
+          activeUpdateIds.set([]);
+          persistedSummary.set(null);
+          showSummary = false;
+        }
+      } catch {
+        /* ignore network errors */
+      }
+    }, 10000);
+  }
+
+  onMount(() => {
+    const existing = $activeUpdateIds;
+    if (existing && existing.length) {
+      startPolling(existing);
+      showSummary = true;
+      const existingSummary = $persistedSummary;
+      if (existingSummary) summary = existingSummary;
+    }
+  });
+
+  onDestroy(() => {
+    if (pollHandle) clearInterval(pollHandle);
+  });
 </script>
 
 <div class="w-full">
@@ -55,6 +121,7 @@
     <br />
 
     <!-- Summary Information -->
+    {#if !showSummary}
     <DataDisplayBox
       title={m.admin_software_update_summary_title()}
       fields={[
@@ -90,6 +157,7 @@
         </p>
       {/if}
     </DataDisplayBox>
+    {/if}
 
     <br />
 
@@ -136,6 +204,15 @@
           <b>{m.admin_software_update_products_rebuilding_label()}:</b>
           {summary.productCount ?? 0}
         </p>
+        {#if (summary.productCount ?? 0) > 0}
+          <p style="padding-left: 1rem; text-indent: -1rem; margin-top: 1rem">
+            <b>Progress:</b> {completedCount} / {summary.productCount}
+          </p>
+          <div style="width: 100%; margin-top: 0.5rem; border-style: solid; border-color: white; border-width: 1px; border-radius: 4px; overflow: hidden; height: 24px;">
+            <div style="width: {(completedCount / (summary.productCount ?? 1)) * 100}%; background: white; height: 100%; display: flex; align-items: center; justify-content: center;">
+            </div>
+          </div>
+        {/if}
       </DataDisplayBox>
     {/if}
   </div>

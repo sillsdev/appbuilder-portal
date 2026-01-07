@@ -12,6 +12,7 @@ import * as products from './Products';
 import * as projects from './Projects';
 import type { WRITE_METHODS } from './ReadonlyPrisma';
 import * as reviewers from './Reviewers';
+import * as softwareUpdates from './SoftwareUpdates';
 import * as userRoles from './UserRoles';
 import * as userTasks from './UserTasks';
 import * as workflowInstances from './WorkflowInstances';
@@ -52,6 +53,7 @@ const handlers = {
   organizationProductDefinitions,
   organizationMemberships,
   productTransitions,
+  softwareUpdates,
   userRoles,
   utility,
   workflowInstances
