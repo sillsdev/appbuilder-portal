@@ -3,6 +3,7 @@
   import type { MinifiedUser } from '../../common';
   import type { PageData } from './$types';
   import { enhance as svk_enhance } from '$app/forms';
+  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
@@ -51,6 +52,11 @@
         focusSearchBar();
       }
     }
+  });
+
+  afterNavigate((navigation) => {
+    users = data.users;
+    count = data.userCount;
   });
 
   $effect(() => {
