@@ -615,5 +615,8 @@
   "admin_software_update_target_versions_label": "Target Versions",
   "admin_software_update_rebuild_started_title": "Rebuild Started",
   "admin_software_update_products_rebuilding_label": "Products Rebuilding",
-  "admin_software_update_no_products_message": "There are no products eligible for rebuild at this time."
+  "admin_software_update_no_products_message": "There are no products eligible for rebuild at this time.",
+  "admin_software_update_progress_label": "Progress",
+  "admin_software_update_paused_message": "Software update paused",
+  "admin_software_update_all_completed_message": "All rebuilds completed"
 }

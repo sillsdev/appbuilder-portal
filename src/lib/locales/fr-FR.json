@@ -614,5 +614,8 @@
   "admin_software_update_target_versions_label": "Versions cibles",
   "admin_software_update_rebuild_started_title": "Reconstruction démarrée",
   "admin_software_update_products_rebuilding_label": "Produits en reconstruction",
-  "admin_software_update_no_products_message": "Il n'y a aucun produit éligible pour la reconstruction pour le moment."
+  "admin_software_update_no_products_message": "Il n'y a aucun produit éligible pour la reconstruction pour le moment.",
+  "admin_software_update_progress_label": "Progrès",
+  "admin_software_update_paused_message": "Mise à jour du logiciel suspendue",
+  "admin_software_update_all_completed_message": "Toutes les reconstructions terminées"
 }
