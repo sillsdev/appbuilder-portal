@@ -81,12 +81,12 @@
           completedCount = json.completedProducts;
         }
         if (json.paused) {
-          toast('info', 'Software update paused');
+          toast('info', m.admin_software_update_paused_message());
           clearInterval(pollHandle!);
           pollHandle = null;
           // Keep state persisted so user can see what was paused and potentially resume
         } else if (json.allCompleted) {
-          toast('success', 'All rebuilds completed');
+          toast('success', m.admin_software_update_all_completed_message());
           clearInterval(pollHandle!);
           pollHandle = null;
           activeUpdateIds.set([]);
@@ -133,11 +133,11 @@
       >
         <p style="padding-left: 1rem; text-indent: -1rem">
           <b>{m.admin_software_update_projects_label()}:</b>
-          {data.affectedProjectCount} project{data.affectedProjectCount !== 1 ? 's' : ''}
+          {data.affectedProjectCount}
         </p>
         <p style="padding-left: 1rem; text-indent: -1rem">
           <b>{m.admin_software_update_products_label()}:</b>
-          {data.affectedProductCount} product{data.affectedProductCount !== 1 ? 's' : ''}
+          {data.affectedProductCount}
         </p>
         {#if data.affectedProjects && data.affectedProjects.length > 0}
           <p style="padding-left: 1rem; text-indent: -1rem" class="text-sm opacity-75">
@@ -206,7 +206,7 @@
         </p>
         {#if (summary.productCount ?? 0) > 0}
           <p style="padding-left: 1rem; text-indent: -1rem; margin-top: 1rem">
-            <b>Progress:</b>
+            <b>{m.admin_software_update_progress_label()}:</b>
             {completedCount} / {summary.productCount}
           </p>
           <div

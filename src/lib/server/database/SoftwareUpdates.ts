@@ -109,7 +109,7 @@ export async function completeForProduct(productId: string) {
 
     let ok = true;
     for (const p of u.Products) {
-      // Require a successful build at the target version strictly after the update start time
+      // Require a successful build at the target version at or after the update start time
       const recent = await prisma.productBuilds.findFirst({
         where: {
           ProductId: p.Id,
@@ -132,8 +132,6 @@ export async function completeForProduct(productId: string) {
         data: { DateCompleted: new Date() }
       });
       completed++;
-    } else {
-      console.log(`[completeForProduct] Update ${u.Id}: INCOMPLETE, some products don't match`);
     }
   }
 
