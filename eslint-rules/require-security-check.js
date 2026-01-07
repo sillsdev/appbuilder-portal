@@ -151,18 +151,18 @@ export default ESLintUtils.RuleCreator(() => '')({
                     }
                 }
                 else if (context.filename.endsWith('+server.ts') && node.declaration) {
+                    const httpMethods = ['POST', 'GET', 'PUT', 'DELETE', 'PATCH', 'HEAD'];
                     // endpoint functions in +server.ts files
                     if (node.declaration.type === 'FunctionDeclaration') {
                         // export function POST/GET/PUT/etc. ...
-                        if (['POST', 'GET', 'PUT', 'DELETE', 'PATCH'].includes(node.declaration.id.name)) {
+                        if (httpMethods.includes(node.declaration.id.name)) {
                             blockStatements.push(node.declaration.body);
                         }
                     }
                     else if (node.declaration.type === 'VariableDeclaration') {
                         // export const POST/GET/PUT/etc. = ...
                         node.declaration.declarations?.forEach((decl) => {
-                            if (decl.id.type === 'Identifier' &&
-                                ['POST', 'GET', 'PUT', 'DELETE', 'PATCH'].includes(decl.id.name)) {
+                            if (decl.id.type === 'Identifier' && httpMethods.includes(decl.id.name)) {
                                 collectBlockStatementsFromExpression(decl.init);
                             }
                         });
