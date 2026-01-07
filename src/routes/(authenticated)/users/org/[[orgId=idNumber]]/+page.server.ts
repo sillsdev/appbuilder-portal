@@ -22,7 +22,8 @@ const searchFilterSchema = v.object({
   search: v.string()
 });
 
-function select(orgIds?: number[]) {
+function select(orgIds: number[] | undefined, specificOrg: number | undefined) {
+  orgIds ??= specificOrg ? [specificOrg] : undefined;
   return {
     Id: true,
     Name: true,
@@ -127,7 +128,7 @@ export const load = (async ({ locals, params }) => {
         orderBy: {
           Name: 'asc'
         },
-        select: select(isSuper ? undefined : orgIds),
+        select: select(isSuper ? undefined : orgIds, orgId),
         where: userFilter(isSuper, orgIds, orgId),
         take: 50
       });
@@ -261,7 +262,7 @@ export const actions: Actions = {
         orderBy: {
           Name: 'asc'
         },
-        select: select(isSuper ? undefined : orgIds),
+        select: select(isSuper ? undefined : orgIds, orgId),
         where: where,
         skip: form.data.page.page * form.data.page.size,
         take: form.data.page.size

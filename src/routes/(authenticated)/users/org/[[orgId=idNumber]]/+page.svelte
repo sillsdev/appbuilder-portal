@@ -23,8 +23,8 @@
 
   let { data }: Props = $props();
 
-  const orgMap = new Map(data.organizations.map(({ Id, Name }) => [Id, Name]));
-  const groupMap = new Map(data.groups.map(({ Id, Name }) => [Id, Name]));
+  const orgMap = $derived(new Map(data.organizations.map(({ Id, Name }) => [Id, Name])));
+  const groupMap = $derived(new Map(data.groups.map(({ Id, Name }) => [Id, Name])));
 
   let users = $state(data.users);
   let count = $state(data.userCount);
