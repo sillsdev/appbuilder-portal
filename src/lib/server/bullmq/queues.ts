@@ -1,4 +1,4 @@
-import { Queue } from 'bullmq';
+import { Queue, type QueueOptions } from 'bullmq';
 import { BullMQOtel } from 'bullmq-otel';
 import { Redis } from 'ioredis';
 import type {
@@ -105,8 +105,21 @@ export const getQueueConfig = () => {
   return {
     connection: _queueConnection!.connection(),
     prefix: 'scriptoria',
-    telemetry: new BullMQOtel('scriptoria')
-  } as const;
+    telemetry: new BullMQOtel('scriptoria'),
+    defaultJobOptions: {
+      // https://docs.bullmq.io/guide/queues/auto-removal-of-jobs#keep-a-certain-number-of-jobs
+      removeOnComplete: {
+        // 2 weeks
+        age: 2 * 7 * 24 * 60 * 60,
+        count: 1000
+      },
+      removeOnFail: {
+        // 2 weeks
+        age: 2 * 7 * 24 * 60 * 60,
+        count: 2000
+      }
+    }
+  } as QueueOptions;
 };
 let _queues: ReturnType<typeof createQueues> | undefined = undefined;
 
