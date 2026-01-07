@@ -6,7 +6,7 @@ import type { Actions, PageServerLoad, RouteParams } from './$types';
 import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
-import { DatabaseReads } from '$lib/server/database';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 
 /// HELPERS
 
@@ -51,6 +51,8 @@ interface ProductToRebuild {
   requiredVersion: string | null;
   projectId: number;
   projectName: string;
+  applicationTypeId: number;
+  buildEngineUrl: string;
 }
 
 /**
@@ -146,7 +148,9 @@ async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToReb
         latestVersion: latestVersion,
         requiredVersion: requiredVersion,
         projectId: product.ProjectId,
-        projectName: product.Project.Name ?? 'Unknown Project'
+        projectName: product.Project.Name ?? 'Unknown Project',
+        applicationTypeId: product.Project.TypeId,
+        buildEngineUrl: product.Project.Organization.BuildEngineUrl ?? 'unknown'
       });
     }
   }
@@ -216,12 +220,33 @@ export const actions = {
 
     const productsToRebuild = await getProductsForRebuild(searchOrgs);
 
+    // If no products need to be rebuilt, return an error
+    if (productsToRebuild.length === 0) {
+      return fail(400, {
+        form,
+        ok: false
+      });
+    }
+
+    // Record rebuilds in SoftwareUpdates table
+    const createdUpdates = await DatabaseWrites.softwareUpdates.recordRebuilds({
+      initiatorId: locals.security.userId,
+      comment: form.data.comment,
+      items: productsToRebuild.map((p) => ({
+        buildEngineUrl: p.buildEngineUrl,
+        applicationTypeId: p.applicationTypeId,
+        version: p.requiredVersion!,
+        productId: p.id
+      }))
+    });
+
     // Get user info for display
     const user = await DatabaseReads.users.findUnique({
       where: { Id: locals.security.userId },
       select: { Name: true, Email: true }
     });
 
+    // Start rebuilds for each affected product
     const results = await Promise.allSettled(
       productsToRebuild.map((p) => {
         return doProductAction(p.id, ProductActionType.Rebuild, form.data.comment);
@@ -239,7 +264,8 @@ export const actions = {
       productCount: successCount,
       totalProducts: productsToRebuild.length,
       failureCount,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      updateIds: createdUpdates.map((u) => u.Id)
     };
 
     return { form };
