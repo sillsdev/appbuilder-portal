@@ -790,7 +790,10 @@ export const WorkflowStateMachine = setup({
                       //ProductType.AssetPackage
                       //default
                       's3-bucket',
-              environment: context.environment
+              environment:
+                context.workflowType === WorkflowType.Republish
+                  ? { ...context.environment, [ENVKeys.PUBLISH_NO_APK]: '1' }
+                  : context.environment
             },
             BullMQ.Retry0f600
           );
