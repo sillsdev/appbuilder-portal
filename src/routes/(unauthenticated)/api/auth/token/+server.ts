@@ -17,7 +17,16 @@ export const HEAD: RequestHandler = async ({ locals }) => {
  *
  * Required URL Params:
  * challenge: base64URL-encodeded, sha256 hash of a string that will be used in /api/auth/exchange
- * redirect_uri: location to send the code to, allowed to start with localhost, 127.0.0.1 or org.sil.{sab,dab,rab,kab}: (for desktop apps)
+ * redirect_uri: location to send the code to
+ * - restrictions:
+ *  - may start with: 'org.sil.{sab,dab,rab,kab}:' (for desktop apps)
+ *  - may have hostname:
+ *    - equal to 'localhost' or '127.0.0.1' (for dev and desktop apps)
+ *    - ending with 'buildengine.scriptoria.io' (for buildengine auth)
+ *
+ * Optional URL Params:
+ * scope: minimum permissions requested
+ * - admin: checks if user is SuperAdmin
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
   locals.security.requireNothing();
@@ -29,10 +38,12 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     error(400, 'Invalid challenge format: Base64URL (no padding) required');
   }
   let urlValid = !!redirectUri.match(/^org\.sil\.[srdk]ab:/);
+  let isBuildEngine = false;
   if (!urlValid) {
     try {
       const url = new URL(redirectUri);
-      urlValid = ['localhost', '127.0.0.1'].includes(url.hostname);
+      isBuildEngine = !!url.hostname.match(/buildengine\.scriptoria\.io$/);
+      urlValid = ['localhost', '127.0.0.1'].includes(url.hostname) || isBuildEngine;
     } catch {
       /*empty*/
     }
@@ -41,6 +52,12 @@ export const GET: RequestHandler = async ({ locals, url }) => {
   if (!urlValid) error(400, 'Invalid redirect url');
   // params are valid, now do login prompt
   locals.security.requireAuthenticated();
+
+  if (url.searchParams.get('scope') === 'admin') {
+    locals.security.requireSuperAdmin();
+  } else if (isBuildEngine) {
+    error(400, 'Missing required scope');
+  }
 
   // create key from AUTH0_SECRET
   if (!env.AUTH0_SECRET) {
@@ -64,7 +81,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
   const code = randomUUID();
 
   try {
-    const token = await new SignJWT({ email: user.Email })
+    const token = await new SignJWT({
+      email: user.Email,
+      scope: url.searchParams.get('scope') ?? 'default'
+    })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
       .setSubject(user.ExternalId)
@@ -72,11 +92,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       .sign(secret);
 
     // store challenge and token in redis for up to 5 minutes with generated code as the key
-    // we may want to use IORedis key prefixes in the future (https://github.com/redis/ioredis?tab=readme-ov-file#transparent-key-prefixing)
     await getAuthConnection()
       .pipeline()
-      .set(`auth:code:${code}`, challenge, 'EX', 300)
-      .set(`auth:token:${code}`, token, 'EX', 300)
+      .set(`code:${code}`, challenge, 'EX', 300)
+      .set(`token:${code}`, token, 'EX', 300)
       .exec(); // 5 minute (300 s) TTL
   } catch {
     error(500, 'Failed to generate authentication code');

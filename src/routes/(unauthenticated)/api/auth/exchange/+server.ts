@@ -24,8 +24,8 @@ export async function POST({ locals, request }) {
   if (body.success) {
     // get cached challenge and token
     const [challenge, token] = await getAuthConnection().mget(
-      `auth:code:${body.output.code}`,
-      `auth:token:${body.output.code}`
+      `code:${body.output.code}`,
+      `token:${body.output.code}`
     );
     if (!challenge || !token) error(400, 'Invalid or expired code');
 
@@ -33,8 +33,8 @@ export async function POST({ locals, request }) {
       //immediately invalidate
       await getAuthConnection()
         .pipeline()
-        .del(`auth:code:${body.output.code}`)
-        .del(`auth:token:${body.output.code}`)
+        .del(`code:${body.output.code}`)
+        .del(`token:${body.output.code}`)
         .exec();
     } catch {
       /* empty */
