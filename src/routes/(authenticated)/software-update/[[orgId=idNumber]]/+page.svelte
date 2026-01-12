@@ -5,7 +5,6 @@
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { persistedSession } from '$lib/stores';
   import { toast } from '$lib/utils';
 
   interface Props {
@@ -30,14 +29,11 @@
 
   let { data }: Props = $props();
 
-  const activeUpdateIds = persistedSession<number[]>('software-update-active-ids', []);
-  const persistedSummary = persistedSession<Summary | null>('software-update-summary', null);
-
   const { form, enhance, reset } = superForm(data.form, {
     resetForm: false,
-    onUpdated({ form }) {
-      const response = form.message as SoftwareUpdateResponse;
-      if (response?.ok) {
+    onUpdate(event) {
+      const response = event.result.data as SoftwareUpdateResponse;
+      if (event.form.valid && response?.ok) {
         toast('success', m.admin_software_update_toast_success());
         summary = {
           initiatedBy: response.initiatedBy,
@@ -45,10 +41,8 @@
           productCount: response.productCount,
           timestamp: response.timestamp
         };
-        persistedSummary.set(summary);
         showSummary = true;
         if (response.updateIds?.length) {
-          activeUpdateIds.set(response.updateIds);
           startPolling(response.updateIds);
         }
         // Clear the form after showing summary
@@ -89,8 +83,6 @@
           toast('success', m.admin_software_update_all_completed_message());
           clearInterval(pollHandle!);
           pollHandle = null;
-          activeUpdateIds.set([]);
-          persistedSummary.set(null);
           showSummary = false;
         }
       } catch {
@@ -100,12 +92,11 @@
   }
 
   onMount(() => {
-    const existing = $activeUpdateIds;
-    if (existing && existing.length) {
-      startPolling(existing);
+    if (data.activeUpdates?.length) {
+      const updateIds = data.activeUpdates.map((u) => u.Id);
+      startPolling(updateIds);
       showSummary = true;
-      const existingSummary = $persistedSummary;
-      if (existingSummary) summary = existingSummary;
+      // Note: summary details will be shown from the last polling response
     }
   });
 
@@ -131,28 +122,28 @@
           }
         ]}
       >
-        <p style="padding-left: 1rem; text-indent: -1rem">
+        <p class="pl-4 -indent-4">
           <b>{m.admin_software_update_projects_label()}:</b>
           {data.affectedProjectCount}
         </p>
-        <p style="padding-left: 1rem; text-indent: -1rem">
+        <p class="pl-4 -indent-4">
           <b>{m.admin_software_update_products_label()}:</b>
           {data.affectedProductCount}
         </p>
         {#if data.affectedProjects && data.affectedProjects.length > 0}
-          <p style="padding-left: 1rem; text-indent: -1rem" class="text-sm opacity-75">
+          <p class="pl-4 -indent-4 text-sm opacity-75">
             <b>{m.admin_software_update_project_names_label()}:</b>
             {data.affectedProjects.join(', ')}
           </p>
         {/if}
         {#if data.affectedVersions && data.affectedVersions.length > 0}
-          <p style="padding-left: 1rem; text-indent: -1rem" class="text-sm opacity-75">
+          <p class="pl-4 -indent-4 text-sm opacity-75">
             <b>{m.admin_software_update_target_versions_label()}:</b>
             {data.affectedVersions.join(', ')}
           </p>
         {/if}
         {#if data.affectedProductCount === 0}
-          <p style="padding-left: 1rem; text-indent: -1rem" class="text-info font-bold mt-2">
+          <p class="pl-4 -indent-4 text-info font-bold mt-2">
             {m.admin_software_update_no_products_message()}
           </p>
         {/if}
@@ -200,23 +191,20 @@
           }
         ]}
       >
-        <p style="padding-left: 1rem; text-indent: -1rem">
+        <p class="pl-4 -indent-4">
           <b>{m.admin_software_update_products_rebuilding_label()}:</b>
           {summary.productCount ?? 0}
         </p>
         {#if (summary.productCount ?? 0) > 0}
-          <p style="padding-left: 1rem; text-indent: -1rem; margin-top: 1rem">
+          <p class="pl-4 -indent-4 mt-4">
             <b>{m.admin_software_update_progress_label()}:</b>
             {completedCount} / {summary.productCount}
           </p>
-          <div
-            style="width: 100%; margin-top: 0.5rem; border-style: solid; border-color: white; border-width: 1px; border-radius: 4px; overflow: hidden; height: 24px;"
-          >
-            <div
-              style="width: {(completedCount / (summary.productCount ?? 1)) *
-                100}%; background: white; height: 100%; display: flex; align-items: center; justify-content: center;"
-            ></div>
-          </div>
+          <progress
+            class="progress progress-primary w-full mt-2"
+            value={completedCount}
+            max={summary.productCount ?? 1}
+          ></progress>
         {/if}
       </DataDisplayBox>
     {/if}

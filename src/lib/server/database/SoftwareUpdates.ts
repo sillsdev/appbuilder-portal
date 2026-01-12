@@ -7,29 +7,6 @@ export type RebuildItem = {
   productId: string;
 };
 
-// Creates a SoftwareUpdates entry and links the provided products.
-export async function createWithProducts(data: {
-  InitiatedById: number;
-  Comment: string;
-  BuildEngineUrl: string;
-  ApplicationTypeId: number;
-  Version: string;
-  productIds: string[];
-}) {
-  return prisma.softwareUpdates.create({
-    data: {
-      InitiatedById: data.InitiatedById,
-      Comment: data.Comment,
-      BuildEngineUrl: data.BuildEngineUrl,
-      ApplicationTypeId: data.ApplicationTypeId,
-      Version: data.Version,
-      Products: {
-        connect: data.productIds.map((id) => ({ Id: id }))
-      }
-    }
-  });
-}
-
 /**
  * Records rebuild intents by grouping items per (engine, appType, version) and
  * creating one SoftwareUpdates row per group, connecting all products in that group.
