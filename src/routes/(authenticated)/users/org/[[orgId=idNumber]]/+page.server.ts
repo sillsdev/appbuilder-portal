@@ -5,9 +5,9 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import { minifyUser } from '../../common';
 import type { Actions, PageServerLoad } from './$types';
-import { RoleId } from '$lib/prisma';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { filterAdminOrgs } from '$lib/utils/roles';
 import { idSchema, paginateSchema } from '$lib/valibot';
 
 const lockSchema = v.object({
@@ -83,24 +83,6 @@ function userFilter(isSuper: boolean, orgIds: number[], specificOrg: number | un
         };
 }
 
-function orgFilter(
-  sec: Security,
-  orgId: number | undefined
-): Prisma.OrganizationsWhereInput | undefined {
-  return orgId
-    ? { Id: orgId }
-    : sec.isSuperAdmin
-      ? undefined
-      : {
-          UserRoles: {
-            some: {
-              RoleId: RoleId.OrgAdmin,
-              UserId: sec.userId
-            }
-          }
-        };
-}
-
 export const load = (async ({ locals, params }) => {
   locals.security.requireAdminOfAny();
   if (params.orgId) {
@@ -113,7 +95,7 @@ export const load = (async ({ locals, params }) => {
     try {
       const isSuper = locals.security.isSuperAdmin;
       const organizations = await DatabaseReads.organizations.findMany({
-        where: orgFilter(locals.security, orgId),
+        where: filterAdminOrgs(locals.security, orgId),
         select: {
           Id: true,
           Name: true
@@ -218,7 +200,7 @@ export const actions: Actions = {
       const isSuper = event.locals.security.isSuperAdmin;
 
       const organizations = await DatabaseReads.organizations.findMany({
-        where: orgFilter(event.locals.security, orgId),
+        where: filterAdminOrgs(event.locals.security, orgId),
         select: {
           Id: true
         }

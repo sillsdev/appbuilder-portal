@@ -1,4 +1,5 @@
 import type { Session } from '@auth/sveltekit';
+import type { Prisma } from '@prisma/client';
 import { RoleId } from '$lib/prisma';
 
 type ClientRolesArray = Session['user']['roles'];
@@ -32,4 +33,28 @@ export function isAdminForAny(roles: ClientRolesArray): boolean {
  */
 export function isSuperAdmin(roles: ClientRolesArray): boolean {
   return roles.some(([, r]) => r === RoleId.SuperAdmin);
+}
+
+/** returns a Prisma filter for organizations that a user is admin for
+ *
+ * DOES NOT CHECK IF USER IS ADMIN OF SPECIFIC ORG (this needs to be checked externally with the security object)
+ * @param sec Security object
+ * @param orgId Id of specific organization
+ */
+export function filterAdminOrgs(
+  sec: Security,
+  orgId: number | undefined
+): Prisma.OrganizationsWhereInput {
+  return orgId
+    ? { Id: orgId }
+    : sec.isSuperAdmin
+      ? {} // returns empty object in case spreading is desired at call site
+      : {
+          UserRoles: {
+            some: {
+              RoleId: RoleId.OrgAdmin,
+              UserId: sec.userId
+            }
+          }
+        };
 }
