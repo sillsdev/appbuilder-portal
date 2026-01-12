@@ -3,6 +3,7 @@
   import type { MinifiedUser } from '../../common';
   import type { PageData } from './$types';
   import { enhance as svk_enhance } from '$app/forms';
+  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
@@ -22,8 +23,8 @@
 
   let { data }: Props = $props();
 
-  const orgMap = new Map(data.organizations.map(({ Id, Name }) => [Id, Name]));
-  const groupMap = new Map(data.groups.map(({ Id, Name }) => [Id, Name]));
+  const orgMap = $derived(new Map(data.organizations.map(({ Id, Name }) => [Id, Name])));
+  const groupMap = $derived(new Map(data.groups.map(({ Id, Name }) => [Id, Name])));
 
   let users = $state(data.users);
   let count = $state(data.userCount);
@@ -51,6 +52,11 @@
         focusSearchBar();
       }
     }
+  });
+
+  afterNavigate((navigation) => {
+    users = data.users;
+    count = data.userCount;
   });
 
   $effect(() => {
