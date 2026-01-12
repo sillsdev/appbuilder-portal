@@ -6,6 +6,7 @@ import type { Actions, PageServerLoad, RouteParams } from './$types';
 import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
+import { BuildEngine } from '$lib/server/build-engine-api';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 
 /// HELPERS
@@ -71,11 +72,11 @@ async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToReb
         DateArchived: null, // Project has not been archived
         RebuildOnSoftwareUpdate: true // Project setting is true
       },
-      WorkflowInstance: null // Only products without active workflows
+      WorkflowInstance: null, // Only products without active workflows
+      DatePublished: { not: null } // Only products that have been published at least once
     },
     select: {
       Id: true,
-      WorkflowBuildId: true, // We need this to identify the latest build, assuming WorkflowBuildId is monotonically increasing
       ProductDefinitionId: true,
       ProjectId: true,
       ProductBuilds: {
@@ -89,11 +90,7 @@ async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToReb
         select: {
           TypeId: true,
           Name: true,
-          Organization: {
-            select: {
-              BuildEngineUrl: true
-            }
-          }
+          OrganizationId: true
         }
       }
     }
@@ -101,12 +98,21 @@ async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToReb
 
   const productsForRebuild: ProductToRebuild[] = [];
 
-  // Batch fetch required SystemVersions for unique (BuildEngineUrl, ApplicationTypeId) pairs
-  const uniqueKeys = new Set(
-    eligibleProducts.map(
-      (p) => `${p.Project.Organization.BuildEngineUrl ?? ''}|${p.Project.TypeId}`
-    )
-  );
+  const orgIdToUrlMap = new Map<number, string>();
+
+  // Build unique keys and resolve URLs on-demand
+  const uniqueKeys = new Set<string>();
+  for (const product of eligibleProducts) {
+    const orgId = product.Project.OrganizationId;
+    if (!orgIdToUrlMap.has(orgId)) {
+      const { url } = await BuildEngine.Requests.getURLandToken(orgId);
+      if (url) {
+        orgIdToUrlMap.set(orgId, url);
+      }
+    }
+    const buildEngineUrl = orgIdToUrlMap.get(orgId)!;
+    uniqueKeys.add(`${buildEngineUrl}|${product.Project.TypeId}`);
+  }
 
   const systemVersionsRaw = uniqueKeys.size
     ? await DatabaseReads.systemVersions.findMany({
@@ -136,8 +142,9 @@ async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToReb
     const latestProductBuild = product.ProductBuilds[0];
     const latestVersion = latestProductBuild?.AppBuilderVersion ?? null;
 
-    // Look up the required SystemVersion from the pre-fetched map
-    const key = `${product.Project.Organization.BuildEngineUrl ?? ''}|${product.Project.TypeId}`;
+    // Get the resolved build engine URL and look up the required SystemVersion
+    const buildEngineUrl = orgIdToUrlMap.get(product.Project.OrganizationId) ?? '';
+    const key = `${buildEngineUrl}|${product.Project.TypeId}`;
     const requiredVersion = systemVersionsMap.get(key) ?? null;
 
     // 3. Apply the final filtering logic:
@@ -150,7 +157,7 @@ async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToReb
         projectId: product.ProjectId,
         projectName: product.Project.Name ?? 'Unknown Project',
         applicationTypeId: product.Project.TypeId,
-        buildEngineUrl: product.Project.Organization.BuildEngineUrl ?? 'unknown'
+        buildEngineUrl: buildEngineUrl
       });
     }
   }
@@ -160,7 +167,6 @@ async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToReb
 
 const formSchema = v.object({
   comment: v.pipe(v.string(), v.minLength(1, 'Comment is required'))
-  // Since we are only getting a comment, I do not believe we need a properties: propertiesSchema here.
 });
 
 export const load = (async ({ url, locals, params }) => {
@@ -189,6 +195,21 @@ export const load = (async ({ url, locals, params }) => {
   }
   const projects = Array.from(projectMap.entries()).map(([id, name]) => ({ Id: id, Name: name }));
 
+  // Get any active software updates initiated by this user
+  const activeUpdates = await DatabaseReads.softwareUpdates.findMany({
+    where: {
+      DateCompleted: null,
+      Paused: false,
+      InitiatedById: locals.security.userId
+    },
+    select: {
+      Id: true,
+      Comment: true,
+      DateCreated: true,
+      Products: { select: { Id: true } }
+    }
+  });
+
   const form = await superValidate(valibot(formSchema));
   return {
     form,
@@ -196,7 +217,8 @@ export const load = (async ({ url, locals, params }) => {
     affectedProductCount: productsToRebuild.length,
     affectedProjectCount: projects.length,
     affectedProjects: projects.map((p) => p.Name).sort(),
-    affectedVersions: Array.from(new Set(productsToRebuild.map((p) => p.requiredVersion))).sort()
+    affectedVersions: Array.from(new Set(productsToRebuild.map((p) => p.requiredVersion))).sort(),
+    activeUpdates
   };
 }) satisfies PageServerLoad;
 
@@ -206,17 +228,17 @@ export const actions = {
   /// START: Starts rebuilds for affected organizations.
   //
   async start({ request, locals, params }) {
+    // Determine what organizations are being affected and check security
+    const searchOrgs = await getOrganizations(locals, params);
+    if (params.orgId) locals.security.requireAdminOfOrg(Number(params.orgId));
+    else locals.security.requireAdminOfOrgIn(searchOrgs);
+
     // Check that form is valid upon submission
     const form = await superValidate(request, valibot(formSchema));
 
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
-
-    // Determine what organizations are being affected and check security
-    const searchOrgs = await getOrganizations(locals, params);
-    if (params.orgId) locals.security.requireAdminOfOrg(Number(params.orgId));
-    else locals.security.requireAdminOfOrgIn(searchOrgs);
 
     const productsToRebuild = await getProductsForRebuild(searchOrgs);
 
@@ -256,8 +278,8 @@ export const actions = {
     const successCount = results.filter((r) => r.status === 'fulfilled').length;
     const failureCount = results.filter((r) => r.status === 'rejected').length;
 
-    // Attach extra data to the form object so it survives Superforms serialization
-    form.message = {
+    return {
+      form,
       ok: true,
       initiatedBy: user?.Name || user?.Email || 'Unknown User',
       comment: form.data.comment,
@@ -267,7 +289,5 @@ export const actions = {
       timestamp: new Date().toISOString(),
       updateIds: createdUpdates.map((u) => u.Id)
     };
-
-    return { form };
   }
 } satisfies Actions;
