@@ -1,21 +1,12 @@
 import type { LayoutServerLoad } from './$types';
-import { RoleId } from '$lib/prisma';
 import { DatabaseReads } from '$lib/server/database';
+import { filterAdminOrgs } from '$lib/utils/roles';
 
 export const load = (async (event) => {
   event.locals.security.requireAdminOfAny();
 
   const organizations = await DatabaseReads.organizations.findMany({
-    where: event.locals.security.isSuperAdmin
-      ? {}
-      : {
-          UserRoles: {
-            some: {
-              UserId: event.locals.security.userId,
-              RoleId: RoleId.OrgAdmin
-            }
-          }
-        },
+    where: filterAdminOrgs(event.locals.security, undefined),
     select: {
       Id: true,
       LogoUrl: true,
