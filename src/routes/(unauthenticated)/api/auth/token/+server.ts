@@ -38,6 +38,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     error(400, 'Invalid challenge format: Base64URL (no padding) required');
   }
   let urlValid = !!redirectUri.match(/^org\.sil\.[srdk]ab:/);
+  let isBuildEngine = false;
   if (!urlValid) {
     try {
       const url = new URL(redirectUri);
@@ -79,7 +80,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
   const code = randomUUID();
 
   try {
-    const token = await new SignJWT({ email: user.Email })
+    const token = await new SignJWT({
+      email: user.Email,
+      scope: url.searchParams.get('scope') ?? 'default'
+    })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
       .setSubject(user.ExternalId)
