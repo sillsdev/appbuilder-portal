@@ -42,9 +42,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
   if (!urlValid) {
     try {
       const url = new URL(redirectUri);
-      urlValid =
-        ['localhost', '127.0.0.1'].includes(url.hostname) ||
-        !!url.hostname.match(/buildengine\.scriptoria\.io$/);
+      isBuildEngine = !!url.hostname.match(/buildengine\.scriptoria\.io$/);
+      urlValid = ['localhost', '127.0.0.1'].includes(url.hostname) || isBuildEngine;
     } catch {
       /*empty*/
     }
@@ -56,6 +55,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
   if (url.searchParams.get('scope') === 'admin') {
     locals.security.requireSuperAdmin();
+  } else if (isBuildEngine) {
+    error(400, 'Missing required scope');
   }
 
   // create key from AUTH0_SECRET
