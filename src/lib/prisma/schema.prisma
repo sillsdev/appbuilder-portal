@@ -13,7 +13,6 @@ model ApplicationTypes {
   Id                 Int                  @id(map: "PK_ApplicationTypes") @default(autoincrement())
   Name               String?
   Description        String?
-  ProductDefinitions ProductDefinitions[]
   ProjectImports     ProjectImports[]
   Projects           Projects[]
   SystemVersions     SystemVersions[]
@@ -31,17 +30,6 @@ model Authors {
 
   @@index([ProjectId], map: "IX_Authors_ProjectId")
   @@index([UserId], map: "IX_Authors_UserId")
-}
-
-model Emails {
-  Id               Int      @id(map: "PK_Emails") @default(autoincrement())
-  To               String?
-  Cc               String?
-  Bcc              String?
-  Subject          String?
-  ContentTemplate  String?
-  ContentModelJson String?
-  Created          DateTime @db.Timestamp(6)
 }
 
 model GroupMemberships {
@@ -67,39 +55,6 @@ model Groups {
   Projects         Projects[]
 
   @@index([OwnerId], map: "IX_Groups_OwnerId")
-}
-
-model Notifications {
-  Id                       Int       @id(map: "PK_Notifications") @default(autoincrement())
-  MessageId                String?
-  UserId                   Int
-  DateRead                 DateTime? @db.Timestamp(6)
-  DateEmailSent            DateTime? @db.Timestamp(6)
-  DateCreated              DateTime? @default(now()) @db.Timestamp(6)
-  DateUpdated              DateTime? @updatedAt @db.Timestamp(6)
-  Message                  String?
-  MessageSubstitutionsJson String?
-  SendEmail                Boolean
-  LinkUrl                  String?
-  User                     Users     @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Notifications_Users_UserId")
-
-  @@index([UserId], map: "IX_Notifications_UserId")
-}
-
-model OrganizationInviteRequests {
-  Id            Int       @id(map: "PK_OrganizationInviteRequests") @default(autoincrement())
-  Name          String?
-  OrgAdminEmail String?
-  WebsiteUrl    String?
-  DateCreated   DateTime? @default(now()) @db.Timestamp(6)
-  DateUpdated   DateTime? @updatedAt @db.Timestamp(6)
-}
-
-model OrganizationInvites {
-  Id         Int     @id(map: "PK_OrganizationInvites") @default(autoincrement())
-  Name       String?
-  OwnerEmail String?
-  Token      String?
 }
 
 model OrganizationMembershipInvites {
@@ -217,14 +172,12 @@ model ProductBuilds {
 model ProductDefinitions {
   Id                             Int                              @id(map: "PK_ProductDefinitions") @default(autoincrement())
   Name                           String?
-  TypeId                         Int // ISSUE: #1102 This doesn't actually do anything... This should probably be removed?
   Description                    String?
   WorkflowId                     Int
   RebuildWorkflowId              Int?
   RepublishWorkflowId            Int?
   Properties                     String?
   OrganizationProductDefinitions OrganizationProductDefinitions[]
-  ApplicationTypes               ApplicationTypes                 @relation(fields: [TypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductDefinitions_ApplicationTypes_TypeId")
   RebuildWorkflow                WorkflowDefinitions?             @relation("ProductDefinitions_RebuildWorkflowIdToWorkflowDefinitions", fields: [RebuildWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RebuildWorkflowId")
   RepublishWorkflow              WorkflowDefinitions?             @relation("ProductDefinitions_RepublishWorkflowIdToWorkflowDefinitions", fields: [RepublishWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RepublishWorkflowId")
   Workflow                       WorkflowDefinitions              @relation("ProductDefinitions_WorkflowIdToWorkflowDefinitions", fields: [WorkflowId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_WorkflowId")
@@ -232,7 +185,6 @@ model ProductDefinitions {
 
   @@index([RebuildWorkflowId], map: "IX_ProductDefinitions_RebuildWorkflowId")
   @@index([RepublishWorkflowId], map: "IX_ProductDefinitions_RepublishWorkflowId")
-  @@index([TypeId], map: "IX_ProductDefinitions_TypeId")
   @@index([WorkflowId], map: "IX_ProductDefinitions_WorkflowId")
 }
 
@@ -300,7 +252,6 @@ model Products {
   WorkflowBuildId     Int
   DateBuilt           DateTime?             @db.Timestamp(6)
   WorkflowPublishId   Int
-  WorkflowComment     String?
   DatePublished       DateTime?             @db.Timestamp(6)
   PublishLink         String?
   VersionBuilt        String?
@@ -394,12 +345,6 @@ model Reviewers {
   @@index([ProjectId], map: "IX_Reviewers_ProjectId")
 }
 
-model Roles {
-  Id        Int         @id(map: "PK_Roles") @default(autoincrement())
-  RoleName  Int
-  UserRoles UserRoles[]
-}
-
 model StoreLanguages {
   Id          Int        @id(map: "PK_StoreLanguages") @default(autoincrement())
   Name        String?
@@ -475,10 +420,9 @@ model UserRoles {
   // ISSUE: #1102 composite keys?
   Id             Int           @id(map: "PK_UserRoles") @default(autoincrement())
   UserId         Int
-  RoleId         Int // Do we really *need* a separate database model for Roles?
+  RoleId         Int
   OrganizationId Int
   Organization   Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserRoles_Organizations_OrganizationId")
-  Role           Roles         @relation(fields: [RoleId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserRoles_Roles_RoleId")
   User           Users         @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserRoles_Users_UserId")
 
   @@index([OrganizationId], map: "IX_UserRoles_OrganizationId")
@@ -520,7 +464,6 @@ model Users {
   DateUpdated                   DateTime?                       @updatedAt @db.Timestamp(6)
   Authors                       Authors[]
   GroupMemberships              GroupMemberships[]
-  Notifications                 Notifications[]
   OrganizationMembershipInvites OrganizationMembershipInvites[]
   OrganizationMemberships       OrganizationMemberships[]
   ProjectImports                ProjectImports[]
