@@ -7,19 +7,8 @@ import { join } from 'path';
 import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
-import { Workflow } from '../workflow';
-import { WorkflowType, WorkflowTypeString } from '$lib/prisma';
 import { fetchPackageName } from '$lib/products';
-import {
-  ENVKeys,
-  ProductType,
-  WorkflowAction,
-  WorkflowOptions,
-  WorkflowState,
-  isDeprecated,
-  isWorkflowState
-} from '$lib/workflowTypes';
-import type { Environment, WorkflowInstanceContext } from '$lib/workflowTypes';
+import { ProductType, WorkflowOptions } from '$lib/workflowTypes';
 
 export async function checkSystemStatuses(
   job: Job<BullMQ.System.CheckEngineStatuses>
@@ -417,44 +406,12 @@ async function processLocalizedNames(
   return update;
 }
 
-enum ProcessStatus {
-  /** Status of a process which was created just now */
-  Initialized = 0,
-  /** Status of a process which is executing at current moment */
-  Running = 1,
-  /** Status of a process which is not executing at current moment and awaiting an external interaction */
-  Idled = 2,
-  /** Status of a process which was finalized */
-  Finalized = 3,
-  /** Status of a process which was terminated with an error */
-  Terminated = 4,
-  /** Status of a process which had an error but not terminated */
-  Error = 5,
-  /** Status of a process which exists in persistence store but its status is not defined */
-  Unknown = 254,
-  /** Status of a process which does not exist in persistence store */
-  NotFound = 255
-}
-
-const uninterestedStatuses = new Map([
-  [ProcessStatus.Terminated, 'Terminated'],
-  [ProcessStatus.Unknown, 'Unknown'],
-  [ProcessStatus.NotFound, 'NotFound']
-]);
-
-const usableStatuses = new Map([
-  [ProcessStatus.Idled, 'Idled'],
-  [ProcessStatus.Finalized, 'Finalized'],
-  [ProcessStatus.Error, 'Error']
-]);
-
 export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
   /**
    * Migration Tasks:
    * 1. Delete UserTasks for archived projects
-   * 2. Add UserId to transitions with a WorkflowUserId but no UserId
-   * 3. Migrate data from DWKit tables to WorkflowInstances
    * 2. (removed step)
+   * 3. (removed step)
    * 4. Populate Product.PackageName
    * 5. Remove users with no org membership
    * 6. Populate ProductBuild.AppBuilderVersion
@@ -471,82 +428,6 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     }
   });
   job.updateProgress(10);
-
-  // 3. Migrate data from DWKit tables to WorkflowInstances
-
-  // Any product we would be interested in
-  // - already exists in the Products table
-  // - lacks a WorkflowInstance
-  // - has an associated WorkflowProcessInstance
-
-  type ProductId = {
-    Id: string;
-  };
-
-  type InstanceData = ProductId & { ActivityName: string; Status: number };
-
-  let migratedProducts = 0;
-  const migrationErrors: { Id: string; error: string }[] = [];
-  const products = await DatabaseReads.$queryRaw<InstanceData[]>`
-    SELECT p."Id", wpi."ActivityName", wpis."Status" from "Products" p
-    LEFT JOIN "WorkflowProcessInstance" wpi on wpi."Id" = p."Id"
-    LEFT JOIN "WorkflowProcessInstanceStatus" wpis on wpis."Id" = p."Id"
-    WHERE wpi."ActivityName" IS NOT NULL AND wpis."Status" IS NOT NULL AND
-    NOT EXISTS (SELECT "ProductId" FROM "WorkflowInstances" wi WHERE p."Id" = wi."ProductId")`;
-
-  for (const product of products) {
-    // we aren't interested in the weird edge cases, none of these show up in the prod dump anyways
-    if (uninterestedStatuses.get(product.Status)) {
-      migrationErrors.push({
-        Id: product.Id,
-        error: uninterestedStatuses.get(product.Status)!
-      });
-      continue;
-    }
-
-    // We are interested in the Idled, Error, and Finalized states
-    if (usableStatuses.get(product.Status)) {
-      const res = await tryCreateInstance(product.Id, product.Status, product.ActivityName, (s) =>
-        job.log(s)
-      );
-      if (res.ok) {
-        migratedProducts++;
-      } else {
-        migrationErrors.push({
-          Id: product.Id,
-          error: res.value
-        });
-        continue;
-      }
-    } else if (
-      product.Status === ProcessStatus.Initialized ||
-      product.Status === ProcessStatus.Running
-    ) {
-      // if the process is currently running or just created, we want to check back in a little bit
-      // PR #1115: TODO create delayed job to take care of instances that are currently running or initialized???
-      migrationErrors.push({
-        Id: product.Id,
-        error: product.Status ? 'Running' : 'Initialized'
-      });
-      continue;
-    } else {
-      migrationErrors.push({
-        Id: product.Id,
-        error: `Unrecognized status: '${product.Status}'`
-      });
-      continue;
-    }
-  }
-
-  // delete any WorkflowProcessInstances that are no longer associated with a product
-  const orphanedInstances = await Promise.all(
-    // If the database had properly defined relationships between these tables, this raw query wouldn't be necessary...
-    (
-      await DatabaseReads.$queryRaw<ProductId[]>`
-        SELECT wpi."Id" FROM "WorkflowProcessInstance" wpi 
-        WHERE NOT EXISTS (SELECT p."Id" from "Products" p WHERE p."Id" = wpi."Id")`
-    ).map(({ Id }) => DatabaseWrites.workflowInstances.markProcessFinalized(Id))
-  );
 
   job.updateProgress(40);
   // Update WorkflowDefinitions ProductType and WorkflowOptions
@@ -800,9 +681,6 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
 
   return {
     deletedTasks: deletedTasks.count,
-    migratedProducts,
-    migrationErrors,
-    orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0),
     updatedWorkflowDefinitions: workflowDefsNeedUpdate,
     updatedPackages,
     deletedUsers: {
@@ -816,117 +694,4 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
       versions: Array.from(builtVersions).sort((a, b) => a.localeCompare(b, 'en-US'))
     }
   };
-}
-
-async function tryCreateInstance(
-  productId: string,
-  Status: number,
-  ActivityName: string,
-  log: Logger
-): Promise<{ ok: boolean; value: string }> {
-  try {
-    const product = await DatabaseReads.products.findUnique({
-      where: { Id: productId },
-      select: {
-        ProductDefinition: {
-          select: {
-            Name: true,
-            WorkflowId: true,
-            RebuildWorkflowId: true,
-            RepublishWorkflowId: true
-          }
-        }
-      }
-    });
-
-    if (!product) return { ok: false, value: 'Product not found' };
-
-    const persistence = await DatabaseReads.workflowProcessInstancePersistence.findMany({
-      where: { ProcessId: productId }
-    });
-
-    if (Status === ProcessStatus.Finalized) {
-      await DatabaseWrites.workflowInstances.markProcessFinalized(productId);
-      return { ok: true, value: '' };
-    }
-
-    if (!(isWorkflowState(ActivityName) || isDeprecated(ActivityName))) {
-      return {
-        ok: false,
-        value: `Unrecognized ActivityName '${ActivityName}'`
-      };
-    }
-
-    const mergedEnv: Environment = {};
-    for (const c of persistence) {
-      if (c.ParameterName === 'environment') {
-        try {
-          Object.assign(mergedEnv, mergedEnv, JSON.parse(JSON.parse(c.Value)));
-        } catch (e) {
-          log(`${productId}: ${e instanceof Error ? e.message : String(e)}`);
-        }
-      }
-    }
-
-    // Pass empty string if key is not defined. empty string is at index 0 of WorkflowTypeString
-    const typeIndex = WorkflowTypeString.indexOf(mergedEnv[ENVKeys.WORKFLOW_TYPE] ?? '');
-
-    let workflowType = typeIndex as WorkflowType;
-
-    // typeIndex could be -1 if not found in array, handled by < WorkflowType.Startup check
-    if (typeIndex < WorkflowType.Startup || typeIndex > WorkflowType.Republish) {
-      log(
-        `${productId}: Invalid WORKFLOW_TYPE (${mergedEnv[ENVKeys.WORKFLOW_TYPE]}) in ProcessPersistence. Assuming Startup`
-      );
-
-      // If not defined assume Startup type
-      workflowType = WorkflowType.Startup;
-    }
-
-    let WorkflowDefinitionId = product.ProductDefinition.WorkflowId; /* Startup */
-    if (workflowType === WorkflowType.Rebuild && product.ProductDefinition.RebuildWorkflowId) {
-      WorkflowDefinitionId = product.ProductDefinition.RebuildWorkflowId;
-    } else if (
-      workflowType === WorkflowType.Republish &&
-      product.ProductDefinition.RepublishWorkflowId
-    ) {
-      WorkflowDefinitionId = product.ProductDefinition.RepublishWorkflowId;
-    } else if (workflowType !== WorkflowType.Startup) {
-      return {
-        ok: false,
-        value: `${WorkflowTypeString[workflowType]} is not available for ${product.ProductDefinition.Name}`
-      };
-    }
-
-    const timestamp = new Date();
-
-    const instance = await DatabaseWrites.workflowInstances.upsert(productId, {
-      create: {
-        State: WorkflowState.Start,
-        Context: JSON.stringify({
-          instructions: null,
-          includeFields: [],
-          includeArtifacts: null,
-          includeReviewers: false,
-          environment: mergedEnv,
-          start: ActivityName as WorkflowState
-        } satisfies WorkflowInstanceContext),
-        WorkflowDefinitionId
-      },
-      update: {}
-    });
-
-    // If DateCreated is less than the timestamp (i.e. NOT >=) it already existed and we don't want to send the jump command
-    if (instance.DateCreated && instance.DateCreated.valueOf() >= timestamp.valueOf()) {
-      const flow = await Workflow.restore(productId);
-      // this will make sure all fields are correct and UserTasks are created if needed
-      flow?.send({
-        type: WorkflowAction.Migrate,
-        target: ActivityName
-      });
-    }
-    return { ok: true, value: '' };
-  } catch (e) {
-    return { ok: false, value: e instanceof Error ? e.message : String(e) };
-  }
 }
