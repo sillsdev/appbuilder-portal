@@ -26,8 +26,8 @@ model Authors {
   UserId    Int
   ProjectId Int
   CanUpdate Boolean?
-  Projects  Projects @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Authors_Projects_ProjectId")
-  Users     Users    @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Authors_Users_UserId")
+  Project   Projects @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Authors_Projects_ProjectId")
+  User      Users    @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Authors_Users_UserId")
 
   @@index([ProjectId], map: "IX_Authors_ProjectId")
   @@index([UserId], map: "IX_Authors_UserId")
@@ -116,7 +116,7 @@ model OrganizationMembershipInvites {
   DateCreated    DateTime?     @default(now()) @db.Timestamp(6)
   DateUpdated    DateTime?     @updatedAt @db.Timestamp(6)
   Organization   Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationMembershipInvites_Organizations_OrganizationId")
-  User           Users         @relation(fields: [InvitedById], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_OrganizationMembershipInvites_Users_InvitedById")
+  InvitedBy      Users         @relation(fields: [InvitedById], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_OrganizationMembershipInvites_Users_InvitedById")
 
   @@index([InvitedById], map: "IX_OrganizationMembershipInvites_InvitedById")
   @@index([OrganizationId], map: "IX_OrganizationMembershipInvites_OrganizationId")
@@ -326,19 +326,19 @@ model Products {
 }
 
 model ProjectImports {
-  Id               Int               @id(map: "PK_ProjectImports") @default(autoincrement())
-  ImportData       String?
-  TypeId           Int?
-  OwnerId          Int?
-  GroupId          Int?
-  OrganizationId   Int?
-  DateCreated      DateTime?         @default(now()) @db.Timestamp(6)
-  DateUpdated      DateTime?         @updatedAt @db.Timestamp(6)
-  ApplicationTypes ApplicationTypes? @relation(fields: [TypeId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_ApplicationTypes_TypeId")
-  Groups           Groups?           @relation(fields: [GroupId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_Groups_GroupId")
-  Organizations    Organizations?    @relation(fields: [OrganizationId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_Organizations_OrganizationId")
-  Users            Users?            @relation(fields: [OwnerId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_Users_OwnerId")
-  Projects         Projects[]
+  Id              Int               @id(map: "PK_ProjectImports") @default(autoincrement())
+  ImportData      String?
+  TypeId          Int?
+  OwnerId         Int?
+  GroupId         Int?
+  OrganizationId  Int?
+  DateCreated     DateTime?         @default(now()) @db.Timestamp(6)
+  DateUpdated     DateTime?         @updatedAt @db.Timestamp(6)
+  ApplicationType ApplicationTypes? @relation(fields: [TypeId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_ApplicationTypes_TypeId")
+  Group           Groups?           @relation(fields: [GroupId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_Groups_GroupId")
+  Organization    Organizations?    @relation(fields: [OrganizationId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_Organizations_OrganizationId")
+  Owner           Users?            @relation(fields: [OwnerId], references: [Id], onUpdate: NoAction, map: "FK_ProjectImports_Users_OwnerId")
+  Projects        Projects[]
 
   @@index([GroupId], map: "IX_ProjectImports_GroupId")
   @@index([OrganizationId], map: "IX_ProjectImports_OrganizationId")
@@ -532,20 +532,20 @@ model Users {
 }
 
 model WorkflowDefinitions {
-  Id                   Int                  @id(map: "PK_WorkflowDefinitions") @default(autoincrement())
-  Name                 String?
-  Enabled              Boolean
-  Description          String?
-  StoreTypeId          Int?
-  Type                 Int                  @default(1)
-  Properties           String?
-  RebuildWorkflows     ProductDefinitions[] @relation("ProductDefinitions_RebuildWorkflowIdToWorkflowDefinitions")
-  RepublishWorkflows   ProductDefinitions[] @relation("ProductDefinitions_RepublishWorkflowIdToWorkflowDefinitions")
-  Workflows            ProductDefinitions[] @relation("ProductDefinitions_WorkflowIdToWorkflowDefinitions")
-  StoreType            StoreTypes?          @relation(fields: [StoreTypeId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_WorkflowDefinitions_StoreTypes_StoreTypeId")
-  ProductType          Int                  @default(0)
-  WorkflowOptions      Int[]                @default([])
-  WorkflowInstances    WorkflowInstances[]
+  Id                          Int                  @id(map: "PK_WorkflowDefinitions") @default(autoincrement())
+  Name                        String?
+  Enabled                     Boolean
+  Description                 String?
+  StoreTypeId                 Int?
+  Type                        Int                  @default(1)
+  Properties                  String?
+  RebuildProductDefinitions   ProductDefinitions[] @relation("ProductDefinitions_RebuildWorkflowIdToWorkflowDefinitions")
+  RepublishProductDefinitions ProductDefinitions[] @relation("ProductDefinitions_RepublishWorkflowIdToWorkflowDefinitions")
+  ProductDefinitions          ProductDefinitions[] @relation("ProductDefinitions_WorkflowIdToWorkflowDefinitions")
+  StoreType                   StoreTypes?          @relation(fields: [StoreTypeId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_WorkflowDefinitions_StoreTypes_StoreTypeId")
+  ProductType                 Int                  @default(0)
+  WorkflowOptions             Int[]                @default([])
+  WorkflowInstances           WorkflowInstances[]
 
   @@index([StoreTypeId], map: "IX_WorkflowDefinitions_StoreTypeId")
 }
