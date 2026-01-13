@@ -2,49 +2,12 @@ import { fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import type { Actions, PageServerLoad, RouteParams } from './$types';
-import { RoleId } from '$lib/prisma';
+import type { Actions, PageServerLoad } from './$types';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { BuildEngine } from '$lib/server/build-engine-api';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-
-/// HELPERS
-
-/**
- * Determines the target organizations based on the user's roles.
- * If the user is a super admin, all organizations are returned.
- * Otherwise, only organizations where the user is an org admin are returned.
- * @param locals The request locals containing security information.
- * @returns An array of organization IDs.
- */
-async function determineTargetOrgs(locals: App.Locals): Promise<number[]> {
-  if (locals.security.isSuperAdmin) {
-    const orgs = await DatabaseReads.organizations.findMany({
-      select: { Id: true }
-    });
-    return orgs.map((o) => o.Id);
-  }
-
-  const roles = await DatabaseReads.userRoles.findMany({
-    where: {
-      UserId: locals.security.userId,
-      RoleId: RoleId.OrgAdmin
-    },
-    select: { OrganizationId: true }
-  });
-
-  return roles.map((r) => r.OrganizationId);
-}
-
-async function getOrganizations(locals: App.Locals, params: RouteParams): Promise<number[]> {
-  // Determine what organizations are being affected
-  const organizationId = Number(params.orgId);
-  const searchOrgs: number[] = isNaN(organizationId)
-    ? await determineTargetOrgs(locals)
-    : [organizationId];
-  return searchOrgs;
-}
+import { filterAdminOrgs } from '$lib/utils/roles';
 
 interface ProductToRebuild {
   id: string; // Product ID (UUID)
@@ -169,24 +132,24 @@ const formSchema = v.object({
   comment: v.pipe(v.string(), v.minLength(1, 'Comment is required'))
 });
 
-export const load = (async ({ url, locals, params }) => {
-  // Determine what organizations are being affected
-  const searchOrgs = await getOrganizations(locals, params);
-  if (params.orgId) locals.security.requireAdminOfOrg(Number(params.orgId));
-  else locals.security.requireAdminOfOrgIn(searchOrgs);
-  // Translate organization IDs to names for readability
-  const names = await DatabaseReads.organizations.findMany({
-    where: {
-      Id: { in: searchOrgs }
-    },
+export const load = (async ({ locals, params }) => {
+  if (params.orgId) {
+    locals.security.requireAdminOfOrg(Number(params.orgId));
+  } else {
+    locals.security.requireAdminOfAny();
+  }
+
+  // Determine what organizations are being affected and fetch their names.
+  const organizations = await DatabaseReads.organizations.findMany({
+    where: filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined),
     select: {
+      Id: true,
       Name: true
     }
   });
-  const organizationsReadable = names.map((n) => n.Name ?? 'Unknown Organization');
 
   // Get products that would be rebuilt
-  const productsToRebuild = await getProductsForRebuild(searchOrgs);
+  const productsToRebuild = await getProductsForRebuild(organizations.map((o) => o.Id));
 
   // Extract unique project information from products
   const projectMap = new Map<number, string>();
@@ -213,7 +176,7 @@ export const load = (async ({ url, locals, params }) => {
   const form = await superValidate(valibot(formSchema));
   return {
     form,
-    organizations: organizationsReadable.join(', '),
+    organizations: organizations.map((o) => o.Name ?? 'Unknown Organization').join(', '),
     affectedProductCount: productsToRebuild.length,
     affectedProjectCount: projects.length,
     affectedProjects: projects.map((p) => p.Name).sort(),
@@ -229,19 +192,25 @@ export const actions = {
   //
   async start({ request, locals, params }) {
     // Determine what organizations are being affected and check security
-    const searchOrgs = await getOrganizations(locals, params);
-    if (params.orgId) locals.security.requireAdminOfOrg(Number(params.orgId));
-    else locals.security.requireAdminOfOrgIn(searchOrgs);
+    if (params.orgId) {
+      locals.security.requireAdminOfOrg(Number(params.orgId));
+    } else {
+      locals.security.requireAdminOfAny();
+    }
 
-    // Check that form is valid upon submission
     const form = await superValidate(request, valibot(formSchema));
-
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
 
-    const productsToRebuild = await getProductsForRebuild(searchOrgs);
+    const organizations = await DatabaseReads.organizations.findMany({
+      where: filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined),
+      select: {
+        Id: true
+      }
+    });
 
+    const productsToRebuild = await getProductsForRebuild(organizations.map((o) => o.Id));
     // If no products need to be rebuilt, return an error
     if (productsToRebuild.length === 0) {
       return fail(400, {
