@@ -296,10 +296,9 @@ export class Workflow {
 
     const stateChange =
       !!old && (Workflow.stateName(old) !== xSnap.value || event.type === WorkflowAction.Retry);
-    const migration = event.type === WorkflowAction.Migrate;
     const jump = event.type === WorkflowAction.Jump;
 
-    if (stateChange && !migration) {
+    if (stateChange) {
       await this.updateProductTransitions(
         jump ? null : event.userId,
         Workflow.stateName(old),
@@ -307,33 +306,7 @@ export class Workflow {
         event.type,
         jump ? undefined : event.comment
       );
-    } else if (migration) {
-      await DatabaseWrites.productTransitions.create({
-        data: {
-          ProductId: this.productId,
-          DateTransition: new Date(),
-          TransitionType: ProductTransitionType.Migration,
-          WorkflowType: this.input.workflowType
-        }
-      });
-      if (event.target !== xSnap.value) {
-        await DatabaseWrites.productTransitions.create({
-          data: {
-            ProductId: this.productId,
-            InitialState: event.target,
-            DestinationState: xSnap.value,
-            Command: 'Migrate',
-            Comment: `${event.target} => ${xSnap.value}`,
-            DateTransition: new Date(),
-            TransitionType: ProductTransitionType.Activity,
-            WorkflowType: this.input.workflowType
-          }
-        });
-      }
-      await this.createSnapshot(xSnap.context);
-    }
 
-    if ((stateChange && !migration) || (migration && event.target !== xSnap.value)) {
       await DatabaseWrites.productTransitions.deleteMany(
         {
           where: {
@@ -365,7 +338,7 @@ export class Workflow {
           type: BullMQ.JobType.UserTasks_Modify,
           scope: 'Product',
           productId: this.productId,
-          comment: jump ? undefined : migration ? '' : event.comment,
+          comment: jump ? undefined : event.comment,
           operation: {
             type: BullMQ.UserTasks.OpType.Update
           }
