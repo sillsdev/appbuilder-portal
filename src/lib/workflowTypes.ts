@@ -1,5 +1,6 @@
 import { type TransitionConfig } from 'xstate';
-import { type RoleId, WorkflowType } from './prisma';
+import { WorkflowType } from './prisma';
+import type { RoleId } from './prisma';
 import type { SetFilter, ValueFilter } from './utils';
 import { filterSet, filterValue } from './utils';
 
@@ -133,6 +134,7 @@ export type WorkflowInstanceContext = {
   includeArtifacts: ArtifactLists | null;
   start?: WorkflowState;
   environment: Environment;
+  isAutomatic: boolean;
 };
 
 export type ArtifactLists = 'latestAAB' | 'latestAssetPackage' | 'error' | 'all';
@@ -184,12 +186,14 @@ export type WorkflowConfig = {
   options: Set<WorkflowOptions>;
   productType: ProductType;
   workflowType: WorkflowType;
+  isAutomatic: boolean;
 };
 
 export type WorkflowInput = WorkflowConfig & {
   productId: string;
   hasAuthors: boolean;
   hasReviewers: boolean;
+  autoPublishOnRebuild: boolean;
   existingApp: boolean;
 };
 
@@ -270,7 +274,18 @@ export function newGPApp(args: { context: WorkflowInput }): boolean {
     !args.context.existingApp
   );
 }
-export type Guards = typeof hasAuthors | typeof hasReviewers | typeof newGPApp;
+export function autoPublishOnRebuild(args: { context: WorkflowInput }): boolean {
+  return (
+    args.context.autoPublishOnRebuild &&
+    args.context.isAutomatic &&
+    args.context.workflowType === WorkflowType.Rebuild
+  );
+}
+export type Guards =
+  | typeof hasAuthors
+  | typeof hasReviewers
+  | typeof newGPApp
+  | typeof autoPublishOnRebuild;
 /**
  * @param params expected params of `canJump` guard from StartupWorkflow
  * @param optionalGuards other guards that can optionally be added.
