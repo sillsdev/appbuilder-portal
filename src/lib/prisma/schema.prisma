@@ -262,7 +262,6 @@ model ProductTransitions {
   ProductId        String         @db.Uuid
   // Since users are never deleted, only locked, this should be fine
   UserId           Int?
-  WorkflowUserId   String?        @db.Uuid // ISSUE: #1102 remove when DWKit is replaced
   AllowedUserNames String?
   InitialState     String?
   DestinationState String?
@@ -517,7 +516,6 @@ model Users {
   ExternalId                    String?
   ProfileVisibility             Int                             @default(1)
   EmailNotification             Boolean?                        @default(true)
-  WorkflowUserId                String?                         @db.Uuid // ISSUE: #1102 remove when DWKit is replaced
   DateCreated                   DateTime?                       @default(now()) @db.Timestamp(6)
   DateUpdated                   DateTime?                       @updatedAt @db.Timestamp(6)
   Authors                       Authors[]
@@ -531,8 +529,6 @@ model Users {
   UserTasks                     UserTasks[]
   ProductTransitions            ProductTransitions[]
   SoftwareUpdates               SoftwareUpdates[]
-
-  @@index([WorkflowUserId], map: "IX_Users_WorkflowUserId")
 }
 
 model WorkflowDefinitions {
@@ -540,8 +536,6 @@ model WorkflowDefinitions {
   Name                 String?
   Enabled              Boolean
   Description          String?
-  WorkflowScheme       String? // ISSUE: #1102 remove when DWKit is replaced
-  WorkflowBusinessFlow String? // ISSUE: #1102 remove when DWKit is replaced
   StoreTypeId          Int?
   Type                 Int                  @default(1)
   Properties           String?
@@ -554,266 +548,6 @@ model WorkflowDefinitions {
   WorkflowInstances    WorkflowInstances[]
 
   @@index([StoreTypeId], map: "IX_WorkflowDefinitions_StoreTypeId")
-}
-
-//
-// DWKIT Tables - will be removed later when DWKit is replaced (ISSUE: #1102)
-//
-
-model WorkflowGlobalParameter {
-  Id    String @id @db.Uuid
-  Type  String @db.VarChar(512)
-  Name  String @db.VarChar(256)
-  Value String
-
-  @@index([Name])
-  @@index([Type])
-}
-
-model WorkflowInbox {
-  Id         String @id @db.Uuid
-  ProcessId  String @db.Uuid
-  IdentityId String @db.VarChar(256)
-
-  @@index([IdentityId])
-  @@index([ProcessId])
-}
-
-model WorkflowProcessInstance {
-  Id                             String  @id @db.Uuid
-  StateName                      String? @db.VarChar(256)
-  ActivityName                   String  @db.VarChar(256)
-  SchemeId                       String  @db.Uuid
-  PreviousState                  String? @db.VarChar(256)
-  PreviousStateForDirect         String? @db.VarChar(256)
-  PreviousStateForReverse        String? @db.VarChar(256)
-  PreviousActivity               String? @db.VarChar(256)
-  PreviousActivityForDirect      String? @db.VarChar(256)
-  PreviousActivityForReverse     String? @db.VarChar(256)
-  IsDeterminingParametersChanged Boolean
-  ParentProcessId                String? @db.Uuid
-  RootProcessId                  String  @db.Uuid
-}
-
-model WorkflowProcessInstancePersistence {
-  Id            String @id @db.Uuid
-  ProcessId     String @db.Uuid
-  ParameterName String @db.VarChar(256)
-  Value         String
-
-  @@index([ProcessId])
-}
-
-model WorkflowProcessInstanceStatus {
-  Id     String @id @db.Uuid
-  Status Int    @db.SmallInt
-  Lock   String @db.Uuid
-
-  @@index([Status])
-}
-
-model WorkflowProcessScheme {
-  Id                     String  @id @db.Uuid
-  Scheme                 String
-  DefiningParameters     String
-  DefiningParametersHash String  @db.VarChar(24)
-  SchemeCode             String  @db.VarChar(256)
-  IsObsolete             Boolean
-  RootSchemeCode         String? @db.VarChar(256)
-  RootSchemeId           String? @db.Uuid
-  AllowedActivities      String?
-  StartingTransition     String?
-
-  @@index([DefiningParametersHash])
-  @@index([IsObsolete])
-  @@index([SchemeCode])
-}
-
-model WorkflowProcessTimer {
-  Id                    String   @id @db.Uuid
-  ProcessId             String   @db.Uuid
-  Name                  String   @db.VarChar(256)
-  NextExecutionDateTime DateTime @db.Timestamp(6)
-  Ignore                Boolean
-
-  @@index([Ignore])
-  @@index([Name])
-  @@index([NextExecutionDateTime])
-  @@index([ProcessId])
-}
-
-model WorkflowProcessTransitionHistory {
-  Id                   String   @id @db.Uuid
-  ProcessId            String   @db.Uuid
-  ExecutorIdentityId   String?  @db.VarChar(256)
-  ActorIdentityId      String?  @db.VarChar(256)
-  FromActivityName     String   @db.VarChar(256)
-  ToActivityName       String   @db.VarChar(256)
-  ToStateName          String?  @db.VarChar(256)
-  TransitionTime       DateTime @db.Timestamp(6)
-  TransitionClassifier String   @db.VarChar(256)
-  FromStateName        String?  @db.VarChar(256)
-  TriggerName          String?  @db.VarChar(256)
-  IsFinalised          Boolean
-
-  @@index([ActorIdentityId])
-  @@index([ExecutorIdentityId])
-  @@index([ProcessId])
-}
-
-model WorkflowScheme {
-  Code           String  @id @db.VarChar(256)
-  Scheme         String
-  CanBeInlined   Boolean @default(false)
-  InlinedSchemes String? @db.VarChar(1024)
-}
-
-model EFMigrationsHistory {
-  MigrationId    String @id(map: "PK___EFMigrationsHistory") @db.VarChar(150)
-  ProductVersion String @db.VarChar(32)
-
-  @@map("__EFMigrationsHistory")
-}
-
-model dwAppSettings {
-  Name       String  @id @db.VarChar(50)
-  Value      String  @db.VarChar(1000)
-  GroupName  String? @db.VarChar(50)
-  ParamName  String  @db.VarChar(1024)
-  Order      Int?
-  EditorType String  @default(dbgenerated("0")) @db.VarChar(50)
-  IsHidden   Boolean @default(dbgenerated("(0)::boolean"))
-}
-
-model dwSecurityCredential {
-  Id                 String         @id @db.Uuid
-  PasswordHash       String?        @db.VarChar(128)
-  PasswordSalt       String?        @db.VarChar(128)
-  SecurityUserId     String         @db.Uuid
-  Login              String         @db.VarChar(256)
-  AuthenticationType Int            @db.SmallInt
-  dwSecurityUser     dwSecurityUser @relation(fields: [SecurityUserId], references: [Id], onDelete: Cascade, onUpdate: NoAction)
-}
-
-model dwSecurityGroup {
-  Id                            String                          @id @db.Uuid
-  Name                          String                          @db.VarChar(128)
-  Comment                       String?                         @db.VarChar(1000)
-  IsSyncWithDomainGroup         Boolean                         @default(dbgenerated("(0)::boolean"))
-  dwSecurityGroupToSecurityRole dwSecurityGroupToSecurityRole[]
-  dwSecurityGroupToSecurityUser dwSecurityGroupToSecurityUser[]
-}
-
-model dwSecurityGroupToSecurityRole {
-  Id              String          @id @db.Uuid
-  SecurityRoleId  String          @db.Uuid
-  SecurityGroupId String          @db.Uuid
-  dwSecurityGroup dwSecurityGroup @relation(fields: [SecurityGroupId], references: [Id], onDelete: NoAction, onUpdate: NoAction)
-  dwSecurityRole  dwSecurityRole  @relation(fields: [SecurityRoleId], references: [Id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model dwSecurityGroupToSecurityUser {
-  Id              String          @id @db.Uuid
-  SecurityUserId  String          @db.Uuid
-  SecurityGroupId String          @db.Uuid
-  dwSecurityGroup dwSecurityGroup @relation(fields: [SecurityGroupId], references: [Id], onDelete: NoAction, onUpdate: NoAction)
-  dwSecurityUser  dwSecurityUser  @relation(fields: [SecurityUserId], references: [Id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model dwSecurityPermission {
-  Id                                 String                               @id @db.Uuid
-  Code                               String                               @db.VarChar(128)
-  Name                               String?                              @db.VarChar(128)
-  GroupId                            String                               @db.Uuid
-  dwSecurityPermissionGroup          dwSecurityPermissionGroup            @relation(fields: [GroupId], references: [Id], onDelete: Cascade, onUpdate: NoAction)
-  dwSecurityRoleToSecurityPermission dwSecurityRoleToSecurityPermission[]
-}
-
-model dwSecurityPermissionGroup {
-  Id                   String                 @id @db.Uuid
-  Name                 String                 @db.VarChar(128)
-  Code                 String                 @db.VarChar(128)
-  dwSecurityPermission dwSecurityPermission[]
-}
-
-model dwSecurityRole {
-  Id                                 String                               @id @db.Uuid
-  Code                               String                               @db.VarChar(128)
-  Name                               String                               @db.VarChar(128)
-  Comment                            String?                              @db.VarChar(1000)
-  DomainGroup                        String?                              @db.VarChar(512)
-  dwSecurityGroupToSecurityRole      dwSecurityGroupToSecurityRole[]
-  dwSecurityRoleToSecurityPermission dwSecurityRoleToSecurityPermission[]
-  dwSecurityUserToSecurityRole       dwSecurityUserToSecurityRole[]
-}
-
-model dwSecurityRoleToSecurityPermission {
-  Id                   String               @id @db.Uuid
-  SecurityRoleId       String               @db.Uuid
-  SecurityPermissionId String               @db.Uuid
-  AccessType           Int                  @default(0) @db.SmallInt
-  dwSecurityPermission dwSecurityPermission @relation(fields: [SecurityPermissionId], references: [Id], onDelete: Cascade, onUpdate: NoAction)
-  dwSecurityRole       dwSecurityRole       @relation(fields: [SecurityRoleId], references: [Id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model dwSecurityUser {
-  Id                                                                                        String                          @id @db.Uuid
-  Name                                                                                      String                          @db.VarChar(256)
-  Email                                                                                     String?                         @db.VarChar(256)
-  IsLocked                                                                                  Boolean                         @default(dbgenerated("(0)::boolean"))
-  ExternalId                                                                                String?                         @db.VarChar(1024)
-  Timezone                                                                                  String?                         @db.VarChar(256)
-  Localization                                                                              String?                         @db.VarChar(256)
-  DecimalSeparator                                                                          String?                         @db.Char(1)
-  PageSize                                                                                  Int?
-  StartPage                                                                                 String?                         @db.VarChar(256)
-  IsRTL                                                                                     Boolean?                        @default(dbgenerated("(0)::boolean"))
-  dwSecurityCredential                                                                      dwSecurityCredential[]
-  dwSecurityGroupToSecurityUser                                                             dwSecurityGroupToSecurityUser[]
-  dwSecurityUserImpersonation_dwSecurityUserImpersonation_ImpSecurityUserIdTodwSecurityUser dwSecurityUserImpersonation[]   @relation("dwSecurityUserImpersonation_ImpSecurityUserIdTodwSecurityUser")
-  dwSecurityUserImpersonation_dwSecurityUserImpersonation_SecurityUserIdTodwSecurityUser    dwSecurityUserImpersonation[]   @relation("dwSecurityUserImpersonation_SecurityUserIdTodwSecurityUser")
-  dwSecurityUserState                                                                       dwSecurityUserState[]
-  dwSecurityUserToSecurityRole                                                              dwSecurityUserToSecurityRole[]
-}
-
-model dwSecurityUserImpersonation {
-  Id                                                                           String         @id @db.Uuid
-  SecurityUserId                                                               String         @db.Uuid
-  ImpSecurityUserId                                                            String         @db.Uuid
-  DateFrom                                                                     DateTime       @db.Timestamp(6)
-  DateTo                                                                       DateTime       @db.Timestamp(6)
-  dwSecurityUser_dwSecurityUserImpersonation_ImpSecurityUserIdTodwSecurityUser dwSecurityUser @relation("dwSecurityUserImpersonation_ImpSecurityUserIdTodwSecurityUser", fields: [ImpSecurityUserId], references: [Id], onDelete: NoAction, onUpdate: NoAction)
-  dwSecurityUser_dwSecurityUserImpersonation_SecurityUserIdTodwSecurityUser    dwSecurityUser @relation("dwSecurityUserImpersonation_SecurityUserIdTodwSecurityUser", fields: [SecurityUserId], references: [Id], onDelete: Cascade, onUpdate: NoAction)
-}
-
-model dwSecurityUserState {
-  Id             String         @id @db.Uuid
-  SecurityUserId String         @db.Uuid
-  Key            String         @db.VarChar(256)
-  Value          String
-  dwSecurityUser dwSecurityUser @relation(fields: [SecurityUserId], references: [Id], onDelete: Cascade, onUpdate: NoAction)
-}
-
-model dwSecurityUserToSecurityRole {
-  Id             String         @id @db.Uuid
-  SecurityRoleId String         @db.Uuid
-  SecurityUserId String         @db.Uuid
-  dwSecurityRole dwSecurityRole @relation(fields: [SecurityRoleId], references: [Id], onDelete: NoAction, onUpdate: NoAction)
-  dwSecurityUser dwSecurityUser @relation(fields: [SecurityUserId], references: [Id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model dwUploadedFiles {
-  Id               String    @id @db.Uuid
-  Data             Bytes
-  AttachmentLength BigInt
-  Used             Boolean   @default(dbgenerated("(0)::boolean"))
-  Name             String    @db.VarChar(1000)
-  ContentType      String    @db.VarChar(255)
-  CreatedBy        String?   @db.VarChar(1024)
-  CreatedDate      DateTime? @db.Timestamp(6)
-  UpdatedBy        String?   @db.VarChar(1024)
-  UpdatedDate      DateTime? @db.Timestamp(6)
-  Properties       String?
 }
 
 model ProductUserChanges {
