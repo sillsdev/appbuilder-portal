@@ -1,6 +1,5 @@
 <script lang="ts">
   import { superForm } from 'sveltekit-superforms';
-  import { businessFlows } from '../common';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
@@ -10,7 +9,7 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { WorkflowType } from '$lib/prisma';
   import { enumNumVals, toast } from '$lib/utils';
-  import { byName, byString } from '$lib/utils/sorting';
+  import { byName } from '$lib/utils/sorting';
   import { ProductType, WorkflowOptions } from '$lib/workflowTypes';
 
   interface Props {
@@ -80,22 +79,6 @@
       class="input input-bordered"
       bind:value={$form.description}
     />
-    <span class="validator-hint">&nbsp;</span>
-  </LabeledFormInput>
-  <LabeledFormInput key="flowDefs_scheme">
-    <select class="select" name="workflowScheme" bind:value={$form.workflowScheme}>
-      {#each data.options.schemes.toSorted( (a, b) => byString(a.Code, b.Code, getLocale()) ) as scheme}
-        <option value={scheme.Code}>{scheme.Code}</option>
-      {/each}
-    </select>
-    <span class="validator-hint">&nbsp;</span>
-  </LabeledFormInput>
-  <LabeledFormInput key="flowDefs_businessFlow">
-    <select class="select" name="workflowBusinessFlow" bind:value={$form.workflowBusinessFlow}>
-      {#each businessFlows as flow}
-        <option value={flow}>{flow}</option>
-      {/each}
-    </select>
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_properties">

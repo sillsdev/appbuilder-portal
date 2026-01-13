@@ -460,8 +460,6 @@
   "flowDefs_title": "Workflow Definitions",
   "flowDefs_name": "Workflow Definition Name",
   "flowDefs_description": "Description",
-  "flowDefs_scheme": "Workflow Scheme",
-  "flowDefs_businessFlow": "Workflow Business Flow",
   "flowDefs_properties": "Properties",
   "flowDefs_add": "Add Workflow Definition",
   "flowDefs_edit": "Edit Workflow Definition",
