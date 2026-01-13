@@ -56,19 +56,6 @@
     />
     <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
-  <LabeledFormInput key="prodDefs_type">
-    <select
-      class="select validator"
-      name="applicationType"
-      bind:value={$form.applicationType}
-      required
-    >
-      {#each data.options.applicationTypes as type}
-        <option value={type.Id}>{type.Name}</option>
-      {/each}
-    </select>
-    <span class="validator-hint">{m.prodDefs_emptyType()}</span>
-  </LabeledFormInput>
   <LabeledFormInput key="prodDefs_flow">
     <select class="select validator" name="workflow" bind:value={$form.workflow} required>
       {#each workflows as wf}

@@ -25,17 +25,6 @@ if (options.verbose) console.log(options);
 
 const prisma = new PrismaClient();
 async function main() {
-  type Role = [number, number];
-  const roles: Role[] = [
-    [1, 1],
-    [2, 2],
-    [3, 3],
-    [4, 4]
-  ];
-  for (const [Id, RoleName] of roles) {
-    await prisma.roles.upsert({ where: { Id }, update: {}, create: { Id, RoleName } });
-  }
-
   type ApplicationType = [number, string, string];
   const applicationTypes: ApplicationType[] = [
     [1, 'scriptureappbuilder', 'Scripture App Builder'],
