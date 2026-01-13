@@ -22,9 +22,11 @@
 </script>
 
 <Dropdown
-  dropdownClasses="dropdown-start"
-  labelClasses="no-animation hover:bg-transparent"
-  contentClasses="overflow-y-auto left-2 p-2 border m-2"
+  class={{
+    dropdown: 'dropdown-start',
+    label: 'no-animation hover:bg-transparent',
+    content: 'overflow-y-auto left-2 p-2 border m-2'
+  }}
   bind:open
 >
   {#snippet label()}

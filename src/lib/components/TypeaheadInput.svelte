@@ -1,13 +1,12 @@
 <script lang="ts" generics="T">
   import type { Snippet } from 'svelte';
-  import type { HTMLInputAttributes } from 'svelte/elements';
+  import type { ClassValue, HTMLInputAttributes } from 'svelte/elements';
 
   let selectedIndex = $state(-1);
   let inputFocused = $state(false);
   interface Props {
     inputElProps?: HTMLInputAttributes;
-    classes?: string;
-    dropdownClasses?: string;
+    class?: { default?: ClassValue; dropdown?: ClassValue };
     getList: (searchTerm: string) => T[];
     search?: string;
     inputElement?: HTMLInputElement;
@@ -18,8 +17,7 @@
 
   let {
     inputElProps = {},
-    classes = '',
-    dropdownClasses = '',
+    class: classes,
     getList,
     search = $bindable(''),
     inputElement = $bindable(undefined!),
@@ -66,7 +64,7 @@
 <div class="relative">
   <input
     type="text"
-    class="input input-bordered {classes}"
+    class={['input input-bordered', classes?.default]}
     bind:value={search}
     onkeydown={keypress}
     onfocus={onFocus}
@@ -77,8 +75,11 @@
   {@render custom?.()}
   {#if list.length}
     <ul
-      class="bg-base-200 absolute z-10 rounded-lg p-2 shadow-xl {dropdownClasses}"
-      class:hidden={!inputFocused}
+      class={[
+        'bg-base-200 absolute z-10 rounded-lg p-2 shadow-xl',
+        classes?.dropdown,
+        !inputFocused && 'hidden'
+      ]}
       role="listbox"
     >
       {#each list as item, i}

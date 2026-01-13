@@ -11,10 +11,10 @@
     children?: Snippet;
   }
 
-  let { key, params = {}, classes = '', children }: Props = $props();
+  let { key, params = {}, class: classes, children }: Props = $props();
 </script>
 
-<label class="flex flex-col w-full {classes}">
+<label class={['flex flex-col w-full', classes]}>
   <div class="label">
     <span class="fieldset-label">
       <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->

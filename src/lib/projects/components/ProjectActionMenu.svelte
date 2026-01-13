@@ -52,9 +52,11 @@
 </script>
 
 <Dropdown
-  dropdownClasses="dropdown-bottom dropdown-end"
-  labelClasses="max-h-fit min-h-fit p-1 inline"
-  contentClasses="p-1 min-w-36 w-auto"
+  class={{
+    dropdown: 'dropdown-bottom dropdown-end',
+    label: 'max-h-fit min-h-fit p-1 inline',
+    content: 'p-1 min-w-36 w-auto'
+  }}
   onclick={() => {
     $form.projectId = project.Id;
   }}
@@ -65,10 +67,10 @@
   {#snippet content()}
     <form method="POST" action="?/{endpoint}" use:enhance>
       <input type="hidden" name="projectId" value={project.Id} />
-      <ul class="menu menu-compact overflow-hidden rounded-md">
+      <ul class="menu menu-sm overflow-hidden rounded-md">
         {#if allowActions && canArchive(project, page.data.session!.user)}
           <li class="w-full rounded-none">
-            <BlockIfJobsUnavailable className="text-nowrap">
+            <BlockIfJobsUnavailable class="text-nowrap">
               {#snippet altContent()}
                 {m.common_archive()}
               {/snippet}
@@ -81,7 +83,7 @@
         {/if}
         {#if allowReactivate && canReactivate(project, page.data.session!.user)}
           <li class="w-full rounded-none">
-            <BlockIfJobsUnavailable className="text-nowrap">
+            <BlockIfJobsUnavailable class="text-nowrap">
               {#snippet altContent()}
                 {m.common_reactivate()}
               {/snippet}
@@ -99,7 +101,7 @@
         {/if}
         {#if canClaimProject(page.data.session!.user, project.OwnerId, project.OrganizationId, project.GroupId, userGroups)}
           <li class="w-full rounded-none">
-            <BlockIfJobsUnavailable className="text-nowrap">
+            <BlockIfJobsUnavailable class="text-nowrap">
               {#snippet altContent()}
                 {m.project_claimOwnership()}
               {/snippet}

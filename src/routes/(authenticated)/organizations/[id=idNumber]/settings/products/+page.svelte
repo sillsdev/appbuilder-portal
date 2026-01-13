@@ -34,9 +34,9 @@
     }}
   >
     <Toggle
-      title={{ key: 'org_makePrivateTitle', classes: 'font-bold' }}
+      title={{ key: 'org_makePrivateTitle', class: 'font-bold' }}
       message={{ key: 'org_makePrivateDescription' }}
-      className="pb-2"
+      class="pb-2"
       name="publicByDefault"
       checked={!!data.organization.PublicByDefault}
       inputAttr={{

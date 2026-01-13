@@ -1,3 +1,4 @@
+import type { ClassValue } from 'svelte/elements';
 import { SvelteMap } from 'svelte/reactivity';
 import * as v from 'valibot';
 import type { Locale } from './paraglide/runtime';
@@ -8,7 +9,7 @@ export type ValidI13nKey = ValidKey<typeof m>;
 export type ValueKey<T extends ValidI13nKey = ValidI13nKey> = {
   key: T;
   params?: Parameters<(typeof m)[T]>[0];
-  classes?: string;
+  class?: ClassValue;
 };
 
 export type L10NKeys = 'languages' | 'territories';

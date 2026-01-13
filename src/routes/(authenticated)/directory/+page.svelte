@@ -70,12 +70,12 @@
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center gap-1 {mobileSizing}"
       >
         <OrganizationDropdown
-          className={mobileSizing}
+          class={mobileSizing}
           organizations={data.organizations}
           bind:value={$form.organizationId}
           allowNull={true}
         />
-        <Tooltip className="tooltip-bottom {mobileSizing}">
+        <Tooltip class="tooltip-bottom {mobileSizing}">
           <div class="tooltip-content text-left">
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             {@html m.directory_searchHelp()}
@@ -91,10 +91,10 @@
         <LanguageCodeTypeahead
           bind:langCode={$form.langCode}
           onLangCodeSelected={() => submit()}
-          inputClasses="w-full md:max-w-xs"
+          class={{ input: 'w-full md:max-w-xs' }}
         />
       </div>
-      <select class="select select-bordered {mobileSizing}" bind:value={$form.productDefinitionId}>
+      <select class="select {mobileSizing}" bind:value={$form.productDefinitionId}>
         <option value={null} selected>{m.filters_allProdDefs()}</option>
         {#each data.productDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as pD}
           <option value={pD.Id}>{pD.Name}</option>

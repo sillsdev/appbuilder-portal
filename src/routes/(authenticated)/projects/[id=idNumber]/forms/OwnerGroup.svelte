@@ -97,8 +97,10 @@
           <input type="hidden" name="owner" value={project.Owner.Id} bind:this={ownerField} />
           {#if canEdit || canClaim}
             <Dropdown
-              labelClasses="p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
-              contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
+              class={{
+                label: 'p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal',
+                content: 'drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0'
+              }}
               bind:open={ownerOpen}
             >
               {#snippet label()}
@@ -153,8 +155,10 @@
           <input type="hidden" name="group" value={project.Group.Id} bind:this={groupField} />
           {#if canEdit}
             <Dropdown
-              labelClasses="p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal"
-              contentClasses="drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0"
+              class={{
+                label: 'p-0.5 h-auto min-h-0 no-animation flex-nowrap items-center font-normal',
+                content: 'drop-arrow arrow-top menu z-20 min-w-[10rem] top-8 right-0'
+              }}
               bind:open={groupOpen}
             >
               {#snippet label()}

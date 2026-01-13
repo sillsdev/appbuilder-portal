@@ -99,12 +99,7 @@
     {#if canEdit}
       <form action="?/{createEndpoint}" method="post" use:enhance>
         <div class="flex place-content-between space-x-2">
-          <select
-            class="grow select select-bordered"
-            name="author"
-            bind:value={$form.author}
-            required
-          >
+          <select class="grow select" name="author" bind:value={$form.author} required>
             {#if availableAuthors.length}
               {#each availableAuthors.sort((a, b) => byName(a, b, getLocale())) as author}
                 <option value={author.Id}>
@@ -117,7 +112,7 @@
               </option>
             {/if}
           </select>
-          <BlockIfJobsUnavailable className="btn btn-primary">
+          <BlockIfJobsUnavailable class="btn btn-primary">
             {#snippet altContent()}
               {m.authors_submit()}
             {/snippet}

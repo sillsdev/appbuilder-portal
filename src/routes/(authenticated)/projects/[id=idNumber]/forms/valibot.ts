@@ -1,10 +1,11 @@
 import * as v from 'valibot';
+import { locales } from '$lib/paraglide/runtime';
 import { idSchema } from '$lib/valibot';
 
 export const addReviewerSchema = v.object({
   name: v.string(),
   email: v.pipe(v.string(), v.email()),
-  language: v.string()
+  language: v.pipe(v.string(), v.picklist(locales))
 });
 
 export type ReviewerSchema = typeof addReviewerSchema;

@@ -1,15 +1,16 @@
 <script lang="ts">
+  import type { ClassValue } from 'svelte/elements';
   import { flatten, safeParse } from 'valibot';
   import { propertiesSchema } from '$lib/valibot';
 
   interface Props {
     value: string | null;
     name: string;
-    className?: string;
+    class?: ClassValue;
     ok?: boolean;
   }
 
-  let { value = $bindable(), name, className = '', ok = $bindable(true) }: Props = $props();
+  let { value = $bindable(), name, class: classes, ok = $bindable(true) }: Props = $props();
 
   const parsed = $derived(safeParse(propertiesSchema, value));
 
@@ -23,7 +24,7 @@
 <div class="w-full">
   <textarea
     {name}
-    class="textarea textarea-bordered h-48 {className}"
+    class={['textarea textarea-bordered h-48', classes]}
     onfocus={() => {
       showErrors = false;
     }}

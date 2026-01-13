@@ -114,8 +114,10 @@
           tzValue = res.item.value;
         }}
         bind:search={tzValue}
-        classes="w-full {!tzValue || timeZoneMap.has(tzValue) ? '' : 'select-error'}"
-        dropdownClasses="w-full bg-base-100"
+        class={{
+          default: ['w-full', tzValue && !timeZoneMap.has(tzValue) && 'select-error'],
+          dropdown: 'w-full bg-base-100'
+        }}
       >
         {#snippet listElement(res, selected)}
           <div class="w-full right-0" class:selected>
@@ -125,7 +127,7 @@
       </TypeaheadInput>
     </LabeledFormInput>
     <InputWithMessage
-      className="mt-4"
+      class="mt-4"
       title={{ key: 'profile_notificationSettingsTitle' }}
       message={{ key: 'profile_optOutOfEmailOption' }}
     >
@@ -137,7 +139,7 @@
       />
     </InputWithMessage>
     <InputWithMessage
-      className="mt-4"
+      class="mt-4"
       title={{ key: 'profile_visibleProfile' }}
       message={{ key: 'profile_visibility_visible' }}
     >
@@ -148,7 +150,7 @@
         bind:checked={$form.visible}
       />
     </InputWithMessage>
-    <InputWithMessage className="mt-4" title={{ key: 'users_table_active' }}>
+    <InputWithMessage class="mt-4" title={{ key: 'users_table_active' }}>
       <input
         type="checkbox"
         name="active"

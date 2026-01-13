@@ -163,7 +163,7 @@
     <div class="flex flex-row items-center">
       <h1>{m.users_title()}</h1>
       {#if isAdminForAny(data.session?.user.roles)}
-        <BlockIfJobsUnavailable className="btn btn-outline">
+        <BlockIfJobsUnavailable class="btn btn-outline">
           {#snippet altContent()}
             <IconContainer icon="mdi:user-add" width="20" />
             <span>{m.orgMembership_title()}</span>
@@ -180,7 +180,7 @@
       use:enhance
       class="flex flex-row flex-wrap place-content-end items-center p-2 gap-1 w-full md:w-auto"
     >
-      <SearchBar bind:value={$form.search} className="w-full md:w-auto" requestSubmit={submit} />
+      <SearchBar bind:value={$form.search} class="w-full md:w-auto" requestSubmit={submit} />
     </form>
   </div>
   <div class="m-4 relative mt-0">

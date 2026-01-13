@@ -5,29 +5,24 @@ A simple dropdown menu from DaisyUI.
 -->
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import type { ClassValue } from 'svelte/elements';
   import { onNavigate } from '$app/navigation';
   interface Props {
-    /** class="dropdown ..." */
-    dropdownClasses?: string;
-    /** class="btn btn-ghost ..." */
-    labelClasses?: string;
-    /** class="dropdown-content z-10 drop-shadow-lg rounded-md bg-base-200 ..." */
-    contentClasses?: string;
+    class?: {
+      /** class="dropdown ..." */
+      dropdown?: ClassValue;
+      /** class="btn btn-ghost ..." */
+      label?: ClassValue;
+      /** class="dropdown-content z-10 drop-shadow-lg rounded-md bg-base-200 ..." */
+      content?: ClassValue;
+    };
     label: Snippet;
     content: Snippet;
     onclick?: () => void;
     open?: boolean;
   }
 
-  let {
-    dropdownClasses = '',
-    labelClasses = '',
-    contentClasses = '',
-    label,
-    content,
-    onclick,
-    open = $bindable(false)
-  }: Props = $props();
+  let { class: classes, label, content, onclick, open = $bindable(false) }: Props = $props();
 
   onNavigate(() => {
     // close opened dropdown when navigating (this is mostly important for the dropdowns in the navbar)
@@ -48,11 +43,16 @@ A simple dropdown menu from DaisyUI.
   }}
 />
 
-<details class="dropdown {dropdownClasses}" bind:open bind:this={dropEl}>
-  <summary class="btn btn-ghost {labelClasses}" onclick={() => onclick?.()}>
+<details class={['dropdown', classes?.dropdown]} bind:open bind:this={dropEl}>
+  <summary class={['btn btn-ghost', classes?.label]} onclick={() => onclick?.()}>
     {@render label()}
   </summary>
-  <div class="dropdown-content z-10 drop-shadow-lg rounded-md bg-base-200 {contentClasses}">
+  <div
+    class={[
+      'dropdown-content z-10 drop-shadow-lg rounded-md bg-base-200 dark:border dark:border-base-content',
+      classes?.content
+    ]}
+  >
     {@render content()}
   </div>
 </details>

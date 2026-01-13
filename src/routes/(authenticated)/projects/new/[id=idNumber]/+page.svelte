@@ -50,7 +50,7 @@
     <h1 class="pl-2">{m.project_newProject()}</h1>
     <div class="flex flex-col gap-2 items-center">
       <div class="row">
-        <LabeledFormInput key="project_name" classes="md:max-w-xs grow">
+        <LabeledFormInput key="project_name" class="md:max-w-xs grow">
           <input
             type="text"
             name="Name"
@@ -60,8 +60,8 @@
           />
           <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
         </LabeledFormInput>
-        <LabeledFormInput key="project_group" classes="md:max-w-xs">
-          <select name="group" class="select select-bordered" bind:value={$form.group}>
+        <LabeledFormInput key="project_group" class="md:max-w-xs">
+          <select name="group" class="select" bind:value={$form.group}>
             {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
               <option value={group.Id}>{group.Name}</option>
             {/each}
@@ -70,11 +70,13 @@
         </LabeledFormInput>
       </div>
       <div class="row">
-        <LabeledFormInput key="project_languageCode" classes="md:max-w-xs">
+        <LabeledFormInput key="project_languageCode" class="md:max-w-xs">
           <LanguageCodeTypeahead
             bind:langCode={$form.Language}
-            inputClasses="w-full md:max-w-xs validator"
-            dropdownClasses="left-0"
+            class={{
+              dropdown: 'left-0',
+              input: 'w-full md:max-w-xs validator'
+            }}
             inputElProps={{ required: true, pattern: regExpToInputPattern(langtagRegex) }}
           >
             {#snippet validatorHint()}
@@ -82,8 +84,8 @@
             {/snippet}
           </LanguageCodeTypeahead>
         </LabeledFormInput>
-        <LabeledFormInput key="project_type" classes="md:max-w-xs">
-          <select name="type" class="select select-bordered" bind:value={$form.type}>
+        <LabeledFormInput key="project_type" class="md:max-w-xs">
+          <select name="type" class="select" bind:value={$form.type}>
             {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
               <option value={type.Id}>{type.Description}</option>
             {/each}
@@ -92,7 +94,7 @@
         </LabeledFormInput>
       </div>
       <div class="row">
-        <LabeledFormInput key="project_description" classes="md:max-w-xs">
+        <LabeledFormInput key="project_description" class="md:max-w-xs">
           <textarea
             name="Description"
             class="textarea textarea-bordered h-48 w-full"
@@ -103,7 +105,7 @@
         <Toggle
           title={{ key: 'project_public' }}
           message={{ key: 'project_visibilityDescription' }}
-          className="py-2 md:max-w-xs"
+          class="py-2 md:max-w-xs"
           name="IsPublic"
           inputAttr={{ onchange: () => {} }}
           bind:checked={$form.IsPublic}
@@ -118,7 +120,7 @@
         >
           {m.common_cancel()}
         </a>
-        <BlockIfJobsUnavailable className="btn btn-primary w-full max-w-xs">
+        <BlockIfJobsUnavailable class="btn btn-primary w-full max-w-xs">
           {#snippet altContent()}
             {m.common_save()}
           {/snippet}

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Prisma } from '@prisma/client';
+  import type { ClassValue } from 'svelte/elements';
   import { m } from '$lib/paraglide/messages';
   import { getTimeDateString } from '$lib/utils/time';
 
@@ -13,46 +14,48 @@
         DateResolved: true;
       };
     }>;
-    classes?: string;
-    headerClasses?: string;
+    class?: {
+      default?: ClassValue;
+      header?: ClassValue;
+    };
   }
 
-  let { release, classes = '', headerClasses = '' }: Props = $props();
+  let { release, class: classes }: Props = $props();
 </script>
 
 {#if release?.LogUrl}
-  <table class="table table-auto bg-base-100 sm:hidden {classes}">
+  <table class={['table table-auto bg-base-100 sm:hidden', classes?.default]}>
     <tbody>
       <tr>
-        <th class={headerClasses}>{m.publications_channel()}</th>
+        <th class={[classes?.header]}>{m.publications_channel()}</th>
         <td>{release.Channel}</td>
       </tr>
       <tr>
-        <th class={headerClasses}>{m.publications_status()}</th>
+        <th class={[classes?.header]}>{m.publications_status()}</th>
         <td>
           {release.Success ? m.publications_succeeded() : m.publications_failed()}
         </td>
       </tr>
       {#if release.DateResolved}
         <tr>
-          <th class={headerClasses}>{m.publications_resolved()}</th>
+          <th class={[classes?.header]}>{m.publications_resolved()}</th>
           <td>{getTimeDateString(release.DateResolved)}</td>
         </tr>
       {/if}
       <tr>
-        <th class={headerClasses}>{m.publications_date()}</th>
+        <th class={[classes?.header]}>{m.publications_date()}</th>
         <td>{getTimeDateString(release.DateUpdated)}</td>
       </tr>
       <tr>
-        <th class={headerClasses}>{m.publications_url()}</th>
+        <th class={[classes?.header]}>{m.publications_url()}</th>
         <td>
           <a href={release.LogUrl} class="link" target="_blank">{m.publications_console()}</a>
         </td>
       </tr>
     </tbody>
   </table>
-  <table class="hidden sm:table table-auto bg-base-100 {classes}">
-    <thead class={headerClasses}>
+  <table class={['hidden sm:table table-auto bg-base-100', classes]}>
+    <thead class={[classes?.header]}>
       <tr>
         <th>{m.publications_channel()}</th>
         <th>{m.publications_status()}</th>

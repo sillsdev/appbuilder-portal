@@ -7,18 +7,19 @@
 
 <script lang="ts">
   import { onDestroy } from 'svelte';
+  import type { ClassValue } from 'svelte/elements';
   import IconContainer from './IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
 
   interface Props {
-    className?: string;
+    class?: ClassValue;
     value: string;
     requestSubmit?: () => void;
     requestDelay?: number;
   }
 
   let {
-    className = '',
+    class: classes,
     value = $bindable(),
     requestSubmit,
     requestDelay = 1_000
@@ -33,7 +34,7 @@
   });
 </script>
 
-<div class={className} data-html="true">
+<div class={[classes]} data-html="true">
   <label class="input input-bordered flex items-center gap-2 w-full">
     <input
       type="search"

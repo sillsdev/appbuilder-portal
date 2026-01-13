@@ -37,7 +37,7 @@
     <h1>{m.project_editProject()}</h1>
     <div class="flex flex-col gap-2 items-center">
       <div class="row">
-        <LabeledFormInput key="project_name" classes="md:max-w-xs grow">
+        <LabeledFormInput key="project_name" class="md:max-w-xs grow">
           <input
             type="text"
             name="name"
@@ -47,12 +47,12 @@
           />
           <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
         </LabeledFormInput>
-        <LabeledFormInput key="project_owner" classes="md:max-w-xs">
-          <BlockIfJobsUnavailable className="select select-bordered">
+        <LabeledFormInput key="project_owner" class="md:max-w-xs">
+          <BlockIfJobsUnavailable class="select">
             {#snippet altContent()}
               {data.owners.find((o) => o.Id === $form.owner)?.Name}
             {/snippet}
-            <select name="owner" class="select select-bordered" bind:value={$form.owner}>
+            <select name="owner" class="select" bind:value={$form.owner}>
               {#each data.owners.toSorted((a, b) => byName(a, b, getLocale())) as owner}
                 <option value={owner.Id}>{owner.Name}</option>
               {/each}
@@ -61,18 +61,20 @@
         </LabeledFormInput>
       </div>
       <div class="row">
-        <LabeledFormInput key="project_group" classes="md:max-w-xs grow">
-          <select name="group" class="select select-bordered" bind:value={$form.group}>
+        <LabeledFormInput key="project_group" class="md:max-w-xs grow">
+          <select name="group" class="select" bind:value={$form.group}>
             {#each data.groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
               <option value={group.Id}>{group.Name}</option>
             {/each}
           </select>
         </LabeledFormInput>
-        <LabeledFormInput key="project_languageCode" classes="md:max-w-xs">
+        <LabeledFormInput key="project_languageCode" class="md:max-w-xs">
           <LanguageCodeTypeahead
             bind:langCode={$form.language}
-            inputClasses="w-full md:max-w-xs validator"
-            dropdownClasses="left-0"
+            class={{
+              dropdown: 'left-0',
+              input: 'w-full md:max-w-xs validator'
+            }}
             inputElProps={{ required: true, pattern: regExpToInputPattern(langtagRegex) }}
           >
             {#snippet validatorHint()}
@@ -82,7 +84,7 @@
         </LabeledFormInput>
       </div>
       <div class="row">
-        <LabeledFormInput key="project_description" classes="w-full max-w-2xl">
+        <LabeledFormInput key="project_description" class="w-full max-w-2xl">
           <textarea
             name="description"
             class="textarea textarea-bordered h-48 w-full"

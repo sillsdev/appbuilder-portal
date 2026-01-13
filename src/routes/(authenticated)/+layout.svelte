@@ -2,6 +2,7 @@
   import { signOut } from '@auth/sveltekit/client';
   import type { Prisma } from '@prisma/client';
   import { type Snippet, onMount } from 'svelte';
+  import type { ClassValue } from 'svelte/elements';
   import type { LayoutData } from './$types';
   import { dev } from '$app/environment';
   import { page } from '$app/state';
@@ -70,7 +71,7 @@
 
 {#snippet orgDisplay(
   org?: Prisma.OrganizationsGetPayload<{ select: { LogoUrl: true; Id: true; Name: true } }>,
-  textClasses?: string
+  classes?: ClassValue
 )}
   {#if org?.LogoUrl}
     <img class="inline-block p-1 h-12 w-12" src={org.LogoUrl} alt="Logo" />
@@ -79,7 +80,7 @@
       <div class="bg-white w-full h-full"></div>
     </div>
   {/if}
-  <span class={textClasses ?? ''}>
+  <span class={[classes]}>
     {org?.Name ?? m.org_allOrganizations()}
   </span>
 {/snippet}
@@ -230,7 +231,7 @@
                   </a>
                 </li>
                 <li>
-                  <BlockIfJobsUnavailable className="rounded-none">
+                  <BlockIfJobsUnavailable class="rounded-none">
                     {#snippet altContent()}
                       {m.sidebar_jobAdministration()}
                       <IconContainer icon="mdi:open-in-new" width="18" />
@@ -294,11 +295,18 @@
           <!-- <p>SCRIPTORIA</p> -->
         </div>
         <div class="navbar-end">
-          <LocaleSelector />
+          <LocaleSelector
+            class={{
+              dropdown: 'dropdown-end',
+              label: 'm-2 p-2 rounded-xl items-middle justify-center flex-nowrap'
+            }}
+          />
           <Dropdown
-            dropdownClasses="dropdown-end"
-            labelClasses="m-2 p-2 rounded-xl"
-            contentClasses="w-36 overflow-y-auto"
+            class={{
+              dropdown: 'dropdown-end',
+              label: 'm-2 p-2 rounded-xl',
+              content: 'w-36 overflow-y-auto'
+            }}
           >
             {#snippet label()}
               <img
@@ -309,7 +317,7 @@
               />
             {/snippet}
             {#snippet content()}
-              <ul class="menu menu-compact gap-1 p-2">
+              <ul class="menu menu-sm gap-1 p-2">
                 <li>
                   <a
                     href={localizeHref(

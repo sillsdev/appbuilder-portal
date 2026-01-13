@@ -49,12 +49,7 @@
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="storeTypes_listTitle">
-    <select
-      class="select select-bordered validator"
-      name="storeType"
-      bind:value={$form.storeType}
-      required
-    >
+    <select class="select validator" name="storeType" bind:value={$form.storeType} required>
       {#each data.options.storeType.toSorted((a, b) => byName(a, b, getLocale())) as type}
         <option value={type.Id}>{type.Name}</option>
       {/each}

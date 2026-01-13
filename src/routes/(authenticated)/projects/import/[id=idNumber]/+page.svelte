@@ -94,21 +94,21 @@
       {m.projectImport_help()}
     </a>
     <div class="flex flex-row gap-4 flex-wrap place-content-center sm:place-content-start p-4">
-      <LabeledFormInput key="project_group" classes="max-w-xs">
-        <select name="group" class="select select-bordered" bind:value={$form.group}>
+      <LabeledFormInput key="project_group" class="max-w-xs">
+        <select name="group" class="select" bind:value={$form.group}>
           {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
             <option value={group.Id}>{group.Name}</option>
           {/each}
         </select>
       </LabeledFormInput>
-      <LabeledFormInput key="project_type" classes="max-w-xs">
-        <select name="type" class="select select-bordered" bind:value={$form.type}>
+      <LabeledFormInput key="project_type" class="max-w-xs">
+        <select name="type" class="select" bind:value={$form.type}>
           {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
             <option value={type.Id}>{type.Description}</option>
           {/each}
         </select>
       </LabeledFormInput>
-      <LabeledFormInput key="projectImport_file" classes="max-w-xs">
+      <LabeledFormInput key="projectImport_file" class="max-w-xs">
         <input
           type="file"
           class="file-input file-input-bordered"
@@ -169,7 +169,7 @@
       >
         {m.common_cancel()}
       </a>
-      <BlockIfJobsUnavailable className="btn btn-primary w-full max-w-xs">
+      <BlockIfJobsUnavailable class="btn btn-primary w-full max-w-xs">
         {#snippet altContent()}
           {m.common_save()}
         {/snippet}

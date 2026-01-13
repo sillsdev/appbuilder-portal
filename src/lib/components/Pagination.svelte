@@ -67,7 +67,7 @@
       {m.common_total({ total })}
     </div>
     <div class="grow">&nbsp;</div>
-    <select class="select select-bordered" name="size" bind:value={size}>
+    <select class="select" name="size" bind:value={size}>
       {#each [10, 25, 50, 100].concat(extraSizeOptions).toSorted((a, b) => a - b) as value}
         <option {value}>{value}</option>
       {/each}

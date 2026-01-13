@@ -53,9 +53,10 @@
       href={data.manifest.link}
       download
       target="_blank"
-      class="btn {lightness(data.manifest.color.substring(1 /*ignore #*/)) < 0.5
-        ? 'text-white'
-        : 'text-black'}"
+      class={[
+        'btn',
+        lightness(data.manifest.color.substring(1 /*ignore #*/)) < 0.5 ? 'text-white' : 'text-black'
+      ]}
       style="background-color: {data.manifest.color}"
     >
       {downloadLinkText(data.manifest, lang)}

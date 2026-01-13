@@ -167,18 +167,20 @@
         {$publishedTime}
       </Tooltip>
     </span>
-    <Dropdown labelClasses="px-1" contentClasses="drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto">
+    <Dropdown
+      class={{ label: 'px-1', content: 'drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto' }}
+    >
       {#snippet label()}
         <IconContainer icon="charm:menu-kebab" width="20" />
       {/snippet}
       {#snippet content()}
-        <ul class="menu menu-compact overflow-hidden rounded-md">
+        <ul class="menu menu-sm overflow-hidden rounded-md">
           {#each product.actions as action}
             {@const message =
               //@ts-expect-error this is in fact correct
               m['products_acts_' + action]()}
             <li class="w-full rounded-none">
-              <BlockIfJobsUnavailable className="text-nowrap">
+              <BlockIfJobsUnavailable class="text-nowrap">
                 {#snippet altContent()}
                   {message}
                 {/snippet}
@@ -220,7 +222,7 @@
           {/if}
           {#if canEdit}
             <li class="w-full rounded-none">
-              <BlockIfJobsUnavailable className="text-nowrap text-error">
+              <BlockIfJobsUnavailable class="text-nowrap text-error">
                 {#snippet altContent()}
                   {m.models_delete({ name: m.tasks_product() })}
                 {/snippet}

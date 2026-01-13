@@ -3,7 +3,7 @@
 
   import type { FuseResultMatch } from 'fuse.js';
   import type { Snippet } from 'svelte';
-  import type { HTMLInputAttributes } from 'svelte/elements';
+  import type { ClassValue, HTMLInputAttributes } from 'svelte/elements';
   import TypeaheadInput from './TypeaheadInput.svelte';
   import { page } from '$app/state';
   import { type LangInfo, l10nMap, localizeTagData } from '$lib/locales.svelte';
@@ -106,8 +106,10 @@
   let typeaheadInput: HTMLInputElement | undefined = $state(undefined);
   interface Props {
     langCode: string;
-    dropdownClasses?: string;
-    inputClasses?: string;
+    class?: {
+      dropdown?: ClassValue;
+      input?: ClassValue;
+    };
     onLangCodeSelected?: (langCode: string) => void;
     inputElProps?: HTMLInputAttributes;
     validatorHint?: Snippet;
@@ -115,8 +117,7 @@
 
   let {
     langCode = $bindable(),
-    dropdownClasses = '',
-    inputClasses = '',
+    class: classes,
     onLangCodeSelected,
     inputElProps = {},
     validatorHint
@@ -155,13 +156,12 @@
 <TypeaheadInput
   inputElProps={{ placeholder: m.project_languageCode(), ...inputElProps }}
   getList={(searchValue) => search(searchValue)}
-  classes="pr-20 {inputClasses}"
+  class={{ default: ['pr-20', classes?.input], dropdown: classes?.dropdown }}
   bind:search={langCode}
   onItemClicked={(res) => {
     langCode = res.item.tag;
     onLangCodeSelected?.(langCode);
   }}
-  {dropdownClasses}
   bind:inputElement={typeaheadInput}
 >
   <!-- This is a convenience option and unnecessary for a11y -->

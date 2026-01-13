@@ -73,7 +73,7 @@
         </LabeledFormInput>
         <LabeledFormInput key="project_org">
           <OrganizationDropdown
-            className="w-full"
+            class="w-full"
             selectProperties={{ name: 'organizationId' }}
             bind:value={$form.organizationId}
             organizations={data.groupsByOrg}
@@ -118,7 +118,7 @@
     </div>
     <div class="my-4 flex justify-end gap-2">
       <a class="btn btn-secondary" href={localizeHref(redirectUrl)}>{m.common_cancel()}</a>
-      <BlockIfJobsUnavailable className="btn btn-primary">
+      <BlockIfJobsUnavailable class="btn btn-primary">
         {#snippet altContent()}
           {m.orgMembership_send()}
         {/snippet}
