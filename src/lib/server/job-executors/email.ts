@@ -23,7 +23,7 @@ export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unk
     },
     include: {
       Organization: true,
-      User: true
+      InvitedBy: true
     }
   });
   // If there is a user with the same email, we can localize the email
@@ -43,7 +43,7 @@ export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unk
       }),
       addProperties(OrganizationMembershipInviteTemplate, {
         OrganizationName: inviteInformation.Organization.Name,
-        InvitedBy: inviteInformation.User.Name,
+        InvitedBy: inviteInformation.InvitedBy.Name,
         InviteUrl: job.data.inviteLink
       })
     )
@@ -326,10 +326,10 @@ export async function reportProjectImport(
     },
     include: {
       // Schema mistake; should be Owner or User not Users
-      Users: true,
-      Organizations: true,
-      Groups: true,
-      ApplicationTypes: true
+      Owner: true,
+      Organization: true,
+      Group: true,
+      ApplicationType: true
     }
   });
   const newProjects = await DatabaseReads.projects.findMany({
@@ -340,7 +340,7 @@ export async function reportProjectImport(
   const importJSON: ProjectImportJSON = JSON.parse(projectImport.ImportData!);
   const existingProjects = await DatabaseReads.projects.findMany({
     where: {
-      OrganizationId: projectImport.Organizations!.Id,
+      OrganizationId: projectImport.Organization!.Id,
       Name: {
         in: importJSON.Projects.map((p) => p.Name).filter(
           (p) => !newProjects.find((n) => n.Name === p)
@@ -350,13 +350,13 @@ export async function reportProjectImport(
   });
   const reportLines = [
     ...newProjects.map((p) =>
-      translate(projectImport.Users!.Locale, 'importProject.newProject', {
+      translate(projectImport.Owner!.Locale, 'importProject.newProject', {
         projectName: p.Name,
         projectId: '' + p.Id
       })
     ),
     ...existingProjects.map((p) =>
-      translate(projectImport.Users!.Locale, 'importProject.existingProject', {
+      translate(projectImport.Owner!.Locale, 'importProject.existingProject', {
         projectName: p.Name,
         projectId: '' + p.Id
       })
@@ -375,7 +375,7 @@ export async function reportProjectImport(
     // It is not possible to have an imported project with existing products
     reportLines.push(
       ...products.map((p) =>
-        translate(projectImport.Users!.Locale, 'importProject.newProduct', {
+        translate(projectImport.Owner!.Locale, 'importProject.newProduct', {
           projectId: '' + project.Id,
           projectName: project.Name,
           productDefinitionName: p.ProductDefinition.Name,
@@ -391,35 +391,35 @@ export async function reportProjectImport(
   }
 
   const properties = [
-    translate(projectImport.Users!.Locale, 'importProject.property', {
-      name: translate(projectImport.Users!.Locale, 'importProject.Owner'),
-      value: projectImport.Users!.Name
+    translate(projectImport.Owner!.Locale, 'importProject.property', {
+      name: translate(projectImport.Owner!.Locale, 'importProject.Owner'),
+      value: projectImport.Owner!.Name
     }),
-    translate(projectImport.Users!.Locale, 'importProject.property', {
-      name: translate(projectImport.Users!.Locale, 'importProject.Group'),
-      value: projectImport.Groups!.Name
+    translate(projectImport.Owner!.Locale, 'importProject.property', {
+      name: translate(projectImport.Owner!.Locale, 'importProject.Group'),
+      value: projectImport.Group!.Name
     }),
-    translate(projectImport.Users!.Locale, 'importProject.property', {
-      name: translate(projectImport.Users!.Locale, 'importProject.Organization'),
-      value: projectImport.Organizations!.Name
+    translate(projectImport.Owner!.Locale, 'importProject.property', {
+      name: translate(projectImport.Owner!.Locale, 'importProject.Organization'),
+      value: projectImport.Organization!.Name
     }),
-    translate(projectImport.Users!.Locale, 'importProject.property', {
-      name: translate(projectImport.Users!.Locale, 'importProject.Application Type'),
-      value: projectImport.ApplicationTypes!.Description
+    translate(projectImport.Owner!.Locale, 'importProject.property', {
+      name: translate(projectImport.Owner!.Locale, 'importProject.Application Type'),
+      value: projectImport.ApplicationType!.Description
     })
   ];
 
   const body = addProperties(ProjectImportTemplate, {
-    Title: translate(projectImport.Users!.Locale, 'importProject.title'),
-    PropertiesHeader: translate(projectImport.Users!.Locale, 'importProject.propertiesHeader'),
+    Title: translate(projectImport.Owner!.Locale, 'importProject.title'),
+    PropertiesHeader: translate(projectImport.Owner!.Locale, 'importProject.propertiesHeader'),
     Properties: '<li>' + properties.join('</li><li>') + '</li>',
-    OutputHeader: translate(projectImport.Users!.Locale, 'importProject.outputHeader'),
+    OutputHeader: translate(projectImport.Owner!.Locale, 'importProject.outputHeader'),
     Output: '<tr><td><p>' + reportLines.join('</p></td></tr><tr><td><p>') + '</p></td></tr>'
   });
 
   return await sendEmail(
-    [{ email: projectImport.Users!.Email!, name: projectImport.Users!.Name! }],
-    translate(projectImport.Users!.Locale, 'importProject.subject'),
+    [{ email: projectImport.Owner!.Email!, name: projectImport.Owner!.Name! }],
+    translate(projectImport.Owner!.Locale, 'importProject.subject'),
     body
   );
 }
