@@ -15,7 +15,7 @@
     projectAuthors: Prisma.AuthorsGetPayload<{
       select: {
         Id: true;
-        Users: {
+        User: {
           select: {
             Id: true;
             Name: true;
@@ -60,9 +60,9 @@
   <div class="p-2">
     {#if projectAuthors.length}
       {@const locale = getLocale()}
-      {#each projectAuthors.toSorted((a, b) => byName(a.Users, b.Users, locale)) as author}
+      {#each projectAuthors.toSorted((a, b) => byName(a.User, b.User, locale)) as author}
         <div class="flex flex-row w-full place-content-between p-2">
-          <span>{author.Users.Name}</span>
+          <span>{author.User.Name}</span>
           {#if canEdit}
             <BlockIfJobsUnavailable>
               {#snippet altContent()}
