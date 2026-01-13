@@ -7,7 +7,6 @@ export const load = (async (event) => {
   event.locals.security.requireSuperAdmin();
   const productDefinitions = await DatabaseReads.productDefinitions.findMany({
     include: {
-      ApplicationTypes: true,
       Workflow: true,
       RebuildWorkflow: true,
       RepublishWorkflow: true

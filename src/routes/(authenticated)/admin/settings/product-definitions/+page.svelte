@@ -29,10 +29,6 @@
       title={pD.Name}
       fields={[
         {
-          key: 'prodDefs_type',
-          value: pD.ApplicationTypes.Name // ISSUE: #1102 this doesn't actually mean anything for the product definition, so we may want to remove this entirely from the UI.
-        },
-        {
           key: 'prodDefs_flow',
           value: pD.Workflow.Name
         },

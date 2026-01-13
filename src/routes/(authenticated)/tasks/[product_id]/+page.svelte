@@ -257,7 +257,7 @@
             value={data.productDescription}
           />
         </LabeledFormInput>
-        <LabeledFormInput key="prodDefs_type">
+        <LabeledFormInput key="project_appType">
           <input
             type="text"
             class="input input-bordered w-full"
