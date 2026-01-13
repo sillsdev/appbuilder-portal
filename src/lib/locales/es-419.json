@@ -462,8 +462,6 @@
   "flowDefs_title": "Definiciones de flujo de trabajo",
   "flowDefs_name": "Nombre de la definición del flujo de trabajo",
   "flowDefs_description": "Descripción",
-  "flowDefs_scheme": "Workflow Scheme",
-  "flowDefs_businessFlow": "Workflow Business Flow",
   "flowDefs_properties": "Propiedades",
   "flowDefs_add": "Add Workflow Definition",
   "flowDefs_edit": "Edit Workflow Definition",

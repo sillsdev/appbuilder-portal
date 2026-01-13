@@ -25,7 +25,6 @@ export const load = (async ({ url, locals }) => {
   });
   if (!data) return redirect(302, localizeHref('/admin/settings/workflow-definitions'));
   const storeTypes = await DatabaseReads.storeTypes.findMany();
-  const schemes = await DatabaseReads.workflowScheme.findMany({ select: { Code: true } });
   const form = await superValidate(
     {
       id: data.Id,
@@ -33,8 +32,6 @@ export const load = (async ({ url, locals }) => {
       storeType: data.StoreTypeId!,
       productType: data.ProductType,
       workflowType: data.Type,
-      workflowScheme: data.WorkflowScheme,
-      workflowBusinessFlow: data.WorkflowBusinessFlow,
       description: data.Description,
       properties: data.Properties,
       options: data.WorkflowOptions,
@@ -42,7 +39,7 @@ export const load = (async ({ url, locals }) => {
     },
     valibot(editSchema)
   );
-  return { form, storeTypes, schemes };
+  return { form, storeTypes };
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -59,8 +56,6 @@ export const actions = {
       data: {
         Type: form.data.workflowType,
         Name: form.data.name,
-        WorkflowScheme: form.data.workflowScheme,
-        WorkflowBusinessFlow: form.data.workflowBusinessFlow,
         StoreTypeId: form.data.storeType,
         Description: form.data.description,
         Properties: form.data.properties,
