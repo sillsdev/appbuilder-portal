@@ -39,6 +39,11 @@ export async function POST({ params, locals, request }) {
           ExternalId: true
         }
       },
+      Authors: {
+        select: {
+          UserId: true
+        }
+      },
       OrganizationId: true
     }
   });
@@ -69,7 +74,9 @@ export async function POST({ params, locals, request }) {
       locals.security.requireHasRole(project.OrganizationId, RoleId.Author, false);
       // ISSUE: #1101 Kalaam now wants authors to be able to update at any time.  In the future, we can add a setting on the author to whether they are a restricted author or not. I don't have time to add the UI at the moment.
       //readOnly = !author.CanUpdate;
-      readOnly = false;
+      if (project.Authors.some(({ UserId }) => UserId === locals.security.userId)) {
+        readOnly = false;
+      }
     } catch {
       /* empty */
     }
