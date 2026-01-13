@@ -68,6 +68,7 @@
       "releaseFailedOwner": "Scriptoria: Publish {{projectName}} {{productName}} Failed",
       "releaseFailedAdmin": "Scriptoria: Publish {{projectName}} {{productName}} Failed",
       "releaseProductRecordNotFound": "Scriptoria: Release Failed: Product {{productId}}",
+      "autoPublishOnRebuildCompleted": "Scriptoria : Publication automatique réussie de {{productName}} dans {{projectName}}",
       "reviewProduct": "{{projectName}} app - ready for review",
       "reviewProductWithComment": "{{projectName}} app - ready for review",
       "rejectionEmail": "Scriptoria: {{projectName}} {{productName}} Returned",
@@ -103,7 +104,8 @@
       "releaseCompletedSuccessfully": "Release for product: {{productName}} project: {{projectName}} completed successfully",
       "releaseFailedOwner": "Publish for product {{productName}} project {{projectName}} failed. The organization administrator has been notified of this issue.",
       "releaseFailedAdmin": "Publish for product {{productName}} project {{projectName}} failed. Review logs in email for details.",
-      "releaseProductRecordNotFound": "Release Failed: Unable to find product record with id: {{productId}}"
+      "releaseProductRecordNotFound": "Release Failed: Unable to find product record with id: {{productId}}",
+      "autoPublishOnRebuildCompleted": "La publication automatique du produit {{productName}} dans le projet {{projectName}} s'est terminée avec succès."
     }
   },
   "organizationInvites": {
