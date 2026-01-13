@@ -454,6 +454,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
    * 1. Delete UserTasks for archived projects
    * 2. Add UserId to transitions with a WorkflowUserId but no UserId
    * 3. Migrate data from DWKit tables to WorkflowInstances
+   * 2. (removed step)
    * 4. Populate Product.PackageName
    * 5. Remove users with no org membership
    * 6. Populate ProductBuild.AppBuilderVersion
@@ -470,53 +471,6 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     }
   });
   job.updateProgress(10);
-
-  // 2. Add UserId to transitions with a WorkflowUserId but no UserId
-  const updatedTransitions = (
-    await Promise.all(
-      (
-        await DatabaseReads.productTransitions.findMany({
-          where: {
-            UserId: null,
-            WorkflowUserId: { not: null }
-          },
-          select: { WorkflowUserId: true },
-          distinct: 'WorkflowUserId'
-        })
-      ).map(async ({ WorkflowUserId }) => {
-        const user = await DatabaseReads.users.findFirst({
-          where: { WorkflowUserId },
-          select: { Id: true }
-        });
-        if (!user) return { count: 0 };
-
-        return (
-          (await DatabaseWrites.productTransitions.updateMany(
-            {
-              where: { UserId: null, WorkflowUserId },
-              data: { UserId: user.Id }
-            },
-            // System startup; no need to update SvelteSSE projects
-            // Also this is a migration that should not change any UI
-            0
-          )) || { count: 0 }
-        );
-      })
-    )
-  ).reduce((p, c) => p + c.count, 0);
-
-  const missingWorkflowUserIDs = (
-    await DatabaseReads.productTransitions.findMany({
-      where: {
-        UserId: null,
-        WorkflowUserId: { not: null }
-      },
-      select: { WorkflowUserId: true },
-      distinct: 'WorkflowUserId'
-    })
-  ).map(({ WorkflowUserId }) => WorkflowUserId);
-
-  job.updateProgress(20);
 
   // 3. Migrate data from DWKit tables to WorkflowInstances
 
@@ -846,8 +800,6 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
 
   return {
     deletedTasks: deletedTasks.count,
-    updatedTransitions,
-    missingWorkflowUserIDs,
     migratedProducts,
     migrationErrors,
     orphanedWPIs: orphanedInstances.reduce((p, c) => p + (c?.at(-1)?.count ?? 0), 0),
