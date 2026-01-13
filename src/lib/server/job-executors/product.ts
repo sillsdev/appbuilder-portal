@@ -259,7 +259,8 @@ export async function createLocal(job: Job<BullMQ.Product.CreateLocal>): Promise
         {
           productType: flowDefinition.ProductType,
           options: new Set(flowDefinition.WorkflowOptions),
-          workflowType: flowDefinition.Type
+          workflowType: flowDefinition.Type,
+          isAutomatic: false
         },
         job.data.userId
       );

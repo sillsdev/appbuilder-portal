@@ -61,6 +61,7 @@ export class Workflow {
         Project: {
           select: {
             Id: true,
+            AutoPublishOnRebuild: true,
             _count: {
               select: {
                 Authors: true,
@@ -75,6 +76,7 @@ export class Workflow {
       ...config,
       hasAuthors: !!check?.Project._count.Authors,
       hasReviewers: !!check?.Project._count.Reviewers,
+      autoPublishOnRebuild: !!check?.Project.AutoPublishOnRebuild,
       productId,
       existingApp: false
     });
@@ -182,6 +184,7 @@ export class Workflow {
           select: {
             Project: {
               select: {
+                AutoPublishOnRebuild: true,
                 _count: {
                   select: {
                     Authors: true,
@@ -198,6 +201,7 @@ export class Workflow {
       return null;
     }
     const context = JSON.parse(instance.Context) as WorkflowInstanceContext;
+    context.isAutomatic ??= false;
     return {
       definitionId: instance.WorkflowDefinition.Id,
       state: instance.State,
@@ -208,6 +212,8 @@ export class Workflow {
         options: new Set(instance.WorkflowDefinition.WorkflowOptions),
         hasAuthors: !!instance.Product.Project._count.Authors,
         hasReviewers: !!instance.Product.Project._count.Reviewers,
+        autoPublishOnRebuild: !!instance.Product.Project.AutoPublishOnRebuild,
+        isAutomatic: context.isAutomatic ?? false,
         productId,
         existingApp: !!context.environment[ENVKeys.GOOGLE_PLAY_EXISTING]
       }
@@ -358,6 +364,7 @@ export class Workflow {
       productId: undefined,
       hasAuthors: undefined,
       hasReviewers: undefined,
+      autoPublishOnRebuild: undefined,
       productType: undefined,
       options: undefined,
       existingApp: undefined

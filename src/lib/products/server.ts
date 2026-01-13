@@ -60,7 +60,8 @@ export async function doProductAction(
             {
               productType: product.ProductDefinition[flowType].ProductType,
               options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
-              workflowType: product.ProductDefinition[flowType].Type
+              workflowType: product.ProductDefinition[flowType].Type,
+              isAutomatic: false
             },
             userId
           );
