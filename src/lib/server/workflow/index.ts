@@ -339,7 +339,6 @@ export class Workflow {
           where: {
             ProductId: this.productId,
             DateTransition: null,
-            WorkflowUserId: null,
             UserId: null,
             QueueRecords: {
               none: {}
@@ -579,8 +578,7 @@ export class Workflow {
             Id: userId
           },
           select: {
-            Name: true,
-            WorkflowUserId: true
+            Name: true
           }
         })
       : null;
@@ -592,7 +590,6 @@ export class Workflow {
         },
         data: {
           UserId: userId,
-          WorkflowUserId: user?.WorkflowUserId ?? null,
           AllowedUserNames: user?.Name ?? null,
           Command: command ?? null,
           DateTransition: new Date(),
@@ -605,7 +602,6 @@ export class Workflow {
         data: {
           ProductId: this.productId,
           UserId: userId,
-          WorkflowUserId: user?.WorkflowUserId ?? null,
           AllowedUserNames: user?.Name ?? null,
           InitialState: initialState,
           DestinationState: destinationState,

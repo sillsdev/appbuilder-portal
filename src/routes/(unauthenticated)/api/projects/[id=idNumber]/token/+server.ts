@@ -17,8 +17,7 @@ export async function POST({ params, locals, request }) {
     select: {
       Id: true,
       Name: true,
-      Email: true,
-      WorkflowUserId: true
+      Email: true
     }
   });
 
@@ -138,7 +137,6 @@ export async function POST({ params, locals, request }) {
         AllowedUserNames: user.Name,
         TransitionType: ProductTransitionType.ProjectAccess,
         InitialState: 'Project ' + use,
-        WorkflowUserId: user.WorkflowUserId,
         UserId: user.Id,
         DateTransition: new Date()
       }))
