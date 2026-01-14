@@ -10,57 +10,40 @@ datasource db {
 }
 
 model ApplicationTypes {
-  Id                 Int                  @id(map: "PK_ApplicationTypes") @default(autoincrement())
-  Name               String?
-  Description        String?
-  ProjectImports     ProjectImports[]
-  Projects           Projects[]
-  SystemVersions     SystemVersions[]
-  SoftwareUpdates    SoftwareUpdates[]
+  Id              Int               @id(map: "PK_ApplicationTypes") @default(autoincrement())
+  Name            String?
+  Description     String?
+  ProjectImports  ProjectImports[]
+  Projects        Projects[]
+  SystemVersions  SystemVersions[]
+  SoftwareUpdates SoftwareUpdates[]
 }
 
 model Authors {
-  // ISSUE: #1102 composite keys?
-  Id        Int      @id(map: "PK_Authors") @default(autoincrement())
   UserId    Int
   ProjectId Int
   CanUpdate Boolean?
   Project   Projects @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Authors_Projects_ProjectId")
   User      Users    @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Authors_Users_UserId")
 
-  @@index([ProjectId], map: "IX_Authors_ProjectId")
-  @@index([UserId], map: "IX_Authors_UserId")
-}
-
-model GroupMemberships {
-  // ISSUE: #1102 composite keys?
-  Id      Int    @id(map: "PK_GroupMemberships") @default(autoincrement())
-  UserId  Int
-  GroupId Int
-  Group   Groups @relation(fields: [GroupId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_GroupMemberships_Groups_GroupId")
-  User    Users  @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_GroupMemberships_Users_UserId")
-
-  @@index([GroupId], map: "IX_GroupMemberships_GroupId")
-  @@index([UserId], map: "IX_GroupMemberships_UserId")
+  @@id([UserId, ProjectId], map: "PK_Authors_UserId_ProjectId")
 }
 
 model Groups {
-  Id               Int                @id(map: "PK_Groups") @default(autoincrement())
-  Name             String?
-  Abbreviation     String?
-  OwnerId          Int
-  GroupMemberships GroupMemberships[]
-  Owner            Organizations      @relation(fields: [OwnerId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Groups_Organizations_OwnerId")
-  ProjectImports   ProjectImports[]
-  Projects         Projects[]
+  Id             Int              @id(map: "PK_Groups") @default(autoincrement())
+  Name           String?
+  Abbreviation   String?
+  OwnerId        Int
+  Users          Users[]
+  Owner          Organizations    @relation(fields: [OwnerId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Groups_Organizations_OwnerId")
+  ProjectImports ProjectImports[]
+  Projects       Projects[]
 
   @@index([OwnerId], map: "IX_Groups_OwnerId")
 }
 
 model OrganizationMembershipInvites {
-  // ISSUE: #1102 composite keys?
-  Id             Int           @id(map: "PK_OrganizationMembershipInvites") @default(autoincrement())
-  Token          String        @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  Token          String        @id(map: "PK_OrganizationMembershipInvites") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   Email          String
   Expires        DateTime      @default(dbgenerated("(CURRENT_DATE + 7)")) @db.Timestamp(6)
   Redeemed       Boolean       @default(false)
@@ -77,67 +60,30 @@ model OrganizationMembershipInvites {
   @@index([OrganizationId], map: "IX_OrganizationMembershipInvites_OrganizationId")
 }
 
-model OrganizationMemberships {
-  // ISSUE: #1102 composite keys?
-  Id             Int           @id(map: "PK_OrganizationMemberships") @default(autoincrement())
-  UserId         Int
-  OrganizationId Int
-  Organization   Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationMemberships_Organizations_OrganizationId")
-  User           Users         @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationMemberships_Users_UserId")
-
-  @@index([OrganizationId], map: "IX_OrganizationMemberships_OrganizationId")
-  @@index([UserId], map: "IX_OrganizationMemberships_UserId")
-}
-
-model OrganizationProductDefinitions {
-  Id                  Int                @id(map: "PK_OrganizationProductDefinitions") @default(autoincrement())
-  OrganizationId      Int
-  ProductDefinitionId Int
-  Organization        Organizations      @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationProductDefinitions_Organizations_OrganizationId")
-  ProductDefinition   ProductDefinitions @relation(fields: [ProductDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationProductDefinitions_ProductDefinitions_ProductDe~")
-
-  @@index([OrganizationId], map: "IX_OrganizationProductDefinitions_OrganizationId")
-  @@index([ProductDefinitionId], map: "IX_OrganizationProductDefinitions_ProductDefinitionId")
-}
-
-model OrganizationStores {
-  // ISSUE: #1102 composite keys?
-  Id             Int           @id(map: "PK_OrganizationStores") @default(autoincrement())
-  OrganizationId Int
-  StoreId        Int
-  Organization   Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationStores_Organizations_OrganizationId")
-  Store          Stores        @relation(fields: [StoreId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_OrganizationStores_Stores_StoreId")
-
-  @@index([OrganizationId], map: "IX_OrganizationStores_OrganizationId")
-  @@index([StoreId], map: "IX_OrganizationStores_StoreId")
-}
-
 model Organizations {
-  Id                             Int                              @id(map: "PK_Organizations") @default(autoincrement())
-  Name                           String?
-  WebsiteUrl                     String?
-  BuildEngineUrl                 String?
-  BuildEngineApiAccessToken      String?
-  LogoUrl                        String?
-  UseDefaultBuildEngine          Boolean?                         @default(true)
-  PublicByDefault                Boolean?                         @default(true)
-  ContactEmail                   String?
-  Groups                         Groups[]
-  OrganizationMembershipInvites  OrganizationMembershipInvites[]
-  OrganizationMemberships        OrganizationMemberships[]
-  OrganizationProductDefinitions OrganizationProductDefinitions[]
-  ProjectImports                 ProjectImports[]
-  Projects                       Projects[]
-  UserRoles                      UserRoles[]
-  OrganizationStores             OrganizationStores[]
+  Id                            Int                             @id(map: "PK_Organizations") @default(autoincrement())
+  Name                          String?
+  WebsiteUrl                    String?
+  BuildEngineUrl                String?
+  BuildEngineApiAccessToken     String?
+  LogoUrl                       String?
+  UseDefaultBuildEngine         Boolean?                        @default(true)
+  PublicByDefault               Boolean?                        @default(true)
+  ContactEmail                  String?
+  Groups                        Groups[]
+  OrganizationMembershipInvites OrganizationMembershipInvites[]
+  Users                         Users[]
+  ProductDefinitions            ProductDefinitions[]
+  ProjectImports                ProjectImports[]
+  Projects                      Projects[]
+  UserRoles                     UserRoles[]
+  Stores                        Stores[]
 }
 
 model ProductArtifacts {
-  // ISSUE: #1102 composite keys?
-  Id             Int           @id(map: "PK_ProductArtifacts") @default(autoincrement())
   ProductId      String        @db.Uuid
   ProductBuildId Int
-  ArtifactType   String?
+  ArtifactType   String
   Url            String?
   FileSize       BigInt?
   ContentType    String?
@@ -146,7 +92,7 @@ model ProductArtifacts {
   ProductBuild   ProductBuilds @relation(fields: [ProductBuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductArtifacts_ProductBuilds_ProductBuildId")
   Product        Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductArtifacts_Products_ProductId")
 
-  @@index([ProductBuildId], map: "IX_ProductArtifacts_ProductBuildId")
+  @@id([ProductBuildId, ArtifactType], map: "PK_ProductArtifacts_ProductBuildId_ArtifactType")
   @@index([ProductId], map: "IX_ProductArtifacts_ProductId")
 }
 
@@ -161,27 +107,25 @@ model ProductBuilds {
   AppBuilderVersion   String?
   ProductArtifacts    ProductArtifacts[]
   Product             Products              @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductBuilds_Products_ProductId")
+  // A build may have multiple publications if a SuperAdmin jumps directly from Synchronize Data to Product Publish
   ProductPublications ProductPublications[]
-  // ISSUE: #1102 Usually a build shouldn't have multiple publications?
-  // Typically, a failed publish will go to Synchronize Data, which will always build before trying to publish
-  // The only edge case would be if a SuperAdmin bypasses that by jumping the workflow state...
 
   @@index([ProductId], map: "IX_ProductBuilds_ProductId")
 }
 
 model ProductDefinitions {
-  Id                             Int                              @id(map: "PK_ProductDefinitions") @default(autoincrement())
-  Name                           String?
-  Description                    String?
-  WorkflowId                     Int
-  RebuildWorkflowId              Int?
-  RepublishWorkflowId            Int?
-  Properties                     String?
-  OrganizationProductDefinitions OrganizationProductDefinitions[]
-  RebuildWorkflow                WorkflowDefinitions?             @relation("ProductDefinitions_RebuildWorkflowIdToWorkflowDefinitions", fields: [RebuildWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RebuildWorkflowId")
-  RepublishWorkflow              WorkflowDefinitions?             @relation("ProductDefinitions_RepublishWorkflowIdToWorkflowDefinitions", fields: [RepublishWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RepublishWorkflowId")
-  Workflow                       WorkflowDefinitions              @relation("ProductDefinitions_WorkflowIdToWorkflowDefinitions", fields: [WorkflowId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_WorkflowId")
-  Products                       Products[]
+  Id                  Int                  @id(map: "PK_ProductDefinitions") @default(autoincrement())
+  Name                String?
+  Description         String?
+  WorkflowId          Int
+  RebuildWorkflowId   Int?
+  RepublishWorkflowId Int?
+  Properties          String?
+  Organizations       Organizations[]
+  RebuildWorkflow     WorkflowDefinitions? @relation("ProductDefinitions_RebuildWorkflowIdToWorkflowDefinitions", fields: [RebuildWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RebuildWorkflowId")
+  RepublishWorkflow   WorkflowDefinitions? @relation("ProductDefinitions_RepublishWorkflowIdToWorkflowDefinitions", fields: [RepublishWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RepublishWorkflowId")
+  Workflow            WorkflowDefinitions  @relation("ProductDefinitions_WorkflowIdToWorkflowDefinitions", fields: [WorkflowId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_WorkflowId")
+  Products            Products[]
 
   @@index([RebuildWorkflowId], map: "IX_ProductDefinitions_RebuildWorkflowId")
   @@index([RepublishWorkflowId], map: "IX_ProductDefinitions_RepublishWorkflowId")
@@ -189,8 +133,6 @@ model ProductDefinitions {
 }
 
 model ProductPublications {
-  // ISSUE: #1102 composite keys? see comment in ProductBuilds
-  Id                   Int           @id(map: "PK_ProductPublications") @default(autoincrement())
   ProductId            String        @db.Uuid
   ProductBuildId       Int
   BuildEngineReleaseId Int
@@ -204,8 +146,8 @@ model ProductPublications {
   ProductBuild         ProductBuilds @relation(fields: [ProductBuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_ProductBuilds_ProductBuildId")
   Product              Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_Products_ProductId")
 
+  @@id([ProductBuildId, BuildEngineReleaseId], map: "PK_ProductPublications_ProductBuildId_ReleaseId")
   @@index([Package], map: "IX_ProductPublications_Package")
-  @@index([ProductBuildId], map: "IX_ProductPublications_ProductBuildId")
   @@index([ProductId], map: "IX_ProductPublications_ProductId")
 }
 
@@ -234,10 +176,10 @@ model QueueRecords {
   Queue               String
   JobType             String
   JobId               String
-  ProductTransition ProductTransitions @relation(fields: [ProductTransitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_QueueRecords_ProductTransitions_ProductTransitionId")
+  ProductTransition   ProductTransitions @relation(fields: [ProductTransitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_QueueRecords_ProductTransitions_ProductTransitionId")
 
-  @@index([ProductTransitionId], map: "IX_QueueRecords_ProductTransitionId")
   @@id([Queue, JobId], map: "IX_QueueRecords_Queue_JobId")
+  @@index([ProductTransitionId], map: "IX_QueueRecords_ProductTransitionId")
 }
 
 model Products {
@@ -365,13 +307,13 @@ model StoreTypes {
 }
 
 model Stores {
-  Id                 Int                  @id(map: "PK_Stores") @default(autoincrement())
-  Name               String?
-  Description        String?
-  StoreTypeId        Int
-  OrganizationStores OrganizationStores[]
-  Products           Products[]
-  StoreType          StoreTypes           @relation(fields: [StoreTypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Stores_StoreTypes_StoreTypeId")
+  Id            Int             @id(map: "PK_Stores") @default(autoincrement())
+  Name          String?
+  Description   String?
+  StoreTypeId   Int
+  Organizations Organizations[]
+  Products      Products[]
+  StoreType     StoreTypes      @relation(fields: [StoreTypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Stores_StoreTypes_StoreTypeId")
 
   @@index([StoreTypeId], map: "IX_Stores_StoreTypeId")
 }
@@ -416,17 +358,13 @@ model SoftwareUpdates {
 }
 
 model UserRoles {
-  // ISSUE: #1102 composite keys?
-  Id             Int           @id(map: "PK_UserRoles") @default(autoincrement())
   UserId         Int
   RoleId         Int
   OrganizationId Int
   Organization   Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserRoles_Organizations_OrganizationId")
   User           Users         @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserRoles_Users_UserId")
 
-  @@index([OrganizationId], map: "IX_UserRoles_OrganizationId")
-  @@index([RoleId], map: "IX_UserRoles_RoleId")
-  @@index([UserId], map: "IX_UserRoles_UserId")
+  @@id([UserId, RoleId, OrganizationId], map: "PK_UserRoles_UserId_RoleId_OrganizationId")
 }
 
 model UserTasks {
@@ -462,9 +400,9 @@ model Users {
   DateCreated                   DateTime?                       @default(now()) @db.Timestamp(6)
   DateUpdated                   DateTime?                       @updatedAt @db.Timestamp(6)
   Authors                       Authors[]
-  GroupMemberships              GroupMemberships[]
+  Groups                        Groups[]
   OrganizationMembershipInvites OrganizationMembershipInvites[]
-  OrganizationMemberships       OrganizationMemberships[]
+  Organizations                 Organizations[]
   ProjectImports                ProjectImports[]
   Projects                      Projects[]
   UserRoles                     UserRoles[]
@@ -507,12 +445,10 @@ model ProductUserChanges {
 }
 
 model WorkflowInstances {
-  // ISSUE: #1102 composite keys?
-  Id                   Int                 @id(map: "PK_WorkflowInstances") @default(autoincrement())
   State                String
   Context              String
   WorkflowDefinitionId Int
-  ProductId            String              @unique @db.Uuid
+  ProductId            String              @id(map: "PK_WorkflowInstances") @db.Uuid
   DateCreated          DateTime?           @default(now()) @db.Timestamp
   DateUpdated          DateTime?           @updatedAt @db.Timestamp
   Product              Products            @relation(fields: [ProductId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_Products_ProductId")
