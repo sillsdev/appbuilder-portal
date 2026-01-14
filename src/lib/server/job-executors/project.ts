@@ -58,9 +58,6 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
   } else {
     await DatabaseWrites.projects.update(job.data.projectId, {
       WorkflowProjectId: response.id,
-      WorkflowAppProjectUrl: `${process.env.ORIGIN || 'http://localhost:6173'}/projects/${
-        job.data.projectId
-      }`
     });
     job.updateProgress(75);
 

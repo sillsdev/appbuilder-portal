@@ -6,6 +6,7 @@ import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
 import { fetchPackageName, getComputeType, updateComputeType } from '$lib/products';
+import { projectUrl } from '$lib/projects/server';
 import { WorkflowAction } from '$lib/workflowTypes';
 
 export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> {
@@ -149,7 +150,6 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
           Id: true,
           Name: true,
           OwnerId: true,
-          WorkflowAppProjectUrl: true,
           OrganizationId: true
         }
       },
@@ -419,7 +419,6 @@ async function notifyFailed(
           Id: true;
           Name: true;
           OrganizationId: true;
-          WorkflowAppProjectUrl: true;
         };
       };
     };
@@ -444,7 +443,7 @@ async function notifyFailed(
         projectId: '' + product.Project.Id,
         jobId: '' + product.WorkflowJobId,
         buildId: '' + product.WorkflowBuildId,
-        projectUrl: product.Project.WorkflowAppProjectUrl!
+        projectUrl: projectUrl(product.Project.Id)
       },
       link: buildResponse.artifacts['consoleText'] ?? '',
       transition
@@ -471,8 +470,8 @@ async function notifyRetrying(
       };
       Project: {
         select: {
+          Id: true;
           Name: true;
-          WorkflowAppProjectUrl: true;
         };
       };
     };
@@ -488,7 +487,7 @@ async function notifyRetrying(
       messageProperties: {
         projectName: product.Project.Name!,
         productName: product.ProductDefinition.Name!,
-        projectUrl: product.Project.WorkflowAppProjectUrl!
+        projectUrl: projectUrl(product.Project.Id)
       },
       link: buildResponse.artifacts['consoleText'] ?? '',
       transition

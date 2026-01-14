@@ -5,6 +5,7 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
+import { projectUrl } from '$lib/projects/server';
 import { WorkflowAction } from '$lib/workflowTypes';
 
 export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown> {
@@ -177,7 +178,6 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
           Id: true,
           Name: true,
           OwnerId: true,
-          WorkflowAppProjectUrl: true,
           OrganizationId: true
         }
       }
@@ -350,7 +350,6 @@ async function notifyFailed(
           Id: true;
           Name: true;
           OrganizationId: true;
-          WorkflowAppProjectUrl: true;
         };
       };
     };
@@ -376,7 +375,7 @@ async function notifyFailed(
         buildId: '' + product.WorkflowBuildId,
         publishId: '' + product.WorkflowPublishId,
         projectId: '' + product.Project.Id,
-        projectUrl: product.Project.WorkflowAppProjectUrl!
+        projectUrl: projectUrl(product.Project.Id)
       },
       link: release.artifacts['consoleText'] ?? '',
       transition
