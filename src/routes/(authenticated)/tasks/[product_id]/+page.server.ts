@@ -4,6 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { RoleId } from '$lib/prisma';
+import { projectUrl } from '$lib/projects/server';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
@@ -49,7 +50,6 @@ export const load = (async ({ params, locals, depends }) => {
           Id: true,
           Name: true,
           Description: true,
-          WorkflowAppProjectUrl: snap.context.includeFields.includes('projectURL'),
           Language: snap.context.includeFields.includes('projectLanguageCode'),
           Owner: {
             select: {
@@ -174,7 +174,8 @@ export const load = (async ({ params, locals, depends }) => {
         snap.context.includeFields.includes('storeDescription') && product.Store?.Description,
       listingLanguageCode:
         snap.context.includeFields.includes('listingLanguageCode') && product.StoreLanguage?.Name,
-      projectURL: product.Project.WorkflowAppProjectUrl,
+      projectURL:
+        snap.context.includeFields.includes('projectURL') && projectUrl(product.Project.Id),
       displayProductDescription: snap.context.includeFields.includes('productDescription'),
       appType:
         snap.context.includeFields.includes('appType') &&
