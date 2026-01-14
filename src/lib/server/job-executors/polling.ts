@@ -9,8 +9,8 @@ import { notifyProductNotFound as publish_notifyProductNotFound } from './publis
 export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
   const product = await DatabaseReads.products.findFirst({
     where: {
-      WorkflowJobId: job.data.jobId,
-      WorkflowBuildId: job.data.buildId
+      BuildEngineJobId: job.data.jobId,
+      BuildEngineBuildId: job.data.buildId
     },
     select: {
       WorkflowInstance: {
@@ -63,9 +63,9 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
 export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown> {
   const product = await DatabaseReads.products.findFirst({
     where: {
-      WorkflowJobId: job.data.jobId,
-      WorkflowBuildId: job.data.buildId,
-      WorkflowPublishId: job.data.releaseId
+      BuildEngineJobId: job.data.jobId,
+      BuildEngineBuildId: job.data.buildId,
+      BuildEngineReleaseId: job.data.releaseId
     },
     select: {
       WorkflowInstance: {
@@ -121,7 +121,7 @@ export async function project(job: Job<BullMQ.Polling.Project>): Promise<unknown
     where: { Id: job.data.projectId },
     select: {
       Name: true,
-      WorkflowProjectId: true,
+      BuildEngineProjectId: true,
       OwnerId: true
     }
   });
@@ -149,7 +149,7 @@ export async function project(job: Job<BullMQ.Polling.Project>): Promise<unknown
         where: { Id: job.data.projectId },
         select: {
           Name: true,
-          WorkflowProjectId: true,
+          BuildEngineProjectId: true,
           OwnerId: true
         }
       });
@@ -157,7 +157,7 @@ export async function project(job: Job<BullMQ.Polling.Project>): Promise<unknown
         const buildEngineUrl =
           (await BuildEngine.Requests.getURLandToken(job.data.organizationId)).url +
           '/project-admin/view?id=' +
-          project.WorkflowProjectId;
+          project.BuildEngineProjectId;
         await notifyCreationFailed(
           job.data.projectId,
           project.Name!,
@@ -168,7 +168,7 @@ export async function project(job: Job<BullMQ.Polling.Project>): Promise<unknown
       } else {
         // BuildEngineProjectService.ProjectCompletedAsync
         await DatabaseWrites.projects.update(job.data.projectId, {
-          WorkflowProjectUrl: response.url
+          RepositoryUrl: response.url
         });
 
         await notifyCreated(job.data.projectId, project.OwnerId, project.Name!);

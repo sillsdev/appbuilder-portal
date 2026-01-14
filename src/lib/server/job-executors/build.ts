@@ -27,7 +27,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
           Name: true
         }
       },
-      WorkflowJobId: true,
+      BuildEngineJobId: true,
       WorkflowInstance: {
         select: {
           Id: true
@@ -42,7 +42,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
   if (productData.WorkflowInstance) {
     // reset previous build
     await DatabaseWrites.products.update(job.data.productId, {
-      WorkflowBuildId: 0
+      BuildEngineBuildId: 0
     });
     job.updateProgress(20);
     const params = await getWorkflowParameters(productData.WorkflowInstance.Id, 'build');
@@ -51,7 +51,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
     job.updateProgress(40);
     const response = await BuildEngine.Requests.createBuild(
       { type: 'query', organizationId: productData.Project.OrganizationId },
-      productData.WorkflowJobId,
+      productData.BuildEngineJobId,
       {
         targets: params['targets'] ?? job.data.defaultTargets,
         environment: { ...env, ...params.environment, ...job.data.environment }
@@ -91,7 +91,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
       throw new Error(message);
     } else {
       await DatabaseWrites.products.update(job.data.productId, {
-        WorkflowBuildId: response.id
+        BuildEngineBuildId: response.id
       });
       job.updateProgress(65);
 
@@ -111,7 +111,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
           type: BullMQ.JobType.Poll_Build,
           productId: job.data.productId,
           organizationId: productData.Project.OrganizationId,
-          jobId: productData.WorkflowJobId,
+          jobId: productData.BuildEngineJobId,
           buildId: response.id,
           productBuildId: productBuild.Id,
           transition: job.data.transition
@@ -138,8 +138,8 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
   const product = await DatabaseReads.products.findUnique({
     where: { Id: job.data.productId },
     select: {
-      WorkflowJobId: true,
-      WorkflowBuildId: true,
+      BuildEngineJobId: true,
+      BuildEngineBuildId: true,
       ProductDefinition: {
         select: {
           Name: true
@@ -409,8 +409,8 @@ async function notifyFailed(
   productId: string,
   product: Prisma.ProductsGetPayload<{
     select: {
-      WorkflowBuildId: true;
-      WorkflowJobId: true;
+      BuildEngineBuildId: true;
+      BuildEngineJobId: true;
       ProductDefinition: {
         select: { Name: true };
       };
@@ -438,11 +438,11 @@ async function notifyFailed(
         productName: product.ProductDefinition.Name!,
         buildStatus: buildResponse.status,
         buildError: buildResponse.error!,
-        buildEngineUrl: endpoint.url + '/build-admin/view?id=' + product.WorkflowBuildId,
+        buildEngineUrl: endpoint.url + '/build-admin/view?id=' + product.BuildEngineBuildId,
         consoleText: buildResponse.artifacts['consoleText'] ?? '',
         projectId: '' + product.Project.Id,
-        jobId: '' + product.WorkflowJobId,
-        buildId: '' + product.WorkflowBuildId,
+        jobId: '' + product.BuildEngineJobId,
+        buildId: '' + product.BuildEngineBuildId,
         projectUrl: projectUrl(product.Project.Id)
       },
       link: buildResponse.artifacts['consoleText'] ?? '',

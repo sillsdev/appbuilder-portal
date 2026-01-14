@@ -44,7 +44,7 @@ export const load = (async ({ params, locals, depends }) => {
       Id: params.product_id
     },
     select: {
-      WorkflowBuildId: true,
+      BuildEngineBuildId: true,
       Project: {
         select: {
           Id: true,
@@ -124,7 +124,7 @@ export const load = (async ({ params, locals, depends }) => {
         where: {
           ProductId: params.product_id,
           ProductBuild: {
-            BuildId: product.WorkflowBuildId
+            BuildId: product.BuildEngineBuildId
           },
           //filter by artifact type
           ArtifactType:
