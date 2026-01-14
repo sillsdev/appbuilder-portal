@@ -21,8 +21,8 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
           OrganizationId: true
         }
       },
-      WorkflowJobId: true,
-      WorkflowBuildId: true,
+      BuildEngineJobId: true,
+      BuildEngineBuildId: true,
       WorkflowInstance: {
         select: {
           Id: true
@@ -41,13 +41,13 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
   job.updateProgress(10);
   const productBuild = await DatabaseReads.productBuilds.findFirst({
     where: {
-      BuildId: productData.WorkflowBuildId
+      BuildId: productData.BuildEngineBuildId
     },
     select: {
       Id: true
     }
   });
-  if (!productData.WorkflowBuildId || !productBuild) {
+  if (!productData.BuildEngineBuildId || !productBuild) {
     // ISSUE: #1100 I don't like this, but it's the most appropriate message currently available
     await notifyProductNotFound(job.data.productId);
     const flow = await Workflow.restore(job.data.productId);
@@ -62,7 +62,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
   job.updateProgress(15);
   if (productData.WorkflowInstance) {
     await DatabaseWrites.products.update(job.data.productId, {
-      WorkflowPublishId: 0
+      BuildEngineReleaseId: 0
     });
     job.updateProgress(20);
     const params = await getWorkflowParameters(productData.WorkflowInstance.Id, 'publish');
@@ -72,8 +72,8 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     job.updateProgress(40);
     const response = await BuildEngine.Requests.createRelease(
       { type: 'query', organizationId: productData.Project.OrganizationId },
-      productData.WorkflowJobId,
-      productData.WorkflowBuildId,
+      productData.BuildEngineJobId,
+      productData.BuildEngineBuildId,
       {
         channel: channel,
         targets: params['targets'] ?? job.data.defaultTargets,
@@ -115,7 +115,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
       throw new Error(message);
     } else {
       await DatabaseWrites.products.update(job.data.productId, {
-        WorkflowPublishId: response.id
+        BuildEngineReleaseId: response.id
       });
       job.updateProgress(65);
 
@@ -137,8 +137,8 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
           type: BullMQ.JobType.Poll_Publish,
           productId: job.data.productId,
           organizationId: productData.Project.OrganizationId,
-          jobId: productData.WorkflowJobId,
-          buildId: productData.WorkflowBuildId,
+          jobId: productData.BuildEngineJobId,
+          buildId: productData.BuildEngineBuildId,
           releaseId: response.id,
           publicationId: pub.Id,
           transition: job.data.transition
@@ -165,9 +165,9 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
   const product = await DatabaseReads.products.findUnique({
     where: { Id: job.data.productId },
     select: {
-      WorkflowJobId: true,
-      WorkflowBuildId: true,
-      WorkflowPublishId: true,
+      BuildEngineJobId: true,
+      BuildEngineBuildId: true,
+      BuildEngineReleaseId: true,
       ProductDefinition: {
         select: {
           Name: true
@@ -339,9 +339,9 @@ async function notifyFailed(
   productId: string,
   product: Prisma.ProductsGetPayload<{
     select: {
-      WorkflowBuildId: true;
-      WorkflowJobId: true;
-      WorkflowPublishId: true;
+      BuildEngineBuildId: true;
+      BuildEngineJobId: true;
+      BuildEngineReleaseId: true;
       ProductDefinition: {
         select: { Name: true };
       };
@@ -369,11 +369,11 @@ async function notifyFailed(
         productName: product.ProductDefinition.Name!,
         releaseStatus: release.status,
         releaseError: release.error!,
-        buildEngineUrl: endpoint.url + '/release-admin/view?id=' + product.WorkflowPublishId,
+        buildEngineUrl: endpoint.url + '/release-admin/view?id=' + product.BuildEngineReleaseId,
         consoleTextUrl: release.artifacts['consoleText'] ?? '',
-        jobId: '' + product.WorkflowJobId,
-        buildId: '' + product.WorkflowBuildId,
-        publishId: '' + product.WorkflowPublishId,
+        jobId: '' + product.BuildEngineJobId,
+        buildId: '' + product.BuildEngineBuildId,
+        publishId: '' + product.BuildEngineReleaseId,
         projectId: '' + product.Project.Id,
         projectUrl: projectUrl(product.Project.Id)
       },

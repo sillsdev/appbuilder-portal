@@ -31,8 +31,8 @@ export async function POST({ params, locals, request }) {
       Id: projectId
     },
     select: {
-      WorkflowProjectUrl: true,
-      WorkflowProjectId: true,
+      RepositoryUrl: true,
+      BuildEngineProjectId: true,
       Owner: {
         select: {
           Id: true,
@@ -49,8 +49,8 @@ export async function POST({ params, locals, request }) {
   });
   if (!project) return createAppBuildersError(404, `Project id=${projectId} not found`);
 
-  if (!project.WorkflowProjectUrl)
-    return createAppBuildersError(404, `Project id=${projectId}: WorkflowProjectUrl is null`);
+  if (!project.RepositoryUrl)
+    return createAppBuildersError(404, `Project id=${projectId}: RepositoryUrl is null`);
 
   // Check ownership
   let readOnly: boolean | null = null;
@@ -96,7 +96,7 @@ export async function POST({ params, locals, request }) {
 
   const tokenResult = await BuildEngine.Requests.getProjectAccessToken(
     { type: 'query', organizationId: project.OrganizationId },
-    project.WorkflowProjectId,
+    project.BuildEngineProjectId,
     {
       name: project.Owner.ExternalId ?? '',
       ReadOnly: readOnly
@@ -111,7 +111,7 @@ export async function POST({ params, locals, request }) {
     type: 'project-tokens',
     attributes: {
       id: projectId,
-      url: project.WorkflowProjectUrl,
+      url: project.RepositoryUrl,
       'session-token': tokenResult.SessionToken,
       'secret-access-key': tokenResult.SecretAccessKey,
       'access-key-id': tokenResult.AccessKeyId,

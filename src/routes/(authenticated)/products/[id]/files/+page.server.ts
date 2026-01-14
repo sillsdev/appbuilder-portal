@@ -66,7 +66,7 @@ export const load = (async ({ params, locals }) => {
       Id: params.id
     },
     select: {
-      WorkflowBuildId: true,
+      BuildEngineBuildId: true,
       ProductDefinition: {
         select: {
           Name: true

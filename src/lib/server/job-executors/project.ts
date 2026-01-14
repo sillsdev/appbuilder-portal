@@ -57,7 +57,7 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
     throw new Error(message!);
   } else {
     await DatabaseWrites.projects.update(job.data.projectId, {
-      WorkflowProjectId: response.id,
+      BuildEngineProjectId: response.id
     });
     job.updateProgress(75);
 
