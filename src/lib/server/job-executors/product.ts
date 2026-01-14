@@ -126,7 +126,7 @@ export async function deleteProduct(job: Job<BullMQ.Product.Delete>): Promise<un
     }
   } else {
     job.updateProgress(100);
-    return 'No Job to delete from BuildEngine (WorkflowJobId === 0)';
+    return 'No Job to delete from BuildEngine (BuildEngineJobId === 0)';
   }
 }
 

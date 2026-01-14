@@ -24,7 +24,7 @@ type Fields = {
   projectDescription: string; //Product.Project.Description
   storeDescription?: string; //Product.Store.Description
   listingLanguageCode?: string; //Product.StoreLanguage.Name
-  projectURL?: string; //Product.Project.WorkflowAppProjectURL
+  projectURL?: string; // Origin URL + /projects/[Project.Id]
   displayProductDescription: boolean; //Product.ProductDefinition.Description
   appType?: string; //Product.ProductDefinition.ApplicationTypes.Description
   projectLanguageCode?: string; //Product.Project.Language
