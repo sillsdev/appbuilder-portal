@@ -130,7 +130,7 @@ export async function project(job: Job<BullMQ.Polling.Project>): Promise<unknown
   }
   const response = await BuildEngine.Requests.getProject(
     { type: 'query', organizationId: job.data.organizationId },
-    job.data.workflowProjectId
+    job.data.buildEngineProjectId
   );
   job.updateProgress(50);
   if (response.responseType === 'error') {

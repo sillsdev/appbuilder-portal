@@ -66,7 +66,7 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
       name,
       data: {
         type: BullMQ.JobType.Poll_Project,
-        workflowProjectId: response.id,
+        buildEngineProjectId: response.id,
         organizationId: projectData.Organization.Id,
         projectId: job.data.projectId
       }
