@@ -6,6 +6,7 @@ import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
 import { fetchPackageName, getComputeType, updateComputeType } from '$lib/products';
+import { projectUrl } from '$lib/projects/server';
 import { WorkflowAction } from '$lib/workflowTypes';
 
 export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> {
@@ -26,7 +27,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
           Name: true
         }
       },
-      WorkflowJobId: true,
+      BuildEngineJobId: true,
       WorkflowInstance: {
         select: {
           Id: true
@@ -41,7 +42,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
   if (productData.WorkflowInstance) {
     // reset previous build
     await DatabaseWrites.products.update(job.data.productId, {
-      WorkflowBuildId: 0
+      BuildEngineBuildId: 0
     });
     job.updateProgress(20);
     const params = await getWorkflowParameters(productData.WorkflowInstance.Id, 'build');
@@ -50,7 +51,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
     job.updateProgress(40);
     const response = await BuildEngine.Requests.createBuild(
       { type: 'query', organizationId: productData.Project.OrganizationId },
-      productData.WorkflowJobId,
+      productData.BuildEngineJobId,
       {
         targets: params['targets'] ?? job.data.defaultTargets,
         environment: { ...env, ...params.environment, ...job.data.environment }
@@ -90,14 +91,14 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
       throw new Error(message);
     } else {
       await DatabaseWrites.products.update(job.data.productId, {
-        WorkflowBuildId: response.id
+        BuildEngineBuildId: response.id
       });
       job.updateProgress(65);
 
       const productBuild = await DatabaseWrites.productBuilds.create({
         data: {
           ProductId: job.data.productId,
-          BuildId: response.id
+          BuildEngineBuildId: response.id
         }
       });
 
@@ -110,7 +111,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
           type: BullMQ.JobType.Poll_Build,
           productId: job.data.productId,
           organizationId: productData.Project.OrganizationId,
-          jobId: productData.WorkflowJobId,
+          jobId: productData.BuildEngineJobId,
           buildId: response.id,
           productBuildId: productBuild.Id,
           transition: job.data.transition
@@ -137,8 +138,8 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
   const product = await DatabaseReads.products.findUnique({
     where: { Id: job.data.productId },
     select: {
-      WorkflowJobId: true,
-      WorkflowBuildId: true,
+      BuildEngineJobId: true,
+      BuildEngineBuildId: true,
       ProductDefinition: {
         select: {
           Name: true
@@ -149,7 +150,6 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
           Id: true,
           Name: true,
           OwnerId: true,
-          WorkflowAppProjectUrl: true,
           OrganizationId: true
         }
       },
@@ -409,8 +409,8 @@ async function notifyFailed(
   productId: string,
   product: Prisma.ProductsGetPayload<{
     select: {
-      WorkflowBuildId: true;
-      WorkflowJobId: true;
+      BuildEngineBuildId: true;
+      BuildEngineJobId: true;
       ProductDefinition: {
         select: { Name: true };
       };
@@ -419,7 +419,6 @@ async function notifyFailed(
           Id: true;
           Name: true;
           OrganizationId: true;
-          WorkflowAppProjectUrl: true;
         };
       };
     };
@@ -439,12 +438,12 @@ async function notifyFailed(
         productName: product.ProductDefinition.Name!,
         buildStatus: buildResponse.status,
         buildError: buildResponse.error!,
-        buildEngineUrl: endpoint.url + '/build-admin/view?id=' + product.WorkflowBuildId,
+        buildEngineUrl: endpoint.url + '/build-admin/view?id=' + product.BuildEngineBuildId,
         consoleText: buildResponse.artifacts['consoleText'] ?? '',
         projectId: '' + product.Project.Id,
-        jobId: '' + product.WorkflowJobId,
-        buildId: '' + product.WorkflowBuildId,
-        projectUrl: product.Project.WorkflowAppProjectUrl!
+        jobId: '' + product.BuildEngineJobId,
+        buildId: '' + product.BuildEngineBuildId,
+        projectUrl: projectUrl(product.Project.Id)
       },
       link: buildResponse.artifacts['consoleText'] ?? '',
       transition
@@ -471,8 +470,8 @@ async function notifyRetrying(
       };
       Project: {
         select: {
+          Id: true;
           Name: true;
-          WorkflowAppProjectUrl: true;
         };
       };
     };
@@ -488,7 +487,7 @@ async function notifyRetrying(
       messageProperties: {
         projectName: product.Project.Name!,
         productName: product.ProductDefinition.Name!,
-        projectUrl: product.Project.WorkflowAppProjectUrl!
+        projectUrl: projectUrl(product.Project.Id)
       },
       link: buildResponse.artifacts['consoleText'] ?? '',
       transition

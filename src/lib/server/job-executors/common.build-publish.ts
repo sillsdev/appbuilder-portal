@@ -1,5 +1,6 @@
 import { DatabaseReads } from '../database';
 import { WorkflowType, WorkflowTypeString } from '$lib/prisma';
+import { projectUrl } from '$lib/projects/server';
 import type { Environment } from '$lib/workflowTypes';
 import { ENVKeys, ProductType } from '$lib/workflowTypes';
 
@@ -32,7 +33,6 @@ export async function addProductPropertiesToEnvironment(productId: string) {
     }
   });
   const originUrl = process.env.ORIGIN || 'http://localhost:6173';
-  const projectUrl = originUrl + '/projects/' + product.Project.Id;
 
   return {
     [ENVKeys.ORIGIN]: originUrl,
@@ -40,7 +40,7 @@ export async function addProductPropertiesToEnvironment(productId: string) {
     [ENVKeys.PROJECT_ID]: '' + product.Project.Id,
     [ENVKeys.PROJECT_NAME]: product.Project.Name ?? '',
     [ENVKeys.PROJECT_DESCRIPTION]: product.Project.Description ?? '',
-    [ENVKeys.PROJECT_URL]: projectUrl,
+    [ENVKeys.PROJECT_URL]: projectUrl(product.Project.Id),
     [ENVKeys.PROJECT_LANGUAGE]: product.Project.Language ?? '',
     [ENVKeys.PROJECT_ORGANIZATION]: product.Project.Organization.Name,
     [ENVKeys.PROJECT_OWNER_NAME]: product.Project.Owner.Name,

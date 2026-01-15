@@ -88,7 +88,7 @@ async function deleteProduct(productId: string) {
           OrganizationId: true
         }
       },
-      WorkflowJobId: true
+      BuildEngineJobId: true
     }
   });
   await getQueues().Products.add(
@@ -96,7 +96,7 @@ async function deleteProduct(productId: string) {
     {
       type: BullMQ.JobType.Product_Delete,
       organizationId: product!.Project.OrganizationId,
-      workflowJobId: product!.WorkflowJobId
+      buildEngineJobId: product!.BuildEngineJobId
     },
     BullMQ.Retry0f600
   );
@@ -122,7 +122,7 @@ export { deleteProduct as delete };
 
 /** A product is valid if:
  * 1. The store's type matches the Workflow's store type
- * 2. The project has a WorkflowProjectUrl
+ * 2. The project has a RepositoryUrl
  * 3. The store is allowed by the organization
  * 4. The language is allowed by the store
  * 5. The product type is allowed by the organization
@@ -155,8 +155,8 @@ async function validateProductBase(
   const project = await prisma.projects.findUnique({
     where: {
       Id: projectId,
-      // Project must have a WorkflowProjectUrl (handled by query)
-      WorkflowProjectUrl: {
+      // Project must have a RepositoryUrl (handled by query)
+      RepositoryUrl: {
         not: null
       }
     },

@@ -57,10 +57,7 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
     throw new Error(message!);
   } else {
     await DatabaseWrites.projects.update(job.data.projectId, {
-      WorkflowProjectId: response.id,
-      WorkflowAppProjectUrl: `${process.env.ORIGIN || 'http://localhost:6173'}/projects/${
-        job.data.projectId
-      }`
+      BuildEngineProjectId: response.id
     });
     job.updateProgress(75);
 
@@ -69,7 +66,7 @@ export async function create(job: Job<BullMQ.Project.Create>): Promise<unknown> 
       name,
       data: {
         type: BullMQ.JobType.Poll_Project,
-        workflowProjectId: response.id,
+        buildEngineProjectId: response.id,
         organizationId: projectData.Organization.Id,
         projectId: job.data.projectId
       }

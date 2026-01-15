@@ -4,6 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { RoleId } from '$lib/prisma';
+import { projectUrl } from '$lib/projects/server';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
@@ -23,7 +24,7 @@ type Fields = {
   projectDescription: string; //Product.Project.Description
   storeDescription?: string; //Product.Store.Description
   listingLanguageCode?: string; //Product.StoreLanguage.Name
-  projectURL?: string; //Product.Project.WorkflowAppProjectURL
+  projectURL?: string; // Origin URL + /projects/[Project.Id]
   displayProductDescription: boolean; //Product.ProductDefinition.Description
   appType?: string; //Product.ProductDefinition.ApplicationTypes.Description
   projectLanguageCode?: string; //Product.Project.Language
@@ -43,13 +44,12 @@ export const load = (async ({ params, locals, depends }) => {
       Id: params.product_id
     },
     select: {
-      WorkflowBuildId: true,
+      BuildEngineBuildId: true,
       Project: {
         select: {
           Id: true,
           Name: true,
           Description: true,
-          WorkflowAppProjectUrl: snap.context.includeFields.includes('projectURL'),
           Language: snap.context.includeFields.includes('projectLanguageCode'),
           Owner: {
             select: {
@@ -124,7 +124,7 @@ export const load = (async ({ params, locals, depends }) => {
         where: {
           ProductId: params.product_id,
           ProductBuild: {
-            BuildId: product.WorkflowBuildId
+            BuildEngineBuildId: product.BuildEngineBuildId
           },
           //filter by artifact type
           ArtifactType:
@@ -174,7 +174,8 @@ export const load = (async ({ params, locals, depends }) => {
         snap.context.includeFields.includes('storeDescription') && product.Store?.Description,
       listingLanguageCode:
         snap.context.includeFields.includes('listingLanguageCode') && product.StoreLanguage?.Name,
-      projectURL: product.Project.WorkflowAppProjectUrl,
+      projectURL:
+        snap.context.includeFields.includes('projectURL') && projectUrl(product.Project.Id),
       displayProductDescription: snap.context.includeFields.includes('productDescription'),
       appType:
         snap.context.includeFields.includes('appType') &&

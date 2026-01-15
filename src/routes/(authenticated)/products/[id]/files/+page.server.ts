@@ -34,7 +34,7 @@ export const load = (async ({ params, locals }) => {
     select: {
       Id: true,
       Version: true,
-      BuildId: true,
+      BuildEngineBuildId: true,
       Success: true,
       AppBuilderVersion: true,
       ProductArtifacts: {
@@ -66,7 +66,7 @@ export const load = (async ({ params, locals }) => {
       Id: params.id
     },
     select: {
-      WorkflowBuildId: true,
+      BuildEngineBuildId: true,
       ProductDefinition: {
         select: {
           Name: true
@@ -120,7 +120,7 @@ export const actions = {
       select: {
         Id: true,
         Version: true,
-        BuildId: true,
+        BuildEngineBuildId: true,
         Success: true,
         ProductArtifacts: {
           select: {

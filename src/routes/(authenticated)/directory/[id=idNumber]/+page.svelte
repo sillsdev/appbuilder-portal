@@ -99,7 +99,7 @@
             <BuildArtifacts
               {build}
               artifacts={build.ProductArtifacts}
-              latestBuildId={build.BuildId}
+              latestBuildId={build.BuildEngineBuildId}
               allowDownloads={data.allowDownloads}
             />
           {:else}

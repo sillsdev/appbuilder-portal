@@ -14,7 +14,7 @@
       select: {
         Version: true;
         Success: true;
-        BuildId: true;
+        BuildEngineBuildId: true;
         AppBuilderVersion: true;
       };
     }>;
@@ -52,7 +52,7 @@
       }
     }
 
-    if (b.BuildId === latestBuildId) {
+    if (b.BuildEngineBuildId === latestBuildId) {
       return m.projects_latestBuild({ version });
     }
     return version;

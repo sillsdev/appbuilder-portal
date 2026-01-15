@@ -154,21 +154,21 @@
             <br />
             <div class="flex rounded-md text-nowrap bg-base-200 p-3 pt-2 mt-2">
               <p>
-                {projectData.project.WorkflowProjectUrl?.substring(0, 5) ?? ''}
+                {projectData.project.RepositoryUrl?.substring(0, 5) ?? ''}
               </p>
-              {#if !projectData.project.WorkflowProjectUrl}
+              {#if !projectData.project.RepositoryUrl}
                 <p class="italic">{m.project_location_placeholder()}</p>
               {:else}
                 <p class="shrink overflow-hidden text-ellipsis">
-                  {projectData.project.WorkflowProjectUrl.split('/').slice(2, -1).join('/')}
+                  {projectData.project.RepositoryUrl.split('/').slice(2, -1).join('/')}
                 </p>
                 <p class="grow pr-2">
-                  /{projectData.project.WorkflowProjectUrl.split('/').pop()}
+                  /{projectData.project.RepositoryUrl.split('/').pop()}
                 </p>
                 <button
                   class="cursor-copy float-right"
                   onclick={() => {
-                    navigator.clipboard.writeText(projectData.project.WorkflowProjectUrl!);
+                    navigator.clipboard.writeText(projectData.project.RepositoryUrl!);
                     projectLocationCopied = true;
                     setTimeout(() => {
                       projectLocationCopied = false;
@@ -203,7 +203,7 @@
               disabled={!(
                 canEdit &&
                 projectData.productsToAdd.length &&
-                projectData.project.WorkflowProjectUrl
+                projectData.project.RepositoryUrl
               )}
             >
               {m.products_add()}
