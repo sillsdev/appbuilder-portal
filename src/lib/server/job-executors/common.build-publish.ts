@@ -50,13 +50,13 @@ export async function addProductPropertiesToEnvironment(productId: string) {
 }
 
 export async function getWorkflowParameters(
-  workflowInstanceId: number,
+  ProductId: string,
   scope: 'build' | 'publish'
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any & { environment: Environment }> {
   const instance = await DatabaseReads.workflowInstances.findUniqueOrThrow({
     where: {
-      Id: workflowInstanceId
+      ProductId
     },
     select: {
       Product: {

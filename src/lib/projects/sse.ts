@@ -77,7 +77,6 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               },
               WorkflowInstance: {
                 select: {
-                  Id: true,
                   WorkflowDefinition: {
                     select: {
                       Type: true
