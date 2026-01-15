@@ -38,9 +38,9 @@ export const load = (async ({ locals, params }) => {
   const projectId = Number(params.id);
   if (isNaN(projectId)) throw error(404, 'Not Found');
   locals.security.requireProjectReadAccess(
-    await DatabaseReads.groupMemberships.findMany({
-      where: { UserId: locals.security.userId },
-      select: { GroupId: true }
+    await DatabaseReads.groups.findMany({
+      where: { Users: { some: { Id: locals.security.userId } } },
+      select: { Id: true }
     }),
     await DatabaseReads.projects.findUnique({
       where: { Id: projectId },
@@ -214,14 +214,12 @@ export const actions = {
     const projectId = parseInt(event.params.id);
     if (
       // if user modified hidden values
-      !(await DatabaseReads.groupMemberships.findFirst({
+      !(await DatabaseReads.groups.findFirst({
         where: {
-          UserId: form.data.author,
-          Group: {
-            Owner: {
-              Projects: {
-                some: { Id: projectId }
-              }
+          Users: { some: { Id: form.data.author } },
+          Owner: {
+            Projects: {
+              some: { Id: projectId }
             }
           }
         }
@@ -412,7 +410,7 @@ export const actions = {
       }
     });
     if (!project) return fail(404, { form, ok: false });
-    let groups: { GroupId: number }[] = [];
+    let groups: { Id: number }[] = [];
 
     if (form.data.operation === 'claim') {
       groups = await userGroupsForOrg(event.locals.security.userId, project.OrganizationId);
@@ -425,7 +423,7 @@ export const actions = {
       form.data.operation,
       project,
       event.locals.security,
-      groups.map((g) => g.GroupId)
+      groups.map((g) => g.Id)
     );
 
     return { form, ok: true };

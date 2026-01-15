@@ -563,7 +563,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   // 5. delete users with no org membership
   const deletedUsers = await DatabaseReads.users.findMany({
     where: {
-      NOT: { OrganizationMemberships: { some: {} } }
+      Organizations: { none: {} }
     },
     select: { Id: true, GivenName: true, Email: true }
   });
@@ -571,7 +571,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   try {
     const deleteRes = await DatabaseWrites.users.deleteMany({
       where: {
-        NOT: { OrganizationMemberships: { some: {} } }
+        Organizations: { none: {} }
       }
     });
     deleteCount = deleteRes.count;

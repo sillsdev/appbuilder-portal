@@ -117,18 +117,20 @@ async function validateProjectBase(orgId: number, groupId: number, ownerId: numb
   // Each of the criteria for a valid project just needs to checked if
   // the relevant data is supplied. If it isn't, then this is an update
   // and the data was valid already, or PostgreSQL will catch it
+  const user = await prisma.users.findUnique({
+    where: { Id: ownerId },
+    select: {
+      Groups: { where: { Id: groupId } },
+      Organizations: { where: { Id: orgId } },
+      UserRoles: { where: { RoleId: RoleId.SuperAdmin } }
+    }
+  });
   /** owner must be a member of project group */
-  const userInGroup = await prisma.groupMemberships.findFirst({
-    where: { UserId: ownerId, GroupId: groupId }
-  });
+  const userInGroup = !!user?.Groups.length;
   /** owner must be a member of project org */
-  const userInOrg = await prisma.organizationMemberships.findFirst({
-    where: { UserId: ownerId, OrganizationId: orgId }
-  });
+  const userInOrg = !!user?.Organizations.length;
   /** disregard owner restrictions if owner is Super Admin */
-  const userIsSuperAdmin = await prisma.userRoles.findFirst({
-    where: { RoleId: RoleId.SuperAdmin, UserId: ownerId }
-  });
+  const userIsSuperAdmin = !!user?.UserRoles.length;
   return !!(
     // project group must be owned by project org
     (

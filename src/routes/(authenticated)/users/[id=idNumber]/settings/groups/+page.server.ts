@@ -17,10 +17,10 @@ export const load = (async ({ params, locals }) => {
   const subjectId = parseInt(params.id);
   const user = await DatabaseReads.users.findUnique({
     where: { Id: subjectId },
-    include: { OrganizationMemberships: { select: { OrganizationId: true } } }
+    include: { Organizations: { select: { Id: true } } }
   });
   if (!user) return error(404);
-  locals.security.requireAdminOfOrgIn(user.OrganizationMemberships.map((o) => o.OrganizationId));
+  locals.security.requireAdminOfOrgIn(user.Organizations.map((o) => o.Id));
 
   return {
     groupsByOrg: await DatabaseReads.organizations.findMany({
@@ -33,9 +33,9 @@ export const load = (async ({ params, locals }) => {
             Name: true,
             _count: {
               select: {
-                GroupMemberships: {
+                Users: {
                   where: {
-                    UserId: subjectId
+                    Id: subjectId
                   }
                 }
               }
@@ -57,12 +57,10 @@ export const actions = {
     const subjectId = parseInt(event.params.id);
     const user = await DatabaseReads.users.findUnique({
       where: { Id: subjectId },
-      include: { OrganizationMemberships: { select: { OrganizationId: true } } }
+      include: { Organizations: { select: { Id: true } } }
     });
     if (!user) return error(404);
-    event.locals.security.requireAdminOfOrgIn(
-      user.OrganizationMemberships.map((o) => o.OrganizationId)
-    );
+    event.locals.security.requireAdminOfOrgIn(user.Organizations.map((o) => o.Id));
 
     const form = await superValidate(event, valibot(toggleGroupSchema));
 

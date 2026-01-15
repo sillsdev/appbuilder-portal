@@ -17,8 +17,8 @@ export const load = (async ({ params, locals }) => {
   )?.Project;
   if (!project) error(404);
   locals.security.requireProjectReadAccess(
-    await DatabaseReads.groupMemberships.findMany({
-      where: { UserId: locals.security.userId, GroupId: project.GroupId }
+    await DatabaseReads.groups.findMany({
+      where: { Users: { some: { Id: locals.security.userId } }, Id: project.GroupId }
     }),
     project
   );
@@ -100,8 +100,8 @@ export const actions = {
     )?.Project;
     if (!project) error(404);
     locals.security.requireProjectReadAccess(
-      await DatabaseReads.groupMemberships.findMany({
-        where: { UserId: locals.security.userId, GroupId: project.GroupId }
+      await DatabaseReads.groups.findMany({
+        where: { Users: { some: { Id: locals.security.userId } }, Id: project.GroupId }
       }),
       project
     );

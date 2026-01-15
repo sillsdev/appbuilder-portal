@@ -108,17 +108,13 @@ export function verifyCanCreateProject(user: Security, orgId: number): boolean {
 }
 
 export async function userGroupsForOrg(userId: number, orgId: number) {
-  return await DatabaseReads.groupMemberships.findMany({
+  return await DatabaseReads.groups.findMany({
     where: {
-      UserId: userId,
-      Group: {
-        is: {
-          OwnerId: orgId
-        }
-      }
+      Users: { some: { Id: userId } },
+      OwnerId: orgId
     },
     select: {
-      GroupId: true
+      Id: true
     }
   });
 }
