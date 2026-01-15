@@ -101,7 +101,6 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           },
           Authors: {
             select: {
-              Id: true,
               Users: {
                 select: {
                   Id: true,

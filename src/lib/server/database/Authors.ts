@@ -3,33 +3,31 @@ import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
 
-async function deleteAuthor(id: number) {
-  // Get the author's project
-  const author = await prisma.authors.findUnique({
-    where: { Id: id }
-  });
-  if (!author) {
-    return false;
-  }
-  const ret = await prisma.authors.delete({
-    where: { Id: id }
+async function deleteAuthor(ProjectId: number, UserId: number) {
+  const ret = await prisma.authors.deleteMany({
+    where: { ProjectId, UserId }
   });
 
-  getQueues().SvelteSSE.add(`Update Project #${author.ProjectId} (author removed)`, {
-    type: BullMQ.JobType.SvelteSSE_UpdateProject,
-    projectIds: [author.ProjectId]
-  });
-  return ret;
+  if (ret.count) {
+    getQueues().SvelteSSE.add(`Update Project #${ProjectId} (author #${UserId} removed)`, {
+      type: BullMQ.JobType.SvelteSSE_UpdateProject,
+      projectIds: [ProjectId]
+    });
+  }
+  return !!ret.count;
 }
 
 export async function create(authorData: Prisma.AuthorsUncheckedCreateInput) {
   const ret = await prisma.authors.create({
     data: authorData
   });
-  getQueues().SvelteSSE.add(`Update Project #${authorData.ProjectId} (author added)`, {
-    type: BullMQ.JobType.SvelteSSE_UpdateProject,
-    projectIds: [authorData.ProjectId]
-  });
+  getQueues().SvelteSSE.add(
+    `Update Project #${authorData.ProjectId} (author #${authorData.UserId} added)`,
+    {
+      type: BullMQ.JobType.SvelteSSE_UpdateProject,
+      projectIds: [authorData.ProjectId]
+    }
+  );
   return ret;
 }
 export { deleteAuthor as delete };

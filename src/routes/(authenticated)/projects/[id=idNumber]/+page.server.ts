@@ -82,6 +82,7 @@ export const actions = {
     return { form, ok: true };
   },
   async deleteAuthor(event) {
+    const ProjectId = parseInt(event.params.id);
     event.locals.security.requireProjectWriteAccess(
       await DatabaseReads.projects.findUnique({
         where: { Id: parseInt(event.params.id) },
@@ -94,23 +95,26 @@ export const actions = {
     if (
       // if user modified hidden values
       !(await DatabaseReads.authors.findFirst({
-        where: { Id: form.data.id, ProjectId: parseInt(event.params.id) }
+        where: { UserId: form.data.id, ProjectId }
       }))
     ) {
       return fail(403, { form, ok: false });
     }
-    const author = await DatabaseWrites.authors.delete(form.data.id);
+    const author = await DatabaseWrites.authors.delete(ProjectId, form.data.id);
     if (!author) return fail(404, { form, ok: false });
-    await getQueues().UserTasks.add(`Remove UserTasks for Author #${form.data.id}`, {
-      type: BullMQ.JobType.UserTasks_Modify,
-      scope: 'Project',
-      projectId: parseInt(event.params.id),
-      operation: {
-        type: BullMQ.UserTasks.OpType.Delete,
-        users: [author.UserId],
-        roles: [RoleId.Author]
+    await getQueues().UserTasks.add(
+      `Remove UserTasks for Project #${ProjectId} Author #${form.data.id}`,
+      {
+        type: BullMQ.JobType.UserTasks_Modify,
+        scope: 'Project',
+        projectId: parseInt(event.params.id),
+        operation: {
+          type: BullMQ.UserTasks.OpType.Delete,
+          users: [form.data.id],
+          roles: [RoleId.Author]
+        }
       }
-    });
+    );
     return { form, ok: true };
   },
   async deleteReviewer(event) {
@@ -241,20 +245,23 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
     // ISSUE: #1101 Appears that CanUpdate is not used
-    const author = await DatabaseWrites.authors.create({
+    await DatabaseWrites.authors.create({
       ProjectId: projectId,
       UserId: form.data.author
     });
-    await getQueues().UserTasks.add(`Add UserTasks for Author #${author.Id}`, {
-      type: BullMQ.JobType.UserTasks_Modify,
-      scope: 'Project',
-      projectId,
-      operation: {
-        type: BullMQ.UserTasks.OpType.Create,
-        users: [form.data.author],
-        roles: [RoleId.Author]
+    await getQueues().UserTasks.add(
+      `Add UserTasks for Project #${projectId} Author #${form.data.author}`,
+      {
+        type: BullMQ.JobType.UserTasks_Modify,
+        scope: 'Project',
+        projectId,
+        operation: {
+          type: BullMQ.UserTasks.OpType.Create,
+          users: [form.data.author],
+          roles: [RoleId.Author]
+        }
       }
-    });
+    );
     return { form, ok: true };
   },
   async addReviewer(event) {
