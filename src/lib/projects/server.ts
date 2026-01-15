@@ -11,7 +11,7 @@ export function projectFilter(args: {
   productDefinitionId: number | null;
   dateUpdatedRange: [Date, Date | null] | null;
   search: string;
-}): Prisma.ProjectsWhereInput {
+}) {
   return {
     OrganizationId: args.organizationId !== null ? args.organizationId : undefined,
     Language: args.langCode
@@ -96,7 +96,7 @@ export function projectFilter(args: {
           : undefined
       }
     ]
-  };
+  } satisfies Prisma.ProjectsWhereInput;
 }
 
 export function verifyCanCreateProject(user: Security, orgId: number): boolean {
@@ -108,17 +108,13 @@ export function verifyCanCreateProject(user: Security, orgId: number): boolean {
 }
 
 export async function userGroupsForOrg(userId: number, orgId: number) {
-  return await DatabaseReads.groupMemberships.findMany({
+  return await DatabaseReads.groups.findMany({
     where: {
-      UserId: userId,
-      Group: {
-        is: {
-          OwnerId: orgId
-        }
-      }
+      Users: { some: { Id: userId } },
+      OwnerId: orgId
     },
     select: {
-      GroupId: true
+      Id: true
     }
   });
 }

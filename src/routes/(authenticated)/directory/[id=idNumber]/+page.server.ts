@@ -31,7 +31,16 @@ export const load = (async ({ params, locals }) => {
           Id: true,
           LogoUrl: true,
           Name: true,
-          ContactEmail: true
+          ContactEmail: true,
+          _count: {
+            select: {
+              Users: {
+                where: {
+                  Id: locals.security.userId
+                }
+              }
+            }
+          }
         }
       },
       Products: {
@@ -85,12 +94,7 @@ export const load = (async ({ params, locals }) => {
   if (!project.IsPublic) return error(403);
 
   // This assumes that a null value is meant as false
-  const allowDownloads = !!(
-    project.AllowDownloads ||
-    (await DatabaseReads.organizationMemberships.findFirst({
-      where: { OrganizationId: project.Organization.Id, UserId: locals.security.userId }
-    }))
-  );
+  const allowDownloads = !!(project.AllowDownloads || project.Organization._count.Users);
 
   if (!allowDownloads) {
     project.Products.forEach((p) => {
@@ -106,12 +110,12 @@ export const load = (async ({ params, locals }) => {
     project,
     allowDownloads,
     sessionGroups: (
-      await DatabaseReads.groupMemberships.findMany({
-        where: { UserId: locals.security.userId },
+      await DatabaseReads.users.findUniqueOrThrow({
+        where: { Id: locals.security.userId },
         select: {
-          GroupId: true
+          Groups: { select: { Id: true } }
         }
       })
-    ).map((gm) => gm.GroupId)
+    ).Groups.map((gm) => gm.Id)
   };
 }) satisfies PageServerLoad;

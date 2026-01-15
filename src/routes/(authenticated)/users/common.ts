@@ -6,10 +6,10 @@ type UserInfo = Prisma.UsersGetPayload<{
     Name: true;
     Email: true;
     UserRoles: { select: { OrganizationId: true; RoleId: true } };
-    GroupMemberships: { select: { Group: { select: { Id: true; OwnerId: true } } } };
-    OrganizationMemberships: {
+    Groups: { select: { Id: true; OwnerId: true } };
+    Organizations: {
       select: {
-        OrganizationId: true;
+        Id: true;
       };
     };
     IsLocked: true;
@@ -27,17 +27,13 @@ export function minifyUser(user: UserInfo) {
     /** User Email */
     E: user.Email,
     /** User OrganizationMemberships */
-    O: user.OrganizationMemberships.map((orgMem) => ({
+    O: user.Organizations.map((org) => ({
       /** Roles */
-      R: user.UserRoles.filter((ur) => ur.OrganizationId === orgMem.OrganizationId).map(
-        (r) => r.RoleId
-      ),
+      R: user.UserRoles.filter((ur) => ur.OrganizationId === org.Id).map((r) => r.RoleId),
       /** Organization Id */
-      I: orgMem.OrganizationId,
+      I: org.Id,
       /** Group Ids */
-      G: user.GroupMemberships.filter(
-        (groupMem) => groupMem.Group.OwnerId === orgMem.OrganizationId
-      ).map((group) => group.Group.Id)
+      G: user.Groups.filter((group) => group.OwnerId === org.Id).map((group) => group.Id)
     })),
     /** User is Active (i.e. !IsLocked) */
     A: !user.IsLocked

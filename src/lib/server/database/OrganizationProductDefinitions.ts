@@ -5,20 +5,17 @@ export async function toggleForOrg(
   ProductDefinitionId: number,
   enabled: boolean
 ) {
-  if (enabled) {
-    // ISSUE: #1102 this extra check would be unneccessary if we could switch to composite primary keys
-    const existing = await prisma.organizationProductDefinitions.findFirst({
-      where: { OrganizationId, ProductDefinitionId },
-      select: { Id: true }
-    });
-    if (!existing) {
-      return prisma.organizationProductDefinitions.create({
-        data: { OrganizationId, ProductDefinitionId }
-      });
+  return !!(await prisma.organizations.update({
+    where: { Id: OrganizationId },
+    data: {
+      ProductDefinitions: {
+        [enabled ? 'connect' : 'disconnect']: {
+          Id: ProductDefinitionId
+        }
+      }
+    },
+    select: {
+      Id: true
     }
-  } else {
-    return prisma.organizationProductDefinitions.deleteMany({
-      where: { OrganizationId, ProductDefinitionId }
-    });
-  }
+  }));
 }

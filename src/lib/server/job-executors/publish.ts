@@ -24,7 +24,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
       WorkflowBuildId: true,
       WorkflowInstance: {
         select: {
-          Id: true
+          ProductId: true
         }
       },
       ProductDefinition: {
@@ -64,7 +64,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
       WorkflowPublishId: 0
     });
     job.updateProgress(20);
-    const params = await getWorkflowParameters(productData.WorkflowInstance.Id, 'publish');
+    const params = await getWorkflowParameters(productData.WorkflowInstance.ProductId, 'publish');
     const channel = params['channel'] ?? job.data.defaultChannel;
     job.updateProgress(30);
     const env = await addProductPropertiesToEnvironment(job.data.productId);
@@ -118,7 +118,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
       });
       job.updateProgress(65);
 
-      const pub = await DatabaseWrites.productPublications.create({
+      await DatabaseWrites.productPublications.create({
         data: {
           ProductId: job.data.productId,
           ProductBuildId: productBuild.Id,
@@ -139,7 +139,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
           jobId: productData.WorkflowJobId,
           buildId: productData.WorkflowBuildId,
           releaseId: response.id,
-          publicationId: pub.Id,
+          productBuildId: productBuild.Id,
           transition: job.data.transition
         }
       });
@@ -202,7 +202,8 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
           : undefined
       });
       await notifyCompleted(
-        job.data.publicationId,
+        job.data.productBuildId,
+        job.data.release.id,
         job.data.productId,
         product.Project.OwnerId,
         product.Project.Name!,
@@ -212,7 +213,10 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
       flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
       const packageFile = await DatabaseReads.productPublications.findUnique({
         where: {
-          Id: job.data.publicationId
+          ProductBuildId_ReleaseId: {
+            ProductBuildId: job.data.productBuildId,
+            ReleaseId: job.data.release.id
+          }
         },
         select: {
           ProductBuild: {
@@ -237,7 +241,8 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
       }
     } else {
       await notifyFailed(
-        job.data.publicationId,
+        job.data.productBuildId,
+        job.data.release.id,
         job.data.productId,
         product,
         job.data.release,
@@ -258,7 +263,10 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
   job.updateProgress(75);
   const publication = await DatabaseWrites.productPublications.update({
     where: {
-      Id: job.data.publicationId
+      ProductBuildId_ReleaseId: {
+        ProductBuildId: job.data.productBuildId,
+        ReleaseId: job.data.release.id
+      }
     },
     data: {
       Success: job.data.release.result === 'SUCCESS',
@@ -313,7 +321,8 @@ async function notifyUnableToCreate(
   );
 }
 async function notifyCompleted(
-  publicationId: number,
+  productBuildId: number,
+  releaseId: number,
   productId: string,
   userId: number,
   projectName: string,
@@ -321,7 +330,7 @@ async function notifyCompleted(
   transition?: number
 ) {
   return getQueues().Emails.add(
-    `Notify Owner of Successful Completion of Release #${publicationId} for Product #${productId}`,
+    `Notify Owner of Successful Completion of Release #${productBuildId} (${releaseId}) for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToUser,
       userId,
@@ -335,7 +344,8 @@ async function notifyCompleted(
   );
 }
 async function notifyFailed(
-  publicationId: number,
+  productBuildId: number,
+  releaseId: number,
   productId: string,
   product: Prisma.ProductsGetPayload<{
     select: {
@@ -360,7 +370,7 @@ async function notifyFailed(
 ) {
   const endpoint = await BuildEngine.Requests.getURLandToken(product.Project.OrganizationId);
   return getQueues().Emails.add(
-    `Notify Owner/Admins of Failure to Create Release #${publicationId} for Product #${productId}`,
+    `Notify Owner/Admins of Failure to Create Release #${productBuildId} (${releaseId}) for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
       projectId: product.Project.Id,

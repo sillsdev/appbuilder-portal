@@ -14,49 +14,49 @@ export async function acceptOrganizationInvite(userId: number, inviteToken: stri
     userId === invite.InvitedById
   )
     return false;
-  // Check if the user is already a member of the organization
-  // This could be done such that they can accept the invite to get the roles and groups
-  const existingMembership = await prisma.organizationMemberships.findFirst({
+
+  await prisma.users.update({
     where: {
-      UserId: userId,
-      OrganizationId: invite.OrganizationId
+      Id: userId
+    },
+    data: {
+      Organizations: {
+        connect: {
+          Id: invite.OrganizationId
+        }
+      },
+      UserRoles: {
+        connectOrCreate: invite.Roles.map((r) => ({
+          where: {
+            UserId_RoleId_OrganizationId: {
+              UserId: userId,
+              RoleId: r,
+              OrganizationId: invite.OrganizationId
+            }
+          },
+          create: {
+            RoleId: r,
+            OrganizationId: invite.OrganizationId
+          }
+        }))
+      },
+      Groups: {
+        connect: await prisma.groups.findMany({
+          where: {
+            OwnerId: invite.OrganizationId,
+            Id: { in: invite.Groups }
+          },
+          select: {
+            Id: true
+          }
+        })
+      }
     }
-  });
-  if (!existingMembership) {
-    await prisma.organizationMemberships.create({
-      data: {
-        UserId: userId,
-        OrganizationId: invite.OrganizationId
-      }
-    });
-  }
-  // TODO: When the roles become a composite primary key, it won't be
-  // possible to add the same role or group twice. Currently it will.
-  await prisma.userRoles.createMany({
-    data: invite.Roles.map((r) => ({
-      UserId: userId,
-      RoleId: r,
-      OrganizationId: invite.OrganizationId
-    }))
-  });
-  // Make sure that we don't try to add the user to groups that have since been deleted
-  const existingGroups = (
-    await prisma.groups.findMany({
-      where: {
-        OwnerId: invite.OrganizationId
-      }
-    })
-  ).map((g) => g.Id);
-  await prisma.groupMemberships.createMany({
-    data: invite.Groups.map((g) => ({
-      UserId: userId,
-      GroupId: g
-    })).filter((l) => existingGroups.includes(l.GroupId))
   });
 
   await prisma.organizationMembershipInvites.update({
     where: {
-      Id: invite.Id
+      Token: invite.Token
     },
     data: {
       Redeemed: true

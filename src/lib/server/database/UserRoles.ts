@@ -9,12 +9,16 @@ export async function toggleForOrg(
   enabled: boolean
 ) {
   // check if user is a member of the org
-  if (!(await prisma.organizationMemberships.findFirst({ where: { OrganizationId, UserId } })))
+  if (
+    !(await prisma.users.findFirst({
+      where: { Organizations: { some: { Id: OrganizationId } }, Id: UserId }
+    }))
+  )
     return false;
-  // ISSUE: #1102 this extra check would be unneccessary if we could switch to composite primary keys
+  // This existence check is necessary for the task creation step
   const existing = await prisma.userRoles.findFirst({
     where: { OrganizationId, UserId, RoleId: role },
-    select: { Id: true }
+    select: { RoleId: true }
   });
   if (enabled) {
     if (!existing) {

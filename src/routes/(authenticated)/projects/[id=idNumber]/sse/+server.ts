@@ -6,9 +6,9 @@ import { DatabaseReads } from '$lib/server/database';
 
 export async function POST(request) {
   request.locals.security.requireProjectReadAccess(
-    await DatabaseReads.groupMemberships.findMany({
-      where: { UserId: request.locals.security.userId },
-      select: { GroupId: true }
+    await DatabaseReads.groups.findMany({
+      where: { Users: { some: { Id: request.locals.security.userId } } },
+      select: { Id: true }
     }),
     await DatabaseReads.projects.findUnique({
       where: { Id: parseInt(request.params.id) }
