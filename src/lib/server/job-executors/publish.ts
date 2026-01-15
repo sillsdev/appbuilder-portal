@@ -41,7 +41,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
   job.updateProgress(10);
   const productBuild = await DatabaseReads.productBuilds.findFirst({
     where: {
-      BuildId: productData.BuildEngineBuildId
+      BuildEngineBuildId: productData.BuildEngineBuildId
     },
     select: {
       Id: true
