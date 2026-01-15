@@ -623,7 +623,6 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
               ArtifactType: { in: ['consoleText', 'version'] }
             },
             select: {
-              Id: true,
               ArtifactType: true,
               Url: true
             }
