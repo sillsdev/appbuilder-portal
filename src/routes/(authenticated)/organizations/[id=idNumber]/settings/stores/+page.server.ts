@@ -13,16 +13,14 @@ const toggleStoreSchema = v.object({
 export const load = (async (event) => {
   event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
   const { organization } = await event.parent();
-  const orgStores = await DatabaseReads.organizationStores.findMany({
-    where: {
-      OrganizationId: organization.Id
-    }
-  });
-  const setOrgStores = new Set(orgStores.map((p) => p.StoreId));
   return {
-    stores: (await DatabaseReads.stores.findMany()).map((s) => ({
+    stores: (
+      await DatabaseReads.stores.findMany({
+        include: { Organizations: { where: { Id: organization.Id }, select: { Id: true } } }
+      })
+    ).map((s) => ({
       ...s,
-      enabled: setOrgStores.has(s.Id)
+      enabled: !!s.Organizations.length
     }))
   };
 }) satisfies PageServerLoad;

@@ -97,9 +97,9 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
         await DatabaseReads.productDefinitions.findFirst({
           where: {
             Name: p.Name,
-            OrganizationProductDefinitions: {
+            Organizations: {
               some: {
-                OrganizationId: job.data.organizationId
+                Id: job.data.organizationId
               }
             }
           },
@@ -113,9 +113,9 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
         await DatabaseReads.stores.findFirst({
           where: {
             Name: p.Store,
-            OrganizationStores: {
+            Organizations: {
               some: {
-                OrganizationId: job.data.organizationId
+                Id: job.data.organizationId
               }
             }
           },

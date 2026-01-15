@@ -125,16 +125,12 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           Id: project.OrganizationId
         },
         select: {
-          OrganizationStores: {
+          Stores: {
             select: {
-              Store: {
-                select: {
-                  Id: true,
-                  Name: true,
-                  Description: true,
-                  StoreTypeId: true
-                }
-              }
+              Id: true,
+              Name: true,
+              Description: true,
+              StoreTypeId: true
             }
           }
         }
@@ -179,27 +175,21 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         transitions.find((tr) => tr.ProductId === p.Id && tr.DateTransition === null)!
       ]);
 
-      const productDefinitions = (
-        await DatabaseReads.organizationProductDefinitions.findMany({
-          where: {
-            OrganizationId: project.OrganizationId
-          },
-          select: {
-            ProductDefinition: {
-              select: {
-                Id: true,
-                Name: true,
-                Description: true,
-                Workflow: {
-                  select: {
-                    StoreTypeId: true
-                  }
-                }
-              }
+      const productDefinitions = await DatabaseReads.productDefinitions.findMany({
+        where: {
+          Organizations: { some: { Id: project.OrganizationId } }
+        },
+        select: {
+          Id: true,
+          Name: true,
+          Description: true,
+          Workflow: {
+            select: {
+              StoreTypeId: true
             }
           }
-        })
-      ).map((pd) => pd.ProductDefinition);
+        }
+      });
 
       const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
       span.addEvent('Product definitions fetched');
@@ -226,7 +216,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         productsToAdd: productDefinitions.filter(
           (pd) => !projectProductDefinitionIds.includes(pd.Id)
         ),
-        stores: organization?.OrganizationStores.map((os) => os.Store) ?? [],
+        stores: organization?.Stores ?? [],
         possibleProjectOwners: await DatabaseReads.users.findMany({
           where: {
             Organizations: {
