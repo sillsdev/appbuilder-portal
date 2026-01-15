@@ -47,36 +47,10 @@ export enum WorkflowState {
   Make_It_Live = 'Make It Live',
   Published = 'Published'
 }
-export function isWorkflowState(state: string): state is WorkflowState {
-  return Object.values(WorkflowState).includes(state as WorkflowState);
-}
-
-const AuthorStates = [
-  WorkflowState.Author_Configuration,
-  WorkflowState.Author_Download,
-  WorkflowState.Author_Upload
-] as const;
-type AuthorState = (typeof AuthorStates)[number];
-export function isAuthorState(state: string): state is AuthorState {
-  return AuthorStates.includes(state as AuthorState);
-}
 
 export type TerminalState = WorkflowState.Terminated | WorkflowState.Published;
 export function isTerminal(state: WorkflowState): state is TerminalState {
   return state === WorkflowState.Terminated || state === WorkflowState.Published;
-}
-const DeprecatedStates = [
-  /* Redirect to Synchronize Data */
-  'Check Product Build',
-  'Check Product Publish',
-  /* Set context.environment.GOOGLE_PLAY_EXISTING to '1', redirect to Product Build */
-  'Set Google Play Existing',
-  /* Enqueue GetVersionCode, redirect to Verify and Publish */
-  'Set Google Play Uploaded'
-] as const;
-export type DeprecatedState = (typeof DeprecatedStates)[number];
-export function isDeprecated(state: string): state is DeprecatedState {
-  return DeprecatedStates.includes(state as DeprecatedState);
 }
 
 export enum WorkflowAction {
@@ -86,7 +60,6 @@ export enum WorkflowAction {
   Hold = 'Hold',
   Reject = 'Reject',
   Jump = 'Jump',
-  Migrate = 'Migrate',
   Product_Created = 'Product Created',
   New_App = 'New App',
   Existing_App = 'Existing App',
@@ -236,7 +209,7 @@ export function includeStateOrTransition(input: WorkflowInput, filter?: MetaFilt
 
 export type WorkflowEvent =
   | {
-      type: Exclude<WorkflowAction, WorkflowAction.Jump | WorkflowAction.Migrate>;
+      type: Exclude<WorkflowAction, WorkflowAction.Jump>;
       userId: number | null;
       comment?: string;
       options?: string[];
@@ -244,8 +217,7 @@ export type WorkflowEvent =
   | {
       type: WorkflowAction.Jump;
       target: WorkflowState;
-    }
-  | { type: WorkflowAction.Migrate; target: string };
+    };
 
 export type JumpParams = {
   target: WorkflowState | string;

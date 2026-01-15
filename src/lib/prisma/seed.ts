@@ -156,8 +156,6 @@ async function main() {
       Type: 1,
       Enabled: true,
       Description: 'SIL Default Workflow for Publishing to Google Play',
-      WorkflowScheme: 'SIL_Default_AppBuilders_Android_GooglePlay',
-      WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_GooglePlay_Flow',
       StoreTypeId: 1,
       WorkflowOptions: [WorkflowOptions.AdminStoreAccess, WorkflowOptions.ApprovalProcess]
     },
@@ -166,8 +164,6 @@ async function main() {
       Type: 2,
       Enabled: true,
       Description: 'SIL Default Workflow for Rebuilding to Google Play',
-      WorkflowScheme: 'SIL_Default_AppBuilders_Android_GooglePlay_Rebuild',
-      WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_GooglePlay_Flow',
       StoreTypeId: 1
     },
     {
@@ -175,8 +171,6 @@ async function main() {
       Type: 3,
       Enabled: true,
       Description: 'SIL Default Workflow for Republishing to Google Play',
-      WorkflowScheme: 'SIL_Default_AppBuilders_Android_GooglePlay_Republish',
-      WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_GooglePlay_Flow',
       StoreTypeId: 1
     },
     {
@@ -184,8 +178,6 @@ async function main() {
       Type: 1,
       Enabled: true,
       Description: 'SIL Default Workflow for Publishing to Amazon S3 Bucket',
-      WorkflowScheme: 'SIL_Default_AppBuilders_Android_S3',
-      WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_S3_Flow',
       StoreTypeId: 2,
       ProductType: ProductType.Android_S3,
       WorkflowOptions: [WorkflowOptions.ApprovalProcess]
@@ -195,8 +187,6 @@ async function main() {
       Type: 2,
       Enabled: true,
       Description: 'SIL Default Workflow for Rebuilding to Amazon S3 Bucket',
-      WorkflowScheme: 'SIL_Default_AppBuilders_Android_S3_Rebuild',
-      WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_S3_Flow',
       StoreTypeId: 2,
       ProductType: ProductType.Android_S3
     },
@@ -205,8 +195,6 @@ async function main() {
       Type: 1,
       Enabled: true,
       Description: 'Low Admin Workflow for Publishing to Google Play',
-      WorkflowScheme: 'SIL_LowAdmin_AppBuilders_Android_GooglePlay',
-      WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_GooglePlay_Flow',
       StoreTypeId: 1,
       WorkflowOptions: [WorkflowOptions.AdminStoreAccess]
     },
@@ -215,8 +203,6 @@ async function main() {
       Type: 1,
       Enabled: true,
       Description: 'Owner Admin Workflow for Publishing to Google Play',
-      WorkflowScheme: 'SIL_OwnerAdmin_AppBuilders_Android_GooglePlay',
-      WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_GooglePlay_Flow',
       StoreTypeId: 1
     },
     {
@@ -224,8 +210,6 @@ async function main() {
       Type: 1,
       Enabled: true,
       Description: 'No Admin Workflow for Publishing to S3',
-      WorkflowScheme: 'SIL_NoAdmin_AppBuilders_Android_S3',
-      WorkflowBusinessFlow: 'SIL_Default_AppBuilders_Android_S3_Flow',
       StoreTypeId: 2,
       ProductType: ProductType.Android_S3
     },
@@ -234,8 +218,6 @@ async function main() {
       Type: 1,
       Enabled: true,
       Description: 'SIL Default Workflow for Publishing PWA to Cloud',
-      WorkflowScheme: 'SIL_Default_AppBuilders_Pwa_Cloud',
-      WorkflowBusinessFlow: 'SIL_AppBuilders_Web_Flow',
       StoreTypeId: 3,
       Properties: '{ "build:targets" : "pwa" }',
       ProductType: ProductType.Web
@@ -245,8 +227,6 @@ async function main() {
       Type: 2,
       Enabled: true,
       Description: 'SIL Default Workflow for Rebuilding PWA to Cloud',
-      WorkflowScheme: 'SIL_Default_AppBuilders_Pwa_Cloud_Rebuild',
-      WorkflowBusinessFlow: 'SIL_AppBuilders_Web_Flow',
       StoreTypeId: 3,
       Properties: '{ "build:targets" : "pwa" }',
       ProductType: ProductType.Web
@@ -256,8 +236,6 @@ async function main() {
       Type: 1,
       Enabled: true,
       Description: 'SIL Default Workflow for Publishing HTML to Cloud',
-      WorkflowScheme: 'SIL_Default_AppBuilders_Html_Cloud',
-      WorkflowBusinessFlow: 'SIL_AppBuilders_Web_Flow',
       StoreTypeId: 3,
       ProductType: ProductType.Web
     },
@@ -266,8 +244,6 @@ async function main() {
       Type: 2,
       Enabled: true,
       Description: 'SIL Default Workflow for Rebuilding HTML to Cloud',
-      WorkflowScheme: 'SIL_Default_AppBuilders_Html_Cloud_Rebuild',
-      WorkflowBusinessFlow: 'SIL_AppBuilders_Web_Flow',
       StoreTypeId: 3,
       ProductType: ProductType.Web
     },
@@ -276,8 +252,6 @@ async function main() {
       Type: 1,
       Enabled: true,
       Description: 'SIL Default Workflow for Publishing Asset Packages',
-      WorkflowScheme: 'SIL_NoAdmin_AppBuilders_Android_S3',
-      WorkflowBusinessFlow: 'SIL_AppBuilders_AssetPackage_Flow',
       StoreTypeId: 2,
       ProductType: ProductType.AssetPackage
     },
@@ -286,8 +260,6 @@ async function main() {
       Type: 2,
       Enabled: true,
       Description: 'SIL Default Workflow for Rebuilding Asset Packages',
-      WorkflowScheme: 'SIL_Default_AppBuilders_Android_S3_Rebuild',
-      WorkflowBusinessFlow: 'SIL_AppBuilders_AssetPackage_Flow',
       StoreTypeId: 2,
       ProductType: ProductType.AssetPackage
     }

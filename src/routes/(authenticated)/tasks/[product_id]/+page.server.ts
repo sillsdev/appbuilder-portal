@@ -227,10 +227,7 @@ export const actions = {
     const flow = await Workflow.restore(params.product_id);
 
     if (!flow) return fail(404, { form, ok: false });
-    if (
-      form.data.flowAction === WorkflowAction.Jump ||
-      form.data.flowAction === WorkflowAction.Migrate
-    ) {
+    if (form.data.flowAction === WorkflowAction.Jump) {
       return fail(400, {
         form,
         ok: false

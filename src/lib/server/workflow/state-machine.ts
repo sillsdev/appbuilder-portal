@@ -16,8 +16,6 @@ import {
   WorkflowState,
   hasAuthors,
   hasReviewers,
-  isAuthorState,
-  isDeprecated,
   jump,
   newGPApp
 } from '../../workflowTypes';
@@ -1009,52 +1007,6 @@ export const WorkflowStateMachine = setup({
         assign({
           start: ({ event }) => event.target
         })
-      ],
-      target: `.${WorkflowState.Start}`
-    },
-    [WorkflowAction.Migrate]: {
-      actions: [
-        assign({
-          start: ({ event, context }) => {
-            if (isDeprecated(event.target)) {
-              switch (event.target) {
-                case 'Check Product Build':
-                case 'Check Product Publish':
-                  return WorkflowState.Synchronize_Data;
-                case 'Set Google Play Existing':
-                  return WorkflowState.Product_Build;
-                case 'Set Google Play Uploaded':
-                  return WorkflowState.Verify_and_Publish;
-              }
-            } else if (isAuthorState(event.target) && !context.hasAuthors) {
-              switch (event.target) {
-                case WorkflowState.Author_Configuration:
-                  return WorkflowState.App_Builder_Configuration;
-                case WorkflowState.Author_Download:
-                case WorkflowState.Author_Upload:
-                  return WorkflowState.Synchronize_Data;
-              }
-            } else {
-              return event.target as WorkflowState;
-            }
-          },
-          environment: ({ event, context }) =>
-            isDeprecated(event.target) && event.target === 'Set Google Play Existing'
-              ? { ...context.environment, [ENVKeys.GOOGLE_PLAY_EXISTING]: '1' }
-              : context.environment
-        }),
-        async ({ event, context }) => {
-          if (isDeprecated(event.target) && event.target === 'Set Google Play Uploaded') {
-            getQueues().Products.add(`Get VersionCode for Migrated Product #${context.productId}`, {
-              type: BullMQ.JobType.Product_GetVersionCode,
-              productId: context.productId,
-              transition: await Workflow.currentProductTransition(
-                context.productId,
-                WorkflowState.Create_App_Store_Entry
-              ).then((pt) => pt?.Id ?? undefined)
-            });
-          }
-        }
       ],
       target: `.${WorkflowState.Start}`
     }

@@ -11,8 +11,7 @@ export const load = (async ({ url, locals }) => {
   locals.security.requireSuperAdmin();
   const form = await superValidate(valibot(createSchema));
   const options = {
-    storeType: await DatabaseReads.storeTypes.findMany(),
-    schemes: await DatabaseReads.workflowScheme.findMany({ select: { Code: true } })
+    storeType: await DatabaseReads.storeTypes.findMany()
   };
 
   return { form, options };
@@ -32,8 +31,6 @@ export const actions = {
         Properties: form.data.properties,
         Enabled: form.data.enabled,
         StoreTypeId: form.data.storeType,
-        WorkflowBusinessFlow: form.data.workflowBusinessFlow,
-        WorkflowScheme: form.data.workflowScheme,
         Type: form.data.workflowType,
         ProductType: form.data.productType,
         WorkflowOptions: form.data.options

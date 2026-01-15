@@ -141,7 +141,6 @@
               {@render transitionType(transition)}
             </td>
             <td>
-              <!-- Does not include WorkflowUserId mapping. Might be needed but didn't seem like it to me -->
               {#if !isLandmark(transition.TransitionType)}
                 {transition.User?.Name || transition.AllowedUserNames || m.appName()}
               {/if}
