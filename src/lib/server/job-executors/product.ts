@@ -157,7 +157,7 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
     const productBuild = await DatabaseReads.productBuilds.findFirst({
       where: {
         ProductId: job.data.productId,
-        BuildId: product.BuildEngineBuildId
+        BuildEngineBuildId: product.BuildEngineBuildId
       },
       select: {
         Id: true

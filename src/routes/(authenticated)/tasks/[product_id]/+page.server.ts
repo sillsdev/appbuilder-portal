@@ -124,7 +124,7 @@ export const load = (async ({ params, locals, depends }) => {
         where: {
           ProductId: params.product_id,
           ProductBuild: {
-            BuildId: product.BuildEngineBuildId
+            BuildEngineBuildId: product.BuildEngineBuildId
           },
           //filter by artifact type
           ArtifactType:

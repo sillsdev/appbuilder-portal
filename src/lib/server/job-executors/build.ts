@@ -98,7 +98,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
       const productBuild = await DatabaseWrites.productBuilds.create({
         data: {
           ProductId: job.data.productId,
-          BuildId: response.id
+          BuildEngineBuildId: response.id
         }
       });
 
