@@ -18,11 +18,7 @@ const bulkProductActionSchema = v.object({
   operation: v.nullable(v.pipe(v.enum(ProductActionType), v.excludes(ProductActionType.Cancel)))
 });
 
-function whereStatements(
-  paramFilter: string,
-  user: Security,
-  orgIds?: number[]
-): Prisma.ProjectsWhereInput {
+function whereStatements(paramFilter: string, user: Security, orgIds?: number[]) {
   if (user.isSuperAdmin) {
     return filter(paramFilter, orgIds, user.userId);
   } else {
@@ -49,11 +45,11 @@ function whereStatements(
         }
       ],
       ...filter(paramFilter, orgIds, user.userId)
-    };
+    } satisfies Prisma.ProjectsWhereInput;
   }
 }
 
-function filter(filter: string, orgIds?: number[], userId?: number): Prisma.ProjectsWhereInput {
+const filter = ((filter: string, orgIds?: number[], userId?: number) => {
   const selector = filter as 'organization' | 'active' | 'archived' | 'all' | 'own';
   switch (selector) {
     case 'organization':
@@ -98,7 +94,7 @@ function filter(filter: string, orgIds?: number[], userId?: number): Prisma.Proj
         ]
       };
   }
-}
+}) satisfies (filter: string, orgIds?: number[], userId?: number) => Prisma.ProjectsWhereInput;
 
 export const load = (async ({ params, locals }) => {
   locals.security.requireAuthenticated();

@@ -49,7 +49,7 @@ function select(orgIds: number[] | undefined, specificOrg: number | undefined) {
         Id: true
       }
     }
-  };
+  } satisfies Prisma.UsersSelect;
 }
 
 // If we are a superadmin, collect all users, otherwise
@@ -82,7 +82,7 @@ function userFilter(isSuper: boolean, orgIds: number[], specificOrg: number | un
               }
             }
           }
-        };
+  ) satisfies Prisma.UsersWhereInput;
 }
 
 export const load = (async ({ locals, params }) => {

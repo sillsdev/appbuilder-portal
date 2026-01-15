@@ -25,5 +25,5 @@ export function adminOrgs(subjectId: number, userId: number, isSuper: boolean, o
             RoleId: RoleId.OrgAdmin
           }
         }
-  } as Prisma.OrganizationsWhereInput;
+  } satisfies Prisma.OrganizationsWhereInput;
 }

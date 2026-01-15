@@ -11,7 +11,7 @@ export function projectFilter(args: {
   productDefinitionId: number | null;
   dateUpdatedRange: [Date, Date | null] | null;
   search: string;
-}): Prisma.ProjectsWhereInput {
+}) {
   return {
     OrganizationId: args.organizationId !== null ? args.organizationId : undefined,
     Language: args.langCode
@@ -96,7 +96,7 @@ export function projectFilter(args: {
           : undefined
       }
     ]
-  };
+  } satisfies Prisma.ProjectsWhereInput;
 }
 
 export function verifyCanCreateProject(user: Security, orgId: number): boolean {
