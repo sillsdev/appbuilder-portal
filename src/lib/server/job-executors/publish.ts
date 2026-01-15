@@ -123,7 +123,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
         data: {
           ProductId: job.data.productId,
           ProductBuildId: productBuild.Id,
-          ReleaseId: response.id,
+          BuildEngineReleaseId: response.id,
           Channel: channel
         }
       });
