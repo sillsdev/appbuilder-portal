@@ -49,11 +49,6 @@ export const load = (async ({ params, locals }) => {
 
 export const actions = {
   async default(event) {
-    // ISSUE: #1102 composite keys? I really want to change all many-to-many relationships in db to have composite primary keys
-    // In this case that would be GroupMemberships PRIMARY KEY(GroupId, UserId)
-    // This way they can be added and removed in constant time and in a single command
-    // https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations
-
     const subjectId = parseInt(event.params.id);
     const user = await DatabaseReads.users.findUnique({
       where: { Id: subjectId },
