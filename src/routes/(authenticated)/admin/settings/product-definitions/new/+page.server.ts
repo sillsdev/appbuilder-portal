@@ -8,7 +8,6 @@ import { propertiesSchema } from '$lib/valibot';
 
 const createSchema = v.object({
   name: v.nullable(v.string()),
-  applicationType: v.pipe(v.number(), v.minValue(1), v.integer()),
   workflow: v.pipe(v.number(), v.minValue(1), v.integer()),
   rebuildWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
   republishWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
@@ -36,7 +35,6 @@ export const actions = {
     await DatabaseWrites.productDefinitions.create({
       data: {
         Name: form.data.name,
-        TypeId: form.data.applicationType,
         WorkflowId: form.data.workflow,
         RebuildWorkflowId: form.data.rebuildWorkflow,
         RepublishWorkflowId: form.data.republishWorkflow,
