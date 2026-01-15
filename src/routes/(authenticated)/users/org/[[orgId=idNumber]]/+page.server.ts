@@ -36,18 +36,17 @@ function select(orgIds: number[] | undefined, specificOrg: number | undefined) {
         OrganizationId: true
       }
     },
-    GroupMemberships: {
-      where: orgIds ? { Group: { OwnerId: { in: orgIds } } } : undefined,
+    Groups: {
+      where: orgIds ? { OwnerId: { in: orgIds } } : undefined,
       select: {
-        Group: {
-          select: { Id: true, OwnerId: true }
-        }
+        Id: true,
+        OwnerId: true
       }
     },
-    OrganizationMemberships: {
-      where: orgIds ? { OrganizationId: { in: orgIds } } : undefined,
+    Organizations: {
+      where: orgIds ? { Id: { in: orgIds } } : undefined,
       select: {
-        OrganizationId: true
+        Id: true
       }
     }
   };
@@ -56,29 +55,31 @@ function select(orgIds: number[] | undefined, specificOrg: number | undefined) {
 // If we are a superadmin, collect all users, otherwise
 // collect every user in one of our organizations
 function userFilter(isSuper: boolean, orgIds: number[], specificOrg: number | undefined) {
-  return specificOrg
-    ? { OrganizationMemberships: { some: { OrganizationId: specificOrg } } }
-    : isSuper
-      ? {
-          // Get all users that are locked or are a member of at least one organization
-          // (Users that are not in an organization and are not locked are not interesting
-          // because they can't login and behave essentially as locked users or as users
-          // who have never logged in before)
-          OR: [
-            {
-              OrganizationMemberships: {
-                some: {}
+  return (
+    specificOrg
+      ? { Organizations: { some: { Id: specificOrg } } }
+      : isSuper
+        ? {
+            // Get all users that are locked or are a member of at least one organization
+            // (Users that are not in an organization and are not locked are not interesting
+            // because they can't login and behave essentially as locked users or as users
+            // who have never logged in before)
+            OR: [
+              {
+                Organizations: {
+                  some: {}
+                }
+              },
+              {
+                IsLocked: true
               }
-            },
-            {
-              IsLocked: true
-            }
-          ]
-        }
-      : {
-          OrganizationMemberships: {
-            some: {
-              OrganizationId: { in: orgIds }
+            ]
+          }
+        : {
+            Organizations: {
+              some: {
+                Id: { in: orgIds }
+              }
             }
           }
         };
@@ -138,7 +139,7 @@ export const load = (async ({ locals, params }) => {
         groups: await DatabaseReads.groups.findMany({
           where: {
             OwnerId: locals.security.isSuperAdmin ? undefined : { in: orgIds },
-            GroupMemberships: {
+            Users: {
               some: {}
             }
           }
@@ -170,11 +171,17 @@ export const actions: Actions = {
     if (!form.valid || event.locals.security.userId === form.data.user) return { form, ok: false };
     event.locals.security.requireAdminOfOrgIn(
       (
-        await DatabaseReads.organizationMemberships.findMany({
-          where: { UserId: form.data.user },
-          distinct: 'OrganizationId'
+        await DatabaseReads.users.findUniqueOrThrow({
+          where: { Id: form.data.user },
+          select: {
+            Organizations: {
+              select: {
+                Id: true
+              }
+            }
+          }
         })
-      ).map(({ OrganizationId }) => OrganizationId)
+      ).Organizations.map(({ Id }) => Id)
     );
     await DatabaseWrites.users.update({
       where: {

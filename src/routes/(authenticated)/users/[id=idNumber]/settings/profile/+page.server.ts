@@ -22,13 +22,11 @@ export const load = (async (event) => {
   event.locals.security.requireAuthenticated();
   const user = await DatabaseReads.users.findUnique({
     where: { Id: parseInt(event.params.id) },
-    include: { OrganizationMemberships: { select: { OrganizationId: true } } }
+    include: { Organizations: { select: { Id: true } } }
   });
   if (!user) return error(404);
   if (event.locals.security.userId !== parseInt(event.params.id)) {
-    event.locals.security.requireAdminOfOrgIn(
-      user.OrganizationMemberships.map((o) => o.OrganizationId)
-    );
+    event.locals.security.requireAdminOfOrgIn(user.Organizations.map((o) => o.Id));
   }
   return {
     form: await superValidate(
@@ -53,13 +51,11 @@ export const actions = {
     event.locals.security.requireAuthenticated();
     const user = await DatabaseReads.users.findUnique({
       where: { Id: parseInt(event.params.id) },
-      include: { OrganizationMemberships: { select: { OrganizationId: true } } }
+      include: { Organizations: { select: { Id: true } } }
     });
     if (!user) return fail(404, { form: null, ok: false });
     if (event.locals.security.userId !== parseInt(event.params.id)) {
-      event.locals.security.requireAdminOfOrgIn(
-        user.OrganizationMemberships.map((o) => o.OrganizationId)
-      );
+      event.locals.security.requireAdminOfOrgIn(user.Organizations.map((o) => o.Id));
     }
     const form = await superValidate(event, valibot(profileSchema));
     if (!form.valid) return fail(400, { form, ok: false });

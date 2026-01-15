@@ -229,14 +229,14 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         stores: organization?.OrganizationStores.map((os) => os.Store) ?? [],
         possibleProjectOwners: await DatabaseReads.users.findMany({
           where: {
-            OrganizationMemberships: {
+            Organizations: {
               some: {
-                OrganizationId: project.OrganizationId
+                Id: project.OrganizationId
               }
             },
-            GroupMemberships: {
+            Groups: {
               some: {
-                GroupId: project.Group.Id
+                Id: project.Group.Id
               }
             }
           }
@@ -245,9 +245,9 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         possibleGroups: await DatabaseReads.groups.findMany({
           where: {
             OwnerId: project.OrganizationId,
-            GroupMemberships: {
+            Users: {
               some: {
-                UserId: project.Owner.Id
+                Id: project.Owner.Id
               }
             }
           }
@@ -256,9 +256,9 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         // May be a more efficient way to search this, by referencing group memberships instead of users
         authorsToAdd: await DatabaseReads.users.findMany({
           where: {
-            GroupMemberships: {
+            Groups: {
               some: {
-                GroupId: project?.Group.Id
+                Id: project?.Group.Id
               }
             },
             UserRoles: {
@@ -275,7 +275,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           }
         }),
         userGroups: (await userGroupsForOrg(userSession.userId, project.OrganizationId)).map(
-          (g) => g.GroupId
+          (g) => g.Id
         )
       };
     } catch (e) {

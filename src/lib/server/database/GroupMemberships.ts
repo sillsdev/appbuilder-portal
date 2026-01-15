@@ -9,30 +9,38 @@ export async function toggleForOrg(
   enabled: boolean
 ) {
   // check if group owned by org
-  if (!(await prisma.groups.findFirst({ where: { OwnerId: OrganizationId, Id: GroupId } })))
-    return false;
+  const orgOwnsGroup = await prisma.groups.findFirst({
+    where: { OwnerId: OrganizationId, Id: GroupId },
+    select: { Id: true }
+  });
   // check if user is a member of the org
-  if (!(await prisma.organizationMemberships.findFirst({ where: { OrganizationId, UserId } })))
-    return false;
-  if (enabled) {
-    // ISSUE: #1102 this extra check would be unneccessary if we could switch to composite primary keys
-    const existing = await prisma.groupMemberships.findFirst({
-      where: { UserId, GroupId },
-      select: { Id: true }
-    });
-    if (!existing) {
-      await prisma.groupMemberships.create({
-        data: { UserId, GroupId }
-      });
-    }
-  } else {
-    // check if user owns a project in this group
-    // this is the only check not precluded by the UI
-    if (await prisma.projects.findFirst({ where: { OwnerId: UserId, GroupId } })) return false;
-    await prisma.groupMemberships.deleteMany({
-      where: { UserId, GroupId }
-    });
-  }
+  const userInOrg = await prisma.users.findFirst({
+    where: { Organizations: { some: { Id: OrganizationId } }, Id: UserId },
+    select: { Id: true }
+  });
+  // check if user owns a project in this group
+  // this is the only check not precluded by the UI
+  const userHasProjectInGroup = await prisma.projects.findFirst({
+    where: { OwnerId: UserId, GroupId },
+    select: { Id: true }
+  });
 
-  return true;
+  return (
+    orgOwnsGroup &&
+    userInOrg &&
+    (enabled || !userHasProjectInGroup) &&
+    !!(await prisma.users.update({
+      where: { Id: UserId },
+      data: {
+        Groups: {
+          [enabled ? 'connect' : 'disconnect']: {
+            Id: GroupId
+          }
+        }
+      },
+      select: {
+        Id: true
+      }
+    }))
+  );
 }

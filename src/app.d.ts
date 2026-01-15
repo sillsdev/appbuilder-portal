@@ -26,7 +26,7 @@ declare global {
       project?: { OwnerId: number; OrganizationId: number } | null
     ): this | never;
     requireProjectReadAccess(
-      userGroups: { GroupId: number }[],
+      userGroups: { /* Group.Id */ Id: number }[],
       project: {
         OwnerId: number;
         OrganizationId: number;
@@ -34,7 +34,7 @@ declare global {
       } | null
     ): this | never;
     requireProjectClaimable(
-      userGroups: { GroupId: number }[],
+      userGroups: { /* Group.Id */ Id: number }[],
       project?: {
         OwnerId: number;
         OrganizationId: number;
