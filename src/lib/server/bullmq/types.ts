@@ -65,7 +65,7 @@ export namespace Polling {
     jobId: number;
     buildId: number;
     releaseId: number;
-    publicationId: number;
+    productBuildId: number;
   }
 }
 
@@ -117,7 +117,7 @@ export namespace Publish {
   export interface PostProcess extends BaseJob {
     type: JobType.Publish_PostProcess;
     productId: string;
-    publicationId: number;
+    productBuildId: number;
     release: ReleaseResponse;
   }
 }

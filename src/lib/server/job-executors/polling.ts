@@ -102,7 +102,7 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
         {
           type: BullMQ.JobType.Publish_PostProcess,
           productId: job.data.productId,
-          publicationId: job.data.publicationId,
+          productBuildId: job.data.productBuildId,
           release: response,
           transition: job.data.transition
         }
