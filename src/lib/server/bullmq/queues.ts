@@ -1,7 +1,11 @@
-import { Queue, type QueueOptions } from 'bullmq';
+import { Queue } from 'bullmq';
+import type { Job, QueueOptions } from 'bullmq';
 import { BullMQOtel } from 'bullmq-otel';
 import { Redis } from 'ioredis';
+import prismaInternal from '../database/prisma';
+import { Workflow } from '../workflow';
 import type {
+  BaseJob,
   BuildJob,
   EmailJob,
   PollJob,
@@ -124,28 +128,75 @@ export const getQueueConfig = () => {
 };
 let _queues: ReturnType<typeof createQueues> | undefined = undefined;
 
+async function createJobRecord(job: Job<BaseJob>) {
+  try {
+    if (job.id && job.data.transition) {
+      await prismaInternal.$transaction(async (tx) => {
+        const existing = await tx.productTransitions.findFirst({
+          where: { Id: job.data.transition }
+        });
+
+        let found: number | undefined = undefined;
+
+        if (!existing) {
+          if ('productId' in job.data && job.data.productId) {
+            found = (await Workflow.currentProductTransition(job.data.productId))?.Id;
+          }
+          if (!found) {
+            job.log('Error recovering transition. No job record created.');
+            console.error(`Error recovering transition ${job.data.transition}`);
+            return;
+          } else {
+            job.log(`Transition ${job.data.transition} not found. Replacing with ${found}`);
+            await job.updateData({ ...job.data, transition: found });
+          }
+        }
+
+        const transitionId = existing ? job.data.transition! : found!;
+
+        return await tx.queueRecords.create({
+          data: {
+            ProductTransitionId: transitionId,
+            Queue: job.queueName,
+            JobType: job.data.type,
+            JobId: job.id! // this is in fact defined (checked in above if)
+          }
+        });
+      });
+    }
+  } catch (e) {
+    job.log(`Error creating job records: ${e}`);
+    console.error(e);
+  }
+}
+
 function createQueues() {
   if (!_queueConnection) {
     _queueConnection = new Connection(true);
   }
   /** Queue for Product Builds */
   const Builds = new Queue<BuildJob>(QueueName.Builds, getQueueConfig());
+  Builds.on('waiting', createJobRecord);
   /** Queue for default recurring jobs such as the BuildEngine status check */
   const SystemRecurring = new Queue<RecurringJob>(QueueName.System_Recurring, getQueueConfig());
   /** Queue for system jobs that run on startup, such as prepopulating langtags.json */
   const SystemStartup = new Queue<StartupJob>(QueueName.System_Startup, getQueueConfig());
   /** Queue for miscellaneous jobs such as getting a VersionCode or importing products */
   const Products = new Queue<ProductJob>(QueueName.Products, getQueueConfig());
+  Products.on('waiting', createJobRecord);
   /** Queue for miscellaneous jobs in BuildEngine such as Product and Project Creation */
   const Projects = new Queue<ProjectJob>(QueueName.Projects, getQueueConfig());
   /** Queue for Product Publishing  */
   const Publishing = new Queue<PublishJob>(QueueName.Publishing, getQueueConfig());
+  Publishing.on('waiting', createJobRecord);
   /** Queue for jobs that poll BuildEngine, such as checking the status of a build */
   const Polling = new Queue<PollJob>(QueueName.Polling, getQueueConfig());
+  Polling.on('waiting', createJobRecord);
   /** Queue for operations on UserTasks */
   const UserTasks = new Queue<UserTasksJob>(QueueName.UserTasks, getQueueConfig());
   /** Queue for Email tasks */
   const Emails = new Queue<EmailJob>(QueueName.Emails, getQueueConfig());
+  Emails.on('waiting', createJobRecord);
   /** Queue for Svelte SSE Project events */
   const SvelteSSE = new Queue<SvelteSSEJob>(QueueName.SvelteSSE, getQueueConfig());
   return {

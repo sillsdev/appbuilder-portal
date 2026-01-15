@@ -68,14 +68,16 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
             job.data.productId,
             productData.Project.Id,
             productData.Project.Name!,
-            productData.ProductDefinition.Name!
+            productData.ProductDefinition.Name!,
+            job.data.transition
           );
         } else {
           await notifyUnableToCreate(
             job.data.productId,
             productData.Project.Id,
             productData.Project.Name!,
-            productData.ProductDefinition.Name!
+            productData.ProductDefinition.Name!,
+            job.data.transition
           );
         }
         const flow = await Workflow.restore(job.data.productId);
@@ -110,7 +112,8 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
           organizationId: productData.Project.OrganizationId,
           jobId: productData.WorkflowJobId,
           buildId: response.id,
-          productBuildId: productBuild.Id
+          productBuildId: productBuild.Id,
+          transition: job.data.transition
         }
       });
     }
@@ -273,7 +276,8 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
         job.data.productId,
         product.Project.OwnerId,
         product.Project.Name!,
-        product.ProductDefinition.Name!
+        product.ProductDefinition.Name!,
+        job.data.transition
       );
       flow.send({ type: WorkflowAction.Build_Successful, userId: null });
     } else {
@@ -300,14 +304,26 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
         }
       }
       if (action === WorkflowAction.Build_Failed) {
-        await notifyFailed(job.data.productBuildId, job.data.productId, product, job.data.build);
+        await notifyFailed(
+          job.data.productBuildId,
+          job.data.productId,
+          product,
+          job.data.build,
+          job.data.transition
+        );
         flow.send({
           type: action,
           userId: null,
           comment: `system.build-failed,${job.data.build.artifacts['consoleText'] ?? ''}`
         });
       } else {
-        await notifyRetrying(job.data.productBuildId, job.data.productId, product, job.data.build);
+        await notifyRetrying(
+          job.data.productBuildId,
+          job.data.productId,
+          product,
+          job.data.build,
+          job.data.transition
+        );
         flow.send({
           type: action,
           userId: null,
@@ -328,7 +344,8 @@ async function notifyConnectionFailed(
   productId: string,
   projectId: number,
   projectName: string,
-  productName: string
+  productName: string,
+  transition?: number
 ) {
   return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Build for Product #${productId}`,
@@ -339,7 +356,8 @@ async function notifyConnectionFailed(
       messageProperties: {
         projectName,
         productName
-      }
+      },
+      transition
     }
   );
 }
@@ -347,7 +365,8 @@ async function notifyUnableToCreate(
   productId: string,
   projectId: number,
   projectName: string,
-  productName: string
+  productName: string,
+  transition?: number
 ) {
   return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Build for Product #${productId}`,
@@ -358,7 +377,8 @@ async function notifyUnableToCreate(
       messageProperties: {
         projectName,
         productName
-      }
+      },
+      transition
     }
   );
 }
@@ -367,7 +387,8 @@ async function notifyCompleted(
   productId: string,
   userId: number,
   projectName: string,
-  productName: string
+  productName: string,
+  transition?: number
 ) {
   return getQueues().Emails.add(
     `Notify Owner of Successful Completion of Build #${productBuildId} for Product #${productId}`,
@@ -378,7 +399,8 @@ async function notifyCompleted(
       messageProperties: {
         projectName,
         productName
-      }
+      },
+      transition
     }
   );
 }
@@ -402,7 +424,8 @@ async function notifyFailed(
       };
     };
   }>,
-  buildResponse: BuildEngine.Types.BuildResponse
+  buildResponse: BuildEngine.Types.BuildResponse,
+  transition?: number
 ) {
   const endpoint = await BuildEngine.Requests.getURLandToken(product.Project.OrganizationId);
   return getQueues().Emails.add(
@@ -423,7 +446,8 @@ async function notifyFailed(
         buildId: '' + product.WorkflowBuildId,
         projectUrl: product.Project.WorkflowAppProjectUrl!
       },
-      link: buildResponse.artifacts['consoleText'] ?? ''
+      link: buildResponse.artifacts['consoleText'] ?? '',
+      transition
     }
   );
 }
@@ -453,7 +477,8 @@ async function notifyRetrying(
       };
     };
   }>,
-  buildResponse: BuildEngine.Types.BuildResponse
+  buildResponse: BuildEngine.Types.BuildResponse,
+  transition?: number
 ) {
   return getQueues().Emails.add(
     `Notify Admins of Retry with Medium Compute for Build #${productBuildId} for Product #${productId}`,
@@ -465,7 +490,8 @@ async function notifyRetrying(
         productName: product.ProductDefinition.Name!,
         projectUrl: product.Project.WorkflowAppProjectUrl!
       },
-      link: buildResponse.artifacts['consoleText'] ?? ''
+      link: buildResponse.artifacts['consoleText'] ?? '',
+      transition
     }
   );
 }

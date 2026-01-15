@@ -47,7 +47,8 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
         job.data.productId,
         productData.Project.Id,
         productData.Project.Name!,
-        productData.ProductDefinition.Name!
+        productData.ProductDefinition.Name!,
+        job.data.transition
       );
     }
     throw new Error('Project.WorkflowProjectUrl not set!');
@@ -71,7 +72,8 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
           job.data.productId,
           productData.Project.Id,
           productData.Project.Name!,
-          productData.ProductDefinition.Name!
+          productData.ProductDefinition.Name!,
+          job.data.transition
         );
       } else {
         await notifyFailed(
@@ -79,7 +81,8 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
           productData.Project.Id,
           productData.Project.OrganizationId,
           productData.Project.Name!,
-          productData.ProductDefinition.Name!
+          productData.ProductDefinition.Name!,
+          job.data.transition
         );
       }
     }
@@ -94,7 +97,8 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
       job.data.productId,
       productData.Project.OwnerId,
       productData.Project.Name!,
-      productData.ProductDefinition.Name!
+      productData.ProductDefinition.Name!,
+      job.data.transition
     );
     const flow = await Workflow.restore(job.data.productId);
 
@@ -259,7 +263,8 @@ async function notifyConnectionFailed(
   productId: string,
   projectId: number,
   projectName: string,
-  productName: string
+  productName: string,
+  transition?: number
 ) {
   return getQueues().Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
@@ -268,14 +273,16 @@ async function notifyConnectionFailed(
     messageProperties: {
       projectName,
       productName
-    }
+    },
+    transition
   });
 }
 async function notifyProjectUrlNotSet(
   productId: string,
   projectId: number,
   projectName: string,
-  productName: string
+  productName: string,
+  transition?: number
 ) {
   return getQueues().Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
@@ -284,14 +291,16 @@ async function notifyProjectUrlNotSet(
     messageProperties: {
       projectName,
       productName
-    }
+    },
+    transition
   });
 }
 async function notifyCreated(
   productId: string,
   userId: number,
   projectName: string,
-  productName: string
+  productName: string,
+  transition?: number
 ) {
   return getQueues().Emails.add(`Notify Owner of Product #${productId} Creation Success`, {
     type: BullMQ.JobType.Email_SendNotificationToUser,
@@ -300,7 +309,8 @@ async function notifyCreated(
     messageProperties: {
       projectName,
       productName
-    }
+    },
+    transition
   });
 }
 async function notifyFailed(
@@ -308,9 +318,10 @@ async function notifyFailed(
   projectId: number,
   organizationId: number,
   projectName: string,
-  productName: string
+  productName: string,
+  transition?: number
 ) {
-  const endpoint = await BuildEngine.Requests.getURLandToken(organizationId);
+  const endpoint = (await BuildEngine.Requests.getURLandToken(organizationId)).url;
   const buildEngineUrl = endpoint + '/job-admin';
   return getQueues().Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
@@ -321,7 +332,8 @@ async function notifyFailed(
       productName,
       buildEngineUrl
     },
-    link: buildEngineUrl
+    link: buildEngineUrl,
+    transition
   });
 }
 async function notifyNotFound(productId: string) {

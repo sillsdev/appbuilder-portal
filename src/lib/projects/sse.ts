@@ -5,6 +5,7 @@ import { getProductActions } from '$lib/products';
 import { canModifyProject } from '$lib/projects';
 import { userGroupsForOrg } from '$lib/projects/server';
 import { DatabaseReads } from '$lib/server/database';
+import { isSuperAdmin } from '$lib/utils/roles';
 
 const tracer = trace.getTracer('ProjectSSE');
 export type ProjectDataSSE = Awaited<ReturnType<typeof getProjectDetails>>;
@@ -160,7 +161,16 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             select: {
               Name: true
             }
-          }
+          },
+          QueueRecords: isSuperAdmin(userSession.roles)
+            ? {
+                select: {
+                  Queue: true,
+                  JobId: true,
+                  JobType: true
+                }
+              }
+            : false
         }
       });
       span.addEvent('Product transitions fetched');
