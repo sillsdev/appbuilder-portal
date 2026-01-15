@@ -6,10 +6,7 @@ export function createAppBuildersError(status: number, title: string) {
 }
 
 // filter for rebuildable products
-export function rebuildableProductsWhere(
-  projectId: number,
-  ownerId: number
-): Prisma.ProductsWhereInput {
+export function rebuildableProductsWhere(projectId: number, ownerId: number) {
   return {
     ProjectId: projectId,
     Project: { Owner: { Id: ownerId } },
@@ -17,5 +14,5 @@ export function rebuildableProductsWhere(
     PublishLink: { not: null },
     WorkflowInstance: null,
     ProductDefinition: { RebuildWorkflowId: { not: null } }
-  };
+  } satisfies Prisma.ProductsWhereInput;
 }

@@ -41,20 +41,19 @@ export function isSuperAdmin(roles: ClientRolesArray): boolean {
  * @param sec Security object
  * @param orgId Id of specific organization
  */
-export function filterAdminOrgs(
-  sec: Security,
-  orgId: number | undefined
-): Prisma.OrganizationsWhereInput {
-  return orgId
-    ? { Id: orgId }
-    : sec.isSuperAdmin
-      ? {} // returns empty object in case spreading is desired at call site
-      : {
-          UserRoles: {
-            some: {
-              RoleId: RoleId.OrgAdmin,
-              UserId: sec.userId
+export function filterAdminOrgs(sec: Security, orgId: number | undefined) {
+  return (
+    orgId
+      ? { Id: orgId }
+      : sec.isSuperAdmin
+        ? {} // returns empty object in case spreading is desired at call site
+        : {
+            UserRoles: {
+              some: {
+                RoleId: RoleId.OrgAdmin,
+                UserId: sec.userId
+              }
             }
           }
-        };
+  ) satisfies Prisma.OrganizationsWhereInput;
 }
