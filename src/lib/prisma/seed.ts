@@ -440,9 +440,14 @@ async function main() {
       { OrganizationId: 3, ProductDefinitionId: 1 }
     ];
 
-    await prisma.organizationProductDefinitions.createMany({
-      data: organizationProductDefinitionsData
-    });
+    await Promise.all(
+      organizationProductDefinitionsData.map((opd) =>
+        prisma.productDefinitions.update({
+          where: { Id: opd.ProductDefinitionId },
+          data: { Organizations: { connect: { Id: opd.OrganizationId } } }
+        })
+      )
+    );
 
     const organizationStoresData = [
       { OrganizationId: 1, StoreId: 1 },
@@ -451,9 +456,14 @@ async function main() {
       { OrganizationId: 4, StoreId: 3 }
     ];
 
-    await prisma.organizationStores.createMany({
-      data: organizationStoresData
-    });
+    await Promise.all(
+      organizationStoresData.map((osd) =>
+        prisma.stores.update({
+          where: { Id: osd.StoreId },
+          data: { Organizations: { connect: { Id: osd.OrganizationId } } }
+        })
+      )
+    );
 
     const groupsData = [
       { Name: 'Language Software Development', Abbreviation: 'LSDEV', OwnerId: 1 },

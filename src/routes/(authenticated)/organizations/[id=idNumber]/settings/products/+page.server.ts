@@ -17,19 +17,14 @@ const toggleProductSchema = v.object({
 export const load = (async (event) => {
   event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
   const { organization } = await event.parent();
-  const setOrgProductDefs = new Set(
-    (
-      await DatabaseReads.organizationProductDefinitions.findMany({
-        where: {
-          OrganizationId: organization.Id
-        }
-      })
-    ).map((p) => p.ProductDefinitionId)
-  );
   return {
-    allProductDefs: (await DatabaseReads.productDefinitions.findMany()).map((pd) => ({
+    allProductDefs: (
+      await DatabaseReads.productDefinitions.findMany({
+        include: { Organizations: { where: { Id: organization.Id }, select: { Id: true } } }
+      })
+    ).map((pd) => ({
       ...pd,
-      enabled: setOrgProductDefs.has(pd.Id)
+      enabled: !!pd.Organizations.length
     }))
   };
 }) satisfies PageServerLoad;

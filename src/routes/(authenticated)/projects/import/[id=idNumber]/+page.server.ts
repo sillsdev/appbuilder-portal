@@ -105,9 +105,9 @@ export const actions: Actions = {
             Id: true,
             _count: {
               select: {
-                OrganizationProductDefinitions: {
+                Organizations: {
                   where: {
-                    OrganizationId: organizationId
+                    Id: organizationId
                   }
                 }
               }
@@ -121,7 +121,7 @@ export const actions: Actions = {
             path: `json.Products[${i}].Name`,
             messages: [`Could not find ProductDefinition: "${product.Name}"`]
           });
-        } else if (!prodDef?._count.OrganizationProductDefinitions) {
+        } else if (!prodDef?._count.Organizations) {
           errors.push({
             path: `json.Products[${i}].Name`,
             messages: [
@@ -138,9 +138,9 @@ export const actions: Actions = {
             Id: true,
             _count: {
               select: {
-                OrganizationStores: {
+                Organizations: {
                   where: {
-                    OrganizationId: organizationId
+                    Id: organizationId
                   }
                 }
               }
@@ -154,7 +154,7 @@ export const actions: Actions = {
             path: `json.Products[${i}].Store`,
             messages: [`Could not find Store: "${product.Store}"`]
           });
-        } else if (!store?._count.OrganizationStores) {
+        } else if (!store?._count.Organizations) {
           errors.push({
             path: `json.Products[${i}].Store`,
             messages: [`Invalid Store: "${product.Store}" for Organization: ${organization.Name}`]
