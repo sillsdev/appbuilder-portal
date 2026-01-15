@@ -15,7 +15,7 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
     select: {
       WorkflowInstance: {
         select: {
-          Id: true
+          ProductId: true
         }
       }
     }
@@ -70,7 +70,7 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
     select: {
       WorkflowInstance: {
         select: {
-          Id: true
+          ProductId: true
         }
       }
     }

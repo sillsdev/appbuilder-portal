@@ -308,7 +308,6 @@ export type StateNode = {
 };
 
 export type Snapshot = {
-  instanceId: number;
   definitionId: number;
   state: string;
   context: WorkflowInstanceContext;

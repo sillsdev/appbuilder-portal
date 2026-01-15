@@ -164,7 +164,6 @@ export class Workflow {
         ProductId: productId
       },
       select: {
-        Id: true,
         State: true,
         Context: true,
         WorkflowDefinition: {
@@ -196,7 +195,6 @@ export class Workflow {
     }
     const context = JSON.parse(instance.Context) as WorkflowInstanceContext;
     return {
-      instanceId: instance.Id,
       definitionId: instance.WorkflowDefinition.Id,
       state: instance.State,
       context,
