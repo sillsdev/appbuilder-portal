@@ -15,7 +15,7 @@ export async function toggleForOrg(
     }))
   )
     return false;
-  // ISSUE: #1102 this extra check would be unneccessary if we could switch to composite primary keys
+  // This existence check is necessary for the task creation step
   const existing = await prisma.userRoles.findFirst({
     where: { OrganizationId, UserId, RoleId: role },
     select: { RoleId: true }
