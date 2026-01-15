@@ -18,7 +18,7 @@ export async function toggleForOrg(
   // ISSUE: #1102 this extra check would be unneccessary if we could switch to composite primary keys
   const existing = await prisma.userRoles.findFirst({
     where: { OrganizationId, UserId, RoleId: role },
-    select: { Id: true }
+    select: { RoleId: true }
   });
   if (enabled) {
     if (!existing) {
