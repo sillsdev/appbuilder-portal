@@ -2,12 +2,14 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
+  import Toggle from '$lib/components/settings/Toggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
-  import { byName } from '$lib/utils/sorting';
+  import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -18,6 +20,7 @@
   const base = '/admin/settings/product-definitions';
 
   const { form, enhance } = superForm(data.form, {
+    dataType: 'json',
     onUpdated({ form }) {
       if (form.valid) {
         goto(localizeHref(base));
@@ -56,6 +59,26 @@
     />
     <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
+  <Toggle title={{ key: 'prodDefs_type_allowAll' }} name="allowAll" bind:checked={$form.allowAll} />
+  {#if !$form.allowAll}
+    <LabeledFormInput key="prodDefs_type" class="border border-warning p-1 my-4 rounded-lg">
+      {#each data.options.applicationTypes.toSorted( (a, b) => byString(a.Description, b.Description, locale) ) as type}
+        <InputWithMessage
+          message={{ key: 'common_passThrough', params: { value: type.Description } }}
+          class="my-1"
+        >
+          <input
+            class="toggle toggle-warning border-warning"
+            type="checkbox"
+            bind:group={$form.applicationTypes}
+            value={type.Id}
+          />
+        </InputWithMessage>
+      {/each}
+    </LabeledFormInput>
+  {:else}
+    <div class="mb-4"></div>
+  {/if}
   <LabeledFormInput key="prodDefs_flow">
     <select class="select validator" name="workflow" bind:value={$form.workflow} required>
       {#each workflows as wf}

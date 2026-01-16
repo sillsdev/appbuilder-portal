@@ -11,6 +11,8 @@ const editSchema = v.object({
   id: idSchema,
   name: v.pipe(v.string(), v.trim(), v.minLength(1)),
   workflow: idSchema,
+  allowAll: v.boolean(),
+  applicationTypes: v.array(idSchema),
   rebuildWorkflow: v.nullable(idSchema),
   republishWorkflow: v.nullable(idSchema),
   description: v.nullable(v.string()),
@@ -29,6 +31,9 @@ export const load = (async ({ url, locals }) => {
   const data = await DatabaseReads.productDefinitions.findFirst({
     where: {
       Id: id
+    },
+    include: {
+      ApplicationTypes: true
     }
   });
   if (!data) return redirect(302, localizeHref('/admin/settings/product-definitions'));
@@ -37,6 +42,8 @@ export const load = (async ({ url, locals }) => {
       id: data.Id,
       name: data.Name,
       workflow: data.WorkflowId,
+      allowAll: data.AllowAllApplicationTypes,
+      applicationTypes: data.ApplicationTypes.map((at) => at.Id),
       rebuildWorkflow: data.RebuildWorkflowId,
       republishWorkflow: data.RepublishWorkflowId,
       description: data.Description,
@@ -56,12 +63,17 @@ export const actions = {
     }
     await DatabaseWrites.productDefinitions.update(form.data.id, {
       Name: form.data.name,
+      AllowAllApplicationTypes: form.data.allowAll,
       WorkflowId: form.data.workflow,
       RebuildWorkflowId: form.data.rebuildWorkflow,
       RepublishWorkflowId: form.data.republishWorkflow,
       Description: form.data.description,
       Properties: form.data.properties
     });
+    await DatabaseWrites.productDefinitions.setApplicationTypes(
+      form.data.id,
+      form.data.applicationTypes
+    );
     return { ok: true, form };
   }
 } satisfies Actions;
