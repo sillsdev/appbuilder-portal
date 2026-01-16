@@ -1,7 +1,7 @@
 import * as v from 'valibot';
 
 export const infoSchema = v.object({
-  name: v.nullable(v.string()),
+  name: v.pipe(v.string(), v.trim(), v.minLength(1)),
   logoUrl: v.nullable(v.string()),
   contact: v.nullable(
     v.union([
@@ -17,7 +17,7 @@ export const infoSchema = v.object({
 export const infrastructureSchema = v.object({
   buildEngineUrl: v.nullable(v.string()),
   buildEngineApiAccessToken: v.nullable(v.string()),
-  useDefaultBuildEngine: v.nullable(v.boolean(), true)
+  useDefaultBuildEngine: v.boolean()
 });
 
 export const organizationBaseSchema = v.object({

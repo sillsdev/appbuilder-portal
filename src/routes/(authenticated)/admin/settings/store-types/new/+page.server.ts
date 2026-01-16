@@ -6,7 +6,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { DatabaseWrites } from '$lib/server/database';
 
 const createSchema = v.object({
-  name: v.nullable(v.string()),
+  name: v.pipe(v.string(), v.trim(), v.minLength(1)),
   description: v.nullable(v.string())
 });
 
