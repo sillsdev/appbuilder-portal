@@ -10,7 +10,7 @@ export const businessFlows = [
 ];
 
 export const workflowDefinitionSchemaBase = v.object({
-  name: v.nullable(v.string()),
+  name: v.pipe(v.string(), v.trim(), v.minLength(1)),
   storeType: idSchema,
   productType: v.pipe(idSchema, v.enum(ProductType)),
   workflowType: idSchema,

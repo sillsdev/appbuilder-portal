@@ -9,7 +9,7 @@ import { idSchema } from '$lib/valibot';
 
 const editSchema = v.object({
   id: idSchema,
-  name: v.nullable(v.string()),
+  name: v.pipe(v.string(), v.trim(), v.minLength(1)),
   description: v.nullable(v.string())
 });
 export const load = (async ({ url, locals }) => {
