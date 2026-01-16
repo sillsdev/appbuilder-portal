@@ -4,7 +4,7 @@
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-  import { byName } from '$lib/utils/sorting';
+  import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -28,6 +28,14 @@
       onEdit={() => goto(localizeHref(`${base}/edit?id=${pD.Id}`))}
       title={pD.Name}
       fields={[
+        {
+          key: 'prodDefs_type',
+          value: pD.AllowAllApplicationTypes
+            ? m.prodDefs_type_allowAll()
+            : pD.ApplicationTypes.map((at) => at.Description)
+                .sort((a, b) => byString(a, b, getLocale()))
+                .join(', ')
+        },
         {
           key: 'prodDefs_flow',
           value: pD.Workflow.Name

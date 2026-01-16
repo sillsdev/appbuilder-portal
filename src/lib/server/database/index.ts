@@ -7,6 +7,7 @@ import * as groups from './Groups';
 import * as organizationMemberships from './OrganizationMemberships';
 import * as organizationProductDefinitions from './OrganizationProductDefinitions';
 import * as organizationStores from './OrganizationStores';
+import * as productDefinitions from './ProductDefinitions';
 import * as productTransitions from './ProductTransitions';
 import * as products from './Products';
 import * as projects from './Projects';
@@ -51,6 +52,7 @@ const handlers = {
   organizationStores,
   organizationProductDefinitions,
   organizationMemberships,
+  productDefinitions,
   productTransitions,
   userRoles,
   utility,
