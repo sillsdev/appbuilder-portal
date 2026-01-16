@@ -11,7 +11,7 @@ datasource db {
 
 model ApplicationTypes {
   Id              Int               @id(map: "PK_ApplicationTypes") @default(autoincrement())
-  Name            String?
+  Name            String
   Description     String?
   ProjectImports  ProjectImports[]
   Projects        Projects[]
@@ -31,8 +31,8 @@ model Authors {
 
 model Groups {
   Id             Int              @id(map: "PK_Groups") @default(autoincrement())
-  Name           String?
-  Abbreviation   String?
+  Name           String
+  Abbreviation   String
   OwnerId        Int
   Users          Users[]
   Owner          Organizations    @relation(fields: [OwnerId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Groups_Organizations_OwnerId")
@@ -62,13 +62,13 @@ model OrganizationMembershipInvites {
 
 model Organizations {
   Id                            Int                             @id(map: "PK_Organizations") @default(autoincrement())
-  Name                          String?
+  Name                          String
   WebsiteUrl                    String?
   BuildEngineUrl                String?
   BuildEngineApiAccessToken     String?
   LogoUrl                       String?
-  UseDefaultBuildEngine         Boolean?                        @default(true)
-  PublicByDefault               Boolean?                        @default(true)
+  UseDefaultBuildEngine         Boolean                         @default(true)
+  PublicByDefault               Boolean                         @default(true)
   ContactEmail                  String?
   Groups                        Groups[]
   OrganizationMembershipInvites OrganizationMembershipInvites[]
@@ -115,7 +115,7 @@ model ProductBuilds {
 
 model ProductDefinitions {
   Id                  Int                  @id(map: "PK_ProductDefinitions") @default(autoincrement())
-  Name                String?
+  Name                String
   Description         String?
   WorkflowId          Int
   RebuildWorkflowId   Int?
@@ -241,20 +241,20 @@ model ProjectImports {
 
 model Projects {
   Id                      Int              @id(map: "PK_Projects") @default(autoincrement())
-  Name                    String?
+  Name                    String
   TypeId                  Int
   Description             String?
   OwnerId                 Int
   GroupId                 Int
   OrganizationId          Int
-  Language                String?
-  IsPublic                Boolean?         @default(true)
+  Language                String
+  IsPublic                Boolean          @default(true)
   DateCreated             DateTime?        @default(now()) @db.Timestamp(6)
   DateUpdated             DateTime?        @updatedAt @db.Timestamp(6)
   DateArchived            DateTime?        @db.Timestamp(6)
-  AllowDownloads          Boolean?         @default(true)
-  AutoPublishOnRebuild    Boolean?         @default(false)
-  RebuildOnSoftwareUpdate Boolean?         @default(false)
+  AllowDownloads          Boolean          @default(true)
+  AutoPublishOnRebuild    Boolean          @default(false)
+  RebuildOnSoftwareUpdate Boolean          @default(false)
   BuildEngineProjectId    Int              @default(0)
   RepositoryUrl           String?
   DateActive              DateTime?        @db.Timestamp(6)
@@ -277,10 +277,10 @@ model Projects {
 
 model Reviewers {
   Id        Int      @id(map: "PK_Reviewers") @default(autoincrement())
-  Name      String?
-  Email     String?
+  Name      String
+  Email     String
   ProjectId Int
-  Locale    String?
+  Locale    String
   Project   Projects @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Reviewers_Projects_ProjectId")
 
   @@index([ProjectId], map: "IX_Reviewers_ProjectId")
@@ -288,7 +288,7 @@ model Reviewers {
 
 model StoreLanguages {
   Id          Int        @id(map: "PK_StoreLanguages") @default(autoincrement())
-  Name        String?
+  Name        String
   Description String?
   StoreTypeId Int
   Products    Products[]
@@ -299,7 +299,7 @@ model StoreLanguages {
 
 model StoreTypes {
   Id                  Int                   @id(map: "PK_StoreTypes") @default(autoincrement())
-  Name                String?
+  Name                String
   Description         String?
   StoreLanguages      StoreLanguages[]
   Stores              Stores[]
@@ -308,7 +308,7 @@ model StoreTypes {
 
 model Stores {
   Id            Int             @id(map: "PK_Stores") @default(autoincrement())
-  Name          String?
+  Name          String
   Description   String?
   StoreTypeId   Int
   Organizations Organizations[]
@@ -413,10 +413,10 @@ model Users {
 
 model WorkflowDefinitions {
   Id                          Int                  @id(map: "PK_WorkflowDefinitions") @default(autoincrement())
-  Name                        String?
+  Name                        String
   Enabled                     Boolean
   Description                 String?
-  StoreTypeId                 Int?
+  StoreTypeId                 Int
   Type                        Int                  @default(1)
   Properties                  String?
   RebuildProductDefinitions   ProductDefinitions[] @relation("ProductDefinitions_RebuildWorkflowIdToWorkflowDefinitions")
