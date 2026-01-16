@@ -217,14 +217,14 @@ model ProductBuilds {
 model ProductDefinitions {
   Id                             Int                              @id(map: "PK_ProductDefinitions") @default(autoincrement())
   Name                           String?
-  TypeId                         Int // ISSUE: #1102 This doesn't actually do anything... This should probably be removed?
   Description                    String?
   WorkflowId                     Int
   RebuildWorkflowId              Int?
   RepublishWorkflowId            Int?
   Properties                     String?
+  AllowAllApplicationTypes       Boolean                          @default(true)
   OrganizationProductDefinitions OrganizationProductDefinitions[]
-  ApplicationTypes               ApplicationTypes                 @relation(fields: [TypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductDefinitions_ApplicationTypes_TypeId")
+  ApplicationTypes               ApplicationTypes[]
   RebuildWorkflow                WorkflowDefinitions?             @relation("ProductDefinitions_RebuildWorkflowIdToWorkflowDefinitions", fields: [RebuildWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RebuildWorkflowId")
   RepublishWorkflow              WorkflowDefinitions?             @relation("ProductDefinitions_RepublishWorkflowIdToWorkflowDefinitions", fields: [RepublishWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RepublishWorkflowId")
   Workflow                       WorkflowDefinitions              @relation("ProductDefinitions_WorkflowIdToWorkflowDefinitions", fields: [WorkflowId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_WorkflowId")
@@ -232,7 +232,6 @@ model ProductDefinitions {
 
   @@index([RebuildWorkflowId], map: "IX_ProductDefinitions_RebuildWorkflowId")
   @@index([RepublishWorkflowId], map: "IX_ProductDefinitions_RepublishWorkflowId")
-  @@index([TypeId], map: "IX_ProductDefinitions_TypeId")
   @@index([WorkflowId], map: "IX_ProductDefinitions_WorkflowId")
 }
 
