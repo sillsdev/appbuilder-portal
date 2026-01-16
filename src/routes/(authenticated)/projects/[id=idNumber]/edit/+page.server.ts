@@ -8,7 +8,7 @@ import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { idSchema } from '$lib/valibot';
 
 const projectPropertyEditSchema = v.object({
-  name: v.pipe(v.string(), v.minLength(1)),
+  name: v.pipe(v.string(), v.trim(), v.minLength(1)),
   group: idSchema,
   owner: idSchema,
   language: v.string(),

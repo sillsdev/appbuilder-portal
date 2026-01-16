@@ -7,7 +7,7 @@ import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { propertiesSchema } from '$lib/valibot';
 
 const createSchema = v.object({
-  name: v.nullable(v.string()),
+  name: v.pipe(v.string(), v.trim(), v.minLength(1)),
   workflow: v.pipe(v.number(), v.minValue(1), v.integer()),
   rebuildWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
   republishWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
