@@ -10,7 +10,6 @@ import { idSchema, propertiesSchema } from '$lib/valibot';
 const editSchema = v.object({
   id: idSchema,
   name: v.nullable(v.string()),
-  applicationType: idSchema,
   workflow: idSchema,
   rebuildWorkflow: v.nullable(idSchema),
   republishWorkflow: v.nullable(idSchema),
@@ -37,7 +36,6 @@ export const load = (async ({ url, locals }) => {
     {
       id: data.Id,
       name: data.Name,
-      applicationType: data.TypeId,
       workflow: data.WorkflowId,
       rebuildWorkflow: data.RebuildWorkflowId,
       republishWorkflow: data.RepublishWorkflowId,
@@ -61,7 +59,6 @@ export const actions = {
         Id: form.data.id
       },
       data: {
-        TypeId: form.data.applicationType,
         Name: form.data.name,
         WorkflowId: form.data.workflow,
         RebuildWorkflowId: form.data.rebuildWorkflow,
