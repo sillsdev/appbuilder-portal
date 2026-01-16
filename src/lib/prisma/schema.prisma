@@ -10,13 +10,14 @@ datasource db {
 }
 
 model ApplicationTypes {
-  Id              Int               @id(map: "PK_ApplicationTypes") @default(autoincrement())
-  Name            String
-  Description     String?
-  ProjectImports  ProjectImports[]
-  Projects        Projects[]
-  SystemVersions  SystemVersions[]
-  SoftwareUpdates SoftwareUpdates[]
+  Id                 Int                  @id(map: "PK_ApplicationTypes") @default(autoincrement())
+  Name               String
+  Description        String?
+  ProjectImports     ProjectImports[]
+  Projects           Projects[]
+  SystemVersions     SystemVersions[]
+  SoftwareUpdates    SoftwareUpdates[]
+  ProductDefinitions ProductDefinitions[]
 }
 
 model Authors {
@@ -114,18 +115,20 @@ model ProductBuilds {
 }
 
 model ProductDefinitions {
-  Id                  Int                  @id(map: "PK_ProductDefinitions") @default(autoincrement())
-  Name                String
-  Description         String?
-  WorkflowId          Int
-  RebuildWorkflowId   Int?
-  RepublishWorkflowId Int?
-  Properties          String?
-  Organizations       Organizations[]
-  RebuildWorkflow     WorkflowDefinitions? @relation("ProductDefinitions_RebuildWorkflowIdToWorkflowDefinitions", fields: [RebuildWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RebuildWorkflowId")
-  RepublishWorkflow   WorkflowDefinitions? @relation("ProductDefinitions_RepublishWorkflowIdToWorkflowDefinitions", fields: [RepublishWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RepublishWorkflowId")
-  Workflow            WorkflowDefinitions  @relation("ProductDefinitions_WorkflowIdToWorkflowDefinitions", fields: [WorkflowId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_WorkflowId")
-  Products            Products[]
+  Id                       Int                  @id(map: "PK_ProductDefinitions") @default(autoincrement())
+  Name                     String
+  Description              String?
+  WorkflowId               Int
+  RebuildWorkflowId        Int?
+  RepublishWorkflowId      Int?
+  Properties               String?
+  AllowAllApplicationTypes Boolean              @default(true)
+  Organizations            Organizations[]
+  ApplicationTypes         ApplicationTypes[]
+  RebuildWorkflow          WorkflowDefinitions? @relation("ProductDefinitions_RebuildWorkflowIdToWorkflowDefinitions", fields: [RebuildWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RebuildWorkflowId")
+  RepublishWorkflow        WorkflowDefinitions? @relation("ProductDefinitions_RepublishWorkflowIdToWorkflowDefinitions", fields: [RepublishWorkflowId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_RepublishWorkflowId")
+  Workflow                 WorkflowDefinitions  @relation("ProductDefinitions_WorkflowIdToWorkflowDefinitions", fields: [WorkflowId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductDefinitions_WorkflowDefinitions_WorkflowId")
+  Products                 Products[]
 
   @@index([RebuildWorkflowId], map: "IX_ProductDefinitions_RebuildWorkflowId")
   @@index([RepublishWorkflowId], map: "IX_ProductDefinitions_RepublishWorkflowId")
