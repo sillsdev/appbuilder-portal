@@ -36,6 +36,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           Language: true,
           ApplicationType: {
             select: {
+              Id: true,
               Description: true
             }
           },
@@ -175,7 +176,11 @@ export async function getProjectDetails(id: number, userSession: Session['user']
 
       const productDefinitions = await DatabaseReads.productDefinitions.findMany({
         where: {
-          Organizations: { some: { Id: project.OrganizationId } }
+          Organizations: { some: { Id: project.OrganizationId } },
+          OR: [
+            { AllowAllApplicationTypes: true },
+            { ApplicationTypes: { some: { Id: project.ApplicationType.Id } } }
+          ]
         },
         select: {
           Id: true,
