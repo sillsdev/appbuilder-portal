@@ -6,6 +6,7 @@ import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
 import { projectUrl } from '$lib/projects/server';
+import { NotificationType } from '$lib/users';
 import { WorkflowAction } from '$lib/workflowTypes';
 
 export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown> {
@@ -339,7 +340,8 @@ async function notifyCompleted(
         projectName,
         productName
       },
-      transition
+      transition,
+      forceIfAllow: NotificationType.OwnerJobComplete
     }
   );
 }

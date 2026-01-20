@@ -5,6 +5,7 @@ import { DatabaseReads, DatabaseWrites } from '../database';
 import { notifyProductNotFound as build_notifyProductNotFound } from './build';
 import { notifyNotFound } from './project';
 import { notifyProductNotFound as publish_notifyProductNotFound } from './publish';
+import { NotificationType } from '$lib/users';
 
 export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
   const product = await DatabaseReads.products.findFirst({
@@ -230,6 +231,7 @@ async function notifyCreated(projectId: number, userId: number, projectName: str
     messageKey: 'projectCreatedSuccessfully',
     messageProperties: {
       projectName
-    }
+    },
+    forceIfAllow: NotificationType.OwnerJobComplete
   });
 }

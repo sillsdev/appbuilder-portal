@@ -14,6 +14,7 @@ import {
 import { getOwnerAdminVariantKeys, translate } from '../email-service/locales/locale';
 import { RoleId } from '$lib/prisma';
 import type { ProjectImportJSON } from '$lib/projects';
+import { NotificationType } from '$lib/users';
 
 export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unknown> {
   const inviteInformation = await DatabaseReads.organizationMembershipInvites.findFirstOrThrow({
@@ -161,7 +162,12 @@ export async function sendBatchUserTaskNotifications(
       where: {
         Id: notification.userId,
         IsLocked: false,
-        EmailNotification: true
+        OR: [
+          { EmailNotification: true },
+          {
+            NotificationOptions: { has: NotificationType.NewTask }
+          }
+        ]
       }
     });
     if (!user) continue;
@@ -259,7 +265,12 @@ export async function notifySuperAdminsLowPriority(
           RoleId: RoleId.SuperAdmin
         }
       },
-      EmailNotification: true
+      OR: [
+        { EmailNotification: true },
+        {
+          NotificationOptions: { has: NotificationType.SuperAdminLowPriority }
+        }
+      ]
     }
   });
   if (superAdmins.length) {
@@ -289,7 +300,10 @@ export async function sendNotificationToUser(
   const user = await DatabaseReads.users.findUnique({
     where: {
       Id: job.data.userId,
-      EmailNotification: true
+      OR: [
+        { EmailNotification: true },
+        ...(job.data.forceIfAllow ? [{ NotificationOptions: { has: job.data.forceIfAllow } }] : [])
+      ]
     }
   });
   if (!user) return `User ${job.data.userId} has disabled Email Notifications`;
@@ -443,7 +457,13 @@ export async function sendNotificationToOrgAdminsAndOwner(
           RoleId: RoleId.OrgAdmin,
           OrganizationId: project.OrganizationId
         }
-      }
+      },
+      OR: [
+        { EmailNotification: true },
+        {
+          NotificationOptions: { has: NotificationType.AdminJobFailed }
+        }
+      ]
     }
   });
   const owner = await DatabaseReads.users.findUniqueOrThrow({
@@ -476,7 +496,7 @@ export async function sendNotificationToOrgAdminsAndOwner(
   // They receive only the org admin email
   if (
     !orgAdmins.some((admin) => admin.Id === owner.Id) &&
-    (owner.EmailNotification || owner.EmailNotification === null)
+    (owner.EmailNotification || owner.NotificationOptions.includes(NotificationType.OwnerJobFailed))
   ) {
     emails.push(
       sendEmail(
