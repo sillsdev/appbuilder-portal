@@ -8,7 +8,7 @@ import { idSchema, propertiesSchema } from '$lib/valibot';
 
 const createSchema = v.object({
   name: v.pipe(v.string(), v.trim(), v.minLength(1)),
-  allowAll: v.boolean(),
+  allowAll: v.optional(v.boolean(), true),
   applicationTypes: v.array(idSchema),
   workflow: v.pipe(v.number(), v.minValue(1), v.integer()),
   rebuildWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
