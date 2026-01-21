@@ -325,7 +325,6 @@ export async function reportProjectImport(
       Id: job.data.importId
     },
     include: {
-      // Schema mistake; should be Owner or User not Users
       Owner: true,
       Organization: true,
       Group: true,
