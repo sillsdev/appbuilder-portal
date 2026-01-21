@@ -36,7 +36,18 @@ export const load = (async ({ params, locals }) => {
     subjectOrgs: canEdit
       ? await DatabaseReads.organizations.findMany({
           where: filter,
-          select: { Id: true, Name: true }
+          select: {
+            Id: true,
+            Name: true,
+            UserRoles: {
+              where: {
+                UserId: subject.Id
+              },
+              select: {
+                RoleId: true
+              }
+            }
+          }
         })
       : []
   };

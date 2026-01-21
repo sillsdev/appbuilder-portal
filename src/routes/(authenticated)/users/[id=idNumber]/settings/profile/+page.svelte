@@ -8,7 +8,10 @@
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { toast } from '$lib/utils';
+  import type { RoleId } from '$lib/prisma';
+  import { NotificationType } from '$lib/users';
+  import { enumNumVals, toast } from '$lib/utils';
+  import { isAdminForAny, isSuperAdmin } from '$lib/utils/roles';
   import { phoneRegex, regExpToInputPattern } from '$lib/valibot';
 
   interface Props {
@@ -48,6 +51,23 @@
     ignoreLocation: true,
     ignoreFieldNorm: true
   });
+
+  const subjectRoles = $derived(
+    data.subjectOrgs.flatMap((o) => o.UserRoles.map((ur) => [o.Id, ur.RoleId] as [number, RoleId]))
+  );
+
+  const emailOptions = $derived(
+    enumNumVals(NotificationType).filter((o) => {
+      switch (o) {
+        case NotificationType.AdminJobFailed:
+          return isAdminForAny(subjectRoles);
+        case NotificationType.SuperAdminLowPriority:
+          return isSuperAdmin(subjectRoles) && isSuperAdmin(data.session.user.roles);
+        default:
+          return true;
+      }
+    })
+  );
 </script>
 
 <form action="" method="post" use:enhance>
@@ -138,6 +158,26 @@
         bind:checked={$form.notifications}
       />
     </InputWithMessage>
+    {#if !$form.notifications}
+      <LabeledFormInput
+        key="profile_emailExceptions"
+        class="border border-info p-1 my-4 rounded-lg"
+      >
+        {#each emailOptions as option}
+          <InputWithMessage
+            message={{ key: 'profile_email_options', params: { option } }}
+            class="my-1"
+          >
+            <input
+              class="toggle toggle-info border-info"
+              type="checkbox"
+              bind:group={$form.emailOptions}
+              value={option}
+            />
+          </InputWithMessage>
+        {/each}
+      </LabeledFormInput>
+    {/if}
     <InputWithMessage
       class="mt-4"
       title={{ key: 'profile_visibleProfile' }}
