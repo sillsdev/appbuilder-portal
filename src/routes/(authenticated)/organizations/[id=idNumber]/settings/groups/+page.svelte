@@ -25,7 +25,7 @@
         groups.push({
           Id: result.data.createdId,
           Name: form.data.name,
-          Abbreviation: form.data.abbreviation,
+          Description: form.data.description,
           OwnerId: data.organization.Id
         });
         formElement.reset();
@@ -60,9 +60,9 @@
     <input type="hidden" name="id" value={group.Id} />
     <div class="border w-full flex flex-row p-2 rounded-md items-center place-content-between">
       <div>
-        <span class="p-1 badge badge-primary rounded-md">{group.Abbreviation}</span>
         <span class="p-1">{group.Name}</span>
       </div>
+        <span class="p-1 badge badge-primary rounded-md">{group.Description}</span>
       <button class="btn btn-xs btn-ghost p-0" type="submit">
         <IconContainer icon="mdi:close" class="" width={26} />
       </button>
@@ -94,15 +94,15 @@
       />
       <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
-    <LabeledFormInput key="common_abbreviation">
+    <LabeledFormInput key="common_description">
       <input
         class="w-full input input-bordered validator"
         type="text"
-        name="abbreviation"
-        bind:value={$form.abbreviation}
+        name="description"
+        bind:value={$form.description}
         required
       />
-      <span class="validator-hint">{m.org_abbreviationError()}</span>
+      <span class="validator-hint">&nbsp;</span>
     </LabeledFormInput>
     <input type="submit" class="btn btn-primary w-full sm:w-auto" value={m.common_save()} />
   </div>
