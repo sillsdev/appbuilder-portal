@@ -33,7 +33,7 @@ model Authors {
 model Groups {
   Id             Int              @id(map: "PK_Groups") @default(autoincrement())
   Name           String
-  Abbreviation   String
+  Description    String?
   OwnerId        Int
   Users          Users[]
   Owner          Organizations    @relation(fields: [OwnerId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Groups_Organizations_OwnerId")
