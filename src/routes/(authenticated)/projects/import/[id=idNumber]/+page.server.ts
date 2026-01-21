@@ -34,20 +34,6 @@ export const load = (async ({ locals, params }) => {
           Id: true,
           Name: true
         }
-      },
-      OrganizationProductDefinitions: {
-        select: {
-          ProductDefinition: {
-            select: {
-              ApplicationTypes: {
-                select: {
-                  Id: true,
-                  Description: true
-                }
-              }
-            }
-          }
-        }
       }
     }
   });

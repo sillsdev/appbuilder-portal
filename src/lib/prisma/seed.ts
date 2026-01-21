@@ -25,17 +25,6 @@ if (options.verbose) console.log(options);
 
 const prisma = new PrismaClient();
 async function main() {
-  type Role = [number, number];
-  const roles: Role[] = [
-    [1, 1],
-    [2, 2],
-    [3, 3],
-    [4, 4]
-  ];
-  for (const [Id, RoleName] of roles) {
-    await prisma.roles.upsert({ where: { Id }, update: {}, create: { Id, RoleName } });
-  }
-
   type ApplicationType = [number, string, string];
   const applicationTypes: ApplicationType[] = [
     [1, 'scriptureappbuilder', 'Scripture App Builder'],
@@ -272,7 +261,6 @@ async function main() {
   const productDefinitionData = [
     {
       Name: 'Android App to Google Play',
-      TypeId: 1,
       Description:
         'Build an Android App from a Scripture App Builder project and publish to a Google Play Store. The Organization Admin has to approve of the project and review the store preview. The Organization Admin has access to Google Play Console.',
       WorkflowId: 1,
@@ -281,7 +269,6 @@ async function main() {
     },
     {
       Name: 'Android App to Amazon S3 Bucket',
-      TypeId: 1,
       Description:
         'Build an Android App from a Scripture App Builder project and publish to an Amazon S3 Bucket',
       WorkflowId: 4,
@@ -289,7 +276,6 @@ async function main() {
     },
     {
       Name: 'Android App to Google Play (Low Admin)',
-      TypeId: 1,
       Description:
         'Build an Android App from a Scripture App Builder project and publish to a Google Play Store, but with less approval and oversight required. The Organization Admin has access to Google Play Console.',
       WorkflowId: 6,
@@ -298,7 +284,6 @@ async function main() {
     },
     {
       Name: 'Android App to Amazon S3 Bucket (No Admin)',
-      TypeId: 1,
       Description:
         'Build an Android App from a Scripture App Builder project and publish to an Amazon S3 Bucket, but with no admin required.',
       WorkflowId: 8,
@@ -306,7 +291,6 @@ async function main() {
     },
     {
       Name: 'Android App to Google Play (Owner Admin)',
-      TypeId: 1,
       Description:
         'Build an Android App from a Scripture App Builder project and publish to a Google Play Store, but with no approval and oversight required. The owner of the project has access to Google Play Console.',
       WorkflowId: 7,
