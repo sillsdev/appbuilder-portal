@@ -30,7 +30,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
       BuildEngineJobId: true,
       WorkflowInstance: {
         select: {
-          Id: true
+          ProductId: true
         }
       }
     }
@@ -45,7 +45,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
       BuildEngineBuildId: 0
     });
     job.updateProgress(20);
-    const params = await getWorkflowParameters(productData.WorkflowInstance.Id, 'build');
+    const params = await getWorkflowParameters(productData.WorkflowInstance.ProductId, 'build');
     job.updateProgress(30);
     const env = await addProductPropertiesToEnvironment(job.data.productId);
     job.updateProgress(40);

@@ -164,38 +164,32 @@ async function validateProductBase(
       Organization: {
         select: {
           // Store must be allowed by Organization
-          OrganizationStores: {
+          Stores: {
             where: {
-              StoreId: storeId,
+              Id: storeId,
               // The language, if specified, is allowed by the store
-              Store:
+              StoreType:
                 storeLanguageId !== undefined
                   ? {
-                      StoreType: {
-                        StoreLanguages: {
-                          some: {
-                            Id: storeLanguageId
-                          }
+                      StoreLanguages: {
+                        some: {
+                          Id: storeLanguageId
                         }
                       }
                     }
                   : undefined
             },
             select: {
-              Store: {
+              StoreType: {
                 select: {
-                  StoreType: {
+                  // Store type must match Workflow store type
+                  Id: true,
+                  StoreLanguages: {
+                    where: {
+                      Id: storeLanguageId
+                    },
                     select: {
-                      // Store type must match Workflow store type
-                      Id: true,
-                      StoreLanguages: {
-                        where: {
-                          Id: storeLanguageId
-                        },
-                        select: {
-                          Id: true
-                        }
-                      }
+                      Id: true
                     }
                   }
                 }
@@ -203,9 +197,9 @@ async function validateProductBase(
             }
           },
           // Product type must be allowed by Organization
-          OrganizationProductDefinitions: {
+          ProductDefinitions: {
             where: {
-              ProductDefinitionId: productDefinition?.Id
+              Id: productDefinition?.Id
             }
           }
         }
@@ -214,10 +208,10 @@ async function validateProductBase(
   });
 
   /** 3. The store is allowed by the organization */
-  const storeInOrg = (project?.Organization.OrganizationStores.length ?? 0) > 0;
+  const storeInOrg = (project?.Organization.Stores.length ?? 0) > 0;
 
   const prodDefStore = productDefinition?.Workflow.StoreTypeId;
-  const orgStore = project?.Organization.OrganizationStores[0]?.Store.StoreType.Id;
+  const orgStore = project?.Organization.Stores[0]?.StoreType.Id;
   /** 1. The store's type matches the Workflow's store type
    *
    * Note: if both are undefined, this would be `true`; however, under those circumstances,
@@ -225,13 +219,12 @@ async function validateProductBase(
    */
   const storeMatchFlowStore = prodDefStore === orgStore;
 
-  const storeLang =
-    project?.Organization.OrganizationStores.at(0)?.Store.StoreType.StoreLanguages.at(0);
+  const storeLang = project?.Organization.Stores.at(0)?.StoreType.StoreLanguages.at(0);
   /** 4. The language, if specified, is allowed by the store */
   const optionalLanguageAllowed =
     storeLanguageId === undefined || storeLang?.Id === storeLanguageId;
 
-  const numOrgProdDefs = project?.Organization.OrganizationProductDefinitions.length;
+  const numOrgProdDefs = project?.Organization.ProductDefinitions.length;
   /** 5. The product type is allowed by the organization */
   const productInOrg = (numOrgProdDefs ?? 0) > 0;
 

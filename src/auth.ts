@@ -65,7 +65,7 @@ const config: SvelteKitAuthConfig = {
       try {
         if (!profile || !profile.sub) return false;
         try {
-          user = await DatabaseWrites.utility.getUserIfExists(profile.sub);
+          user = await DatabaseWrites.users.byExternalId(profile.sub);
         } catch {
           // If the database is down, return the user to the homepage
           return '/';
@@ -79,7 +79,7 @@ const config: SvelteKitAuthConfig = {
             return '/invitations/organization-membership?t=' + currentInviteToken;
           // If there is a pending invitation, allow the login anyway and create the user account
           if (tokenStatus === TokenStatus.Valid) {
-            user = await DatabaseWrites.utility.createUser(profile);
+            user = await DatabaseWrites.users.create(profile);
             return true;
           }
         }
@@ -106,7 +106,7 @@ const config: SvelteKitAuthConfig = {
       try {
         if (!profile) return token;
         if (!profile.sub) throw new Error('No sub in profile');
-        const dbUser = await DatabaseWrites.utility.getUserIfExists(profile.sub);
+        const dbUser = await DatabaseWrites.users.byExternalId(profile.sub);
         if (!dbUser) throw new Error('User not found');
         token.userId = dbUser.Id;
         return token;
@@ -253,21 +253,21 @@ export class Security {
   }
 
   requireProjectReadAccess(
-    userGroups: { GroupId: number }[],
+    userGroups: { Id: number }[],
     project: { OwnerId: number; OrganizationId: number; GroupId: number } | null
   ) {
     this.requireAuthenticated();
     if (!project) {
       error(404, 'Project not found');
     }
-    if (!userGroups.find((ug) => ug.GroupId === project.GroupId)) {
+    if (!userGroups.find((ug) => ug.Id === project.GroupId)) {
       this.requireProjectWriteAccess(project);
     }
     return this;
   }
 
   requireProjectClaimable(
-    userGroups: { GroupId: number }[],
+    userGroups: { Id: number }[],
     project?: { OwnerId: number; OrganizationId: number; GroupId: number } | null,
     userId?: number
   ) {
@@ -278,7 +278,7 @@ export class Security {
     if ((userId ?? this.userId) === project.OwnerId) {
       error(400, 'Project owner cannot claim own project');
     }
-    if (!this.isSuperAdmin && !userGroups.some((ug) => ug.GroupId === project.GroupId)) {
+    if (!this.isSuperAdmin && !userGroups.some((ug) => ug.Id === project.GroupId)) {
       error(400, 'User must share a group with the project in order to claim it!');
     }
     return this.requireHasRole(
@@ -359,7 +359,11 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
           Id: security.userId
         },
         include: {
-          OrganizationMemberships: true
+          Organizations: {
+            select: {
+              Id: true
+            }
+          }
         }
       });
 
@@ -367,15 +371,12 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
         'auth.userId': security?.userId,
         'auth.user': user ? user.Email + ' - ' + user.Id : 'null',
         'auth.user.OrganizationMemberships':
-          user?.OrganizationMemberships.map((o) => o.OrganizationId).join(', ') ?? 'null',
+          user?.Organizations.map((o) => o.Id).join(', ') ?? 'null',
         'auth.user.roles': user ? JSON.stringify(security.roles) : 'null',
         'auth.user.IsLocked': user ? user.IsLocked + '' : 'null'
       });
 
-      if (
-        !user ||
-        (user.OrganizationMemberships.length === 0 && !event.cookies.get('inviteToken'))
-      ) {
+      if (!user || (user.Organizations.length === 0 && !event.cookies.get('inviteToken'))) {
         event.cookies.set('authjs.session-token', '', { path: '/' });
         return redirect(302, localizeHref('/login/no-organization'));
       }
@@ -391,7 +392,7 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
       event.locals.security = new Security(
         event,
         security.userId,
-        user.OrganizationMemberships.map((o) => o.OrganizationId),
+        user.Organizations.map((o) => o.Id),
         roleMap,
         !!userIdFromApiToken // used api token?
       );

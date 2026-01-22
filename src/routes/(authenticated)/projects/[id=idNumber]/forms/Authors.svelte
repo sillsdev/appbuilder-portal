@@ -14,7 +14,6 @@
     group: Prisma.GroupsGetPayload<{ select: { Name: true } }>;
     projectAuthors: Prisma.AuthorsGetPayload<{
       select: {
-        Id: true;
         User: {
           select: {
             Id: true;
@@ -81,7 +80,7 @@
                     update({ reset: false });
                   }}
               >
-                <input type="hidden" name="id" value={author.Id} />
+                <input type="hidden" name="id" value={author.User.Id} />
                 <button type="submit" class="cursor-pointer">
                   <IconContainer icon="mdi:close" width="24" />
                 </button>

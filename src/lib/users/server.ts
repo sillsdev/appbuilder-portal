@@ -12,9 +12,9 @@ import { RoleId } from '$lib/prisma';
 export function adminOrgs(subjectId: number, userId: number, isSuper: boolean, orgId?: number) {
   return {
     Id: orgId,
-    OrganizationMemberships: {
+    Users: {
       some: {
-        UserId: subjectId
+        Id: subjectId
       }
     },
     UserRoles: isSuper
@@ -25,5 +25,5 @@ export function adminOrgs(subjectId: number, userId: number, isSuper: boolean, o
             RoleId: RoleId.OrgAdmin
           }
         }
-  } as Prisma.OrganizationsWhereInput;
+  } satisfies Prisma.OrganizationsWhereInput;
 }

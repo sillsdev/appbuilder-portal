@@ -44,9 +44,9 @@ export const load = (async ({ params, locals }) => {
     ),
     owners: await DatabaseReads.users.findMany({
       where: {
-        OrganizationMemberships: {
+        Organizations: {
           some: {
-            OrganizationId: project.OrganizationId
+            Id: project.OrganizationId
           }
         }
       },

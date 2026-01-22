@@ -19,10 +19,10 @@ export const load = (async ({ params, locals }) => {
   const subjectId = parseInt(params.id);
   const user = await DatabaseReads.users.findUnique({
     where: { Id: subjectId },
-    include: { OrganizationMemberships: { select: { OrganizationId: true } } }
+    include: { Organizations: { select: { Id: true } } }
   });
   if (!user) return error(404);
-  locals.security.requireAdminOfOrgIn(user.OrganizationMemberships.map((o) => o.OrganizationId));
+  locals.security.requireAdminOfOrgIn(user.Organizations.map((o) => o.Id));
 
   return {
     rolesByOrg: await DatabaseReads.organizations.findMany({
@@ -46,12 +46,10 @@ export const actions = {
   async default(event) {
     const user = await DatabaseReads.users.findUnique({
       where: { Id: parseInt(event.params.id) },
-      include: { OrganizationMemberships: { select: { OrganizationId: true } } }
+      include: { Organizations: { select: { Id: true } } }
     });
     if (!user) return error(404);
-    event.locals.security.requireAdminOfOrgIn(
-      user.OrganizationMemberships.map((o) => o.OrganizationId)
-    );
+    event.locals.security.requireAdminOfOrgIn(user.Organizations.map((o) => o.Id));
 
     const form = await superValidate(event, valibot(toggleRoleSchema));
 
@@ -74,9 +72,9 @@ export const actions = {
       return error(403);
     }
 
-    const ok = await DatabaseWrites.userRoles.toggleForOrg(
-      form.data.orgId,
+    const ok = await DatabaseWrites.users.toggleRole(
       form.data.userId,
+      form.data.orgId,
       form.data.roleId,
       form.data.enabled
     );

@@ -28,11 +28,9 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
     await DatabaseWrites.stores.create({
-      data: {
-        Name: form.data.name,
-        Description: form.data.description,
-        StoreTypeId: form.data.storeType
-      }
+      Name: form.data.name,
+      Description: form.data.description,
+      StoreTypeId: form.data.storeType
     });
     return { ok: true, form };
   }

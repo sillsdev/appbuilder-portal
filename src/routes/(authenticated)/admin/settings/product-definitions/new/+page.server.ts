@@ -33,14 +33,12 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
     await DatabaseWrites.productDefinitions.create({
-      data: {
-        Name: form.data.name,
-        WorkflowId: form.data.workflow,
-        RebuildWorkflowId: form.data.rebuildWorkflow,
-        RepublishWorkflowId: form.data.republishWorkflow,
-        Description: form.data.description,
-        Properties: form.data.properties
-      }
+      Name: form.data.name,
+      WorkflowId: form.data.workflow,
+      RebuildWorkflowId: form.data.rebuildWorkflow,
+      RepublishWorkflowId: form.data.republishWorkflow,
+      Description: form.data.description,
+      Properties: form.data.properties
     });
     return { ok: true, form };
   }

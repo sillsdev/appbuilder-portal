@@ -17,19 +17,14 @@ const toggleProductSchema = v.object({
 export const load = (async (event) => {
   event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
   const { organization } = await event.parent();
-  const setOrgProductDefs = new Set(
-    (
-      await DatabaseReads.organizationProductDefinitions.findMany({
-        where: {
-          OrganizationId: organization.Id
-        }
-      })
-    ).map((p) => p.ProductDefinitionId)
-  );
   return {
-    allProductDefs: (await DatabaseReads.productDefinitions.findMany()).map((pd) => ({
+    allProductDefs: (
+      await DatabaseReads.productDefinitions.findMany({
+        include: { Organizations: { where: { Id: organization.Id }, select: { Id: true } } }
+      })
+    ).map((pd) => ({
       ...pd,
-      enabled: setOrgProductDefs.has(pd.Id)
+      enabled: !!pd.Organizations.length
     }))
   };
 }) satisfies PageServerLoad;
@@ -39,13 +34,8 @@ export const actions = {
     event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
     const form = await superValidate(event.request, valibot(togglePublicSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    await DatabaseWrites.organizations.update({
-      where: {
-        Id: parseInt(event.params.id)
-      },
-      data: {
-        PublicByDefault: form.data.publicByDefault // seed for Project.IsPublic when creating a new project
-      }
+    await DatabaseWrites.organizations.update(parseInt(event.params.id), {
+      PublicByDefault: form.data.publicByDefault // seed for Project.IsPublic when creating a new project
     });
     return { form, ok: true };
   },
@@ -53,9 +43,9 @@ export const actions = {
     event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
     const form = await superValidate(event.request, valibot(toggleProductSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    await DatabaseWrites.organizationProductDefinitions.toggleForOrg(
-      parseInt(event.params.id),
+    await DatabaseWrites.productDefinitions.toggleForOrg(
       form.data.prodDefId,
+      parseInt(event.params.id),
       form.data.enabled
     );
 

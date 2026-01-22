@@ -35,7 +35,7 @@ export async function acceptOrganizationInvite(userId: number, inviteToken: stri
     invite.InvitedById === userId
   )
     return { error: 'failed' };
-  if (await DatabaseWrites.organizationMemberships.acceptOrganizationInvite(userId, inviteToken))
+  if (await DatabaseWrites.users.acceptInvite(userId, inviteToken))
     return {
       joinedOrganization: {
         logoUrl: invite.Organization.LogoUrl,

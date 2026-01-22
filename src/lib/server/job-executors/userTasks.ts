@@ -133,10 +133,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     job.updateProgress(90);
   } else {
     job.updateProgress(25);
-    const allUsers = await DatabaseWrites.userRoles.allUsersByRole(
-      projectId,
-      job.data.operation.roles
-    );
+    const allUsers = await DatabaseWrites.users.byRole(projectId, job.data.operation.roles);
     job.updateProgress(30);
     if (job.data.operation.type !== BullMQ.UserTasks.OpType.Create) {
       // Clear existing UserTasks

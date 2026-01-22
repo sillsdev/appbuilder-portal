@@ -66,7 +66,7 @@
             type="checkbox"
             name="enabled"
             class="toggle toggle-accent"
-            checked={!!group._count.GroupMemberships}
+            checked={!!group._count.Users}
             onchange={(e) => {
               (e.currentTarget.parentElement as HTMLFormElement).requestSubmit();
             }}

@@ -18,11 +18,7 @@ const bulkProductActionSchema = v.object({
   operation: v.nullable(v.pipe(v.enum(ProductActionType), v.excludes(ProductActionType.Cancel)))
 });
 
-function whereStatements(
-  paramFilter: string,
-  user: Security,
-  orgIds?: number[]
-): Prisma.ProjectsWhereInput {
+function whereStatements(paramFilter: string, user: Security, orgIds?: number[]) {
   if (user.isSuperAdmin) {
     return filter(paramFilter, orgIds, user.userId);
   } else {
@@ -40,20 +36,20 @@ function whereStatements(
         },
         {
           Group: {
-            GroupMemberships: {
+            Users: {
               some: {
-                UserId: user.userId
+                Id: user.userId
               }
             }
           }
         }
       ],
       ...filter(paramFilter, orgIds, user.userId)
-    };
+    } satisfies Prisma.ProjectsWhereInput;
   }
 }
 
-function filter(filter: string, orgIds?: number[], userId?: number): Prisma.ProjectsWhereInput {
+const filter = ((filter: string, orgIds?: number[], userId?: number) => {
   const selector = filter as 'organization' | 'active' | 'archived' | 'all' | 'own';
   switch (selector) {
     case 'organization':
@@ -98,7 +94,7 @@ function filter(filter: string, orgIds?: number[], userId?: number): Prisma.Proj
         ]
       };
   }
-}
+}) satisfies (filter: string, orgIds?: number[], userId?: number) => Prisma.ProjectsWhereInput;
 
 export const load = (async ({ params, locals }) => {
   locals.security.requireAuthenticated();
@@ -157,19 +153,17 @@ export const load = (async ({ params, locals }) => {
     allowActions: params.filter !== 'archived',
     allowReactivate: params.filter === 'all' || params.filter === 'archived',
     userGroups: (
-      await DatabaseReads.groupMemberships.findMany({
+      await DatabaseReads.groups.findMany({
         where: {
-          Group: orgIds
+          OwnerId: orgIds
             ? {
-                OwnerId: {
-                  in: orgIds
-                }
+                in: orgIds
               }
             : undefined,
-          UserId: locals.security.userId
+          Users: { some: { Id: locals.security.userId } }
         }
       })
-    ).map((g) => g.GroupId),
+    ).map((g) => g.Id),
     jobsAvailable: QueueConnected()
   };
 }) satisfies PageServerLoad;
@@ -262,16 +256,14 @@ export const actions: Actions = {
       }
     });
 
-    const groups = await DatabaseReads.groupMemberships.findMany({
+    const groups = await DatabaseReads.groups.findMany({
       where: {
-        Group: orgIds
+        OwnerId: orgIds
           ? {
-              OwnerId: {
-                in: orgIds
-              }
+              in: orgIds
             }
           : undefined,
-        UserId: locals.security.userId
+        Users: { some: { Id: locals.security.userId } }
       }
     });
 
@@ -287,7 +279,7 @@ export const actions: Actions = {
           form.data.operation,
           project,
           locals.security,
-          groups.map((g) => g.GroupId)
+          groups.map((g) => g.Id)
         );
       })
     );

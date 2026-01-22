@@ -28,7 +28,7 @@ import type {
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
-import { allUsersByRole } from '../database/UserRoles';
+import { byRole as allUsersByRole } from '../database/Users';
 import { WorkflowStateMachine } from './state-machine';
 
 /**
@@ -164,7 +164,6 @@ export class Workflow {
         ProductId: productId
       },
       select: {
-        Id: true,
         State: true,
         Context: true,
         WorkflowDefinition: {
@@ -196,7 +195,6 @@ export class Workflow {
     }
     const context = JSON.parse(instance.Context) as WorkflowInstanceContext;
     return {
-      instanceId: instance.Id,
       definitionId: instance.WorkflowDefinition.Id,
       state: instance.State,
       context,
@@ -405,7 +403,7 @@ export class Workflow {
     productId: string,
     input: WorkflowInput,
     users: Record<string, Set<RoleId>>
-  ): Prisma.ProductTransitionsCreateManyInput {
+  ) {
     const t = Workflow.filterTransitions(state.on, input)[0][0];
 
     return {
@@ -425,7 +423,7 @@ export class Workflow {
       DestinationState: Workflow.targetStringFromEvent(t),
       Command: t.meta.type !== ActionType.Auto ? t.eventType : null,
       WorkflowType: input.workflowType
-    };
+    } satisfies Prisma.ProductTransitionsCreateManyInput;
   }
 
   public static async transitionEntriesFromState(

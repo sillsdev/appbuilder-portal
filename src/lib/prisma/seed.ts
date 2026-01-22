@@ -440,9 +440,14 @@ async function main() {
       { OrganizationId: 3, ProductDefinitionId: 1 }
     ];
 
-    await prisma.organizationProductDefinitions.createMany({
-      data: organizationProductDefinitionsData
-    });
+    await Promise.all(
+      organizationProductDefinitionsData.map((opd) =>
+        prisma.productDefinitions.update({
+          where: { Id: opd.ProductDefinitionId },
+          data: { Organizations: { connect: { Id: opd.OrganizationId } } }
+        })
+      )
+    );
 
     const organizationStoresData = [
       { OrganizationId: 1, StoreId: 1 },
@@ -451,9 +456,14 @@ async function main() {
       { OrganizationId: 4, StoreId: 3 }
     ];
 
-    await prisma.organizationStores.createMany({
-      data: organizationStoresData
-    });
+    await Promise.all(
+      organizationStoresData.map((osd) =>
+        prisma.stores.update({
+          where: { Id: osd.StoreId },
+          data: { Organizations: { connect: { Id: osd.OrganizationId } } }
+        })
+      )
+    );
 
     const groupsData = [
       { Name: 'Language Software Development', Abbreviation: 'LSDEV', OwnerId: 1 },
@@ -492,9 +502,14 @@ async function main() {
       { UserId: 8, OrganizationId: 1 } // aejones4gm@gmail.com - SIL
     ];
 
-    await prisma.organizationMemberships.createMany({
-      data: organizationMembershipsData
-    });
+    await Promise.all(
+      organizationMembershipsData.map((omd) =>
+        prisma.users.update({
+          where: { Id: omd.UserId },
+          data: { Organizations: { connect: { Id: omd.OrganizationId } } }
+        })
+      )
+    );
 
     const groupMembershipsData = [
       { UserId: 1, GroupId: 1 },
@@ -511,9 +526,14 @@ async function main() {
       { UserId: 8, GroupId: 1 }
     ];
 
-    await prisma.groupMemberships.createMany({
-      data: groupMembershipsData
-    });
+    await Promise.all(
+      groupMembershipsData.map((gmd) =>
+        prisma.users.update({
+          where: { Id: gmd.UserId },
+          data: { Groups: { connect: { Id: gmd.GroupId } } }
+        })
+      )
+    );
 
     const userRolesData = [
       { UserId: 1, RoleId: 1, OrganizationId: 1 }, // chris_hubbard@sil.org - SuperAdmin - SIL

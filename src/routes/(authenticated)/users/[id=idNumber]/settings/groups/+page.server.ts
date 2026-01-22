@@ -17,10 +17,10 @@ export const load = (async ({ params, locals }) => {
   const subjectId = parseInt(params.id);
   const user = await DatabaseReads.users.findUnique({
     where: { Id: subjectId },
-    include: { OrganizationMemberships: { select: { OrganizationId: true } } }
+    include: { Organizations: { select: { Id: true } } }
   });
   if (!user) return error(404);
-  locals.security.requireAdminOfOrgIn(user.OrganizationMemberships.map((o) => o.OrganizationId));
+  locals.security.requireAdminOfOrgIn(user.Organizations.map((o) => o.Id));
 
   return {
     groupsByOrg: await DatabaseReads.organizations.findMany({
@@ -33,9 +33,9 @@ export const load = (async ({ params, locals }) => {
             Name: true,
             _count: {
               select: {
-                GroupMemberships: {
+                Users: {
                   where: {
-                    UserId: subjectId
+                    Id: subjectId
                   }
                 }
               }
@@ -49,20 +49,13 @@ export const load = (async ({ params, locals }) => {
 
 export const actions = {
   async default(event) {
-    // ISSUE: #1102 composite keys? I really want to change all many-to-many relationships in db to have composite primary keys
-    // In this case that would be GroupMemberships PRIMARY KEY(GroupId, UserId)
-    // This way they can be added and removed in constant time and in a single command
-    // https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations
-
     const subjectId = parseInt(event.params.id);
     const user = await DatabaseReads.users.findUnique({
       where: { Id: subjectId },
-      include: { OrganizationMemberships: { select: { OrganizationId: true } } }
+      include: { Organizations: { select: { Id: true } } }
     });
     if (!user) return error(404);
-    event.locals.security.requireAdminOfOrgIn(
-      user.OrganizationMemberships.map((o) => o.OrganizationId)
-    );
+    event.locals.security.requireAdminOfOrgIn(user.Organizations.map((o) => o.Id));
 
     const form = await superValidate(event, valibot(toggleGroupSchema));
 
@@ -87,9 +80,9 @@ export const actions = {
       return error(403);
     }
 
-    const ok = await DatabaseWrites.groupMemberships.toggleForOrg(
-      form.data.orgId,
+    const ok = await DatabaseWrites.users.toggleGroup(
       subjectId,
+      form.data.orgId,
       form.data.groupId,
       form.data.enabled
     );

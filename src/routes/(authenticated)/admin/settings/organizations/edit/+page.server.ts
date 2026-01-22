@@ -48,20 +48,15 @@ export const actions = {
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
-    await DatabaseWrites.organizations.update({
-      where: {
-        Id: form.data.id
-      },
-      data: {
-        Name: form.data.name,
-        BuildEngineApiAccessToken: form.data.buildEngineApiAccessToken,
-        BuildEngineUrl: form.data.buildEngineUrl,
-        LogoUrl: form.data.logoUrl,
-        ContactEmail: form.data.contact,
-        PublicByDefault: form.data.publicByDefault,
-        UseDefaultBuildEngine: form.data.useDefaultBuildEngine,
-        WebsiteUrl: form.data.websiteUrl
-      }
+    await DatabaseWrites.organizations.update(form.data.id, {
+      Name: form.data.name,
+      BuildEngineApiAccessToken: form.data.buildEngineApiAccessToken,
+      BuildEngineUrl: form.data.buildEngineUrl,
+      LogoUrl: form.data.logoUrl,
+      ContactEmail: form.data.contact,
+      PublicByDefault: form.data.publicByDefault,
+      UseDefaultBuildEngine: form.data.useDefaultBuildEngine,
+      WebsiteUrl: form.data.websiteUrl
     });
 
     return { ok: true, form };

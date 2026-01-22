@@ -7,12 +7,12 @@ export const load = (async ({ params, locals }) => {
   const userId = Number(params.id);
   if (locals.security.userId !== userId) {
     locals.security.requireAdminOfOrgIn(
-      await DatabaseReads.organizationMemberships
+      await DatabaseReads.organizations
         .findMany({
-          where: { UserId: userId },
-          select: { OrganizationId: true }
+          where: { Users: { some: { Id: userId } } },
+          select: { Id: true }
         })
-        .then((orgs) => orgs.map((o) => o.OrganizationId))
+        .then((orgs) => orgs.map((o) => o.Id))
     );
   }
   const subject = await DatabaseReads.users.findUniqueOrThrow({

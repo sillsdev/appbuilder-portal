@@ -74,7 +74,7 @@ async function updateProjectDateActive(productId: string, projectId: number) {
         select: {
           WorkflowInstance: {
             select: {
-              Id: true
+              ProductId: true
             }
           },
           DateUpdated: true
