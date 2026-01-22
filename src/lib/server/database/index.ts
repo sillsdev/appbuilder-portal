@@ -2,7 +2,6 @@ import type { PrismaClient } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
 import * as authors from './Authors';
-import * as groupMemberships from './GroupMemberships';
 import * as groups from './Groups';
 import * as organizationProductDefinitions from './OrganizationProductDefinitions';
 import * as organizationStores from './OrganizationStores';
@@ -12,7 +11,6 @@ import * as products from './Products';
 import * as projects from './Projects';
 import type { WRITE_METHODS } from './ReadonlyPrisma';
 import * as reviewers from './Reviewers';
-import * as userRoles from './UserRoles';
 import * as userTasks from './UserTasks';
 import * as users from './Users';
 import * as workflowInstances from './WorkflowInstances';
@@ -47,12 +45,10 @@ const handlers = {
   projects,
   groups,
   userTasks,
-  groupMemberships,
   organizationStores,
   organizationProductDefinitions,
   organizations,
   productTransitions,
-  userRoles,
   users,
   workflowInstances
 };

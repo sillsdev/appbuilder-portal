@@ -80,9 +80,9 @@ export const actions = {
       return error(403);
     }
 
-    const ok = await DatabaseWrites.groupMemberships.toggleForOrg(
-      form.data.orgId,
+    const ok = await DatabaseWrites.users.toggleGroup(
       subjectId,
+      form.data.orgId,
       form.data.groupId,
       form.data.enabled
     );

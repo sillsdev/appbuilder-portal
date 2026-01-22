@@ -28,7 +28,7 @@ import type {
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
-import { allUsersByRole } from '../database/UserRoles';
+import { byRole as allUsersByRole } from '../database/Users';
 import { WorkflowStateMachine } from './state-machine';
 
 /**

@@ -72,9 +72,9 @@ export const actions = {
       return error(403);
     }
 
-    const ok = await DatabaseWrites.userRoles.toggleForOrg(
-      form.data.orgId,
+    const ok = await DatabaseWrites.users.toggleRole(
       form.data.userId,
+      form.data.orgId,
       form.data.roleId,
       form.data.enabled
     );
