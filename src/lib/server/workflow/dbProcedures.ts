@@ -32,7 +32,7 @@ export async function markResolved(productId: string) {
       ProductPublications: {
         select: {
           ProductBuildId: true,
-          ReleaseId: true
+          BuildEngineReleaseId: true
         },
         orderBy: {
           DateUpdated: 'desc'
@@ -44,7 +44,7 @@ export async function markResolved(productId: string) {
   if (product?.ProductPublications.length) {
     const release = product.ProductPublications[0];
     await DatabaseWrites.productPublications.update({
-      where: { ProductBuildId_ReleaseId: release },
+      where: { ProductBuildId_BuildEngineReleaseId: release },
       data: {
         DateResolved: new Date()
       }

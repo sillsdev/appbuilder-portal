@@ -213,7 +213,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
       flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
       const packageFile = await DatabaseReads.productPublications.findUnique({
         where: {
-          ProductBuildId_ReleaseId: {
+          ProductBuildId_BuildEngineReleaseId: {
             ProductBuildId: job.data.productBuildId,
             ReleaseId: job.data.release.id
           }
@@ -263,7 +263,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
   job.updateProgress(75);
   const publication = await DatabaseWrites.productPublications.update({
     where: {
-      ProductBuildId_ReleaseId: {
+      ProductBuildId_BuildEngineReleaseId: {
         ProductBuildId: job.data.productBuildId,
         ReleaseId: job.data.release.id
       }

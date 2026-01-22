@@ -100,7 +100,6 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           },
           Authors: {
             select: {
-              Id: true,
               User: {
                 select: {
                   Id: true,
