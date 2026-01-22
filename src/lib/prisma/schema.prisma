@@ -146,7 +146,7 @@ model ProductPublications {
   ProductBuild         ProductBuilds @relation(fields: [ProductBuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_ProductBuilds_ProductBuildId")
   Product              Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_Products_ProductId")
 
-  @@id([ProductBuildId, BuildEngineReleaseId], map: "PK_ProductPublications_ProductBuildId_ReleaseId")
+  @@id([ProductBuildId, BuildEngineReleaseId], map: "PK_ProductPublications_ProductBuildId_BuildEngineReleaseId")
   @@index([Package], map: "IX_ProductPublications_Package")
   @@index([ProductId], map: "IX_ProductPublications_ProductId")
 }
