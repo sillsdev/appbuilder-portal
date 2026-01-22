@@ -9,7 +9,8 @@ export const load = (async (event) => {
     include: {
       Workflow: true,
       RebuildWorkflow: true,
-      RepublishWorkflow: true
+      RepublishWorkflow: true,
+      ApplicationTypes: true
     }
   });
 

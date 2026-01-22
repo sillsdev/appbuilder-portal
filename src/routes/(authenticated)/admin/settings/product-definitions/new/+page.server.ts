@@ -34,7 +34,7 @@ export const actions = {
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
-    await DatabaseWrites.productDefinitions.create({
+    const pd = await DatabaseWrites.productDefinitions.create({
       Name: form.data.name,
       WorkflowId: form.data.workflow,
       RebuildWorkflowId: form.data.rebuildWorkflow,
