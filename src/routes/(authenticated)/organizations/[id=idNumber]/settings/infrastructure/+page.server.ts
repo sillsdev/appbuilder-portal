@@ -23,15 +23,10 @@ export const actions = {
     event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
     const form = await superValidate(event.request, valibot(infrastructureSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    await DatabaseWrites.organizations.update({
-      where: {
-        Id: parseInt(event.params.id)
-      },
-      data: {
-        BuildEngineApiAccessToken: form.data.buildEngineApiAccessToken,
-        BuildEngineUrl: form.data.buildEngineUrl,
-        UseDefaultBuildEngine: form.data.useDefaultBuildEngine
-      }
+    await DatabaseWrites.organizations.update(parseInt(event.params.id), {
+      BuildEngineApiAccessToken: form.data.buildEngineApiAccessToken,
+      BuildEngineUrl: form.data.buildEngineUrl,
+      UseDefaultBuildEngine: form.data.useDefaultBuildEngine
     });
     return { form, ok: true };
   }

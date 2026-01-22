@@ -51,7 +51,7 @@ export const actions = {
     if (!QueueConnected()) return error(503);
 
     const { email, organizationId, roles, groups } = form.data;
-    const inviteToken = await DatabaseWrites.organizationMemberships.createOrganizationInvite(
+    const inviteToken = await DatabaseWrites.organizations.createInvite(
       email,
       organizationId,
       locals.security.userId,

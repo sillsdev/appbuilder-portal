@@ -201,7 +201,7 @@ if (!building && typeof process.env.ADD_USER !== 'undefined' && process.env.ADD_
       'Missing organizations or users. Please bootstrap the database first using ./run bootstrap.'
     );
   }
-  const inviteToken = await DatabaseWrites.organizationMemberships.createOrganizationInvite(
+  const inviteToken = await DatabaseWrites.organizations.createInvite(
     '',
     organizationId?.Id,
     invitedBy.Id,

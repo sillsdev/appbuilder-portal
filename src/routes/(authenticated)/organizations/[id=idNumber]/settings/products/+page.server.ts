@@ -34,13 +34,8 @@ export const actions = {
     event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
     const form = await superValidate(event.request, valibot(togglePublicSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    await DatabaseWrites.organizations.update({
-      where: {
-        Id: parseInt(event.params.id)
-      },
-      data: {
-        PublicByDefault: form.data.publicByDefault // seed for Project.IsPublic when creating a new project
-      }
+    await DatabaseWrites.organizations.update(parseInt(event.params.id), {
+      PublicByDefault: form.data.publicByDefault // seed for Project.IsPublic when creating a new project
     });
     return { form, ok: true };
   },

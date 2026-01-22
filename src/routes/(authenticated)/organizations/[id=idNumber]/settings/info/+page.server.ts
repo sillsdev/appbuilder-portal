@@ -23,15 +23,10 @@ export const actions = {
     event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
     const form = await superValidate(event.request, valibot(infoSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    await DatabaseWrites.organizations.update({
-      where: {
-        Id: parseInt(event.params.id)
-      },
-      data: {
-        Name: form.data.name,
-        LogoUrl: form.data.logoUrl,
-        ContactEmail: form.data.contact
-      }
+    await DatabaseWrites.organizations.update(parseInt(event.params.id), {
+      Name: form.data.name,
+      LogoUrl: form.data.logoUrl,
+      ContactEmail: form.data.contact
     });
     return { form, ok: true };
   }

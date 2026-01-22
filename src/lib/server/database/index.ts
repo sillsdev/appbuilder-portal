@@ -4,9 +4,9 @@ import { Prisma } from '@prisma/client';
 import * as authors from './Authors';
 import * as groupMemberships from './GroupMemberships';
 import * as groups from './Groups';
-import * as organizationMemberships from './OrganizationMemberships';
 import * as organizationProductDefinitions from './OrganizationProductDefinitions';
 import * as organizationStores from './OrganizationStores';
+import * as organizations from './Organizations';
 import * as productTransitions from './ProductTransitions';
 import * as products from './Products';
 import * as projects from './Projects';
@@ -50,7 +50,7 @@ const handlers = {
   groupMemberships,
   organizationStores,
   organizationProductDefinitions,
-  organizationMemberships,
+  organizations,
   productTransitions,
   userRoles,
   users,

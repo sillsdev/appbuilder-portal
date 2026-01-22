@@ -20,16 +20,14 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
     await DatabaseWrites.organizations.create({
-      data: {
-        Name: form.data.name,
-        BuildEngineApiAccessToken: form.data.buildEngineApiAccessToken,
-        BuildEngineUrl: form.data.buildEngineUrl,
-        LogoUrl: form.data.logoUrl,
-        ContactEmail: form.data.contact,
-        PublicByDefault: form.data.publicByDefault,
-        UseDefaultBuildEngine: form.data.useDefaultBuildEngine,
-        WebsiteUrl: form.data.websiteUrl
-      }
+      Name: form.data.name,
+      BuildEngineApiAccessToken: form.data.buildEngineApiAccessToken,
+      BuildEngineUrl: form.data.buildEngineUrl,
+      LogoUrl: form.data.logoUrl,
+      ContactEmail: form.data.contact,
+      PublicByDefault: form.data.publicByDefault,
+      UseDefaultBuildEngine: form.data.useDefaultBuildEngine,
+      WebsiteUrl: form.data.websiteUrl
     });
     return { ok: true, form };
   }
