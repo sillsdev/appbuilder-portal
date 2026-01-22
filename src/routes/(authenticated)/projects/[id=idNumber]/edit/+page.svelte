@@ -84,7 +84,7 @@
         </LabeledFormInput>
       </div>
       <div class="row">
-        <LabeledFormInput key="project_description" class="w-full max-w-2xl">
+        <LabeledFormInput key="common_description" class="w-full max-w-2xl">
           <textarea
             name="description"
             class="textarea textarea-bordered h-48 w-full"

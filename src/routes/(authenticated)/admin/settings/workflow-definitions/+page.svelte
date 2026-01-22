@@ -29,7 +29,7 @@
       title={wd.Name}
       fields={[
         {
-          key: 'flowDefs_description',
+          key: 'common_description',
           value: wd.Description
         },
         {

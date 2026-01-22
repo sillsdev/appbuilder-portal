@@ -38,7 +38,7 @@
     />
     <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
-  <LabeledFormInput key="storeTypes_description">
+  <LabeledFormInput key="common_description">
     <input
       type="text"
       name="description"

@@ -19,9 +19,10 @@
     store: Store;
     getTitle: (store: Store) => string;
     extra?: Snippet<[Store]>;
+    showDescription?: boolean;
   }
 
-  let { editable, onEdit, store, getTitle, extra }: Props = $props();
+  let { editable, onEdit, store, getTitle, extra, showDescription }: Props = $props();
 
   const missingGPTitle = $derived(
     store.StoreTypeId === StoreType.GooglePlay && editable && !store.GooglePlayTitle
@@ -39,7 +40,10 @@
   {onEdit}
   title={getTitle(store)}
   fields={[
-    { key: 'projectTable_owner' as ValidI13nKey, value: store.Owner?.Name ?? m.appName() },
+    { key: 'projectTable_owner', value: store.Owner?.Name ?? m.appName() },
+    ...(showDescription
+      ? [{ key: 'common_description' as ValidI13nKey, value: store.Description }]
+      : []),
     { key: 'stores_publisherId', value: store.BuildEnginePublisherId },
     { key: 'common_type', value: store.StoreType.Description },
     ...(displayStoreGPTitle(store) || missingGPTitle

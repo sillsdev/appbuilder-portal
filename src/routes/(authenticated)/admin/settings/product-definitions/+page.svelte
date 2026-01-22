@@ -49,7 +49,7 @@
           value: pD.RepublishWorkflow?.Name
         },
         {
-          key: 'prodDefs_description',
+          key: 'common_description',
           value: pD.Description
         }
       ]}
