@@ -54,18 +54,13 @@ export const actions = {
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
-    await DatabaseWrites.productDefinitions.update({
-      where: {
-        Id: form.data.id
-      },
-      data: {
-        Name: form.data.name,
-        WorkflowId: form.data.workflow,
-        RebuildWorkflowId: form.data.rebuildWorkflow,
-        RepublishWorkflowId: form.data.republishWorkflow,
-        Description: form.data.description,
-        Properties: form.data.properties
-      }
+    await DatabaseWrites.productDefinitions.update(form.data.id, {
+      Name: form.data.name,
+      WorkflowId: form.data.workflow,
+      RebuildWorkflowId: form.data.rebuildWorkflow,
+      RepublishWorkflowId: form.data.republishWorkflow,
+      Description: form.data.description,
+      Properties: form.data.properties
     });
     return { ok: true, form };
   }

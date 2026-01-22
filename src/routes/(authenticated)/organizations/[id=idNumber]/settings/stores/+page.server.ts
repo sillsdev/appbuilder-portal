@@ -30,9 +30,9 @@ export const actions = {
     event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
     const form = await superValidate(event.request, valibot(toggleStoreSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    await DatabaseWrites.organizationStores.toggleForOrg(
-      parseInt(event.params.id),
+    await DatabaseWrites.stores.toggleForOrg(
       form.data.storeId,
+      parseInt(event.params.id),
       form.data.enabled
     );
     return { ok: true, form };

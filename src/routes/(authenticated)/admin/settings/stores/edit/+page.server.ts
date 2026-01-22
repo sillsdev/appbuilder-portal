@@ -45,18 +45,13 @@ export const actions = {
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
-    await DatabaseWrites.stores.update({
-      where: {
-        Id: form.data.id
-      },
-      data: {
-        // Don't write name to database here.
-        // The publishing process requires the name to stay the same.
-        // Changing the name of the store will require a more involved UI.
-        // See #1383 and #1378
-        StoreTypeId: form.data.storeType,
-        Description: form.data.description
-      }
+    await DatabaseWrites.stores.update(form.data.id, {
+      // Don't write name to database here.
+      // The publishing process requires the name to stay the same.
+      // Changing the name of the store will require a more involved UI.
+      // See #1383 and #1378
+      StoreTypeId: form.data.storeType,
+      Description: form.data.description
     });
     return { ok: true, form };
   }
