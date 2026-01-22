@@ -65,7 +65,7 @@ const config: SvelteKitAuthConfig = {
       try {
         if (!profile || !profile.sub) return false;
         try {
-          user = await DatabaseWrites.utility.getUserIfExists(profile.sub);
+          user = await DatabaseWrites.users.byExternalId(profile.sub);
         } catch {
           // If the database is down, return the user to the homepage
           return '/';
@@ -79,7 +79,7 @@ const config: SvelteKitAuthConfig = {
             return '/invitations/organization-membership?t=' + currentInviteToken;
           // If there is a pending invitation, allow the login anyway and create the user account
           if (tokenStatus === TokenStatus.Valid) {
-            user = await DatabaseWrites.utility.createUser(profile);
+            user = await DatabaseWrites.users.create(profile);
             return true;
           }
         }
@@ -106,7 +106,7 @@ const config: SvelteKitAuthConfig = {
       try {
         if (!profile) return token;
         if (!profile.sub) throw new Error('No sub in profile');
-        const dbUser = await DatabaseWrites.utility.getUserIfExists(profile.sub);
+        const dbUser = await DatabaseWrites.users.byExternalId(profile.sub);
         if (!dbUser) throw new Error('User not found');
         token.userId = dbUser.Id;
         return token;

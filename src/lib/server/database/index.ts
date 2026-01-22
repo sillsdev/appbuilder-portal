@@ -14,9 +14,9 @@ import type { WRITE_METHODS } from './ReadonlyPrisma';
 import * as reviewers from './Reviewers';
 import * as userRoles from './UserRoles';
 import * as userTasks from './UserTasks';
+import * as users from './Users';
 import * as workflowInstances from './WorkflowInstances';
 import prisma from './prisma';
-import * as utility from './utility';
 
 export * from './prisma';
 
@@ -53,7 +53,7 @@ const handlers = {
   organizationMemberships,
   productTransitions,
   userRoles,
-  utility,
+  users,
   workflowInstances
 };
 // @ts-expect-error this is in fact immediately populated

@@ -183,13 +183,8 @@ export const actions: Actions = {
         })
       ).Organizations.map(({ Id }) => Id)
     );
-    await DatabaseWrites.users.update({
-      where: {
-        Id: form.data.user
-      },
-      data: {
-        IsLocked: !form.data.active
-      }
+    await DatabaseWrites.users.update(form.data.user, {
+      IsLocked: !form.data.active
     });
     return { form, ok: true };
   },

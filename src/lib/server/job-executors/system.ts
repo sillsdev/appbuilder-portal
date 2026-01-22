@@ -413,7 +413,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
    * 2. (removed step)
    * 3. (removed step)
    * 4. Populate Product.PackageName
-   * 5. Remove users with no org membership
+   * 5. (removed step)
    * 6. Populate ProductBuild.AppBuilderVersion
    */
 
@@ -560,25 +560,6 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
 
   job.updateProgress(70);
 
-  // 5. delete users with no org membership
-  const deletedUsers = await DatabaseReads.users.findMany({
-    where: {
-      Organizations: { none: {} }
-    },
-    select: { Id: true, GivenName: true, Email: true }
-  });
-  let deleteCount = 0;
-  try {
-    const deleteRes = await DatabaseWrites.users.deleteMany({
-      where: {
-        Organizations: { none: {} }
-      }
-    });
-    deleteCount = deleteRes.count;
-  } catch (e) {
-    job.log(`User prune failed: ${e instanceof Error ? e.message : String(e)}`);
-  }
-
   job.updateProgress(80);
 
   // 6. Populate ProductBuilds.AppBuilderVersion
@@ -682,11 +663,6 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     deletedTasks: deletedTasks.count,
     updatedWorkflowDefinitions: workflowDefsNeedUpdate,
     updatedPackages,
-    deletedUsers: {
-      users: deletedUsers,
-      count: deleteCount,
-      success: deleteCount === deletedUsers.length
-    },
     updatedBuilds: {
       recent: mostRecentBuilds.length,
       updated: updatedBuilds.length,
