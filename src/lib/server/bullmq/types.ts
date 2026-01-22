@@ -53,7 +53,7 @@ export namespace Polling {
 
   export interface Project extends BaseJob {
     type: JobType.Poll_Project;
-    workflowProjectId: number;
+    buildEngineProjectId: number;
     organizationId: number;
     projectId: number;
   }
@@ -77,7 +77,7 @@ export namespace Product {
   export interface Delete extends BaseJob {
     type: JobType.Product_Delete;
     organizationId: number;
-    workflowJobId: number;
+    buildEngineJobId: number;
   }
   export interface GetVersionCode extends BaseJob {
     type: JobType.Product_GetVersionCode;

@@ -149,10 +149,10 @@ export const actions = {
         Id: parseInt(event.params.id)
       },
       select: {
-        WorkflowProjectUrl: true
+        RepositoryUrl: true
       }
     });
-    if (!checkRepository?.WorkflowProjectUrl) {
+    if (!checkRepository?.RepositoryUrl) {
       return error(400, 'Project Repository not Yet Initialized');
     }
     getQueues().Products.add(`Create Product for Project #${event.params.id}`, {

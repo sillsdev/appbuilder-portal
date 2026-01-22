@@ -22,7 +22,7 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
               Name: true
             }
           },
-          WorkflowProjectUrl: true,
+          RepositoryUrl: true,
           OrganizationId: true
         }
       },
@@ -41,7 +41,7 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
   if (!productData) {
     return await notifyNotFound(job.data.productId);
   }
-  if (!productData.Project.WorkflowProjectUrl) {
+  if (!productData.Project.RepositoryUrl) {
     if (job.attemptsStarted >= (job.opts.attempts ?? 0)) {
       await notifyProjectUrlNotSet(
         job.data.productId,
@@ -51,14 +51,14 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
         job.data.transition
       );
     }
-    throw new Error('Project.WorkflowProjectUrl not set!');
+    throw new Error('Project.RepositoryUrl not set!');
   }
   job.updateProgress(25);
   const response = await BuildEngine.Requests.createJob(
     { type: 'query', organizationId: productData.Project.OrganizationId },
     {
       request_id: job.data.productId,
-      git_url: productData.Project.WorkflowProjectUrl,
+      git_url: productData.Project.RepositoryUrl,
       app_id: productData.Project.ApplicationType.Name!,
       publisher_id: productData.Store!.Name!
     }
@@ -89,7 +89,7 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
     throw new Error(response.message);
   } else {
     await DatabaseWrites.products.update(job.data.productId, {
-      WorkflowJobId: response.id
+      BuildEngineJobId: response.id
     });
     job.updateProgress(75);
 
@@ -111,10 +111,10 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
 
 // This shouldn't need any notifications
 export async function deleteProduct(job: Job<BullMQ.Product.Delete>): Promise<unknown> {
-  if (job.data.workflowJobId > 0) {
+  if (job.data.buildEngineJobId > 0) {
     const response = await BuildEngine.Requests.deleteJob(
       { type: 'query', organizationId: job.data.organizationId },
-      job.data.workflowJobId
+      job.data.buildEngineJobId
     );
     job.updateProgress(50);
     if (response.responseType === 'error') {
@@ -126,7 +126,7 @@ export async function deleteProduct(job: Job<BullMQ.Product.Delete>): Promise<un
     }
   } else {
     job.updateProgress(100);
-    return 'No Job to delete from BuildEngine (WorkflowJobId === 0)';
+    return 'No Job to delete from BuildEngine (BuildEngineJobId === 0)';
   }
 }
 
@@ -138,8 +138,8 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
       Id: job.data.productId
     },
     select: {
-      WorkflowBuildId: true,
-      WorkflowJobId: true,
+      BuildEngineBuildId: true,
+      BuildEngineJobId: true,
       Project: {
         select: {
           Organization: {
@@ -153,11 +153,11 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
     }
   });
   job.updateProgress(30);
-  if (product?.WorkflowBuildId && product?.WorkflowJobId) {
+  if (product?.BuildEngineBuildId && product?.BuildEngineJobId) {
     const productBuild = await DatabaseReads.productBuilds.findFirst({
       where: {
         ProductId: job.data.productId,
-        BuildId: product.WorkflowBuildId
+        BuildEngineBuildId: product.BuildEngineBuildId
       },
       select: {
         Id: true
@@ -204,7 +204,7 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
         ...ctx,
         environment: {
           ...ctx.environment,
-          [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID]: '' + product.WorkflowBuildId,
+          [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID]: '' + product.BuildEngineBuildId,
           [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE]: '' + versionCode
         }
       } as WorkflowInstanceContext)
@@ -220,9 +220,9 @@ export async function createLocal(job: Job<BullMQ.Product.CreateLocal>): Promise
       ProjectId: job.data.projectId,
       ProductDefinitionId: job.data.productDefinitionId,
       StoreId: job.data.storeId,
-      WorkflowBuildId: 0,
-      WorkflowJobId: 0,
-      WorkflowPublishId: 0
+      BuildEngineBuildId: 0,
+      BuildEngineJobId: 0,
+      BuildEngineReleaseId: 0
     });
     if (!productId) return false;
 

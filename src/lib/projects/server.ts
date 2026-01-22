@@ -168,3 +168,8 @@ export async function doProjectAction(
     });
   }
 }
+
+export function projectUrl(id: number) {
+  const originUrl = process.env.ORIGIN || 'http://localhost:6173';
+  return originUrl + '/projects/' + id;
+}

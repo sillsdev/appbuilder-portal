@@ -59,7 +59,7 @@
         {build}
         artifacts={build.ProductArtifacts}
         release={build.ProductPublications.at(0)}
-        latestBuildId={data.product?.WorkflowBuildId}
+        latestBuildId={data.product?.BuildEngineBuildId}
       />
     {/each}
   </div>

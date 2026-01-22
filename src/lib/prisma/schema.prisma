@@ -153,7 +153,7 @@ model ProductArtifacts {
 model ProductBuilds {
   Id                  Int                   @id(map: "PK_ProductBuilds") @default(autoincrement())
   ProductId           String                @db.Uuid
-  BuildId             Int
+  BuildEngineBuildId  Int
   Version             String?
   DateCreated         DateTime?             @default(now()) @db.Timestamp(6)
   DateUpdated         DateTime?             @updatedAt @db.Timestamp(6)
@@ -190,19 +190,19 @@ model ProductDefinitions {
 
 model ProductPublications {
   // ISSUE: #1102 composite keys? see comment in ProductBuilds
-  Id             Int           @id(map: "PK_ProductPublications") @default(autoincrement())
-  ProductId      String        @db.Uuid
-  ProductBuildId Int
-  ReleaseId      Int
-  Channel        String?
-  LogUrl         String?
-  Success        Boolean?
-  DateCreated    DateTime?     @default(now()) @db.Timestamp(6)
-  DateUpdated    DateTime?     @updatedAt @db.Timestamp(6)
-  Package        String?
-  DateResolved   DateTime?     @db.Timestamp(6)
-  ProductBuild   ProductBuilds @relation(fields: [ProductBuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_ProductBuilds_ProductBuildId")
-  Product        Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_Products_ProductId")
+  Id                   Int           @id(map: "PK_ProductPublications") @default(autoincrement())
+  ProductId            String        @db.Uuid
+  ProductBuildId       Int
+  BuildEngineReleaseId Int
+  Channel              String?
+  LogUrl               String?
+  Success              Boolean?
+  DateCreated          DateTime?     @default(now()) @db.Timestamp(6)
+  DateUpdated          DateTime?     @updatedAt @db.Timestamp(6)
+  Package              String?
+  DateResolved         DateTime?     @db.Timestamp(6)
+  ProductBuild         ProductBuilds @relation(fields: [ProductBuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_ProductBuilds_ProductBuildId")
+  Product              Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_Products_ProductId")
 
   @@index([Package], map: "IX_ProductPublications_Package")
   @@index([ProductBuildId], map: "IX_ProductPublications_ProductBuildId")
@@ -241,34 +241,34 @@ model QueueRecords {
 }
 
 model Products {
-  Id                  String                @id(map: "PK_Products") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  ProjectId           Int
-  ProductDefinitionId Int
-  StoreId             Int?
-  StoreLanguageId     Int?
-  DateCreated         DateTime?             @default(now()) @db.Timestamp(6)
-  DateUpdated         DateTime?             @updatedAt @db.Timestamp(6)
-  WorkflowJobId       Int
-  WorkflowBuildId     Int
-  DateBuilt           DateTime?             @db.Timestamp(6)
-  WorkflowPublishId   Int
-  DatePublished       DateTime?             @db.Timestamp(6)
-  PublishLink         String?
-  VersionBuilt        String?
-  Properties          String?
-  PackageName         String?
-  ProductArtifacts    ProductArtifacts[]
-  ProductBuilds       ProductBuilds[]
-  ProductPublications ProductPublications[]
-  ProductTransitions  ProductTransitions[]
-  ProductDefinition   ProductDefinitions    @relation(fields: [ProductDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_ProductDefinitions_ProductDefinitionId")
-  Project             Projects              @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_Projects_ProjectId")
-  StoreLanguage       StoreLanguages?       @relation(fields: [StoreLanguageId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_StoreLanguages_StoreLanguageId")
-  Store               Stores?               @relation(fields: [StoreId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_Stores_StoreId")
-  UserTasks           UserTasks[]
-  WorkflowInstance    WorkflowInstances?
-  ProductUserChanges  ProductUserChanges[]
-  SoftwareUpdates     SoftwareUpdates[]
+  Id                   String                @id(map: "PK_Products") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  ProjectId            Int
+  ProductDefinitionId  Int
+  StoreId              Int?
+  StoreLanguageId      Int?
+  DateCreated          DateTime?             @default(now()) @db.Timestamp(6)
+  DateUpdated          DateTime?             @updatedAt @db.Timestamp(6)
+  BuildEngineJobId     Int
+  BuildEngineBuildId   Int
+  DateBuilt            DateTime?             @db.Timestamp(6)
+  BuildEngineReleaseId Int
+  DatePublished        DateTime?             @db.Timestamp(6)
+  PublishLink          String?
+  VersionBuilt         String?
+  Properties           String?
+  PackageName          String?
+  ProductArtifacts     ProductArtifacts[]
+  ProductBuilds        ProductBuilds[]
+  ProductPublications  ProductPublications[]
+  ProductTransitions   ProductTransitions[]
+  ProductDefinition    ProductDefinitions    @relation(fields: [ProductDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_ProductDefinitions_ProductDefinitionId")
+  Project              Projects              @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_Projects_ProjectId")
+  StoreLanguage        StoreLanguages?       @relation(fields: [StoreLanguageId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_StoreLanguages_StoreLanguageId")
+  Store                Stores?               @relation(fields: [StoreId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_Stores_StoreId")
+  UserTasks            UserTasks[]
+  WorkflowInstance     WorkflowInstances?
+  ProductUserChanges   ProductUserChanges[]
+  SoftwareUpdates      SoftwareUpdates[]
 
   @@index([ProductDefinitionId], map: "IX_Products_ProductDefinitionId")
   @@index([ProjectId], map: "IX_Products_ProjectId")
@@ -313,9 +313,8 @@ model Projects {
   AllowDownloads          Boolean?         @default(true)
   AutoPublishOnRebuild    Boolean?         @default(false)
   RebuildOnSoftwareUpdate Boolean?         @default(false)
-  WorkflowProjectId       Int              @default(0)
-  WorkflowProjectUrl      String?
-  WorkflowAppProjectUrl   String?
+  BuildEngineProjectId    Int              @default(0)
+  RepositoryUrl           String?
   DateActive              DateTime?        @db.Timestamp(6)
   ImportId                Int?
   Authors                 Authors[]
