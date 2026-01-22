@@ -215,7 +215,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
         where: {
           ProductBuildId_BuildEngineReleaseId: {
             ProductBuildId: job.data.productBuildId,
-            ReleaseId: job.data.release.id
+            BuildEngineReleaseId: job.data.release.id
           }
         },
         select: {
@@ -265,7 +265,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
     where: {
       ProductBuildId_BuildEngineReleaseId: {
         ProductBuildId: job.data.productBuildId,
-        ReleaseId: job.data.release.id
+        BuildEngineReleaseId: job.data.release.id
       }
     },
     data: {

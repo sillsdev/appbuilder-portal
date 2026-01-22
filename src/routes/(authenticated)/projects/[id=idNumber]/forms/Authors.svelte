@@ -14,7 +14,6 @@
     group: Prisma.GroupsGetPayload<{ select: { Name: true } }>;
     projectAuthors: Prisma.AuthorsGetPayload<{
       select: {
-        Id: true;
         User: {
           select: {
             Id: true;
