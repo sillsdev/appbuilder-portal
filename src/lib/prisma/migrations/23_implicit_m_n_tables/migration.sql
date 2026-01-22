@@ -87,7 +87,7 @@ ADD CONSTRAINT "PK_ProductArtifacts_ProductBuildId_ArtifactType" PRIMARY KEY ("P
 -- AlterTable
 ALTER TABLE "ProductPublications" DROP CONSTRAINT "PK_ProductPublications",
 DROP COLUMN "Id",
-ADD CONSTRAINT "PK_ProductPublications_ProductBuildId_ReleaseId" PRIMARY KEY ("ProductBuildId", "ReleaseId");
+ADD CONSTRAINT "PK_ProductPublications_ProductBuildId_BuildEngineReleaseId" PRIMARY KEY ("ProductBuildId", "BuildEngineReleaseId");
 
 -- AlterTable
 ALTER TABLE "UserRoles" DROP CONSTRAINT "PK_UserRoles",
