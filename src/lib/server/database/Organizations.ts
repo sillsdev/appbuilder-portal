@@ -31,7 +31,7 @@ export async function create(data: RequirePrimitive<Prisma.OrganizationsUnchecke
 
 export async function update(
   id: number,
-  data: RequirePrimitive<Prisma.OrganizationsUncheckedCreateInput>
+  data: RequirePrimitive<Prisma.OrganizationsUncheckedUpdateInput>
 ) {
   return await prisma.organizations.update({
     where: { Id: id },

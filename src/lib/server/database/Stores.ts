@@ -26,7 +26,7 @@ export async function create(data: RequirePrimitive<Prisma.StoresUncheckedCreate
 
 export async function update(
   id: number,
-  data: RequirePrimitive<Prisma.StoresUncheckedCreateInput>
+  data: RequirePrimitive<Prisma.StoresUncheckedUpdateInput>
 ) {
   return await prisma.stores.update({
     where: { Id: id },
