@@ -9,7 +9,7 @@ import { idSchema, propertiesSchema } from '$lib/valibot';
 
 const editSchema = v.object({
   id: idSchema,
-  name: v.nullable(v.string()),
+  name: v.pipe(v.string(), v.trim(), v.minLength(1)),
   workflow: idSchema,
   rebuildWorkflow: v.nullable(idSchema),
   republishWorkflow: v.nullable(idSchema),
