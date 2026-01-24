@@ -28,19 +28,34 @@ export async function deleteMany(deleteManyData: Prisma.UserTasksDeleteManyArgs)
   return res;
 }
 
-export async function updateMany(updateManyData: Prisma.UserTasksUpdateManyArgs) {
-  const beforeUsers = await prisma.userTasks.findMany({
-    where: updateManyData.where
-  });
+export async function updateMany(
+  productIds: string[],
+  updateManyData: Prisma.UserTasksUpdateManyArgs
+) {
+  const beforeUsers = (
+    await prisma.userTasks.findMany({
+      where: {
+        ProductId: {
+          in: productIds
+        }
+      }
+    })
+  ).map((r) => r.UserId);
   const res = await prisma.userTasks.updateMany({
     ...updateManyData
   });
-  const afterUsers = await prisma.userTasks.findMany({
-    where: updateManyData.where
-  });
+  const afterUsers = (
+    await prisma.userTasks.findMany({
+      where: {
+        ProductId: {
+          in: productIds
+        }
+      }
+    })
+  ).map((r) => r.UserId);
   getQueues().SvelteSSE.add(`Update UserTasks`, {
     type: BullMQ.JobType.SvelteSSE_UpdateUserTasks,
-    userIds: [...new Set([...beforeUsers.map((r) => r.UserId), ...afterUsers.map((r) => r.UserId)])]
+    userIds: [...new Set([...beforeUsers, ...afterUsers])]
   });
   return res;
 }
