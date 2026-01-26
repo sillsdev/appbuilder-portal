@@ -9,7 +9,7 @@ export async function POST({ params, locals }) {
   try {
     locals.security.requireApiToken();
   } catch {
-    return createAppBuildersError(401, 'Login failed');
+    return createAppBuildersError(401, 'Login timed out');
   }
   const userId = locals.security.userId;
 

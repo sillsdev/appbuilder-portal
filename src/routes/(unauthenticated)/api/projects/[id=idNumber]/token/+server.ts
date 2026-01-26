@@ -13,7 +13,7 @@ export async function POST({ params, locals, request }) {
   try {
     locals.security.requireApiToken();
   } catch {
-    return createAppBuildersError(401, 'Login failed');
+    return createAppBuildersError(401, 'Login timed out');
   }
 
   const user = await DatabaseReads.users.findUniqueOrThrow({

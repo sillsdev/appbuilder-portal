@@ -6,7 +6,7 @@ export async function GET({ params, locals }) {
   try {
     locals.security.requireApiToken();
   } catch {
-    return createAppBuildersError(401, 'Login failed');
+    return createAppBuildersError(401, 'Login timed out');
   }
 
   const projectId = parseInt(params.id);
