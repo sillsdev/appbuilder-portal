@@ -296,12 +296,50 @@ async function main() {
       WorkflowId: 7,
       RebuildWorkflowId: 2,
       RepublishWorkflowId: 3
+    },
+    {
+      // Id = 6
+      Name: 'PWA to Cloud',
+      Description:
+        'Build a Progressive Web App from a Scripture App Builder project and publish to a Cloud Provider',
+      WorkflowId: 9,
+      RebuildWorkflowId: 10,
+      AllowAllApplicationTypes: false
+    },
+    {
+      // Id = 7
+      Name: 'Modern PWA to Cloud',
+      Description:
+        'Build a Progressive Web App using the new Modern PWA from a Scripture App Builder or Dictionary App Builder project and publish to a Cloud Provider',
+      WorkflowId: 9,
+      RebuildWorkflowId: 10,
+      AllowAllApplicationTypes: false,
+      Properties: '{ "build:targets": "modern-pwa" }'
     }
   ];
 
   await prisma.productDefinitions.createMany({
     data: productDefinitionData
   });
+
+  // Set application types for "PWA to Cloud"
+  const productAppTypesData = [
+    { ProductDefinitionId: 6, ApplicationTypeIds: [1] }, // Classic PWA only in SAB
+    { ProductDefinitionId: 7, ApplicationTypeIds: [1, 3] } // Modern PWA in SAB and DAB
+  ];
+
+  await Promise.all(
+    productAppTypesData.map((pat) =>
+      prisma.productDefinitions.update({
+        where: { Id: pat.ProductDefinitionId },
+        data: {
+          ApplicationTypes: {
+            connect: pat.ApplicationTypeIds.map((id) => ({ Id: id }))
+          }
+        }
+      })
+    )
+  );
 
   if (options.organizations) {
     const usersData = [
