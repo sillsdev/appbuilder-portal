@@ -1,134 +1,341 @@
 <script lang="ts">
-  // Static mock data; replace with real data in server load later.
+  import { onMount } from 'svelte';
+
+  const DEFAULT_ICON =
+    'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MiA3MiIgZmlsbD0ibm9uZSI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjcyIiB5Mj0iNzIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iIzBlNzk1YiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxMmEzN2EiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI3MiIgaGVpZ2h0PSI3MiIgcng9IjE2IiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTIwIDQ4bDgtMjQgOCAxNiA4LTEyIDggMjAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIgc3Rya2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+';
+
   const app = {
-    icon: 'https://placehold.co/96x96/png',
+    icon: DEFAULT_ICON,
     name: 'Sample App Name',
     developer: 'Sample Developer',
-    shortDesc: 'A short description from the store listing to reassure users this page is official.',
-    longDesc: `A longer description that expands to give more context about the app.
-It can include multiple lines of text to mirror the Google Play listing content.
+    themeColor: '#0e795b',
+    shortDesc: 'A concise store listing blurb to confirm this page is official.',
+    longDesc: `A longer store listing description for users who want details.
 
-This is static placeholder content for the mockup.`
+This is placeholder content to demonstrate layout only.`
   };
+
   const locales = ['en-US', 'fr-FR', 'es-419'];
   let selectedLocale = locales[0];
+  let themeColor = app.themeColor;
+
+  // Helper: DaisyUI (v5) uses CSS vars like --color-primary; we also keep HSL for older tokens.
+  // Converts hex to a Daisy-friendly HSL string (e.g., "120 50% 50%")
+  function hexToDaisyHSL(hex: string) {
+    let c = hex.substring(1).split('');
+    if (c.length === 3) c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+    c = '0x' + c.join('');
+    let r = (c >> 16) & 255, g = (c >> 8) & 255, b = c & 255;
+    r /= 255; g /= 255; b /= 255;
+    let max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+    if (max === min) {
+      h = s = 0;
+    } else {
+      let d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+    return `${(h * 360).toFixed(1)} ${(s * 100).toFixed(1)}% ${(l * 100).toFixed(1)}%`;
+  }
+
+  function hexToRgb(hex: string) {
+    const clean = hex.replace('#', '');
+    const int = Number.parseInt(clean.length === 3 ? clean.replace(/./g, '$&$&') : clean, 16);
+    return {
+      r: (int >> 16) & 255,
+      g: (int >> 8) & 255,
+      b: int & 255
+    };
+  }
+
+  function getReadableTextHex(hex: string) {
+    const { r, g, b } = hexToRgb(hex);
+    const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+    return luminance > 0.55 ? '#0f172a' : '#ffffff';
+  }
+
+  function lightenColor(hex: string, amount = 0.9) {
+    const { r, g, b } = hexToRgb(hex);
+    const mix = (channel: number) => Math.round(channel + (255 - channel) * amount);
+    return rgbToHex(mix(r), mix(g), mix(b));
+  }
+
+  function rgbToHex(r: number, g: number, b: number) {
+    return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+  }
+
+  // Determine theme color from the icon's average color so the UI auto-matches.
+  function deriveColorFromIcon(iconSrc: string): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const width = img.naturalWidth || img.width;
+        const height = img.naturalHeight || img.height;
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(themeColor);
+
+        ctx.drawImage(img, 0, 0, width, height);
+        const { data } = ctx.getImageData(0, 0, width, height);
+
+        let r = 0, g = 0, b = 0, count = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          const alpha = data[i + 3];
+          if (alpha === 0) continue;
+          r += data[i];
+          g += data[i + 1];
+          b += data[i + 2];
+          count++;
+        }
+
+        if (!count) return resolve(themeColor);
+        resolve(rgbToHex(Math.round(r / count), Math.round(g / count), Math.round(b / count)));
+      };
+
+      img.onerror = () => resolve(themeColor);
+      img.src = iconSrc;
+    });
+  }
+
+  // Generate HSL string for the style tag
+  $: primaryHSL = hexToDaisyHSL(themeColor);
+  $: primaryContentHSL = hexToDaisyHSL(getReadableTextHex(themeColor));
+  $: primaryHex = themeColor;
+  $: primaryContentHex = getReadableTextHex(themeColor);
+  $: lightBgHex = lightenColor(themeColor, 0.92);
+
+  // Keep DaisyUI CSS variables in sync on the document root for all components.
+  $: {
+    if (typeof document !== 'undefined') {
+      // New Daisy v5 tokens (oklch-compatible, but hex works in color-mix)
+      document.documentElement.style.setProperty('--color-primary', primaryHex);
+      document.documentElement.style.setProperty('--color-primary-content', primaryContentHex);
+      // Legacy Daisy tokens for safety
+      document.documentElement.style.setProperty('--p', primaryHSL);
+      document.documentElement.style.setProperty('--pf', primaryHSL);
+      document.documentElement.style.setProperty('--pc', primaryContentHSL);
+      // Base palette kept light/neutral
+      document.documentElement.style.setProperty('--color-base-100', '#ffffff');
+      document.documentElement.style.setProperty('--color-base-200', '#f5f7fa');
+      document.documentElement.style.setProperty('--color-base-300', '#e5e7eb');
+      document.documentElement.style.setProperty('--color-base-content', '#1f2937');
+      document.documentElement.style.setProperty('--outer-bg', lightBgHex);
+      document.documentElement.style.setProperty('--root-bg', lightBgHex);
+    }
+  }
+
+  onMount(() => {
+    deriveColorFromIcon(app.icon).then((hex) => {
+      themeColor = hex;
+    });
+  });
 </script>
 
-<div class="min-h-screen bg-base-200 flex justify-center p-6">
-  <div class="w-full max-w-3xl space-y-6">
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body space-y-3">
-        <div class="flex items-center gap-4">
-          <img src={app.icon} alt="App icon" class="w-16 h-16 rounded-xl object-cover" />
+<svelte:head>
+  <style>
+    :root { --outer-bg: {lightBgHex}; }
+    :global(html), :global(body) { background-color: var(--outer-bg) !important; min-height: 100%; }
+  </style>
+</svelte:head>
+
+<div 
+  class="min-h-screen max-h-screen overflow-hidden w-full text-base-content font-sans antialiased break-words"
+  style="
+    --color-primary: {primaryHex};
+    --color-primary-content: {primaryContentHex};
+    --color-base-100: #ffffff;
+    --color-base-200: #f5f7fa;
+    --color-base-300: #e5e7eb;
+    --color-base-content: #1f2937;
+    /* legacy tokens for older Daisy selectors */
+    --p: {primaryHSL};
+    --pf: {primaryHSL};
+    --pc: {primaryContentHSL};
+    --b1: 0 0% 100%;
+    --b2: 210 20% 98%;
+    --bc: 220 13% 18%;
+    word-break: break-word;
+    overflow-wrap: anywhere;"
+>
+  <div class="max-w-6xl mx-auto bg-white">
+  
+    <div class="w-full border-b border-base-300 bg-base-100 sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center gap-4">
+      <img src={app.icon} alt="App icon" class="w-12 h-12 rounded-2xl shadow-sm bg-primary/5 p-0.5" />
+      
+      <div class="leading-snug">
+        <p class="text-[10px] uppercase tracking-wider font-bold opacity-50">Official data request page</p>
+        <h1 class="text-xl font-bold tracking-tight">{app.name}</h1>
+        <p class="text-sm text-primary font-bold cursor-pointer hover:underline opacity-90">{app.developer}</p>
+      </div>
+      
+      <div class="ml-auto hidden sm:flex gap-3 items-center">
+        <span class="text-[11px] uppercase tracking-wide opacity-50 font-bold">Locale</span>
+        <div class="join">
+          {#each locales as locale}
+            <button
+              type="button"
+              class={`btn btn-xs join-item border-none ${
+                locale === selectedLocale 
+                  ? 'btn-primary text-primary-content' 
+                  : 'btn-ghost opacity-60 hover:opacity-100 bg-base-200'
+              }`}
+              on:click={() => (selectedLocale = locale)}
+            >
+              {locale}
+            </button>
+          {/each}
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="max-w-5xl mx-auto px-6 py-6">
+      <div class="grid gap-6 md:grid-cols-[minmax(0,1fr)_400px] items-start">
+      
+      <div class="space-y-6 min-w-0">
+        <div class="card bg-base-100 shadow-sm border border-base-300 rounded-lg min-w-0">
+          <div class="card-body p-5 break-words">
+            <div class="flex items-center justify-between mb-2">
+               <h2 class="card-title text-lg font-bold">About this app</h2>
+               <svg class="w-5 h-5 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+            </div>
+            
+            <p class="text-sm opacity-70 leading-relaxed">{app.shortDesc}</p>
+            
+            <details class="group mt-2">
+              <summary class="list-none text-sm font-bold text-primary cursor-pointer hover:underline flex items-center gap-2 select-none">
+                Show more
+              </summary>
+              <div class="pt-3 text-sm opacity-70 whitespace-pre-line leading-relaxed">
+                {app.longDesc}
+              </div>
+            </details>
+
+            <div class="divider sm:hidden my-4"></div>
+            <div class="sm:hidden">
+              <span class="text-xs font-bold opacity-50 uppercase tracking-wide">Locale:</span>
+              <div class="flex flex-wrap gap-2 mt-2">
+                {#each locales as locale}
+                  <button
+                    type="button"
+                    class={`btn btn-xs ${
+                      locale === selectedLocale ? 'btn-primary' : 'btn-outline border-base-300 text-base-content/70'
+                    }`}
+                    on:click={() => (selectedLocale = locale)}
+                  >
+                    {locale}
+                  </button>
+                {/each}
+              </div>
+            </div>
+            
+            <div class="mt-6 bg-base-200 rounded-lg p-4 border border-base-200/50">
+              <p class="text-xs font-bold mb-1 opacity-90">Why this page exists</p>
+              <p class="text-xs opacity-60 leading-relaxed">
+                Google Play requires a public link to request account or data deletion. Use this form to
+                start that process for {app.name}.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <div class="card bg-base-100 shadow-sm border border-base-300 rounded-lg h-fit min-w-0">
+          <div class="card-body p-5 space-y-4 break-words">
           <div>
-            <div class="badge badge-primary mb-1">Official data request</div>
-            <h1 class="text-2xl font-bold leading-tight">{app.name}</h1>
-            <p class="text-sm text-base-content/70">{app.developer}</p>
+            <h2 class="card-title text-lg font-bold">Manage my data</h2>
+            <p class="text-xs opacity-60 mt-1 leading-relaxed">
+              Enter your email to request deletion. We’ll email a 6-digit code to confirm it’s you.
+            </p>
           </div>
-        </div>
 
-        <p class="text-base">{app.shortDesc}</p>
-
-        <details class="collapse collapse-arrow bg-base-200/60 rounded-box">
-          <summary class="collapse-title text-sm font-semibold">Show more</summary>
-          <div class="collapse-content whitespace-pre-line text-sm text-base-content/80">
-            {app.longDesc}
+          <div class="form-control w-full">
+            <label class="label pb-1 pt-0">
+              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Email</span>
+            </label>
+            <input 
+              type="email" 
+              placeholder="you@example.com" 
+              class="input input-bordered w-full text-sm h-11 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" 
+              name="email" 
+            />
+            <label class="label pt-1 pb-0">
+              <span class="label-text-alt text-[10px] opacity-60">Use the email associated with your account.</span>
+            </label>
           </div>
-        </details>
 
-        <div class="flex flex-wrap gap-2 items-center">
-          <span class="text-sm font-semibold text-base-content/80">Localization:</span>
-          <div class="join">
-            {#each locales as locale}
-              <button
-                type="button"
-                class={`btn btn-sm join-item ${
-                  locale === selectedLocale ? 'btn-primary' : 'btn-ghost'
-                }`}
-                on:click={() => (selectedLocale = locale)}
-              >
-                {locale}
-              </button>
-            {/each}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card bg-base-100 shadow-lg">
-      <div class="card-body space-y-4">
-        <h2 class="text-xl font-semibold">Manage my data</h2>
-        <p class="text-sm text-base-content/80">
-          Enter your email to request deletion. We will send a 6-digit code to verify it is you.
-        </p>
-
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text font-medium">Email</span>
-          </label>
-          <input
-            class="input input-bordered w-full"
-            type="email"
-            placeholder="you@example.com"
-            name="email"
-          />
-          <label class="label">
-            <span class="label-text-alt text-base-content/70">
-              Use the email associated with your account in the app.
-            </span>
-          </label>
-        </div>
-
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text font-medium">What do you want to delete?</span>
-          </label>
-          <div class="space-y-2">
-            <label class="flex items-start gap-3 cursor-pointer">
-              <input type="radio" name="deletionType" class="radio radio-primary mt-1" checked />
-              <span>
-                <div class="font-medium">Delete my data</div>
-                <div class="text-sm text-base-content/70">
-                  Bookmarks, notes, highlights, reading plan progress. Account stays active.
+          <div class="form-control">
+            <label class="label pb-1 pt-0">
+              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Deletion Scope</span>
+            </label>
+            <div class="flex flex-col gap-3 mt-1">
+              <label class="label cursor-pointer items-start justify-start gap-3 p-0 group">
+                <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" checked />
+                <div>
+                  <span class="label-text font-bold text-sm group-hover:text-primary transition-colors">Delete my data</span>
+                  <p class="text-xs opacity-60 leading-tight mt-0.5">
+                    Bookmarks, notes, highlights, reading plan progress. Account stays active.
+                  </p>
                 </div>
-              </span>
-            </label>
-            <label class="flex items-start gap-3 cursor-pointer">
-              <input type="radio" name="deletionType" class="radio radio-primary mt-1" />
-              <span>
-                <div class="font-medium">Delete my account and data</div>
-                <div class="text-sm text-base-content/70">Removes account plus all associated data.</div>
-              </span>
-            </label>
+              </label>
+              <label class="label cursor-pointer items-start justify-start gap-3 p-0 group">
+                <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" />
+                <div>
+                  <span class="label-text font-bold text-sm group-hover:text-primary transition-colors">Delete my account and data</span>
+                  <p class="text-xs opacity-60 leading-tight mt-0.5">
+                    Removes account plus all associated data.
+                  </p>
+                </div>
+              </label>
+            </div>
           </div>
-        </div>
 
-        <div class="bg-base-200/70 rounded-box p-3 text-sm">
-          <div class="font-semibold mb-1">What will be deleted</div>
-          <ul class="list-disc list-inside space-y-1 text-base-content/80">
-            <li>Bookmarks</li>
-            <li>Notes</li>
-            <li>Highlights</li>
-            <li>Reading plan progress</li>
-          </ul>
-        </div>
-
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text font-medium">Verification</span>
-          </label>
-          <div class="rounded-box border border-dashed border-base-300 p-4 text-sm text-base-content/70">
-            Captcha widget placeholder (Turnstile)
+          <div class="bg-base-200/60 rounded-lg p-4 border border-base-200">
+            <div class="text-[10px] font-bold mb-2 uppercase tracking-wide opacity-50">Items to be removed</div>
+            <ul class="list-disc list-inside space-y-1 text-xs opacity-60">
+              <li>Bookmarks</li>
+              <li>Notes</li>
+              <li>Highlights</li>
+              <li>Reading plan progress</li>
+            </ul>
           </div>
-        </div>
 
-        <button class="btn btn-primary w-full" type="button">Send verification code</button>
+          <div class="form-control">
+            <label class="label pb-1 pt-0">
+              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Verification</span>
+            </label>
+            <div class="rounded-btn border border-base-300 bg-base-200/30 h-14 flex items-center justify-center text-xs opacity-50">
+              Captcha widget placeholder (Turnstile)
+            </div>
+          </div>
+
+          <button class="btn btn-primary w-full text-white no-animation" type="button">
+            Send verification code
+          </button>
+        </div>
       </div>
     </div>
 
-    <p class="text-xs text-base-content/60">
-      This page is provided for {app.name} on Google Play. Need help?
-      <a class="link" href="/support">Contact support</a>.
-    </p>
+      <p class="text-xs opacity-50 text-center mt-4">
+        This page is provided for <span class="font-bold opacity-90">{app.name}</span> on Google Play. Need help?
+        <a class="link link-primary no-underline hover:underline" href="/support">Contact support</a>.
+      </p>
+    </div>
   </div>
 </div>
+
+<style>
+  :global(body) {
+    background-color: var(--outer-bg, #f5f7fa);
+  }
+</style>
