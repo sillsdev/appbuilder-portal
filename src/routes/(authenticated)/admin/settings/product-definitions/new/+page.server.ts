@@ -4,10 +4,12 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { propertiesSchema } from '$lib/valibot';
+import { idSchema, propertiesSchema } from '$lib/valibot';
 
 const createSchema = v.object({
   name: v.pipe(v.string(), v.trim(), v.minLength(1)),
+  allowAll: v.optional(v.boolean(), true),
+  applicationTypes: v.array(idSchema),
   workflow: v.pipe(v.number(), v.minValue(1), v.integer()),
   rebuildWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
   republishWorkflow: v.nullable(v.pipe(v.number(), v.minValue(1), v.integer())),
@@ -32,14 +34,16 @@ export const actions = {
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
-    await DatabaseWrites.productDefinitions.create({
+    const pd = await DatabaseWrites.productDefinitions.create({
       Name: form.data.name,
       WorkflowId: form.data.workflow,
       RebuildWorkflowId: form.data.rebuildWorkflow,
       RepublishWorkflowId: form.data.republishWorkflow,
       Description: form.data.description,
-      Properties: form.data.properties
+      Properties: form.data.properties,
+      AllowAllApplicationTypes: form.data.allowAll
     });
+    await DatabaseWrites.productDefinitions.setApplicationTypes(pd.Id, form.data.applicationTypes);
     return { ok: true, form };
   }
 } satisfies Actions;

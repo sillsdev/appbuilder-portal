@@ -126,6 +126,7 @@ export { deleteProduct as delete };
  * 3. The store is allowed by the organization
  * 4. The language is allowed by the store
  * 5. The product type is allowed by the organization
+ * 6. The product type allows the project type
  */
 async function validateProductBase(
   projectId: number,
@@ -149,6 +150,13 @@ async function validateProductBase(
         select: {
           StoreTypeId: true
         }
+      },
+      // Project.ApplicationType must be allowed by ProductDefinition
+      AllowAllApplicationTypes: true,
+      ApplicationTypes: {
+        select: {
+          Id: true
+        }
       }
     }
   });
@@ -161,6 +169,7 @@ async function validateProductBase(
       }
     },
     select: {
+      TypeId: true,
       Organization: {
         select: {
           // Store must be allowed by Organization
@@ -228,5 +237,17 @@ async function validateProductBase(
   /** 5. The product type is allowed by the organization */
   const productInOrg = (numOrgProdDefs ?? 0) > 0;
 
-  return storeInOrg && storeMatchFlowStore && optionalLanguageAllowed && productInOrg;
+  /** 6. The product definition allows the project type */
+  const projectTypeAllowed = !!(
+    productDefinition?.AllowAllApplicationTypes ||
+    productDefinition?.ApplicationTypes.find((at) => at.Id === project?.TypeId)
+  );
+
+  return (
+    storeInOrg &&
+    storeMatchFlowStore &&
+    optionalLanguageAllowed &&
+    productInOrg &&
+    projectTypeAllowed
+  );
 }
