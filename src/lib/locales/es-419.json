@@ -274,7 +274,19 @@
   "profile_locale": "Idioma",
   "profile_timezonePlaceholder": "Seleccione su zona horaria...",
   "profile_notificationSettingsTitle": "Configuración de notificaciones",
-  "profile_optOutOfEmailOption": "Deseo recibir notificaciones por correo electrónico",
+  "profile_optOutOfEmailOption": "Deseo recibir todas las notificaciones por correo electrónico",
+  "profile_emailExceptions": "Deseo recibir notificaciones sobre...",
+  "profile_email_options": [
+    {
+      "match": {
+        "option=1": "Las nuevas tareas que se me han asignado",
+        "option=2": "Las tareas que se hayan completado para mis proyectos",
+        "option=3": "Las tareas que se hayan fallado en mis proyectos",
+        "option=4": "Las tareas que se hayan fallado en cualquier proyecto de mi organización",
+        "option=5": "SuperAdmin stuff (i.e. Product Not Found, Retry with Medium Compute)"
+      }
+    }
+  ],
   "profile_visibleProfile": "Visibilidad del perfil",
   "profile_noPhone": "Sin teléfono",
   "profile_noTimezone": "(GMT-0)",

@@ -7,6 +7,7 @@ import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
 import { fetchPackageName, getComputeType, updateComputeType } from '$lib/products';
 import { projectUrl } from '$lib/projects/server';
+import { NotificationType } from '$lib/users';
 import { WorkflowAction } from '$lib/workflowTypes';
 
 export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> {
@@ -400,7 +401,8 @@ async function notifyCompleted(
         projectName,
         productName
       },
-      transition
+      transition,
+      forceIfAllow: NotificationType.OwnerJobComplete
     }
   );
 }

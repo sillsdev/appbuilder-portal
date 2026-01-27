@@ -20,7 +20,7 @@
   let { title, message, class: classes, children }: Props = $props();
 </script>
 
-<div class={['flex flex-row items-center gap-2', classes]}>
+<label class={['flex flex-row items-center gap-2', classes]}>
   <div class="fieldset-label flex-col items-start grow text-base-content">
     {#if title}
       <span class={['title', title.class]}>
@@ -34,7 +34,7 @@
     {/if}
   </div>
   {@render children?.()}
-</div>
+</label>
 
 <style>
   .title {

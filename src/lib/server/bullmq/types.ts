@@ -3,6 +3,7 @@ import type { RepeatOptions } from 'bullmq';
 import type { RoleId } from '../../prisma';
 import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-api/types';
 import type { JobType } from '$lib/bullmq';
+import type { NotificationType } from '$lib/users';
 export { JobSchedulerId, JobType, QueueName } from '$lib/bullmq';
 
 /** Retry a job for 72 hours every 10 minutes. Useful for build engine tasks */
@@ -185,6 +186,7 @@ export namespace Email {
     messageKey: string;
     messageProperties: Record<string, string>;
     link?: string;
+    forceIfAllow?: NotificationType;
   }
   export interface SendNotificationToReviewers extends BaseJob {
     type: JobType.Email_SendNotificationToReviewers;

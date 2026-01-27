@@ -4,7 +4,8 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { phoneRegex } from '$lib/valibot';
+import { NotificationType } from '$lib/users';
+import { idSchema, phoneRegex } from '$lib/valibot';
 
 const profileSchema = v.object({
   firstName: v.nullable(v.string()),
@@ -14,6 +15,7 @@ const profileSchema = v.object({
   phone: v.nullable(v.pipe(v.string(), v.maxLength(24), v.regex(phoneRegex))),
   timezone: v.nullable(v.string()),
   notifications: v.boolean(),
+  emailOptions: v.array(v.pipe(idSchema, v.enum(NotificationType))),
   visible: v.boolean(),
   active: v.boolean()
 });
@@ -37,7 +39,8 @@ export const load = (async (event) => {
         email: user.Email,
         phone: user.Phone,
         timezone: user.Timezone,
-        notifications: user.EmailNotification ?? false,
+        notifications: user.EmailNotification,
+        emailOptions: user.NotificationOptions,
         visible: !!user.ProfileVisibility,
         active: !user.IsLocked
       },
@@ -68,6 +71,7 @@ export const actions = {
       Phone: form.data.phone,
       Timezone: form.data.timezone,
       EmailNotification: form.data.notifications,
+      NotificationOptions: form.data.emailOptions as number[],
       ProfileVisibility: form.data.visible ? 1 : 0,
       // You cannot change lock state of yourself, and if you are editing someone else, you are either org admin or superadmin
       IsLocked: user.Id === event.locals.security.userId ? undefined : !form.data.active

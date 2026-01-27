@@ -3,6 +3,7 @@ import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
+import { NotificationType } from '$lib/users';
 import type { WorkflowInstanceContext } from '$lib/workflowTypes';
 import { ENVKeys, WorkflowAction } from '$lib/workflowTypes';
 
@@ -310,7 +311,8 @@ async function notifyCreated(
       projectName,
       productName
     },
-    transition
+    transition,
+    forceIfAllow: NotificationType.OwnerJobComplete
   });
 }
 async function notifyFailed(

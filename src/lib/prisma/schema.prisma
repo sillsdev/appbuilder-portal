@@ -399,7 +399,8 @@ model Users {
   IsLocked                      Boolean
   ExternalId                    String?
   ProfileVisibility             Int                             @default(1)
-  EmailNotification             Boolean?                        @default(true)
+  EmailNotification             Boolean                         @default(true)
+  NotificationOptions           Int[]                           @default([])
   DateCreated                   DateTime?                       @default(now()) @db.Timestamp(6)
   DateUpdated                   DateTime?                       @updatedAt @db.Timestamp(6)
   Authors                       Authors[]
