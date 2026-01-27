@@ -10,7 +10,11 @@ const TOKEN_USE_UPLOAD = 'Upload';
 const TOKEN_USE_DOWNLOAD = 'Download';
 
 export async function POST({ params, locals, request }) {
-  locals.security.requireApiToken();
+  try {
+    locals.security.requireApiToken();
+  } catch {
+    return createAppBuildersError(401, 'Login timed out');
+  }
 
   const user = await DatabaseReads.users.findUniqueOrThrow({
     where: { Id: locals.security.userId },

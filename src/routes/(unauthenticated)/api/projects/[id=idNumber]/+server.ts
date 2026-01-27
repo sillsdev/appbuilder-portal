@@ -3,7 +3,11 @@ import { createAppBuildersError, rebuildableProductsWhere } from './common';
 import { DatabaseReads } from '$lib/server/database';
 
 export async function GET({ params, locals }) {
-  locals.security.requireApiToken();
+  try {
+    locals.security.requireApiToken();
+  } catch {
+    return createAppBuildersError(401, 'Login timed out');
+  }
 
   const projectId = parseInt(params.id);
   const userId = locals.security.userId;

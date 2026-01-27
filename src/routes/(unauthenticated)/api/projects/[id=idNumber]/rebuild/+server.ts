@@ -6,7 +6,11 @@ import { DatabaseReads } from '$lib/server/database';
 
 export async function POST({ params, locals }) {
   // Validate API token and get user ID
-  locals.security.requireApiToken();
+  try {
+    locals.security.requireApiToken();
+  } catch {
+    return createAppBuildersError(401, 'Login timed out');
+  }
   const userId = locals.security.userId;
 
   const projectId = parseInt(params.id);
