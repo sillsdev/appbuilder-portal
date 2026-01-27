@@ -5,6 +5,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { StoreType } from '$lib/prisma';
   import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
 
@@ -29,15 +30,15 @@
 <h3 class="pl-4">{m.models_add({ name: m.stores_name() })}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput key="stores_attributes_name">
+  <LabeledFormInput key="stores_publisherId">
     <input
       type="text"
-      name="name"
+      name="publisherId"
       class="input input-bordered validator"
-      bind:value={$form.name}
+      bind:value={$form.publisherId}
       required
     />
-    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
+    <span class="validator-hint">{m.stores_publisherIdEmpty()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="stores_attributes_description">
     <input
@@ -48,6 +49,18 @@
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
+  {#if $form.storeType === StoreType.GooglePlay}
+    <LabeledFormInput key="stores_gpTitle">
+      <input
+        type="text"
+        name="gpTitle"
+        class="input input-bordered validator"
+        value={$form.gpTitle}
+        required
+      />
+      <span class="validator-hint">{m.stores_gpTitleEmpty()}</span>
+    </LabeledFormInput>
+  {/if}
   <LabeledFormInput key="storeTypes_listTitle">
     <select class="select validator" name="storeType" bind:value={$form.storeType} required>
       {#each data.options.storeType.toSorted((a, b) => byName(a, b, getLocale())) as type}

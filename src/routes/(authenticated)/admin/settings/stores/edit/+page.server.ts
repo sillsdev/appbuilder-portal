@@ -9,9 +9,10 @@ import { idSchema } from '$lib/valibot';
 
 const editSchema = v.object({
   id: idSchema,
-  name: v.nullable(v.string()),
+  publisherId: v.pipe(v.string(), v.trim(), v.minLength(1)),
   description: v.nullable(v.string()),
-  storeType: idSchema
+  storeType: idSchema,
+  gpTitle: v.nullable(v.string())
 });
 export const load = (async ({ url, locals }) => {
   locals.security.requireSuperAdmin();
@@ -29,9 +30,10 @@ export const load = (async ({ url, locals }) => {
   const form = await superValidate(
     {
       id: data.Id,
-      name: data.Name,
+      publisherId: data.BuildEnginePublisherId,
       storeType: data.StoreTypeId!,
-      description: data.Description
+      description: data.Description,
+      gpTitle: data.GooglePlayTitle
     },
     valibot(editSchema)
   );
@@ -46,12 +48,13 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
     await DatabaseWrites.stores.update(form.data.id, {
-      // Don't write name to database here.
-      // The publishing process requires the name to stay the same.
-      // Changing the name of the store will require a more involved UI.
+      // Don't write publisherId to database here.
+      // The publishing process requires the publisherId to stay the same.
+      // Changing the publisherId of the store will require a more involved UI.
       // See #1383 and #1378
       StoreTypeId: form.data.storeType,
-      Description: form.data.description
+      Description: form.data.description,
+      GooglePlayTitle: form.data.gpTitle
     });
     return { ok: true, form };
   }
