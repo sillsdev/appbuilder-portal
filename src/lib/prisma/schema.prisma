@@ -310,13 +310,14 @@ model StoreTypes {
 }
 
 model Stores {
-  Id            Int             @id(map: "PK_Stores") @default(autoincrement())
-  Name          String
-  Description   String?
-  StoreTypeId   Int
-  Organizations Organizations[]
-  Products      Products[]
-  StoreType     StoreTypes      @relation(fields: [StoreTypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Stores_StoreTypes_StoreTypeId")
+  Id                     Int             @id(map: "PK_Stores") @default(autoincrement())
+  BuildEnginePublisherId String
+  Description            String?
+  StoreTypeId            Int
+  GooglePlayTitle        String?
+  Organizations          Organizations[]
+  Products               Products[]
+  StoreType              StoreTypes      @relation(fields: [StoreTypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Stores_StoreTypes_StoreTypeId")
 
   @@index([StoreTypeId], map: "IX_Stores_StoreTypeId")
 }
