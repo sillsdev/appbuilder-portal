@@ -298,7 +298,19 @@
   "profile_locale": "Locale",
   "profile_timezonePlaceholder": "Select your timezone...",
   "profile_notificationSettingsTitle": "Notification Settings",
-  "profile_optOutOfEmailOption": "I want to receive email notifications",
+  "profile_optOutOfEmailOption": "I want to receive all email notifications",
+  "profile_emailExceptions": "I want to receive notifications about...",
+  "profile_email_options": [
+    {
+      "match": {
+        "option=1": "New tasks that have been assigned to me",
+        "option=2": "Background tasks that have been completed for my projects",
+        "option=3": "Background tasks that have failed for my projects",
+        "option=4": "Background tasks that have failed for any project in my organization",
+        "option=5": "SuperAdmin stuff (i.e. Product Not Found, Retry with Medium Compute)"
+      }
+    }
+  ],
   "profile_visibleProfile": "Profile visibility",
   "profile_noPhone": "no phone added",
   "profile_noTimezone": "(GMT-0)",
