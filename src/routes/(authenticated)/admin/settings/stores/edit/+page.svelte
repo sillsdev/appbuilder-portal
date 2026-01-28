@@ -7,7 +7,7 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
   import { toast } from '$lib/utils';
-  import { byName } from '$lib/utils/sorting';
+  import { byString } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -65,8 +65,8 @@
   {/if}
   <LabeledFormInput key="project_type">
     <select class="select validator" name="storeType" bind:value={$form.storeType} required>
-      {#each data.options.toSorted((a, b) => byName(a, b, getLocale())) as type}
-        <option value={type.Id}>{type.Name}</option>
+      {#each data.options.toSorted((a, b) => byString(a.Description, b.Description, getLocale())) as type}
+        <option value={type.Id}>{type.Description}</option>
       {/each}
     </select>
     <span class="validator-hint">{m.stores_emptyStoreType()}</span>
