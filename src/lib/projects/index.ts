@@ -3,7 +3,7 @@ import type { Prisma } from '@prisma/client';
 import * as v from 'valibot';
 import { RoleId } from '$lib/prisma';
 import { isAdminForOrg } from '$lib/utils/roles';
-import { idSchema, langtagRegex, paginateSchema } from '$lib/valibot';
+import { idSchema, langtagRegex, paginateSchema, requiredString } from '$lib/valibot';
 
 export function pruneProjects(
   projects: Prisma.ProjectsGetPayload<{
@@ -90,7 +90,7 @@ export const projectSearchSchema = v.object({
 });
 
 const projectSchemaBase = v.object({
-  Name: v.pipe(v.string(), v.trim(), v.minLength(1)),
+  Name: requiredString,
   Description: v.optional(v.string()),
   Language: v.pipe(
     v.string(),

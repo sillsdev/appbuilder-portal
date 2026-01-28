@@ -4,10 +4,10 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { idSchema, propertiesSchema } from '$lib/valibot';
+import { idSchema, propertiesSchema, requiredString } from '$lib/valibot';
 
 const createSchema = v.object({
-  name: v.pipe(v.string(), v.trim(), v.minLength(1)),
+  name: requiredString,
   allowAll: v.optional(v.boolean(), true),
   applicationTypes: v.array(idSchema),
   workflow: v.pipe(v.number(), v.minValue(1), v.integer()),
