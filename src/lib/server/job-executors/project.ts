@@ -109,7 +109,7 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
       const storeId = (
         await DatabaseReads.stores.findFirst({
           where: {
-            Name: p.Store,
+            BuildEnginePublisherId: p.Store,
             Organizations: {
               some: {
                 Id: job.data.organizationId

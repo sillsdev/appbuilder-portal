@@ -5,8 +5,9 @@
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
+  import { displayStoreGPTitle } from '$lib/prisma';
   import { toast } from '$lib/utils';
-  import { byName } from '$lib/utils/sorting';
+  import { byString } from '$lib/utils/sorting';
   interface Props {
     data: PageData;
   }
@@ -17,7 +18,7 @@
 <h2>{m.org_storesTitle()}</h2>
 <div class="m-4">
   <MultiselectBox header={m.org_storeSelectTitle()}>
-    {#each data.stores.toSorted((a, b) => byName(a, b, getLocale())) as store}
+    {#each data.stores.toSorted( (a, b) => byString(displayStoreGPTitle(a) || a.BuildEnginePublisherId, displayStoreGPTitle(b) || b.BuildEnginePublisherId, getLocale()) ) as store}
       <form
         method="POST"
         action=""
@@ -35,7 +36,7 @@
       >
         <input type="hidden" name="storeId" value={store.Id} />
         <MultiselectBoxElement
-          title={store.Name ?? ''}
+          title={displayStoreGPTitle(store) || store.BuildEnginePublisherId}
           description={store?.Description ?? ''}
           bind:checked={store.enabled}
           checkProps={{

@@ -392,7 +392,7 @@ export async function reportProjectImport(
           projectId: '' + project.Id,
           projectName: project.Name,
           productDefinitionName: p.ProductDefinition.Name,
-          storeName: p.Store!.Name,
+          storeName: p.Store!.BuildEnginePublisherId,
           storeId: '' + p.StoreId
         })
       )
