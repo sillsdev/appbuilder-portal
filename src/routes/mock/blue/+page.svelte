@@ -21,19 +21,32 @@
     let c = hex.substring(1).split('');
     if (c.length === 3) c = [c[0], c[0], c[1], c[1], c[2], c[2]];
     c = '0x' + c.join('');
-    let r = (c >> 16) & 255, g = (c >> 8) & 255, b = c & 255;
-    r /= 255; g /= 255; b /= 255;
-    let max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
+    let r = (c >> 16) & 255,
+      g = (c >> 8) & 255,
+      b = c & 255;
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    let max = Math.max(r, g, b),
+      min = Math.min(r, g, b);
+    let h,
+      s,
+      l = (max + min) / 2;
     if (max === min) {
       h = s = 0;
     } else {
       let d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
       switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
       }
       h /= 6;
     }
@@ -78,7 +91,10 @@
         ctx.drawImage(img, 0, 0, width, height);
         const { data } = ctx.getImageData(0, 0, width, height);
 
-        let r = 0, g = 0, b = 0, count = 0;
+        let r = 0,
+          g = 0,
+          b = 0,
+          count = 0;
         for (let i = 0; i < data.length; i += 4) {
           const alpha = data[i + 3];
           if (alpha === 0) continue;
@@ -128,12 +144,12 @@
 
 <svelte:head>
   <style>
-    :root { --outer-bg: {lightBgHex}; }
-    :global(html), :global(body) { background-color: var(--outer-bg) !important; min-height: 100%; }
+     :root { --outer-bg: {lightBgHex}; }
+     :global(html), :global(body) { background-color: var(--outer-bg) !important; min-height: 100%; }
   </style>
 </svelte:head>
 
-<div 
+<div
   class="min-h-screen w-full text-base-content font-sans antialiased break-words"
   style="
     --color-primary: {primaryHex};
@@ -154,15 +170,22 @@
   <div class="max-w-xl mx-auto bg-white min-h-screen">
     <div
       class="px-5 pt-5 pb-3 flex items-start gap-3"
-      style="padding-top: calc(2rem + env(safe-area-inset-top));"
+      style="padding-top: calc(1rem + env(safe-area-inset-top));"
     >
       <div class="flex flex-col">
         <h1 class="text-2xl font-bold tracking-tight">Manage my data</h1>
-        <p class="text-xs opacity-60 mt-1 leading-tight">Request account or data deletion for this app.</p>
+        <p class="text-xs opacity-60 mt-1 leading-tight">
+          Request account or data deletion for this app.
+        </p>
       </div>
       <div class="ml-auto">
-        <label class="text-[11px] uppercase tracking-wide opacity-60 font-bold block mb-1">Locale</label>
-        <select class="select select-bordered w-28 text-base sm:text-sm" bind:value={selectedLocale}>
+        <label class="text-[11px] uppercase tracking-wide opacity-60 font-bold block mb-1">
+          Locale
+        </label>
+        <select
+          class="select select-bordered w-28 text-base sm:text-sm"
+          bind:value={selectedLocale}
+        >
           {#each locales as locale}
             <option value={locale}>{locale}</option>
           {/each}
@@ -171,7 +194,11 @@
     </div>
 
     <div class="px-5 pb-4 flex items-start gap-4">
-      <img src={app.icon} alt="App icon" class="w-14 h-14 rounded-2xl shadow-sm bg-primary/5 p-0.5" />
+      <img
+        src={app.icon}
+        alt="App icon"
+        class="w-14 h-14 rounded-2xl shadow-sm bg-primary/5 p-0.5"
+      />
       <div class="grid justify-items-start text-left gap-0">
         <h2 class="text-lg font-bold tracking-tight leading-none">{app.name}</h2>
         <p class="text-sm text-primary font-bold leading-tight ml-4">{app.developer}</p>
@@ -179,7 +206,10 @@
     </div>
 
     <div class="px-5">
-      <a class="btn btn-ghost btn-sm border border-base-300 mb-4 w-full justify-center" href="./about">
+      <a
+        class="btn btn-ghost btn-sm border border-base-300 mb-4 w-full justify-center"
+        href="./about"
+      >
         About this app
       </a>
     </div>
@@ -196,28 +226,43 @@
 
           <div class="form-control w-full">
             <label class="label pb-1 pt-0">
-              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Email</span>
+              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
+                Email
+              </span>
             </label>
-            <input 
-              type="email" 
-              placeholder="you@example.com" 
-              class="input input-bordered w-full text-base sm:text-sm h-11 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" 
-              name="email" 
+            <input
+              type="email"
+              placeholder="you@example.com"
+              class="input input-bordered w-full text-base sm:text-sm h-11 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
+              name="email"
             />
             <label class="label pt-1 pb-0">
-              <span class="label-text-alt text-[10px] opacity-60">Use the email associated with your account.</span>
+              <span class="label-text-alt text-[10px] opacity-60">
+                Use the email associated with your account.
+              </span>
             </label>
           </div>
 
           <div class="form-control">
             <label class="label pb-1 pt-0">
-              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Deletion Scope</span>
+              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
+                Deletion Scope
+              </span>
             </label>
             <div class="flex flex-col gap-3 mt-1">
               <label class="label cursor-pointer items-start justify-start gap-3 p-0 group">
-                <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" checked />
+                <input
+                  type="radio"
+                  name="deletionType"
+                  class="radio radio-primary radio-sm mt-1"
+                  checked
+                />
                 <div>
-                  <span class="label-text font-bold text-sm group-hover:text-primary transition-colors">Delete my data</span>
+                  <span
+                    class="label-text font-bold text-sm group-hover:text-primary transition-colors"
+                  >
+                    Delete my data
+                  </span>
                   <p class="text-xs opacity-60 leading-tight mt-0.5">
                     Bookmarks, notes, highlights, reading plan progress. Account stays active.
                   </p>
@@ -226,7 +271,11 @@
               <label class="label cursor-pointer items-start justify-start gap-3 p-0 group">
                 <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" />
                 <div>
-                  <span class="label-text font-bold text-sm group-hover:text-primary transition-colors">Delete my account and data</span>
+                  <span
+                    class="label-text font-bold text-sm group-hover:text-primary transition-colors"
+                  >
+                    Delete my account and data
+                  </span>
                   <p class="text-xs opacity-60 leading-tight mt-0.5">
                     Removes account plus all associated data.
                   </p>
@@ -236,7 +285,9 @@
           </div>
 
           <div class="bg-base-200/60 rounded-lg p-4 border border-base-200">
-            <div class="text-[10px] font-bold mb-2 uppercase tracking-wide opacity-50">Items to be removed</div>
+            <div class="text-[10px] font-bold mb-2 uppercase tracking-wide opacity-50">
+              Items to be removed
+            </div>
             <ul class="list-disc list-inside space-y-1 text-xs opacity-60">
               <li>Bookmarks</li>
               <li>Notes</li>
@@ -247,9 +298,13 @@
 
           <div class="form-control">
             <label class="label pb-1 pt-0">
-              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Verification</span>
+              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
+                Verification
+              </span>
             </label>
-            <div class="rounded-btn border border-base-300 bg-base-200/30 h-14 flex items-center justify-center text-xs opacity-50">
+            <div
+              class="rounded-btn border border-base-300 bg-base-200/30 h-14 flex items-center justify-center text-xs opacity-50"
+            >
               Captcha widget placeholder (Turnstile)
             </div>
           </div>
@@ -261,8 +316,12 @@
       </div>
 
       <p class="text-xs opacity-50 text-center mt-4">
-        This page is provided for <span class="font-bold opacity-90">{app.name}</span> on Google Play. Need help?
-        <a class="link link-primary no-underline hover:underline" href="/support">Contact support</a>.
+        This page is provided for <span class="font-bold opacity-90">{app.name}</span>
+        on Google Play. Need help?
+        <a class="link link-primary no-underline hover:underline" href="/support">
+          Contact support
+        </a>
+        .
       </p>
     </div>
   </div>
