@@ -5,6 +5,12 @@ export enum RoleId {
   Author
 }
 
+export enum StoreType {
+  GooglePlay = 1,
+  S3,
+  Cloud
+}
+
 export enum ProductTransitionType {
   Activity = 1,
   StartWorkflow,
