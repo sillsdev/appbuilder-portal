@@ -10,9 +10,7 @@
     developer: 'Purple Studio',
     themeColor: '#6a4bff',
     shortDesc: 'A concise store listing blurb to confirm this page is official.',
-    longDesc: `A longer store listing description for users who want details.
-
-This is placeholder content to demonstrate layout only.`
+    longDesc: `A longer store listing description for users who want details.\n\nThis is placeholder content to demonstrate layout only.`
   };
 
   const locales = ['en-US', 'fr-FR', 'es-419'];
@@ -45,11 +43,7 @@ This is placeholder content to demonstrate layout only.`
   function hexToRgb(hex: string) {
     const clean = hex.replace('#', '');
     const int = Number.parseInt(clean.length === 3 ? clean.replace(/./g, '$&$&') : clean, 16);
-    return {
-      r: (int >> 16) & 255,
-      g: (int >> 8) & 255,
-      b: int & 255
-    };
+    return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
   }
 
   function getReadableTextHex(hex: string) {
@@ -140,7 +134,7 @@ This is placeholder content to demonstrate layout only.`
 </svelte:head>
 
 <div 
-  class="min-h-screen max-h-screen overflow-hidden w-full text-base-content font-sans antialiased break-words"
+  class="min-h-screen w-full text-base-content font-sans antialiased break-words"
   style="
     --color-primary: {primaryHex};
     --color-primary-content: {primaryContentHex};
@@ -157,150 +151,112 @@ This is placeholder content to demonstrate layout only.`
     word-break: break-word;
     overflow-wrap: anywhere;"
 >
-  <div class="max-w-6xl mx-auto bg-white">
-    <div class="w-full border-b border-base-300 bg-base-100 sticky top-0 z-50">
-      <div class="max-w-5xl mx-auto px-6 py-4 flex items-center gap-4">
-        <img src={app.icon} alt="App icon" class="w-12 h-12 rounded-2xl shadow-sm bg-primary/5 p-0.5" />
-        <div class="leading-snug">
-          <p class="text-[10px] uppercase tracking-wider font-bold opacity-50">Official data request page</p>
-          <h1 class="text-xl font-bold tracking-tight">{app.name}</h1>
-          <p class="text-sm text-primary font-bold cursor-pointer hover:underline opacity-90">{app.developer}</p>
-        </div>
-        <div class="ml-auto hidden sm:flex gap-3 items-center">
-          <span class="text-[11px] uppercase tracking-wide opacity-50 font-bold">Locale</span>
-          <div class="join">
-            {#each locales as locale}
-              <button
-                type="button"
-                class={`btn btn-xs join-item border-none ${
-                  locale === selectedLocale 
-                    ? 'btn-primary text-primary-content' 
-                    : 'btn-ghost opacity-60 hover:opacity-100 bg-base-200'
-                }`}
-                on:click={() => (selectedLocale = locale)}
-              >
-                {locale}
-              </button>
-            {/each}
-          </div>
-        </div>
+  <div class="max-w-xl mx-auto bg-white min-h-screen">
+    <div
+      class="px-5 pt-5 pb-3 flex items-start gap-3"
+      style="padding-top: calc(2rem + env(safe-area-inset-top));"
+    >
+      <div class="flex flex-col">
+        <h1 class="text-2xl font-bold tracking-tight">Manage my data</h1>
+        <p class="text-xs opacity-60 mt-1 leading-tight">Request account or data deletion for this app.</p>
+      </div>
+      <div class="ml-auto">
+        <label class="text-[11px] uppercase tracking-wide opacity-60 font-bold block mb-1">Locale</label>
+        <select class="select select-bordered w-28 text-base sm:text-sm" bind:value={selectedLocale}>
+          {#each locales as locale}
+            <option value={locale}>{locale}</option>
+          {/each}
+        </select>
       </div>
     </div>
 
-    <div class="max-w-5xl mx-auto px-6 py-6">
-      <div class="grid gap-6 md:grid-cols-[minmax(0,1fr)_400px] items-start">
-        <div class="space-y-6 min-w-0">
-          <div class="card bg-base-100 shadow-sm border border-base-300 rounded-lg min-w-0">
-            <div class="card-body p-5 break-words">
-              <div class="flex items-center justify-between mb-2">
-                <h2 class="card-title text-lg font-bold">About this app</h2>
-                <svg class="w-5 h-5 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-              </div>
-              <p class="text-sm opacity-70 leading-relaxed">{app.shortDesc}</p>
-              <details class="group mt-2">
-                <summary class="list-none text-sm font-bold text-primary cursor-pointer hover:underline flex items-center gap-2 select-none">
-                  Show more
-                </summary>
-                <div class="pt-3 text-sm opacity-70 whitespace-pre-line leading-relaxed">
-                  {app.longDesc}
-                </div>
-              </details>
-              <div class="divider sm:hidden my-4"></div>
-              <div class="sm:hidden">
-                <span class="text-xs font-bold opacity-50 uppercase tracking-wide">Locale:</span>
-                <div class="flex flex-wrap gap-2 mt-2">
-                  {#each locales as locale}
-                    <button
-                      type="button"
-                      class={`btn btn-xs ${
-                        locale === selectedLocale ? 'btn-primary' : 'btn-outline border-base-300 text-base-content/70'
-                      }`}
-                      on:click={() => (selectedLocale = locale)}
-                    >
-                      {locale}
-                    </button>
-                  {/each}
-                </div>
-              </div>
-              <div class="mt-6 bg-base-200 rounded-lg p-4 border border-base-200/50">
-                <p class="text-xs font-bold mb-1 opacity-90">Why this page exists</p>
-                <p class="text-xs opacity-60 leading-relaxed">
-                  Google Play requires a public link to request account or data deletion. Use this form to
-                  start that process for {app.name}.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="px-5 pb-4 flex items-start gap-4">
+      <img src={app.icon} alt="App icon" class="w-14 h-14 rounded-2xl shadow-sm bg-primary/5 p-0.5" />
+      <div class="grid justify-items-start text-left gap-0">
+        <h2 class="text-lg font-bold tracking-tight leading-none">{app.name}</h2>
+        <p class="text-sm text-primary font-bold leading-tight ml-4">{app.developer}</p>
+      </div>
+    </div>
 
-        <div class="card bg-base-100 shadow-sm border border-base-300 rounded-lg h-fit min-w-0">
-          <div class="card-body p-5 space-y-4 break-words">
-            <div>
-              <h2 class="card-title text-lg font-bold">Manage my data</h2>
-              <p class="text-xs opacity-60 mt-1 leading-relaxed">
-                Enter your email to request deletion. We’ll email a 6-digit code to confirm it’s you.
-              </p>
-            </div>
-            <div class="form-control w-full">
-              <label class="label pb-1 pt-0">
-                <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Email</span>
-              </label>
-              <input 
-                type="email" 
-                placeholder="you@example.com" 
-                class="input input-bordered w-full text-sm h-11 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" 
-                name="email" 
-              />
-              <label class="label pt-1 pb-0">
-                <span class="label-text-alt text-[10px] opacity-60">Use the email associated with your account.</span>
-              </label>
-            </div>
-            <div class="form-control">
-              <label class="label pb-1 pt-0">
-                <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Deletion Scope</span>
-              </label>
-              <div class="flex flex-col gap-3 mt-1">
-                <label class="label cursor-pointer items-start justify-start gap-3 p-0 group">
-                  <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" checked />
-                  <div>
-                    <span class="label-text font-bold text-sm group-hover:text-primary transition-colors">Delete my data</span>
-                    <p class="text-xs opacity-60 leading-tight mt-0.5">
-                      Bookmarks, notes, highlights, reading plan progress. Account stays active.
-                    </p>
-                  </div>
-                </label>
-                <label class="label cursor-pointer items-start justify-start gap-3 p-0 group">
-                  <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" />
-                  <div>
-                    <span class="label-text font-bold text-sm group-hover:text-primary transition-colors">Delete my account and data</span>
-                    <p class="text-xs opacity-60 leading-tight mt-0.5">
-                      Removes account plus all associated data.
-                    </p>
-                  </div>
-                </label>
-              </div>
-            </div>
-            <div class="bg-base-200/60 rounded-lg p-4 border border-base-200">
-              <div class="text-[10px] font-bold mb-2 uppercase tracking-wide opacity-50">Items to be removed</div>
-              <ul class="list-disc list-inside space-y-1 text-xs opacity-60">
-                <li>Bookmarks</li>
-                <li>Notes</li>
-                <li>Highlights</li>
-                <li>Reading plan progress</li>
-              </ul>
-            </div>
-            <div class="form-control">
-              <label class="label pb-1 pt-0">
-                <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Verification</span>
-              </label>
-              <div class="rounded-btn border border-base-300 bg-base-200/30 h-14 flex items-center justify-center text-xs opacity-50">
-                Captcha widget placeholder (Turnstile)
-              </div>
-            </div>
-            <button class="btn btn-primary w-full text-white no-animation" type="button">
-              Send verification code
-            </button>
+    <div class="px-5">
+      <a class="btn btn-ghost btn-sm border border-base-300 mb-4 w-full justify-center" href="./about">
+        About this app
+      </a>
+    </div>
+
+    <div class="px-5 pb-8">
+      <div class="card bg-base-100 shadow-sm border border-base-300 rounded-lg">
+        <div class="card-body p-5 space-y-4 break-words">
+          <div>
+            <h2 class="card-title text-lg font-bold">Manage my data</h2>
+            <p class="text-xs opacity-60 mt-1 leading-relaxed">
+              Enter your email to request deletion. We’ll email a 6-digit code to confirm it’s you.
+            </p>
           </div>
+
+          <div class="form-control w-full">
+            <label class="label pb-1 pt-0">
+              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Email</span>
+            </label>
+            <input 
+              type="email" 
+              placeholder="you@example.com" 
+              class="input input-bordered w-full text-base sm:text-sm h-11 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" 
+              name="email" 
+            />
+            <label class="label pt-1 pb-0">
+              <span class="label-text-alt text-[10px] opacity-60">Use the email associated with your account.</span>
+            </label>
+          </div>
+
+          <div class="form-control">
+            <label class="label pb-1 pt-0">
+              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Deletion Scope</span>
+            </label>
+            <div class="flex flex-col gap-3 mt-1">
+              <label class="label cursor-pointer items-start justify-start gap-3 p-0 group">
+                <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" checked />
+                <div>
+                  <span class="label-text font-bold text-sm group-hover:text-primary transition-colors">Delete my data</span>
+                  <p class="text-xs opacity-60 leading-tight mt-0.5">
+                    Bookmarks, notes, highlights, reading plan progress. Account stays active.
+                  </p>
+                </div>
+              </label>
+              <label class="label cursor-pointer items-start justify-start gap-3 p-0 group">
+                <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" />
+                <div>
+                  <span class="label-text font-bold text-sm group-hover:text-primary transition-colors">Delete my account and data</span>
+                  <p class="text-xs opacity-60 leading-tight mt-0.5">
+                    Removes account plus all associated data.
+                  </p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="bg-base-200/60 rounded-lg p-4 border border-base-200">
+            <div class="text-[10px] font-bold mb-2 uppercase tracking-wide opacity-50">Items to be removed</div>
+            <ul class="list-disc list-inside space-y-1 text-xs opacity-60">
+              <li>Bookmarks</li>
+              <li>Notes</li>
+              <li>Highlights</li>
+              <li>Reading plan progress</li>
+            </ul>
+          </div>
+
+          <div class="form-control">
+            <label class="label pb-1 pt-0">
+              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Verification</span>
+            </label>
+            <div class="rounded-btn border border-base-300 bg-base-200/30 h-14 flex items-center justify-center text-xs opacity-50">
+              Captcha widget placeholder (Turnstile)
+            </div>
+          </div>
+
+          <button class="btn btn-primary w-full text-white no-animation" type="button">
+            Send verification code
+          </button>
         </div>
       </div>
 
