@@ -55,7 +55,7 @@
         type="text"
         name="gpTitle"
         class="input input-bordered validator"
-        value={$form.gpTitle}
+        bind:value={$form.gpTitle}
         required
       />
       <span class="validator-hint">{m.stores_gpTitleEmpty()}</span>

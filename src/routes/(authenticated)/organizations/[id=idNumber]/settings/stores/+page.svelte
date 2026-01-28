@@ -21,7 +21,7 @@
 <h2>{m.org_storesTitle()}</h2>
 <p class="p-4 pt-0">{m.org_storeSelectTitle()}</p>
 <div class="flex flex-col w-full">
-  {#each data.stores.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as store}
+  {#each data.stores.toSorted( (a, b) => byString(a.Description || a.BuildEnginePublisherId, b.Description || b.BuildEnginePublisherId, getLocale()) ) as store}
     <DataDisplayBox
       editable
       onEdit={() =>
