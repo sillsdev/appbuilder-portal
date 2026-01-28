@@ -1,13 +1,16 @@
 <script lang="ts">
   import type { ActionData, PageData } from './$types';
   import { enhance } from '$app/forms';
-  import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
-  import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
+  import { goto } from '$app/navigation';
+  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
+  import type { ValidI13nKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { displayStoreGPTitle } from '$lib/prisma';
   import { toast } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
+
   interface Props {
     data: PageData;
   }
@@ -16,9 +19,24 @@
 </script>
 
 <h2>{m.org_storesTitle()}</h2>
-<div class="m-4">
-  <MultiselectBox header={m.org_storeSelectTitle()}>
-    {#each data.stores.toSorted( (a, b) => byString(displayStoreGPTitle(a) || a.BuildEnginePublisherId, displayStoreGPTitle(b) || b.BuildEnginePublisherId, getLocale()) ) as store}
+<p class="p-4 pt-0">{m.org_storeSelectTitle()}</p>
+<div class="flex flex-col w-full">
+  {#each data.stores.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as store}
+    <DataDisplayBox
+      editable
+      onEdit={() =>
+        goto(
+          localizeHref(`/organizations/${data.organization.Id}/settings/stores/edit?id=${store.Id}`)
+        )}
+      title={store.Description}
+      fields={[
+        { key: 'stores_publisherId', value: store.BuildEnginePublisherId },
+        { key: 'project_type', value: store.StoreType.Description },
+        ...(displayStoreGPTitle(store)
+          ? [{ key: 'stores_gpTitle' as ValidI13nKey, value: store.GooglePlayTitle }]
+          : [])
+      ]}
+    >
       <form
         method="POST"
         action=""
@@ -35,16 +53,16 @@
         }}
       >
         <input type="hidden" name="storeId" value={store.Id} />
-        <MultiselectBoxElement
-          title={displayStoreGPTitle(store) || store.BuildEnginePublisherId}
-          description={store?.Description ?? ''}
-          bind:checked={store.enabled}
-          checkProps={{
-            name: 'enabled',
-            onchange: (e) => e.currentTarget.form?.requestSubmit()
-          }}
-        />
+        <InputWithMessage title={{ key: 'flowDefs_enabled' }}>
+          <input
+            name="enabled"
+            class="toggle toggle-accent"
+            type="checkbox"
+            bind:checked={store.enabled}
+            onchange={(e) => e.currentTarget.form?.requestSubmit()}
+          />
+        </InputWithMessage>
       </form>
-    {/each}
-  </MultiselectBox>
+    </DataDisplayBox>
+  {/each}
 </div>
