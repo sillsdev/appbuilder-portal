@@ -65,7 +65,7 @@
   {/if}
   <LabeledFormInput key="project_type">
     <select class="select validator" name="storeType" bind:value={$form.storeType} required>
-      {#each data.options.toSorted((a, b) => byString(a.Description, b.Description, getLocale())) as type}
+      {#each data.options.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
         <option value={type.Id}>{type.Description}</option>
       {/each}
     </select>
