@@ -63,7 +63,7 @@
       <span class="validator-hint">{m.stores_gpTitleEmpty()}</span>
     </LabeledFormInput>
   {/if}
-  <LabeledFormInput key="project_type">
+  <LabeledFormInput key="common_type">
     <select class="select validator" name="storeType" bind:value={$form.storeType} required>
       {#each data.options.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
         <option value={type.Id}>{type.Description}</option>

@@ -63,7 +63,7 @@
       <span class="validator-hint">{m.stores_gpTitleEmpty()}</span>
     </LabeledFormInput>
   {/if}
-  <LabeledFormInput key="project_type">
+  <LabeledFormInput key="common_type">
     <input type="hidden" name="storeType" value={$form.storeType} />
     <input
       type="text"

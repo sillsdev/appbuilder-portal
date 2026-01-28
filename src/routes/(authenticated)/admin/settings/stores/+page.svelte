@@ -31,7 +31,7 @@
       title={store.BuildEnginePublisherId}
       fields={[
         { key: 'stores_attributes_description', value: store.Description },
-        { key: 'project_type', value: store.StoreType.Description },
+        { key: 'common_type', value: store.StoreType.Description },
         ...(displayStoreGPTitle(store)
           ? [{ key: 'stores_gpTitle' as ValidI13nKey, value: store.GooglePlayTitle }]
           : [])

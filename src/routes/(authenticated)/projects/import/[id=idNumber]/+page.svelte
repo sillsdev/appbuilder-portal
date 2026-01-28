@@ -101,7 +101,7 @@
           {/each}
         </select>
       </LabeledFormInput>
-      <LabeledFormInput key="project_type" class="max-w-xs">
+      <LabeledFormInput key="common_type" class="max-w-xs">
         <select name="type" class="select" bind:value={$form.type}>
           {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
             <option value={type.Id}>{type.Description}</option>

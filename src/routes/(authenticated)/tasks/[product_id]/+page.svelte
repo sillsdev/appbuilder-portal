@@ -316,7 +316,7 @@
         columns={[
           {
             id: 'artifactType',
-            header: m.project_type(),
+            header: m.common_type(),
             compare: (a, b) => byString(a.ArtifactType, b.ArtifactType, locale)
           },
           {
@@ -359,7 +359,7 @@
         columns={[
           {
             id: 'artifactType',
-            header: m.project_type(),
+            header: m.common_type(),
             compare: (a, b) => byString(a.ArtifactType, b.ArtifactType, locale)
           },
           {
