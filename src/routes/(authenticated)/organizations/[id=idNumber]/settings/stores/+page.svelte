@@ -58,7 +58,7 @@
             name="enabled"
             class="toggle toggle-accent"
             type="checkbox"
-            bind:checked={store.enabled}
+            checked={store.enabled}
             onchange={(e) => e.currentTarget.form?.requestSubmit()}
           />
         </InputWithMessage>
