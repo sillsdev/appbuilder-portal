@@ -1,7 +1,15 @@
+import type { Prisma } from '@prisma/client';
 import prisma from './prisma';
+import type { RequirePrimitive } from './utility';
 
-export async function update(): Promise<never> {
-  throw new Error('Not implemented');
+export async function update(
+  Id: number,
+  data: RequirePrimitive<Prisma.GroupsUncheckedUpdateInput>
+) {
+  return prisma.groups.update({
+    where: { Id },
+    data
+  });
 }
 /** @returns false if the group is associated with at least one project. */
 export async function deleteGroup(id: number) {
