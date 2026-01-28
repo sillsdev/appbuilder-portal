@@ -78,7 +78,8 @@ model Organizations {
   ProjectImports                ProjectImports[]
   Projects                      Projects[]
   UserRoles                     UserRoles[]
-  Stores                        Stores[]
+  Stores                        Stores[]                        @relation("OrganizationsToStores")
+  ManagedStores                 Stores[]                        @relation("ManagedStores")
 }
 
 model ProductArtifacts {
@@ -315,9 +316,11 @@ model Stores {
   Description            String?
   StoreTypeId            Int
   GooglePlayTitle        String?
-  Organizations          Organizations[]
+  OwnerId                Int?
+  Organizations          Organizations[] @relation("OrganizationsToStores")
   Products               Products[]
   StoreType              StoreTypes      @relation(fields: [StoreTypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Stores_StoreTypes_StoreTypeId")
+  Owner                  Organizations?  @relation(name: "ManagedStores", fields: [OwnerId], references: [Id], onDelete: SetNull, onUpdate: NoAction, map: "FK_Stores_Organizations_OwnerId")
 
   @@index([StoreTypeId], map: "IX_Stores_StoreTypeId")
 }
