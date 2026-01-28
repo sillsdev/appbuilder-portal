@@ -125,14 +125,26 @@
         <div class="flex flex-col pt-1 space-y-1">
           {#if availableStores.length}
             {@const locale = getLocale()}
-            {#each availableStores.toSorted( (a, b) => byString(displayStoreGPTitle(a) || a.BuildEnginePublisherId, displayStoreGPTitle(b) || b.BuildEnginePublisherId, locale) ) as store}
+            {@const display = (store: (typeof availableStores)[number]) =>
+              // prefer store description, if null, display GP title, if still empty, show publisher id as last resort
+              store.Description || displayStoreGPTitle(store) || store.BuildEnginePublisherId}
+            {#each availableStores.toSorted( (a, b) => byString(display(a), display(b), locale) ) as store}
               <label
                 class="flex flex-col border border-secondary rounded-sm text-left cursor-pointer"
               >
                 <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
-                  {displayStoreGPTitle(store) || store.BuildEnginePublisherId}
+                  {display(store)}
                 </div>
-                <p class="p-2 text-sm text-neutral-400">{store.Description}</p>
+                {#if displayStoreGPTitle(store)}
+                  <p class="p-2 pb-0 text-sm text-neutral-400">
+                    <b>{m.stores_gpTitle()}:</b>
+                    <span>{store.GooglePlayTitle}</span>
+                  </p>
+                {/if}
+                <p class="p-2 text-sm text-neutral-400">
+                  <b>{m.stores_publisherId()}:</b>
+                  <span>{store.BuildEnginePublisherId}</span>
+                </p>
                 <input
                   type="submit"
                   name="storeId"
