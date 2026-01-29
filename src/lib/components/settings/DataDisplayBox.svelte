@@ -41,7 +41,7 @@
       <p
         style="padding-left: 1rem; text-indent: -1rem"
         class:opacity-40={field.faint}
-        class="wrap-anywhere"
+        class={['wrap-anywhere', field.class]}
       >
         <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
         <b>{m[field.key](field.params as any)}:</b>

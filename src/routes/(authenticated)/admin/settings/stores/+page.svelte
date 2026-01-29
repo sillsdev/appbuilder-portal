@@ -5,7 +5,7 @@
   import type { ValidI13nKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-  import { displayStoreGPTitle } from '$lib/prisma';
+  import { displayStoreGPTitle, StoreType } from '$lib/prisma';
   import { byString } from '$lib/utils/sorting';
 
   interface Props {
@@ -25,6 +25,7 @@
 
 <div class="flex flex-col w-full">
   {#each data.stores.toSorted( (a, b) => byString(a.BuildEnginePublisherId, b.BuildEnginePublisherId, getLocale()) ) as store}
+    {@const missingGPTitle = store.StoreTypeId === StoreType.GooglePlay}
     <DataDisplayBox
       editable
       onEdit={() => goto(localizeHref(`${base}/edit?id=${store.Id}`))}
@@ -33,8 +34,14 @@
         { key: 'projectTable_owner' as ValidI13nKey, value: store.Owner?.Name ?? m.appName() },
         { key: 'stores_attributes_description', value: store.Description },
         { key: 'common_type', value: store.StoreType.Description },
-        ...(displayStoreGPTitle(store)
-          ? [{ key: 'stores_gpTitle' as ValidI13nKey, value: store.GooglePlayTitle }]
+        ...(displayStoreGPTitle(store) || missingGPTitle
+          ? [
+              {
+                key: 'stores_gpTitle' as ValidI13nKey,
+                value: store.GooglePlayTitle,
+                class: { 'text-error': missingGPTitle && !displayStoreGPTitle(store) }
+              }
+            ]
           : [])
       ]}
     />
