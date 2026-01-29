@@ -22,14 +22,16 @@
 <p class="p-4 pt-0">{m.org_storeSelectTitle()}</p>
 <div class="flex flex-col w-full">
   {#each data.stores.toSorted( (a, b) => byString(a.Description || a.BuildEnginePublisherId, b.Description || b.BuildEnginePublisherId, getLocale()) ) as store}
+    {@const editable = store.OwnerId === data.organization.Id}
     <DataDisplayBox
-      editable
+      {editable}
       onEdit={() =>
         goto(
           localizeHref(`/organizations/${data.organization.Id}/settings/stores/edit?id=${store.Id}`)
         )}
       title={store.Description}
       fields={[
+        { key: 'projectTable_owner' as ValidI13nKey, value: store.Owner?.Name ?? m.appName() },
         { key: 'stores_publisherId', value: store.BuildEnginePublisherId },
         { key: 'common_type', value: store.StoreType.Description },
         ...(displayStoreGPTitle(store)

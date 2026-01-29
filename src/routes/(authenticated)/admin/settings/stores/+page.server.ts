@@ -6,7 +6,7 @@ import { DatabaseReads } from '$lib/server/database';
 export const load = (async (event) => {
   event.locals.security.requireSuperAdmin();
   const stores = await DatabaseReads.stores.findMany({
-    include: { StoreType: true }
+    include: { StoreType: true, Owner: { select: { Name: true } } }
   });
 
   return { stores };

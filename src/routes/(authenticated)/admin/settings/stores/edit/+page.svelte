@@ -7,7 +7,7 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
   import { toast } from '$lib/utils';
-  import { byString } from '$lib/utils/sorting';
+  import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -32,6 +32,15 @@
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
+  <LabeledFormInput key="projectTable_owner">
+    <select class="select validator" name="owner" bind:value={$form.owner}>
+      <option value={null}>{m.appName()}</option>
+      {#each data.organizations.toSorted( (a, b) => byName(a, b, getLocale()) ) as org}
+        <option value={org.Id}>{org.Name}</option>
+      {/each}
+    </select>
+    <span class="validator-hint">&nbsp;</span>
+  </LabeledFormInput>
   <LabeledFormInput key="stores_publisherId">
     <input
       type="text"

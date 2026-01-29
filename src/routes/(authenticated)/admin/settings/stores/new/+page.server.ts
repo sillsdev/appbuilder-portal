@@ -4,12 +4,14 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { idSchema } from '$lib/valibot';
 
 const createSchema = v.object({
   publisherId: v.pipe(v.string(), v.trim(), v.minLength(1)),
   storeType: v.pipe(v.number(), v.minValue(1), v.integer()),
   description: v.nullable(v.string()),
-  gpTitle: v.nullable(v.string())
+  gpTitle: v.nullable(v.string()),
+  owner: v.nullable(idSchema)
 });
 
 export const load = (async ({ url, locals }) => {
@@ -32,7 +34,8 @@ export const actions = {
       BuildEnginePublisherId: form.data.publisherId,
       Description: form.data.description,
       StoreTypeId: form.data.storeType,
-      GooglePlayTitle: form.data.gpTitle
+      GooglePlayTitle: form.data.gpTitle,
+      OwnerId: form.data.owner
     });
     return { ok: true, form };
   }

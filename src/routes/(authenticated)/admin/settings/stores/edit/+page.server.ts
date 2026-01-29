@@ -12,7 +12,8 @@ const editSchema = v.object({
   publisherId: v.pipe(v.string(), v.trim(), v.minLength(1)),
   description: v.nullable(v.string()),
   storeType: idSchema,
-  gpTitle: v.nullable(v.string())
+  gpTitle: v.nullable(v.string()),
+  owner: v.nullable(idSchema)
 });
 export const load = (async ({ url, locals }) => {
   locals.security.requireSuperAdmin();
@@ -20,24 +21,28 @@ export const load = (async ({ url, locals }) => {
   if (isNaN(id)) {
     return redirect(302, localizeHref('/admin/settings/stores'));
   }
-  const data = await DatabaseReads.stores.findFirst({
+  const store = await DatabaseReads.stores.findFirst({
     where: {
       Id: id
-    }
-  });
-  if (!data) return redirect(302, localizeHref('/admin/settings/stores'));
-  const options = await DatabaseReads.storeTypes.findMany();
-  const form = await superValidate(
-    {
-      id: data.Id,
-      publisherId: data.BuildEnginePublisherId,
-      storeType: data.StoreTypeId!,
-      description: data.Description,
-      gpTitle: data.GooglePlayTitle
     },
-    valibot(editSchema)
-  );
-  return { form, options };
+    include: { StoreType: true }
+  });
+  if (!store) return redirect(302, localizeHref('/admin/settings/stores'));
+
+  return {
+    store,
+    form: await superValidate(
+      {
+        id: store.Id,
+        description: store.Description,
+        storeType: store.StoreTypeId,
+        gpTitle: store.GooglePlayTitle,
+        owner: store.OwnerId
+      },
+      valibot(editSchema)
+    ),
+    options: await DatabaseReads.storeTypes.findMany()
+  };
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -52,9 +57,9 @@ export const actions = {
       // The publishing process requires the publisherId to stay the same.
       // Changing the publisherId of the store will require a more involved UI.
       // See #1383 and #1378
-      StoreTypeId: form.data.storeType,
       Description: form.data.description,
-      GooglePlayTitle: form.data.gpTitle
+      GooglePlayTitle: form.data.gpTitle,
+      OwnerId: form.data.owner
     });
     return { ok: true, form };
   }

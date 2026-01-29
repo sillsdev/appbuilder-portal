@@ -30,6 +30,7 @@
       onEdit={() => goto(localizeHref(`${base}/edit?id=${store.Id}`))}
       title={store.BuildEnginePublisherId}
       fields={[
+        { key: 'projectTable_owner' as ValidI13nKey, value: store.Owner?.Name ?? m.appName() },
         { key: 'stores_attributes_description', value: store.Description },
         { key: 'common_type', value: store.StoreType.Description },
         ...(displayStoreGPTitle(store)
