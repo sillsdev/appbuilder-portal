@@ -127,7 +127,8 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           Stores: {
             select: {
               Id: true,
-              Name: true,
+              BuildEnginePublisherId: true,
+              GooglePlayTitle: true,
               Description: true,
               StoreTypeId: true
             }

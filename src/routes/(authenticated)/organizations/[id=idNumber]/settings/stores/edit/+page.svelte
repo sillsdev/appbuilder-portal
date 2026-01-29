@@ -2,12 +2,12 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
   import { toast } from '$lib/utils';
-  import { byName } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -15,7 +15,7 @@
 
   let { data }: Props = $props();
 
-  const base = '/admin/settings/stores';
+  const base = $derived(`/organizations/${data.organization.Id}/settings/stores`);
 
   const { form, enhance } = superForm(data.form, {
     onUpdated({ form }) {
@@ -54,15 +54,6 @@
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
-  <LabeledFormInput key="projectTable_owner">
-    <select class="select validator" name="owner" bind:value={$form.owner}>
-      <option value={null}>{m.appName()}</option>
-      {#each data.organizations.toSorted((a, b) => byName(a, b, getLocale())) as org}
-        <option value={org.Id}>{org.Name}</option>
-      {/each}
-    </select>
-    <span class="validator-hint">&nbsp;</span>
-  </LabeledFormInput>
   {#if data.store.StoreTypeId === StoreType.GooglePlay}
     <LabeledFormInput key="stores_gpTitle">
       <input
@@ -70,7 +61,7 @@
         name="gpTitle"
         class="input input-bordered validator"
         bind:value={$form.gpTitle}
-        required={$form.owner === null}
+        required
       />
       <span class="validator-hint">{m.stores_gpTitleEmpty()}</span>
     </LabeledFormInput>
@@ -84,6 +75,14 @@
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
+  <InputWithMessage title={{ key: 'flowDefs_enabled' }}>
+    <input
+      name="enabled"
+      class="toggle toggle-accent"
+      type="checkbox"
+      bind:checked={$form.enabled}
+    />
+  </InputWithMessage>
   <div class="my-4">
     <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
     <input type="submit" class="btn btn-primary" value={m.common_save()} />
@@ -91,13 +90,11 @@
 </form>
 
 <style>
-  input[type='text'],
-  select {
+  input[type='text'] {
     width: 100%;
   }
   @media (width >= 40rem) {
-    input[type='text'],
-    select {
+    input[type='text'] {
       max-width: var(--container-xs);
     }
   }

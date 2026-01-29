@@ -11,21 +11,33 @@ const editSchema = v.object({
   id: idSchema,
   description: v.nullable(v.string()),
   gpTitle: v.nullable(v.string()),
-  owner: v.nullable(idSchema)
+  enabled: v.boolean()
 });
-export const load = (async ({ url, locals }) => {
-  locals.security.requireSuperAdmin();
+export const load = (async ({ url, locals, params }) => {
+  const orgId = parseInt(params.id);
+  locals.security.requireAdminOfOrg(orgId);
   const id = parseInt(url.searchParams.get('id') ?? '');
   if (isNaN(id)) {
-    return redirect(302, localizeHref('/admin/settings/stores'));
+    return redirect(302, localizeHref(`/organizations/${orgId}/settings/stores`));
   }
   const store = await DatabaseReads.stores.findFirst({
     where: {
       Id: id
     },
-    include: { StoreType: true }
+    include: {
+      StoreType: true,
+      _count: {
+        select: {
+          Organizations: {
+            where: { Id: orgId }
+          }
+        }
+      }
+    }
   });
-  if (!store) return redirect(302, localizeHref('/admin/settings/stores'));
+  if (!store || store.OwnerId !== orgId) {
+    return redirect(302, localizeHref(`/organizations/${orgId}/settings/stores`));
+  }
 
   return {
     store,
@@ -34,20 +46,23 @@ export const load = (async ({ url, locals }) => {
         id: store.Id,
         description: store.Description,
         gpTitle: store.GooglePlayTitle,
-        owner: store.OwnerId
+        enabled: !!store._count.Organizations
       },
       valibot(editSchema)
-    ),
-    options: await DatabaseReads.storeTypes.findMany()
+    )
   };
 }) satisfies PageServerLoad;
 
 export const actions = {
-  async edit({ request, locals }) {
-    locals.security.requireSuperAdmin();
+  async edit({ request, locals, params }) {
+    const orgId = parseInt(params.id);
+    locals.security.requireAdminOfOrg(orgId);
     const form = await superValidate(request, valibot(editSchema));
     if (!form.valid) {
       return fail(400, { form, ok: false });
+    }
+    if (!(await DatabaseReads.stores.findFirst({ where: { Id: form.data.id, OwnerId: orgId } }))) {
+      return fail(403, { form, ok: false });
     }
     await DatabaseWrites.stores.update(form.data.id, {
       // Don't write publisherId to database here.
@@ -55,9 +70,9 @@ export const actions = {
       // Changing the publisherId of the store will require a more involved UI.
       // See #1383 and #1378
       Description: form.data.description,
-      GooglePlayTitle: form.data.gpTitle,
-      OwnerId: form.data.owner
+      GooglePlayTitle: form.data.gpTitle
     });
+    await DatabaseWrites.stores.toggleForOrg(form.data.id, orgId, form.data.enabled);
     return { ok: true, form };
   }
 } satisfies Actions;

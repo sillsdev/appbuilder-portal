@@ -6,8 +6,9 @@
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
+  import { displayStoreGPTitle } from '$lib/prisma';
   import { toast } from '$lib/utils';
-  import { byName } from '$lib/utils/sorting';
+  import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
     modal?: HTMLDialogElement;
@@ -26,7 +27,8 @@
     stores: Prisma.StoresGetPayload<{
       select: {
         Id: true;
-        Name: true;
+        BuildEnginePublisherId: true;
+        GooglePlayTitle: true;
         Description: true;
         StoreTypeId: true;
       };
@@ -123,14 +125,26 @@
         <div class="flex flex-col pt-1 space-y-1">
           {#if availableStores.length}
             {@const locale = getLocale()}
-            {#each availableStores.toSorted((a, b) => byName(a, b, locale)) as store}
+            {@const display = (store: (typeof availableStores)[number]) =>
+              // prefer store description, if null, display GP title, if still empty, show publisher id as last resort
+              store.Description || displayStoreGPTitle(store) || store.BuildEnginePublisherId}
+            {#each availableStores.toSorted( (a, b) => byString(display(a), display(b), locale) ) as store}
               <label
                 class="flex flex-col border border-secondary rounded-sm text-left cursor-pointer"
               >
                 <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
-                  {store.Name}
+                  {display(store)}
                 </div>
-                <p class="p-2 text-sm text-neutral-400">{store.Description}</p>
+                {#if displayStoreGPTitle(store)}
+                  <p class="p-2 pb-0 text-sm text-neutral-400">
+                    <b>{m.stores_gpTitle()}:</b>
+                    <span>{store.GooglePlayTitle}</span>
+                  </p>
+                {/if}
+                <p class="p-2 text-sm text-neutral-400">
+                  <b>{m.stores_publisherId()}:</b>
+                  <span>{store.BuildEnginePublisherId}</span>
+                </p>
                 <input
                   type="submit"
                   name="storeId"

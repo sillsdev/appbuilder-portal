@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import StoreListDisplay from '$lib/organizations/components/StoreListDisplay.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-  import { byName } from '$lib/utils/sorting';
+  import { byString } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -22,15 +22,12 @@
 </a>
 
 <div class="flex flex-col w-full">
-  {#each data.stores.toSorted((a, b) => byName(a, b, getLocale())) as store}
-    <DataDisplayBox
+  {#each data.stores.toSorted( (a, b) => byString(a.BuildEnginePublisherId, b.BuildEnginePublisherId, getLocale()) ) as store}
+    <StoreListDisplay
       editable
       onEdit={() => goto(localizeHref(`${base}/edit?id=${store.Id}`))}
-      title={store.Name}
-      fields={[
-        { key: 'stores_attributes_description', value: store.Description },
-        { key: 'storeTypes_name', value: store.StoreType.Name }
-      ]}
+      {store}
+      getTitle={(store) => store.BuildEnginePublisherId}
     />
   {/each}
 </div>

@@ -16,7 +16,11 @@ export const load = (async (event) => {
   return {
     stores: (
       await DatabaseReads.stores.findMany({
-        include: { Organizations: { where: { Id: organization.Id }, select: { Id: true } } }
+        include: {
+          Organizations: { where: { Id: organization.Id }, select: { Id: true } },
+          StoreType: true,
+          Owner: { select: { Name: true } }
+        }
       })
     ).map((s) => ({
       ...s,

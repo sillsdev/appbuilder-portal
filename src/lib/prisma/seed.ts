@@ -456,16 +456,23 @@ async function main() {
 
     const storesData = [
       {
-        Name: 'wycliffeusa',
+        BuildEnginePublisherId: 'wycliffeusa',
+        GooglePlayTitle: 'Wycliffe USA',
         Description: 'Wycliffe USA - Google Play',
         StoreTypeId: 1
       },
       {
-        Name: 'internetpublishingservice',
+        BuildEnginePublisherId: 'internetpublishingservice',
+        GooglePlayTitle: 'Internet Publishing Service',
         Description: 'Internet Publishing Service (Kalaam) - Google Play',
         StoreTypeId: 1
       },
-      { Name: 'indhack', Description: 'Indigitous Hack - Google Play', StoreTypeId: 1 }
+      {
+        BuildEnginePublisherId: 'indhack',
+        GooglePlayTitle: 'Indigitous Hack',
+        Description: 'Indigitous Hack - Google Play',
+        StoreTypeId: 1
+      }
     ];
 
     await prisma.stores.createMany({

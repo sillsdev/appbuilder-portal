@@ -29,7 +29,7 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
       },
       Store: {
         select: {
-          Name: true
+          BuildEnginePublisherId: true
         }
       },
       ProductDefinition: {
@@ -61,7 +61,7 @@ export async function create(job: Job<BullMQ.Product.Create>): Promise<unknown> 
       request_id: job.data.productId,
       git_url: productData.Project.RepositoryUrl,
       app_id: productData.Project.ApplicationType.Name!,
-      publisher_id: productData.Store!.Name!
+      publisher_id: productData.Store!.BuildEnginePublisherId
     }
   );
   job.updateProgress(50);

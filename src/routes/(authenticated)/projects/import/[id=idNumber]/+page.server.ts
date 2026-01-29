@@ -132,7 +132,7 @@ export const actions: Actions = {
 
         const store = await DatabaseReads.stores.findFirst({
           where: {
-            Name: product.Store
+            BuildEnginePublisherId: product.Store
           },
           select: {
             Id: true,
