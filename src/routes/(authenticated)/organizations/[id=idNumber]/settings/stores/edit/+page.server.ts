@@ -9,9 +9,7 @@ import { idSchema } from '$lib/valibot';
 
 const editSchema = v.object({
   id: idSchema,
-  publisherId: v.pipe(v.string(), v.trim(), v.minLength(1)),
   description: v.nullable(v.string()),
-  storeType: idSchema,
   gpTitle: v.nullable(v.string()),
   enabled: v.boolean()
 });
@@ -22,28 +20,35 @@ export const load = (async ({ url, locals, params }) => {
   if (isNaN(id)) {
     return redirect(302, localizeHref(`/organizations/${orgId}/settings/stores`));
   }
-  const data = await DatabaseReads.stores.findFirst({
+  const store = await DatabaseReads.stores.findFirst({
     where: {
       Id: id
     },
     include: {
       StoreType: true,
-      Organizations: { where: { Id: orgId }, select: { Id: true } }
+      _count: {
+        select: {
+          Organizations: {
+            where: { Id: orgId }
+          }
+        }
+      }
     }
   });
-  if (!data) return redirect(302, localizeHref(`/organizations/${orgId}/settings/stores`));
-  const form = await superValidate(
-    {
-      id: data.Id,
-      publisherId: data.BuildEnginePublisherId,
-      storeType: data.StoreTypeId!,
-      description: data.Description,
-      gpTitle: data.GooglePlayTitle,
-      enabled: !!data.Organizations.length
-    },
-    valibot(editSchema)
-  );
-  return { form, storeType: data.StoreType.Description };
+  if (!store) return redirect(302, localizeHref(`/organizations/${orgId}/settings/stores`));
+
+  return {
+    store,
+    form: await superValidate(
+      {
+        id: store.Id,
+        description: store.Description,
+        gpTitle: store.GooglePlayTitle,
+        enabled: !!store._count.Organizations
+      },
+      valibot(editSchema)
+    )
+  };
 }) satisfies PageServerLoad;
 
 export const actions = {

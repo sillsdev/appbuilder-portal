@@ -37,21 +37,24 @@
       type="text"
       name="publisherId"
       class="input input-bordered validator"
-      value={$form.publisherId}
+      value={data.store.BuildEnginePublisherId}
       readonly
+      disabled
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
-  <LabeledFormInput key="stores_attributes_description">
+  <LabeledFormInput key="common_type">
     <input
       type="text"
-      name="description"
-      class="input input-bordered"
-      bind:value={$form.description}
+      name="storeTypeDisplay"
+      class="input input-bordered validator"
+      value={data.store.StoreType.Description}
+      readonly
+      disabled
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
-  {#if $form.storeType === StoreType.GooglePlay}
+  {#if data.store.StoreTypeId === StoreType.GooglePlay}
     <LabeledFormInput key="stores_gpTitle">
       <input
         type="text"
@@ -63,14 +66,12 @@
       <span class="validator-hint">{m.stores_gpTitleEmpty()}</span>
     </LabeledFormInput>
   {/if}
-  <LabeledFormInput key="common_type">
-    <input type="hidden" name="storeType" value={$form.storeType} />
+  <LabeledFormInput key="stores_attributes_description">
     <input
       type="text"
-      name="storeTypeDisplay"
-      class="input input-bordered validator"
-      value={data.storeType}
-      readonly
+      name="description"
+      class="input input-bordered"
+      bind:value={$form.description}
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>

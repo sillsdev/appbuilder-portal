@@ -7,7 +7,7 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
   import { toast } from '$lib/utils';
-  import { byName, byString } from '$lib/utils/sorting';
+  import { byName } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -35,7 +35,7 @@
   <LabeledFormInput key="projectTable_owner">
     <select class="select validator" name="owner" bind:value={$form.owner}>
       <option value={null}>{m.appName()}</option>
-      {#each data.organizations.toSorted( (a, b) => byName(a, b, getLocale()) ) as org}
+      {#each data.organizations.toSorted((a, b) => byName(a, b, getLocale())) as org}
         <option value={org.Id}>{org.Name}</option>
       {/each}
     </select>
@@ -46,21 +46,24 @@
       type="text"
       name="publisherId"
       class="input input-bordered validator"
-      value={$form.publisherId}
+      value={data.store.BuildEnginePublisherId}
       readonly
+      disabled
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
-  <LabeledFormInput key="stores_attributes_description">
+  <LabeledFormInput key="common_type">
     <input
       type="text"
-      name="description"
-      class="input input-bordered"
-      bind:value={$form.description}
+      name="storeTypeDisplay"
+      class="input input-bordered validator"
+      value={data.store.StoreType.Description}
+      readonly
+      disabled
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
-  {#if $form.storeType === StoreType.GooglePlay}
+  {#if data.store.StoreTypeId === StoreType.GooglePlay}
     <LabeledFormInput key="stores_gpTitle">
       <input
         type="text"
@@ -72,13 +75,14 @@
       <span class="validator-hint">{m.stores_gpTitleEmpty()}</span>
     </LabeledFormInput>
   {/if}
-  <LabeledFormInput key="common_type">
-    <select class="select validator" name="storeType" bind:value={$form.storeType} required>
-      {#each data.options.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
-        <option value={type.Id}>{type.Description}</option>
-      {/each}
-    </select>
-    <span class="validator-hint">{m.stores_emptyStoreType()}</span>
+  <LabeledFormInput key="stores_attributes_description">
+    <input
+      type="text"
+      name="description"
+      class="input input-bordered"
+      bind:value={$form.description}
+    />
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <div class="my-4">
     <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>

@@ -9,9 +9,7 @@ import { idSchema } from '$lib/valibot';
 
 const editSchema = v.object({
   id: idSchema,
-  publisherId: v.pipe(v.string(), v.trim(), v.minLength(1)),
   description: v.nullable(v.string()),
-  storeType: idSchema,
   gpTitle: v.nullable(v.string()),
   owner: v.nullable(idSchema)
 });
@@ -35,7 +33,6 @@ export const load = (async ({ url, locals }) => {
       {
         id: store.Id,
         description: store.Description,
-        storeType: store.StoreTypeId,
         gpTitle: store.GooglePlayTitle,
         owner: store.OwnerId
       },

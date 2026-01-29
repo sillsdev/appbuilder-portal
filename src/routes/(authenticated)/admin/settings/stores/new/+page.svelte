@@ -33,7 +33,7 @@
   <LabeledFormInput key="projectTable_owner">
     <select class="select validator" name="owner" bind:value={$form.owner}>
       <option value={null}>{m.appName()}</option>
-      {#each data.organizations.toSorted( (a, b) => byName(a, b, getLocale()) ) as org}
+      {#each data.organizations.toSorted((a, b) => byName(a, b, getLocale())) as org}
         <option value={org.Id}>{org.Name}</option>
       {/each}
     </select>
@@ -49,14 +49,13 @@
     />
     <span class="validator-hint">{m.stores_publisherIdEmpty()}</span>
   </LabeledFormInput>
-  <LabeledFormInput key="stores_attributes_description">
-    <input
-      type="text"
-      name="description"
-      class="input input-bordered"
-      bind:value={$form.description}
-    />
-    <span class="validator-hint">&nbsp;</span>
+  <LabeledFormInput key="common_type">
+    <select class="select validator" name="storeType" bind:value={$form.storeType} required>
+      {#each data.options.storeType.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
+        <option value={type.Id}>{type.Description}</option>
+      {/each}
+    </select>
+    <span class="validator-hint">{m.stores_emptyStoreType()}</span>
   </LabeledFormInput>
   {#if $form.storeType === StoreType.GooglePlay}
     <LabeledFormInput key="stores_gpTitle">
@@ -70,13 +69,14 @@
       <span class="validator-hint">{m.stores_gpTitleEmpty()}</span>
     </LabeledFormInput>
   {/if}
-  <LabeledFormInput key="common_type">
-    <select class="select validator" name="storeType" bind:value={$form.storeType} required>
-      {#each data.options.storeType.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
-        <option value={type.Id}>{type.Description}</option>
-      {/each}
-    </select>
-    <span class="validator-hint">{m.stores_emptyStoreType()}</span>
+  <LabeledFormInput key="stores_attributes_description">
+    <input
+      type="text"
+      name="description"
+      class="input input-bordered"
+      bind:value={$form.description}
+    />
+    <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <div class="my-4">
     <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
