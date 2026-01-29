@@ -22,7 +22,8 @@ export const load = (async (event) => {
 
   const group = await DatabaseReads.groups.findUnique({
     where: {
-      Id: groupId
+      Id: groupId,
+      OwnerId: orgId
     },
     select: {
       Id: true,
