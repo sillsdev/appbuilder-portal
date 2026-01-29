@@ -35,7 +35,9 @@ export const load = (async ({ url, locals, params }) => {
       }
     }
   });
-  if (!store) return redirect(302, localizeHref(`/organizations/${orgId}/settings/stores`));
+  if (!store || store.OwnerId !== orgId) {
+    return redirect(302, localizeHref(`/organizations/${orgId}/settings/stores`));
+  }
 
   return {
     store,
@@ -58,6 +60,9 @@ export const actions = {
     const form = await superValidate(request, valibot(editSchema));
     if (!form.valid) {
       return fail(400, { form, ok: false });
+    }
+    if (!(await DatabaseReads.stores.findFirst({ where: { Id: form.data.id, OwnerId: orgId } }))) {
+      return fail(403, { form, ok: false });
     }
     await DatabaseWrites.stores.update(form.data.id, {
       // Don't write publisherId to database here.

@@ -5,7 +5,7 @@
   import type { ValidI13nKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-  import { displayStoreGPTitle, StoreType } from '$lib/prisma';
+  import { StoreType, displayStoreGPTitle } from '$lib/prisma';
   import { byString } from '$lib/utils/sorting';
 
   interface Props {
