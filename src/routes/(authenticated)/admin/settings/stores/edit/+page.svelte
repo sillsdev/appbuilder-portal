@@ -70,7 +70,7 @@
         name="gpTitle"
         class="input input-bordered validator"
         bind:value={$form.gpTitle}
-        required
+        required={$form.owner === null}
       />
       <span class="validator-hint">{m.stores_gpTitleEmpty()}</span>
     </LabeledFormInput>
