@@ -17,7 +17,7 @@ export const load = (async (event) => {
   const groupId = parseInt(event.url.searchParams.get('id') ?? '');
   event.locals.security.requireAdminOfOrg(orgId);
   if (isNaN(groupId)) {
-    return redirect(302, localizeHref(`/organizations/settings/${event.params.id}/groups`));
+    return redirect(302, localizeHref(`/organizations/${event.params.id}/settings/groups`));
   }
 
   const group = await DatabaseReads.groups.findUnique({
