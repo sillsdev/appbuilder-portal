@@ -1,11 +1,9 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
-  import type { ValidI13nKey } from '$lib/locales.svelte';
+  import StoreListDisplay from '$lib/organizations/components/StoreListDisplay.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
-  import { StoreType, displayStoreGPTitle } from '$lib/prisma';
   import { byString } from '$lib/utils/sorting';
 
   interface Props {
@@ -25,25 +23,11 @@
 
 <div class="flex flex-col w-full">
   {#each data.stores.toSorted( (a, b) => byString(a.BuildEnginePublisherId, b.BuildEnginePublisherId, getLocale()) ) as store}
-    {@const missingGPTitle = store.StoreTypeId === StoreType.GooglePlay}
-    <DataDisplayBox
+    <StoreListDisplay
       editable
       onEdit={() => goto(localizeHref(`${base}/edit?id=${store.Id}`))}
-      title={store.BuildEnginePublisherId}
-      fields={[
-        { key: 'projectTable_owner' as ValidI13nKey, value: store.Owner?.Name ?? m.appName() },
-        { key: 'stores_attributes_description', value: store.Description },
-        { key: 'common_type', value: store.StoreType.Description },
-        ...(displayStoreGPTitle(store) || missingGPTitle
-          ? [
-              {
-                key: 'stores_gpTitle' as ValidI13nKey,
-                value: store.GooglePlayTitle,
-                class: { 'text-error': missingGPTitle && !displayStoreGPTitle(store) }
-              }
-            ]
-          : [])
-      ]}
+      {store}
+      getTitle={(store) => store.BuildEnginePublisherId}
     />
   {/each}
 </div>
