@@ -47,13 +47,21 @@ export async function update(
   const existing = await prisma.products.findUnique({
     where: {
       Id: id
+    },
+    include: {
+      Project: { select: { OrganizationId: true } }
     }
   });
   const projectId = productData.ProjectId ?? existing!.ProjectId;
   const productDefinitionId = productData.ProductDefinitionId ?? existing!.ProductDefinitionId;
   const storeId = productData.StoreId ?? existing!.StoreId ?? undefined;
   const storeLanguageId = productData.StoreLanguageId ?? existing!.StoreLanguageId ?? undefined;
-  if (!(await validateProductBase(projectId, productDefinitionId, storeId, storeLanguageId)))
+  if (
+    !(
+      existing &&
+      (await validateProductBase(projectId, productDefinitionId, storeId, storeLanguageId))
+    )
+  )
     return false;
 
   // No additional verification steps
@@ -69,6 +77,18 @@ export async function update(
       type: BullMQ.JobType.SvelteSSE_UpdateProject,
       projectIds: [projectId]
     });
+    if (storeId && storeId !== existing.StoreId) {
+      const store = await prisma.stores.findUniqueOrThrow({ where: { Id: storeId } });
+      await getQueues().Products.add(
+        `Update Product #${existing.Id} (PublisherId => ${store.BuildEnginePublisherId})`,
+        {
+          type: BullMQ.JobType.Product_UpdateStore,
+          organizationId: existing.Project.OrganizationId,
+          buildEngineJobId: existing.BuildEngineJobId,
+          buildEnginePublisherId: store.BuildEnginePublisherId
+        }
+      );
+    }
   } catch {
     return false;
   }
