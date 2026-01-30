@@ -27,7 +27,7 @@
       editable
       onEdit={() => goto(localizeHref(`${base}/edit?id=${storeType.Id}`))}
       title={storeType.Name}
-      fields={[{ key: 'stores_attributes_description', value: storeType.Description }]}
+      fields={[{ key: 'common_description', value: storeType.Description }]}
     />
   {/each}
 </div>

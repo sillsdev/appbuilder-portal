@@ -5,11 +5,11 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { idSchema, propertiesSchema } from '$lib/valibot';
+import { idSchema, propertiesSchema, requiredString } from '$lib/valibot';
 
 const editSchema = v.object({
   id: idSchema,
-  name: v.pipe(v.string(), v.trim(), v.minLength(1)),
+  name: requiredString,
   workflow: idSchema,
   allowAll: v.boolean(),
   applicationTypes: v.array(idSchema),

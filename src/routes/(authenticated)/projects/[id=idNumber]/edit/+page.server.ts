@@ -5,10 +5,10 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { idSchema } from '$lib/valibot';
+import { idSchema, requiredString } from '$lib/valibot';
 
 const projectPropertyEditSchema = v.object({
-  name: v.pipe(v.string(), v.trim(), v.minLength(1)),
+  name: requiredString,
   group: idSchema,
   owner: idSchema,
   language: v.string(),

@@ -511,22 +511,22 @@ async function main() {
     );
 
     const groupsData = [
-      { Name: 'Language Software Development', Abbreviation: 'LSDEV', OwnerId: 1 },
-      { Name: 'Chad Branch', Abbreviation: 'CHB', OwnerId: 1 },
-      { Name: 'Mexico Branch', Abbreviation: 'MXB', OwnerId: 1 },
-      { Name: 'AuSIL', Abbreviation: 'AAB', OwnerId: 1 },
-      { Name: 'Americas Group', Abbreviation: 'AMG', OwnerId: 1 },
-      { Name: 'Asia Area', Abbreviation: 'ASA', OwnerId: 1 },
-      { Name: 'Camaroon Branch', Abbreviation: 'CMB', OwnerId: 1 },
-      { Name: 'Roma Region', Abbreviation: 'RMA', OwnerId: 1 },
-      { Name: 'The Seed Company', Abbreviation: 'RSM', OwnerId: 1 },
-      { Name: 'SIL International', Abbreviation: 'SIL', OwnerId: 1 },
-      { Name: 'Mainland Southeast Asia Group', Abbreviation: 'THG', OwnerId: 1 },
-      { Name: 'Wycliffe Taiwan', Abbreviation: 'TWN', OwnerId: 1 },
-      { Name: 'West Africa', Abbreviation: 'WAF', OwnerId: 1 },
-      { Name: 'Kalaam', Abbreviation: 'KAL', OwnerId: 2 },
-      { Name: 'FCBH', Abbreviation: 'FCBH', OwnerId: 3 },
-      { Name: 'Scripture Earth', Abbreviation: 'SE', OwnerId: 4 }
+      { Name: 'Language Software Development', Description: 'LSDEV', OwnerId: 1 },
+      { Name: 'Chad Branch', Description: 'CHB', OwnerId: 1 },
+      { Name: 'Mexico Branch', Description: 'MXB', OwnerId: 1 },
+      { Name: 'AuSIL', Description: 'AAB', OwnerId: 1 },
+      { Name: 'Americas Group', Description: 'AMG', OwnerId: 1 },
+      { Name: 'Asia Area', Description: 'ASA', OwnerId: 1 },
+      { Name: 'Camaroon Branch', Description: 'CMB', OwnerId: 1 },
+      { Name: 'Roma Region', Description: 'RMA', OwnerId: 1 },
+      { Name: 'The Seed Company', Description: 'RSM', OwnerId: 1 },
+      { Name: 'SIL International', Description: 'SIL', OwnerId: 1 },
+      { Name: 'Mainland Southeast Asia Group', Description: 'THG', OwnerId: 1 },
+      { Name: 'Wycliffe Taiwan', Description: 'TWN', OwnerId: 1 },
+      { Name: 'West Africa', Description: 'WAF', OwnerId: 1 },
+      { Name: 'Kalaam', Description: 'KAL', OwnerId: 2 },
+      { Name: 'FCBH', Description: 'FCBH', OwnerId: 3 },
+      { Name: 'Scripture Earth', Description: 'SE', OwnerId: 4 }
     ];
 
     await prisma.groups.createMany({

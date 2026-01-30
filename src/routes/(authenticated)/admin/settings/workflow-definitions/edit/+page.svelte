@@ -65,7 +65,7 @@
     </select>
     <span class="validator-hint">{m.flowDefs_emptyProductType()}</span>
   </LabeledFormInput>
-  <LabeledFormInput key="flowDefs_description">
+  <LabeledFormInput key="common_description">
     <input
       type="text"
       name="description"

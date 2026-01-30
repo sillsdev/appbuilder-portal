@@ -192,7 +192,7 @@
             value={data.fields.projectName}
           />
         </LabeledFormInput>
-        <LabeledFormInput key="project_description" class="md:w-2/4">
+        <LabeledFormInput key="common_description" class="md:w-2/4">
           <input
             type="text"
             class="input input-bordered w-full"

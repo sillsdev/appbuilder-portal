@@ -145,7 +145,7 @@
             </div>
           </div>
           <div class="my-4">
-            <span>{m.project_description()}:</span>
+            <span>{m.common_description()}:</span>
             <br />
             <p>{projectData.project.Description}</p>
           </div>

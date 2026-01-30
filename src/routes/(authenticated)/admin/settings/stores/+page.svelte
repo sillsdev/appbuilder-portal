@@ -28,6 +28,7 @@
       onEdit={() => goto(localizeHref(`${base}/edit?id=${store.Id}`))}
       {store}
       getTitle={(store) => store.BuildEnginePublisherId}
+      showDescription
     />
   {/each}
 </div>

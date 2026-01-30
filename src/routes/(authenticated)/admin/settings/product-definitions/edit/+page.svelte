@@ -105,7 +105,7 @@
     </select>
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
-  <LabeledFormInput key="prodDefs_description">
+  <LabeledFormInput key="common_description">
     <textarea
       name="description"
       class="textarea textarea-bordered h-36 w-full"

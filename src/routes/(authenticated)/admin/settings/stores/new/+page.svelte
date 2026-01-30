@@ -69,7 +69,7 @@
       <span class="validator-hint">{m.stores_gpTitleEmpty()}</span>
     </LabeledFormInput>
   {/if}
-  <LabeledFormInput key="stores_attributes_description">
+  <LabeledFormInput key="common_description">
     <input
       type="text"
       name="description"

@@ -1,7 +1,8 @@
 import * as v from 'valibot';
+import { requiredString } from '$lib/valibot';
 
 export const infoSchema = v.object({
-  name: v.pipe(v.string(), v.trim(), v.minLength(1)),
+  name: requiredString,
   logoUrl: v.nullable(v.string()),
   contact: v.nullable(
     v.union([
