@@ -144,8 +144,11 @@
 
 <svelte:head>
   <style>
-    :root { --outer-bg: {lightBgHex}; }
-    :global(html), :global(body) { background-color: var(--outer-bg) !important; min-height: 100%; }
+    :global(html),
+    :global(body) {
+      background-color: var(--outer-bg, #f5f7fa) !important;
+      min-height: 100%;
+    }
   </style>
 </svelte:head>
 
@@ -180,10 +183,14 @@
         </p>
       </div>
       <div class="ml-auto justify-self-end">
-        <label class="text-[11px] uppercase tracking-wide opacity-60 font-bold block mb-1">
+        <label
+          class="text-[11px] uppercase tracking-wide opacity-60 font-bold block mb-1"
+          for="language-select"
+        >
           Language
         </label>
         <select
+          id="language-select"
           class="select select-bordered w-28 text-base sm:text-sm"
           bind:value={selectedLocale}
         >
@@ -233,18 +240,19 @@
           </div>
 
           <div class="form-control w-full">
-            <label class="label pb-1 pt-0">
+            <label class="label pb-1 pt-0" for="email">
               <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
                 Email
               </span>
             </label>
             <input
+              id="email"
               type="email"
               placeholder="you@example.com"
               class="input input-bordered w-full text-base sm:text-sm h-11 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
               name="email"
             />
-            <label class="label pt-1 pb-0">
+            <label class="label pt-1 pb-0" for="email">
               <span class="label-text-alt text-[10px] opacity-60">
                 Use the email associated with your account.
               </span>
@@ -252,11 +260,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label pb-1 pt-0">
+            <p class="label pb-1 pt-0">
               <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
                 Deletion Scope
               </span>
-            </label>
+            </p>
             <div class="flex flex-col gap-3 mt-1">
               <label class="label cursor-pointer items-start justify-start gap-3 p-0 group">
                 <input
@@ -283,7 +291,7 @@
                   <span
                     class="label-text font-bold text-sm group-hover:text-primary transition-colors"
                   >
-                    Delete my account and data
+                    Delete my account and all associated data
                   </span>
                   <p class="text-xs opacity-60 leading-tight mt-0.5">
                     This will permanently remove your login and saved content.
@@ -310,11 +318,11 @@
           </div>
 
           <div class="form-control">
-            <label class="label pb-1 pt-0">
+            <p class="label pb-1 pt-0">
               <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
                 Verification
               </span>
-            </label>
+            </p>
             <div
               class="rounded-btn border border-base-300 bg-base-200/30 h-14 flex items-center justify-center text-xs opacity-50"
             >
