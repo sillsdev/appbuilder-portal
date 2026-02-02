@@ -161,11 +161,12 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
       const product = products[i];
       const snap = await Workflow.getSnapshot(product.Id);
       if (snap) {
+        const availableTransitions = Workflow.availableTransitionsFromName(snap.state, snap.input);
         // Create tasks for all users that could perform this activity
         if (!project.DateArchived && job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
           const roleSet = new Set(
             (
-              Workflow.availableTransitionsFromName(snap.state, snap.input)
+              availableTransitions
                 .filter((t) => t[0].meta.type === ActionType.User)
                 .map((t) => t[0].meta.user) as RoleId[]
             ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
@@ -199,7 +200,8 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         // create ProductTransitions if user tasks still exist
         if (
           job.data.operation.type !== BullMQ.UserTasks.OpType.Delete ||
-          (await DatabaseReads.userTasks.findFirst({ where: { ProductId: product.Id } }))
+          (await DatabaseReads.userTasks.findFirst({ where: { ProductId: product.Id } })) ||
+          availableTransitions.filter((t) => t[0].meta.type === ActionType.Auto).length
         ) {
           await DatabaseWrites.productTransitions.createMany(
             {
