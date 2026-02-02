@@ -169,18 +169,19 @@
 >
   <div class="max-w-xl mx-auto bg-white min-h-screen">
     <div
-      class="px-5 pt-5 pb-3 flex items-start gap-3"
-      style="padding-top: calc(1rem + env(safe-area-inset-top));"
+      class="px-5 pt-5 pb-3 grid grid-cols-[auto_1fr] gap-3 items-start"
+      style="padding-top: calc(1rem + env(safe-area-inset-top)); padding-left: 45px;"
     >
-      <div class="flex flex-col">
-        <h1 class="text-2xl font-bold tracking-tight">Manage my data</h1>
-        <p class="text-xs opacity-60 mt-1 leading-tight">
+      <div class="grid grid-cols-1 gap-0 border-l-4 border-black pl-0 content-start">
+        <h1 class="text-2xl font-bold tracking-tight leading-none">Manage my data</h1>
+
+        <p class="text-xs opacity-60 leading-tight -mt-3 m-9">
           Request account or data deletion for this app.
         </p>
       </div>
-      <div class="ml-auto">
+      <div class="ml-auto justify-self-end">
         <label class="text-[11px] uppercase tracking-wide opacity-60 font-bold block mb-1">
-          Locale
+          Language
         </label>
         <select
           class="select select-bordered w-28 text-base sm:text-sm"
@@ -218,9 +219,16 @@
       <div class="card bg-base-100 shadow-sm border border-base-300 rounded-lg">
         <div class="card-body p-5 space-y-4 break-words">
           <div>
-            <h2 class="card-title text-lg font-bold">Manage my data</h2>
-            <p class="text-xs opacity-60 mt-1 leading-relaxed">
-              Enter your email to request deletion. We’ll email a 6-digit code to confirm it’s you.
+            <h2 class="card-title text-lg font-bold">Deletion Request</h2>
+            <p class="text-xs opacity-60 mt-1 leading-relaxed" style="text-indent: 10px;">
+              Enter the email address associated with your account to request data deletion. We’ll
+              send a one-time verification code to confirm your identity.
+            </p>
+            <p class="text-xs opacity-60 mt-1 leading-relaxed" style="text-indent: 10px;">
+              Once confirmed, your request will be processed within 30 days, in accordance with our
+              data retention obligations. Deletions are permanent and cannot be undone. Some
+              information may be retained where required by law or for legitimate compliance
+              purposes.
             </p>
           </div>
 
@@ -264,7 +272,8 @@
                     Delete my data
                   </span>
                   <p class="text-xs opacity-60 leading-tight mt-0.5">
-                    Bookmarks, notes, highlights, reading plan progress. Account stays active.
+                    Your login remains active, but your personal content will be permanently
+                    deleted.
                   </p>
                 </div>
               </label>
@@ -277,10 +286,14 @@
                     Delete my account and data
                   </span>
                   <p class="text-xs opacity-60 leading-tight mt-0.5">
-                    Removes account plus all associated data.
+                    This will permanently remove your login and saved content.
                   </p>
                 </div>
               </label>
+              <p class="text-xs opacity-60 leading-tight mt-0.5">
+                ⚠️ Deletions are permanent and cannot be undone. Some data may be retained for legal
+                or compliance purposes
+              </p>
             </div>
           </div>
 
