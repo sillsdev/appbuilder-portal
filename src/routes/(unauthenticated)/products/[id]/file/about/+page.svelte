@@ -11,13 +11,15 @@
 <div class="min-h-screen bg-base-200 text-base-content">
   <div class="max-w-3xl mx-auto bg-white min-h-screen px-6 py-8 space-y-6">
     <div class="px-5 pb-4 flex items-start gap-4">
-      <img src={app.icon} alt="App icon" class="w-14 h-14 rounded-2xl shadow-sm bg-primary/5 p-0.5" />
+      <img
+        src={app.icon}
+        alt="App icon"
+        class="w-14 h-14 rounded-2xl shadow-sm bg-primary/5 p-0.5"
+      />
       <div class="grid justify-items-start text-left gap-0">
-        
         <h2 class="text-lg font-bold tracking-tight leading-none">{app.name}</h2>
 
         <p class="text-sm text-primary font-bold leading-tight ml-4">{app.developer}</p>
-        
       </div>
     </div>
     <div class="card bg-base-100 shadow-sm border border-base-300 rounded-lg">
@@ -26,7 +28,9 @@
         <p class="text-sm opacity-70 leading-relaxed">{app.shortDesc}</p>
 
         <details class="group">
-          <summary class="list-none text-sm font-bold text-primary cursor-pointer hover:underline flex items-center gap-2 select-none">
+          <summary
+            class="list-none text-sm font-bold text-primary cursor-pointer hover:underline flex items-center gap-2 select-none"
+          >
             Show more
           </summary>
           <div class="pt-3 text-sm opacity-70 whitespace-pre-line leading-relaxed">
