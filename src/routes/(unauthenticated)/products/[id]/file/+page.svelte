@@ -21,19 +21,32 @@
     let c = hex.substring(1).split('');
     if (c.length === 3) c = [c[0], c[0], c[1], c[1], c[2], c[2]];
     c = '0x' + c.join('');
-    let r = (c >> 16) & 255, g = (c >> 8) & 255, b = c & 255;
-    r /= 255; g /= 255; b /= 255;
-    let max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
+    let r = (c >> 16) & 255,
+      g = (c >> 8) & 255,
+      b = c & 255;
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    let max = Math.max(r, g, b),
+      min = Math.min(r, g, b);
+    let h,
+      s,
+      l = (max + min) / 2;
     if (max === min) {
       h = s = 0;
     } else {
       let d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
       switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
       }
       h /= 6;
     }
@@ -78,7 +91,10 @@
         ctx.drawImage(img, 0, 0, width, height);
         const { data } = ctx.getImageData(0, 0, width, height);
 
-        let r = 0, g = 0, b = 0, count = 0;
+        let r = 0,
+          g = 0,
+          b = 0,
+          count = 0;
         for (let i = 0; i < data.length; i += 4) {
           const alpha = data[i + 3];
           if (alpha === 0) continue;
@@ -128,12 +144,15 @@
 
 <svelte:head>
   <style>
-    :root { --outer-bg: {lightBgHex}; }
-    :global(html), :global(body) { background-color: var(--outer-bg) !important; min-height: 100%; }
+    :global(html),
+    :global(body) {
+      background-color: var(--outer-bg, #f5f7fa) !important;
+      min-height: 100%;
+    }
   </style>
 </svelte:head>
 
-<div 
+<div
   class="min-h-screen w-full text-base-content font-sans antialiased break-words"
   style="
     --color-primary: {primaryHex};
@@ -157,19 +176,24 @@
       style="padding-top: calc(18rem + env(safe-area-inset-top)); padding-left: 45px;"
     >
       <div class="grid grid-cols-1 gap-0 border-l-4 border-black pl-0 content-start">
-        
-        <h1 class="text-2xl font-bold tracking-tight leading-none">
-          Manage my data
-        </h1>
-        
+        <h1 class="text-2xl font-bold tracking-tight leading-none">Manage my data</h1>
+
         <p class="text-xs opacity-60 leading-tight -mt-3 m-9">
           Request account or data deletion for this app.
         </p>
-
       </div>
       <div class="ml-auto justify-self-end">
-        <label class="text-[11px] uppercase tracking-wide opacity-60 font-bold block mb-1">Language</label>
-        <select class="select select-bordered w-28 text-base sm:text-sm" bind:value={selectedLocale}>
+        <label
+          class="text-[11px] uppercase tracking-wide opacity-60 font-bold block mb-1"
+          for="language-select"
+        >
+          Language
+        </label>
+        <select
+          id="language-select"
+          class="select select-bordered w-28 text-base sm:text-sm"
+          bind:value={selectedLocale}
+        >
           {#each locales as locale}
             <option value={locale}>{locale}</option>
           {/each}
@@ -178,7 +202,11 @@
     </div>
 
     <div class="px-5 pb-4 flex items-start gap-4">
-      <img src={app.icon} alt="App icon" class="w-14 h-14 rounded-2xl shadow-sm bg-primary/5 p-0.5" />
+      <img
+        src={app.icon}
+        alt="App icon"
+        class="w-14 h-14 rounded-2xl shadow-sm bg-primary/5 p-0.5"
+      />
       <div class="grid justify-items-start text-left gap-0">
         <h2 class="text-lg font-bold tracking-tight leading-none">{app.name}</h2>
         <p class="text-sm text-primary font-bold leading-tight ml-4">{app.developer}</p>
@@ -186,7 +214,10 @@
     </div>
 
     <div class="px-5">
-      <a class="btn btn-ghost btn-sm border border-base-300 mb-4 w-full justify-center" href="./file/about">
+      <a
+        class="btn btn-ghost btn-sm border border-base-300 mb-4 w-full justify-center"
+        href="./file/about"
+      >
         About this app
       </a>
     </div>
@@ -197,57 +228,87 @@
           <div>
             <h2 class="card-title text-lg font-bold">Deletion Request</h2>
             <p class="text-xs opacity-60 mt-1 leading-relaxed" style="text-indent: 10px;">
-              Enter the email address associated with your account to request data deletion. We’ll send a one-time verification code to confirm your identity.
+              Enter the email address associated with your account to request data deletion. We’ll
+              send a one-time verification code to confirm your identity.
             </p>
             <p class="text-xs opacity-60 mt-1 leading-relaxed" style="text-indent: 10px;">
-              Once confirmed, your request will be processed within 30 days, in accordance with our data retention obligations. Deletions are permanent and cannot be undone. Some information may be retained where required by law or for legitimate compliance purposes.
+              Once confirmed, your request will be processed within 30 days, in accordance with our
+              data retention obligations. Deletions are permanent and cannot be undone. Some
+              information may be retained where required by law or for legitimate compliance
+              purposes.
             </p>
           </div>
 
           <div class="form-control w-full">
-            <label class="label pb-1 pt-0">
-              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Email</span>
+            <label class="label pb-1 pt-0" for="email">
+              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
+                Email
+              </span>
             </label>
-            <input 
-              type="email" 
-              placeholder="you@example.com" 
-              class="input input-bordered w-full text-base sm:text-sm h-11 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none" 
-              name="email" 
+            <input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              class="input input-bordered w-full text-base sm:text-sm h-11 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
+              name="email"
             />
-            <label class="label pt-1 pb-0">
-              <span class="label-text-alt text-[10px] opacity-60">Use the email associated with your account.</span>
+            <label class="label pt-1 pb-0" for="email">
+              <span class="label-text-alt text-[10px] opacity-60">
+                Use the email associated with your account.
+              </span>
             </label>
           </div>
 
           <div class="form-control">
-            <label class="label pb-1 pt-0">
-              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Deletion Scope</span>
-            </label>
+            <p class="label pb-1 pt-0">
+              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
+                Deletion Scope
+              </span>
+            </p>
             <div class="flex flex-col gap-3 mt-1">
               <label class="label cursor-pointer items-start justify-start gap-3 p-0 group">
-                <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" checked />
+                <input
+                  type="radio"
+                  name="deletionType"
+                  class="radio radio-primary radio-sm mt-1"
+                  checked
+                />
                 <div>
-                  <span class="label-text font-bold text-sm group-hover:text-primary transition-colors">Delete my data</span>
+                  <span
+                    class="label-text font-bold text-sm group-hover:text-primary transition-colors"
+                  >
+                    Delete my data
+                  </span>
                   <p class="text-xs opacity-60 leading-tight mt-0.5">
-                    Your login remains active, but your personal content will be permanently deleted.
+                    Your login remains active, but your personal content will be permanently
+                    deleted.
                   </p>
                 </div>
               </label>
               <label class="label cursor-pointer items-start justify-start gap-3 p-0 group">
                 <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" />
                 <div>
-                  <span class="label-text font-bold text-sm group-hover:text-primary transition-colors">Delete my account and all associated data</span>
+                  <span
+                    class="label-text font-bold text-sm group-hover:text-primary transition-colors"
+                  >
+                    Delete my account and all associated data
+                  </span>
                   <p class="text-xs opacity-60 leading-tight mt-0.5">
                     This will permanently remove your login and saved content.
                   </p>
                 </div>
               </label>
-              <p class="text-xs opacity-60 leading-tight mt-0.5">⚠️ Deletions are permanent and cannot be undone. Some data may be retained for legal or compliance purposes</p>
+              <p class="text-xs opacity-60 leading-tight mt-0.5">
+                ⚠️ Deletions are permanent and cannot be undone. Some data may be retained for legal
+                or compliance purposes
+              </p>
             </div>
           </div>
 
           <div class="bg-base-200/60 rounded-lg p-4 border border-base-200">
-            <div class="text-[10px] font-bold mb-2 uppercase tracking-wide opacity-50">Items to be removed</div>
+            <div class="text-[10px] font-bold mb-2 uppercase tracking-wide opacity-50">
+              Items to be removed
+            </div>
             <ul class="list-disc list-inside space-y-1 text-xs opacity-60">
               <li>Bookmarks</li>
               <li>Notes</li>
@@ -257,10 +318,14 @@
           </div>
 
           <div class="form-control">
-            <label class="label pb-1 pt-0">
-              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">Verification</span>
-            </label>
-            <div class="rounded-btn border border-base-300 bg-base-200/30 h-14 flex items-center justify-center text-xs opacity-50">
+            <p class="label pb-1 pt-0">
+              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
+                Verification
+              </span>
+            </p>
+            <div
+              class="rounded-btn border border-base-300 bg-base-200/30 h-14 flex items-center justify-center text-xs opacity-50"
+            >
               Captcha widget placeholder (Turnstile)
             </div>
           </div>
@@ -272,8 +337,12 @@
       </div>
 
       <p class="text-xs opacity-50 text-center mt-4">
-        This page is provided for <span class="font-bold opacity-90">{app.name}</span> on Google Play. Need help?
-        <a class="link link-primary no-underline hover:underline" href="/support">Contact support</a>.
+        This page is provided for <span class="font-bold opacity-90">{app.name}</span>
+        on Google Play. Need help?
+        <a class="link link-primary no-underline hover:underline" href="/support">
+          Contact support
+        </a>
+        .
       </p>
     </div>
   </div>
