@@ -24,19 +24,25 @@ interface ProductToRebuild {
  * Checks to make sure the product is part of a project that has rebuildOnSoftwareUpdate enabled,
  * and that the latest product build's AppBuilderVersion does not match the required SystemVersion.
  * @param searchOrgs An array or organizations to include products from.
+ * @param selectedTypeIds Optional array of ApplicationTypeIds to filter by. If provided, only products with these types are returned.
  * @returns Array of Products
  */
-async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToRebuild[]> {
+async function getProductsForRebuild(
+  searchOrgs: number[],
+  selectedTypeIds?: number[]
+): Promise<ProductToRebuild[]> {
   // 1. Fetch all products that meet the initial Project/Organization criteria.
   const eligibleProducts = await DatabaseReads.products.findMany({
     where: {
       Project: {
         OrganizationId: { in: searchOrgs },
         DateArchived: null, // Project has not been archived
-        RebuildOnSoftwareUpdate: true // Project setting is true
+        RebuildOnSoftwareUpdate: true, // Project setting is true
+        ...(selectedTypeIds && selectedTypeIds.length > 0 && { TypeId: { in: selectedTypeIds } })
       },
-      WorkflowInstance: null, // Only products without active workflows
-      DatePublished: { not: null } // Only products that have been published at least once
+      WorkflowInstance: null // Only products without active workflows
+      //add back in
+      //DatePublished: { not: null } // Only products that have been published at least once
     },
     select: {
       Id: true,
@@ -129,7 +135,8 @@ async function getProductsForRebuild(searchOrgs: number[]): Promise<ProductToReb
 }
 
 const formSchema = v.object({
-  comment: v.pipe(v.string(), v.minLength(1, 'Comment is required'))
+  comment: v.pipe(v.string(), v.minLength(1)),
+  applicationTypeIds: v.pipe(v.array(v.number()), v.minLength(1))
 });
 
 export const load = (async ({ locals, params }) => {
@@ -156,7 +163,6 @@ export const load = (async ({ locals, params }) => {
   for (const product of productsToRebuild) {
     projectMap.set(product.projectId, product.projectName);
   }
-  const projects = Array.from(projectMap.entries()).map(([id, name]) => ({ Id: id, Name: name }));
 
   // Get any active software updates initiated by this user
   const activeUpdates = await DatabaseReads.softwareUpdates.findMany({
@@ -173,15 +179,27 @@ export const load = (async ({ locals, params }) => {
     }
   });
 
+  // Fetch all available ApplicationTypes for the form toggles
+  const applicationTypes = await DatabaseReads.applicationTypes.findMany({
+    select: {
+      Id: true,
+      Name: true,
+      Description: true
+    }
+  });
+
   const form = await superValidate(valibot(formSchema));
   return {
     form,
     organizations: organizations.map((o) => o.Name ?? 'Unknown Organization').join(', '),
-    affectedProductCount: productsToRebuild.length,
-    affectedProjectCount: projects.length,
-    affectedProjects: projects.map((p) => p.Name).sort(),
-    affectedVersions: Array.from(new Set(productsToRebuild.map((p) => p.requiredVersion))).sort(),
-    activeUpdates
+    productsToRebuild: productsToRebuild.map((p) => ({
+      projectId: p.projectId,
+      projectName: p.projectName,
+      applicationTypeId: p.applicationTypeId,
+      requiredVersion: p.requiredVersion
+    })),
+    activeUpdates,
+    applicationTypes
   };
 }) satisfies PageServerLoad;
 
@@ -210,7 +228,10 @@ export const actions = {
       }
     });
 
-    const productsToRebuild = await getProductsForRebuild(organizations.map((o) => o.Id));
+    const productsToRebuild = await getProductsForRebuild(
+      organizations.map((o) => o.Id),
+      form.data.applicationTypeIds
+    );
     // If no products need to be rebuilt, return an error
     if (productsToRebuild.length === 0) {
       return fail(400, {

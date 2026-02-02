@@ -600,14 +600,14 @@
   "system_unavailable": "Scriptoria is currently unable to process background tasks",
   "downloads_title": "Downloads",
   "admin_nav_software_update": "Mise à jour du logiciel",
-  "admin_nav_software_update_description": "Initier une reconstruction de tous les projets qui ont activé le paramètre \"Reconstruire sur la mise à jour du logiciel\", qui ont un produit qui a terminé la publication initiale et qui ne sont pas actuellement en cours de reconstruction. Tous les produits dans cet état seront reconstruits.",
+  "admin_nav_software_update_description": "Cette action lancera une reconstruction pour tous les projets éligibles ayant l’option Reconstruire lors d’une mise à jour logicielle activée. Seuls les projets contenant au moins un produit entièrement publié et qui ne sont pas actuellement en cours de reconstruction seront inclus.",
   "admin_nav_software_update_comment": "Commentaire",
   "admin_software_update_rebuild_start": "Commencer les Reconstructions",
   "admin_software_update_comment_required": "Un commentaire est requis pour commencer les constructions.",
   "admin_software_update_toast_success": "Les reconstructions ont commencé avec succès !",
   "admin_software_update_affected_organizations": "Cela affectera les organisations suivantes",
   "admin_software_update_initiated_by": "Lancé par",
-  "admin_software_update_summary_title": "Résumé de la mise à jour",
+  "admin_software_update_summary_title": "Résumé de la reconstruction",
   "admin_software_update_projects_label": "Projets",
   "admin_software_update_products_label": "Produits",
   "admin_software_update_project_names_label": "Noms des projets",
@@ -617,5 +617,7 @@
   "admin_software_update_no_products_message": "Il n'y a aucun produit éligible pour la reconstruction pour le moment.",
   "admin_software_update_progress_label": "Progrès",
   "admin_software_update_paused_message": "Mise à jour du logiciel suspendue",
-  "admin_software_update_all_completed_message": "Toutes les reconstructions terminées"
+  "admin_software_update_all_completed_message": "Toutes les reconstructions terminées",
+  "admin_software_update_application_types_title": "Types d'application",
+  "admin_software_update_application_types_description": "Sélectionnez les types d'application à reconstruire"
 }
