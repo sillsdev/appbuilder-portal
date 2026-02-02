@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import LocaleSelector from '$lib/components/LocaleSelector.svelte';
 
   const DEFAULT_ICON =
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MiA3MiIgZmlsbD0ibm9uZSI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjcyIiB5Mj0iNzIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iIzBlNzk1YiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxMmEzN2EiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI3MiIgaGVpZ2h0PSI3MiIgcng9IjE2IiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTIwIDQ4bDgtMjQgOCAxNiA4LTEyIDggMjAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIgc3Rya2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+';
@@ -13,8 +14,6 @@
     longDesc: `A longer store listing description for users who want details. This is placeholder content to demonstrate layout only.`
   };
 
-  const locales = ['en-US', 'fr-FR', 'es-419'];
-  let selectedLocale = locales[0];
   let themeColor = app.themeColor;
 
   function hexToDaisyHSL(hex: string) {
@@ -183,21 +182,7 @@
         </p>
       </div>
       <div class="ml-auto justify-self-end">
-        <label
-          class="text-[11px] uppercase tracking-wide opacity-60 font-bold block mb-1"
-          for="language-select"
-        >
-          Language
-        </label>
-        <select
-          id="language-select"
-          class="select select-bordered w-28 text-base sm:text-sm"
-          bind:value={selectedLocale}
-        >
-          {#each locales as locale}
-            <option value={locale}>{locale}</option>
-          {/each}
-        </select>
+        <LocaleSelector />
       </div>
     </div>
 
