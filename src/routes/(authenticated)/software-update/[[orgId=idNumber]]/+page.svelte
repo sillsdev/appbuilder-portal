@@ -1,12 +1,16 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import { afterNavigate } from '$app/navigation';
+  import { page } from '$app/state';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
-
+  import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
+  import { isAdminForOrg } from '$lib/utils/roles';
   interface Props {
     data: PageData;
   }
@@ -91,17 +95,29 @@
     }, 10000);
   }
 
-  onMount(() => {
+  onDestroy(() => {
+    if (pollHandle) clearInterval(pollHandle);
+  });
+
+  afterNavigate((_) => {
     if (data.activeUpdates?.length) {
       const updateIds = data.activeUpdates.map((u) => u.Id);
       startPolling(updateIds);
       showSummary = true;
-      // Note: summary details will be shown from the last polling response
+      summary = null;
     }
   });
 
-  onDestroy(() => {
-    if (pollHandle) clearInterval(pollHandle);
+  $effect(() => {
+    if (
+      !selectGotoFromOrg(
+        !!$orgActive && isAdminForOrg($orgActive, data.session.user.roles),
+        `/software-update/${$orgActive}`,
+        `/software-update`
+      )
+    ) {
+      setOrgFromParams($orgActive, page.params.orgId);
+    }
   });
 </script>
 
