@@ -7,6 +7,7 @@
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
+  import IconContainer from '$lib/components/IconContainer.svelte';
 
   interface Props {
     data: PageData;
@@ -48,7 +49,28 @@
       bind:value={$form.description}
     />
   </LabeledFormInput>
-  <GroupUsers header={`${m.sidebar_users()}: ${$form.users.length}`} users={data.users}>
+  <GroupUsers
+    header={`${m.sidebar_users()}: ${$form.users.length}`}
+    users={data.users}
+    groups={data.groups}
+  >
+    {#snippet group(group)}
+      <label>
+        <span class="flex items-center">
+          <input
+            type="checkbox"
+            bind:group={$form.groups}
+            class="checkbox checkbox-accent mr-2 mt-2"
+            value={group.Id}
+          />
+          <IconContainer icon="mdi:account-group" width={20} />&nbsp;
+          <b>
+            {group.Name}
+          </b>
+          : {group._count.Users}
+        </span>
+      </label>
+    {/snippet}
     {#snippet user(user)}
       <label>
         <span class="flex items-center">
