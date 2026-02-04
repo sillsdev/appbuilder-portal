@@ -58,7 +58,7 @@
     </div>
   {/each}
   {#if groups.length}
-    <hr>
+    <hr />
   {/if}
   {#key page}
     {#each users.slice(window * page, window * (page + 1)) as u}
