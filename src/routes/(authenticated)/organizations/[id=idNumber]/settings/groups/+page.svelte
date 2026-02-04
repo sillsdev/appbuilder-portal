@@ -13,8 +13,6 @@
 
   let { data }: Props = $props();
 
-  let groups = $state(data.groups);
-
   const base = $derived(`/organizations/${data.organization.Id}/settings/groups`);
 </script>
 
@@ -23,7 +21,7 @@
 </a>
 
 <div class="flex flex-col w-full">
-  {#each groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
+  {#each data.groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
     <DataDisplayBox
       editable
       onEdit={() => goto(localizeHref(`${base}/edit?id=${group.Id}`))}
