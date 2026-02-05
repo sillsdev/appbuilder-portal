@@ -1,40 +1,40 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import type { PageData } from './$types';
   import LocaleSelector from '$lib/components/LocaleSelector.svelte';
+
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 
   const DEFAULT_ICON =
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MiA3MiIgZmlsbD0ibm9uZSI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjcyIiB5Mj0iNzIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iIzBlNzk1YiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxMmEzN2EiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI3MiIgaGVpZ2h0PSI3MiIgcng9IjE2IiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTIwIDQ4bDgtMjQgOCAxNiA4LTEyIDggMjAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIgc3Rya2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+';
 
-  const app = {
-    icon: DEFAULT_ICON,
-    name: 'Sample App Name',
-    developer: 'Sample Developer',
-    themeColor: '#0e795b',
-    shortDesc: 'A concise store listing blurb to confirm this page is official.',
-    longDesc: `A longer store listing description for users who want details. This is placeholder content to demonstrate layout only.`
-  };
-
-  let themeColor = app.themeColor;
+  const app = data.app;
+  const iconSrc = app.icon ?? DEFAULT_ICON;
+  let themeColor = $state(app.themeColor ?? '#0e795b');
 
   function hexToDaisyHSL(hex: string) {
-    let c = hex.substring(1).split('');
-    if (c.length === 3) c = [c[0], c[0], c[1], c[1], c[2], c[2]];
-    c = '0x' + c.join('');
-    let r = (c >> 16) & 255,
-      g = (c >> 8) & 255,
-      b = c & 255;
-    r /= 255;
-    g /= 255;
-    b /= 255;
-    let max = Math.max(r, g, b),
-      min = Math.min(r, g, b);
-    let h,
-      s,
-      l = (max + min) / 2;
-    if (max === min) {
-      h = s = 0;
-    } else {
-      let d = max - min;
+    const clean = hex.replace('#', '').trim();
+    const normalized =
+      clean.length === 3 ? clean.split('').map((ch) => ch + ch).join('') : clean;
+    const int = Number.parseInt(normalized, 16);
+    if (Number.isNaN(int)) return '0 0% 0%';
+
+    const r = ((int >> 16) & 255) / 255;
+    const g = ((int >> 8) & 255) / 255;
+    const b = (int & 255) / 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0;
+    let s = 0;
+    const l = (max + min) / 2;
+
+    if (max !== min) {
+      const d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
       switch (max) {
         case r:
@@ -49,6 +49,7 @@
       }
       h /= 6;
     }
+
     return `${(h * 360).toFixed(1)} ${(s * 100).toFixed(1)}% ${(l * 100).toFixed(1)}%`;
   }
 
@@ -87,24 +88,29 @@
         const ctx = canvas.getContext('2d');
         if (!ctx) return resolve(themeColor);
 
-        ctx.drawImage(img, 0, 0, width, height);
-        const { data } = ctx.getImageData(0, 0, width, height);
+        try {
+          ctx.drawImage(img, 0, 0, width, height);
+          const { data } = ctx.getImageData(0, 0, width, height);
 
-        let r = 0,
-          g = 0,
-          b = 0,
-          count = 0;
-        for (let i = 0; i < data.length; i += 4) {
-          const alpha = data[i + 3];
-          if (alpha === 0) continue;
-          r += data[i];
-          g += data[i + 1];
-          b += data[i + 2];
-          count++;
+          let r = 0,
+            g = 0,
+            b = 0,
+            count = 0;
+          for (let i = 0; i < data.length; i += 4) {
+            const alpha = data[i + 3];
+            if (alpha === 0) continue;
+            r += data[i];
+            g += data[i + 1];
+            b += data[i + 2];
+            count++;
+          }
+
+          if (!count) return resolve(themeColor);
+          resolve(rgbToHex(Math.round(r / count), Math.round(g / count), Math.round(b / count)));
+        } catch {
+          // Canvas can throw on cross-origin images without proper CORS headers.
+          resolve(themeColor);
         }
-
-        if (!count) return resolve(themeColor);
-        resolve(rgbToHex(Math.round(r / count), Math.round(g / count), Math.round(b / count)));
       };
 
       img.onerror = () => resolve(themeColor);
@@ -112,13 +118,13 @@
     });
   }
 
-  $: primaryHSL = hexToDaisyHSL(themeColor);
-  $: primaryContentHSL = hexToDaisyHSL(getReadableTextHex(themeColor));
-  $: primaryHex = themeColor;
-  $: primaryContentHex = getReadableTextHex(themeColor);
-  $: lightBgHex = lightenColor(themeColor, 0.92);
+  const primaryHex = $derived(themeColor);
+  const primaryContentHex = $derived(getReadableTextHex(primaryHex));
+  const primaryHSL = $derived(hexToDaisyHSL(primaryHex));
+  const primaryContentHSL = $derived(hexToDaisyHSL(primaryContentHex));
+  const lightBgHex = $derived(lightenColor(primaryHex, 0.92));
 
-  $: {
+  $effect(() => {
     if (typeof document !== 'undefined') {
       document.documentElement.style.setProperty('--color-primary', primaryHex);
       document.documentElement.style.setProperty('--color-primary-content', primaryContentHex);
@@ -132,12 +138,14 @@
       document.documentElement.style.setProperty('--outer-bg', lightBgHex);
       document.documentElement.style.setProperty('--root-bg', lightBgHex);
     }
-  }
+  });
 
   onMount(() => {
-    deriveColorFromIcon(app.icon).then((hex) => {
-      themeColor = hex;
-    });
+    if (!app.themeColor) {
+      deriveColorFromIcon(iconSrc).then((hex) => {
+        themeColor = hex;
+      });
+    }
   });
 </script>
 
@@ -172,7 +180,10 @@
   <div class="max-w-xl mx-auto bg-white min-h-screen">
     <div
       class="px-5 pt-5 pb-3 grid grid-cols-[auto_1fr] gap-3 items-start"
-      style="padding-top: calc(18rem + env(safe-area-inset-top)); padding-left: 45px;"
+      style="
+        padding-top: calc(18rem + env(safe-area-inset-top));
+        padding-left: 45px;
+        backgound-color: #dedede;"
     >
       <div class="grid grid-cols-1 gap-0 border-l-4 border-black pl-0 content-start">
         <h1 class="text-2xl font-bold tracking-tight leading-none">Manage my data</h1>
@@ -188,7 +199,7 @@
 
     <div class="px-5 pb-4 flex items-start gap-4">
       <img
-        src={app.icon}
+        src={iconSrc}
         alt="App icon"
         class="w-14 h-14 rounded-2xl shadow-sm bg-primary/5 p-0.5"
       />
@@ -201,7 +212,7 @@
     <div class="px-5">
       <a
         class="btn btn-ghost btn-sm border border-base-300 mb-4 w-full justify-center"
-        href="./file/about"
+        href="./about"
       >
         About this app
       </a>
