@@ -22,24 +22,24 @@ This is placeholder content to demonstrate layout only.`
   let themeColor = $state(app.themeColor);
 
   function hexToDaisyHSL(hex: string) {
-    let c = hex.substring(1).split('');
-    if (c.length === 3) c = [c[0], c[0], c[1], c[1], c[2], c[2]];
-    c = '0x' + c.join('');
-    let r = (c >> 16) & 255,
-      g = (c >> 8) & 255,
-      b = c & 255;
-    r /= 255;
-    g /= 255;
-    b /= 255;
-    let max = Math.max(r, g, b),
-      min = Math.min(r, g, b);
-    let h,
-      s,
-      l = (max + min) / 2;
-    if (max === min) {
-      h = s = 0;
-    } else {
-      let d = max - min;
+    const clean = hex.replace('#', '').trim();
+    const normalized =
+      clean.length === 3 ? clean.split('').map((ch) => ch + ch).join('') : clean;
+    const int = Number.parseInt(normalized, 16);
+    if (Number.isNaN(int)) return '0 0% 0%';
+
+    const r = ((int >> 16) & 255) / 255;
+    const g = ((int >> 8) & 255) / 255;
+    const b = (int & 255) / 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0;
+    let s = 0;
+    const l = (max + min) / 2;
+
+    if (max !== min) {
+      const d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
       switch (max) {
         case r:
@@ -54,6 +54,7 @@ This is placeholder content to demonstrate layout only.`
       }
       h /= 6;
     }
+
     return `${(h * 360).toFixed(1)} ${(s * 100).toFixed(1)}% ${(l * 100).toFixed(1)}%`;
   }
 
