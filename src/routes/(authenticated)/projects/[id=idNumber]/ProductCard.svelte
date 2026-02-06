@@ -260,7 +260,10 @@
           <IconContainer icon="material-symbols:history" width={20} />
         </Tooltip>
       </button>
-      <a class="btn btn-ghost btn-square btn-sm" href={localizeHref(`/products/${product.Id}/files`)}>
+      <a
+        class="btn btn-ghost btn-square btn-sm"
+        href={localizeHref(`/products/${product.Id}/files`)}
+      >
         <Tooltip tip={m.project_productFiles()}>
           <IconContainer icon="lsicon:folder-files-filled" width={20} />
         </Tooltip>
