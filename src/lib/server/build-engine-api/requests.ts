@@ -193,6 +193,14 @@ export async function getJob(
   const res = await request(`job/${jobId}`, auth);
   return res.ok ? Types.toJobResponse(await res.json) : Types.toErrorResponse(await res.json);
 }
+export async function updateJob(
+  auth: Types.Auth,
+  jobId: number,
+  publisher_id: string
+): Promise<Types.JobResponse | Types.ErrorResponse> {
+  const res = await request(`job/${jobId}`, auth, { method: 'PUT', body: { publisher_id } });
+  return res.ok ? Types.toJobResponse(await res.json) : Types.toErrorResponse(await res.json);
+}
 export async function deleteJob(
   auth: Types.Auth,
   jobId: number

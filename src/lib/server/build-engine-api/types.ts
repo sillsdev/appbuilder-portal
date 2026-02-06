@@ -13,7 +13,7 @@ export type Auth =
     };
 
 export type RequestOpts = {
-  method?: string;
+  method?: 'POST' | 'PUT' | 'DELETE';
   body?: Record<string, unknown>;
   checkStatusFirst?: boolean;
 };

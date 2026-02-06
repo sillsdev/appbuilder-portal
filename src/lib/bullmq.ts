@@ -24,6 +24,7 @@ export enum JobType {
   Product_Delete = 'Delete Product - BuildEngine',
   Product_GetVersionCode = 'Get VersionCode for Uploaded Product',
   Product_CreateLocal = 'Create Local Product',
+  Product_UpdateStore = 'Update Product PublisherId',
   // Project Jobs
   Project_Create = 'Create Project',
   Project_ImportProducts = 'Import Products for Project',

@@ -90,6 +90,13 @@ export namespace Product {
     productDefinitionId: number;
     storeId: number;
   }
+
+  export interface UpdateStore extends BaseJob {
+    type: JobType.Product_UpdateStore;
+    organizationId: number;
+    buildEngineJobId: number;
+    buildEnginePublisherId: string;
+  }
 }
 
 export namespace Project {
@@ -277,7 +284,8 @@ export type ProductJob = JobTypeMap[
   | JobType.Product_Create
   | JobType.Product_Delete
   | JobType.Product_GetVersionCode
-  | JobType.Product_CreateLocal];
+  | JobType.Product_CreateLocal
+  | JobType.Product_UpdateStore];
 export type ProjectJob = JobTypeMap[JobType.Project_Create | JobType.Project_ImportProducts];
 
 export type JobTypeMap = {
@@ -290,6 +298,7 @@ export type JobTypeMap = {
   [JobType.Product_Delete]: Product.Delete;
   [JobType.Product_GetVersionCode]: Product.GetVersionCode;
   [JobType.Product_CreateLocal]: Product.CreateLocal;
+  [JobType.Product_UpdateStore]: Product.UpdateStore;
   [JobType.Project_Create]: Project.Create;
   [JobType.Project_ImportProducts]: Project.ImportProducts;
   [JobType.Publish_Product]: Publish.Product;
