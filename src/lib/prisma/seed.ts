@@ -543,6 +543,7 @@ async function main() {
       { UserId: 4, OrganizationId: 1 }, // loren_hawthorne@sil.org - SIL
       { UserId: 5, OrganizationId: 2 }, // chris.kalaam@gmail.com - Kalaam
       { UserId: 6, OrganizationId: 1 }, // Scriptoria CI - SIL
+      { UserId: 6, OrganizationId: 2 }, // Scriptoria CI - Kalaam
       { UserId: 7, OrganizationId: 1 }, // 7dev7urandom@gmail.com - SIL
       { UserId: 8, OrganizationId: 1 } // aejones4gm@gmail.com - SIL
     ];
@@ -593,6 +594,7 @@ async function main() {
       { UserId: 4, RoleId: 3, OrganizationId: 1 }, // loren_hawthorne@sil.org - AppBuilder - SIL
       { UserId: 5, RoleId: 3, OrganizationId: 3 }, // chris.kalaam@gmail.com - AppBuilder - Kalaam
       { UserId: 6, RoleId: 2, OrganizationId: 1 }, // CI - OrgAdmin - SIL (this is so CI can send an invite email)
+      { UserId: 6, RoleId: 4, OrganizationId: 2 }, // CI - Author - Kalaam (this is so CI can test OrgAdmin permissions)
       { UserId: 7, RoleId: 1, OrganizationId: 1 }, // 7dev7urandom@gmail.com - SuperAdmin - SIL
       { UserId: 8, RoleId: 1, OrganizationId: 1 } // aejones4gm@gmail.com - SuperAdmin - SIL
     ];
