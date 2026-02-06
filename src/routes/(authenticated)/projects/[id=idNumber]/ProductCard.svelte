@@ -112,6 +112,35 @@
   const publishedTime = $derived(getRelativeTime(product.DatePublished));
 </script>
 
+{#snippet actionButton(action: ProductActionType, full: boolean)}
+  {@const message =
+    //@ts-expect-error this is in fact correct
+    m['products_acts_' + action]()}
+  <BlockIfJobsUnavailable class="text-nowrap">
+    {#snippet altContent()}
+      <IconContainer icon={getActionIcon(action)} width={full? 16 : 20} />
+      {#if full}
+        {message}
+      {/if}
+    {/snippet}
+    <button
+      class={["text-nowrap", full || 'btn btn-ghost btn-square btn-sm']}
+      onclick={(event) => {
+        handleProductAction(product.Id, action);
+        event.currentTarget.blur();
+      }}
+    >
+      {#if full}
+        {@render altContent()}
+      {:else}
+        <Tooltip tip={message}>
+          {@render altContent()}
+        </Tooltip>
+      {/if}
+    </button>
+  </BlockIfJobsUnavailable>
+{/snippet}
+
 {#snippet menu()}
   <Dropdown
     class={{ label: 'px-1', content: 'drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto' }}
@@ -122,25 +151,8 @@
     {#snippet content()}
       <ul class="menu overflow-hidden rounded-md">
         {#each product.actions as action}
-          {@const message =
-            //@ts-expect-error this is in fact correct
-            m['products_acts_' + action]()}
           <li class="w-full rounded-none">
-            <BlockIfJobsUnavailable class="text-nowrap">
-              {#snippet altContent()}
-                <IconContainer icon={getActionIcon(action)} width={16} />
-                {message}
-              {/snippet}
-              <button
-                class="text-nowrap"
-                onclick={(event) => {
-                  handleProductAction(product.Id, action);
-                  event.currentTarget.blur();
-                }}
-              >
-                {@render altContent()}
-              </button>
-            </BlockIfJobsUnavailable>
+            {@render actionButton(action, true)}
           </li>
         {/each}
         <li class="w-full rounded-none">
@@ -238,6 +250,30 @@
             <IconContainer icon="mdi:launch" width={24} />
           </a>
         {/if}
+      {/if}
+    </div>
+    <div class="flex flex-row gap-2 bg-base-100 p-1 mt-1 rounded-md">
+      {#each product.actions as action}
+        {@render actionButton(action, false)}
+      {/each}
+      <button class="btn btn-ghost btn-square btn-sm" onclick={() => showProductDetails(product.Id)}>
+        <Tooltip tip={m.products_details()}>
+          <IconContainer icon="material-symbols:history" width={20} />
+        </Tooltip>
+      </button>
+      <button class="btn btn-ghost btn-square btn-sm">
+        <Tooltip tip={m.project_productFiles()}>
+          <a href={localizeHref(`/products/${product.Id}/files`)}>
+            <IconContainer icon="lsicon:folder-files-filled" width={20} />
+          </a>
+        </Tooltip>
+      </button>
+      {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
+        <button class="btn btn-ghost btn-square btn-sm" onclick={() => updateProductModal?.showModal()}>
+          <Tooltip tip={m.products_properties_title()}>
+            <IconContainer icon="material-symbols:settings" width={20} />
+          </Tooltip>
+        </button>
       {/if}
     </div>
     {#if canEdit}
