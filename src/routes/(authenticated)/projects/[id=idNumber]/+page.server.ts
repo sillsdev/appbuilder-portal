@@ -37,6 +37,10 @@ const productActionSchema = v.object({
 export const load = (async ({ locals, params }) => {
   const projectId = Number(params.id);
   if (isNaN(projectId)) throw error(404, 'Not Found');
+  // Check authentication first, before any db calls
+  // If the user is not logged in at all (locals.security.userId === null),
+  // groups.findMany will error and security will not be handled
+  locals.security.requireAuthenticated();
   locals.security.requireProjectReadAccess(
     await DatabaseReads.groups.findMany({
       where: { Users: { some: { Id: locals.security.userId } } },

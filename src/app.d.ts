@@ -22,9 +22,15 @@ declare global {
     requireHasRole(organizationId: number, roleId: number, orOrgAdmin?: boolean): this | never;
     requireMemberOfOrg(organizationId: number): this | never;
     requireMemberOfOrgOrSuperAdmin(organizationId: number): this | never;
+    /**
+     * Call requireAuthenticated() before assuming userId is non-null
+     */
     requireProjectWriteAccess(
       project?: { OwnerId: number; OrganizationId: number } | null
     ): this | never;
+    /**
+     * Call requireAuthenticated() before assuming userId is non-null
+     */
     requireProjectReadAccess(
       userGroups: { /* Group.Id */ Id: number }[],
       project: {
@@ -33,6 +39,9 @@ declare global {
         GroupId: number;
       } | null
     ): this | never;
+    /**
+     * Call requireAuthenticated() before assuming userId is non-null
+     */
     requireProjectClaimable(
       userGroups: { /* Group.Id */ Id: number }[],
       project?: {

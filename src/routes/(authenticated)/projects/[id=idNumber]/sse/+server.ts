@@ -5,6 +5,7 @@ import { getProjectDetails } from '$lib/projects/sse';
 import { DatabaseReads } from '$lib/server/database';
 
 export async function POST(request) {
+  request.locals.security.requireAuthenticated();
   request.locals.security.requireProjectReadAccess(
     await DatabaseReads.groups.findMany({
       where: { Users: { some: { Id: request.locals.security.userId } } },
