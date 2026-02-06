@@ -112,18 +112,121 @@
   const publishedTime = $derived(getRelativeTime(product.DatePublished));
 </script>
 
+{#snippet menu()}
+  <Dropdown
+    class={{ label: 'px-1', content: 'drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto' }}
+  >
+    {#snippet label()}
+      <IconContainer icon="charm:menu-kebab" width="20" />
+    {/snippet}
+    {#snippet content()}
+      <ul class="menu overflow-hidden rounded-md">
+        {#each product.actions as action}
+          {@const message =
+            //@ts-expect-error this is in fact correct
+            m['products_acts_' + action]()}
+          <li class="w-full rounded-none">
+            <BlockIfJobsUnavailable class="text-nowrap">
+              {#snippet altContent()}
+                <IconContainer icon={getActionIcon(action)} width={16} />
+                {message}
+              {/snippet}
+              <button
+                class="text-nowrap"
+                onclick={(event) => {
+                  handleProductAction(product.Id, action);
+                  event.currentTarget.blur();
+                }}
+              >
+                {@render altContent()}
+              </button>
+            </BlockIfJobsUnavailable>
+          </li>
+        {/each}
+        <li class="w-full rounded-none">
+          <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
+            <IconContainer icon="material-symbols:history" width={16} />
+            {m.products_details()}
+          </button>
+        </li>
+        <li class="w-full rounded-none">
+          <button>
+            <IconContainer icon="lsicon:folder-files-filled" width={16} />
+            <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
+              {m.project_productFiles()}
+            </a>
+          </button>
+        </li>
+        {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
+          <li class="w-full rounded-none">
+            <button class="text-nowrap" onclick={() => updateProductModal?.showModal()}>
+              <IconContainer icon="material-symbols:settings" width={16} />
+              {m.products_properties_title()}
+            </button>
+          </li>
+        {/if}
+        {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}
+          <li class="w-full rounded-none">
+            <button>
+              <IconContainer icon="mdi:workflow" width={16} />
+              <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
+                {m.common_workflow()}
+              </a>
+            </button>
+          </li>
+        {/if}
+        {#if canEdit}
+          <li class="w-full rounded-none">
+            <BlockIfJobsUnavailable class="text-nowrap text-error">
+              {#snippet altContent()}
+                <IconContainer icon="mdi:trash" width={16} />
+                {m.models_delete({ name: m.tasks_product() })}
+              {/snippet}
+              <button
+                class="text-nowrap text-error"
+                onclick={() => deleteProductModal?.showModal()}
+              >
+                {@render altContent()}
+              </button>
+            </BlockIfJobsUnavailable>
+          </li>
+        {/if}
+      </ul>
+    {/snippet}
+  </Dropdown>
+{/snippet}
+
 <div class="rounded-md border border-slate-400 w-full my-2">
-  <div class="bg-neutral p-2 flex flex-row rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
-    <span class="grow min-w-0">
+  <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
+    <div class="flex flex-row">
       <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
-      {product.ProductDefinition.Name}
-    </span>
-    {#if product.PublishLink}
-      {@const pType = product.ProductDefinition.Workflow.ProductType}
-      <span class="flex flex-col px-2">
+      <span class="grow min-w-0">
+        {product.ProductDefinition.Name}
+      </span>
+      {@render menu()}
+    </div>
+    <div class="flex flex-row gap-2">
+      <div class="flex flex-row gap-1 grow">
+        {m.common_updated()}:
+        <Tooltip tip={getTimeDateString(product.DateUpdated)}>
+          {$updatedTime}
+        </Tooltip>
+      </div>
+      {#if product.PublishLink}
         <a class="link" href={product.PublishLink} target="_blank">
           <IconContainer icon="ic:twotone-store" width={24} />
         </a>
+      {/if}
+    </div>
+    <div class="flex flex-row gap-2">
+      <div class="flex flex-row gap-1 grow">
+        {m.products_published()}:
+        <Tooltip tip={getTimeDateString(product.DatePublished)}>
+          {$publishedTime}
+        </Tooltip>
+      </div>
+      {#if product.PublishLink}
+        {@const pType = product.ProductDefinition.Workflow.ProductType}
         {#if pType !== ProductType.Web}
           <a
             class="link"
@@ -135,103 +238,8 @@
             <IconContainer icon="mdi:launch" width={24} />
           </a>
         {/if}
-      </span>
-    {/if}
-    <span class="w-32 inline-block">
-      {m.common_updated()}
-      <br />
-      <Tooltip tip={getTimeDateString(product.DateUpdated)}>
-        {$updatedTime}
-      </Tooltip>
-    </span>
-    <span class="w-32 inline-block">
-      {m.products_published()}
-      <br />
-      <Tooltip tip={getTimeDateString(product.DatePublished)}>
-        {$publishedTime}
-      </Tooltip>
-    </span>
-    <Dropdown
-      class={{ label: 'px-1', content: 'drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto' }}
-    >
-      {#snippet label()}
-        <IconContainer icon="charm:menu-kebab" width="20" />
-      {/snippet}
-      {#snippet content()}
-        <ul class="menu overflow-hidden rounded-md">
-          {#each product.actions as action}
-            {@const message =
-              //@ts-expect-error this is in fact correct
-              m['products_acts_' + action]()}
-            <li class="w-full rounded-none">
-              <BlockIfJobsUnavailable class="text-nowrap">
-                {#snippet altContent()}
-                  <IconContainer icon={getActionIcon(action)} width={16} />
-                  {message}
-                {/snippet}
-                <button
-                  class="text-nowrap"
-                  onclick={(event) => {
-                    handleProductAction(product.Id, action);
-                    event.currentTarget.blur();
-                  }}
-                >
-                  {@render altContent()}
-                </button>
-              </BlockIfJobsUnavailable>
-            </li>
-          {/each}
-          <li class="w-full rounded-none">
-            <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
-              <IconContainer icon="material-symbols:history" width={16} />
-              {m.products_details()}
-            </button>
-          </li>
-          <li class="w-full rounded-none">
-            <button>
-              <IconContainer icon="lsicon:folder-files-filled" width={16} />
-              <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
-                {m.project_productFiles()}
-              </a>
-            </button>
-          </li>
-          {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
-            <li class="w-full rounded-none">
-              <button class="text-nowrap" onclick={() => updateProductModal?.showModal()}>
-                <IconContainer icon="material-symbols:settings" width={16} />
-                {m.products_properties_title()}
-              </button>
-            </li>
-          {/if}
-          {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}
-            <li class="w-full rounded-none">
-              <button>
-                <IconContainer icon="mdi:workflow" width={16} />
-                <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
-                  {m.common_workflow()}
-                </a>
-              </button>
-            </li>
-          {/if}
-          {#if canEdit}
-            <li class="w-full rounded-none">
-              <BlockIfJobsUnavailable class="text-nowrap text-error">
-                {#snippet altContent()}
-                  <IconContainer icon="mdi:trash" width={16} />
-                  {m.models_delete({ name: m.tasks_product() })}
-                {/snippet}
-                <button
-                  class="text-nowrap text-error"
-                  onclick={() => deleteProductModal?.showModal()}
-                >
-                  {@render altContent()}
-                </button>
-              </BlockIfJobsUnavailable>
-            </li>
-          {/if}
-        </ul>
-      {/snippet}
-    </Dropdown>
+      {/if}
+    </div>
     {#if canEdit}
       <DeleteProduct
         bind:modal={deleteProductModal}
