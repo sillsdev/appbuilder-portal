@@ -2,6 +2,7 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import GroupUsers from '$lib/organizations/components/GroupUsers.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -48,7 +49,28 @@
       bind:value={$form.description}
     />
   </LabeledFormInput>
-  <GroupUsers header={`${m.sidebar_users()}: ${$form.users.length}`} users={data.users}>
+  <GroupUsers
+    header={`${m.sidebar_users()}: ${$form.users.length}`}
+    users={data.users}
+    groups={data.groups}
+  >
+    {#snippet group(group)}
+      <label>
+        <span class="flex items-center">
+          <input
+            type="checkbox"
+            bind:group={$form.groups}
+            class="checkbox checkbox-accent mr-2 mt-2"
+            value={group.Id}
+          />
+          <IconContainer icon="mdi:account-group" width={20} />&nbsp;
+          <b>
+            {group.Name}
+          </b>
+          : {group._count.Users}
+        </span>
+      </label>
+    {/snippet}
     {#snippet user(user)}
       <label>
         <span class="flex items-center">

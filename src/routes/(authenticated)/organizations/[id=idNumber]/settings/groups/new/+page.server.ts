@@ -8,7 +8,8 @@ import { idSchema, requiredString } from '$lib/valibot';
 const addGroupSchema = v.object({
   name: requiredString,
   description: v.string(),
-  users: v.array(idSchema)
+  users: v.array(idSchema),
+  groups: v.array(idSchema)
 });
 
 export const load = (async (event) => {
@@ -21,6 +22,22 @@ export const load = (async (event) => {
         Id: true,
         Name: true,
         Email: true
+      }
+    }),
+    groups: await DatabaseReads.groups.findMany({
+      where: { OwnerId: organization.Id, Users: { some: { IsLocked: false } } },
+      select: {
+        Id: true,
+        Name: true,
+        _count: {
+          select: {
+            Users: {
+              where: {
+                IsLocked: false
+              }
+            }
+          }
+        }
       }
     }),
     form: await superValidate(valibot(addGroupSchema))
@@ -36,7 +53,8 @@ export const actions = {
       form.data.name,
       form.data.description,
       parseInt(event.params.id),
-      form.data.users
+      form.data.users,
+      form.data.groups
     );
     return { form, ok: true, createdId: group.Id };
   }
