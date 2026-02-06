@@ -233,30 +233,45 @@
     {/if}
   </div>
   {#if showTaskWaiting}
-    <div class="p-2 flex gap-1">
-      {#if project.DateArchived}
-        {@html m.tasks_archivedAt({
-          activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
-        })}
-      {:else}
-        <span class="text-red-500">
-          {m.tasks_waiting({
-            // waiting since EITHER (the last task exists) -> that task's creation time
-            // OR (there are no tasks for this product) -> the last completed transition's completion time
-            waitTime: $waitTime
-          })}
-        </span>
-        {@html m.tasks_forNames({
-          allowedNames: sanitizeInput(product.ActiveTransition?.AllowedUserNames || m.appName()),
-          activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
-          // activityName appears to show up blank primarily at the very startup of a new product?
-        })}
+    <div class="p-2 flex flex-col gap-1">
+      <div class="flex flex-col md:flex-row gap-1">
+        {#if project.DateArchived}
+          <span>
+            {@html m.tasks_archivedAt({
+              activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
+            })}
+          </span>
+        {:else}
+          <span class="text-red-500">
+            {m.tasks_waiting({
+              // waiting since EITHER (the last task exists) -> that task's creation time
+              // OR (there are no tasks for this product) -> the last completed transition's completion time
+              waitTime: $waitTime
+            })}
+          </span>
+          <span>
+            {@html m.tasks_forNames({
+              allowedNames: sanitizeInput(
+                product.ActiveTransition?.AllowedUserNames || m.appName()
+              ),
+              activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
+              // activityName appears to show up blank primarily at the very startup of a new product?
+            })}
+          </span>
+        {/if}
+      </div>
+      <div class="flex flex-row gap-2">
         {#if product.UserTasks.find((ut) => ut.UserId === page.data.session?.user.userId)}
-          <a class="link mx-2" href={localizeHref(`/tasks/${product.Id}`)}>
+          <a class="link" href={localizeHref(`/tasks/${product.Id}`)}>
             {m.common_continue()}
           </a>
         {/if}
-      {/if}
+        {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}
+          <a class="link" href={localizeHref(`/workflow-instances/${product.Id}`)}>
+            {m.common_workflow()}
+          </a>
+        {/if}
+      </div>
     </div>
   {/if}
   <ProductDetails {product} transitions={product.Transitions} />
