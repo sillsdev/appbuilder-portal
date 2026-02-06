@@ -119,73 +119,71 @@
   </div>
 </form>
 
-{#if data.showUsers}
-  <div class="m-4">
-    <GroupUsers header={`${m.sidebar_users()}: ${userCount}`} users={data.users}>
-      {#snippet user(user)}
-        <form
-          action="?/toggleUser"
-          method="POST"
-          use:svk_enhance={({ formElement }) => {
-            return async ({ result, update }) => {
-              if (result.type === 'success') {
-                const res = result.data as ActionData;
-                const toggle = formElement.querySelector('[name=enabled]') as HTMLInputElement;
-                if (res?.ok) {
-                  if (toggle.checked) {
-                    toast('success', m.user_addedTo({ user: user?.Name ?? '', name: $form.name }));
-                    userCount++;
-                  } else {
-                    toast(
-                      'success',
-                      m.user_removedFrom({ user: user?.Name ?? '', name: $form.name })
-                    );
-                    userCount--;
-                  }
+<div class="m-4">
+  <GroupUsers header={`${m.sidebar_users()}: ${userCount}`} users={data.users}>
+    {#snippet user(user)}
+      <form
+        action="?/toggleUser"
+        method="POST"
+        use:svk_enhance={({ formElement }) => {
+          return async ({ result, update }) => {
+            if (result.type === 'success') {
+              const res = result.data as ActionData;
+              const toggle = formElement.querySelector('[name=enabled]') as HTMLInputElement;
+              if (res?.ok) {
+                if (toggle.checked) {
+                  toast('success', m.user_addedTo({ user: user?.Name ?? '', name: $form.name }));
+                  userCount++;
                 } else {
-                  if (res?.form.valid) {
-                    toast(
-                      'error',
-                      m.user_ownsProjectsInGroup({
-                        user: user?.Name ?? '',
-                        group: $form.name
-                      })
-                    );
-                  } else {
-                    toast('error', m.errors_generic({ errorMessage: '' }));
-                  }
-                  // reset toggle
-                  toggle.checked = !toggle.checked;
+                  toast(
+                    'success',
+                    m.user_removedFrom({ user: user?.Name ?? '', name: $form.name })
+                  );
+                  userCount--;
                 }
+              } else {
+                if (res?.form.valid) {
+                  toast(
+                    'error',
+                    m.user_ownsProjectsInGroup({
+                      user: user?.Name ?? '',
+                      group: $form.name
+                    })
+                  );
+                } else {
+                  toast('error', m.errors_generic({ errorMessage: '' }));
+                }
+                // reset toggle
+                toggle.checked = !toggle.checked;
               }
-              update({ reset: false });
-            };
-          }}
-        >
-          <label>
-            <span class="flex items-center">
-              <input type="hidden" name="userId" value={user.Id} />
-              <input type="hidden" name="orgId" value={$form.id} />
-              <input
-                type="checkbox"
-                name="enabled"
-                onchange={(e) => {
-                  e.currentTarget.form?.requestSubmit();
-                }}
-                class="checkbox checkbox-accent mr-2 mt-2"
-                disabled={!!user._count.Projects}
-                checked={!!user._count.Organizations}
-              />
-              <b>
-                {user.Name}
-              </b>
-            </span>
-            <p class="ml-8">
-              {user.Email}
-            </p>
-          </label>
-        </form>
-      {/snippet}
-    </GroupUsers>
-  </div>
-{/if}
+            }
+            update({ reset: false });
+          };
+        }}
+      >
+        <label>
+          <span class="flex items-center">
+            <input type="hidden" name="userId" value={user.Id} />
+            <input type="hidden" name="orgId" value={$form.id} />
+            <input
+              type="checkbox"
+              name="enabled"
+              onchange={(e) => {
+                e.currentTarget.form?.requestSubmit();
+              }}
+              class="checkbox checkbox-accent mr-2 mt-2"
+              disabled={!!user._count.Projects}
+              checked={!!user._count.Organizations}
+            />
+            <b>
+              {user.Name}
+            </b>
+          </span>
+          <p class="ml-8">
+            {user.Email}
+          </p>
+        </label>
+      </form>
+    {/snippet}
+  </GroupUsers>
+</div>

@@ -3,7 +3,6 @@ import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { env } from '$env/dynamic/private';
 import { organizationBaseSchema } from '$lib/organizations';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
@@ -20,7 +19,6 @@ export const load = (async ({ url, locals }) => {
     return redirect(302, localizeHref('/admin/settings/organizations'));
   }
 
-  const showUsers = env.APP_ENV === 'dev';
   const data = await DatabaseReads.organizations.findUnique({
     where: {
       Id: id
@@ -50,24 +48,21 @@ export const load = (async ({ url, locals }) => {
       },
       valibot(editSchema)
     ),
-    showUsers,
-    userCount: showUsers ? data._count.Users : 0,
-    users: showUsers
-      ? await DatabaseReads.users.findMany({
-          where: { IsLocked: false },
+    userCount: data._count.Users,
+    users: await DatabaseReads.users.findMany({
+      where: { IsLocked: false },
+      select: {
+        Id: true,
+        Name: true,
+        Email: true,
+        _count: {
           select: {
-            Id: true,
-            Name: true,
-            Email: true,
-            _count: {
-              select: {
-                Projects: { where: { OrganizationId: id } },
-                Organizations: { where: { Id: id } }
-              }
-            }
+            Projects: { where: { OrganizationId: id } },
+            Organizations: { where: { Id: id } }
           }
-        })
-      : []
+        }
+      }
+    })
   };
 }) satisfies PageServerLoad;
 
@@ -100,16 +95,13 @@ export const actions = {
     );
 
     if (!form.valid) return fail(400, { form, ok: false });
-    if (env.APP_ENV === 'dev') {
-      const ok = await DatabaseWrites.organizations.toggleUser(
-        form.data.orgId,
-        form.data.userId,
-        form.data.enabled
-      );
 
-      return { form, ok };
-    } else {
-      return fail(403, { form, ok: false });
-    }
+    const ok = await DatabaseWrites.organizations.toggleUser(
+      form.data.orgId,
+      form.data.userId,
+      form.data.enabled
+    );
+
+    return { form, ok };
   }
 } satisfies Actions;
