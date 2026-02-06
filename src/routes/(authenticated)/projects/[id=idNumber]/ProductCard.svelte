@@ -118,13 +118,13 @@
     m['products_acts_' + action]()}
   <BlockIfJobsUnavailable class="text-nowrap">
     {#snippet altContent()}
-      <IconContainer icon={getActionIcon(action)} width={full? 16 : 20} />
+      <IconContainer icon={getActionIcon(action)} width={full ? 16 : 20} />
       {#if full}
         {message}
       {/if}
     {/snippet}
     <button
-      class={["text-nowrap", full || 'btn btn-ghost btn-square btn-sm']}
+      class={['text-nowrap', full || 'btn btn-ghost btn-square btn-sm']}
       onclick={(event) => {
         handleProductAction(product.Id, action);
         event.currentTarget.blur();
@@ -142,9 +142,7 @@
 {/snippet}
 
 {#snippet menu()}
-  <Dropdown
-    class={{ label: 'px-1', content: 'drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto' }}
-  >
+  <Dropdown class={{ label: 'px-1', content: 'drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto' }}>
     {#snippet label()}
       <IconContainer icon="charm:menu-kebab" width="20" />
     {/snippet}
@@ -256,7 +254,10 @@
       {#each product.actions as action}
         {@render actionButton(action, false)}
       {/each}
-      <button class="btn btn-ghost btn-square btn-sm" onclick={() => showProductDetails(product.Id)}>
+      <button
+        class="btn btn-ghost btn-square btn-sm"
+        onclick={() => showProductDetails(product.Id)}
+      >
         <Tooltip tip={m.products_details()}>
           <IconContainer icon="material-symbols:history" width={20} />
         </Tooltip>
@@ -269,7 +270,10 @@
         </Tooltip>
       </button>
       {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
-        <button class="btn btn-ghost btn-square btn-sm" onclick={() => updateProductModal?.showModal()}>
+        <button
+          class="btn btn-ghost btn-square btn-sm"
+          onclick={() => updateProductModal?.showModal()}
+        >
           <Tooltip tip={m.products_properties_title()}>
             <IconContainer icon="material-symbols:settings" width={20} />
           </Tooltip>
