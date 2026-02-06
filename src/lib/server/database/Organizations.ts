@@ -38,3 +38,28 @@ export async function update(
     data
   });
 }
+
+export async function toggleUser(OrganizationId: number, UserId: number, enabled: boolean) {
+  // check if user owns a project in the org
+  const userHasProjectInOrg = await prisma.projects.findFirst({
+    where: { OwnerId: UserId, OrganizationId },
+    select: { Id: true }
+  });
+
+  return (
+    (enabled || !userHasProjectInOrg) &&
+    !!(await prisma.users.update({
+      where: { Id: UserId },
+      data: {
+        Organizations: {
+          [enabled ? 'connect' : 'disconnect']: {
+            Id: OrganizationId
+          }
+        }
+      },
+      select: {
+        Id: true
+      }
+    }))
+  );
+}

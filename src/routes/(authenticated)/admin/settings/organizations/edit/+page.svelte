@@ -1,10 +1,12 @@
 <script lang="ts">
   import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
+  import type { ActionData, PageData } from './$types';
+  import { enhance as svk_enhance } from '$app/forms';
   import { goto } from '$app/navigation';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
+  import GroupUsers from '$lib/organizations/components/GroupUsers.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -26,6 +28,8 @@
       }
     }
   });
+
+  let userCount = $state(data.userCount);
 </script>
 
 <h3 class="pl-4">{m.org_edit()}</h3>
@@ -114,3 +118,72 @@
     <input type="submit" class="btn btn-primary" value={m.common_save()} />
   </div>
 </form>
+
+<div class="m-4">
+  <GroupUsers header={`${m.sidebar_users()}: ${userCount}`} users={data.users}>
+    {#snippet user(user)}
+      <form
+        action="?/toggleUser"
+        method="POST"
+        use:svk_enhance={({ formElement }) => {
+          return async ({ result, update }) => {
+            if (result.type === 'success') {
+              const res = result.data as ActionData;
+              const toggle = formElement.querySelector('[name=enabled]') as HTMLInputElement;
+              if (res?.ok) {
+                if (toggle.checked) {
+                  toast('success', m.user_addedTo({ user: user?.Name ?? '', name: $form.name }));
+                  userCount++;
+                } else {
+                  toast(
+                    'success',
+                    m.user_removedFrom({ user: user?.Name ?? '', name: $form.name })
+                  );
+                  userCount--;
+                }
+              } else {
+                if (res?.form.valid) {
+                  toast(
+                    'error',
+                    m.user_ownsProjectsInGroup({
+                      user: user?.Name ?? '',
+                      group: $form.name
+                    })
+                  );
+                } else {
+                  toast('error', m.errors_generic({ errorMessage: '' }));
+                }
+                // reset toggle
+                toggle.checked = !toggle.checked;
+              }
+            }
+            update({ reset: false });
+          };
+        }}
+      >
+        <label>
+          <span class="flex items-center">
+            <input type="hidden" name="userId" value={user.Id} />
+            <input type="hidden" name="orgId" value={$form.id} />
+            <input
+              type="checkbox"
+              name="enabled"
+              onchange={(e) => {
+                e.currentTarget.form?.requestSubmit();
+              }}
+              class="checkbox checkbox-accent mr-2 mt-2"
+              disabled={!!user._count.Projects}
+              checked={!!user._count.Organizations}
+            />
+            <b>
+              {user.Name}
+            </b>
+          </span>
+          <p class="ml-8">
+            {user.Email}
+          </p>
+        </label>
+      </form>
+    {/snippet}
+  </GroupUsers>
+</div>
