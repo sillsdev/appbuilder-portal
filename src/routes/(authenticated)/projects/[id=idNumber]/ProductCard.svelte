@@ -12,7 +12,7 @@
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
-  import type { ProductActionType } from '$lib/products';
+  import { type ProductActionType, getActionIcon } from '$lib/products';
   import ProductDetails, {
     type Transition,
     showProductDetails
@@ -158,7 +158,7 @@
         <IconContainer icon="charm:menu-kebab" width="20" />
       {/snippet}
       {#snippet content()}
-        <ul class="menu menu-sm overflow-hidden rounded-md">
+        <ul class="menu overflow-hidden rounded-md">
           {#each product.actions as action}
             {@const message =
               //@ts-expect-error this is in fact correct
@@ -166,6 +166,7 @@
             <li class="w-full rounded-none">
               <BlockIfJobsUnavailable class="text-nowrap">
                 {#snippet altContent()}
+                  <IconContainer icon={getActionIcon(action)} width={16} />
                   {message}
                 {/snippet}
                 <button
@@ -175,46 +176,55 @@
                     event.currentTarget.blur();
                   }}
                 >
-                  {message}
+                  {@render altContent()}
                 </button>
               </BlockIfJobsUnavailable>
             </li>
           {/each}
           <li class="w-full rounded-none">
             <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
+              <IconContainer icon="material-symbols:history" width={16} />
               {m.products_details()}
             </button>
           </li>
           <li class="w-full rounded-none">
-            <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
-              {m.project_productFiles()}
-            </a>
+            <button>
+              <IconContainer icon="lsicon:folder-files-filled" width={16} />
+              <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
+                {m.project_productFiles()}
+              </a>
+            </button>
           </li>
           {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
             <li class="w-full rounded-none">
               <button class="text-nowrap" onclick={() => updateProductModal?.showModal()}>
+                <IconContainer icon="material-symbols:settings" width={16} />
                 {m.products_properties_title()}
               </button>
             </li>
           {/if}
           {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}
             <li class="w-full rounded-none">
-              <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
-                {m.common_workflow()}
-              </a>
+              <button>
+                <IconContainer icon="mdi:workflow" width={16} />
+                <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
+                  {m.common_workflow()}
+                </a>
+              </button>
             </li>
           {/if}
           {#if canEdit}
             <li class="w-full rounded-none">
               <BlockIfJobsUnavailable class="text-nowrap text-error">
                 {#snippet altContent()}
+                  <IconContainer icon="mdi:trash" width={16} />
                   {m.models_delete({ name: m.tasks_product() })}
                 {/snippet}
                 <button
                   class="text-nowrap text-error"
                   onclick={() => deleteProductModal?.showModal()}
                 >
-                  {m.models_delete({ name: m.tasks_product() })}
+                  {@render altContent()}
                 </button>
               </BlockIfJobsUnavailable>
             </li>
