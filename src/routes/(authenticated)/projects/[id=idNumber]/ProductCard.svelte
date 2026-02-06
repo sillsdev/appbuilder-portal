@@ -177,12 +177,10 @@
         {/if}
         {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}
           <li class="w-full rounded-none">
-            <button>
+            <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
               <IconContainer icon="mdi:workflow" width={16} />
-              <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
-                {m.common_workflow()}
-              </a>
-            </button>
+              {m.common_workflow()}
+            </a>
           </li>
         {/if}
         {#if canEdit}
@@ -262,13 +260,11 @@
           <IconContainer icon="material-symbols:history" width={20} />
         </Tooltip>
       </button>
-      <button class="btn btn-ghost btn-square btn-sm">
+      <a class="btn btn-ghost btn-square btn-sm" href={localizeHref(`/products/${product.Id}/files`)}>
         <Tooltip tip={m.project_productFiles()}>
-          <a href={localizeHref(`/products/${product.Id}/files`)}>
-            <IconContainer icon="lsicon:folder-files-filled" width={20} />
-          </a>
+          <IconContainer icon="lsicon:folder-files-filled" width={20} />
         </Tooltip>
-      </button>
+      </a>
       {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
         <button
           class="btn btn-ghost btn-square btn-sm"
