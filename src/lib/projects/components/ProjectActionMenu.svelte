@@ -105,7 +105,7 @@
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable class="text-nowrap">
               {#snippet altContent()}
-                <IconContainer icon="mdi:user-add" width={20} />
+                <IconContainer icon="material-symbols:add-card-outline" width={20} />
                 {m.project_claimOwnership()}
               {/snippet}
               <label class="text-nowrap">
