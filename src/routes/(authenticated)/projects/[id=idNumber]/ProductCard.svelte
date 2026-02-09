@@ -160,17 +160,6 @@
         {/snippet}
         {#snippet content()}
           <ul class="menu overflow-hidden rounded-md">
-            {#each product.actions as action}
-              <li class="w-full rounded-none">
-                {@render actionButton(action)}
-              </li>
-            {/each}
-            <li class="w-full rounded-none">
-              <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
-                <IconContainer icon="material-symbols:info" width={16} />
-                {m.products_details()}
-              </button>
-            </li>
             <li class="w-full rounded-none">
               <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
                 <IconContainer icon="lsicon:folder-files-filled" width={16} />
@@ -183,14 +172,6 @@
                   <IconContainer icon="material-symbols:settings" width={16} />
                   {m.products_properties_title()}
                 </button>
-              </li>
-            {/if}
-            {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}
-              <li class="w-full rounded-none">
-                <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
-                  <IconContainer icon="mdi:workflow" width={16} />
-                  {m.common_workflow()}
-                </a>
               </li>
             {/if}
             {#if canEdit}
