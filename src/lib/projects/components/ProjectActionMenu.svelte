@@ -67,11 +67,12 @@
   {#snippet content()}
     <form method="POST" action="?/{endpoint}" use:enhance>
       <input type="hidden" name="projectId" value={project.Id} />
-      <ul class="menu menu-sm overflow-hidden rounded-md">
+      <ul class="menu overflow-hidden rounded-md">
         {#if allowActions && canArchive(project, page.data.session!.user)}
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable class="text-nowrap">
               {#snippet altContent()}
+                <IconContainer icon="material-symbols:archive" width={20} />
                 {m.common_archive()}
               {/snippet}
               <label class="text-nowrap">
@@ -85,6 +86,7 @@
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable class="text-nowrap">
               {#snippet altContent()}
+                <IconContainer icon="mdi:archive-refresh" width={20} />
                 {m.common_reactivate()}
               {/snippet}
               <label class="text-nowrap">
@@ -103,6 +105,7 @@
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable class="text-nowrap">
               {#snippet altContent()}
+                <IconContainer icon="mdi:user-add" width={20} />
                 {m.project_claimOwnership()}
               {/snippet}
               <label class="text-nowrap">
