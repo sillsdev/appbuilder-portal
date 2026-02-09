@@ -163,6 +163,7 @@
                   href={localizeHref('/tasks')}
                   onclick={closeDrawer}
                 >
+                  <IconContainer icon="grommet-icons:task" width={24} />
                   {m.sidebar_myTasks({ count: userTasksLength })}
                 </a>
               </li>
@@ -173,6 +174,7 @@
                   href={activeOrgUrl(`/projects/own`)}
                   onclick={closeDrawer}
                 >
+                  <IconContainer icon="mdi:user" width={24} />
                   {m.sidebar_myProjects()}
                 </a>
               </li>
@@ -183,6 +185,7 @@
                   href={activeOrgUrl('/projects/organization')}
                   onclick={closeDrawer}
                 >
+                  <IconContainer icon="clarity:organization-solid" width={24} />
                   {m.sidebar_orgProjects()}
                 </a>
               </li>
@@ -194,6 +197,7 @@
                     href={activeOrgUrl('/projects/active')}
                     onclick={closeDrawer}
                   >
+                    <IconContainer icon="hugeicons:activity-03" width={24} />
                     {m.sidebar_activeProjects()}
                   </a>
                 </li>
@@ -204,6 +208,7 @@
                     href={activeOrgUrl('/users/org')}
                     onclick={closeDrawer}
                   >
+                    <IconContainer icon="mdi:account-group" width={24} />
                     {m.sidebar_users()}
                   </a>
                 </li>
@@ -214,6 +219,7 @@
                     href={activeOrgUrl('/organizations')}
                     onclick={closeDrawer}
                   >
+                    <IconContainer icon="material-symbols:settings" width={24} />
                     {m.sidebar_orgSettings()}
                   </a>
                 </li>
@@ -226,12 +232,14 @@
                     href={localizeHref('/admin/settings/organizations')}
                     onclick={closeDrawer}
                   >
+                    <IconContainer icon="eos-icons:admin" width={24} />
                     {m.sidebar_adminSettings()}
                   </a>
                 </li>
                 <li>
                   <BlockIfJobsUnavailable class="rounded-none">
                     {#snippet altContent()}
+                      <IconContainer icon="carbon:batch-job" width={24} />
                       {m.sidebar_jobAdministration()}
                       <IconContainer icon="mdi:open-in-new" width="18" />
                     {/snippet}
@@ -252,6 +260,7 @@
                     href={localizeHref('/workflow-instances')}
                     onclick={closeDrawer}
                   >
+                    <IconContainer icon="hugeicons:workflow-square-03" width={24} />
                     {m.workflowInstances_title()}
                   </a>
                 </li>
@@ -263,6 +272,7 @@
                   href={localizeHref('/directory')}
                   onclick={closeDrawer}
                 >
+                  <IconContainer icon="lsicon:folder-files-filled" width={24} />
                   {m.sidebar_projectDirectory()}
                 </a>
               </li>
@@ -273,6 +283,7 @@
                   href={localizeHref('/open-source')}
                   onclick={closeDrawer}
                 >
+                  <IconContainer icon="mdi:info" width={24} />
                   {m.opensource()}
                 </a>
               </li>
