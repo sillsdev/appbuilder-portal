@@ -9,7 +9,7 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
@@ -303,7 +303,7 @@
                             value={product}
                           />
                           <IconContainer
-                            icon={getIcon(product.ProductDefinitionName ?? '')}
+                            icon={getProductIcon(product.ProductDefinitionName ?? '')}
                             width="24"
                           />
                           {product.ProductDefinitionName}

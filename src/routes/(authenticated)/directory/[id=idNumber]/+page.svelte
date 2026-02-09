@@ -2,7 +2,7 @@
   import type { PageData } from './$types';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
@@ -92,7 +92,7 @@
         {#each data.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, locale) ) as product}
           {@const build = product.ProductPublications.at(0)?.ProductBuild}
           <div>
-            <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
+            <IconContainer icon={getProductIcon(product.ProductDefinition.Name ?? '')} width="32" />
             {product.ProductDefinition.Name}
           </div>
           {#if build}

@@ -3,7 +3,7 @@
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { displayStoreGPTitle } from '$lib/prisma';
@@ -86,7 +86,7 @@
               }}
             >
               <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
-                <IconContainer icon={getIcon(productDef.Name ?? '')} width="24" />
+                <IconContainer icon={getProductIcon(productDef.Name ?? '')} width="24" />
                 {productDef.Name}
               </div>
               <p class="p-2 text-sm text-neutral-400">{productDef.Description}</p>

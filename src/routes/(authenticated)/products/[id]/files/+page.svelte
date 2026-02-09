@@ -3,7 +3,7 @@
   import type { PageData } from './$types';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
@@ -45,7 +45,7 @@
         </li>
         <li>
           <IconContainer
-            icon={getIcon(data.product?.ProductDefinition.Name ?? '')}
+            icon={getProductIcon(data.product?.ProductDefinition.Name ?? '')}
             width="24"
           />{data.product?.ProductDefinition.Name}
         </li>

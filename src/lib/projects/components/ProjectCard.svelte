@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import type { PrunedProject } from '$lib/projects';
@@ -107,7 +107,10 @@
             <tr>
               <td class="py-2" colspan="2">
                 <div class="flex items-center">
-                  <IconContainer icon={getIcon(product.ProductDefinitionName ?? '')} width={30} />
+                  <IconContainer
+                    icon={getProductIcon(product.ProductDefinitionName ?? '')}
+                    width={30}
+                  />
                   {product.ProductDefinitionName}
                 </div>
               </td>
@@ -147,7 +150,10 @@
             <tr class="row">
               <td class="p-2">
                 <div class="flex items-center">
-                  <IconContainer icon={getIcon(product.ProductDefinitionName ?? '')} width={30} />
+                  <IconContainer
+                    icon={getProductIcon(product.ProductDefinitionName ?? '')}
+                    width={30}
+                  />
                   {product.ProductDefinitionName}
                 </div>
               </td>

@@ -9,7 +9,7 @@
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { type ProductActionType, getActionIcon } from '$lib/products';
@@ -115,7 +115,7 @@
 <div class="rounded-md border border-slate-400 w-full my-2">
   <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
     <div class="flex flex-row items-start">
-      <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
+      <IconContainer icon={getProductIcon(product.ProductDefinition.Name ?? '')} width="32" />
       <span class="min-w-0 grow">
         {product.ProductDefinition.Name}
       </span>
