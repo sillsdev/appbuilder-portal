@@ -69,7 +69,7 @@
             <div
               class={[
                 'btn flex-nowrap justify-start pl-2 pr-1',
-                locale === currentLocale() && 'bg-accent text-accent-content'
+                locale === currentLocale() ? 'btn-accent' : 'btn-ghost'
               ]}
               onclick={() => onclick(locale)}
               onkeypress={() => onclick(locale)}
