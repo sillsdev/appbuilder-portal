@@ -149,69 +149,6 @@
   </BlockIfJobsUnavailable>
 {/snippet}
 
-{#snippet menu()}
-  <Dropdown class={{ label: 'px-1', content: 'drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto' }}>
-    {#snippet label()}
-      <IconContainer icon="charm:menu-kebab" width="20" />
-    {/snippet}
-    {#snippet content()}
-      <ul class="menu overflow-hidden rounded-md">
-        {#each product.actions as action}
-          <li class="w-full rounded-none">
-            {@render actionButton(action, true)}
-          </li>
-        {/each}
-        <li class="w-full rounded-none">
-          <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
-            <IconContainer icon="material-symbols:info" width={16} />
-            {m.products_details()}
-          </button>
-        </li>
-        <li class="w-full rounded-none">
-          <button>
-            <IconContainer icon="lsicon:folder-files-filled" width={16} />
-            <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
-              {m.project_productFiles()}
-            </a>
-          </button>
-        </li>
-        {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
-          <li class="w-full rounded-none">
-            <button class="text-nowrap" onclick={() => updateProductModal?.showModal()}>
-              <IconContainer icon="material-symbols:settings" width={16} />
-              {m.products_properties_title()}
-            </button>
-          </li>
-        {/if}
-        {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}
-          <li class="w-full rounded-none">
-            <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
-              <IconContainer icon="mdi:workflow" width={16} />
-              {m.common_workflow()}
-            </a>
-          </li>
-        {/if}
-        {#if canEdit}
-          <li class="w-full rounded-none">
-            <BlockIfJobsUnavailable class="text-nowrap text-error">
-              {#snippet altContent()}
-                <IconContainer icon="mdi:trash" width={16} />
-                {m.models_delete({ name: m.tasks_product() })}
-              {/snippet}
-              <button
-                class="text-nowrap text-error"
-                onclick={() => deleteProductModal?.showModal()}
-              >
-                {@render altContent()}
-              </button>
-            </BlockIfJobsUnavailable>
-          </li>
-        {/if}
-      </ul>
-    {/snippet}
-  </Dropdown>
-{/snippet}
-
 <div class="rounded-md border border-slate-400 w-full my-2">
   <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
     <div class="flex flex-row">
@@ -219,7 +156,68 @@
       <span class="grow min-w-0">
         {product.ProductDefinition.Name}
       </span>
-      {@render menu()}
+      <Dropdown
+        class={{ label: 'px-1', content: 'drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto' }}
+      >
+        {#snippet label()}
+          <IconContainer icon="charm:menu-kebab" width="20" />
+        {/snippet}
+        {#snippet content()}
+          <ul class="menu overflow-hidden rounded-md">
+            {#each product.actions as action}
+              <li class="w-full rounded-none">
+                {@render actionButton(action, true)}
+              </li>
+            {/each}
+            <li class="w-full rounded-none">
+              <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
+                <IconContainer icon="material-symbols:info" width={16} />
+                {m.products_details()}
+              </button>
+            </li>
+            <li class="w-full rounded-none">
+              <button>
+                <IconContainer icon="lsicon:folder-files-filled" width={16} />
+                <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
+                  {m.project_productFiles()}
+                </a>
+              </button>
+            </li>
+            {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
+              <li class="w-full rounded-none">
+                <button class="text-nowrap" onclick={() => updateProductModal?.showModal()}>
+                  <IconContainer icon="material-symbols:settings" width={16} />
+                  {m.products_properties_title()}
+                </button>
+              </li>
+            {/if}
+            {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}
+              <li class="w-full rounded-none">
+                <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
+                  <IconContainer icon="mdi:workflow" width={16} />
+                  {m.common_workflow()}
+                </a>
+              </li>
+            {/if}
+            {#if canEdit}
+              <li class="w-full rounded-none">
+                <BlockIfJobsUnavailable class="text-nowrap text-error">
+                  {#snippet altContent()}
+                    <IconContainer icon="mdi:trash" width={16} />
+                    {m.models_delete({ name: m.tasks_product() })}
+                  {/snippet}
+                  <button
+                    class="text-nowrap text-error"
+                    onclick={() => deleteProductModal?.showModal()}
+                  >
+                    {@render altContent()}
+                  </button>
+                </BlockIfJobsUnavailable>
+              </li>
+            {/if}
+          </ul>
+        {/snippet}
+      </Dropdown>
     </div>
     <div class="flex flex-row gap-2">
       <div class="flex flex-row gap-1 grow">
