@@ -20,18 +20,12 @@ import { DatabaseReads } from '$lib/server/database';
  */
 
 type PlayListingManifest = {
-  /** Base URL prefix where the listing files can be fetched from. */
-  url: string;
-  /** Icon path (or URL) inside the listing bundle. */
-  icon: string;
-  /** Brand color hex (e.g. "#1563ff") */
-  color: string;
-  /** Default language tag for the listing bundle (e.g. "en-US"). */
-  ['default-language']: string;
-  /** Languages included in the bundle (language tags). */
-  languages: string[];
-  /** Paths to files within the bundle (usually "<lang>/<file>.txt"). */
-  files: string[];
+  url: string; // Base URL prefix where the listing files can be fetched from.
+  icon: string; // Icon path (or URL) inside the listing bundle.
+  color: string; // Brand color hex (e.g. "#1563ff")
+  ['default-language']: string; // Default language tag for the listing bundle (e.g. "en-US").
+  languages: string[]; // Languages included in the bundle (language tags).
+  files: string[]; // Paths to files within the bundle (usually "<lang>/<file>.txt").
 };
 
 type AppInfo = {
