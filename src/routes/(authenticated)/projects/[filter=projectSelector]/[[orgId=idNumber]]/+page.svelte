@@ -219,6 +219,7 @@
         {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
           <BlockIfJobsUnavailable class="btn btn-outline {mobileSizing}">
             {#snippet altContent()}
+              <IconContainer icon="material-symbols:archive" width={20} />
               {m.common_archive()}
             {/snippet}
             <label
@@ -239,6 +240,7 @@
         {#if data.allowReactivate && (canReactivateSelected || !selectedProjects.length)}
           <BlockIfJobsUnavailable class="btn btn-outline {mobileSizing}">
             {#snippet altContent()}
+              <IconContainer icon="mdi:archive-refresh" width={20} />
               {m.common_reactivate()}
             {/snippet}
             <label
@@ -259,6 +261,7 @@
         {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
           <BlockIfJobsUnavailable class="btn btn-outline {mobileSizing}">
             {#snippet altContent()}
+              <IconContainer icon="carbon:build-run" width={20} />
               {m.common_rebuild()}
             {/snippet}
             <button
@@ -350,6 +353,7 @@
                   selectedProducts.length && selectedProducts.every((p) => p.CanRebuild)
                 )}
               >
+                <IconContainer icon="carbon:build-run" width={20} />
                 {@render altContent()}
                 <input
                   type="radio"
@@ -372,6 +376,7 @@
                   selectedProducts.length && selectedProducts.every((p) => p.CanRepublish)
                 )}
               >
+                <IconContainer icon="carbon:ibm-elo-publishing" width={20} />
                 {@render altContent()}
                 <input
                   type="radio"
@@ -399,6 +404,7 @@
             class="btn btn-outline {mobileSizing}"
             href={localizeHref(`/projects/import/${$orgActive ?? ''}`)}
           >
+            <IconContainer icon="tdesign:import" width={20} />
             {@render altContent()}
           </a>
         </BlockIfJobsUnavailable>
@@ -410,6 +416,7 @@
             class="btn btn-outline {mobileSizing}"
             href={localizeHref(`/projects/new/${$orgActive ?? ''}`)}
           >
+            <IconContainer icon="material-symbols:add-card-outline" width={20} />
             {@render altContent()}
           </a>
         </BlockIfJobsUnavailable>
