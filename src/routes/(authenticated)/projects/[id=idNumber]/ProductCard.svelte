@@ -140,6 +140,12 @@
         {#snippet content()}
           <ul class="menu overflow-hidden rounded-md">
             <li class="w-full rounded-none">
+              <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
+                <IconContainer icon="material-symbols:info" width={16} />
+                {m.products_details()}
+              </button>
+            </li>
+            <li class="w-full rounded-none">
               <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
                 <IconContainer icon="lsicon:folder-files-filled" width={16} />
                 {m.project_productFiles()}
