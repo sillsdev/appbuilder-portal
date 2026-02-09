@@ -176,12 +176,10 @@
               </button>
             </li>
             <li class="w-full rounded-none">
-              <button>
+              <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
                 <IconContainer icon="lsicon:folder-files-filled" width={16} />
-                <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
-                  {m.project_productFiles()}
-                </a>
-              </button>
+                {m.project_productFiles()}
+              </a>
             </li>
             {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
               <li class="w-full rounded-none">
