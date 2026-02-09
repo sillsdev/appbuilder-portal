@@ -46,6 +46,6 @@
       </div>
     </div>
 
-    <a class="btn btn-primary w-full" href="..">Back to Manage my data</a>
+    <a class="btn btn-primary w-full" href="./">Back to Manage my data</a>
   </div>
 </div>
