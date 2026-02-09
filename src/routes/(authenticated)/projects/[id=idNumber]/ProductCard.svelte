@@ -9,10 +9,11 @@
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
+  import { getActionIcon } from '$lib/icons';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
-  import { type ProductActionType, getActionIcon } from '$lib/products';
+  import { type ProductActionType } from '$lib/products';
   import ProductDetails, {
     type Props as ProductDetailProps,
     type Transition,
