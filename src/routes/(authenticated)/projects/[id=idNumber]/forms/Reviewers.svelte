@@ -110,7 +110,7 @@
                 </span>
               {/snippet}
             </LocaleSelector>
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" disabled={!($form.name && $form.email)}>
               <IconContainer icon="mdi:eye-add" width={20} />
               {m.reviewers_submit()}
             </button>
