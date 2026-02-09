@@ -136,16 +136,27 @@
 
 <div class="rounded-md border border-slate-400 w-full my-2">
   <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
-    <div class="flex flex-row">
+    <div class="flex flex-row items-start">
       <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
-      <span class="grow min-w-0">
+      <span class="min-w-0">
         {product.ProductDefinition.Name}
       </span>
+      <span class="grow text-left ml-1">
+        <button
+          class="btn btn-ghost btn-square btn-xs"
+          onclick={() => showProductDetails(product.Id)}
+        >
+          <IconContainer icon="material-symbols:info" width={20} />
+        </button>
+      </span>
       <Dropdown
-        class={{ label: 'px-1', content: 'drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto' }}
+        class={{
+          label: 'px-1 btn-square btn-xs',
+          content: 'drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto'
+        }}
       >
         {#snippet label()}
-          <IconContainer icon="charm:menu-kebab" width="20" />
+          <IconContainer icon="charm:menu-kebab" width="20" class="" />
         {/snippet}
         {#snippet content()}
           <ul class="menu overflow-hidden rounded-md">
