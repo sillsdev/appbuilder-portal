@@ -113,27 +113,6 @@
   const publishedTime = $derived(getRelativeTime(product.DatePublished));
 </script>
 
-{#snippet actionButton(action: ProductActionType, width = 16, classes?: ClassValue)}
-  {@const message =
-    //@ts-expect-error this is in fact correct
-    m['products_acts_' + action]()}
-  <BlockIfJobsUnavailable class="text-nowrap">
-    {#snippet altContent()}
-      <IconContainer icon={getActionIcon(action)} {width} />
-      {message}
-    {/snippet}
-    <button
-      class={['text-nowrap', classes]}
-      onclick={(event) => {
-        handleProductAction(product.Id, action);
-        event.currentTarget.blur();
-      }}
-    >
-      {@render altContent()}
-    </button>
-  </BlockIfJobsUnavailable>
-{/snippet}
-
 <div class="rounded-md border border-slate-400 w-full my-2">
   <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
     <div class="flex flex-row items-start">
@@ -232,7 +211,24 @@
     {#if product.actions.length}
       <div class="flex flex-row gap-2 p-1 mt-1 rounded-md">
         {#each product.actions as action}
-          {@render actionButton(action, 20, 'btn btn-secondary btn-sm')}
+          {@const message =
+            //@ts-expect-error this is in fact correct
+            m['products_acts_' + action]()}
+          <BlockIfJobsUnavailable class="text-nowrap">
+            {#snippet altContent()}
+              <IconContainer icon={getActionIcon(action)} width={20} />
+              {message}
+            {/snippet}
+            <button
+              class="text-nowrap btn btn-secondary btn-sm"
+              onclick={(event) => {
+                handleProductAction(product.Id, action);
+                event.currentTarget.blur();
+              }}
+            >
+              {@render altContent()}
+            </button>
+          </BlockIfJobsUnavailable>
         {/each}
       </div>
     {/if}
