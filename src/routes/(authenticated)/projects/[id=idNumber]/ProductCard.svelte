@@ -247,7 +247,7 @@
               : 'apk'}"
             target="_blank"
           >
-            <IconContainer icon="mdi:launch" width={24} />
+            <IconContainer icon="material-symbols:download" width={24} />
           </a>
         {/if}
       {/if}
