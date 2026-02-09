@@ -21,7 +21,6 @@
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
   import { ProductType } from '$lib/workflowTypes';
-  import type { ClassValue } from 'svelte/elements';
 
   interface Props {
     project: Prisma.ProjectsGetPayload<{
