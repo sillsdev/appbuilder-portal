@@ -10,9 +10,9 @@
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { localizeHref } from '$lib/paraglide/runtime';
+  import ProductDefinitionFilter from '$lib/projects/components/ProductDefinitionFilter.svelte';
   import { orgActive } from '$lib/stores';
-  import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
   interface Props {
@@ -79,26 +79,11 @@
       </div>
     </div>
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}">
-      <label class="select {mobileSizing} gap-4">
-        <IconContainer
-          icon={$form.productDefinitionId
-            ? getProductIcon(
-                data.productDefinitions.find((pD) => pD.Id === $form.productDefinitionId)!.Workflow
-                  .ProductType
-              )
-            : ''}
-          width={20}
-        />
-        <select bind:value={$form.productDefinitionId} name="productDefinitionId">
-          <option value={null} selected>{m.filters_allProdDefs()}</option>
-          {#each data.productDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as pD}
-            <option value={pD.Id}>
-              <IconContainer icon={getProductIcon(pD.Workflow.ProductType)} width={20} />
-              {pD.Name}
-            </option>
-          {/each}
-        </select>
-      </label>
+      <ProductDefinitionFilter
+        bind:value={$form.productDefinitionId}
+        productDefinitions={data.productDefinitions}
+        class={mobileSizing}
+      />
       <DateRangePicker
         bind:chosenDates={$form.dateUpdatedRange}
         placeholder={m.filters_dateRange()}

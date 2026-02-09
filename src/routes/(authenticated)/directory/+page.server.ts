@@ -40,7 +40,9 @@ export const load = (async (event) => {
       { Id: 'asc' }
     ]
   });
-  const productDefinitions = await DatabaseReads.productDefinitions.findMany();
+  const productDefinitions = await DatabaseReads.productDefinitions.findMany({
+    include: { Workflow: { select: { ProductType: true } } }
+  });
   return {
     projects: pruneProjects(projects),
     productDefinitions,
