@@ -116,16 +116,8 @@
   <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
     <div class="flex flex-row items-start">
       <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
-      <span class="min-w-0">
+      <span class="min-w-0 grow">
         {product.ProductDefinition.Name}
-      </span>
-      <span class="grow text-left ml-1">
-        <button
-          class="btn btn-ghost btn-square btn-xs"
-          onclick={() => showProductDetails(product.Id)}
-        >
-          <IconContainer icon="material-symbols:info" width={20} />
-        </button>
       </span>
       <Dropdown
         class={{
@@ -213,30 +205,35 @@
         {/if}
       {/if}
     </div>
-    {#if product.actions.length}
-      <div class="flex flex-row gap-2 p-1 mt-1 rounded-md">
-        {#each product.actions as action}
-          {@const message =
-            //@ts-expect-error this is in fact correct
-            m['products_acts_' + action]()}
-          <BlockIfJobsUnavailable class="text-nowrap">
-            {#snippet altContent()}
-              <IconContainer icon={getActionIcon(action)} width={20} />
-              {message}
-            {/snippet}
-            <button
-              class="text-nowrap btn btn-secondary btn-sm"
-              onclick={(event) => {
-                handleProductAction(product.Id, action);
-                event.currentTarget.blur();
-              }}
-            >
-              {@render altContent()}
-            </button>
-          </BlockIfJobsUnavailable>
-        {/each}
-      </div>
-    {/if}
+    <div class="flex flex-row gap-2 p-1 mt-1 rounded-md">
+      <button
+        class="text-nowrap btn btn-secondary btn-sm"
+        onclick={() => showProductDetails(product.Id)}
+      >
+        <IconContainer icon="material-symbols:info" width={20} />
+        {m.products_details()}
+      </button>
+      {#each product.actions as action}
+        {@const message =
+          //@ts-expect-error this is in fact correct
+          m['products_acts_' + action]()}
+        <BlockIfJobsUnavailable class="text-nowrap">
+          {#snippet altContent()}
+            <IconContainer icon={getActionIcon(action)} width={20} />
+            {message}
+          {/snippet}
+          <button
+            class="text-nowrap btn btn-secondary btn-sm"
+            onclick={(event) => {
+              handleProductAction(product.Id, action);
+              event.currentTarget.blur();
+            }}
+          >
+            {@render altContent()}
+          </button>
+        </BlockIfJobsUnavailable>
+      {/each}
+    </div>
     {#if canEdit}
       <DeleteProduct
         bind:modal={deleteProductModal}
