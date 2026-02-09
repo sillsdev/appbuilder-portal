@@ -1,3 +1,4 @@
+import type { ProductActionType } from '$lib/products';
 const iconMap = {
   android: 'flat-color-icons:android-os',
   html: 'mdi:web',
@@ -14,4 +15,17 @@ export function getProductIcon(name: string) {
       name.toLowerCase().includes(key)
     ) as keyof typeof iconMap) ?? 'none'
   ];
+}
+
+export function getActionIcon(type: ProductActionType) {
+  switch (type) {
+    case 'rebuild':
+      return 'carbon:build-run';
+    case 'republish':
+      return 'carbon:ibm-elo-publishing';
+    case 'cancel':
+      return 'mdi:cancel-octagon';
+    default:
+      return '';
+  }
 }

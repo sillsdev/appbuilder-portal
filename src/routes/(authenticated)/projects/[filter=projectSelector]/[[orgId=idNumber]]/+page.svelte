@@ -9,10 +9,11 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { getProductIcon } from '$lib/icons';
+  import { getActionIcon, getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
+  import { ProductActionType } from '$lib/products';
   import type { ProjectForAction, PrunedProject } from '$lib/projects';
   import { canArchive, canClaimProject, canReactivate } from '$lib/projects';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
@@ -261,7 +262,7 @@
         {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
           <BlockIfJobsUnavailable class="btn btn-outline {mobileSizing}">
             {#snippet altContent()}
-              <IconContainer icon="carbon:build-run" width={20} />
+              <IconContainer icon={getActionIcon(ProductActionType.Rebuild)} width={20} />
               {m.common_rebuild()}
             {/snippet}
             <button
@@ -353,7 +354,7 @@
                   selectedProducts.length && selectedProducts.every((p) => p.CanRebuild)
                 )}
               >
-                <IconContainer icon="carbon:build-run" width={20} />
+                <IconContainer icon={getActionIcon(ProductActionType.Rebuild)} width={20} />
                 {@render altContent()}
                 <input
                   type="radio"
@@ -376,7 +377,7 @@
                   selectedProducts.length && selectedProducts.every((p) => p.CanRepublish)
                 )}
               >
-                <IconContainer icon="carbon:ibm-elo-publishing" width={20} />
+                <IconContainer icon={getActionIcon(ProductActionType.Republish)} width={20} />
                 {@render altContent()}
                 <input
                   type="radio"
