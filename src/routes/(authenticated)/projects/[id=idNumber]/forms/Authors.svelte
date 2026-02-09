@@ -113,10 +113,11 @@
           </select>
           <BlockIfJobsUnavailable class="btn btn-primary">
             {#snippet altContent()}
+              <IconContainer icon="mdi:user-add" width={20} />
               {m.authors_submit()}
             {/snippet}
             <button type="submit" class="btn btn-primary">
-              {m.authors_submit()}
+              {@render altContent()}
             </button>
           </BlockIfJobsUnavailable>
         </div>

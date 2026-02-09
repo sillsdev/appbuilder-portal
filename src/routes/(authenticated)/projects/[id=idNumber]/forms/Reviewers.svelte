@@ -113,6 +113,7 @@
               {/snippet}
             </LocaleSelector>
             <button type="submit" class="btn btn-primary">
+              <IconContainer icon="mdi:eye-add" width={20} />
               {m.reviewers_submit()}
             </button>
           </div>

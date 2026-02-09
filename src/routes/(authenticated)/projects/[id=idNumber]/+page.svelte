@@ -195,6 +195,7 @@
           </div>
           <BlockIfJobsUnavailable class="btn btn-outline">
             {#snippet altContent()}
+              <IconContainer icon="system-uicons:box-add" width={20} />
               {m.products_add()}
             {/snippet}
             <button
@@ -206,7 +207,7 @@
                 projectData.project.RepositoryUrl
               )}
             >
-              {m.products_add()}
+              {@render altContent()}
             </button>
           </BlockIfJobsUnavailable>
           {#if canEdit}
