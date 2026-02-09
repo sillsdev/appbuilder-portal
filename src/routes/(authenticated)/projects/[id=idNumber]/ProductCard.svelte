@@ -155,7 +155,7 @@
         {/each}
         <li class="w-full rounded-none">
           <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
-            <IconContainer icon="material-symbols:history" width={16} />
+            <IconContainer icon="material-symbols:info" width={16} />
             {m.products_details()}
           </button>
         </li>
@@ -257,7 +257,7 @@
         onclick={() => showProductDetails(product.Id)}
       >
         <Tooltip tip={m.products_details()}>
-          <IconContainer icon="material-symbols:history" width={20} />
+          <IconContainer icon="material-symbols:info" width={20} />
         </Tooltip>
       </button>
       <a
