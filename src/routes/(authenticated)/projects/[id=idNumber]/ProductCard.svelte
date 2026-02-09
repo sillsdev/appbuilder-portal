@@ -123,21 +123,29 @@
         {message}
       {/if}
     {/snippet}
-    <button
-      class={['text-nowrap', full || 'btn btn-ghost btn-square btn-sm']}
-      onclick={(event) => {
-        handleProductAction(product.Id, action);
-        event.currentTarget.blur();
-      }}
-    >
-      {#if full}
+    {#if full}
+      <button
+        class="text-nowrap"
+        onclick={(event) => {
+          handleProductAction(product.Id, action);
+          event.currentTarget.blur();
+        }}
+      >
         {@render altContent()}
-      {:else}
-        <Tooltip tip={message}>
+      </button>
+    {:else}
+      <Tooltip tip={message}>
+        <button
+          class="text-nowrap btn btn-ghost btn-square btn-sm"
+          onclick={(event) => {
+            handleProductAction(product.Id, action);
+            event.currentTarget.blur();
+          }}
+        >
           {@render altContent()}
-        </Tooltip>
-      {/if}
-    </button>
+        </button>
+      </Tooltip>
+    {/if}
   </BlockIfJobsUnavailable>
 {/snippet}
 
@@ -252,31 +260,33 @@
       {#each product.actions as action}
         {@render actionButton(action, false)}
       {/each}
-      <button
-        class="btn btn-ghost btn-square btn-sm"
-        onclick={() => showProductDetails(product.Id)}
-      >
-        <Tooltip tip={m.products_details()}>
-          <IconContainer icon="material-symbols:info" width={20} />
-        </Tooltip>
-      </button>
-      <a
-        class="btn btn-ghost btn-square btn-sm"
-        href={localizeHref(`/products/${product.Id}/files`)}
-      >
-        <Tooltip tip={m.project_productFiles()}>
-          <IconContainer icon="lsicon:folder-files-filled" width={20} />
-        </Tooltip>
-      </a>
-      {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
+
+      <Tooltip tip={m.products_details()}>
         <button
           class="btn btn-ghost btn-square btn-sm"
-          onclick={() => updateProductModal?.showModal()}
+          onclick={() => showProductDetails(product.Id)}
         >
-          <Tooltip tip={m.products_properties_title()}>
-            <IconContainer icon="material-symbols:settings" width={20} />
-          </Tooltip>
+          <IconContainer icon="material-symbols:info" width={20} />
         </button>
+      </Tooltip>
+
+      <Tooltip tip={m.project_productFiles()}>
+        <a
+          class="btn btn-ghost btn-square btn-sm"
+          href={localizeHref(`/products/${product.Id}/files`)}
+        >
+          <IconContainer icon="lsicon:folder-files-filled" width={20} />
+        </a>
+      </Tooltip>
+      {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
+        <Tooltip tip={m.products_properties_title()}>
+          <button
+            class="btn btn-ghost btn-square btn-sm"
+            onclick={() => updateProductModal?.showModal()}
+          >
+            <IconContainer icon="material-symbols:settings" width={20} />
+          </button>
+        </Tooltip>
       {/if}
     </div>
     {#if canEdit}
