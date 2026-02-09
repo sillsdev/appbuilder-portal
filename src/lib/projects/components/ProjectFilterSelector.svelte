@@ -1,38 +1,50 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
+  import type { ClassValue } from 'svelte/elements';
   import { page } from '$app/state';
   import Dropdown from '$lib/components/Dropdown.svelte';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Props {
     filter: string;
+    class?: {
+      /** class="dropdown dropdown-start ..." */
+      dropdown?: ClassValue;
+      /** class="btn btn-ghost no-animation hover:bg-transparent ..." */
+      label?: ClassValue;
+      /** class="dropdown-content z-10 drop-shadow-lg rounded-md bg-base-200 overflow-y-auto left-2 p-2 border m-2 ..." */
+      content?: ClassValue;
+    };
   }
 
-  let { filter }: Props = $props();
+  let { filter, class: classes }: Props = $props();
 
   const textsForPaths = new Map([
-    ['all', m.projects_filter_all()],
-    ['own', m.projects_filter_own()],
-    ['organization', m.projects_filter_org()],
-    ['active', m.projects_filter_active()],
-    ['archived', m.projects_filter_archived()]
+    ['all', { msg: m.projects_filter_all(), ic: 'fluent-mdl2:all-apps' }],
+    ['own', { msg: m.projects_filter_own(), ic: 'mdi:user' }],
+    ['organization', { msg: m.projects_filter_org(), ic: 'clarity:organization-solid' }],
+    ['active', { msg: m.projects_filter_active(), ic: 'hugeicons:activity-03' }],
+    ['archived', { msg: m.projects_filter_archived(), ic: 'mdi:archive' }]
   ]);
   let open = $state(false);
 </script>
 
 <Dropdown
   class={{
-    dropdown: 'dropdown-start',
-    label: 'no-animation hover:bg-transparent',
-    content: 'overflow-y-auto left-2 p-2 border m-2'
+    dropdown: ['dropdown-start', classes?.dropdown],
+    label: ['no-animation hover:bg-transparent', classes?.label],
+    content: ['overflow-y-auto left-2 p-2 border m-2', classes?.content]
   }}
   bind:open
 >
   {#snippet label()}
+    {@const route = textsForPaths.get(filter)!}
     <h1 class="p-4 pl-6 cursor-pointer">
       <div class="flex flex-row items-center">
-        {textsForPaths.get(filter)}
+        <IconContainer icon={route.ic} width={24} class="mr-1" />
+        {route.msg}
         <div class="dropdown-icon" class:open>
           <Icon width="24" class="dropdown-icon" icon="gridicons:dropdown" />
         </div>
@@ -40,7 +52,7 @@
     </h1>
   {/snippet}
   {#snippet content()}
-    <div class="px-4">
+    <div class="px-1">
       {#each textsForPaths as route}
         <a
           href={localizeHref(
@@ -49,7 +61,8 @@
           class:font-extrabold={filter === route[0]}
           class="p-1 text-nowrap block"
         >
-          {route[1]}
+          <IconContainer icon={route[1].ic} width={20} />
+          {route[1].msg}
         </a>
       {/each}
     </div>

@@ -188,8 +188,11 @@
     }}
   >
     <div class="flex flex-row place-content-between w-full pt-4 flex-wrap">
-      <div class="inline-block">
-        <ProjectFilterSelector filter={(page.params as RouteParams).filter} />
+      <div class="mx-4 {mobileSizing}">
+        <ProjectFilterSelector
+          filter={(page.params as RouteParams).filter}
+          class={{ dropdown: mobileSizing, label: mobileSizing }}
+        />
       </div>
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 gap-1 {mobileSizing}"
