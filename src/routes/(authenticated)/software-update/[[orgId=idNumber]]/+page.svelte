@@ -2,6 +2,7 @@
   import { onDestroy } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import ApplicationTypesSelector from '../ApplicationTypesSelector.svelte';
+  import RebuildCard from '../RebuildCard.svelte';
   import type { PageData } from './$types';
   import { afterNavigate } from '$app/navigation';
   import { page } from '$app/state';
@@ -38,6 +39,30 @@
     timestamp?: string;
   };
 
+  interface RebuildData {
+    Id: number;
+    Comment: string;
+    DateCreated: Date | null;
+    DateCompleted: Date | null;
+    Version: string;
+    Paused: boolean;
+    InitiatedBy: {
+      Name: string | null;
+      Email: string | null;
+    };
+    ApplicationType: {
+      Name: string | null;
+      Description: string | null;
+    };
+    Projects: Array<{
+      Id: number;
+      Name: string | null;
+    }>;
+    _count: {
+      Products: number;
+    };
+  }
+
   let { data }: Props = $props();
 
   const { form, enhance, reset } = superForm(data.form, {
@@ -55,12 +80,8 @@
           timestamp: response.timestamp
         };
         showSummary = true;
-        // Start SSE to monitor update progress
-        if (response.updateIds?.length) {
-          startSSE(response.updateIds);
-        }
-        // Clear the comment field after showing summary
-        $form.comment = '';
+        // Reset the form for new input
+        reset();
       }
     }
   });
@@ -72,7 +93,7 @@
   // SSE management 
   let sseUnsubscribe: (() => void) | null = null;
   let reconnectDelay = 1000;
-  let completedCount = $state(0);
+  let rebuilds = $state<RebuildData[]>(data.rebuilds);
 
   // Filter products based on selected application types
   let filteredProducts = $derived(() => {
@@ -95,13 +116,13 @@
     return Array.from(versions).sort();
   });
 
-  async function startSSE(ids: number[]) {
+  async function startSSE(orgIds: number[]) {
     if (sseUnsubscribe) {
       sseUnsubscribe();
       sseUnsubscribe = null;
     }
-    const qs = encodeURIComponent(ids.join(','));
-    const updatesSSE = source(`status/sse?ids=${qs}`, {
+    const qs = encodeURIComponent(orgIds.join(','));
+    const rebuildsSSE = source(`sse?orgIds=${qs}`, {
       close({ connect }) {
         setTimeout(() => {
           connect();
@@ -109,31 +130,18 @@
         }, reconnectDelay);
       }
     })
-      .select('status')
+      .select('rebuilds')
       .transform((t) => (t ? parse(t) : undefined));
 
-    sseUnsubscribe = updatesSSE.subscribe((json) => {
-      if (!json) return;
-      if (json.completedProducts !== undefined) {
-        completedCount = json.completedProducts;
-      }
-      if (json.paused) {
-        toast('info', m.admin_software_update_paused_message());
-        sseUnsubscribe?.();
-        sseUnsubscribe = null;
-      } else if (json.allCompleted) {
-        toast('success', m.admin_software_update_all_completed_message());
-        sseUnsubscribe?.();
-        sseUnsubscribe = null;
-        showSummary = false;
-      }
+    sseUnsubscribe = rebuildsSSE.subscribe((data) => {
+      if (!data) return;
+      rebuilds = data;
     });
   }
 
-
   afterNavigate((_) => {
-    if (data.activeUpdates?.length) {
-      const updateIds = data.activeUpdates.map((u) => u.Id);
+    if (rebuilds?.length) {
+      const updateIds = rebuilds.map((u) => u.Id);
       startSSE(updateIds);
       showSummary = true;
       summary = null;
@@ -228,45 +236,31 @@
           type="submit"
           class="btn btn-primary mt-6"
           value={m.admin_software_update_rebuild_start()}
-          disabled={data.productsToRebuild.length === 0 || $form.applicationTypeIds.length === 0 || filteredProductCount === 0}
+          disabled={$form.applicationTypeIds.length === 0 || filteredProductCount === 0}
         />
       </form>
-  
-
-    {#if showSummary && summary}
-      <DataDisplayBox
-        title={m.admin_software_update_rebuild_started_title()}
-        fields={[
-          {
-            key: 'admin_software_update_affected_organizations',
-            value: data.organizations
-          },
-          {
-            key: 'admin_software_update_initiated_by',
-            value: summary.initiatedBy
-          },
-          {
-            key: 'admin_nav_software_update_comment',
-            value: summary.comment
-          },   
-        ]}
-      >
-        <p class="pl-4 -indent-4">
-          <b>{m.admin_software_update_products_rebuilding_label()}:</b>
-          {summary.productCount ?? 0}
-        </p>
-        {#if (summary.productCount ?? 0) > 0}
-          <p class="pl-4 -indent-4 mt-4">
-            <b>{m.admin_software_update_progress_label()}:</b>
-            {completedCount} / {summary.productCount}
-          </p>
-          <progress
-            class="progress progress-primary w-full mt-2"
-            value={completedCount}
-            max={summary.productCount ?? 1}
-          ></progress>
-        {/if}
-      </DataDisplayBox>
-    {/if}
+    <!-- Rebuilds List -->
+    <div class="m-4">
+      {#if rebuilds.length > 0}
+        <div class="space-y-6">
+          <h1>
+              Active Software Updates
+          </h1>
+          {#each rebuilds as rebuild}
+            {#if !rebuild.DateCompleted}
+              <span class ="mb-4"><RebuildCard {rebuild} /></span>
+            {/if}
+          {/each}
+          <h1>
+              Completed Software Updates
+          </h1>
+          {#each rebuilds as rebuild}
+            {#if rebuild.DateCompleted}
+              <span class ="mb-4"><RebuildCard {rebuild} /></span>
+            {/if}
+          {/each}
+        </div>
+      {/if}
+    </div>
   </div>
 </div>

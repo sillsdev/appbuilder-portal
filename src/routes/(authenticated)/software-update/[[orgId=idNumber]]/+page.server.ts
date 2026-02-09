@@ -164,19 +164,94 @@ export const load = (async ({ locals, params }) => {
     projectMap.set(product.projectId, product.projectName);
   }
 
-  // Get any active software updates initiated by this user
-  const activeUpdates = await DatabaseReads.softwareUpdates.findMany({
+  // Get all software updates (active and completed) that contain projects from this organization
+  // First, get all projects from the target organizations
+  const orgProjects = await DatabaseReads.projects.findMany({
     where: {
-      DateCompleted: null,
-      Paused: false,
-      InitiatedById: locals.security.userId
+      OrganizationId: { in: organizations.map((o) => o.Id) }
+    },
+    select: { Id: true }
+  });
+
+  const projectIds = orgProjects.map((p) => p.Id);
+
+  // Get all software updates that have products from these projects
+  const rebuilds = await DatabaseReads.softwareUpdates.findMany({
+    where: {
+      Products: {
+        some: {
+          ProjectId: { in: projectIds }
+        }
+      }
+    },
+    orderBy: {
+      DateCreated: 'desc'
     },
     select: {
       Id: true,
       Comment: true,
       DateCreated: true,
-      Products: { select: { Id: true } }
+      DateCompleted: true,
+      Version: true,
+      Paused: true,
+      InitiatedBy: {
+        select: {
+          Name: true,
+          Email: true
+        }
+      },
+      ApplicationType: {
+        select: {
+          Name: true,
+          Description: true
+        }
+      },
+      Products: {
+        where: {
+          ProjectId: { in: projectIds }
+        },
+        select: {
+          Id: true,
+          Project: {
+            select: {
+              Id: true,
+              Name: true
+            }
+          }
+        }
+      },
+      _count: {
+        select: {
+          Products: true
+        }
+      }
     }
+  });
+
+  // Transform the data to deduplicate projects
+  const rebuildsWithProjects = rebuilds.map((rebuild) => {
+    const uniqueProjects = new Map<number, { Id: number; Name: string | null }>();
+    rebuild.Products.forEach((product) => {
+      if (product.Project) {
+        uniqueProjects.set(product.Project.Id, {
+          Id: product.Project.Id,
+          Name: product.Project.Name
+        });
+      }
+    });
+
+    return {
+      Id: rebuild.Id,
+      Comment: rebuild.Comment,
+      DateCreated: rebuild.DateCreated,
+      DateCompleted: rebuild.DateCompleted,
+      Version: rebuild.Version,
+      Paused: rebuild.Paused,
+      InitiatedBy: rebuild.InitiatedBy,
+      ApplicationType: rebuild.ApplicationType,
+      Projects: Array.from(uniqueProjects.values()),
+      _count: rebuild._count
+    };
   });
 
   // Fetch all available ApplicationTypes for the form toggles
@@ -198,7 +273,7 @@ export const load = (async ({ locals, params }) => {
       applicationTypeId: p.applicationTypeId,
       requiredVersion: p.requiredVersion
     })),
-    activeUpdates,
+    rebuilds: rebuildsWithProjects,
     applicationTypes
   };
 }) satisfies PageServerLoad;
