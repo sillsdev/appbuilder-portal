@@ -18,27 +18,52 @@ export const load = (async ({ url, locals }) => {
   if (isNaN(id)) {
     return redirect(302, localizeHref('/admin/settings/organizations'));
   }
+
   const data = await DatabaseReads.organizations.findUnique({
     where: {
       Id: id
+    },
+    include: {
+      _count: {
+        select: {
+          Users: { where: { IsLocked: false } }
+        }
+      }
     }
   });
   if (!data) return redirect(302, localizeHref('/admin/settings/organizations'));
-  const form = await superValidate(
-    {
-      id: data.Id,
-      name: data.Name,
-      contact: data.ContactEmail,
-      websiteUrl: data.WebsiteUrl,
-      buildEngineUrl: data.BuildEngineUrl,
-      buildEngineApiAccessToken: data.BuildEngineApiAccessToken,
-      logoUrl: data.LogoUrl,
-      useDefaultBuildEngine: data.UseDefaultBuildEngine,
-      publicByDefault: data.PublicByDefault ?? false
-    },
-    valibot(editSchema)
-  );
-  return { form };
+
+  return {
+    form: await superValidate(
+      {
+        id: data.Id,
+        name: data.Name,
+        contact: data.ContactEmail,
+        websiteUrl: data.WebsiteUrl,
+        buildEngineUrl: data.BuildEngineUrl,
+        buildEngineApiAccessToken: data.BuildEngineApiAccessToken,
+        logoUrl: data.LogoUrl,
+        useDefaultBuildEngine: data.UseDefaultBuildEngine,
+        publicByDefault: data.PublicByDefault ?? false
+      },
+      valibot(editSchema)
+    ),
+    userCount: data._count.Users,
+    users: await DatabaseReads.users.findMany({
+      where: { IsLocked: false },
+      select: {
+        Id: true,
+        Name: true,
+        Email: true,
+        _count: {
+          select: {
+            Projects: { where: { OrganizationId: id } },
+            Organizations: { where: { Id: id } }
+          }
+        }
+      }
+    })
+  };
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -60,5 +85,23 @@ export const actions = {
     });
 
     return { ok: true, form };
+  },
+  async toggleUser(event) {
+    event.locals.security.requireSuperAdmin();
+
+    const form = await superValidate(
+      event,
+      valibot(v.object({ orgId: idSchema, userId: idSchema, enabled: v.boolean() }))
+    );
+
+    if (!form.valid) return fail(400, { form, ok: false });
+
+    const ok = await DatabaseWrites.organizations.toggleUser(
+      form.data.orgId,
+      form.data.userId,
+      form.data.enabled
+    );
+
+    return { form, ok };
   }
 } satisfies Actions;
