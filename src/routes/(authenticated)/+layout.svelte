@@ -305,7 +305,7 @@
             class={{
               dropdown: 'dropdown-end',
               label: 'm-2 p-2 rounded-xl',
-              content: 'w-36 overflow-y-auto'
+              content: 'w-40 overflow-y-auto'
             }}
           >
             {#snippet label()}
@@ -317,13 +317,14 @@
               />
             {/snippet}
             {#snippet content()}
-              <ul class="menu menu-sm gap-1 p-2">
+              <ul class="menu gap-1 p-2">
                 <li>
                   <a
                     href={localizeHref(
                       `/users/${page.data.session?.user?.userId ?? ''}/settings/profile`
                     )}
                   >
+                    <IconContainer icon="mdi:user" width={16} />
                     {m.header_myProfile()}
                   </a>
                 </li>
@@ -332,6 +333,7 @@
                     target="_blank"
                     href="https://community.scripture.software.sil.org/c/scriptoria/24"
                   >
+                    <IconContainer icon="charm:messages" width={16} />
                     {m.header_community()}
                   </a>
                 </li>
@@ -340,11 +342,13 @@
                     target="_blank"
                     href="https://app.scriptoria.io/docs/Help+Guide+for+Scriptoria.pdf"
                   >
+                    <IconContainer icon="material-symbols:help" width={16} />
                     {m.header_help()}
                   </a>
                 </li>
                 <li>
                   <button onclick={() => signOut({ redirectTo: '/', redirect: true })}>
+                    <IconContainer icon="mdi:sign-out" width={16} />
                     {m.header_signOut()}
                   </button>
                 </li>
