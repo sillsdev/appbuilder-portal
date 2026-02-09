@@ -21,6 +21,7 @@
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
   import { ProductType } from '$lib/workflowTypes';
+  import type { ClassValue } from 'svelte/elements';
 
   interface Props {
     project: Prisma.ProjectsGetPayload<{
@@ -112,17 +113,17 @@
   const publishedTime = $derived(getRelativeTime(product.DatePublished));
 </script>
 
-{#snippet actionButton(action: ProductActionType, full: boolean)}
+{#snippet actionButton(action: ProductActionType, width = 16, classes?: ClassValue)}
   {@const message =
     //@ts-expect-error this is in fact correct
     m['products_acts_' + action]()}
   <BlockIfJobsUnavailable class="text-nowrap">
     {#snippet altContent()}
-      <IconContainer icon={getActionIcon(action)} width={full ? 16 : 20} />
+      <IconContainer icon={getActionIcon(action)} {width} />
       {message}
     {/snippet}
     <button
-      class={["text-nowrap", full || "btn btn-ghost btn-sm"]}
+      class={['text-nowrap', classes]}
       onclick={(event) => {
         handleProductAction(product.Id, action);
         event.currentTarget.blur();
@@ -150,7 +151,7 @@
           <ul class="menu overflow-hidden rounded-md">
             {#each product.actions as action}
               <li class="w-full rounded-none">
-                {@render actionButton(action, true)}
+                {@render actionButton(action)}
               </li>
             {/each}
             <li class="w-full rounded-none">
@@ -237,9 +238,9 @@
       {/if}
     </div>
     {#if product.actions.length}
-      <div class="flex flex-row gap-2 bg-base-100 p-1 mt-1 rounded-md">
+      <div class="flex flex-row gap-2 p-1 mt-1 rounded-md">
         {#each product.actions as action}
-          {@render actionButton(action, false)}
+          {@render actionButton(action, 20, 'btn btn-secondary btn-sm')}
         {/each}
       </div>
     {/if}
