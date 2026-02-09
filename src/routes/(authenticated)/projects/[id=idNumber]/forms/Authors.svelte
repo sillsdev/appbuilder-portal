@@ -50,6 +50,8 @@
       }
     }
   });
+
+  $inspect($form);
 </script>
 
 <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
@@ -116,7 +118,7 @@
               <IconContainer icon="mdi:user-add" width={20} />
               {m.authors_submit()}
             {/snippet}
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" disabled={!$form.author}>
               {@render altContent()}
             </button>
           </BlockIfJobsUnavailable>
