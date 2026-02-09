@@ -32,7 +32,12 @@ export const load = (async (event) => {
             Id: true,
             ProductDefinition: {
               select: {
-                Name: true
+                Name: true,
+                Workflow: {
+                  select: {
+                    ProductType: true
+                  }
+                }
               }
             },
             Project: {

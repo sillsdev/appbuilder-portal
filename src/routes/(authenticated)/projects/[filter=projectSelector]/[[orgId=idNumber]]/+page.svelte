@@ -24,6 +24,7 @@
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
+  import type { ProductType } from '$lib/workflowTypes';
 
   interface Props {
     data: PageData;
@@ -104,6 +105,7 @@
     Id: string;
     ProductDefinitionId: number;
     ProductDefinitionName: string | null;
+    Type: ProductType;
     CanRebuild: boolean;
     CanRepublish: boolean;
   };
@@ -309,10 +311,7 @@
                             bind:group={selectedProducts}
                             value={product}
                           />
-                          <IconContainer
-                            icon={getProductIcon(product.ProductDefinitionName ?? '')}
-                            width="24"
-                          />
+                          <IconContainer icon={getProductIcon(product.Type)} width="24" />
                           {product.ProductDefinitionName}
                           <div class="basis-full h-0"></div>
                           {#if product.CanRebuild}

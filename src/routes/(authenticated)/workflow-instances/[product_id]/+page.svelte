@@ -7,6 +7,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails, {
@@ -131,7 +132,11 @@
           </a>
         </li>
         <li>
-          {data.product?.ProductDefinition.Name}
+          <IconContainer
+            icon={getProductIcon(data.product.ProductDefinition.Workflow.ProductType)}
+            width={24}
+          />
+          {data.product.ProductDefinition.Name}
         </li>
       </ul>
     </div>

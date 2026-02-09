@@ -112,7 +112,11 @@ export const load = (async ({ params, locals }) => {
     include: {
       Products: {
         include: {
-          ProductDefinition: true,
+          ProductDefinition: {
+            include: {
+              Workflow: true
+            }
+          },
           WorkflowInstance: true,
           ProductBuilds: {
             orderBy: { DateUpdated: 'desc' },
@@ -195,7 +199,11 @@ export const actions: Actions = {
       include: {
         Products: {
           include: {
-            ProductDefinition: true,
+            ProductDefinition: {
+              include: {
+                Workflow: true
+              }
+            },
             WorkflowInstance: true,
             ProductBuilds: {
               orderBy: { DateUpdated: 'desc' },

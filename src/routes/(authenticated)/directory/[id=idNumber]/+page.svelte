@@ -92,7 +92,10 @@
         {#each data.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, locale) ) as product}
           {@const build = product.ProductPublications.at(0)?.ProductBuild}
           <div>
-            <IconContainer icon={getProductIcon(product.ProductDefinition.Name ?? '')} width="32" />
+            <IconContainer
+              icon={getProductIcon(product.ProductDefinition.Workflow.ProductType)}
+              width="32"
+            />
             {product.ProductDefinition.Name}
           </div>
           {#if build}

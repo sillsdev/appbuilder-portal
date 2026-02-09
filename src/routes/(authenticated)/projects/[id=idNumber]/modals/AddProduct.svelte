@@ -19,6 +19,7 @@
         Description: true;
         Workflow: {
           select: {
+            ProductType: true;
             StoreTypeId: true;
           };
         };
@@ -86,7 +87,7 @@
               }}
             >
               <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
-                <IconContainer icon={getProductIcon(productDef.Name ?? '')} width="24" />
+                <IconContainer icon={getProductIcon(productDef.Workflow.ProductType)} width="24" />
                 {productDef.Name}
               </div>
               <p class="p-2 text-sm text-neutral-400">{productDef.Description}</p>

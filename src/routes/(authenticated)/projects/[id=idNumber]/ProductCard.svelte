@@ -115,7 +115,10 @@
 <div class="rounded-md border border-slate-400 w-full my-2">
   <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
     <div class="flex flex-row items-start">
-      <IconContainer icon={getProductIcon(product.ProductDefinition.Name ?? '')} width="32" />
+      <IconContainer
+        icon={getProductIcon(product.ProductDefinition.Workflow.ProductType)}
+        width="32"
+      />
       <span class="min-w-0 grow">
         {product.ProductDefinition.Name}
       </span>

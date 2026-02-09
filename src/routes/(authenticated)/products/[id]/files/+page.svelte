@@ -45,7 +45,7 @@
         </li>
         <li>
           <IconContainer
-            icon={getProductIcon(data.product?.ProductDefinition.Name ?? '')}
+            icon={getProductIcon(data.product.ProductDefinition.Workflow.ProductType)}
             width="24"
           />{data.product?.ProductDefinition.Name}
         </li>

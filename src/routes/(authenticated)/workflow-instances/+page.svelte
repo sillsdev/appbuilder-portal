@@ -3,10 +3,12 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import DateRangePicker from '$lib/components/DateRangePicker.svelte';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
@@ -77,12 +79,26 @@
       </div>
     </div>
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}">
-      <select class="select {mobileSizing}" bind:value={$form.productDefinitionId}>
-        <option value={null} selected>{m.filters_allProdDefs()}</option>
-        {#each data.productDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as pD}
-          <option value={pD.Id}>{pD.Name}</option>
-        {/each}
-      </select>
+      <label class="select {mobileSizing} gap-4">
+        <IconContainer
+          icon={$form.productDefinitionId
+            ? getProductIcon(
+                data.productDefinitions.find((pD) => pD.Id === $form.productDefinitionId)!.Workflow
+                  .ProductType
+              )
+            : ''}
+          width={20}
+        />
+        <select bind:value={$form.productDefinitionId} name="productDefinitionId">
+          <option value={null} selected>{m.filters_allProdDefs()}</option>
+          {#each data.productDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as pD}
+            <option value={pD.Id}>
+              <IconContainer icon={getProductIcon(pD.Workflow.ProductType)} width={20} />
+              {pD.Name}
+            </option>
+          {/each}
+        </select>
+      </label>
       <DateRangePicker
         bind:chosenDates={$form.dateUpdatedRange}
         placeholder={m.filters_dateRange()}
@@ -137,6 +153,7 @@
           <tr class="cursor-pointer hover:bg-neutral row">
             <td class="border border-b-base-content/50" colspan="2">
               <a class="link" href={localizeHref(`/workflow-instances/${instance.Product.Id}`)}>
+                <IconContainer icon={getProductIcon(prodDef.Workflow.ProductType)} width={24} />
                 {prodDef.Name}
               </a>
             </td>
@@ -194,6 +211,7 @@
             </td>
             <td class="border">
               <a class="link" href={localizeHref(`/workflow-instances/${instance.Product.Id}`)}>
+                <IconContainer icon={getProductIcon(prodDef.Workflow.ProductType)} width={24} />
                 {prodDef.Name}
               </a>
             </td>

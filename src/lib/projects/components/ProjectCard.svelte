@@ -107,10 +107,7 @@
             <tr>
               <td class="py-2" colspan="2">
                 <div class="flex items-center">
-                  <IconContainer
-                    icon={getProductIcon(product.ProductDefinitionName ?? '')}
-                    width={30}
-                  />
+                  <IconContainer icon={getProductIcon(product.Type)} width={30} />
                   {product.ProductDefinitionName}
                 </div>
               </td>
@@ -150,10 +147,7 @@
             <tr class="row">
               <td class="p-2">
                 <div class="flex items-center">
-                  <IconContainer
-                    icon={getProductIcon(product.ProductDefinitionName ?? '')}
-                    width={30}
-                  />
+                  <IconContainer icon={getProductIcon(product.Type)} width={30} />
                   {product.ProductDefinitionName}
                 </div>
               </td>

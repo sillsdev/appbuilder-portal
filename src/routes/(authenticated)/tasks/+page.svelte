@@ -42,7 +42,7 @@
               <td colspan="3">
                 <span class="flex items-center">
                   <IconContainer
-                    icon={getProductIcon(task.Product.ProductDefinition.Name ?? '')}
+                    icon={getProductIcon(task.Product.ProductDefinition.Workflow.ProductType)}
                     width={38}
                   />
                   <span>
@@ -105,7 +105,7 @@
               <td>
                 <span class="flex items-center">
                   <IconContainer
-                    icon={getProductIcon(task.Product.ProductDefinition.Name ?? '')}
+                    icon={getProductIcon(task.Product.ProductDefinition.Workflow.ProductType)}
                     width={38}
                   />
                   <span>

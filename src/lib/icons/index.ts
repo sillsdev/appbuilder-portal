@@ -1,20 +1,15 @@
 import type { ProductActionType } from '$lib/products';
-const iconMap = {
-  android: 'flat-color-icons:android-os',
-  html: 'mdi:web',
-  pwa: 'mdi:web',
-  package: 'mdi:archive',
-  none: 'mdi:error-outline'
-};
-// Not sure I like this, but it's implemented here as it was in S1.
-// I would suggest having a productDefinition db field for what type this is
-// TODO: icon colors?
-export function getProductIcon(name: string) {
-  return iconMap[
-    (Object.keys(iconMap).find((key) =>
-      name.toLowerCase().includes(key)
-    ) as keyof typeof iconMap) ?? 'none'
-  ];
+import { ProductType } from '$lib/workflowTypes';
+
+export function getProductIcon(type: ProductType) {
+  switch (type) {
+    case ProductType.Web:
+      return 'mdi:web';
+    case ProductType.AssetPackage:
+      return 'mdi:archive';
+    default:
+      return 'flat-color-icons:android-os';
+  }
 }
 
 export function getActionIcon(type: ProductActionType) {

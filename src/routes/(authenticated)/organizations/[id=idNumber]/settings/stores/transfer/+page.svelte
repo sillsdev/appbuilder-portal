@@ -5,7 +5,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
@@ -103,7 +103,10 @@
               value={product.Id}
             />
             {product.Project.Name}:
-            <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="24" />
+            <IconContainer
+              icon={getProductIcon(product.ProductDefinition.Workflow.ProductType)}
+              width="24"
+            />
             {product.ProductDefinition.Name}
           </label>
         {/each}
