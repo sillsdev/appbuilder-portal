@@ -119,33 +119,17 @@
   <BlockIfJobsUnavailable class="text-nowrap">
     {#snippet altContent()}
       <IconContainer icon={getActionIcon(action)} width={full ? 16 : 20} />
-      {#if full}
-        {message}
-      {/if}
+      {message}
     {/snippet}
-    {#if full}
-      <button
-        class="text-nowrap"
-        onclick={(event) => {
-          handleProductAction(product.Id, action);
-          event.currentTarget.blur();
-        }}
-      >
-        {@render altContent()}
-      </button>
-    {:else}
-      <Tooltip tip={message}>
-        <button
-          class="text-nowrap btn btn-ghost btn-square btn-sm"
-          onclick={(event) => {
-            handleProductAction(product.Id, action);
-            event.currentTarget.blur();
-          }}
-        >
-          {@render altContent()}
-        </button>
-      </Tooltip>
-    {/if}
+    <button
+      class={["text-nowrap", full || "btn btn-ghost btn-sm"]}
+      onclick={(event) => {
+        handleProductAction(product.Id, action);
+        event.currentTarget.blur();
+      }}
+    >
+      {@render altContent()}
+    </button>
   </BlockIfJobsUnavailable>
 {/snippet}
 
@@ -252,39 +236,13 @@
         {/if}
       {/if}
     </div>
-    <div class="flex flex-row gap-2 bg-base-100 p-1 mt-1 rounded-md">
-      {#each product.actions as action}
-        {@render actionButton(action, false)}
-      {/each}
-
-      <Tooltip tip={m.products_details()}>
-        <button
-          class="btn btn-ghost btn-square btn-sm"
-          onclick={() => showProductDetails(product.Id)}
-        >
-          <IconContainer icon="material-symbols:info" width={20} />
-        </button>
-      </Tooltip>
-
-      <Tooltip tip={m.project_productFiles()}>
-        <a
-          class="btn btn-ghost btn-square btn-sm"
-          href={localizeHref(`/products/${product.Id}/files`)}
-        >
-          <IconContainer icon="lsicon:folder-files-filled" width={20} />
-        </a>
-      </Tooltip>
-      {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
-        <Tooltip tip={m.products_properties_title()}>
-          <button
-            class="btn btn-ghost btn-square btn-sm"
-            onclick={() => updateProductModal?.showModal()}
-          >
-            <IconContainer icon="material-symbols:settings" width={20} />
-          </button>
-        </Tooltip>
-      {/if}
-    </div>
+    {#if product.actions.length}
+      <div class="flex flex-row gap-2 bg-base-100 p-1 mt-1 rounded-md">
+        {#each product.actions as action}
+          {@render actionButton(action, false)}
+        {/each}
+      </div>
+    {/if}
     {#if canEdit}
       <DeleteProduct
         bind:modal={deleteProductModal}
