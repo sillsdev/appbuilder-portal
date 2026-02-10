@@ -309,7 +309,7 @@
       </li>
 
       <li>
-        Under the <strong>Health</strong>
+        Under the <strong>Health apps</strong>
         section, click the
         <strong>Start declaration</strong>
         button.
