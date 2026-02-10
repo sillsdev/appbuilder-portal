@@ -29,18 +29,25 @@
 <script lang="ts">
   import type { Prisma } from '@prisma/client';
   import TaskComment from './TaskComment.svelte';
+  import { page } from '$app/state';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { ProductTransitionType } from '$lib/prisma';
+  import { isSuperAdmin } from '$lib/utils/roles';
   import { getTimeDateString } from '$lib/utils/time';
+  import type { WorkflowState } from '$lib/workflowTypes';
+  import { isBackground, linkToBuildEngine } from '$lib/workflowTypes';
 
   interface Props {
     product: Prisma.ProductsGetPayload<{
       select: {
         Id: true;
         Store: { select: { Description: true } };
+        BuildEngineJobId: true;
+        BuildEngineBuildId: true;
+        BuildEngineReleaseId: true;
       };
-    }>;
+    }> & { BuildEngineUrl?: string };
     transitions: Transition[];
   }
 
@@ -63,6 +70,8 @@
   }
 
   let detailsModal: HTMLDialogElement;
+
+  const isSuper = $derived(isSuperAdmin(page.data.session!.user.roles));
 </script>
 
 {#snippet transitionType(transition: (typeof transitions)[0])}
@@ -75,10 +84,27 @@
   {/if}
 {/snippet}
 
-{#snippet queueRecords(records: Transition['QueueRecords'])}
+{#snippet queueRecords(trans: Transition, prod: typeof product)}
+  {@const records = trans.QueueRecords}
+  {@const back = isBackground(trans.InitialState as WorkflowState)}
   <details class="cursor-pointer">
-    <summary>{m.products_jobRecords()} ({records.length})</summary>
+    <summary>{m.products_jobRecords()} ({records.length + (back ? 1 : 0)})</summary>
     <ul>
+      {#if back}
+        <li>
+          <a
+            class="link"
+            href={linkToBuildEngine(
+              prod.BuildEngineUrl!,
+              prod,
+              trans.InitialState as WorkflowState
+            )}
+            target="_blank"
+          >
+            {m.products_viewInBE()}
+          </a>
+        </li>
+      {/if}
       {#each records as rec}
         <li>
           <a
@@ -133,9 +159,14 @@
       </thead>
       <tbody>
         {#each transitions as transition}
+          {@const showRecs =
+            isSuper &&
+            transition.DateTransition &&
+            (transition.QueueRecords.length ||
+              (transition.InitialState && isBackground(transition.InitialState as WorkflowState)))}
           <tr
             class:font-bold={isLandmark(transition.TransitionType)}
-            class:no-border={transition.Comment || transition.QueueRecords?.length}
+            class:no-border={transition.Comment || showRecs}
           >
             <td>
               {@render transitionType(transition)}
@@ -150,10 +181,10 @@
               {getTimeDateString(transition.DateTransition)}
             </td>
           </tr>
-          {#if transition.QueueRecords?.length}
+          {#if showRecs}
             <tr class:no-border={transition.Comment}>
               <td colspan="4">
-                {@render queueRecords(transition.QueueRecords)}
+                {@render queueRecords(transition, product)}
               </td>
             </tr>
           {/if}
@@ -176,11 +207,16 @@
       </thead>
       <tbody>
         {#each transitions as transition}
+          {@const showRecs =
+            isSuper &&
+            transition.DateTransition &&
+            (transition.QueueRecords.length ||
+              (transition.InitialState && isBackground(transition.InitialState as WorkflowState)))}
           <tr
             class:font-bold={isLandmark(transition.TransitionType)}
             class:no-border={!isLandmark(transition.TransitionType) ||
               transition.Comment ||
-              transition.QueueRecords?.length}
+              showRecs}
           >
             <td>
               {@render transitionType(transition)}
@@ -190,17 +226,17 @@
             </td>
           </tr>
           {#if !isLandmark(transition.TransitionType)}
-            <tr class:no-border={transition.Comment || transition.QueueRecords?.length}>
+            <tr class:no-border={transition.Comment || showRecs}>
               <td>
                 {transition.User?.Name || transition.AllowedUserNames || m.appName()}
               </td>
               <td>{transition.Command}</td>
             </tr>
           {/if}
-          {#if transition.QueueRecords?.length}
+          {#if showRecs}
             <tr class:no-border={transition.Comment}>
               <td colspan="2">
-                {@render queueRecords(transition.QueueRecords)}
+                {@render queueRecords(transition, product)}
               </td>
             </tr>
           {/if}
