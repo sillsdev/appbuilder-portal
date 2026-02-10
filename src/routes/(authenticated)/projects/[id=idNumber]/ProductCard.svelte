@@ -20,7 +20,8 @@
   import { sanitizeInput, toast } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
-  import { ProductType } from '$lib/workflowTypes';
+  import type { WorkflowState } from '$lib/workflowTypes';
+  import { ProductType, isBackground, linkToBuildEngine } from '$lib/workflowTypes';
 
   interface Props {
     project: Prisma.ProjectsGetPayload<{
@@ -58,13 +59,21 @@
             DateCreated: true;
           };
         };
+        BuildEngineJobId: true;
+        BuildEngineBuildId: true;
+        BuildEngineReleaseId: true;
+        WorkflowInstance: {
+          select: {
+            State: true;
+          };
+        };
       };
     }> & {
       Transitions: Transition[];
-      WorkflowInstance: unknown;
       actions: ProductActionType[];
       ActiveTransition?: Transition;
       PreviousTransition?: Transition;
+      BuildEngineUrl?: string;
     };
     actionEndpoint: string;
     deleteEndpoint: string;
@@ -276,6 +285,17 @@
         {#if product.UserTasks.find((ut) => ut.UserId === page.data.session?.user.userId)}
           <a class="link" href={localizeHref(`/tasks/${product.Id}`)}>
             {m.common_continue()}
+          </a>
+        {:else if isSuperAdmin(page.data.session!.user.roles) && product.WorkflowInstance && isBackground(product.WorkflowInstance.State as WorkflowState)}
+          <a
+            class="link mx-2"
+            href={linkToBuildEngine(
+              product.BuildEngineUrl!,
+              product,
+              product.WorkflowInstance.State as WorkflowState
+            )}
+          >
+            {m.products_viewInBE()}
           </a>
         {/if}
         {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}
