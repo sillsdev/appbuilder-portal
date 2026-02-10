@@ -24,21 +24,8 @@
       };
     };
   }>;
-</script>
 
-<script lang="ts">
-  import type { Prisma } from '@prisma/client';
-  import TaskComment from './TaskComment.svelte';
-  import { page } from '$app/state';
-  import IconContainer from '$lib/components/IconContainer.svelte';
-  import { m } from '$lib/paraglide/messages';
-  import { ProductTransitionType } from '$lib/prisma';
-  import { isSuperAdmin } from '$lib/utils/roles';
-  import { getTimeDateString } from '$lib/utils/time';
-  import { WorkflowState } from '$lib/workflowTypes';
-  import { isBackground, linkToBuildEngine } from '$lib/workflowTypes';
-
-  interface Props {
+  export interface Props {
     product: Prisma.ProductsGetPayload<{
       select: {
         Id: true;
@@ -62,6 +49,18 @@
     }> & { BuildEngineUrl?: string };
     transitions: Transition[];
   }
+</script>
+
+<script lang="ts">
+  import type { Prisma } from '@prisma/client';
+  import TaskComment from './TaskComment.svelte';
+  import { page } from '$app/state';
+  import IconContainer from '$lib/components/IconContainer.svelte';
+  import { m } from '$lib/paraglide/messages';
+  import { ProductTransitionType } from '$lib/prisma';
+  import { isSuperAdmin } from '$lib/utils/roles';
+  import { getTimeDateString } from '$lib/utils/time';
+  import { WorkflowState, isBackground, linkToBuildEngine } from '$lib/workflowTypes';
 
   let { product, transitions }: Props = $props();
 

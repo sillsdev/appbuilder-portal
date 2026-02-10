@@ -14,6 +14,7 @@
   import { localizeHref } from '$lib/paraglide/runtime';
   import { type ProductActionType, getActionIcon } from '$lib/products';
   import ProductDetails, {
+    type Props as ProductDetailProps,
     type Transition,
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
@@ -33,7 +34,6 @@
     }>;
     product: Prisma.ProductsGetPayload<{
       select: {
-        Id: true;
         DatePublished: true;
         DateUpdated: true;
         Properties: true;
@@ -48,20 +48,12 @@
             };
           };
         };
-        Store: {
-          select: {
-            Description: true;
-          };
-        };
         UserTasks: {
           select: {
             UserId: true;
             DateCreated: true;
           };
         };
-        BuildEngineJobId: true;
-        BuildEngineBuildId: true;
-        BuildEngineReleaseId: true;
         WorkflowInstance: {
           select: {
             State: true;
@@ -73,8 +65,7 @@
       actions: ProductActionType[];
       ActiveTransition?: Transition;
       PreviousTransition?: Transition;
-      BuildEngineUrl?: string;
-    };
+    } & ProductDetailProps['product'];
     actionEndpoint: string;
     deleteEndpoint: string;
     updateEndpoint: string;
