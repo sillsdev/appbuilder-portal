@@ -309,7 +309,7 @@
       </li>
 
       <li>
-        Under the <strong>Financial features</strong>
+        Under the <strong>Health</strong>
         section, click the
         <strong>Start declaration</strong>
         button.
