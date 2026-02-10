@@ -218,7 +218,7 @@
             button at the bottom of the page.
           </li>
           <li>
-            The Data Safey section changes frequently, so you may need to answer addition questions
+            The Data Safety section changes frequently, so you may need to answer addition questions
             until the <strong>Next</strong>
             button is enabled.
           </li>
