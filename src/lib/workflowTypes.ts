@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import { type TransitionConfig } from 'xstate';
 import { type RoleId, WorkflowType } from './prisma';
 import type { SetFilter, ValueFilter } from './utils';
@@ -48,9 +49,43 @@ export enum WorkflowState {
   Published = 'Published'
 }
 
-export type TerminalState = WorkflowState.Terminated | WorkflowState.Published;
+const terminalStates = [WorkflowState.Terminated, WorkflowState.Published] as const;
+export type TerminalState = (typeof terminalStates)[number];
 export function isTerminal(state: WorkflowState): state is TerminalState {
-  return state === WorkflowState.Terminated || state === WorkflowState.Published;
+  return terminalStates.includes(state as TerminalState);
+}
+
+const backgroundStates = [
+  WorkflowState.Product_Creation,
+  WorkflowState.Product_Build,
+  WorkflowState.Product_Publish
+] as const;
+export type BackgroundState = (typeof backgroundStates)[number];
+export function isBackground(state: WorkflowState): state is BackgroundState {
+  return backgroundStates.includes(state as BackgroundState);
+}
+
+export function linkToBuildEngine(
+  url: string,
+  product: Prisma.ProductsGetPayload<{
+    select: {
+      BuildEngineJobId: true;
+      BuildEngineBuildId: true;
+      BuildEngineReleaseId: true;
+    };
+  }>,
+  state: WorkflowState
+) {
+  switch (state) {
+    case WorkflowState.Product_Creation:
+      return `${url}/job-admin/view?id=${product.BuildEngineJobId}`;
+    case WorkflowState.Product_Build:
+      return `${url}/build-admin/view?id=${product.BuildEngineBuildId}`;
+    case WorkflowState.Product_Publish:
+      return `${url}/release-admin/view?id=${product.BuildEngineReleaseId}`;
+    default:
+      return url;
+  }
 }
 
 export enum WorkflowAction {

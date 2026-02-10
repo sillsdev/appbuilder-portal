@@ -323,7 +323,7 @@ async function notifyFailed(
   productName: string,
   transition?: number
 ) {
-  const endpoint = (await BuildEngine.Requests.getURLandToken(organizationId)).url;
+  const endpoint = (await BuildEngine.Requests.queryURLandToken(organizationId)).url;
   const buildEngineUrl = endpoint + '/job-admin';
   return getQueues().Emails.add(`Notify Owner/Admins of Product #${productId} Creation Failure`, {
     type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
