@@ -187,9 +187,10 @@
         {#each transitions as transition}
           {@const showRecs =
             isSuper &&
-            transition.DateTransition &&
             (transition.QueueRecords.length ||
-              (transition.InitialState && isBackground(transition.InitialState as WorkflowState)))}
+              (transition.DateTransition &&
+                transition.InitialState &&
+                isBackground(transition.InitialState as WorkflowState)))}
           <tr
             class:font-bold={isLandmark(transition.TransitionType)}
             class:no-border={transition.Comment || showRecs}
@@ -235,9 +236,10 @@
         {#each transitions as transition}
           {@const showRecs =
             isSuper &&
-            transition.DateTransition &&
             (transition.QueueRecords.length ||
-              (transition.InitialState && isBackground(transition.InitialState as WorkflowState)))}
+              (transition.DateTransition &&
+                transition.InitialState &&
+                isBackground(transition.InitialState as WorkflowState)))}
           <tr
             class:font-bold={isLandmark(transition.TransitionType)}
             class:no-border={!isLandmark(transition.TransitionType) ||
