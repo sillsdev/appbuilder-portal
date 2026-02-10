@@ -35,7 +35,7 @@
   import { ProductTransitionType } from '$lib/prisma';
   import { isSuperAdmin } from '$lib/utils/roles';
   import { getTimeDateString } from '$lib/utils/time';
-  import type { WorkflowState } from '$lib/workflowTypes';
+  import { WorkflowState } from '$lib/workflowTypes';
   import { isBackground, linkToBuildEngine } from '$lib/workflowTypes';
 
   interface Props {
@@ -46,6 +46,18 @@
         BuildEngineJobId: true;
         BuildEngineBuildId: true;
         BuildEngineReleaseId: true;
+        ProductBuilds: {
+          select: {
+            BuildEngineBuildId: true;
+            DateCreated: true;
+          };
+        };
+        ProductPublications: {
+          select: {
+            BuildEngineReleaseId: true;
+            DateCreated: true;
+          };
+        };
       };
     }> & { BuildEngineUrl?: string };
     transitions: Transition[];
@@ -72,6 +84,20 @@
   let detailsModal: HTMLDialogElement;
 
   const isSuper = $derived(isSuperAdmin(page.data.session!.user.roles));
+
+  function getBuildOrPub(trans: Transition, prod: typeof product) {
+    let ret = undefined;
+    if (trans.InitialState === WorkflowState.Product_Build) {
+      ret = prod.ProductBuilds.find(
+        (pb) => (pb.DateCreated?.valueOf() ?? 0) > (trans.DateTransition?.valueOf() ?? 0)
+      );
+    } else if (trans.InitialState === WorkflowState.Product_Publish) {
+      ret = prod.ProductPublications.find(
+        (pp) => (pp.DateCreated?.valueOf() ?? 0) > (trans.DateTransition?.valueOf() ?? 0)
+      );
+    }
+    return ret ?? {};
+  }
 </script>
 
 {#snippet transitionType(transition: (typeof transitions)[0])}
@@ -96,7 +122,7 @@
             class="link"
             href={linkToBuildEngine(
               prod.BuildEngineUrl!,
-              prod,
+              { ...prod, ...getBuildOrPub(trans, prod) },
               trans.InitialState as WorkflowState
             )}
             target="_blank"

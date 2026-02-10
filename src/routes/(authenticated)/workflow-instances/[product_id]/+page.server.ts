@@ -23,6 +23,24 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       BuildEngineJobId: true,
       BuildEngineBuildId: true,
       BuildEngineReleaseId: true,
+      ProductBuilds: {
+        select: {
+          BuildEngineBuildId: true,
+          DateCreated: true
+        },
+        orderBy: {
+          DateCreated: 'asc'
+        }
+      },
+      ProductPublications: {
+        select: {
+          BuildEngineReleaseId: true,
+          DateCreated: true
+        },
+        orderBy: {
+          DateCreated: 'asc'
+        }
+      },
       Store: {
         select: {
           Description: true

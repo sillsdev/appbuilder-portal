@@ -81,6 +81,28 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               BuildEngineJobId: isSuper,
               BuildEngineBuildId: isSuper,
               BuildEngineReleaseId: isSuper,
+              ProductBuilds: isSuper
+                ? {
+                    select: {
+                      BuildEngineBuildId: true,
+                      DateCreated: true
+                    },
+                    orderBy: {
+                      DateCreated: 'asc'
+                    }
+                  }
+                : false,
+              ProductPublications: isSuper
+                ? {
+                    select: {
+                      BuildEngineReleaseId: true,
+                      DateCreated: true
+                    },
+                    orderBy: {
+                      DateCreated: 'asc'
+                    }
+                  }
+                : false,
               WorkflowInstance: {
                 select: {
                   State: true,
