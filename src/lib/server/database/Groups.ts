@@ -28,8 +28,7 @@ export async function createGroup(
   name: string,
   description: string,
   organization: number,
-  users: number[],
-  groups: number[]
+  users: number[]
 ) {
   return prisma.groups.create({
     data: {
@@ -39,10 +38,8 @@ export async function createGroup(
       Users: {
         connect: await prisma.users.findMany({
           where: {
-            OR: [
-              { Id: { in: users }, Organizations: { some: { Id: organization } } },
-              { Groups: { some: { Id: { in: groups }, OwnerId: organization } } }
-            ],
+            Id: { in: users },
+            Organizations: { some: { Id: organization } },
             IsLocked: false
           },
           select: {

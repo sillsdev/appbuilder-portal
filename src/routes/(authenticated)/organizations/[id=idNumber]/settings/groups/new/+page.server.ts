@@ -8,7 +8,10 @@ import { idSchema, requiredString } from '$lib/valibot';
 const addGroupSchema = v.object({
   name: requiredString,
   description: v.string(),
-  users: v.array(idSchema),
+  users: v.array(idSchema)
+});
+
+const fetchUsersSchema = v.object({
   groups: v.array(idSchema)
 });
 
@@ -40,7 +43,8 @@ export const load = (async (event) => {
         }
       }
     }),
-    form: await superValidate(valibot(addGroupSchema))
+    groupForm: await superValidate(valibot(addGroupSchema)),
+    usersForm: await superValidate(valibot(fetchUsersSchema))
   };
 }) satisfies PageServerLoad;
 
@@ -53,9 +57,28 @@ export const actions = {
       form.data.name,
       form.data.description,
       parseInt(event.params.id),
-      form.data.users,
-      form.data.groups
+      form.data.users
     );
     return { form, ok: true, createdId: group.Id };
+  },
+  async users(event) {
+    const orgId = parseInt(event.params.id);
+    event.locals.security.requireAdminOfOrg(orgId);
+    const form = await superValidate(event.request, valibot(fetchUsersSchema));
+    if (!form.valid) return fail(400, { form, ok: false });
+    return {
+      form,
+      ok: true,
+      query: {
+        data: await DatabaseReads.users.findMany({
+          where: {
+            Groups: { some: { Id: { in: form.data.groups }, OwnerId: orgId } }
+          },
+          select: {
+            Id: true
+          }
+        })
+      }
+    };
   }
 } satisfies Actions;
