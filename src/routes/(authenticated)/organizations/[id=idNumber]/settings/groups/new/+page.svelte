@@ -115,9 +115,20 @@
 
 <dialog bind:this={usersModal} class="modal">
   <div class="modal-box">
-    <h2 class="text-lg font-bold grow">
-      {m.org_addUsers()}
-    </h2>
+    <div class="flex flex-row">
+      <h2 class="text-lg font-bold grow">
+        {m.org_addUsers()}
+      </h2>
+      <button
+        class="btn btn-ghost"
+        type="button"
+        onclick={() => {
+          usersModal?.close();
+        }}
+      >
+        <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+      </button>
+    </div>
     <form
       class="flex flex-col gap-2 w-full pt-2 text-left"
       action="?/users"
