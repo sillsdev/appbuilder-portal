@@ -164,6 +164,8 @@ export class Products<J extends BullMQ.ProductJob> extends BullWorker<J> {
         return Executor.Product.getVersionCode(job as Job<BullMQ.Product.GetVersionCode>);
       case BullMQ.JobType.Product_CreateLocal:
         return Executor.Product.createLocal(job as Job<BullMQ.Product.CreateLocal>);
+      case BullMQ.JobType.Product_UpdateStore:
+        return Executor.Product.updateStore(job as Job<BullMQ.Product.UpdateStore>);
     }
   }
 }

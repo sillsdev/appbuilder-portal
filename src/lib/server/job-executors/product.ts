@@ -132,6 +132,28 @@ export async function deleteProduct(job: Job<BullMQ.Product.Delete>): Promise<un
 }
 
 // This shouldn't need any notifications
+export async function updateStore(job: Job<BullMQ.Product.UpdateStore>): Promise<unknown> {
+  if (job.data.buildEngineJobId > 0) {
+    const response = await BuildEngine.Requests.updateJob(
+      { type: 'query', organizationId: job.data.organizationId },
+      job.data.buildEngineJobId,
+      job.data.buildEnginePublisherId
+    );
+    job.updateProgress(50);
+    if (response.responseType === 'error') {
+      job.log(response.message);
+      throw new Error(response.message);
+    } else {
+      job.updateProgress(100);
+      return response;
+    }
+  } else {
+    job.updateProgress(100);
+    return 'No Job to update in BuildEngine (BuildEngineJobId === 0)';
+  }
+}
+
+// This shouldn't need any notifications
 export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): Promise<unknown> {
   let versionCode = 0;
   const product = await DatabaseReads.products.findUniqueOrThrow({

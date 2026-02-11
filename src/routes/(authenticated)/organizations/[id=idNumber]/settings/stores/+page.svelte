@@ -2,6 +2,8 @@
   import type { ActionData, PageData } from './$types';
   import { enhance } from '$app/forms';
   import { goto } from '$app/navigation';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import StoreListDisplay from '$lib/organizations/components/StoreListDisplay.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -14,18 +16,28 @@
   }
 
   let { data }: Props = $props();
+
+  const base = $derived(`/organizations/${data.organization.Id}/settings/stores`);
 </script>
 
-<h2>{m.org_storesTitle()}</h2>
+<div class="flex flex-row items-center">
+  <h2>{m.org_storesTitle()}</h2>
+  <BlockIfJobsUnavailable class="btn btn-outline">
+    {#snippet altContent()}
+      <IconContainer icon="bx:transfer" width="20" />
+      <span>{m.org_storesTransfer()}</span>
+    {/snippet}
+    <a href={localizeHref(`${base}/transfer`)} class="btn btn-outline">
+      {@render altContent()}
+    </a>
+  </BlockIfJobsUnavailable>
+</div>
 <p class="p-4 pt-0">{m.org_storeSelectTitle()}</p>
 <div class="flex flex-col w-full">
   {#each data.stores.toSorted( (a, b) => byString(a.Description || a.BuildEnginePublisherId, b.Description || b.BuildEnginePublisherId, getLocale()) ) as store}
     <StoreListDisplay
       editable={store.OwnerId === data.organization.Id}
-      onEdit={() =>
-        goto(
-          localizeHref(`/organizations/${data.organization.Id}/settings/stores/edit?id=${store.Id}`)
-        )}
+      onEdit={() => goto(localizeHref(`${base}/edit?id=${store.Id}`))}
       {store}
       getTitle={(store) => store.Description ?? ''}
     >
