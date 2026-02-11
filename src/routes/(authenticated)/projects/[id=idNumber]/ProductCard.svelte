@@ -254,14 +254,14 @@
             })}
           </span>
         {:else}
-          <span class="text-red-500">
-            {m.tasks_waiting({
-              // waiting since EITHER (the last task exists) -> that task's creation time
-              // OR (there are no tasks for this product) -> the last completed transition's completion time
-              waitTime: $waitTime
-            })}
-          </span>
           <span>
+            <span class="text-red-500">
+              {m.tasks_waiting({
+                // waiting since EITHER (the last task exists) -> that task's creation time
+                // OR (there are no tasks for this product) -> the last completed transition's completion time
+                waitTime: $waitTime
+              })}
+            </span>
             {#if isSuperAdmin(page.data.session!.user.roles) && product.WorkflowInstance && isBackground(product.WorkflowInstance.State as WorkflowState)}
               {@const href = linkToBuildEngine(
                 product.BuildEngineUrl!,
