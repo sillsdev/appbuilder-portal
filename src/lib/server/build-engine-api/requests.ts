@@ -1,4 +1,5 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
+import type { Prisma } from '@prisma/client';
 import { DatabaseReads } from '../database/prisma';
 import * as Types from './types';
 
@@ -21,7 +22,7 @@ export async function request(resource: string, auth: Types.Auth, opts?: Types.R
     const { method = 'GET', body, checkStatusFirst = true } = opts ?? {};
     try {
       const { url, token } =
-        auth.type === 'query' ? await getURLandToken(auth.organizationId) : auth;
+        auth.type === 'query' ? await queryURLandToken(auth.organizationId) : auth;
       span.setAttributes({
         'auth.url': auth.type === 'provided' ? auth.url : (url ?? 'null'),
         // Replace with *s
@@ -117,7 +118,7 @@ export function tryGetDefaultBuildEngineParameters() {
     token: process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
   };
 }
-export async function getURLandToken(organizationId: number) {
+export async function queryURLandToken(organizationId: number) {
   const org = await DatabaseReads.organizations.findUnique({
     where: {
       Id: organizationId
@@ -133,6 +134,13 @@ export async function getURLandToken(organizationId: number) {
     throw new Error(`No organization could be found with ID: ${organizationId}`);
   }
 
+  return getURLandToken(org);
+}
+export function getURLandToken(
+  org: Prisma.OrganizationsGetPayload<{
+    select: { BuildEngineUrl: true; BuildEngineApiAccessToken: true; UseDefaultBuildEngine: true };
+  }>
+) {
   return org.UseDefaultBuildEngine
     ? tryGetDefaultBuildEngineParameters()
     : {

@@ -156,7 +156,7 @@ export async function project(job: Job<BullMQ.Polling.Project>): Promise<unknown
       });
       if (response.result === 'FAILURE') {
         const buildEngineUrl =
-          (await BuildEngine.Requests.getURLandToken(job.data.organizationId)).url +
+          (await BuildEngine.Requests.queryURLandToken(job.data.organizationId)).url +
           '/project-admin/view?id=' +
           project.BuildEngineProjectId;
         await notifyCreationFailed(

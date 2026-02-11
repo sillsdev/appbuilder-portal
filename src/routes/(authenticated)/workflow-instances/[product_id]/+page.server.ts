@@ -3,6 +3,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { getURLandToken } from '$lib/server/build-engine-api/requests';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
@@ -20,6 +21,27 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     },
     select: {
       Id: true,
+      BuildEngineJobId: true,
+      BuildEngineBuildId: true,
+      BuildEngineReleaseId: true,
+      ProductBuilds: {
+        select: {
+          BuildEngineBuildId: true,
+          DateCreated: true
+        },
+        orderBy: {
+          DateCreated: 'asc'
+        }
+      },
+      ProductPublications: {
+        select: {
+          BuildEngineReleaseId: true,
+          DateCreated: true
+        },
+        orderBy: {
+          DateCreated: 'asc'
+        }
+      },
       Store: {
         select: {
           Description: true
@@ -32,7 +54,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
           Organization: {
             select: {
               Id: true,
-              Name: true
+              Name: true,
+              BuildEngineUrl: true,
+              BuildEngineApiAccessToken: true,
+              UseDefaultBuildEngine: true
             }
           }
         }
@@ -62,7 +87,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   });
 
   return {
-    product,
+    product: {
+      ...product,
+      BuildEngineUrl: getURLandToken(product.Project.Organization).url ?? undefined
+    },
     snapshot: snap,
     machine: snap ? flow.serializeForVisualization() : [],
     definition: workflowDefinition,

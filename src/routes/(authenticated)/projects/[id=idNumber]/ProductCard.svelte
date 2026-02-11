@@ -14,13 +14,15 @@
   import { localizeHref } from '$lib/paraglide/runtime';
   import { type ProductActionType, getActionIcon } from '$lib/products';
   import ProductDetails, {
+    type Props as ProductDetailProps,
     type Transition,
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
   import { sanitizeInput, toast } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
-  import { ProductType } from '$lib/workflowTypes';
+  import type { WorkflowState } from '$lib/workflowTypes';
+  import { ProductType, isBackground, linkToBuildEngine } from '$lib/workflowTypes';
 
   interface Props {
     project: Prisma.ProjectsGetPayload<{
@@ -32,7 +34,6 @@
     }>;
     product: Prisma.ProductsGetPayload<{
       select: {
-        Id: true;
         DatePublished: true;
         DateUpdated: true;
         Properties: true;
@@ -47,25 +48,24 @@
             };
           };
         };
-        Store: {
-          select: {
-            Description: true;
-          };
-        };
         UserTasks: {
           select: {
             UserId: true;
             DateCreated: true;
           };
         };
+        WorkflowInstance: {
+          select: {
+            State: true;
+          };
+        };
       };
     }> & {
       Transitions: Transition[];
-      WorkflowInstance: unknown;
       actions: ProductActionType[];
       ActiveTransition?: Transition;
       PreviousTransition?: Transition;
-    };
+    } & ProductDetailProps['product'];
     actionEndpoint: string;
     deleteEndpoint: string;
     updateEndpoint: string;
@@ -254,21 +254,34 @@
             })}
           </span>
         {:else}
-          <span class="text-red-500">
-            {m.tasks_waiting({
-              // waiting since EITHER (the last task exists) -> that task's creation time
-              // OR (there are no tasks for this product) -> the last completed transition's completion time
-              waitTime: $waitTime
-            })}
-          </span>
           <span>
-            {@html m.tasks_forNames({
-              allowedNames: sanitizeInput(
-                product.ActiveTransition?.AllowedUserNames || m.appName()
-              ),
-              activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
-              // activityName appears to show up blank primarily at the very startup of a new product?
-            })}
+            <span class="text-red-500">
+              {m.tasks_waiting({
+                // waiting since EITHER (the last task exists) -> that task's creation time
+                // OR (there are no tasks for this product) -> the last completed transition's completion time
+                waitTime: $waitTime
+              })}
+            </span>
+            {#if isSuperAdmin(page.data.session!.user.roles) && product.WorkflowInstance && isBackground(product.WorkflowInstance.State as WorkflowState)}
+              {@const href = linkToBuildEngine(
+                product.BuildEngineUrl!,
+                product,
+                product.WorkflowInstance.State as WorkflowState
+              )}
+              {@html m.tasks_forNames({
+                allowedNames: sanitizeInput(
+                  product.ActiveTransition?.AllowedUserNames || m.appName()
+                ),
+                activityName: `<a class="link" href="${href}">${sanitizeInput(product.ActiveTransition?.InitialState ?? '')}</a>`
+              })}
+            {:else}
+              {@html m.tasks_forNames({
+                allowedNames: sanitizeInput(
+                  product.ActiveTransition?.AllowedUserNames || m.appName()
+                ),
+                activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
+              })}
+            {/if}
           </span>
         {/if}
       </div>

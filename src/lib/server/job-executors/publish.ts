@@ -369,7 +369,7 @@ async function notifyFailed(
   release: BuildEngine.Types.ReleaseResponse,
   transition?: number
 ) {
-  const endpoint = await BuildEngine.Requests.getURLandToken(product.Project.OrganizationId);
+  const endpoint = await BuildEngine.Requests.queryURLandToken(product.Project.OrganizationId);
   return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Release #${productBuildId} (${releaseId}) for Product #${productId}`,
     {

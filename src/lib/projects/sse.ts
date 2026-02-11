@@ -4,6 +4,7 @@ import { RoleId } from '$lib/prisma';
 import { getProductActions } from '$lib/products';
 import { canModifyProject } from '$lib/projects';
 import { userGroupsForOrg } from '$lib/projects/server';
+import { getURLandToken } from '$lib/server/build-engine-api/requests';
 import { DatabaseReads } from '$lib/server/database';
 import { isSuperAdmin } from '$lib/utils/roles';
 
@@ -17,6 +18,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
       'project.userId': userSession.userId
     });
     try {
+      const isSuper = isSuperAdmin(userSession.roles);
       const project = await DatabaseReads.projects.findUniqueOrThrow({
         where: {
           Id: id
@@ -76,8 +78,34 @@ export async function getProjectDetails(id: number, userSession: Session['user']
                   Description: true
                 }
               },
+              BuildEngineJobId: isSuper,
+              BuildEngineBuildId: isSuper,
+              BuildEngineReleaseId: isSuper,
+              ProductBuilds: isSuper
+                ? {
+                    select: {
+                      BuildEngineBuildId: true,
+                      DateCreated: true
+                    },
+                    orderBy: {
+                      DateCreated: 'asc'
+                    }
+                  }
+                : false,
+              ProductPublications: isSuper
+                ? {
+                    select: {
+                      BuildEngineReleaseId: true,
+                      DateCreated: true
+                    },
+                    orderBy: {
+                      DateCreated: 'asc'
+                    }
+                  }
+                : false,
               WorkflowInstance: {
                 select: {
+                  State: true,
                   WorkflowDefinition: {
                     select: {
                       Type: true
@@ -119,7 +147,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         }
       });
       span.addEvent('Project fetched');
-      const organization = await DatabaseReads.organizations.findUnique({
+      const organization = await DatabaseReads.organizations.findUniqueOrThrow({
         where: {
           Id: project.OrganizationId
         },
@@ -132,7 +160,10 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               Description: true,
               StoreTypeId: true
             }
-          }
+          },
+          BuildEngineUrl: isSuper,
+          BuildEngineApiAccessToken: isSuper,
+          UseDefaultBuildEngine: isSuper
         }
       });
       span.addEvent('Organization fetched');
@@ -158,7 +189,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               Name: true
             }
           },
-          QueueRecords: isSuperAdmin(userSession.roles)
+          QueueRecords: isSuper
             ? {
                 select: {
                   Queue: true,
@@ -214,7 +245,10 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             ActiveTransition: strippedTransitions.find(
               (t) => (t[0] ?? t[1])?.ProductId === product.Id
             )?.[1],
-            actions: canEdit ? getProductActions(product, project.Owner.Id, userSession.userId) : []
+            actions: canEdit
+              ? getProductActions(product, project.Owner.Id, userSession.userId)
+              : [],
+            BuildEngineUrl: isSuper ? `${getURLandToken(organization).url}` : undefined
           }))
         },
         productsToAdd: productDefinitions.filter(

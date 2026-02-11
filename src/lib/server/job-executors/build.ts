@@ -428,7 +428,7 @@ async function notifyFailed(
   buildResponse: BuildEngine.Types.BuildResponse,
   transition?: number
 ) {
-  const endpoint = await BuildEngine.Requests.getURLandToken(product.Project.OrganizationId);
+  const endpoint = await BuildEngine.Requests.queryURLandToken(product.Project.OrganizationId);
   return getQueues().Emails.add(
     `Notify Owner/Admins of Failure to Create Build #${productBuildId} for Product #${productId}`,
     {
