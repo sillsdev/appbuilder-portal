@@ -9,7 +9,7 @@
   import { m } from '$lib/paraglide/messages';
 
   interface Props {
-    title: string | null;
+    title: string | Snippet;
     data?: T;
     fields: (ValueKey & {
       value?: string | null;
@@ -27,7 +27,11 @@
 
 <div class="flex flex-row border border-slate-600 p-2 mx-4 m-1 rounded-md">
   <div class="relative w-full">
-    <h3>{title}</h3>
+    {#if typeof title === 'string'}
+      <h3>{title}</h3>
+    {:else}
+      {@render title()}
+    {/if}
     {#if editable && editLink}
       <a
         href={editLink}
