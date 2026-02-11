@@ -6,8 +6,9 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import GroupUsers from '$lib/organizations/components/GroupUsers.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { localizeHref } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
+  import { byName } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -123,7 +124,7 @@
       method="POST"
       use:usersEnhance
     >
-      {#each data.groups as group}
+      {#each data.groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
         <label>
           <span class="flex items-center">
             <input
