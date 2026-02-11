@@ -14,7 +14,7 @@
   import { byName } from '$lib/utils/sorting';
 
   interface Props {
-    header: string;
+    header: string | Snippet;
     users: User[];
     user: Snippet<[User]>;
     groups?: Group[];
