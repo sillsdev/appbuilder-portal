@@ -1,7 +1,9 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
@@ -26,7 +28,6 @@
     <DataDisplayBox
       editable
       onEdit={() => goto(localizeHref(`${base}/edit?id=${wd.Id}`))}
-      title={wd.Name}
       fields={[
         {
           key: 'common_description',
@@ -46,6 +47,12 @@
         }
         // ISSUE: #1102 Do we want to show WorkflowOptions here?
       ]}
-    />
+    >
+      {#snippet title()}
+        <h3>
+          <IconContainer icon={getProductIcon(wd.ProductType)} width={24} class="mr-1" />{wd.Name}
+        </h3>
+      {/snippet}
+    </DataDisplayBox>
   {/each}
 </div>

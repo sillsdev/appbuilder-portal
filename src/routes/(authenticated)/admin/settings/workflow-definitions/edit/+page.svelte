@@ -5,6 +5,8 @@
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
+  import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { enumNumVals, toast } from '$lib/utils';
@@ -30,6 +32,8 @@
   });
 
   let propsOk = $state(true);
+
+  const mobileSizing = 'w-full md:max-w-xs';
 </script>
 
 <h3 class="pl-4">{m.flowDefs_edit()}</h3>
@@ -56,13 +60,18 @@
     <span class="validator-hint">{m.flowDefs_emptyStoreType()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_productType">
-    <select class="select validator" name="productType" bind:value={$form.productType} required>
-      {#each enumNumVals(ProductType) as type}
-        <option value={type}>
-          {m.flowDefs_productTypes({ type })}
-        </option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.productType}
+      items={enumNumVals(ProductType)
+        .map((type) => ({
+          Id: type,
+          Name: m.flowDefs_productType({ type }),
+          icon: getProductIcon(type)
+        }))
+        .toSorted((a, b) => byName(a, b, getLocale()))}
+      class="validator {mobileSizing}"
+      attr={{ name: 'productType', required: true }}
+    />
     <span class="validator-hint">{m.flowDefs_emptyProductType()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="common_description">
