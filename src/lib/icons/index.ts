@@ -1,5 +1,5 @@
 import type { Locale } from '$lib/paraglide/runtime';
-import { RoleId, StoreType } from '$lib/prisma';
+import { ApplicationType, RoleId, StoreType } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { ProductType } from '$lib/workflowTypes';
 
@@ -12,6 +12,19 @@ export function getActionIcon(type: ProductActionType) {
     case ProductActionType.Cancel:
       return 'mdi:cancel-octagon';
   }
+}
+
+const appIcons = import.meta.glob('/src/lib/icons/app-builders/*.svg', {
+  eager: true,
+  import: 'default'
+}) as Record<string, string>;
+
+export function getAppIcon(type: ApplicationType) {
+  return (
+    appIcons[
+      `/src/lib/icons/app-builders/${typeof type === 'string' ? type : ApplicationType[type]}.svg`
+    ] ?? ''
+  );
 }
 
 export function getFlagIcon(locale: Locale) {

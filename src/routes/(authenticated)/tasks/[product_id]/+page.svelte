@@ -8,7 +8,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import { Icons, getProductIcon, getStoreIcon } from '$lib/icons';
+  import { Icons, getAppIcon, getProductIcon, getStoreIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -202,15 +202,15 @@
           validate={false}
         />
       {/if}
-      {#if data.fields.storeDescription}
+      {#if data.fields.store}
         <LabeledFormInput
           key="stores_name"
           class="md:w-1/2"
           input={{
             readonly: true,
-            icon: getStoreIcon(data.storeType)
+            icon: getStoreIcon(data.fields.store.StoreTypeId)
           }}
-          value={data.fields.storeDescription}
+          value={data.fields.store.Description}
           validate={false}
         />
       {/if}
@@ -266,7 +266,11 @@
       {/if}
       {#if data.fields.appType}
         <LabeledFormInput key="project_appType" class="md:w-1/2">
-          <input type="text" class="input w-full" readonly value={data.fields.appType} />
+          <div class="input w-full">
+            <!-- svelte-ignore a11y_missing_attribute -->
+            <img src={getAppIcon(data.fields.appType.Id)} width={24} />
+            <input type="text" readonly value={data.fields.appType.Description} />
+          </div>
         </LabeledFormInput>
       {/if}
       {#if data.fields.projectLanguageCode}

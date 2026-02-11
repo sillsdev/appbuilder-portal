@@ -3,6 +3,7 @@
   import { QueueName } from '$lib/bullmq';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import { getAppIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName, byString } from '$lib/utils/sorting';
@@ -33,7 +34,11 @@
       .filter((v) => v.BuildEngineUrl === engine?.BuildEngineUrl)
       .map((v) => ({ ...v, Name: applications.get(v.ApplicationTypeId)?.Description }))
       .toSorted((a, b) => byName(a, b, getLocale())) as version}
-      <li>{version.Name}: {version.Version} ({version.DateUpdated?.toLocaleDateString()})</li>
+      <li class="flex flex-row gap-1 indent-0 mt-1">
+        <!-- svelte-ignore a11y_missing_attribute -->
+        <img src={getAppIcon(version.ApplicationTypeId)} width={24} />
+        {version.Name}: {version.Version} ({version.DateUpdated?.toLocaleDateString()})
+      </li>
     {/each}
   </ul>
 {/snippet}

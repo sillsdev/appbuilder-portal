@@ -8,7 +8,7 @@
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { Icons } from '$lib/icons';
+  import { Icons, getAppIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -142,7 +142,11 @@
             </div>
             <div class="flex place-content-between">
               <span>{m.project_details_type()}:</span>
-              <span>{projectData.project.ApplicationType.Description}</span>
+              <span class="flex flex-row gap-1">
+                <!-- svelte-ignore a11y_missing_attribute -->
+                <img src={getAppIcon(projectData.project.ApplicationType.Id)} width={24} />
+                {projectData.project.ApplicationType.Description}
+              </span>
             </div>
           </div>
           <div class="my-4">

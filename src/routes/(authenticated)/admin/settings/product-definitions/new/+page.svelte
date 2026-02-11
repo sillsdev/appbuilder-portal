@@ -9,7 +9,7 @@
   import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
-  import { type IconType, Icons, getProductIcon } from '$lib/icons';
+  import { type IconType, Icons, getAppIcon, getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -71,17 +71,21 @@
   {#if !$form.allowAll}
     <LabeledFormInput key="prodDefs_type" class="border border-warning p-1 my-4 rounded-lg">
       {#each data.options.applicationTypes.toSorted( (a, b) => byString(a.Description, b.Description, locale) ) as type}
-        <InputWithMessage
-          message={{ key: 'common_passThrough', params: { value: type.Description } }}
-          class="my-1"
-        >
-          <input
-            class="toggle toggle-warning border-warning"
-            type="checkbox"
-            bind:group={$form.applicationTypes}
-            value={type.Id}
-          />
-        </InputWithMessage>
+        <span class="flex flex-row gap-1">
+          <!-- svelte-ignore a11y_missing_attribute -->
+          <img src={getAppIcon(type.Id)} width={24} />
+          <InputWithMessage
+            message={{ key: 'common_passThrough', params: { value: type.Description } }}
+            class="my-1 grow"
+          >
+            <input
+              class="toggle toggle-warning border-warning"
+              type="checkbox"
+              bind:group={$form.applicationTypes}
+              value={type.Id}
+            />
+          </InputWithMessage>
+        </span>
       {/each}
     </LabeledFormInput>
   {:else}
