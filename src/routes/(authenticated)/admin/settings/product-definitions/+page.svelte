@@ -1,7 +1,9 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName, byString } from '$lib/utils/sorting';
@@ -26,7 +28,6 @@
     <DataDisplayBox
       editable
       onEdit={() => goto(localizeHref(`${base}/edit?id=${pD.Id}`))}
-      title={pD.Name}
       fields={[
         {
           key: 'prodDefs_type',
@@ -53,6 +54,16 @@
           value: pD.Description
         }
       ]}
-    />
+    >
+      {#snippet title()}
+        <h3>
+          <IconContainer
+            icon={getProductIcon(pD.Workflow.ProductType)}
+            width={24}
+            class="mr-1"
+          />{pD.Name}
+        </h3>
+      {/snippet}
+    </DataDisplayBox>
   {/each}
 </div>

@@ -1,9 +1,11 @@
 <script lang="ts">
   import type { ActionData, PageData } from './$types';
   import { enhance } from '$app/forms';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -65,14 +67,18 @@
       >
         <input type="hidden" name="prodDefId" value={productDef.Id} />
         <MultiselectBoxElement
-          title={productDef.Name ?? ''}
           description={productDef?.Description ?? ''}
           checked={productDef.enabled}
           checkProps={{
             name: 'enabled',
             onchange: (e) => e.currentTarget.form?.requestSubmit()
           }}
-        />
+        >
+          {#snippet title()}
+            <IconContainer icon={getProductIcon(productDef.Workflow.ProductType)} width={24} />
+            {productDef.Name ?? ''}
+          {/snippet}
+        </MultiselectBoxElement>
       </form>
     {/each}
   </MultiselectBox>
