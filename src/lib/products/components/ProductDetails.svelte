@@ -87,11 +87,11 @@
   function getBuildOrPub(trans: Transition, prod: typeof product) {
     let ret = undefined;
     if (trans.InitialState === WorkflowState.Product_Build) {
-      ret = prod.ProductBuilds.find(
+      ret = prod.ProductBuilds?.find(
         (pb) => (pb.DateCreated?.valueOf() ?? 0) > (trans.DateTransition?.valueOf() ?? 0)
       );
     } else if (trans.InitialState === WorkflowState.Product_Publish) {
-      ret = prod.ProductPublications.find(
+      ret = prod.ProductPublications?.find(
         (pp) => (pp.DateCreated?.valueOf() ?? 0) > (trans.DateTransition?.valueOf() ?? 0)
       );
     }
