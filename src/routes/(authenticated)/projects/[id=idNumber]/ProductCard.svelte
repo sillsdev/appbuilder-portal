@@ -262,13 +262,26 @@
             })}
           </span>
           <span>
-            {@html m.tasks_forNames({
-              allowedNames: sanitizeInput(
-                product.ActiveTransition?.AllowedUserNames || m.appName()
-              ),
-              activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
-              // activityName appears to show up blank primarily at the very startup of a new product?
-            })}
+            {#if isSuperAdmin(page.data.session!.user.roles) && product.WorkflowInstance && isBackground(product.WorkflowInstance.State as WorkflowState)}
+              {@const href = linkToBuildEngine(
+                product.BuildEngineUrl!,
+                product,
+                product.WorkflowInstance.State as WorkflowState
+              )}
+              {@html m.tasks_forNames({
+                allowedNames: sanitizeInput(
+                  product.ActiveTransition?.AllowedUserNames || m.appName()
+                ),
+                activityName: `<a class="link" href="${href}">${sanitizeInput(product.ActiveTransition?.InitialState ?? '')}</a>`
+              })}
+            {:else}
+              {@html m.tasks_forNames({
+                allowedNames: sanitizeInput(
+                  product.ActiveTransition?.AllowedUserNames || m.appName()
+                ),
+                activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
+              })}
+            {/if}
           </span>
         {/if}
       </div>
@@ -276,17 +289,6 @@
         {#if product.UserTasks.find((ut) => ut.UserId === page.data.session?.user.userId)}
           <a class="link" href={localizeHref(`/tasks/${product.Id}`)}>
             {m.common_continue()}
-          </a>
-        {:else if isSuperAdmin(page.data.session!.user.roles) && product.WorkflowInstance && isBackground(product.WorkflowInstance.State as WorkflowState)}
-          <a
-            class="link mx-2"
-            href={linkToBuildEngine(
-              product.BuildEngineUrl!,
-              product,
-              product.WorkflowInstance.State as WorkflowState
-            )}
-          >
-            {m.products_viewInBE()}
           </a>
         {/if}
         {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}

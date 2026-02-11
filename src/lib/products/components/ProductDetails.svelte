@@ -99,9 +99,28 @@
   }
 </script>
 
-{#snippet transitionType(transition: (typeof transitions)[0])}
+{#snippet transitionType(transition: (typeof transitions)[0], showRecs: boolean)}
   {#if transition.TransitionType === ProductTransitionType.Activity}
-    {transition.InitialState}
+    {@const showLink =
+      (transition.DateTransition &&
+        transition.InitialState &&
+        isBackground(transition.InitialState as WorkflowState)) ||
+      showRecs}
+    {#if showLink}
+      <a
+        class="link"
+        href={linkToBuildEngine(
+          product.BuildEngineUrl!,
+          { ...product, ...getBuildOrPub(transition, product) },
+          transition.InitialState as WorkflowState
+        )}
+        target="_blank"
+      >
+        {transition.InitialState}
+      </a>
+    {:else}
+      {transition.InitialState}
+    {/if}
   {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
     <IconContainer icon="material-symbols:star" width={16} />&nbsp;{transition.InitialState}
   {:else}
@@ -109,27 +128,11 @@
   {/if}
 {/snippet}
 
-{#snippet queueRecords(trans: Transition, prod: typeof product)}
+{#snippet queueRecords(trans: Transition)}
   {@const records = trans.QueueRecords}
-  {@const back = isBackground(trans.InitialState as WorkflowState)}
   <details class="cursor-pointer">
-    <summary>{m.products_jobRecords()} ({records.length + (back ? 1 : 0)})</summary>
+    <summary>{m.products_jobRecords()} ({records.length})</summary>
     <ul>
-      {#if back}
-        <li>
-          <a
-            class="link"
-            href={linkToBuildEngine(
-              prod.BuildEngineUrl!,
-              { ...prod, ...getBuildOrPub(trans, prod) },
-              trans.InitialState as WorkflowState
-            )}
-            target="_blank"
-          >
-            {m.products_viewInBE()}
-          </a>
-        </li>
-      {/if}
       {#each records as rec}
         <li>
           <a
@@ -184,18 +187,13 @@
       </thead>
       <tbody>
         {#each transitions as transition}
-          {@const showRecs =
-            isSuper &&
-            (transition.QueueRecords.length ||
-              (transition.DateTransition &&
-                transition.InitialState &&
-                isBackground(transition.InitialState as WorkflowState)))}
+          {@const showRecs = isSuper && !!transition.QueueRecords.length}
           <tr
             class:font-bold={isLandmark(transition.TransitionType)}
             class:no-border={transition.Comment || showRecs}
           >
             <td>
-              {@render transitionType(transition)}
+              {@render transitionType(transition, showRecs)}
             </td>
             <td>
               {#if !isLandmark(transition.TransitionType)}
@@ -210,7 +208,7 @@
           {#if showRecs}
             <tr class:no-border={transition.Comment}>
               <td colspan="4">
-                {@render queueRecords(transition, product)}
+                {@render queueRecords(transition)}
               </td>
             </tr>
           {/if}
@@ -233,12 +231,7 @@
       </thead>
       <tbody>
         {#each transitions as transition}
-          {@const showRecs =
-            isSuper &&
-            (transition.QueueRecords.length ||
-              (transition.DateTransition &&
-                transition.InitialState &&
-                isBackground(transition.InitialState as WorkflowState)))}
+          {@const showRecs = isSuper && !!transition.QueueRecords.length}
           <tr
             class:font-bold={isLandmark(transition.TransitionType)}
             class:no-border={!isLandmark(transition.TransitionType) ||
@@ -246,7 +239,7 @@
               showRecs}
           >
             <td>
-              {@render transitionType(transition)}
+              {@render transitionType(transition, showRecs)}
             </td>
             <td>
               {getTimeDateString(transition.DateTransition)}
@@ -263,7 +256,7 @@
           {#if showRecs}
             <tr class:no-border={transition.Comment}>
               <td colspan="2">
-                {@render queueRecords(transition, product)}
+                {@render queueRecords(transition)}
               </td>
             </tr>
           {/if}
