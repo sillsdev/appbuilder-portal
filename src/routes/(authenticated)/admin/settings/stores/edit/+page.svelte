@@ -2,7 +2,9 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import { getStoreIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
@@ -44,14 +46,16 @@
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="common_type">
-    <input
-      type="text"
-      name="storeTypeDisplay"
-      class="input input-bordered validator"
-      value={data.store.StoreType.Description}
-      readonly
-      disabled
-    />
+    <div class="input input-bordered validator">
+      <IconContainer icon={getStoreIcon(data.store.StoreTypeId)} width={20} />
+      <input
+        type="text"
+        name="storeTypeDisplay"
+        value={data.store.StoreType.Description}
+        readonly
+        disabled
+      />
+    </div>
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="projectTable_owner">

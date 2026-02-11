@@ -9,7 +9,7 @@
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { getActionIcon, getProductIcon } from '$lib/icons';
+  import { getActionIcon, getProductIcon, getStoreIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { type ProductActionType } from '$lib/products';
@@ -182,7 +182,7 @@
       </div>
       {#if product.PublishLink}
         <a class="link" href={product.PublishLink} target="_blank">
-          <IconContainer icon="ic:twotone-store" width={24} />
+          <IconContainer icon={getStoreIcon(product.Store?.StoreTypeId ?? 0)} width={24} />
         </a>
       {/if}
     </div>

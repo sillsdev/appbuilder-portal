@@ -3,6 +3,8 @@
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
+  import { getStoreIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
@@ -25,6 +27,8 @@
       }
     }
   });
+
+  const mobileSizing = 'w-full md:max-w-xs';
 </script>
 
 <h3 class="pl-4">{m.models_add({ name: m.stores_name() })}</h3>
@@ -50,11 +54,14 @@
     <span class="validator-hint">{m.stores_publisherIdEmpty()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="common_type">
-    <select class="select validator" name="storeType" bind:value={$form.storeType} required>
-      {#each data.options.storeType.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
-        <option value={type.Id}>{type.Description}</option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.storeType}
+      items={data.options.storeType
+        .toSorted((a, b) => byString(a.Description, b.Description, getLocale()))
+        .map((st) => ({ ...st, Name: st.Description ?? st.Name, icon: getStoreIcon(st.Id) }))}
+      class="validator {mobileSizing}"
+      attr={{ name: 'storeType', required: true }}
+    />
     <span class="validator-hint">{m.stores_emptyStoreType()}</span>
   </LabeledFormInput>
   {#if $form.storeType === StoreType.GooglePlay}

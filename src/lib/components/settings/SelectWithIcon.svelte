@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { ClassValue, HTMLSelectAttributes } from 'svelte/elements';
+  import type { ClassValue, HTMLOptionAttributes, HTMLSelectAttributes } from 'svelte/elements';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
@@ -11,6 +11,7 @@
       Id: number;
       Name: string;
       icon: string;
+      attr?: HTMLOptionAttributes;
     }[];
     value: number | null;
     extra?: Snippet;
@@ -29,7 +30,7 @@
   <select {...attr} bind:value class:ps-0!={current}>
     {@render extra?.()}
     {#each items.toSorted((a, b) => byName(a, b, getLocale())) as item}
-      <option value={item.Id}>
+      <option {...item.attr} value={item.Id}>
         <IconContainer icon={item.icon} width={20} />
         {item.Name}
       </option>

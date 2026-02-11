@@ -1,3 +1,4 @@
+import { StoreType } from '$lib/prisma';
 import type { ProductActionType } from '$lib/products';
 import { ProductType } from '$lib/workflowTypes';
 
@@ -22,5 +23,18 @@ export function getActionIcon(type: ProductActionType) {
       return 'mdi:cancel-octagon';
     default:
       return '';
+  }
+}
+
+export function getStoreIcon(type: StoreType) {
+  switch (type) {
+    case StoreType.GooglePlay:
+      return 'logos:google-play-icon';
+    case StoreType.S3:
+      return 'logos:aws-s3';
+    case StoreType.Cloud:
+      return 'material-symbols:cloud';
+    default:
+      return 'ic:twotone-store';
   }
 }

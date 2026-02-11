@@ -3,7 +3,7 @@
   import { goto } from '$app/navigation';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
-  import { getProductIcon } from '$lib/icons';
+  import { getProductIcon, getStoreIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
@@ -16,6 +16,13 @@
 
   const base = '/admin/settings/workflow-definitions';
 </script>
+
+{#snippet storeType(wd?: (typeof data)['workflowDefinitions'][number])}
+  {#if wd?.StoreType}
+    <IconContainer icon={getStoreIcon(wd.StoreType.Id)} width={16} class="mr-1" />{wd.StoreType
+      .Description}
+  {/if}
+{/snippet}
 
 <h2>{m.flowDefs_title()}</h2>
 
@@ -35,7 +42,7 @@
         },
         {
           key: 'flowDefs_storeType',
-          value: wd.StoreType?.Name
+          snippet: storeType
         },
         {
           key: 'flowDefs_productType',
@@ -47,6 +54,7 @@
         }
         // ISSUE: #1102 Do we want to show WorkflowOptions here?
       ]}
+      data={wd}
     >
       {#snippet title()}
         <h3>
