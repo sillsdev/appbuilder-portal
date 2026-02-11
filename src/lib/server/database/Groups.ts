@@ -37,7 +37,11 @@ export async function createGroup(
       Description: description,
       Users: {
         connect: await prisma.users.findMany({
-          where: { Id: { in: users }, Organizations: { some: { Id: organization } } },
+          where: {
+            Id: { in: users },
+            Organizations: { some: { Id: organization } },
+            IsLocked: false
+          },
           select: {
             Id: true
           }

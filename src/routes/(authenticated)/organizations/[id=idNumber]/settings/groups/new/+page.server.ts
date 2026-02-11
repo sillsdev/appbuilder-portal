@@ -11,6 +11,10 @@ const addGroupSchema = v.object({
   users: v.array(idSchema)
 });
 
+const fetchUsersSchema = v.object({
+  groups: v.array(idSchema)
+});
+
 export const load = (async (event) => {
   event.locals.security.requireAdminOfOrg(parseInt(event.params.id));
   const { organization } = await event.parent();
@@ -23,7 +27,24 @@ export const load = (async (event) => {
         Email: true
       }
     }),
-    form: await superValidate(valibot(addGroupSchema))
+    groups: await DatabaseReads.groups.findMany({
+      where: { OwnerId: organization.Id, Users: { some: { IsLocked: false } } },
+      select: {
+        Id: true,
+        Name: true,
+        _count: {
+          select: {
+            Users: {
+              where: {
+                IsLocked: false
+              }
+            }
+          }
+        }
+      }
+    }),
+    groupForm: await superValidate(valibot(addGroupSchema)),
+    usersForm: await superValidate(valibot(fetchUsersSchema))
   };
 }) satisfies PageServerLoad;
 
@@ -39,5 +60,25 @@ export const actions = {
       form.data.users
     );
     return { form, ok: true, createdId: group.Id };
+  },
+  async users(event) {
+    const orgId = parseInt(event.params.id);
+    event.locals.security.requireAdminOfOrg(orgId);
+    const form = await superValidate(event.request, valibot(fetchUsersSchema));
+    if (!form.valid) return fail(400, { form, ok: false });
+    return {
+      form,
+      ok: true,
+      query: {
+        data: await DatabaseReads.users.findMany({
+          where: {
+            Groups: { some: { Id: { in: form.data.groups }, OwnerId: orgId } }
+          },
+          select: {
+            Id: true
+          }
+        })
+      }
+    };
   }
 } satisfies Actions;

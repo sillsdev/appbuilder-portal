@@ -206,6 +206,7 @@
   "org_noGroups": "Su organización no tiene grupos",
   "org_addGroupButton": "Agregar grupo",
   "org_editGroupTitle": "Editar Grupo",
+  "org_addUsers": "Agregar usuarios del grupo",
   "org_infrastructureTitle": "Infraestructura",
   "org_useDefaultBuildEngine": "Usar el motor de compilación predeterminado",
   "org_buildEngineURL": "URL del motor de compilación",

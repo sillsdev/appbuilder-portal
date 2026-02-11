@@ -206,6 +206,7 @@
   "org_noGroups": "Your organization has no groups",
   "org_addGroupButton": "Add Group",
   "org_editGroupTitle": "Edit Group",
+  "org_addUsers": "Add Users from Group",
   "org_infrastructureTitle": "Infrastructure",
   "org_useDefaultBuildEngine": "Use Default Build Engine",
   "org_buildEngineURL": "Build Engine URL",
