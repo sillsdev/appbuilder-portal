@@ -1,9 +1,10 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import type { HTMLInputAttributes } from 'svelte/elements';
 
   interface Props {
     checked: boolean;
-    title: string;
+    title: string | Snippet;
     description: string;
     checkProps?: HTMLInputAttributes;
   }
@@ -21,7 +22,11 @@
         {...checkProps}
       />
       <b>
-        {title}
+        {#if typeof title === 'string'}
+          {title}
+        {:else}
+          {@render title()}
+        {/if}
       </b>
     </span>
     <p class="ml-8">

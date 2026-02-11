@@ -54,7 +54,7 @@
   {/if}
   {#each buildEngines.toSorted( (a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, getLocale()) ) as buildEngine, i}
     <DataDisplayBox
-      title={buildEngine.BuildEngineUrl}
+      title={buildEngine.BuildEngineUrl ?? ''}
       data={{ ...buildEngine, i }}
       fields={[
         {
