@@ -3,7 +3,7 @@
   import { goto } from '$app/navigation';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
-  import { getProductIcon } from '$lib/icons';
+  import { getAppIcon, getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName, byString } from '$lib/utils/sorting';
@@ -16,6 +16,25 @@
 
   const base = '/admin/settings/product-definitions';
 </script>
+
+{#snippet appType(pD?: (typeof data)['productDefinitions'][number])}
+  {#if pD}
+    {#if pD.AllowAllApplicationTypes}
+      {m.prodDefs_type_allowAll()}
+    {:else}
+      {@const locale = getLocale()}
+      <div class="flex flex-row flex-wrap gap-2 indent-0">
+        {#each pD.ApplicationTypes.toSorted( (a, b) => byString(a.Description, b.Description, locale) ) as at}
+          <span class="flex flex-row gap-1">
+            <!-- svelte-ignore a11y_missing_attribute -->
+            <img src={getAppIcon(at.Id)} width={24} />
+            {at.Description}
+          </span>
+        {/each}
+      </div>
+    {/if}
+  {/if}
+{/snippet}
 
 <h2>{m.prodDefs_title()}</h2>
 
@@ -31,11 +50,7 @@
       fields={[
         {
           key: 'prodDefs_type',
-          value: pD.AllowAllApplicationTypes
-            ? m.prodDefs_type_allowAll()
-            : pD.ApplicationTypes.map((at) => at.Description)
-                .sort((a, b) => byString(a, b, getLocale()))
-                .join(', ')
+          snippet: appType
         },
         {
           key: 'prodDefs_flow',
@@ -54,6 +69,7 @@
           value: pD.Description
         }
       ]}
+      data={pD}
     >
       {#snippet title()}
         <h3>

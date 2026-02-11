@@ -1,4 +1,4 @@
-import { StoreType } from '$lib/prisma';
+import { ApplicationType, StoreType } from '$lib/prisma';
 import type { ProductActionType } from '$lib/products';
 import { ProductType } from '$lib/workflowTypes';
 
@@ -37,4 +37,15 @@ export function getStoreIcon(type: StoreType) {
     default:
       return 'ic:twotone-store';
   }
+}
+
+const appIcons = import.meta.glob('/src/lib/icons/app-builders/*.svg', {
+  eager: true,
+  import: 'default'
+}) as Record<string, string>;
+
+export function getAppIcon(type: ApplicationType) {
+  return appIcons[
+    `/src/lib/icons/app-builders/${typeof type === 'string' ? type : ApplicationType[type]}.svg`
+  ];
 }
