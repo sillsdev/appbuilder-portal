@@ -8,7 +8,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import { Icons } from '$lib/icons';
+  import { Icons, getProductIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -117,7 +117,12 @@
             {data.fields.projectName}
           </a>
         </li>
-        <li>{data.productDescription}</li>
+        <li>
+          <IconContainer
+            icon={getProductIcon(data.productType)}
+            width={24}
+          />{data.productDescription}
+        </li>
       </ul>
     </div>
   </div>
@@ -248,9 +253,16 @@
         </LabeledFormInput>
       {/if}
       {#if data.fields.displayProductDescription}
-        <LabeledFormInput key="tasks_product" class="md:w-1/2">
-          <input type="text" class="input w-full" readonly value={data.productDescription} />
-        </LabeledFormInput>
+        <LabeledFormInput
+          key="tasks_product"
+          class="md:w-1/2"
+          input={{
+            readonly: true,
+            icon: getProductIcon(data.productType)
+          }}
+          value={data.productDescription}
+          validate={false}
+        />
       {/if}
       {#if data.fields.appType}
         <LabeledFormInput key="project_appType" class="md:w-1/2">

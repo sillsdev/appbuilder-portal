@@ -3,12 +3,12 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import DateRangePicker from '$lib/components/DateRangePicker.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { getProductIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import ProductDefinitionFilter from '$lib/projects/components/ProductDefinitionFilter.svelte';

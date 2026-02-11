@@ -6,9 +6,10 @@
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
+  import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
-  import { Icons } from '$lib/icons';
+  import { type IconType, Icons, getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -36,15 +37,20 @@
 
   const workflows = data.options.workflows
     .filter((w) => w.Type === 1)
-    .sort((a, b) => byName(a, b, locale));
+    .sort((a, b) => byName(a, b, locale))
+    .map((w) => ({ ...w, icon: getProductIcon(w.ProductType) as IconType }));
   const rebuildWorkflows = data.options.workflows
     .filter((w) => w.Type === 2)
-    .sort((a, b) => byName(a, b, locale));
+    .sort((a, b) => byName(a, b, locale))
+    .map((w) => ({ ...w, icon: getProductIcon(w.ProductType) as IconType }));
   const republishWorkflows = data.options.workflows
     .filter((w) => w.Type === 3)
-    .sort((a, b) => byName(a, b, locale));
+    .sort((a, b) => byName(a, b, locale))
+    .map((w) => ({ ...w, icon: getProductIcon(w.ProductType) as IconType }));
 
   let propsOk = $state(true);
+
+  const mobileSizing = 'w-full md:max-w-xs';
 </script>
 
 <h3 class="pl-4">{m.prodDefs_edit()}</h3>
@@ -84,29 +90,38 @@
     <div class="mb-4"></div>
   {/if}
   <LabeledFormInput key="prodDefs_flow">
-    <select class="select validator" name="workflow" bind:value={$form.workflow} required>
-      {#each workflows as wf}
-        <option value={wf.Id}>{wf.Name}</option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.workflow}
+      items={workflows}
+      class="validator {mobileSizing}"
+      attr={{ name: 'workflow', required: true }}
+    />
     <span class="validator-hint">{m.prodDefs_emptyFlow()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="prodDefs_rebuildFlow">
-    <select class="select" name="rebuildWorkflow" bind:value={$form.rebuildWorkflow}>
-      <option value={null}>{m.prodDefs_noFlow()}</option>
-      {#each rebuildWorkflows as workflow}
-        <option value={workflow.Id}>{workflow.Name}</option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.rebuildWorkflow}
+      items={rebuildWorkflows}
+      class="validator {mobileSizing}"
+      attr={{ name: 'rebuildWorkflow' }}
+    >
+      {#snippet extra()}
+        <option value={null}>{m.prodDefs_noFlow()}</option>
+      {/snippet}
+    </SelectWithIcon>
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="prodDefs_republishFlow">
-    <select class="select" name="republishWorkflow" bind:value={$form.republishWorkflow}>
-      <option value={null}>{m.prodDefs_noFlow()}</option>
-      {#each republishWorkflows as workflow}
-        <option value={workflow.Id}>{workflow.Name}</option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.republishWorkflow}
+      items={republishWorkflows}
+      class="validator {mobileSizing}"
+      attr={{ name: 'republishWorkflow' }}
+    >
+      {#snippet extra()}
+        <option value={null}>{m.prodDefs_noFlow()}</option>
+      {/snippet}
+    </SelectWithIcon>
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="common_description">
@@ -130,14 +145,3 @@
     <SubmitButton disabled={!propsOk} />
   </div>
 </form>
-
-<style>
-  select {
-    width: 100%;
-  }
-  @media (width >= 40rem) {
-    select {
-      max-width: var(--container-xs);
-    }
-  }
-</style>

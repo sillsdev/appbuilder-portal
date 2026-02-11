@@ -101,7 +101,12 @@ export const load = (async ({ params, locals, depends }) => {
       ProductDefinition: {
         select: {
           Id: true,
-          Name: true
+          Name: true,
+          Workflow: {
+            select: {
+              ProductType: true
+            }
+          }
         }
       },
       ProductPublications:
@@ -169,6 +174,7 @@ export const load = (async ({ params, locals, depends }) => {
     instructions: snap.context.instructions,
     projectId: product.Project.Id,
     productDescription: product.ProductDefinition.Name,
+    productType: product.ProductDefinition.Workflow.ProductType,
     fields: {
       projectName: product.Project.Name,
       projectDescription: product.Project.Description,
