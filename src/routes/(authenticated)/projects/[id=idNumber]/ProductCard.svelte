@@ -12,7 +12,7 @@
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
-  import type { ProductActionType } from '$lib/products';
+  import { type ProductActionType, getActionIcon } from '$lib/products';
   import ProductDetails, {
     type Transition,
     showProductDetails
@@ -113,17 +113,85 @@
 </script>
 
 <div class="rounded-md border border-slate-400 w-full my-2">
-  <div class="bg-neutral p-2 flex flex-row rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
-    <span class="grow min-w-0">
+  <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
+    <div class="flex flex-row items-start">
       <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
-      {product.ProductDefinition.Name}
-    </span>
-    {#if product.PublishLink}
-      {@const pType = product.ProductDefinition.Workflow.ProductType}
-      <span class="flex flex-col px-2">
+      <span class="min-w-0 grow">
+        {product.ProductDefinition.Name}
+      </span>
+      <Dropdown
+        class={{
+          label: 'px-1 btn-square btn-xs',
+          content: 'drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto'
+        }}
+      >
+        {#snippet label()}
+          <IconContainer icon="charm:menu-kebab" width="20" class="" />
+        {/snippet}
+        {#snippet content()}
+          <ul class="menu overflow-hidden rounded-md">
+            <li class="w-full rounded-none">
+              <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
+                <IconContainer icon="material-symbols:info" width={16} />
+                {m.products_details()}
+              </button>
+            </li>
+            <li class="w-full rounded-none">
+              <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
+                <IconContainer icon="lsicon:folder-files-filled" width={16} />
+                {m.project_productFiles()}
+              </a>
+            </li>
+            {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
+              <li class="w-full rounded-none">
+                <button class="text-nowrap" onclick={() => updateProductModal?.showModal()}>
+                  <IconContainer icon="material-symbols:settings" width={16} />
+                  {m.products_properties_title()}
+                </button>
+              </li>
+            {/if}
+            {#if canEdit}
+              <li class="w-full rounded-none">
+                <BlockIfJobsUnavailable class="text-nowrap text-error">
+                  {#snippet altContent()}
+                    <IconContainer icon="mdi:trash" width={16} />
+                    {m.models_delete({ name: m.tasks_product() })}
+                  {/snippet}
+                  <button
+                    class="text-nowrap text-error"
+                    onclick={() => deleteProductModal?.showModal()}
+                  >
+                    {@render altContent()}
+                  </button>
+                </BlockIfJobsUnavailable>
+              </li>
+            {/if}
+          </ul>
+        {/snippet}
+      </Dropdown>
+    </div>
+    <div class="flex flex-row gap-2">
+      <div class="flex flex-row gap-1 grow">
+        {m.common_updated()}:
+        <Tooltip tip={getTimeDateString(product.DateUpdated)}>
+          {$updatedTime}
+        </Tooltip>
+      </div>
+      {#if product.PublishLink}
         <a class="link" href={product.PublishLink} target="_blank">
           <IconContainer icon="ic:twotone-store" width={24} />
         </a>
+      {/if}
+    </div>
+    <div class="flex flex-row gap-2">
+      <div class="flex flex-row gap-1 grow">
+        {m.products_published()}:
+        <Tooltip tip={getTimeDateString(product.DatePublished)}>
+          {$publishedTime}
+        </Tooltip>
+      </div>
+      {#if product.PublishLink}
+        {@const pType = product.ProductDefinition.Workflow.ProductType}
         {#if pType !== ProductType.Web}
           <a
             class="link"
@@ -132,96 +200,40 @@
               : 'apk'}"
             target="_blank"
           >
-            <IconContainer icon="mdi:launch" width={24} />
+            <IconContainer icon="material-symbols:download" width={24} />
           </a>
         {/if}
-      </span>
-    {/if}
-    <span class="w-32 inline-block">
-      {m.common_updated()}
-      <br />
-      <Tooltip tip={getTimeDateString(product.DateUpdated)}>
-        {$updatedTime}
-      </Tooltip>
-    </span>
-    <span class="w-32 inline-block">
-      {m.products_published()}
-      <br />
-      <Tooltip tip={getTimeDateString(product.DatePublished)}>
-        {$publishedTime}
-      </Tooltip>
-    </span>
-    <Dropdown
-      class={{ label: 'px-1', content: 'drop-arrow bottom-12 right-0 p-1 min-w-36 w-auto' }}
-    >
-      {#snippet label()}
-        <IconContainer icon="charm:menu-kebab" width="20" />
-      {/snippet}
-      {#snippet content()}
-        <ul class="menu menu-sm overflow-hidden rounded-md">
-          {#each product.actions as action}
-            {@const message =
-              //@ts-expect-error this is in fact correct
-              m['products_acts_' + action]()}
-            <li class="w-full rounded-none">
-              <BlockIfJobsUnavailable class="text-nowrap">
-                {#snippet altContent()}
-                  {message}
-                {/snippet}
-                <button
-                  class="text-nowrap"
-                  onclick={(event) => {
-                    handleProductAction(product.Id, action);
-                    event.currentTarget.blur();
-                  }}
-                >
-                  {message}
-                </button>
-              </BlockIfJobsUnavailable>
-            </li>
-          {/each}
-          <li class="w-full rounded-none">
-            <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
-              {m.products_details()}
-            </button>
-          </li>
-          <li class="w-full rounded-none">
-            <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
-              {m.project_productFiles()}
-            </a>
-          </li>
-          {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
-            <li class="w-full rounded-none">
-              <button class="text-nowrap" onclick={() => updateProductModal?.showModal()}>
-                {m.products_properties_title()}
-              </button>
-            </li>
-          {/if}
-          {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}
-            <li class="w-full rounded-none">
-              <a href={localizeHref(`/workflow-instances/${product.Id}`)}>
-                {m.common_workflow()}
-              </a>
-            </li>
-          {/if}
-          {#if canEdit}
-            <li class="w-full rounded-none">
-              <BlockIfJobsUnavailable class="text-nowrap text-error">
-                {#snippet altContent()}
-                  {m.models_delete({ name: m.tasks_product() })}
-                {/snippet}
-                <button
-                  class="text-nowrap text-error"
-                  onclick={() => deleteProductModal?.showModal()}
-                >
-                  {m.models_delete({ name: m.tasks_product() })}
-                </button>
-              </BlockIfJobsUnavailable>
-            </li>
-          {/if}
-        </ul>
-      {/snippet}
-    </Dropdown>
+      {/if}
+    </div>
+    <div class="flex flex-row gap-2 p-1 mt-1 rounded-md">
+      <button
+        class="text-nowrap btn btn-secondary btn-sm"
+        onclick={() => showProductDetails(product.Id)}
+      >
+        <IconContainer icon="material-symbols:info" width={20} />
+        {m.products_details()}
+      </button>
+      {#each product.actions as action}
+        {@const message =
+          //@ts-expect-error this is in fact correct
+          m['products_acts_' + action]()}
+        <BlockIfJobsUnavailable class="text-nowrap">
+          {#snippet altContent()}
+            <IconContainer icon={getActionIcon(action)} width={20} />
+            {message}
+          {/snippet}
+          <button
+            class="text-nowrap btn btn-secondary btn-sm"
+            onclick={(event) => {
+              handleProductAction(product.Id, action);
+              event.currentTarget.blur();
+            }}
+          >
+            {@render altContent()}
+          </button>
+        </BlockIfJobsUnavailable>
+      {/each}
+    </div>
     {#if canEdit}
       <DeleteProduct
         bind:modal={deleteProductModal}
@@ -233,30 +245,45 @@
     {/if}
   </div>
   {#if showTaskWaiting}
-    <div class="p-2 flex gap-1">
-      {#if project.DateArchived}
-        {@html m.tasks_archivedAt({
-          activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
-        })}
-      {:else}
-        <span class="text-red-500">
-          {m.tasks_waiting({
-            // waiting since EITHER (the last task exists) -> that task's creation time
-            // OR (there are no tasks for this product) -> the last completed transition's completion time
-            waitTime: $waitTime
-          })}
-        </span>
-        {@html m.tasks_forNames({
-          allowedNames: sanitizeInput(product.ActiveTransition?.AllowedUserNames || m.appName()),
-          activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
-          // activityName appears to show up blank primarily at the very startup of a new product?
-        })}
+    <div class="p-2 flex flex-col gap-1">
+      <div class="flex flex-col md:flex-row gap-1">
+        {#if project.DateArchived}
+          <span>
+            {@html m.tasks_archivedAt({
+              activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
+            })}
+          </span>
+        {:else}
+          <span class="text-red-500">
+            {m.tasks_waiting({
+              // waiting since EITHER (the last task exists) -> that task's creation time
+              // OR (there are no tasks for this product) -> the last completed transition's completion time
+              waitTime: $waitTime
+            })}
+          </span>
+          <span>
+            {@html m.tasks_forNames({
+              allowedNames: sanitizeInput(
+                product.ActiveTransition?.AllowedUserNames || m.appName()
+              ),
+              activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
+              // activityName appears to show up blank primarily at the very startup of a new product?
+            })}
+          </span>
+        {/if}
+      </div>
+      <div class="flex flex-row gap-2">
         {#if product.UserTasks.find((ut) => ut.UserId === page.data.session?.user.userId)}
-          <a class="link mx-2" href={localizeHref(`/tasks/${product.Id}`)}>
+          <a class="link" href={localizeHref(`/tasks/${product.Id}`)}>
             {m.common_continue()}
           </a>
         {/if}
-      {/if}
+        {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}
+          <a class="link" href={localizeHref(`/workflow-instances/${product.Id}`)}>
+            {m.common_workflow()}
+          </a>
+        {/if}
+      </div>
     </div>
   {/if}
   <ProductDetails {product} transitions={product.Transitions} />
