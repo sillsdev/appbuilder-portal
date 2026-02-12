@@ -2,6 +2,7 @@ import { stringify } from 'devalue';
 import { produce } from 'sveltekit-sse';
 import { SSEPageUpdates } from '$lib/projects/listener';
 import { DatabaseReads } from '$lib/server/database';
+import { getRebuildsForOrgIds } from '$lib/software-updates/sse';
 
 // Parse organization IDs from query parameter
 function parseIdsParam(idsParam: string | null): number[] {
@@ -10,150 +11,6 @@ function parseIdsParam(idsParam: string | null): number[] {
     .split(',')
     .map((v) => Number(v))
     .filter((v) => Number.isFinite(v));
-}
-
-type RebuildResult = {
-  rebuilds: Array<{
-    Id: number;
-    Comment: string;
-    DateCreated: Date | null;
-    DateCompleted: Date | null;
-    Version: string;
-    Paused: boolean;
-    InitiatedBy: {
-      Name: string | null;
-      Email: string | null;
-    };
-    ApplicationType: {
-      Name: string | null;
-      Description: string | null;
-    };
-    Projects: Array<{
-      Id: number;
-      Name: string | null;
-    }>;
-    _count: {
-      Products: number;
-    };
-    projectIds: number[];
-  }>;
-  projectIds: number[];
-};
-
-// Fetch rebuild data for organizations
-async function getRebuilds(orgIds: number[]): Promise<RebuildResult> {
-  if (!orgIds.length) {
-    return {
-      rebuilds: [],
-      projectIds: []
-    };
-  }
-
-  // Get all projects from the target organizations
-  const orgProjects = await DatabaseReads.projects.findMany({
-    where: {
-      OrganizationId: { in: orgIds }
-    },
-    select: { Id: true }
-  });
-
-  const projectIds = orgProjects.map((p) => p.Id);
-
-  if (!projectIds.length) {
-    return {
-      rebuilds: [],
-      projectIds: []
-    };
-  }
-
-  // Get all software updates that have products from these projects
-  const rebuilds = await DatabaseReads.softwareUpdates.findMany({
-    where: {
-      Products: {
-        some: {
-          ProjectId: { in: projectIds }
-        }
-      }
-    },
-    orderBy: {
-      DateCreated: 'desc'
-    },
-    select: {
-      Id: true,
-      Comment: true,
-      DateCreated: true,
-      DateCompleted: true,
-      Version: true,
-      Paused: true,
-      InitiatedBy: {
-        select: {
-          Name: true,
-          Email: true
-        }
-      },
-      ApplicationType: {
-        select: {
-          Name: true,
-          Description: true
-        }
-      },
-      Products: {
-        where: {
-          ProjectId: { in: projectIds }
-        },
-        select: {
-          Id: true,
-          ProjectId: true,
-          Project: {
-            select: {
-              Id: true,
-              Name: true
-            }
-          }
-        }
-      },
-      _count: {
-        select: {
-          Products: true
-        }
-      }
-    }
-  });
-
-  // Transform the data to deduplicate projects and extract project IDs
-  const rebuildsWithProjects = rebuilds.map((rebuild) => {
-    const uniqueProjects = new Map<number, { Id: number; Name: string | null }>();
-    rebuild.Products.forEach((product) => {
-      if (product.Project) {
-        uniqueProjects.set(product.Project.Id, {
-          Id: product.Project.Id,
-          Name: product.Project.Name
-        });
-      }
-    });
-
-    return {
-      Id: rebuild.Id,
-      Comment: rebuild.Comment,
-      DateCreated: rebuild.DateCreated,
-      DateCompleted: rebuild.DateCompleted,
-      Version: rebuild.Version,
-      Paused: rebuild.Paused,
-      InitiatedBy: rebuild.InitiatedBy,
-      ApplicationType: rebuild.ApplicationType,
-      Projects: Array.from(uniqueProjects.values()),
-      _count: rebuild._count,
-      projectIds: Array.from(uniqueProjects.keys())
-    };
-  });
-
-  // Get all unique project IDs across all rebuilds
-  const allProjectIds = Array.from(new Set(rebuildsWithProjects.flatMap((r) => r.projectIds)));
-
-  return {
-    rebuilds: rebuildsWithProjects,
-    projectIds: allProjectIds
-  };
 }
 
 // Handle POST requests to establish an SSE connection for rebuild data
@@ -174,41 +31,39 @@ export async function POST(request) {
 
   // Return SSE stream
   return produce(async function start({ emit }) {
-    // Send initial rebuild data
-    const initial = await getRebuilds(orgIds);
-    if (!initial || !initial.rebuilds) {
-      return;
-    }
-    const { error } = emit('rebuilds', stringify(initial.rebuilds));
+    // User will be allowed to see software updates until they reload
+    // even if their permission is revoked during the SSE connection.
+    const { error } = emit('rebuilds', stringify((await getRebuildsForOrgIds(orgIds)).rebuilds));
     if (error) {
       return;
     }
-    // Store relevant project IDs for update checks
-    const relevantProjectIds = initial.projectIds;
-    // Define callback to handle project updates
+
     async function updateCb(updateIds: number[]) {
-      // If any updated project intersects with relevant projects, emit fresh data
-      if (relevantProjectIds.some((pid: number) => updateIds.includes(pid))) {
-        const current = await getRebuilds(orgIds);
-        if (!current || !current.rebuilds) {
-          return;
-        }
-        const { error } = emit('rebuilds', stringify(current.rebuilds));
+      // This is a little wasteful because it will calculate much of the same data
+      // multiple times if multiple users are connected to the same software update page.
+      // We refetch the project list each time to handle dynamic organization changes.
+      const currentProjects = await DatabaseReads.projects.findMany({
+        where: { OrganizationId: { in: orgIds } },
+        select: { Id: true }
+      });
+      const relevantProjectIds = currentProjects.map((p) => p.Id);
+
+      if (updateIds.some((updateId) => relevantProjectIds.includes(updateId))) {
+        const rebuildsData = await getRebuildsForOrgIds(orgIds);
+        const { error } = emit('rebuilds', stringify(rebuildsData.rebuilds));
         if (error) {
-          SSEPageUpdates.off('projectPage', updateCb);
+          SSEPageUpdates.off('softwareUpdates', updateCb);
           clearInterval(pingInterval);
         }
       }
     }
 
-    // Register the update callback
-    SSEPageUpdates.on('projectPage', updateCb);
+    SSEPageUpdates.on('softwareUpdates', updateCb);
 
-    // Set up periodic ping to detect disconnections
     const pingInterval = setInterval(function onDisconnect() {
       const { error } = emit('ping', '');
       if (!error) return;
-      SSEPageUpdates.off('projectPage', updateCb);
+      SSEPageUpdates.off('softwareUpdates', updateCb);
       clearInterval(pingInterval);
     }, 10000).unref();
   });

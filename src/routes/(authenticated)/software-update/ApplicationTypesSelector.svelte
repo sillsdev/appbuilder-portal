@@ -20,7 +20,7 @@
       <div class="flex space-x-2">
         {@render selector?.(appType)}
         <div>
-          <div class="font-medium">{appType.Description}</div>
+          <div class="font-medium">{appType.Description ?? ''}</div>
         </div>
       </div>
     {/each}

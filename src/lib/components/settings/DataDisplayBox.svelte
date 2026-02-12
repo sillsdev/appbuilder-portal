@@ -13,7 +13,7 @@
     title: string | Snippet<[T | undefined]>;
     data?: T;
     fields: (ValueKey & {
-      value?: string | number |null;
+      value?: string | number | null;
       snippet?: Snippet<[T | undefined]>;
       faint?: boolean;
     })[];
