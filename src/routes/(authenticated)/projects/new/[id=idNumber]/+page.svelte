@@ -13,11 +13,11 @@
   import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { localizeHref } from '$lib/paraglide/runtime';
+  import AppTypeSelector from '$lib/projects/components/AppTypeSelector.svelte';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
-  import { byString } from '$lib/utils/sorting';
   import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
 
   interface Props {
@@ -93,11 +93,12 @@
           </LanguageCodeTypeahead>
         </LabeledFormInput>
         <LabeledFormInput key="common_type" class="md:max-w-xs">
-          <select name="type" class="select" bind:value={$form.type}>
-            {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
-              <option value={type.Id}>{type.Description}</option>
-            {/each}
-          </select>
+          <AppTypeSelector
+            types={data.types}
+            bind:value={$form.type}
+            class={{ dropdown: 'validator' }}
+            attr={{ name: 'type' }}
+          />
           <span class="validator-hint">&nbsp;</span>
         </LabeledFormInput>
       </div>
@@ -154,9 +155,5 @@
     column-gap: calc(var(--spacing) * 8);
     width: 100%;
     justify-content: center;
-  }
-
-  select {
-    width: 100%;
   }
 </style>

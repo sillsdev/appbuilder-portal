@@ -1,18 +1,14 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { ClassValue } from 'svelte/elements';
   import IconContainer from '../icons/IconContainer.svelte';
-  import Dropdown from './Dropdown.svelte';
+  import Dropdown, { type DropdownClasses } from './Dropdown.svelte';
   import { Icons, getFlagIcon } from '$lib/icons';
   import { l10nMap } from '$lib/locales.svelte';
   import { type Locale, getLocale, locales, setLocale } from '$lib/paraglide/runtime';
 
   interface Props {
     label?: Snippet;
-    class?: {
-      dropdown?: ClassValue;
-      label?: ClassValue;
-    };
+    class?: DropdownClasses;
     currentLocale?: () => Locale;
     onselect?: (lang: Locale) => void;
   }
@@ -41,7 +37,7 @@
   <Dropdown
     class={{
       ...classes,
-      content: 'overflow-y-auto min-w-52'
+      content: ['overflow-y-auto min-w-52', classes.content]
     }}
     bind:open
     {label}
