@@ -92,12 +92,12 @@
           >
             <label class="flex flex-row">
               <span>{c.header}</span>
-              <span class="direction-arrow text-secondary-content">
+              <span class="direction-arrow text-neutral-content">
                 {#if current.id === c.id && c.compare}
                   {#if descending}
-                    <IconContainer icon="bx:sort-a-z" width={24} />
-                  {:else}
                     <IconContainer icon="bx:sort-z-a" width={24} />
+                  {:else}
+                    <IconContainer icon="bx:sort-a-z" width={24} />
                   {/if}
                 {:else}
                   &nbsp;
