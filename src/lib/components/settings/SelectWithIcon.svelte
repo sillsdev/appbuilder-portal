@@ -25,9 +25,9 @@
 
 <div class={['select gap-4', classes]}>
   {#if current}
-    <IconContainer icon={current.icon} width={20} />
+    <IconContainer icon={current.icon} width={20} class="absolute left-0 px-2"/>
   {/if}
-  <select {...attr} bind:value class:ps-0!={current}>
+  <select {...attr} bind:value class:spacing={current}>
     {@render extra?.()}
     {#each items.toSorted((a, b) => byName(a, b, getLocale())) as item}
       <option {...item.attr} value={item.Id}>
@@ -37,3 +37,9 @@
     {/each}
   </select>
 </div>
+
+<style>
+  .spacing {
+    padding-inline-start: calc((0.25rem * 3) + 20px) !important;
+  }
+</style>
