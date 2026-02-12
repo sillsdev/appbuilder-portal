@@ -623,5 +623,13 @@
   "admin_software_update_paused_message": "Software update paused",
   "admin_software_update_all_completed_message": "All rebuilds completed",
   "admin_software_update_application_types_title": "Application Types",
-  "admin_software_update_application_types_description": "Select one or more application types to rebuild"
+  "admin_software_update_application_types_description": "Select one or more application types to rebuild",
+  "admin_software_update_active_rebuilds_title": "Active Software Updates",
+  "admin_software_update_completed_rebuilds_title": "Completed Software Updates",
+  "admin_software_update_application_type_title": "Application Type",
+  "admin_software_update_version_title": "Version",
+  "admin_software_update_created_title": "Created",
+  "admin_software_update_organization_title": "Organization",
+  "admin_software_update_projects_title": "Projects",
+  "admin_software_update_products_title": "Products"
 }

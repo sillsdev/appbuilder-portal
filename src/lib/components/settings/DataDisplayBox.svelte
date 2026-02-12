@@ -12,7 +12,7 @@
     title: string | null;
     data?: T;
     fields: (ValueKey & {
-      value?: string | number |null;
+      value?: string | number | null;
       snippet?: Snippet<[T | undefined]>;
       faint?: boolean;
     })[];

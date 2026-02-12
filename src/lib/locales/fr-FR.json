@@ -622,5 +622,13 @@
   "admin_software_update_paused_message": "Mise à jour du logiciel suspendue",
   "admin_software_update_all_completed_message": "Toutes les reconstructions terminées",
   "admin_software_update_application_types_title": "Types d'application",
-  "admin_software_update_application_types_description": "Sélectionnez les types d'application à reconstruire"
+  "admin_software_update_application_types_description": "Sélectionnez les types d'application à reconstruire",
+  "admin_software_update_active_rebuilds_title": "Mises à jour du logiciel actives",
+  "admin_software_update_completed_rebuilds_title": "Mises à jour du logiciel terminées",
+  "admin_software_update_application_type_title": "Type d'application",
+  "admin_software_update_version_title": "Version",
+  "admin_software_update_created_title": "Créé",
+  "admin_software_update_organization_title": "Organisation",
+  "admin_software_update_projects_title": "Projets",
+  "admin_software_update_products_title": "Produits"
 }
