@@ -25,7 +25,7 @@
 
 <div class={['select gap-4', classes]}>
   {#if current}
-    <IconContainer icon={current.icon} width={20} class="absolute left-0 px-2"/>
+    <IconContainer icon={current.icon} width={20} class="absolute left-0 px-2" />
   {/if}
   <select {...attr} bind:value class:spacing={current}>
     {@render extra?.()}
