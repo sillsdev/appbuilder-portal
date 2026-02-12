@@ -67,7 +67,7 @@
       items={enumNumVals(ProductType)
         .map((type) => ({
           Id: type,
-          Name: m.flowDefs_productType({ type }),
+          Name: m.flowDefs_productTypes({ type }),
           icon: getProductIcon(type)
         }))
         .toSorted((a, b) => byName(a, b, getLocale()))}
