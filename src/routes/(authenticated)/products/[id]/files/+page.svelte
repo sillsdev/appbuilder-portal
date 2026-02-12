@@ -39,15 +39,15 @@
     <div class="breadcrumbs text-sm pl-4">
       <ul>
         <li>
-          <a class="link" href={localizeHref(`/projects/${data.product?.Project.Id}`)}>
-            {data.product?.Project.Name}
+          <a class="link" href={localizeHref(`/projects/${data.product.Project.Id}`)}>
+            {data.product.Project.Name}
           </a>
         </li>
         <li>
           <IconContainer
             icon={getProductIcon(data.product.ProductDefinition.Workflow.ProductType)}
             width="24"
-          />{data.product?.ProductDefinition.Name}
+          />{data.product.ProductDefinition.Name}
         </li>
       </ul>
     </div>
@@ -59,7 +59,7 @@
         {build}
         artifacts={build.ProductArtifacts}
         release={build.ProductPublications.at(0)}
-        latestBuildId={data.product?.BuildEngineBuildId}
+        latestBuildId={data.product.BuildEngineBuildId}
       />
     {/each}
   </div>
