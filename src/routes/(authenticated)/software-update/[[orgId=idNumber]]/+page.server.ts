@@ -74,7 +74,7 @@ async function getProductsForRebuild(
   for (const product of eligibleProducts) {
     const orgId = product.Project.OrganizationId;
     if (!orgIdToUrlMap.has(orgId)) {
-      const { url } = await BuildEngine.Requests.getURLandToken(orgId);
+      const { url } = await BuildEngine.Requests.queryURLandToken(orgId);
       if (url) {
         orgIdToUrlMap.set(orgId, url);
       }
