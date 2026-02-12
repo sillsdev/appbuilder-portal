@@ -70,7 +70,7 @@
       bind:value={storeType}
       items={data.storeTypes
         .toSorted((a, b) => byString(a.Description, b.Description, getLocale()))
-        .map((st) => ({ ...st, Name: st.Description ?? st.Name, icon: getStoreIcon(st.Id) }))}
+        .map((st) => ({ ...st, Name: st.Description || st.Name, icon: getStoreIcon(st.Id) }))}
       class="validator {mobileSizing}"
       attr={{ name: 'storeType' }}
     />
