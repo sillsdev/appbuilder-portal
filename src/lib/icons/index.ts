@@ -45,7 +45,9 @@ const appIcons = import.meta.glob('/src/lib/icons/app-builders/*.svg', {
 }) as Record<string, string>;
 
 export function getAppIcon(type: ApplicationType) {
-  return appIcons[
-    `/src/lib/icons/app-builders/${typeof type === 'string' ? type : ApplicationType[type]}.svg`
-  ];
+  return (
+    appIcons[
+      `/src/lib/icons/app-builders/${typeof type === 'string' ? type : ApplicationType[type]}.svg`
+    ] ?? ''
+  );
 }
