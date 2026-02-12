@@ -7,6 +7,7 @@ import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { BuildEngine } from '$lib/server/build-engine-api';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { getRebuildsForOrgIds } from '$lib/software-updates/sse';
 import { filterAdminOrgs } from '$lib/utils/roles';
 
 interface ProductToRebuild {
@@ -17,6 +18,7 @@ interface ProductToRebuild {
   projectName: string;
   applicationTypeId: number;
   buildEngineUrl: string;
+  organizationId: number;
 }
 
 /**
@@ -40,16 +42,14 @@ async function getProductsForRebuild(
         RebuildOnSoftwareUpdate: true, // Project setting is true
         ...(selectedTypeIds && selectedTypeIds.length > 0 && { TypeId: { in: selectedTypeIds } })
       },
-      WorkflowInstance: null // Only products without active workflows
-      //add back in
-      //DatePublished: { not: null } // Only products that have been published at least once
+      WorkflowInstance: null, // Only products without active workflows
+      DatePublished: { not: null } // Only products that have been published at least once
     },
     select: {
       Id: true,
-      ProductDefinitionId: true,
       ProjectId: true,
       ProductBuilds: {
-        orderBy: { Id: 'desc' }, // Order by ID descending to get the 'latest' build
+        orderBy: { DateCreated: 'desc' },
         take: 1, // Only take the most recent
         select: {
           AppBuilderVersion: true
@@ -79,7 +79,7 @@ async function getProductsForRebuild(
         orgIdToUrlMap.set(orgId, url);
       }
     }
-    const buildEngineUrl = orgIdToUrlMap.get(orgId)!;
+    const buildEngineUrl = orgIdToUrlMap.get(orgId);
     uniqueKeys.add(`${buildEngineUrl}|${product.Project.TypeId}`);
   }
 
@@ -124,9 +124,10 @@ async function getProductsForRebuild(
         latestVersion: latestVersion,
         requiredVersion: requiredVersion,
         projectId: product.ProjectId,
-        projectName: product.Project.Name ?? 'Unknown Project',
+        projectName: product.Project.Name ?? '',
         applicationTypeId: product.Project.TypeId,
-        buildEngineUrl: buildEngineUrl
+        buildEngineUrl: buildEngineUrl,
+        organizationId: product.Project.OrganizationId
       });
     }
   }
@@ -158,101 +159,8 @@ export const load = (async ({ locals, params }) => {
   // Get products that would be rebuilt
   const productsToRebuild = await getProductsForRebuild(organizations.map((o) => o.Id));
 
-  // Extract unique project information from products
-  const projectMap = new Map<number, string>();
-  for (const product of productsToRebuild) {
-    projectMap.set(product.projectId, product.projectName);
-  }
-
-  // Get all software updates (active and completed) that contain projects from this organization
-  // First, get all projects from the target organizations
-  const orgProjects = await DatabaseReads.projects.findMany({
-    where: {
-      OrganizationId: { in: organizations.map((o) => o.Id) }
-    },
-    select: { Id: true }
-  });
-
-  const projectIds = orgProjects.map((p) => p.Id);
-
-  // Get all software updates that have products from these projects
-  const rebuilds = await DatabaseReads.softwareUpdates.findMany({
-    where: {
-      Products: {
-        some: {
-          ProjectId: { in: projectIds }
-        }
-      }
-    },
-    orderBy: {
-      DateCreated: 'desc'
-    },
-    select: {
-      Id: true,
-      Comment: true,
-      DateCreated: true,
-      DateCompleted: true,
-      Version: true,
-      Paused: true,
-      InitiatedBy: {
-        select: {
-          Name: true,
-          Email: true
-        }
-      },
-      ApplicationType: {
-        select: {
-          Name: true,
-          Description: true
-        }
-      },
-      Products: {
-        where: {
-          ProjectId: { in: projectIds }
-        },
-        select: {
-          Id: true,
-          Project: {
-            select: {
-              Id: true,
-              Name: true
-            }
-          }
-        }
-      },
-      _count: {
-        select: {
-          Products: true
-        }
-      }
-    }
-  });
-
-  // Transform the data to deduplicate projects
-  const rebuildsWithProjects = rebuilds.map((rebuild) => {
-    const uniqueProjects = new Map<number, { Id: number; Name: string | null }>();
-    rebuild.Products.forEach((product) => {
-      if (product.Project) {
-        uniqueProjects.set(product.Project.Id, {
-          Id: product.Project.Id,
-          Name: product.Project.Name
-        });
-      }
-    });
-
-    return {
-      Id: rebuild.Id,
-      Comment: rebuild.Comment,
-      DateCreated: rebuild.DateCreated,
-      DateCompleted: rebuild.DateCompleted,
-      Version: rebuild.Version,
-      Paused: rebuild.Paused,
-      InitiatedBy: rebuild.InitiatedBy,
-      ApplicationType: rebuild.ApplicationType,
-      Projects: Array.from(uniqueProjects.values()),
-      _count: rebuild._count
-    };
-  });
+  // Get current rebuilds for the affected organizations to show in the UI
+  const rebuildsData = await getRebuildsForOrgIds(organizations.map((o) => o.Id));
 
   // Fetch all available ApplicationTypes for the form toggles
   const applicationTypes = await DatabaseReads.applicationTypes.findMany({
@@ -266,14 +174,14 @@ export const load = (async ({ locals, params }) => {
   const form = await superValidate(valibot(formSchema));
   return {
     form,
-    organizations: organizations.map((o) => o.Name ?? 'Unknown Organization').join(', '),
+    organizationIds: organizations.map((o) => o.Id),
     productsToRebuild: productsToRebuild.map((p) => ({
       projectId: p.projectId,
       projectName: p.projectName,
       applicationTypeId: p.applicationTypeId,
       requiredVersion: p.requiredVersion
     })),
-    rebuilds: rebuildsWithProjects,
+    rebuilds: rebuildsData.rebuilds,
     applicationTypes
   };
 }) satisfies PageServerLoad;
@@ -307,52 +215,30 @@ export const actions = {
       organizations.map((o) => o.Id),
       form.data.applicationTypeIds
     );
-    // If no products need to be rebuilt, return an error
-    if (productsToRebuild.length === 0) {
-      return fail(400, {
-        form,
-        ok: false
-      });
-    }
 
     // Record rebuilds in SoftwareUpdates table
-    const createdUpdates = await DatabaseWrites.softwareUpdates.recordRebuilds({
+    await DatabaseWrites.softwareUpdates.recordRebuilds({
       initiatorId: locals.security.userId,
       comment: form.data.comment,
       items: productsToRebuild.map((p) => ({
         buildEngineUrl: p.buildEngineUrl,
         applicationTypeId: p.applicationTypeId,
         version: p.requiredVersion!,
-        productId: p.id
+        productId: p.id,
+        organizationId: p.organizationId
       }))
     });
 
-    // Get user info for display
-    const user = await DatabaseReads.users.findUnique({
-      where: { Id: locals.security.userId },
-      select: { Name: true, Email: true }
-    });
-
     // Start rebuilds for each affected product
-    const results = await Promise.allSettled(
+    await Promise.allSettled(
       productsToRebuild.map((p) => {
         return doProductAction(p.id, ProductActionType.Rebuild, form.data.comment);
       })
     );
 
-    const successCount = results.filter((r) => r.status === 'fulfilled').length;
-    const failureCount = results.filter((r) => r.status === 'rejected').length;
-
     return {
       form,
-      ok: true,
-      initiatedBy: user?.Name || user?.Email || 'Unknown User',
-      comment: form.data.comment,
-      productCount: successCount,
-      totalProducts: productsToRebuild.length,
-      failureCount,
-      timestamp: new Date().toISOString(),
-      updateIds: createdUpdates.map((u) => u.Id)
+      ok: true
     };
   }
 } satisfies Actions;
