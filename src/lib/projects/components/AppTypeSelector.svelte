@@ -33,6 +33,10 @@
   }
 </script>
 
+{#if attr.name}
+  <input type="hidden" name={attr.name} {value} />
+{/if}
+
 <Dropdown
   class={{
     dropdown: ['w-full', classes.dropdown],
@@ -57,9 +61,6 @@
   {/snippet}
   {#snippet content()}
     <ul class="menu menu-sm gap-1 p-2">
-      {#if attr.name}
-        <input type="hidden" name={attr.name} {value} />
-      {/if}
       {@render extra?.()}
       {#each types.toSorted((a, b) => byString(a.Description, b.Description, getLocale())) as type}
         <li class="w-full">
