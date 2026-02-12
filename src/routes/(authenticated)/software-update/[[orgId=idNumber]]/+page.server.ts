@@ -42,8 +42,8 @@ async function getProductsForRebuild(
         RebuildOnSoftwareUpdate: true, // Project setting is true
         ...(selectedTypeIds && selectedTypeIds.length > 0 && { TypeId: { in: selectedTypeIds } })
       },
-      WorkflowInstance: null // Only products without active workflows
-      // DatePublished: { not: null } // Only products that have been published at least once
+      WorkflowInstance: null, // Only products without active workflows
+      DatePublished: { not: null } // Only products that have been published at least once
     },
     select: {
       Id: true,
