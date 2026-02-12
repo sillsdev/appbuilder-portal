@@ -1,5 +1,5 @@
 import { ApplicationType, StoreType } from '$lib/prisma';
-import type { ProductActionType } from '$lib/products';
+import { ProductActionType } from '$lib/products';
 import { ProductType } from '$lib/workflowTypes';
 
 export function getProductIcon(type: ProductType) {
@@ -15,11 +15,11 @@ export function getProductIcon(type: ProductType) {
 
 export function getActionIcon(type: ProductActionType) {
   switch (type) {
-    case 'rebuild':
+    case ProductActionType.Rebuild:
       return 'carbon:build-run';
-    case 'republish':
+    case ProductActionType.Republish:
       return 'carbon:ibm-elo-publishing';
-    case 'cancel':
+    case ProductActionType.Cancel:
       return 'mdi:cancel-octagon';
     default:
       return '';
