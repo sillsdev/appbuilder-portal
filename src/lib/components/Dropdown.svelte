@@ -3,19 +3,23 @@
 A simple dropdown menu from DaisyUI.
 
 -->
+<script lang="ts" module>
+  export type DropdownClasses = {
+    /** class="dropdown ..." */
+    dropdown?: ClassValue;
+    /** class="btn btn-ghost ..." */
+    label?: ClassValue;
+    /** class="dropdown-content z-10 drop-shadow-lg rounded-md bg-base-200 ..." */
+    content?: ClassValue;
+  };
+</script>
+
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { ClassValue } from 'svelte/elements';
   import { onNavigate } from '$app/navigation';
   interface Props {
-    class?: {
-      /** class="dropdown ..." */
-      dropdown?: ClassValue;
-      /** class="btn btn-ghost ..." */
-      label?: ClassValue;
-      /** class="dropdown-content z-10 drop-shadow-lg rounded-md bg-base-200 ..." */
-      content?: ClassValue;
-    };
+    class?: DropdownClasses;
     label: Snippet;
     content: Snippet;
     onclick?: () => void;

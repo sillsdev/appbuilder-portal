@@ -16,19 +16,14 @@
 
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { ClassValue } from 'svelte/elements';
-  import Dropdown from './Dropdown.svelte';
+  import Dropdown, { type DropdownClasses } from './Dropdown.svelte';
   import IconContainer from './IconContainer.svelte';
-  import { LanguageIcon } from '$lib/icons';
   import { l10nMap } from '$lib/locales.svelte';
   import { type Locale, getLocale, locales, setLocale } from '$lib/paraglide/runtime';
 
   interface Props {
     label?: Snippet;
-    class?: {
-      dropdown?: ClassValue;
-      label?: ClassValue;
-    };
+    class?: DropdownClasses;
     currentLocale?: () => Locale;
     onselect?: (lang: Locale) => void;
   }
@@ -49,7 +44,7 @@
 </script>
 
 {#snippet globe()}
-  <LanguageIcon color="white" />
+  <IconContainer icon="ph:globe-bold" width={28} />
 {/snippet}
 
 {#key getLocale()}
@@ -57,7 +52,7 @@
   <Dropdown
     class={{
       ...classes,
-      content: 'overflow-y-auto min-w-52'
+      content: ['overflow-y-auto min-w-52', classes.content]
     }}
     bind:open
     {label}
@@ -69,7 +64,7 @@
             <div
               class={[
                 'btn flex-nowrap justify-start pl-2 pr-1',
-                locale === currentLocale() && 'bg-accent text-accent-content'
+                locale === currentLocale() ? 'btn-accent' : 'btn-ghost'
               ]}
               onclick={() => onclick(locale)}
               onkeypress={() => onclick(locale)}

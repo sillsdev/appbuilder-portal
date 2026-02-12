@@ -1,7 +1,9 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import { getStoreIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
@@ -26,8 +28,17 @@
     <DataDisplayBox
       editable
       onEdit={() => goto(localizeHref(`${base}/edit?id=${storeType.Id}`))}
-      title={storeType.Name}
       fields={[{ key: 'common_description', value: storeType.Description }]}
-    />
+    >
+      {#snippet title()}
+        <h3>
+          <IconContainer
+            icon={getStoreIcon(storeType.Id)}
+            width={20}
+            class="mr-1"
+          />{storeType.Name}
+        </h3>
+      {/snippet}
+    </DataDisplayBox>
   {/each}
 </div>

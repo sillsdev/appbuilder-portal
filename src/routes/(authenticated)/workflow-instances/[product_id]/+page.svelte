@@ -7,6 +7,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails, {
@@ -115,14 +116,14 @@
         <li>
           <a
             class="link"
-            href={localizeHref(`/projects/org/${data.product?.Project.Organization.Id}`)}
+            href={localizeHref(`/projects/org/${data.product.Project.Organization.Id}`)}
           >
-            {data.product?.Project.Organization.Name}
+            {data.product.Project.Organization.Name}
           </a>
         </li>
         <li>
-          <a class="link" href={localizeHref(`/projects/${data.product?.Project.Id}`)}>
-            {data.product?.Project.Name}
+          <a class="link" href={localizeHref(`/projects/${data.product.Project.Id}`)}>
+            {data.product.Project.Name}
           </a>
         </li>
         <li>
@@ -131,7 +132,11 @@
           </a>
         </li>
         <li>
-          {data.product?.ProductDefinition.Name}
+          <IconContainer
+            icon={getProductIcon(data.product.ProductDefinition.Workflow.ProductType)}
+            width={24}
+          />
+          {data.product.ProductDefinition.Name}
         </li>
       </ul>
     </div>
@@ -141,24 +146,24 @@
           <IconContainer icon="charm:menu-kebab" width="20" />
         {/snippet}
         {#snippet content()}
-          <ul class="menu menu-sm overflow-hidden rounded-md">
+          <ul class="menu overflow-hidden rounded-md">
             <li class="w-full rounded-none">
               <button class="text-nowrap" onclick={() => showProductDetails(data.product.Id)}>
+                <IconContainer icon="mdi:info" width={16} />
                 {m.products_details()}
               </button>
             </li>
             <li class="w-full rounded-none">
               <BlockIfJobsUnavailable class="text-nowrap">
                 {#snippet altContent()}
+                  <IconContainer icon="mdi:jump" width={16} />
                   {m.workflowInstances_jump({ state: $form.state })}
                 {/snippet}
                 <form method="POST" use:enhance>
                   <input type="hidden" name="state" bind:value={$form.state} />
-                  <input
-                    type="submit"
-                    class="text-nowrap"
-                    value={m.workflowInstances_jump({ state: $form.state })}
-                  />
+                  <button class="text-nowrap" type="submit">
+                    {@render altContent()}
+                  </button>
                 </form>
               </BlockIfJobsUnavailable>
             </li>

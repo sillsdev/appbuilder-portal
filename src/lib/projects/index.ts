@@ -10,7 +10,11 @@ export function pruneProjects(
     include: {
       Products: {
         include: {
-          ProductDefinition: true;
+          ProductDefinition: {
+            include: {
+              Workflow: true;
+            };
+          };
           WorkflowInstance: true;
           ProductBuilds: true;
         };
@@ -59,6 +63,7 @@ export function pruneProjects(
           Id: Id,
           ProductDefinitionId: ProductDefinition.Id,
           ProductDefinitionName: ProductDefinition.Name,
+          Type: ProductDefinition.Workflow.ProductType,
           VersionBuilt,
           AppBuilderVersion: ProductBuilds.at(0)?.AppBuilderVersion ?? null,
           DateBuilt,

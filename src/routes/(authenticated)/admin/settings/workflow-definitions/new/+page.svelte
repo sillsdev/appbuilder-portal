@@ -5,11 +5,13 @@
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
+  import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
+  import { getProductIcon, getStoreIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { WorkflowType } from '$lib/prisma';
   import { enumNumVals, toast } from '$lib/utils';
-  import { byName } from '$lib/utils/sorting';
+  import { byName, byString } from '$lib/utils/sorting';
   import { ProductType, WorkflowOptions } from '$lib/workflowTypes';
 
   interface Props {
@@ -31,6 +33,8 @@
   });
 
   let propsOk = $state(true);
+
+  const mobileSizing = 'w-full md:max-w-xs';
 </script>
 
 <h3 class="pl-4">{m.flowDefs_add()}</h3>
@@ -47,21 +51,29 @@
     <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_storeType">
-    <select class="select validator" name="storeType" bind:value={$form.storeType} required>
-      {#each data.options.storeType.toSorted((a, b) => byName(a, b, getLocale())) as type}
-        <option value={type.Id}>{type.Name}</option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.storeType}
+      items={data.options.storeType
+        .toSorted((a, b) => byString(a.Description, b.Description, getLocale()))
+        .map((st) => ({ ...st, Name: st.Description ?? st.Name, icon: getStoreIcon(st.Id) }))}
+      class="validator {mobileSizing}"
+      attr={{ name: 'storeType', required: true }}
+    />
     <span class="validator-hint">{m.flowDefs_emptyStoreType()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_productType">
-    <select class="select validator" name="productType" bind:value={$form.productType} required>
-      {#each enumNumVals(ProductType) as type}
-        <option value={type}>
-          {m.flowDefs_productTypes({ type })}
-        </option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.productType}
+      items={enumNumVals(ProductType)
+        .map((type) => ({
+          Id: type,
+          Name: m.flowDefs_productTypes({ type }),
+          icon: getProductIcon(type)
+        }))
+        .toSorted((a, b) => byName(a, b, getLocale()))}
+      class="validator {mobileSizing}"
+      attr={{ name: 'productType', required: true }}
+    />
     <span class="validator-hint">{m.flowDefs_emptyProductType()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_type">

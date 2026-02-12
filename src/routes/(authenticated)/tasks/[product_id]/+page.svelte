@@ -9,6 +9,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import { getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import ReleaseInfo from '$lib/products/components/ReleaseInfo.svelte';
@@ -115,7 +116,12 @@
             {data.fields.projectName}
           </a>
         </li>
-        <li>{data.productDescription}</li>
+        <li>
+          <IconContainer
+            icon={getProductIcon(data.productType)}
+            width={24}
+          />{data.productDescription}
+        </li>
       </ul>
     </div>
   </div>

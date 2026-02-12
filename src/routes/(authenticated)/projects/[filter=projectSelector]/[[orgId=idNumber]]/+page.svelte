@@ -9,10 +9,11 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { getActionIcon, getProductIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
+  import { ProductActionType } from '$lib/products';
   import type { ProjectForAction, PrunedProject } from '$lib/projects';
   import { canArchive, canClaimProject, canReactivate } from '$lib/projects';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
@@ -23,6 +24,7 @@
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
+  import type { ProductType } from '$lib/workflowTypes';
 
   interface Props {
     data: PageData;
@@ -103,6 +105,7 @@
     Id: string;
     ProductDefinitionId: number;
     ProductDefinitionName: string | null;
+    Type: ProductType;
     CanRebuild: boolean;
     CanRepublish: boolean;
   };
@@ -188,8 +191,11 @@
     }}
   >
     <div class="flex flex-row place-content-between w-full pt-4 flex-wrap">
-      <div class="inline-block">
-        <ProjectFilterSelector filter={(page.params as RouteParams).filter} />
+      <div class="mx-4 {mobileSizing}">
+        <ProjectFilterSelector
+          filter={(page.params as RouteParams).filter}
+          class={{ dropdown: mobileSizing, label: mobileSizing }}
+        />
       </div>
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 gap-1 {mobileSizing}"
@@ -216,6 +222,7 @@
         {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
           <BlockIfJobsUnavailable class="btn btn-outline {mobileSizing}">
             {#snippet altContent()}
+              <IconContainer icon="material-symbols:archive" width={20} />
               {m.common_archive()}
             {/snippet}
             <label
@@ -236,6 +243,7 @@
         {#if data.allowReactivate && (canReactivateSelected || !selectedProjects.length)}
           <BlockIfJobsUnavailable class="btn btn-outline {mobileSizing}">
             {#snippet altContent()}
+              <IconContainer icon="mdi:archive-refresh" width={20} />
               {m.common_reactivate()}
             {/snippet}
             <label
@@ -256,6 +264,7 @@
         {#if data.allowActions && (canArchiveSelected || !selectedProjects.length)}
           <BlockIfJobsUnavailable class="btn btn-outline {mobileSizing}">
             {#snippet altContent()}
+              <IconContainer icon={getActionIcon(ProductActionType.Rebuild)} width={20} />
               {m.common_rebuild()}
             {/snippet}
             <button
@@ -302,10 +311,7 @@
                             bind:group={selectedProducts}
                             value={product}
                           />
-                          <IconContainer
-                            icon={getIcon(product.ProductDefinitionName ?? '')}
-                            width="24"
-                          />
+                          <IconContainer icon={getProductIcon(product.Type)} width="24" />
                           {product.ProductDefinitionName}
                           <div class="basis-full h-0"></div>
                           {#if product.CanRebuild}
@@ -347,6 +353,7 @@
                   selectedProducts.length && selectedProducts.every((p) => p.CanRebuild)
                 )}
               >
+                <IconContainer icon={getActionIcon(ProductActionType.Rebuild)} width={20} />
                 {@render altContent()}
                 <input
                   type="radio"
@@ -369,6 +376,7 @@
                   selectedProducts.length && selectedProducts.every((p) => p.CanRepublish)
                 )}
               >
+                <IconContainer icon={getActionIcon(ProductActionType.Republish)} width={20} />
                 {@render altContent()}
                 <input
                   type="radio"
@@ -396,6 +404,7 @@
             class="btn btn-outline {mobileSizing}"
             href={localizeHref(`/projects/import/${$orgActive ?? ''}`)}
           >
+            <IconContainer icon="tdesign:import" width={20} />
             {@render altContent()}
           </a>
         </BlockIfJobsUnavailable>
@@ -407,6 +416,7 @@
             class="btn btn-outline {mobileSizing}"
             href={localizeHref(`/projects/new/${$orgActive ?? ''}`)}
           >
+            <IconContainer icon="material-symbols:add-card-outline" width={20} />
             {@render altContent()}
           </a>
         </BlockIfJobsUnavailable>

@@ -75,6 +75,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               },
               Store: {
                 select: {
+                  StoreTypeId: true,
                   Description: true
                 }
               },
@@ -220,6 +221,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           Description: true,
           Workflow: {
             select: {
+              ProductType: true,
               StoreTypeId: true
             }
           }
@@ -333,7 +335,12 @@ export async function getUserTasks(userId: number) {
         select: {
           ProductDefinition: {
             select: {
-              Name: true
+              Name: true,
+              Workflow: {
+                select: {
+                  ProductType: true
+                }
+              }
             }
           },
           ProjectId: true,

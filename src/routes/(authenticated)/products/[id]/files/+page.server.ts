@@ -62,7 +62,7 @@ export const load = (async ({ params, locals }) => {
     },
     take: 3
   });
-  const product = await DatabaseReads.products.findUnique({
+  const product = await DatabaseReads.products.findUniqueOrThrow({
     where: {
       Id: params.id
     },
@@ -70,7 +70,12 @@ export const load = (async ({ params, locals }) => {
       BuildEngineBuildId: true,
       ProductDefinition: {
         select: {
-          Name: true
+          Name: true,
+          Workflow: {
+            select: {
+              ProductType: true
+            }
+          }
         }
       },
       Project: {

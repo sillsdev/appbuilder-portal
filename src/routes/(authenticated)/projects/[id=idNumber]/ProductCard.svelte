@@ -9,10 +9,10 @@
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { getActionIcon, getProductIcon, getStoreIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
-  import { type ProductActionType, getActionIcon } from '$lib/products';
+  import { type ProductActionType } from '$lib/products';
   import ProductDetails, {
     type Props as ProductDetailProps,
     type Transition,
@@ -115,7 +115,10 @@
 <div class="rounded-md border border-slate-400 w-full my-2">
   <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
     <div class="flex flex-row items-start">
-      <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
+      <IconContainer
+        icon={getProductIcon(product.ProductDefinition.Workflow.ProductType)}
+        width="32"
+      />
       <span class="min-w-0 grow">
         {product.ProductDefinition.Name}
       </span>
@@ -179,7 +182,7 @@
       </div>
       {#if product.PublishLink}
         <a class="link" href={product.PublishLink} target="_blank">
-          <IconContainer icon="ic:twotone-store" width={24} />
+          <IconContainer icon={getStoreIcon(product.Store?.StoreTypeId ?? 0)} width={24} />
         </a>
       {/if}
     </div>

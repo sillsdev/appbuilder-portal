@@ -9,10 +9,11 @@
   import Toggle from '$lib/components/settings/Toggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import AppTypeSelector from '$lib/projects/components/AppTypeSelector.svelte';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
-  import { byName, byString } from '$lib/utils/sorting';
+  import { byName } from '$lib/utils/sorting';
   import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
 
   interface Props {
@@ -85,11 +86,12 @@
           </LanguageCodeTypeahead>
         </LabeledFormInput>
         <LabeledFormInput key="common_type" class="md:max-w-xs">
-          <select name="type" class="select" bind:value={$form.type}>
-            {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
-              <option value={type.Id}>{type.Description}</option>
-            {/each}
-          </select>
+          <AppTypeSelector
+            types={data.types}
+            bind:value={$form.type}
+            class={{ dropdown: 'validator' }}
+            attr={{ name: 'type' }}
+          />
           <span class="validator-hint">&nbsp;</span>
         </LabeledFormInput>
       </div>
@@ -102,16 +104,17 @@
           ></textarea>
           <span class="validator-hint">&nbsp;</span>
         </LabeledFormInput>
-        <Toggle
-          title={{ key: 'project_public' }}
-          message={{ key: 'project_visibilityDescription' }}
-          class="py-2 md:max-w-xs"
-          name="IsPublic"
-          inputAttr={{ onchange: () => {} }}
-          bind:checked={$form.IsPublic}
-          onIcon="mdi:lock-open-variant"
-          offIcon="mdi:lock"
-        />
+        <div class="md:max-w-xs">
+          <Toggle
+            title={{ key: 'project_public' }}
+            message={{ key: 'project_visibilityDescription' }}
+            name="IsPublic"
+            inputAttr={{ onchange: () => {} }}
+            bind:checked={$form.IsPublic}
+            onIcon="mdi:lock-open-variant"
+            offIcon="mdi:lock"
+          />
+        </div>
       </div>
       <div class="flex flex-row flex-wrap place-content-center gap-4 p-4 w-full">
         <a

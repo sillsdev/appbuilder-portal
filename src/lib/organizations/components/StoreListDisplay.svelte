@@ -9,6 +9,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import { getStoreIcon } from '$lib/icons';
   import type { ValidI13nKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { StoreType, displayStoreGPTitle } from '$lib/prisma';
@@ -38,7 +39,6 @@
 <DataDisplayBox
   {editable}
   {onEdit}
-  title={getTitle(store)}
   fields={[
     { key: 'projectTable_owner', value: store.Owner?.Name ?? m.appName() },
     ...(showDescription
@@ -59,4 +59,11 @@
   ]}
 >
   {@render extra?.(store)}
+  {#snippet title()}
+    <h3>
+      <IconContainer icon={getStoreIcon(store.StoreTypeId)} width={20} class="mr-1" />{getTitle(
+        store
+      )}
+    </h3>
+  {/snippet}
 </DataDisplayBox>

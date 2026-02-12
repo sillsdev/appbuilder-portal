@@ -16,7 +16,11 @@ export const load = (async (event) => {
     include: {
       Products: {
         include: {
-          ProductDefinition: true,
+          ProductDefinition: {
+            include: {
+              Workflow: true
+            }
+          },
           WorkflowInstance: true,
           ProductBuilds: {
             orderBy: { DateUpdated: 'desc' },
@@ -36,7 +40,9 @@ export const load = (async (event) => {
       { Id: 'asc' }
     ]
   });
-  const productDefinitions = await DatabaseReads.productDefinitions.findMany();
+  const productDefinitions = await DatabaseReads.productDefinitions.findMany({
+    include: { Workflow: { select: { ProductType: true } } }
+  });
   return {
     projects: pruneProjects(projects),
     productDefinitions,
@@ -79,7 +85,11 @@ export const actions: Actions = {
       include: {
         Products: {
           include: {
-            ProductDefinition: true,
+            ProductDefinition: {
+              include: {
+                Workflow: true
+              }
+            },
             WorkflowInstance: true,
             ProductBuilds: {
               orderBy: { DateUpdated: 'desc' },
