@@ -56,7 +56,11 @@ test.describe('Create a Test Project', () => {
       .getByRole('combobox', { name: 'Project Group' })
       .selectOption('Language Software Development');
     // project type should already be SAB
-    await page.getByRole('combobox', { name: 'Type' }).selectOption('Scripture App Builder');
+    const type = page.getByLabel('Type');
+    await type.click();
+    const sab = type.getByText('Scripture App Builder');
+    await expect(sab).toBeVisible();
+    await sab.click();
     // fill project name
     await page.getByLabel('Project Name').fill(projectName);
     // submit button should no longer be disabled
