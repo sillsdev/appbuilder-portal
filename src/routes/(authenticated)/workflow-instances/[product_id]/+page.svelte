@@ -116,14 +116,14 @@
         <li>
           <a
             class="link"
-            href={localizeHref(`/projects/org/${data.product?.Project.Organization.Id}`)}
+            href={localizeHref(`/projects/org/${data.product.Project.Organization.Id}`)}
           >
-            {data.product?.Project.Organization.Name}
+            {data.product.Project.Organization.Name}
           </a>
         </li>
         <li>
-          <a class="link" href={localizeHref(`/projects/${data.product?.Project.Id}`)}>
-            {data.product?.Project.Name}
+          <a class="link" href={localizeHref(`/projects/${data.product.Project.Id}`)}>
+            {data.product.Project.Name}
           </a>
         </li>
         <li>
