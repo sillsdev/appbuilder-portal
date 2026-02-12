@@ -10,10 +10,11 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { importJSONSchema } from '$lib/projects';
+  import AppTypeSelector from '$lib/projects/components/AppTypeSelector.svelte';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
-  import { byName, byString } from '$lib/utils/sorting';
+  import { byName } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -102,11 +103,12 @@
         </select>
       </LabeledFormInput>
       <LabeledFormInput key="common_type" class="max-w-xs">
-        <select name="type" class="select" bind:value={$form.type}>
-          {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
-            <option value={type.Id}>{type.Description}</option>
-          {/each}
-        </select>
+        <AppTypeSelector
+          types={data.types}
+          bind:value={$form.type}
+          class={{ dropdown: 'validator' }}
+          attr={{ name: 'type' }}
+        />
       </LabeledFormInput>
       <LabeledFormInput key="projectImport_file" class="max-w-xs">
         <input

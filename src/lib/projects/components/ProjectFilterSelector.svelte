@@ -1,22 +1,14 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
-  import type { ClassValue } from 'svelte/elements';
   import { page } from '$app/state';
-  import Dropdown from '$lib/components/Dropdown.svelte';
+  import Dropdown, { type DropdownClasses } from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Props {
     filter: string;
-    class?: {
-      /** class="dropdown dropdown-start ..." */
-      dropdown?: ClassValue;
-      /** class="btn btn-ghost no-animation hover:bg-transparent ..." */
-      label?: ClassValue;
-      /** class="dropdown-content z-10 drop-shadow-lg rounded-md bg-base-200 overflow-y-auto left-2 p-2 border m-2 ..." */
-      content?: ClassValue;
-    };
+    class?: DropdownClasses;
   }
 
   let { filter, class: classes }: Props = $props();
