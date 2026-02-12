@@ -42,8 +42,8 @@ async function getProductsForRebuild(
         RebuildOnSoftwareUpdate: true, // Project setting is true
         ...(selectedTypeIds && selectedTypeIds.length > 0 && { TypeId: { in: selectedTypeIds } })
       },
-      WorkflowInstance: null, // Only products without active workflows
-      DatePublished: { not: null } // Only products that have been published at least once
+      WorkflowInstance: null // Only products without active workflows
+      // DatePublished: { not: null } // Only products that have been published at least once
     },
     select: {
       Id: true,
@@ -216,29 +216,55 @@ export const actions = {
       form.data.applicationTypeIds
     );
 
-    // Record rebuilds in SoftwareUpdates table
-    await DatabaseWrites.softwareUpdates.recordRebuilds({
-      initiatorId: locals.security.userId,
-      comment: form.data.comment,
-      items: productsToRebuild.map((p) => ({
-        buildEngineUrl: p.buildEngineUrl,
-        applicationTypeId: p.applicationTypeId,
-        version: p.requiredVersion!,
-        productId: p.id,
-        organizationId: p.organizationId
-      }))
-    });
-
-    // Start rebuilds for each affected product
-    await Promise.allSettled(
+    // Attempt rebuilds for each affected product
+    const rebuildResults = await Promise.allSettled(
       productsToRebuild.map((p) => {
         return doProductAction(p.id, ProductActionType.Rebuild, form.data.comment);
       })
     );
 
+    // Separate successful and failed products
+    const successfulProducts: typeof productsToRebuild = [];
+    const failedProducts: Array<{ id: string; projectName: string; error: string }> = [];
+
+    rebuildResults.forEach((result, index) => {
+      const product = productsToRebuild[index];
+      if (result.status === 'fulfilled') {
+        successfulProducts.push(product);
+      } else {
+        failedProducts.push({
+          id: product.id,
+          projectName: product.projectName,
+          error: result.reason instanceof Error ? result.reason.message : String(result.reason)
+        });
+      }
+    });
+
+    // Record only successful rebuilds in SoftwareUpdates table
+    if (successfulProducts.length > 0) {
+      await DatabaseWrites.softwareUpdates.recordRebuilds({
+        initiatorId: locals.security.userId,
+        comment: form.data.comment,
+        items: successfulProducts.map((p) => ({
+          buildEngineUrl: p.buildEngineUrl,
+          applicationTypeId: p.applicationTypeId,
+          version: p.requiredVersion!,
+          productId: p.id,
+          organizationId: p.organizationId
+        }))
+      });
+    }
+
     return {
       form,
-      ok: true
+      ok: failedProducts.length === 0,
+      ...(failedProducts.length > 0 && {
+        failures: {
+          count: failedProducts.length,
+          products: failedProducts,
+          successCount: successfulProducts.length
+        }
+      })
     };
   }
 } satisfies Actions;

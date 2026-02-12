@@ -29,8 +29,8 @@ export async function recordRebuilds(params: {
   initiatorId: number;
   comment: string;
   items: RebuildRequest[];
-}) {
-  if (!params.items.length) return [] as { Id: number }[];
+}): Promise<{ Id: number }[]> {
+  if (!params.items.length) return [];
 
   // Group items by key (organization + engine + appType + version)
   const groups = new Map<
@@ -60,7 +60,7 @@ export async function recordRebuilds(params: {
       });
   }
 
-  if (!groups.size) return [] as { Id: number }[];
+  if (!groups.size) return [];
 
   // Create SoftwareUpdates entries for each group
   const created = await prisma.$transaction(

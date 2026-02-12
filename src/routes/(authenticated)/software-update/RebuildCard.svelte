@@ -2,6 +2,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import type { RebuildItem } from '$lib/software-updates/sse';
   import { byString } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
@@ -74,7 +75,7 @@
         <span class="overflow-hidden text-nowrap">
           {m.admin_nav_software_update_comment()}:
         </span>
-        <span class="text-nowrap w-40 text-left ml-2">
+        <span class="w-40 text-left ml-2">
           {rebuild.Comment ?? ''}
         </span>
       </span>
@@ -89,7 +90,7 @@
       <div class="flex flex-wrap gap-2">
         {#each rebuild.Projects.toSorted((a, b) => byString(a.Name, b.Name, locale)) as project}
           <a
-            href={`/projects/${project.Id}`}
+            href={localizeHref(`/projects/${project.Id}`)}
             class="badge badge-primary badge-lg hover:badge-accent transition-colors"
           >
             {project.Name ?? ''}
