@@ -58,7 +58,7 @@ test.describe('Create a Test Project', () => {
     // project type should already be SAB
     const type = page.getByLabel('Type');
     await type.click();
-    const sab = type.getByText('Scripture App Builder');
+    const sab = page.getByText('Scripture App Builder');
     await expect(sab).toBeVisible();
     await sab.click();
     // fill project name
