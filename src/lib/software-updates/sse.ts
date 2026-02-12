@@ -48,8 +48,7 @@ export async function getRebuildsForOrgIds(orgIds: number[]) {
           Paused: true,
           InitiatedBy: {
             select: {
-              Name: true,
-              Email: true
+              Name: true
             }
           },
           ApplicationType: {

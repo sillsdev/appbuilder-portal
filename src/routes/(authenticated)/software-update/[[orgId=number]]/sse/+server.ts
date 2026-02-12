@@ -39,22 +39,30 @@ export async function POST(request) {
     }
 
     async function updateCb(updateIds: number[]) {
-      // This is a little wasteful because it will calculate much of the same data
-      // multiple times if multiple users are connected to the same software update page.
-      // We refetch the project list each time to handle dynamic organization changes.
-      const currentProjects = await DatabaseReads.projects.findMany({
-        where: { OrganizationId: { in: orgIds } },
-        select: { Id: true }
-      });
-      const relevantProjectIds = currentProjects.map((p) => p.Id);
+      try {
+        // This is a little wasteful because it will calculate much of the same data
+        // multiple times if multiple users are connected to the same software update page.
+        // We refetch the project list each time to handle dynamic organization changes.
+        const currentProjects = await DatabaseReads.projects.findMany({
+          where: { OrganizationId: { in: orgIds } },
+          select: { Id: true }
+        });
+        const relevantProjectIds = currentProjects.map((p) => p.Id);
 
-      if (updateIds.some((updateId) => relevantProjectIds.includes(updateId))) {
-        const rebuildsData = await getRebuildsForOrgIds(orgIds);
-        const { error } = emit('rebuilds', stringify(rebuildsData.rebuilds));
-        if (error) {
-          SSEPageUpdates.off('softwareUpdates', updateCb);
-          clearInterval(pingInterval);
+        if (updateIds.some((updateId) => relevantProjectIds.includes(updateId))) {
+          const rebuildsData = await getRebuildsForOrgIds(orgIds);
+          const { error } = emit('rebuilds', stringify(rebuildsData.rebuilds));
+          if (error) {
+            SSEPageUpdates.off('softwareUpdates', updateCb);
+            clearInterval(pingInterval);
+          }
         }
+      } catch (err) {
+        console.error('Error in software-update SSE updateCb:', err);
+        SSEPageUpdates.off('softwareUpdates', updateCb);
+        clearInterval(pingInterval);
+        emit('error', stringify({ message: 'Failed to fetch software updates' }));
+        return;
       }
     }
 
