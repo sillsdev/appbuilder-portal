@@ -49,7 +49,8 @@ export enum JobType {
   Email_ProjectImportReport = 'Project Import Report',
   // Svelte Project SSE
   SvelteSSE_UpdateProject = 'Update Project',
-  SvelteSSE_UpdateUserTasks = 'Update UserTasks'
+  SvelteSSE_UpdateUserTasks = 'Update UserTasks',
+  SvelteSSE_UpdateSoftwareUpdates = 'Update Software Updates'
 }
 
 export enum JobSchedulerId {

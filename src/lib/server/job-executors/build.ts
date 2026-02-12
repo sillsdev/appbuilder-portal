@@ -335,6 +335,14 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
     }
   }
   job.updateProgress(100);
+  // Check if this successful build completes any open SoftwareUpdates
+  if (job.data.build.result === 'SUCCESS') {
+    try {
+      await DatabaseWrites.softwareUpdates.completeForProduct(job.data.productId);
+    } catch (e) {
+      console.error('SoftwareUpdates completion check failed:', e);
+    }
+  }
   return {
     created: artifacts.length,
     artifacts: artifacts.map((a) => ({ ...a, FileSize: a.FileSize?.toString() }))
