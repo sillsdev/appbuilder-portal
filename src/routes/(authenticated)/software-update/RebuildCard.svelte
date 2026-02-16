@@ -1,8 +1,8 @@
 <script lang="ts">
   import IconContainer from '$lib/components/IconContainer.svelte';
-  import TaskComment from '$lib/products/components/TaskComment.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import TaskComment from '$lib/products/components/TaskComment.svelte';
   import type { RebuildItem } from '$lib/software-updates/sse';
   import { byString } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
@@ -28,9 +28,13 @@
           <IconContainer icon="mdi:user" width={20} class="mr-1 shrink-0" />
           {rebuild.InitiatedBy.Name ?? ''}
         </span>
-        <span class="flex items-center mb-1" title={m.admin_software_update_application_type_title()}>
+        <span
+          class="flex items-center mb-1"
+          title={m.admin_software_update_application_type_title()}
+        >
           <IconContainer icon="mdi:tag" width={20} class="mr-1 shrink-0" />
-          {rebuild.ApplicationType.Description ?? ''} {rebuild.Version ?? ''}
+          {rebuild.ApplicationType.Description ?? ''}
+          {rebuild.Version ?? ''}
         </span>
         <span class="flex items-center mb-1">
           <IconContainer icon="mdi:package-variant" width={20} class="mr-1 shrink-0" />
