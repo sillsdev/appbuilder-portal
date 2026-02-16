@@ -439,7 +439,7 @@ model WorkflowDefinitions {
 }
 
 model ProductUserChanges {
-  Id               Int       @id(map: "PK_ProductUserChanges") @default(autoincrement())
+  Id               String    @id(map: "PK_ProductUserChanges") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   ProductId        String    @db.Uuid
   Email            String?
   Change           String?
@@ -449,7 +449,7 @@ model ProductUserChanges {
   ConfirmationCode String
   DateExpires      DateTime  @db.Timestamp(6)
   DateConfirmed    DateTime? @db.Timestamp(6)
-  Product          Products? @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductUserChanges_Products_ProductId")
+  Product          Products  @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductUserChanges_Products_ProductId")
 
   @@index([ProductId], map: "IX_ProductUserChanges_ProductId")
 }
