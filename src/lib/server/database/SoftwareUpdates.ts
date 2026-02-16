@@ -33,16 +33,7 @@ export async function recordRebuilds(params: {
   if (!params.items.length) return [];
 
   // Group items by key (organization + engine + appType + version)
-  const groups = new Map<
-    string,
-    {
-      organizationId: number;
-      buildEngineUrl: string;
-      applicationTypeId: number;
-      version: string;
-      productIds: string[];
-    }
-  >();
+  const groups = new Map<string, Omit<RebuildRequest, 'productId'> & { productIds: string[] }>();
 
   // Populate groups
   for (const it of params.items) {
