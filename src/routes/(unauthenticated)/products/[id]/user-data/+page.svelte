@@ -232,7 +232,7 @@
     <div class="px-5">
       <a
         class="btn btn-ghost btn-sm border border-base-300 mb-4 w-full justify-center"
-        href="./file/about"
+        href="./user-data/about"
       >
         {m.udm_about_button()}
       </a>
