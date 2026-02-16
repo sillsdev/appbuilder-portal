@@ -38,6 +38,10 @@ type AppInfo = {
   longDesc: string;
 };
 
+type ArtifactRef = {
+  Url: string | null;
+};
+
 /**
  * Paraglide's `getLocale()` depends on server-side async local storage.
  * During some edge cases (misconfigured middleware/tests), it can throw.
@@ -125,6 +129,32 @@ function resolveIconUrl(icon: string | null | undefined, baseUrl: URL, artifactU
   }
 }
 
+/**
+ * Fallback for UDM pages: if a product has not been successfully published yet,
+ * use the latest build artifact so app metadata can still be displayed.
+ */
+async function getLatestBuiltFile(productId: string, artifactType: string): Promise<ArtifactRef | null> {
+  const builds = await DatabaseReads.productBuilds.findMany({
+    where: { ProductId: productId },
+    include: {
+      ProductArtifacts: {
+        select: {
+          ArtifactType: true,
+          Url: true
+        }
+      }
+    },
+    orderBy: { Id: 'desc' }
+  });
+
+  for (const build of builds) {
+    const artifact = build.ProductArtifacts.find((a) => a.ArtifactType === artifactType);
+    if (artifact?.Url) return artifact;
+  }
+
+  return null;
+}
+
 export const load: LayoutServerLoad = async ({ params, locals }) => {
   // This is a public route by design.
   locals.security.requireNothing();
@@ -159,8 +189,10 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
     longDesc: ''
   };
 
-  // The manifest is published as a build artifact, not stored in our DB.
-  const manifestArtifact = await getPublishedFile(product.Id, 'play-listing-manifest');
+  // Prefer published manifest; fall back to latest built manifest if not published yet.
+  const manifestArtifact =
+    (await getPublishedFile(product.Id, 'play-listing-manifest')) ??
+    (await getLatestBuiltFile(product.Id, 'play-listing-manifest'));
   if (!manifestArtifact?.Url) return { app };
 
   // Parse the JSON manifest (best-effort; don't fail page rendering).
