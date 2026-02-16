@@ -20,7 +20,12 @@
   function hexToDaisyHSL(hex: string) {
     const clean = hex.replace('#', '').trim();
     const normalized =
-      clean.length === 3 ? clean.split('').map((ch) => ch + ch).join('') : clean;
+      clean.length === 3
+        ? clean
+            .split('')
+            .map((ch) => ch + ch)
+            .join('')
+        : clean;
     const int = Number.parseInt(normalized, 16);
     if (Number.isNaN(int)) return '0 0% 0%';
 
@@ -54,66 +59,53 @@
     return `${(h * 360).toFixed(1)} ${(s * 100).toFixed(1)}% ${(l * 100).toFixed(1)}%`;
   }
 
-	  function hexToRgb(hex: string) {
-	    const clean = hex.replace('#', '');
-	    const int = Number.parseInt(clean.length === 3 ? clean.replace(/./g, '$&$&') : clean, 16);
-	    return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
-	  }
+  function hexToRgb(hex: string) {
+    const clean = hex.replace('#', '');
+    const int = Number.parseInt(clean.length === 3 ? clean.replace(/./g, '$&$&') : clean, 16);
+    return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
+  }
 
-	  function srgbChannelToLinear(channel: number) {
-	    const c = channel / 255;
-	    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-	  }
+  function srgbChannelToLinear(channel: number) {
+    const c = channel / 255;
+    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  }
 
-	  function getRelativeLuminance(hex: string) {
-	    const { r, g, b } = hexToRgb(hex);
-	    const R = srgbChannelToLinear(r);
-	    const G = srgbChannelToLinear(g);
-	    const B = srgbChannelToLinear(b);
-	    return 0.2126 * R + 0.7152 * G + 0.0722 * B;
-	  }
+  function getRelativeLuminance(hex: string) {
+    const { r, g, b } = hexToRgb(hex);
+    const R = srgbChannelToLinear(r);
+    const G = srgbChannelToLinear(g);
+    const B = srgbChannelToLinear(b);
+    return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+  }
 
-	  function contrastRatio(a: string, b: string) {
-	    const L1 = getRelativeLuminance(a);
-	    const L2 = getRelativeLuminance(b);
-	    const lighter = Math.max(L1, L2);
-	    const darker = Math.min(L1, L2);
-	    return (lighter + 0.05) / (darker + 0.05);
-	  }
+  function contrastRatio(a: string, b: string) {
+    const L1 = getRelativeLuminance(a);
+    const L2 = getRelativeLuminance(b);
+    const lighter = Math.max(L1, L2);
+    const darker = Math.min(L1, L2);
+    return (lighter + 0.05) / (darker + 0.05);
+  }
 
-	  function getReadableTextHex(hex: string) {
-	    const light = '#ffffff';
-	    const dark = '#0f172a';
-	    return contrastRatio(hex, dark) >= contrastRatio(hex, light) ? dark : light;
-	  }
+  function getReadableTextHex(hex: string) {
+    const light = '#ffffff';
+    const dark = '#0f172a';
+    return contrastRatio(hex, dark) >= contrastRatio(hex, light) ? dark : light;
+  }
 
-	  function lightenColor(hex: string, amount = 0.9) {
-	    const { r, g, b } = hexToRgb(hex);
-	    const mix = (channel: number) => Math.round(channel + (255 - channel) * amount);
-	    return rgbToHex(mix(r), mix(g), mix(b));
-	  }
+  function lightenColor(hex: string, amount = 0.9) {
+    const { r, g, b } = hexToRgb(hex);
+    const mix = (channel: number) => Math.round(channel + (255 - channel) * amount);
+    return rgbToHex(mix(r), mix(g), mix(b));
+  }
 
-	  function darkenColor(hex: string, amount = 0.25) {
-	    const { r, g, b } = hexToRgb(hex);
-	    const mult = 1 - amount;
-	    return rgbToHex(Math.round(r * mult), Math.round(g * mult), Math.round(b * mult));
-	  }
+  function rgbToHex(r: number, g: number, b: number) {
+    return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+  }
 
-	  function rgbToHex(r: number, g: number, b: number) {
-	    return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
-	  }
-
-	  function getButtonBgHex(primary: string) {
-	    const lum = getRelativeLuminance(primary);
-	    if (lum > 0.8) return darkenColor(primary, 0.5);
-	    if (lum > 0.65) return darkenColor(primary, 0.28);
-	    return primary;
-	  }
-
-	  function deriveColorFromIcon(iconSrc: string): Promise<string> {
-	    return new Promise((resolve) => {
-	      const img = new Image();
-	      img.crossOrigin = 'anonymous';
+  function deriveColorFromIcon(iconSrc: string): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
       img.onload = () => {
         const width = img.naturalWidth || img.width;
         const height = img.naturalHeight || img.height;
@@ -153,13 +145,11 @@
     });
   }
 
-	  const primaryHex = $derived(themeColor);
-	  const primaryContentHex = $derived(getReadableTextHex(primaryHex));
-	  const primaryHSL = $derived(hexToDaisyHSL(primaryHex));
-	  const primaryContentHSL = $derived(hexToDaisyHSL(primaryContentHex));
-	  const lightBgHex = $derived(lightenColor(primaryHex, 0.92));
-	  const buttonBgHex = $derived(getButtonBgHex(primaryHex));
-	  const buttonTextHex = $derived(getReadableTextHex(buttonBgHex));
+  const primaryHex = $derived(themeColor);
+  const primaryContentHex = $derived(getReadableTextHex(primaryHex));
+  const primaryHSL = $derived(hexToDaisyHSL(primaryHex));
+  const primaryContentHSL = $derived(hexToDaisyHSL(primaryContentHex));
+  const lightBgHex = $derived(lightenColor(primaryHex, 0.92));
 
   $effect(() => {
     if (typeof document !== 'undefined') {
@@ -196,42 +186,42 @@
   </style>
 </svelte:head>
 
-		<div
-		  class="min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
-		  style="
-		    --color-primary: {primaryHex};
-	    --color-primary-content: {primaryContentHex};
-	    --color-base-100: #ffffff;
-    --color-base-200: #f5f7fa;
-    --color-base-300: #e5e7eb;
-    --color-base-content: #1f2937;
-    --p: {primaryHSL};
-    --pf: {primaryHSL};
-    --pc: {primaryContentHSL};
-    --b1: 0 0% 100%;
-    --b2: 210 20% 98%;
-    --bc: 220 13% 18%;
-    word-break: break-word;
-    overflow-wrap: anywhere;"
-	>
-		  <div class="w-full bg-white min-h-screen sm:max-w-xl sm:mx-auto">
-		    <div class="px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-4 bg-[#eef3f3]">
-		      <div class="relative">
-		        <div class="min-w-0 border-l-4 border-black pl-3 pr-16">
-		          <h1 class="text-2xl font-bold tracking-tight leading-none">{m.udm_manage_title()}</h1>
-		          <p class="text-xs opacity-60 leading-tight pl-8 mt-0">{m.udm_manage_subtitle()}</p>
-		        </div>
-		        <div class="absolute top-0 right-0 rounded-xl bg-slate-900/70 p-1">
-		          <LocaleSelector />
-		        </div>
-		      </div>
-		    </div>
+<div
+  class="min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
+  style="
+      --color-primary: {primaryHex};
+      --color-primary-content: {primaryContentHex};
+      --color-base-100: #ffffff;
+      --color-base-200: #f5f7fa;
+      --color-base-300: #e5e7eb;
+      --color-base-content: #1f2937;
+      --p: {primaryHSL};
+      --pf: {primaryHSL};
+      --pc: {primaryContentHSL};
+      --b1: 0 0% 100%;
+      --b2: 210 20% 98%;
+      --bc: 220 13% 18%;
+      word-break: break-word;
+      overflow-wrap: anywhere;"
+>
+  <div class="w-full bg-white min-h-screen sm:max-w-xl sm:mx-auto">
+    <div class="px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-4 bg-[#eef3f3]">
+      <div class="relative">
+        <div class="min-w-0 border-l-4 border-black pl-3 pr-16">
+          <h1 class="text-2xl font-bold tracking-tight leading-none">{m.udm_manage_title()}</h1>
+          <p class="text-xs opacity-60 leading-tight pl-8 mt-0">{m.udm_manage_subtitle()}</p>
+        </div>
+        <div class="absolute top-0 right-0 rounded-xl bg-slate-900/70 p-1">
+          <LocaleSelector />
+        </div>
+      </div>
+    </div>
 
-	    <div class="px-5 pb-4 mt-2 flex items-start gap-4">
-	      <img
-	        src={iconSrc}
-	        alt="App icon"
-	        class="w-14 h-14 rounded-2xl shadow-sm bg-primary/5 p-0.5"
+    <div class="px-5 pb-4 mt-2 flex items-start gap-4">
+      <img
+        src={iconSrc}
+        alt="App icon"
+        class="w-14 h-14 rounded-2xl shadow-sm bg-primary/5 p-0.5"
       />
       <div class="grid justify-items-start text-left gap-0">
         <h2 class="text-lg font-bold tracking-tight leading-none">{app.name}</h2>
@@ -286,39 +276,39 @@
               <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
                 {m.udm_scope_label()}
               </span>
-	            </p>
-	            <div class="flex flex-col gap-3 mt-1">
-	              <label class="label cursor-pointer items-start justify-start gap-3 p-0 group min-w-0">
-	                <input
-	                  type="radio"
-	                  name="deletionType"
-	                  class="radio radio-primary radio-sm mt-1"
-	                  checked
-	                />
-	                <div class="min-w-0">
-	                  <span
-	                    class="label-text font-bold text-sm group-hover:text-primary transition-colors whitespace-normal break-words"
-	                  >
-	                    {m.udm_scope_data_title()}
-	                  </span>
-	                  <p class="text-xs opacity-60 leading-tight mt-0.5 whitespace-normal break-words">
-	                    {m.udm_scope_data_desc()}
-	                  </p>
-	                </div>
-	              </label>
-	              <label class="label cursor-pointer items-start justify-start gap-3 p-0 group min-w-0">
-	                <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" />
-	                <div class="min-w-0">
-	                  <span
-	                    class="label-text font-bold text-sm group-hover:text-primary transition-colors whitespace-normal break-words"
-	                  >
-	                    {m.udm_scope_account_title()}
-	                  </span>
-	                  <p class="text-xs opacity-60 leading-tight mt-0.5 whitespace-normal break-words">
-	                    {m.udm_scope_account_desc()}
-	                  </p>
-	                </div>
-	              </label>
+            </p>
+            <div class="flex flex-col gap-3 mt-1">
+              <label class="label cursor-pointer items-start justify-start gap-3 p-0 group min-w-0">
+                <input
+                  type="radio"
+                  name="deletionType"
+                  class="radio radio-primary radio-sm mt-1"
+                  checked
+                />
+                <div class="min-w-0">
+                  <span
+                    class="label-text font-bold text-sm group-hover:text-primary transition-colors whitespace-normal break-words"
+                  >
+                    {m.udm_scope_data_title()}
+                  </span>
+                  <p class="text-xs opacity-60 leading-tight mt-0.5 whitespace-normal break-words">
+                    {m.udm_scope_data_desc()}
+                  </p>
+                </div>
+              </label>
+              <label class="label cursor-pointer items-start justify-start gap-3 p-0 group min-w-0">
+                <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" />
+                <div class="min-w-0">
+                  <span
+                    class="label-text font-bold text-sm group-hover:text-primary transition-colors whitespace-normal break-words"
+                  >
+                    {m.udm_scope_account_title()}
+                  </span>
+                  <p class="text-xs opacity-60 leading-tight mt-0.5 whitespace-normal break-words">
+                    {m.udm_scope_account_desc()}
+                  </p>
+                </div>
+              </label>
               <p class="text-xs opacity-60 leading-tight mt-0.5">
                 {m.udm_scope_warning()}
               </p>
@@ -350,13 +340,13 @@
             </div>
           </div>
 
-	          <button
-	            class="btn w-full no-animation border border-black/10 shadow-sm"
-	            style="background-color: #0f172a; color: #ffffff;"
-	            type="button"
-	          >
-	            {m.udm_send_code()}
-	          </button>
+          <button
+            class="btn w-full no-animation border border-black/10 shadow-sm"
+            style="background-color: #0f172a; color: #ffffff;"
+            type="button"
+          >
+            {m.udm_send_code()}
+          </button>
         </div>
       </div>
 
