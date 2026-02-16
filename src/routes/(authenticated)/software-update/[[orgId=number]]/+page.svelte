@@ -70,9 +70,7 @@
   // Filter products based on selected application types
   const filteredProducts = $derived.by(() =>
     $form.applicationTypeIds.length
-      ? data.productsToRebuild.filter((p) =>
-          $form.applicationTypeIds.includes(p.applicationTypeId)
-        )
+      ? data.productsToRebuild.filter((p) => $form.applicationTypeIds.includes(p.applicationTypeId))
       : []
   );
 
@@ -85,9 +83,7 @@
 
   const filteredVersions = $derived.by(() => {
     const versions = new Set(
-      filteredProducts
-        .map((p) => p.requiredVersion)
-        .filter((v) => v !== null)
+      filteredProducts.map((p) => p.requiredVersion).filter((v) => v !== null)
     );
     return Array.from(versions).sort();
   });

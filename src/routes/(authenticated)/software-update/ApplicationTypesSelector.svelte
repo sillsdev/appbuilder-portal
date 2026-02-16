@@ -16,7 +16,7 @@
 
 <div class="flex w-full">
   <div class="shrink space-y-2">
-    {#each applicationTypes.toSorted((a, b) => byString(a.Description, b.Description, getLocale())) as appType}
+    {#each applicationTypes.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as appType}
       <div class="flex space-x-2">
         {@render selector?.(appType)}
         <div>
