@@ -68,36 +68,32 @@
   });
 
   // Filter products based on selected application types
-  const filteredProducts = $derived(() => {
-    if (!$form.applicationTypeIds || $form.applicationTypeIds.length === 0) return [];
-    return data.productsToRebuild.filter((p) =>
-      $form.applicationTypeIds.includes(p.applicationTypeId)
-    );
-  });
-
-  // Calculate reactive counts and lists
-  const filteredProductCount = $derived(() => filteredProducts().length);
-
-  const filteredProjectCount = $derived(
-    () => new Set(filteredProducts().map((p) => p.projectId)).size
+  const filteredProducts = $derived.by(() =>
+    $form.applicationTypeIds.length
+      ? data.productsToRebuild.filter((p) =>
+          $form.applicationTypeIds.includes(p.applicationTypeId)
+        )
+      : []
   );
 
-  const filteredProjectNames = $derived(() => {
-    const projectNames = new Set(filteredProducts().map((p) => p.projectName));
+  const filteredProductCount = $derived.by(() => filteredProducts.length);
+
+  const filteredProjectNames = $derived.by(() => {
+    const projectNames = new Set(filteredProducts.map((p) => p.projectName));
     return Array.from(projectNames).sort();
   });
 
-  const filteredVersions = $derived(() => {
+  const filteredVersions = $derived.by(() => {
     const versions = new Set(
-      filteredProducts()
+      filteredProducts
         .map((p) => p.requiredVersion)
         .filter((v) => v !== null)
     );
     return Array.from(versions).sort();
   });
 
-  const activeRebuilds = $derived(rebuilds.filter((r: RebuildItem) => !r.DateCompleted));
-  const completedRebuilds = $derived(rebuilds.filter((r: RebuildItem) => r.DateCompleted));
+  const activeRebuilds = $derived.by(() => rebuilds.filter((r: RebuildItem) => !r.DateCompleted));
+  const completedRebuilds = $derived.by(() => rebuilds.filter((r: RebuildItem) => r.DateCompleted));
 
   $effect(() => {
     if (
@@ -149,21 +145,21 @@
               },
               {
                 key: 'admin_software_update_projects_label',
-                value: filteredProjectCount()
+                value: new Set(filteredProducts.map((p) => p.projectId)).size
               },
               {
                 key: 'admin_software_update_products_label',
-                value: filteredProductCount()
+                value: filteredProductCount
               },
               {
                 key: 'admin_software_update_project_names_label',
-                value: filteredProjectNames().join(', '),
-                faint: filteredProjectNames().length === 0
+                value: filteredProjectNames.join(', '),
+                faint: filteredProjectNames.length === 0
               },
               {
                 key: 'admin_software_update_target_versions_label',
-                value: filteredVersions().join(', '),
-                faint: filteredVersions().length === 0
+                value: filteredVersions.join(', '),
+                faint: filteredVersions.length === 0
               }
             ]}
           />
@@ -185,7 +181,7 @@
         type="submit"
         class="btn btn-primary mt-6"
         value={m.admin_software_update_rebuild_start()}
-        disabled={$form.applicationTypeIds.length === 0 || filteredProductCount() === 0}
+        disabled={$form.applicationTypeIds.length === 0 || filteredProductCount === 0}
       />
     </form>
     <!-- Rebuilds List -->
