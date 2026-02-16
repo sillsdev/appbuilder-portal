@@ -54,32 +54,66 @@
     return `${(h * 360).toFixed(1)} ${(s * 100).toFixed(1)}% ${(l * 100).toFixed(1)}%`;
   }
 
-  function hexToRgb(hex: string) {
-    const clean = hex.replace('#', '');
-    const int = Number.parseInt(clean.length === 3 ? clean.replace(/./g, '$&$&') : clean, 16);
-    return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
-  }
+	  function hexToRgb(hex: string) {
+	    const clean = hex.replace('#', '');
+	    const int = Number.parseInt(clean.length === 3 ? clean.replace(/./g, '$&$&') : clean, 16);
+	    return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
+	  }
 
-  function getReadableTextHex(hex: string) {
-    const { r, g, b } = hexToRgb(hex);
-    const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-    return luminance > 0.55 ? '#0f172a' : '#ffffff';
-  }
+	  function srgbChannelToLinear(channel: number) {
+	    const c = channel / 255;
+	    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+	  }
 
-  function lightenColor(hex: string, amount = 0.9) {
-    const { r, g, b } = hexToRgb(hex);
-    const mix = (channel: number) => Math.round(channel + (255 - channel) * amount);
-    return rgbToHex(mix(r), mix(g), mix(b));
-  }
+	  function getRelativeLuminance(hex: string) {
+	    const { r, g, b } = hexToRgb(hex);
+	    const R = srgbChannelToLinear(r);
+	    const G = srgbChannelToLinear(g);
+	    const B = srgbChannelToLinear(b);
+	    return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+	  }
 
-  function rgbToHex(r: number, g: number, b: number) {
-    return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
-  }
+	  function contrastRatio(a: string, b: string) {
+	    const L1 = getRelativeLuminance(a);
+	    const L2 = getRelativeLuminance(b);
+	    const lighter = Math.max(L1, L2);
+	    const darker = Math.min(L1, L2);
+	    return (lighter + 0.05) / (darker + 0.05);
+	  }
 
-  function deriveColorFromIcon(iconSrc: string): Promise<string> {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
+	  function getReadableTextHex(hex: string) {
+	    const light = '#ffffff';
+	    const dark = '#0f172a';
+	    return contrastRatio(hex, dark) >= contrastRatio(hex, light) ? dark : light;
+	  }
+
+	  function lightenColor(hex: string, amount = 0.9) {
+	    const { r, g, b } = hexToRgb(hex);
+	    const mix = (channel: number) => Math.round(channel + (255 - channel) * amount);
+	    return rgbToHex(mix(r), mix(g), mix(b));
+	  }
+
+	  function darkenColor(hex: string, amount = 0.25) {
+	    const { r, g, b } = hexToRgb(hex);
+	    const mult = 1 - amount;
+	    return rgbToHex(Math.round(r * mult), Math.round(g * mult), Math.round(b * mult));
+	  }
+
+	  function rgbToHex(r: number, g: number, b: number) {
+	    return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+	  }
+
+	  function getButtonBgHex(primary: string) {
+	    const lum = getRelativeLuminance(primary);
+	    if (lum > 0.8) return darkenColor(primary, 0.5);
+	    if (lum > 0.65) return darkenColor(primary, 0.28);
+	    return primary;
+	  }
+
+	  function deriveColorFromIcon(iconSrc: string): Promise<string> {
+	    return new Promise((resolve) => {
+	      const img = new Image();
+	      img.crossOrigin = 'anonymous';
       img.onload = () => {
         const width = img.naturalWidth || img.width;
         const height = img.naturalHeight || img.height;
@@ -119,11 +153,13 @@
     });
   }
 
-  const primaryHex = $derived(themeColor);
-  const primaryContentHex = $derived(getReadableTextHex(primaryHex));
-  const primaryHSL = $derived(hexToDaisyHSL(primaryHex));
-  const primaryContentHSL = $derived(hexToDaisyHSL(primaryContentHex));
-  const lightBgHex = $derived(lightenColor(primaryHex, 0.92));
+	  const primaryHex = $derived(themeColor);
+	  const primaryContentHex = $derived(getReadableTextHex(primaryHex));
+	  const primaryHSL = $derived(hexToDaisyHSL(primaryHex));
+	  const primaryContentHSL = $derived(hexToDaisyHSL(primaryContentHex));
+	  const lightBgHex = $derived(lightenColor(primaryHex, 0.92));
+	  const buttonBgHex = $derived(getButtonBgHex(primaryHex));
+	  const buttonTextHex = $derived(getReadableTextHex(buttonBgHex));
 
   $effect(() => {
     if (typeof document !== 'undefined') {
@@ -314,9 +350,13 @@
             </div>
           </div>
 
-          <button class="btn btn-primary w-full text-white no-animation" type="button">
-            {m.udm_send_code()}
-          </button>
+	          <button
+	            class="btn w-full no-animation border border-black/10 shadow-sm"
+	            style="background-color: #0f172a; color: #ffffff;"
+	            type="button"
+	          >
+	            {m.udm_send_code()}
+	          </button>
         </div>
       </div>
 
