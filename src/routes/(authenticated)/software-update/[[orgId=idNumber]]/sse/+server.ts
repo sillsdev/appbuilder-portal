@@ -24,10 +24,8 @@ export async function POST(request) {
     return new Response('No organization IDs provided', { status: 400 });
   }
 
-  // Check user permissions for each organization
-  for (const orgId of orgIds) {
-    request.locals.security.requireMemberOfOrgOrSuperAdmin(orgId);
-  }
+  // Check user permissions for organizations
+  request.locals.security.requireAdminOfOrgIn(orgIds);
 
   // Return SSE stream
   return produce(async function start({ emit }) {
@@ -40,16 +38,15 @@ export async function POST(request) {
 
     async function updateCb(updateIds: number[]) {
       try {
-        // This is a little wasteful because it will calculate much of the same data
-        // multiple times if multiple users are connected to the same software update page.
-        // We refetch the project list each time to handle dynamic organization changes.
-        const currentProjects = await DatabaseReads.projects.findMany({
-          where: { OrganizationId: { in: orgIds } },
-          select: { Id: true }
+        // Find which organizations contain the updated projects
+        const affectedProjects = await DatabaseReads.projects.findMany({
+          where: { Id: { in: updateIds } },
+          select: { OrganizationId: true }
         });
-        const relevantProjectIds = currentProjects.map((p) => p.Id);
+        const affectedOrgIds = Array.from(new Set(affectedProjects.map((p) => p.OrganizationId)));
 
-        if (updateIds.some((updateId) => relevantProjectIds.includes(updateId))) {
+        // Check if any affected organizations overlap with subscribed organizations
+        if (affectedOrgIds.some((id) => orgIds.includes(id))) {
           const rebuildsData = await getRebuildsForOrgIds(orgIds);
           const { error } = emit('rebuilds', stringify(rebuildsData.rebuilds));
           if (error) {

@@ -340,7 +340,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
     try {
       await DatabaseWrites.softwareUpdates.completeForProduct(job.data.productId);
     } catch (e) {
-      console.error('SoftwareUpdates completion check failed:', e);
+      job.log(`SoftwareUpdates completion check failed: ${e}`);
     }
   }
   return {
