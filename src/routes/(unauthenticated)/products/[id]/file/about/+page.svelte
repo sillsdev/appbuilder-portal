@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
+  import { m } from '$lib/paraglide/messages';
 
   interface Props {
     data: PageData;
@@ -15,7 +16,7 @@
 </script>
 
 <div class="min-h-screen bg-base-200 text-base-content">
-  <div class="max-w-3xl mx-auto bg-white min-h-screen px-6 py-8 space-y-6">
+  <div class="w-full bg-white min-h-screen px-6 py-8 space-y-6 sm:max-w-3xl sm:mx-auto">
     <div class="px-5 pb-4 flex items-start gap-4">
       <img
         src={iconSrc}
@@ -30,14 +31,14 @@
     </div>
     <div class="card bg-base-100 shadow-sm border border-base-300 rounded-lg">
       <div class="card-body space-y-3">
-        <h2 class="card-title text-lg font-bold">About this app</h2>
+        <h2 class="card-title text-lg font-bold">{m.udm_about_title()}</h2>
         <p class="text-sm opacity-70 leading-relaxed">{app.shortDesc}</p>
 
         <details class="group">
           <summary
             class="list-none text-sm font-bold text-primary cursor-pointer hover:underline flex items-center gap-2 select-none"
           >
-            Show more
+            {m.udm_show_more()}
           </summary>
           <div class="pt-3 text-sm opacity-70 whitespace-pre-line leading-relaxed">
             {app.longDesc}
@@ -46,6 +47,6 @@
       </div>
     </div>
 
-    <a class="btn btn-primary w-full" href="./">Back to Manage my data</a>
+    <a class="btn btn-primary w-full" href="./">{m.udm_back_manage()}</a>
   </div>
 </div>
