@@ -6,7 +6,8 @@ import { type L10NEntries, type L10NKeys } from '$lib/locales.svelte';
 import { type Locale, locales } from '$lib/paraglide/runtime';
 import type { Entries } from '$lib/utils';
 
-export const load: LayoutServerLoad = async () => {
+export const load: LayoutServerLoad = async (event) => {
+  event.locals.security.requireNothing();
   const localDir = join(process.cwd(), 'languages');
 
   return {
@@ -24,4 +25,3 @@ export const load: LayoutServerLoad = async () => {
     )) as L10NEntries
   };
 };
-
