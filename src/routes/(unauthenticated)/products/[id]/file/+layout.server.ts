@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
-import { getLocale, baseLocale } from '$lib/paraglide/runtime';
+import { baseLocale, getLocale } from '$lib/paraglide/runtime';
 import { getPublishedFile } from '$lib/products/server';
 import { DatabaseReads } from '$lib/server/database';
 
@@ -89,7 +89,9 @@ function resolveManifestLanguage(
 function findFilePath(files: string[], language: string, filename: string) {
   // Most manifests store entries like: "<lang>/<file>.txt"
   const exact = new RegExp(`(^|/)${escapeRegExp(language)}/${escapeRegExp(filename)}$`);
-  return files.find((p) => exact.test(p)) ?? files.find((p) => p.includes(`${language}/${filename}`));
+  return (
+    files.find((p) => exact.test(p)) ?? files.find((p) => p.includes(`${language}/${filename}`))
+  );
 }
 
 /**
@@ -133,7 +135,10 @@ function resolveIconUrl(icon: string | null | undefined, baseUrl: URL, artifactU
  * Fallback for UDM pages: if a product has not been successfully published yet,
  * use the latest build artifact so app metadata can still be displayed.
  */
-async function getLatestBuiltFile(productId: string, artifactType: string): Promise<ArtifactRef | null> {
+async function getLatestBuiltFile(
+  productId: string,
+  artifactType: string
+): Promise<ArtifactRef | null> {
   const builds = await DatabaseReads.productBuilds.findMany({
     where: { ProductId: productId },
     include: {
@@ -176,7 +181,8 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
   if (!product) throw error(404);
 
   // "Developer" isn't a first-class concept in our schema; use org name when available.
-  const developer = product.Project.Organization?.Name ?? product.Project.Name ?? 'Unknown developer';
+  const developer =
+    product.Project.Organization?.Name ?? product.Project.Name ?? 'Unknown developer';
 
   // Always return an `app` object so pages can render even when listing data is missing.
   const app: AppInfo = {
@@ -221,7 +227,11 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
   // Use the URL locale to decide which language variant to render.
   const requestedLocale = safeGetLocale();
   const language =
-    resolveManifestLanguage(requestedLocale, manifest.languages ?? [], manifest['default-language']) ??
+    resolveManifestLanguage(
+      requestedLocale,
+      manifest.languages ?? [],
+      manifest['default-language']
+    ) ??
     manifest['default-language'] ??
     requestedLocale;
 
