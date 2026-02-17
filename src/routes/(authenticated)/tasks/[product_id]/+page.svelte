@@ -163,8 +163,10 @@
     {waiting ? 'Waiting' : data.taskTitle}
   </h2>
   {#if !waiting}
-    {#if data.taskComment}
-      <TaskComment comment={data.taskComment} class="mb-4" />
+    {#if data.previousTask}
+      <LabeledFormInput key="tasks_previousComment" params={{ activityName: data.previousTask.InitialState ?? '' }} >
+        <TaskComment comment={data.previousTask.Comment} />
+      </LabeledFormInput>
     {/if}
     <div>
       {#if data.fields.ownerName && data.fields.ownerEmail}
