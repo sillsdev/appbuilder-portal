@@ -4,7 +4,6 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
-  import { optionalAsync } from 'valibot';
 
   interface Props {
     data: PageData;
@@ -54,7 +53,7 @@
   {/each}
 </div>
 
-{#snippet options(wd?: typeof data['workflowDefinitions'][number])}
+{#snippet options(wd?: (typeof data)['workflowDefinitions'][number])}
   <span class="opacity-70 font-semibold">
     {#if wd?.WorkflowOptions.length}
       {#each wd.WorkflowOptions as option}
