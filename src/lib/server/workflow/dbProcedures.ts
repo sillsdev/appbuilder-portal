@@ -42,12 +42,17 @@ export async function markResolved(productId: string) {
     }
   });
   if (product?.ProductPublications.length) {
+    const resolved = new Date();
     const release = product.ProductPublications[0];
     await DatabaseWrites.productPublications.update({
       where: { ProductBuildId_BuildEngineReleaseId: release },
       data: {
-        DateResolved: new Date()
+        DateResolved: resolved
       }
+    });
+
+    await DatabaseWrites.products.update(productId, {
+      DatePublished: resolved
     });
   }
 }
