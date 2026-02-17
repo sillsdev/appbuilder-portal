@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import { goto } from '$app/navigation';
   import StoreListDisplay from '$lib/organizations/components/StoreListDisplay.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';

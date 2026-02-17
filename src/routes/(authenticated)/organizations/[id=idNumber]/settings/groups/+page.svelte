@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import { goto } from '$app/navigation';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { m } from '$lib/paraglide/messages';
