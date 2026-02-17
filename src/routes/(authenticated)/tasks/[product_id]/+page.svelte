@@ -15,6 +15,7 @@
   import { userTasksSSE } from '$lib/stores';
   import { bytesToHumanSize, toast } from '$lib/utils';
   import { byName, byNumber, byString } from '$lib/utils/sorting';
+  import TaskComment from '$lib/products/components/TaskComment.svelte';
 
   interface Props {
     data: PageData;
@@ -162,6 +163,9 @@
     {waiting ? 'Waiting' : data.taskTitle}
   </h2>
   {#if !waiting}
+    {#if data.taskComment}
+      <TaskComment comment={data.taskComment} class="mb-4" />
+    {/if}
     <div>
       {#if data.fields.ownerName && data.fields.ownerEmail}
         <div class="flex flex-col gap-x-3 w-full md:flex-row">

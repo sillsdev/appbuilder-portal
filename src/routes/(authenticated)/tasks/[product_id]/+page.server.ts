@@ -115,7 +115,13 @@ export const load = (async ({ params, locals, depends }) => {
               },
               take: 1
             }
-          : undefined
+          : undefined,
+      UserTasks: {
+        select: {
+          Comment: true
+        },
+        take: 1
+      }
     }
   }))!;
 
@@ -162,6 +168,7 @@ export const load = (async ({ params, locals, depends }) => {
       )
       .map((a) => a[0].eventType as WorkflowAction),
     taskTitle: snap.state,
+    taskComment: product.UserTasks.at(0)?.Comment,
     instructions: snap.context.instructions,
     projectId: product.Project.Id,
     productDescription: product.ProductDefinition.Name,

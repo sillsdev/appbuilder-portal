@@ -1,14 +1,16 @@
 <script lang="ts">
   import { m } from '$lib/paraglide/messages';
+  import type { ClassValue } from 'svelte/elements';
 
   interface Props {
     comment: string | null;
+    class?: ClassValue;
   }
 
-  const { comment }: Props = $props();
+  const { comment, class: classes }: Props = $props();
 </script>
 
-<div class="comment">
+<div class={['comment m-1 mx-2 p-1', classes]}>
   {#if comment?.startsWith('system.')}
     {#if comment.startsWith('system.build-failed')}
       <span>
@@ -35,10 +37,6 @@
 <style>
   .comment {
     border: calc(2 * var(--border)) inset var(--color-base-content);
-    margin: var(--spacing);
-    margin-left: calc(2 * var(--spacing));
-    margin-right: calc(2 * var(--spacing));
-    padding: var(--spacing);
   }
   .comment {
     @supports (color: color-mix(in lab, red, red)) {
