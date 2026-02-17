@@ -33,6 +33,7 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
         `External Id (build: ${product.BuildEngineBuildId}) does not match expected (build: ${job.data.buildId})`
       );
     }
+    await DatabaseWrites.productBuilds.deleteMany({ where: { Id: job.data.productBuildId } });
     job.updateProgress(100);
     return { product };
   }
@@ -98,6 +99,12 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
         `External Id (build: ${product.BuildEngineBuildId}, release: ${product.BuildEngineReleaseId}) does not match expected (build: ${job.data.buildId}, release: ${job.data.releaseId})`
       );
     }
+    await DatabaseWrites.productPublications.deleteMany({
+      where: {
+        ProductBuildId: job.data.productBuildId,
+        BuildEngineReleaseId: job.data.releaseId
+      }
+    });
     job.updateProgress(100);
     return { product };
   }
