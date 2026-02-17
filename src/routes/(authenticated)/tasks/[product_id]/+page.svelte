@@ -164,7 +164,10 @@
   </h2>
   {#if !waiting}
     {#if data.previousTask}
-      <LabeledFormInput key="tasks_previousComment" params={{ activityName: data.previousTask.InitialState ?? '' }} >
+      <LabeledFormInput
+        key="tasks_previousComment"
+        params={{ activityName: data.previousTask.InitialState ?? '' }}
+      >
         <TaskComment comment={data.previousTask.Comment} />
       </LabeledFormInput>
     {/if}
