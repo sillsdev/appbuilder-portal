@@ -92,7 +92,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
           to: to.Name!,
           count: targetHasSpecifiedRole
             ? (
-                await DatabaseWrites.userTasks.updateMany(productIds, {
+                await DatabaseWrites.userTasks.updateMany({
                   where: {
                     Role: u.withRole,
                     UserId: u.from,

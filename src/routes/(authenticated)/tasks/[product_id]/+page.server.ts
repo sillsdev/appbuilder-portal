@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import { error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -155,23 +156,10 @@ export const load = (async ({ params, locals, depends }) => {
         })
       : [];
 
-  const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
-  const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
-
-  console.log(product.ProductTransitions);
-
   return {
     loadTime: new Date().valueOf(),
     actions: Workflow.availableTransitionsFromName(snap.state, snap.input)
-      .filter((a) =>
-        filterAvailableActions(
-          a,
-          locals.security.userId,
-          product.Project.Owner.Id,
-          authorIds,
-          orgAdminIds
-        )
-      )
+      .filter((a) => filterAvailableActions(a, locals.security.userId, product.Project))
       .map((a) => a[0].eventType as WorkflowAction),
     taskTitle: snap.state,
     previousTask: product.ProductTransitions.at(0),
@@ -281,18 +269,8 @@ export const actions = {
       }
     }))!;
 
-    const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
-    const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
     const transition = Workflow.availableTransitionsFromName(old, snap.input)
-      .filter((a) =>
-        filterAvailableActions(
-          a,
-          locals.security.userId,
-          product.Project.Owner.Id,
-          authorIds,
-          orgAdminIds
-        )
-      )
+      .filter((a) => filterAvailableActions(a, locals.security.userId, product.Project))
       .find((t) => t[0].eventType === form.data.flowAction)
       ?.at(0);
     if (transition && form.data.state === flow.state()) {
@@ -307,13 +285,7 @@ export const actions = {
 
       const availableTransitions = targetState
         ? Workflow.availableTransitionsFromNode(targetState[0], snap.input).filter((a) =>
-            filterAvailableActions(
-              a,
-              locals.security.userId,
-              product.Project.Owner.Id,
-              authorIds,
-              orgAdminIds
-            )
+            filterAvailableActions(a, locals.security.userId, product.Project)
           )
         : [];
 
@@ -353,19 +325,27 @@ async function verifyCanViewTask(security: Security, productId: string): Promise
 function filterAvailableActions(
   action: ReturnType<typeof Workflow.availableTransitionsFromName>[number],
   userId: number | undefined,
-  ownerId: number,
-  authors: Set<number>,
-  orgAdmins: Set<number>
+  project: Prisma.ProjectsGetPayload<{
+    select: {
+      Owner: { select: { Id: true } };
+      Authors: { select: { UserId: true } };
+      Organization: {
+        select: {
+          UserRoles: { select: { UserId: true } };
+        };
+      };
+    };
+  }>
 ): boolean {
   if (userId === undefined) return false;
   return action.some((a) => {
     switch (a.meta?.user) {
       case RoleId.AppBuilder:
-        return userId === ownerId;
+        return userId === project.Owner.Id;
       case RoleId.Author:
-        return authors.has(userId);
+        return !!project.Authors.find((u) => u.UserId === userId);
       case RoleId.OrgAdmin:
-        return orgAdmins.has(userId);
+        return !!project.Organization.UserRoles.find((u) => u.UserId === userId);
       default:
         return false;
     }
