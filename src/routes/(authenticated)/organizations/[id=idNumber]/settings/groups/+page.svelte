@@ -24,7 +24,7 @@
   {#each data.groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
     <DataDisplayBox
       editable
-      onEdit={() => goto(localizeHref(`${base}/edit?id=${group.Id}`))}
+      editLink={localizeHref(`${base}/edit?id=${group.Id}`)}
       title={group.Name}
       fields={[{ key: 'common_description', value: group.Description }]}
     >

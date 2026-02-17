@@ -25,7 +25,7 @@
   {#each data.productDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as pD}
     <DataDisplayBox
       editable
-      onEdit={() => goto(localizeHref(`${base}/edit?id=${pD.Id}`))}
+      editLink={localizeHref(`${base}/edit?id=${pD.Id}`)}
       title={pD.Name}
       fields={[
         {

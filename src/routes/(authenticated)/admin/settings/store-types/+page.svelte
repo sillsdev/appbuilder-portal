@@ -25,7 +25,7 @@
   {#each data.storeTypes.toSorted((a, b) => byName(a, b, getLocale())) as storeType}
     <DataDisplayBox
       editable
-      onEdit={() => goto(localizeHref(`${base}/edit?id=${storeType.Id}`))}
+      editLink={localizeHref(`${base}/edit?id=${storeType.Id}`)}
       title={storeType.Name}
       fields={[{ key: 'common_description', value: storeType.Description }]}
     />

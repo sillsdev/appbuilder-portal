@@ -24,7 +24,7 @@
   {#each data.organizations.toSorted((a, b) => byName(a, b, getLocale())) as organization}
     <DataDisplayBox
       editable
-      onEdit={() => goto(localizeHref(`${base}/edit?id=${organization.Id}`))}
+      editLink={localizeHref(`${base}/edit?id=${organization.Id}`)}
       title={organization.Name}
       fields={[
         { key: 'project_orgContact', value: organization.ContactEmail },

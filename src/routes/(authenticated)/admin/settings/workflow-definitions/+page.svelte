@@ -25,7 +25,7 @@
   {#each data.workflowDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as wd}
     <DataDisplayBox
       editable
-      onEdit={() => goto(localizeHref(`${base}/edit?id=${wd.Id}`))}
+      editLink={localizeHref(`${base}/edit?id=${wd.Id}`)}
       title={wd.Name}
       fields={[
         {

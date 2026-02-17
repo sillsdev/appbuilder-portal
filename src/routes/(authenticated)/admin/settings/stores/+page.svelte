@@ -25,7 +25,7 @@
   {#each data.stores.toSorted( (a, b) => byString(a.BuildEnginePublisherId, b.BuildEnginePublisherId, getLocale()) ) as store}
     <StoreListDisplay
       editable
-      onEdit={() => goto(localizeHref(`${base}/edit?id=${store.Id}`))}
+      editLink={localizeHref(`${base}/edit?id=${store.Id}`)}
       {store}
       getTitle={(store) => store.BuildEnginePublisherId}
       showDescription

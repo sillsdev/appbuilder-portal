@@ -18,24 +18,24 @@
     })[];
     editable?: boolean;
     editTitle?: string;
+    editLink?: string;
     children?: Snippet;
-    onEdit?: () => void;
   }
 
-  let { title, data, fields, editable = false, editTitle, children, onEdit }: Props = $props();
+  let { title, data, fields, editable = false, editTitle, editLink, children }: Props = $props();
 </script>
 
 <div class="flex flex-row border border-slate-600 p-2 mx-4 m-1 rounded-md">
   <div class="relative w-full">
     <h3>{title}</h3>
     {#if editable}
-      <button
+      <a
+        href={editLink}
         title={editTitle ?? m.common_clickToEdit()}
         class="absolute right-2 top-2 cursor-pointer"
-        onclick={() => onEdit?.()}
       >
         <Icon width="24" icon="mdi:pencil" />
-      </button>
+      </a>
     {/if}
     {#each fields as field}
       <p
