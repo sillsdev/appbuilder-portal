@@ -142,7 +142,7 @@ async function main() {
     [84, 'fa-IR', 'Persian – fa-IR', 1],
     [85, 'pa', 'Punjabi – pa', 1],
     [86, 'ur', 'Urdu – ur', 1],
-    [87, 'zulu', 'zu', 1]
+    [87, 'zulu', 'Zulu – zu', 1]
   ];
   for (const [Id, Name, Description, StoreTypeId] of storeLanguages) {
     await prisma.storeLanguages.upsert({
