@@ -6,9 +6,8 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
-  import { Icons } from '$lib/icons';
+  import { Icons, getProductIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
@@ -106,7 +105,10 @@
               value={product.Id}
             />
             {product.Project.Name}:
-            <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="24" />
+            <IconContainer
+              icon={getProductIcon(product.ProductDefinition.Workflow.ProductType)}
+              width="24"
+            />
             {product.ProductDefinition.Name}
           </label>
         {/each}

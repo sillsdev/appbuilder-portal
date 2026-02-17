@@ -1,7 +1,7 @@
-import type { getIcon } from './productDefinitionIcon';
 import type { Locale } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
+import { ProductType } from '$lib/workflowTypes';
 
 export function getActionIcon(type: ProductActionType) {
   switch (type) {
@@ -25,6 +25,17 @@ export function getFlagIcon(locale: Locale) {
     default:
       console.warn(`Unrecognized language tag ${locale} in getFlag, using default flag.`);
       return 'circle-flags:un'; // UN flag as fallback
+  }
+}
+
+export function getProductIcon(type: ProductType) {
+  switch (type) {
+    case ProductType.Web:
+      return 'mdi:web';
+    case ProductType.AssetPackage:
+      return 'mdi:archive';
+    default:
+      return 'flat-color-icons:android-os';
   }
 }
 
@@ -127,4 +138,6 @@ export const Icons = {
 
 export type IconType =
   | (typeof Icons)[keyof typeof Icons]
-  | ReturnType<typeof getActionIcon | typeof getFlagIcon | typeof getIcon | typeof getRoleIcon>;
+  | ReturnType<
+      typeof getActionIcon | typeof getFlagIcon | typeof getRoleIcon | typeof getProductIcon
+    >;

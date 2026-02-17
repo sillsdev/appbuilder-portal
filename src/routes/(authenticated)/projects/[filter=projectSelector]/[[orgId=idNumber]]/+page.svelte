@@ -9,9 +9,8 @@
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
-  import { Icons, getActionIcon } from '$lib/icons';
+  import { Icons, getActionIcon, getProductIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
@@ -26,6 +25,7 @@
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
+  import type { ProductType } from '$lib/workflowTypes';
 
   interface Props {
     data: PageData;
@@ -106,6 +106,7 @@
     Id: string;
     ProductDefinitionId: number;
     ProductDefinitionName: string | null;
+    Type: ProductType;
     CanRebuild: boolean;
     CanRepublish: boolean;
   };
@@ -311,10 +312,7 @@
                             bind:group={selectedProducts}
                             value={product}
                           />
-                          <IconContainer
-                            icon={getIcon(product.ProductDefinitionName ?? '')}
-                            width="24"
-                          />
+                          <IconContainer icon={getProductIcon(product.Type)} width="24" />
                           {product.ProductDefinitionName}
                           <div class="basis-full h-0"></div>
                           {#if product.CanRebuild}

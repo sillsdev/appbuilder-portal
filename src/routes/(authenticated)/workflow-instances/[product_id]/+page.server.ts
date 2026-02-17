@@ -64,7 +64,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       },
       ProductDefinition: {
         select: {
-          Name: true
+          Name: true,
+          Workflow: {
+            select: {
+              ProductType: true
+            }
+          }
         }
       }
     }

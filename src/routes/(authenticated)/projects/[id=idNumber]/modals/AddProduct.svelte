@@ -2,9 +2,8 @@
   import type { Prisma } from '@prisma/client';
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
-  import { Icons } from '$lib/icons';
+  import { Icons, getProductIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { displayStoreGPTitle } from '$lib/prisma';
@@ -20,6 +19,7 @@
         Description: true;
         Workflow: {
           select: {
+            ProductType: true;
             StoreTypeId: true;
           };
         };
@@ -87,7 +87,7 @@
               }}
             >
               <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
-                <IconContainer icon={getIcon(productDef.Name ?? '')} width="24" />
+                <IconContainer icon={getProductIcon(productDef.Workflow.ProductType)} width={24} />
                 {productDef.Name}
               </div>
               <p class="p-2 text-sm text-neutral-400">{productDef.Description}</p>

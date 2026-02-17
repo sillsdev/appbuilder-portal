@@ -2,8 +2,8 @@
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import Tooltip from '$lib/components/Tooltip.svelte';
+  import { getProductIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import TaskComment from '$lib/products/components/TaskComment.svelte';
@@ -42,7 +42,7 @@
               <td colspan="3">
                 <span class="flex items-center">
                   <IconContainer
-                    icon={getIcon(task.Product.ProductDefinition.Name ?? '')}
+                    icon={getProductIcon(task.Product.ProductDefinition.Workflow.ProductType)}
                     width={30}
                   />
                   <span>
@@ -105,7 +105,7 @@
               <td>
                 <span class="flex items-center">
                   <IconContainer
-                    icon={getIcon(task.Product.ProductDefinition.Name ?? '')}
+                    icon={getProductIcon(task.Product.ProductDefinition.Workflow.ProductType)}
                     width={30}
                   />
                   <span>

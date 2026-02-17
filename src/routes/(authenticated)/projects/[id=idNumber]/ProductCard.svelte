@@ -8,9 +8,8 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { Icons, getActionIcon } from '$lib/icons';
+  import { Icons, getActionIcon, getProductIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { type ProductActionType } from '$lib/products';
@@ -121,7 +120,10 @@
 <div class="rounded-md border border-slate-400 w-full my-2">
   <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
     <div class="flex flex-row items-start">
-      <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width={30} />
+      <IconContainer
+        icon={getProductIcon(product.ProductDefinition.Workflow.ProductType)}
+        width={30}
+      />
       <span class="min-w-0 grow">
         {product.ProductDefinition.Name}
       </span>

@@ -6,7 +6,7 @@
   import { browser } from '$app/environment';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
-  import { Icons } from '$lib/icons';
+  import { Icons, getProductIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
@@ -118,12 +118,12 @@
             class="link"
             href={localizeHref(`/projects/organization/${data.product?.Project.Organization.Id}`)}
           >
-            {data.product?.Project.Organization.Name}
+            {data.product.Project.Organization.Name}
           </a>
         </li>
         <li>
-          <a class="link" href={localizeHref(`/projects/${data.product?.Project.Id}`)}>
-            {data.product?.Project.Name}
+          <a class="link" href={localizeHref(`/projects/${data.product.Project.Id}`)}>
+            {data.product.Project.Name}
           </a>
         </li>
         <li>
@@ -132,7 +132,11 @@
           </a>
         </li>
         <li>
-          {data.product?.ProductDefinition.Name}
+          <IconContainer
+            icon={getProductIcon(data.product.ProductDefinition.Workflow.ProductType)}
+            width={24}
+          />
+          {data.product.ProductDefinition.Name}
         </li>
       </ul>
     </div>
