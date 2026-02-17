@@ -19,7 +19,6 @@
   import type { ClassValue } from 'svelte/elements';
   import Dropdown from './Dropdown.svelte';
   import IconContainer from './IconContainer.svelte';
-  import { LanguageIcon } from '$lib/icons';
   import { l10nMap } from '$lib/locales.svelte';
   import { type Locale, getLocale, locales, setLocale } from '$lib/paraglide/runtime';
 
@@ -49,7 +48,7 @@
 </script>
 
 {#snippet globe()}
-  <LanguageIcon color="white" />
+  <IconContainer icon="ph:globe-bold" width={28} />
 {/snippet}
 
 {#key getLocale()}

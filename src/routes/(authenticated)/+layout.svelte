@@ -10,7 +10,6 @@
   import Dropdown from '$lib/components/Dropdown.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import LocaleSelector from '$lib/components/LocaleSelector.svelte';
-  import { HamburgerIcon } from '$lib/icons';
   import { createl10nMapFromEntries, l10nMap } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeUrl, getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -287,9 +286,9 @@
         <div class="navbar-start">
           <label
             for="primary-content-drawer"
-            class="btn btn-ghost btn-circle p-1 drawer-button lg:hidden"
+            class="btn btn-ghost btn-circle p-1 drawer-button lg:hidden text-primary-content hover:text-base-content"
           >
-            <HamburgerIcon color="white" />
+            <IconContainer icon="mdi:hamburger-menu" width={24} />
           </label>
           <p class="uppercase text-white lg:ps-4">{m.appName()}</p>
           <!-- <p>SCRIPTORIA</p> -->
@@ -298,7 +297,8 @@
           <LocaleSelector
             class={{
               dropdown: 'dropdown-end',
-              label: 'm-2 p-2 rounded-xl items-middle justify-center flex-nowrap'
+              label:
+                'm-2 p-2 rounded-xl items-middle justify-center flex-nowrap text-primary-content hover:text-base-content'
             }}
           />
           <Dropdown
