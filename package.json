@@ -91,7 +91,7 @@
     "typescript-eslint": "^8.44.0",
     "valibot": "^1.0.0-beta.14",
     "vite": "^6.3.6",
-    "vitest": "^3.0.4",
+    "vitest": "^4.0.0",
     "xstate": "^5.20.1",
     "zod": "^3.25.76"
   },
