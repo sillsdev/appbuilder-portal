@@ -10,10 +10,10 @@ import { NotificationType } from '$lib/users';
 export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
   const product = await DatabaseReads.products.findFirst({
     where: {
-      BuildEngineJobId: job.data.jobId,
-      BuildEngineBuildId: job.data.buildId
+      BuildEngineJobId: job.data.jobId
     },
     select: {
+      BuildEngineBuildId: true,
       WorkflowInstance: {
         select: {
           ProductId: true
@@ -21,11 +21,17 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
       }
     }
   });
-  if (!product?.WorkflowInstance) {
+  if (!product) {
+    return await build_notifyProductNotFound(job.data.productId);
+  }
+  if (!product.WorkflowInstance || product.BuildEngineBuildId !== job.data.buildId) {
     await getQueues().Polling.removeJobScheduler(job.name);
-    job.log('No WorkflowInstance found. Workflow cancelled?');
-    if (!product) {
-      return await build_notifyProductNotFound(job.data.productId);
+    if (!product.WorkflowInstance) {
+      job.log('No WorkflowInstance found. Workflow cancelled?');
+    } else {
+      job.log(
+        `External Id (build: ${product.BuildEngineBuildId}) does not match expected (build: ${job.data.buildId})`
+      );
     }
     job.updateProgress(100);
     return { product };
@@ -64,11 +70,11 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
 export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown> {
   const product = await DatabaseReads.products.findFirst({
     where: {
-      BuildEngineJobId: job.data.jobId,
-      BuildEngineBuildId: job.data.buildId,
-      BuildEngineReleaseId: job.data.releaseId
+      BuildEngineJobId: job.data.jobId
     },
     select: {
+      BuildEngineBuildId: true,
+      BuildEngineReleaseId: true,
       WorkflowInstance: {
         select: {
           ProductId: true
@@ -76,11 +82,21 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
       }
     }
   });
-  if (!product?.WorkflowInstance) {
+  if (!product) {
+    return await publish_notifyProductNotFound(job.data.productId);
+  }
+  if (
+    !product.WorkflowInstance ||
+    product.BuildEngineBuildId !== job.data.buildId ||
+    product.BuildEngineReleaseId !== job.data.releaseId
+  ) {
     await getQueues().Polling.removeJobScheduler(job.name);
-    job.log('No WorkflowInstance found. Workflow cancelled?');
-    if (!product) {
-      return await publish_notifyProductNotFound(job.data.productId);
+    if (!product.WorkflowInstance) {
+      job.log('No WorkflowInstance found. Workflow cancelled?');
+    } else {
+      job.log(
+        `External Id (build: ${product.BuildEngineBuildId}, release: ${product.BuildEngineReleaseId}) does not match expected (build: ${job.data.buildId}, release: ${job.data.releaseId})`
+      );
     }
     job.updateProgress(100);
     return { product };
