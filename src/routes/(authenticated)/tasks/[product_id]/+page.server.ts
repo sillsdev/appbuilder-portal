@@ -91,7 +91,7 @@ export const load = (async ({ params, locals, depends }) => {
       },
       StoreLanguage: {
         select: {
-          Name: true
+          Description: true
         }
       },
       ProductDefinition: {
@@ -173,7 +173,8 @@ export const load = (async ({ params, locals, depends }) => {
       storeDescription:
         snap.context.includeFields.includes('storeDescription') && product.Store?.Description,
       listingLanguageCode:
-        snap.context.includeFields.includes('listingLanguageCode') && product.StoreLanguage?.Name,
+        snap.context.includeFields.includes('listingLanguageCode') &&
+        product.StoreLanguage?.Description,
       projectURL:
         snap.context.includeFields.includes('projectURL') && projectUrl(product.Project.Id),
       displayProductDescription: snap.context.includeFields.includes('productDescription'),
