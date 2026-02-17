@@ -4,6 +4,7 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
+  import { optionalAsync } from 'valibot';
 
   interface Props {
     data: PageData;
@@ -42,9 +43,25 @@
         {
           key: 'flowDefs_type',
           value: m.flowDefs_types({ type: wd.Type })
+        },
+        {
+          key: 'flowDefs_options_title',
+          snippet: options
         }
-        // ISSUE: #1102 Do we want to show WorkflowOptions here?
       ]}
+      data={wd}
     />
   {/each}
 </div>
+
+{#snippet options(wd?: typeof data['workflowDefinitions'][number])}
+  <span class="opacity-70 font-semibold">
+    {#if wd?.WorkflowOptions.length}
+      {#each wd.WorkflowOptions as option}
+        <div>{m.flowDefs_options({ option })}</div>
+      {/each}
+    {:else}
+      {m.common_none()}
+    {/if}
+  </span>
+{/snippet}
