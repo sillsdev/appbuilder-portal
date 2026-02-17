@@ -1,5 +1,5 @@
 import type { Locale } from '$lib/paraglide/runtime';
-import { RoleId } from '$lib/prisma';
+import { RoleId, StoreType } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { ProductType } from '$lib/workflowTypes';
 
@@ -48,6 +48,19 @@ export function getRoleIcon(role: RoleId) {
       return 'mdi:worker';
     case RoleId.Author:
       return 'mdi:pencil';
+  }
+}
+
+export function getStoreIcon(type: StoreType) {
+  switch (type) {
+    case StoreType.GooglePlay:
+      return 'logos:google-play-icon';
+    case StoreType.S3:
+      return 'logos:aws-s3';
+    case StoreType.Cloud:
+      return 'material-symbols:cloud';
+    default:
+      return 'ic:twotone-store';
   }
 }
 
@@ -139,5 +152,9 @@ export const Icons = {
 export type IconType =
   | (typeof Icons)[keyof typeof Icons]
   | ReturnType<
-      typeof getActionIcon | typeof getFlagIcon | typeof getRoleIcon | typeof getProductIcon
+      | typeof getActionIcon
+      | typeof getFlagIcon
+      | typeof getProductIcon
+      | typeof getRoleIcon
+      | typeof getStoreIcon
     >;

@@ -6,7 +6,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
-  import { Icons } from '$lib/icons';
+  import { Icons, getStoreIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
@@ -46,17 +46,14 @@
     value={data.store.BuildEnginePublisherId}
     class="md:max-w-xs"
   />
-  <LabeledFormInput key="common_type">
-    <input
-      type="text"
-      name="storeTypeDisplay"
-      class="input validator"
-      value={data.store.StoreType.Description}
-      readonly
-      disabled
-    />
-    <span class="validator-hint">&nbsp;</span>
-  </LabeledFormInput>
+  <LabeledFormInput
+    key="common_type"
+    input={{
+      readonly: true,
+      icon: getStoreIcon(data.store.StoreTypeId)
+    }}
+    value={data.store.StoreType.Description}
+  />
   <LabeledFormInput key="projectTable_owner">
     <SelectWithIcon
       bind:value={$form.owner}
@@ -97,14 +94,3 @@
     <SubmitButton />
   </div>
 </form>
-
-<style>
-  input[type='text'] {
-    width: 100%;
-  }
-  @media (width >= 40rem) {
-    input[type='text'] {
-      max-width: var(--container-xs);
-    }
-  }
-</style>

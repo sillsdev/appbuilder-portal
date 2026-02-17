@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
-  import { Icons, getProductIcon } from '$lib/icons';
+  import { Icons, getProductIcon, getStoreIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -15,6 +15,13 @@
 
   const base = '/admin/settings/workflow-definitions';
 </script>
+
+{#snippet storeType(wd?: (typeof data)['workflowDefinitions'][number])}
+  {#if wd?.StoreType}
+    <IconContainer icon={getStoreIcon(wd.StoreType.Id)} width={16} class="mr-1" />{wd.StoreType
+      .Description}
+  {/if}
+{/snippet}
 
 <h2>{m.flowDefs_title()}</h2>
 
@@ -35,7 +42,7 @@
         },
         {
           key: 'flowDefs_storeType',
-          value: wd.StoreType?.Name
+          snippet: storeType
         },
         {
           key: 'flowDefs_productType',

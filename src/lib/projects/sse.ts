@@ -75,6 +75,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               },
               Store: {
                 select: {
+                  StoreTypeId: true,
                   Description: true
                 }
               },

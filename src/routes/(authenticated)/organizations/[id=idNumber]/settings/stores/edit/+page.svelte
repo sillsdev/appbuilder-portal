@@ -6,6 +6,7 @@
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { getStoreIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
@@ -45,17 +46,14 @@
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
-  <LabeledFormInput key="common_type">
-    <input
-      type="text"
-      name="storeTypeDisplay"
-      class="input validator"
-      value={data.store.StoreType.Description}
-      readonly
-      disabled
-    />
-    <span class="validator-hint">&nbsp;</span>
-  </LabeledFormInput>
+  <LabeledFormInput
+    key="common_type"
+    input={{
+      readonly: true,
+      icon: getStoreIcon(data.store.StoreTypeId)
+    }}
+    value={data.store.StoreType.Description}
+  />
   {#if data.store.StoreTypeId === StoreType.GooglePlay}
     <LabeledFormInput key="stores_gpTitle">
       <input

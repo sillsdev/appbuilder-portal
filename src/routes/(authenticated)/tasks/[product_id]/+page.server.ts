@@ -90,7 +90,8 @@ export const load = (async ({ params, locals, depends }) => {
       },
       Store: {
         select: {
-          Description: true
+          Description: true,
+          StoreTypeId: true
         }
       },
       StoreLanguage: {
@@ -175,6 +176,7 @@ export const load = (async ({ params, locals, depends }) => {
     projectId: product.Project.Id,
     productDescription: product.ProductDefinition.Name,
     productType: product.ProductDefinition.Workflow.ProductType,
+    storeType: product.Store.StoreTypeId,
     fields: {
       projectName: product.Project.Name,
       projectDescription: product.Project.Description,

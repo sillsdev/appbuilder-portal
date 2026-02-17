@@ -8,7 +8,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import { Icons, getProductIcon } from '$lib/icons';
+  import { Icons, getProductIcon, getStoreIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -208,7 +208,7 @@
           class="md:w-1/2"
           input={{
             readonly: true,
-            icon: Icons.Store
+            icon: getStoreIcon(data.storeType)
           }}
           value={data.fields.storeDescription}
           validate={false}

@@ -8,7 +8,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { Icons, getActionIcon, getProductIcon } from '$lib/icons';
+  import { Icons, getActionIcon, getProductIcon, getStoreIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
@@ -187,7 +187,7 @@
       </div>
       {#if product.PublishLink}
         <a class="link" href={product.PublishLink} target="_blank">
-          <IconContainer icon={Icons.Store} width={24} />
+          <IconContainer icon={getStoreIcon(product.Store?.StoreTypeId ?? 0)} width={24} />
         </a>
       {/if}
     </div>

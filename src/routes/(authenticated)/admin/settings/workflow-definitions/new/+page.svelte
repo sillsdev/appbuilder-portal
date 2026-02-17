@@ -8,12 +8,12 @@
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
-  import { Icons, getProductIcon } from '$lib/icons';
+  import { Icons, getProductIcon, getStoreIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { WorkflowType } from '$lib/prisma';
   import { enumNumVals, toast } from '$lib/utils';
-  import { byName } from '$lib/utils/sorting';
+  import { byString } from '$lib/utils/sorting';
   import { ProductType, WorkflowOptions } from '$lib/workflowTypes';
 
   interface Props {
@@ -54,11 +54,14 @@
     bind:value={$form.name}
   />
   <LabeledFormInput key="flowDefs_storeType">
-    <select class="select validator" name="storeType" bind:value={$form.storeType} required>
-      {#each data.options.storeType.toSorted((a, b) => byName(a, b, getLocale())) as type}
-        <option value={type.Id}>{type.Name}</option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.storeType}
+      items={data.options.storeType
+        .toSorted((a, b) => byString(a.Description, b.Description, getLocale()))
+        .map((st) => ({ ...st, Name: st.Description ?? st.Name, icon: getStoreIcon(st.Id) }))}
+      class="validator {mobileSizing}"
+      attr={{ name: 'storeType', required: true }}
+    />
     <span class="validator-hint">{m.flowDefs_emptyStoreType()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_productType">

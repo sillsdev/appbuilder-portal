@@ -5,8 +5,9 @@
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
+  import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
-  import { Icons, getProductIcon } from '$lib/icons';
+  import { type IconType, Icons, getProductIcon, getStoreIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -34,6 +35,11 @@
           getLocale()
         )
       )
+      .map((s) => ({
+        ...s,
+        Name: s.Description || s.BuildEnginePublisherId,
+        icon: getStoreIcon(s.StoreTypeId) as IconType
+      }))
   );
 
   const { form, enhance } = superForm(data.form, {
@@ -53,6 +59,8 @@
       }
     }
   });
+
+  const mobileSizing = 'w-full md:max-w-xs';
 </script>
 
 <h2>{m.org_storesTransfer()}</h2>
@@ -60,31 +68,34 @@
 
 <form class="m-4" method="post" action="?/transfer" use:enhance>
   <LabeledFormInput key="common_type">
-    <select class="select validator" name="storeType" bind:value={storeType}>
-      {#each data.storeTypes.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
-        <option value={type.Id}>{type.Description}</option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={storeType}
+      items={data.storeTypes
+        .toSorted((a, b) => byString(a.Description, b.Description, getLocale()))
+        .map((st) => ({ ...st, Name: st.Description || st.Name, icon: getStoreIcon(st.Id) }))}
+      class="validator {mobileSizing}"
+      attr={{ name: 'storeType' }}
+    />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="org_storesTransfer_source">
-    <select class="select validator" name="source" bind:value={$form.source} required>
-      {#each stores as store}
-        <option value={store.Id}>{store.Description || store.BuildEnginePublisherId}</option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.source}
+      items={stores}
+      class="validator {mobileSizing}"
+      attr={{ name: 'source', required: true }}
+    />
     <span class="validator-hint">
       {m.errors_requiredField({ field: m.org_storesTransfer_source() })}
     </span>
   </LabeledFormInput>
   <LabeledFormInput key="org_storesTransfer_destination">
-    <select class="select validator" name="destination" bind:value={$form.destination} required>
-      {#each stores as store}
-        <option disabled={store.Id === $form.source} value={store.Id}>
-          {store.Description || store.BuildEnginePublisherId}
-        </option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.destination}
+      items={stores.map((s) => ({ ...s, attr: { disabled: s.Id === $form.source } }))}
+      class="validator {mobileSizing}"
+      attr={{ name: 'destination', required: true }}
+    />
     <span class="validator-hint">
       {m.errors_requiredField({ field: m.org_storesTransfer_destination() })}
     </span>

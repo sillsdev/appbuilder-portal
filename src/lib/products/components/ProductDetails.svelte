@@ -30,7 +30,7 @@
     product: Prisma.ProductsGetPayload<{
       select: {
         Id: true;
-        Store: { select: { Description: true } };
+        Store: { select: { StoreTypeId: true; Description: true } };
         BuildEngineJobId: true;
         CurrentBuildId: true;
         CurrentReleaseId: true;
@@ -57,7 +57,7 @@
   import type { Prisma } from '@prisma/client';
   import TaskComment from './TaskComment.svelte';
   import { page } from '$app/state';
-  import { Icons } from '$lib/icons';
+  import { Icons, getStoreIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { ProductTransitionType } from '$lib/prisma';
@@ -180,6 +180,11 @@
       <tbody>
         <tr>
           <td>
+            <IconContainer
+              icon={getStoreIcon(product.Store?.StoreTypeId ?? 0)}
+              width={24}
+              class="mr-1"
+            />
             {product.Store?.Description}
           </td>
         </tr>
