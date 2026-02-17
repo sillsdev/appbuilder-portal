@@ -28,7 +28,7 @@
 <div class="flex flex-row border border-slate-600 p-2 mx-4 m-1 rounded-md">
   <div class="relative w-full">
     <h3>{title}</h3>
-    {#if editable}
+    {#if editable && editLink}
       <a
         href={editLink}
         title={editTitle ?? m.common_clickToEdit()}
