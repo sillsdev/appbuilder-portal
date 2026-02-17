@@ -207,7 +207,10 @@
       </div>
       {#if data.fields.storeDescription}
         <div class="flex flex-col gap-x-3 md:flex-row">
-          <LabeledFormInput key="stores_name" class="md:w-2/4">
+          <LabeledFormInput
+            key="stores_name"
+            class={['md:w-2/4', data.fields.listingLanguageCode || 'pr-1.5']}
+          >
             <input
               type="text"
               class="input input-bordered w-full"
