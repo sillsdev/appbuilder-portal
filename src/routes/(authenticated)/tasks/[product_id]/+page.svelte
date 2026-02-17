@@ -12,10 +12,10 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import ReleaseInfo from '$lib/products/components/ReleaseInfo.svelte';
+  import TaskComment from '$lib/products/components/TaskComment.svelte';
   import { userTasksSSE } from '$lib/stores';
   import { bytesToHumanSize, toast } from '$lib/utils';
   import { byName, byNumber, byString } from '$lib/utils/sorting';
-  import TaskComment from '$lib/products/components/TaskComment.svelte';
 
   interface Props {
     data: PageData;

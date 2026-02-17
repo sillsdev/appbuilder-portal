@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { m } from '$lib/paraglide/messages';
   import type { ClassValue } from 'svelte/elements';
+  import { m } from '$lib/paraglide/messages';
 
   interface Props {
     comment: string | null;
