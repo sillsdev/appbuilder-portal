@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import { goto } from '$app/navigation';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -25,7 +24,7 @@
   {#each data.workflowDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as wd}
     <DataDisplayBox
       editable
-      onEdit={() => goto(localizeHref(`${base}/edit?id=${wd.Id}`))}
+      editLink={localizeHref(`${base}/edit?id=${wd.Id}`)}
       title={wd.Name}
       fields={[
         {

@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { ActionData, PageData } from './$types';
   import { enhance } from '$app/forms';
-  import { goto } from '$app/navigation';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
@@ -37,7 +36,7 @@
   {#each data.stores.toSorted( (a, b) => byString(a.Description || a.BuildEnginePublisherId, b.Description || b.BuildEnginePublisherId, getLocale()) ) as store}
     <StoreListDisplay
       editable={store.OwnerId === data.organization.Id}
-      onEdit={() => goto(localizeHref(`${base}/edit?id=${store.Id}`))}
+      editLink={localizeHref(`${base}/edit?id=${store.Id}`)}
       {store}
       getTitle={(store) => store.Description ?? ''}
     >

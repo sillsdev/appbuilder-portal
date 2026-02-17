@@ -15,14 +15,14 @@
 
   interface Props {
     editable: boolean;
-    onEdit: () => void;
+    editLink?: string;
     store: Store;
     getTitle: (store: Store) => string;
     extra?: Snippet<[Store]>;
     showDescription?: boolean;
   }
 
-  let { editable, onEdit, store, getTitle, extra, showDescription }: Props = $props();
+  let { editable, editLink, store, getTitle, extra, showDescription }: Props = $props();
 
   const missingGPTitle = $derived(
     store.StoreTypeId === StoreType.GooglePlay && editable && !store.GooglePlayTitle
@@ -37,7 +37,7 @@
 
 <DataDisplayBox
   {editable}
-  {onEdit}
+  {editLink}
   title={getTitle(store)}
   fields={[
     { key: 'projectTable_owner', value: store.Owner?.Name ?? m.appName() },

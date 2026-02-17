@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import { goto } from '$app/navigation';
   import StoreListDisplay from '$lib/organizations/components/StoreListDisplay.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -25,7 +24,7 @@
   {#each data.stores.toSorted( (a, b) => byString(a.BuildEnginePublisherId, b.BuildEnginePublisherId, getLocale()) ) as store}
     <StoreListDisplay
       editable
-      onEdit={() => goto(localizeHref(`${base}/edit?id=${store.Id}`))}
+      editLink={localizeHref(`${base}/edit?id=${store.Id}`)}
       {store}
       getTitle={(store) => store.BuildEnginePublisherId}
       showDescription

@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import { goto } from '$app/navigation';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -25,7 +24,7 @@
   {#each data.storeTypes.toSorted((a, b) => byName(a, b, getLocale())) as storeType}
     <DataDisplayBox
       editable
-      onEdit={() => goto(localizeHref(`${base}/edit?id=${storeType.Id}`))}
+      editLink={localizeHref(`${base}/edit?id=${storeType.Id}`)}
       title={storeType.Name}
       fields={[{ key: 'common_description', value: storeType.Description }]}
     />
