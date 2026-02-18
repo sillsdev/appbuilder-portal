@@ -175,20 +175,16 @@
       {#if data.fields.ownerName && data.fields.ownerEmail}
         <div class="flex flex-col gap-x-3 w-full md:flex-row">
           <LabeledFormInput key="projectTable_owner" class="md:w-2/4">
-            <input
-              type="text"
-              class="input input-bordered w-full"
-              readonly
-              value={data.fields.ownerName}
-            />
+            <div class="input input-bordered w-full">
+              <IconContainer icon="mdi:user" width={20} />
+              <input type="text" readonly value={data.fields.ownerName} />
+            </div>
           </LabeledFormInput>
           <LabeledFormInput key="profile_email" class="md:w-2/4">
-            <input
-              type="text"
-              class="input input-bordered w-full"
-              readonly
-              value={data.fields.ownerEmail}
-            />
+            <div class="input input-bordered w-full">
+              <IconContainer icon="mdi:email" width={20} />
+              <input type="text" readonly value={data.fields.ownerEmail} />
+            </div>
           </LabeledFormInput>
         </div>
       {/if}
@@ -212,25 +208,18 @@
       </div>
       {#if data.fields.storeDescription}
         <div class="flex flex-col gap-x-3 md:flex-row">
-          <LabeledFormInput
-            key="stores_name"
-            class={['md:w-2/4', data.fields.listingLanguageCode || 'pr-1.5']}
-          >
-            <input
-              type="text"
-              class="input input-bordered w-full"
-              readonly
-              value={data.fields.storeDescription}
-            />
+          <LabeledFormInput key="stores_name" class="md:w-2/4">
+            <div class="input input-bordered w-full">
+              <IconContainer icon="ic:twotone-store" width={20} />
+              <input type="text" readonly value={data.fields.storeDescription} />
+            </div>
           </LabeledFormInput>
           {#if data.fields.listingLanguageCode}
             <LabeledFormInput key="tasks_storeLanguage" class="md:w-2/4">
-              <input
-                type="text"
-                class="input input-bordered w-full"
-                readonly
-                value={data.fields.listingLanguageCode}
-              />
+              <div class="input input-bordered w-full">
+                <IconContainer icon="ph:globe" width={20} />
+                <input type="text" readonly value={data.fields.listingLanguageCode} />
+              </div>
             </LabeledFormInput>
           {/if}
         </div>
@@ -238,6 +227,7 @@
       {#if data.fields.projectURL}
         <LabeledFormInput key="tasks_appProjectURL">
           <span class="input input-bordered w-full flex flex-row gap-2 items-center">
+            <IconContainer icon="solar:link-bold" width={20} />
             <input type="text" class="grow" readonly value={data.fields.projectURL} />
             <button
               class="cursor-copy"
@@ -278,12 +268,10 @@
           />
         </LabeledFormInput>
         <LabeledFormInput key="project_languageCode">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            readonly
-            value={data.fields.projectLanguageCode}
-          />
+          <div class="input input-bordered w-full">
+            <IconContainer icon="ph:globe" width={20} />
+            <input type="text" readonly value={data.fields.projectLanguageCode} />
+          </div>
         </LabeledFormInput>
       {/if}
     </div>
