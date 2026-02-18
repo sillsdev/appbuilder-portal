@@ -62,7 +62,6 @@ export const load = (async ({ params, locals }) => {
             select: {
               ProductBuild: {
                 select: {
-                  Id: true,
                   Version: true,
                   BuildEngineBuildId: true,
                   Success: true,

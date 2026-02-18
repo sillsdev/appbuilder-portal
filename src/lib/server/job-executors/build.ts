@@ -43,7 +43,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
   if (productData.WorkflowInstance) {
     // reset previous build
     await DatabaseWrites.products.update(job.data.productId, {
-      BuildEngineBuildId: 0
+      CurrentBuildId: null
     });
     job.updateProgress(20);
     const params = await getWorkflowParameters(productData.WorkflowInstance.ProductId, 'build');
@@ -91,16 +91,17 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
       }
       throw new Error(message);
     } else {
-      await DatabaseWrites.products.update(job.data.productId, {
-        BuildEngineBuildId: response.id
-      });
-      job.updateProgress(65);
-
-      const productBuild = await DatabaseWrites.productBuilds.create({
+      await DatabaseWrites.productBuilds.create({
         data: {
           ProductId: job.data.productId,
           BuildEngineBuildId: response.id
         }
+      });
+
+      job.updateProgress(65);
+
+      await DatabaseWrites.products.update(job.data.productId, {
+        CurrentBuildId: response.id
       });
 
       job.updateProgress(85);
@@ -114,7 +115,6 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
           organizationId: productData.Project.OrganizationId,
           jobId: productData.BuildEngineJobId,
           buildId: response.id,
-          productBuildId: productBuild.Id,
           transition: job.data.transition
         }
       });
@@ -140,7 +140,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
     where: { Id: job.data.productId },
     select: {
       BuildEngineJobId: true,
-      BuildEngineBuildId: true,
+      CurrentBuildId: true,
       ProductDefinition: {
         select: {
           Name: true
@@ -183,7 +183,10 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
               if (version['version']) {
                 await DatabaseWrites.productBuilds.update({
                   where: {
-                    Id: job.data.productBuildId
+                    ProductId_BuildEngineBuildId: {
+                      ProductId: job.data.productId,
+                      BuildEngineBuildId: job.data.build.id
+                    }
                   },
                   data: {
                     Version: version['version']
@@ -198,7 +201,10 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
               if (version['appbuilderVersion']) {
                 await DatabaseWrites.productBuilds.update({
                   where: {
-                    Id: job.data.productBuildId
+                    ProductId_BuildEngineBuildId: {
+                      ProductId: job.data.productId,
+                      BuildEngineBuildId: job.data.build.id
+                    }
                   },
                   data: {
                     AppBuilderVersion: version['appbuilderVersion']
@@ -240,7 +246,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
 
             return {
               ProductId: job.data.productId,
-              ProductBuildId: job.data.productBuildId,
+              BuildEngineBuildId: job.data.build.id,
               ArtifactType: type,
               Url: url,
               ContentType: res.headers.get('Content-Type'),
@@ -262,7 +268,10 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
   job.updateProgress(75);
   await DatabaseWrites.productBuilds.update({
     where: {
-      Id: job.data.productBuildId
+      ProductId_BuildEngineBuildId: {
+        ProductId: job.data.productId,
+        BuildEngineBuildId: job.data.build.id
+      }
     },
     data: {
       Success: job.data.build.result === 'SUCCESS'
@@ -273,7 +282,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
   if (flow) {
     if (job.data.build.result === 'SUCCESS') {
       await notifyCompleted(
-        job.data.productBuildId,
+        job.data.build.id,
         job.data.productId,
         product.Project.OwnerId,
         product.Project.Name!,
@@ -306,7 +315,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
       }
       if (action === WorkflowAction.Build_Failed) {
         await notifyFailed(
-          job.data.productBuildId,
+          job.data.build.id,
           job.data.productId,
           product,
           job.data.build,
@@ -319,7 +328,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
         });
       } else {
         await notifyRetrying(
-          job.data.productBuildId,
+          job.data.build.id,
           job.data.productId,
           product,
           job.data.build,
@@ -401,7 +410,7 @@ async function notifyUnableToCreate(
   );
 }
 async function notifyCompleted(
-  productBuildId: number,
+  buildId: number,
   productId: string,
   userId: number,
   projectName: string,
@@ -409,7 +418,7 @@ async function notifyCompleted(
   transition?: number
 ) {
   return getQueues().Emails.add(
-    `Notify Owner of Successful Completion of Build #${productBuildId} for Product #${productId}`,
+    `Notify Owner of Successful Completion of Build #${buildId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToUser,
       userId,
@@ -424,11 +433,10 @@ async function notifyCompleted(
   );
 }
 async function notifyFailed(
-  productBuildId: number,
+  buildId: number,
   productId: string,
   product: Prisma.ProductsGetPayload<{
     select: {
-      BuildEngineBuildId: true;
       BuildEngineJobId: true;
       ProductDefinition: {
         select: { Name: true };
@@ -447,7 +455,7 @@ async function notifyFailed(
 ) {
   const endpoint = await BuildEngine.Requests.queryURLandToken(product.Project.OrganizationId);
   return getQueues().Emails.add(
-    `Notify Owner/Admins of Failure to Create Build #${productBuildId} for Product #${productId}`,
+    `Notify Owner/Admins of Failure to Create Build #${buildId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
       projectId: product.Project.Id,
@@ -457,11 +465,11 @@ async function notifyFailed(
         productName: product.ProductDefinition.Name!,
         buildStatus: buildResponse.status,
         buildError: buildResponse.error!,
-        buildEngineUrl: endpoint.url + '/build-admin/view?id=' + product.BuildEngineBuildId,
+        buildEngineUrl: endpoint.url + '/build-admin/view?id=' + buildId,
         consoleText: buildResponse.artifacts['consoleText'] ?? '',
         projectId: '' + product.Project.Id,
         jobId: '' + product.BuildEngineJobId,
-        buildId: '' + product.BuildEngineBuildId,
+        buildId: '' + buildId,
         projectUrl: projectUrl(product.Project.Id)
       },
       link: buildResponse.artifacts['consoleText'] ?? '',
@@ -480,7 +488,7 @@ export async function notifyProductNotFound(productId: string) {
   return { message: 'Product Not Found' };
 }
 async function notifyRetrying(
-  productBuildId: number,
+  buildId: number,
   productId: string,
   product: Prisma.ProductsGetPayload<{
     select: {
@@ -499,7 +507,7 @@ async function notifyRetrying(
   transition?: number
 ) {
   return getQueues().Emails.add(
-    `Notify Admins of Retry with Medium Compute for Build #${productBuildId} for Product #${productId}`,
+    `Notify Admins of Retry with Medium Compute for Build #${buildId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
       messageKey: 'retryBuild',

@@ -597,7 +597,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
         orderBy: { DateCreated: 'desc' },
         take: 1,
         select: {
-          Id: true,
+          BuildEngineBuildId: true,
           AppBuilderVersion: true,
           ProductArtifacts: {
             where: {
@@ -646,7 +646,12 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
             if (appVersion) {
               builtVersions.add(appVersion);
               await DatabaseWrites.productBuilds.update({
-                where: { Id: p.ProductBuilds[0].Id },
+                where: {
+                  ProductId_BuildEngineBuildId: {
+                    ProductId: p.Id,
+                    BuildEngineBuildId: p.ProductBuilds[0].BuildEngineBuildId
+                  }
+                },
                 data: { AppBuilderVersion: appVersion }
               });
             }

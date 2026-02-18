@@ -35,7 +35,7 @@
         DateResolved: true;
       };
     }>;
-    latestBuildId: number | undefined;
+    latestBuildId: number | null | undefined;
     allowDownloads?: boolean;
   }
 
