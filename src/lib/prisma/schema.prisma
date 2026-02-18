@@ -83,23 +83,22 @@ model Organizations {
 }
 
 model ProductArtifacts {
-  ProductId      String        @db.Uuid
-  ProductBuildId Int
-  ArtifactType   String
-  Url            String?
-  FileSize       BigInt?
-  ContentType    String?
-  DateCreated    DateTime?     @default(now()) @db.Timestamp(6)
-  DateUpdated    DateTime?     @updatedAt @db.Timestamp(6)
-  ProductBuild   ProductBuilds @relation(fields: [ProductBuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductArtifacts_ProductBuilds_ProductBuildId")
-  Product        Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductArtifacts_Products_ProductId")
+  ProductId          String        @db.Uuid
+  BuildEngineBuildId Int
+  ArtifactType       String
+  Url                String?
+  FileSize           BigInt?
+  ContentType        String?
+  DateCreated        DateTime?     @default(now()) @db.Timestamp(6)
+  DateUpdated        DateTime?     @updatedAt @db.Timestamp(6)
+  ProductBuild       ProductBuilds @relation(fields: [ProductId, BuildEngineBuildId], references: [ProductId, BuildEngineBuildId], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductArtifacts_ProductBuilds_ProductId_BuildEngineBuildId")
+  Product            Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductArtifacts_Products_ProductId")
 
-  @@id([ProductBuildId, ArtifactType], map: "PK_ProductArtifacts_ProductBuildId_ArtifactType")
+  @@id([ProductId, BuildEngineBuildId, ArtifactType], map: "PK_ProductArtifacts_ProductId_BEBuildId_ArtifactType")
   @@index([ProductId], map: "IX_ProductArtifacts_ProductId")
 }
 
 model ProductBuilds {
-  Id                  Int                   @id(map: "PK_ProductBuilds") @default(autoincrement())
   ProductId           String                @db.Uuid
   BuildEngineBuildId  Int
   Version             String?
@@ -108,11 +107,12 @@ model ProductBuilds {
   Success             Boolean?
   AppBuilderVersion   String?
   ProductArtifacts    ProductArtifacts[]
-  Product             Products              @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductBuilds_Products_ProductId")
+  Product             Products              @relation(name: "Products_ProductBuilds_all", fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductBuilds_Products_ProductId")
+  Current             Products?             @relation("Products_ProductBuilds_CurrentBuild")
   // A build may have multiple publications if a SuperAdmin jumps directly from Synchronize Data to Product Publish
   ProductPublications ProductPublications[]
 
-  @@index([ProductId], map: "IX_ProductBuilds_ProductId")
+  @@id([ProductId, BuildEngineBuildId], map: "PK_ProductBuilds_ProductId_BuildEngineBuildId")
 }
 
 model ProductDefinitions {
@@ -138,7 +138,7 @@ model ProductDefinitions {
 
 model ProductPublications {
   ProductId            String        @db.Uuid
-  ProductBuildId       Int
+  BuildEngineBuildId   Int
   BuildEngineReleaseId Int
   Channel              String?
   LogUrl               String?
@@ -147,10 +147,12 @@ model ProductPublications {
   DateUpdated          DateTime?     @updatedAt @db.Timestamp(6)
   Package              String?
   DateResolved         DateTime?     @db.Timestamp(6)
-  ProductBuild         ProductBuilds @relation(fields: [ProductBuildId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_ProductBuilds_ProductBuildId")
-  Product              Products      @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_Products_ProductId")
+  ProductBuild         ProductBuilds @relation(fields: [ProductId, BuildEngineBuildId], references: [ProductId, BuildEngineBuildId], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_ProductBuilds_ProductId_BEBuildId")
+  Product              Products      @relation(name: "Products_ProductPublications_all", fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_Products_ProductId")
+  Current              Products?     @relation("Products_ProductPublications_CurrentRelease")
 
-  @@id([ProductBuildId, BuildEngineReleaseId], map: "PK_ProductPublications_ProductBuildId_BuildEngineReleaseId")
+  @@id([ProductId, BuildEngineReleaseId], map: "PK_ProductPublications_ProductId_BuildEngineReleaseId")
+  @@index([BuildEngineBuildId], map: "IX_ProductPublications_BuildEngineBuildId")
   @@index([Package], map: "IX_ProductPublications_Package")
   @@index([ProductId], map: "IX_ProductPublications_ProductId")
 }
@@ -187,35 +189,41 @@ model QueueRecords {
 }
 
 model Products {
-  Id                   String                @id(map: "PK_Products") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  ProjectId            Int
-  ProductDefinitionId  Int
-  StoreId              Int?
-  StoreLanguageId      Int?
-  DateCreated          DateTime?             @default(now()) @db.Timestamp(6)
-  DateUpdated          DateTime?             @updatedAt @db.Timestamp(6)
-  BuildEngineJobId     Int
-  BuildEngineBuildId   Int
-  DateBuilt            DateTime?             @db.Timestamp(6)
-  BuildEngineReleaseId Int
-  DatePublished        DateTime?             @db.Timestamp(6)
-  PublishLink          String?
-  VersionBuilt         String?
-  Properties           String?
-  PackageName          String?
-  ProductArtifacts     ProductArtifacts[]
-  ProductBuilds        ProductBuilds[]
-  ProductPublications  ProductPublications[]
-  ProductTransitions   ProductTransitions[]
-  ProductDefinition    ProductDefinitions    @relation(fields: [ProductDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_ProductDefinitions_ProductDefinitionId")
-  Project              Projects              @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_Projects_ProjectId")
-  StoreLanguage        StoreLanguages?       @relation(fields: [StoreLanguageId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_StoreLanguages_StoreLanguageId")
-  Store                Stores?               @relation(fields: [StoreId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_Stores_StoreId")
-  UserTasks            UserTasks[]
-  WorkflowInstance     WorkflowInstances?
-  ProductUserChanges   ProductUserChanges[]
-  SoftwareUpdates      SoftwareUpdates[]
+  Id                  String                @id(map: "PK_Products") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  ProjectId           Int
+  ProductDefinitionId Int
+  StoreId             Int
+  StoreLanguageId     Int?
+  DateCreated         DateTime?             @default(now()) @db.Timestamp(6)
+  DateUpdated         DateTime?             @updatedAt @db.Timestamp(6)
+  BuildEngineJobId    Int
+  CurrentBuildId      Int?
+  DateBuilt           DateTime?             @db.Timestamp(6)
+  CurrentReleaseId    Int?
+  DatePublished       DateTime?             @db.Timestamp(6)
+  PublishLink         String?
+  VersionBuilt        String?
+  Properties          String?
+  PackageName         String?
+  ProductArtifacts    ProductArtifacts[]
+  // Note: this should only set CurrentBuildId to null
+  CurrentBuild        ProductBuilds?        @relation(name: "Products_ProductBuilds_CurrentBuild", fields: [Id, CurrentBuildId], references: [ProductId, BuildEngineBuildId], onDelete: SetNull, onUpdate: NoAction, map: "FK_Products_ProductBuilds_CurrentBuildId")
+  ProductBuilds       ProductBuilds[]       @relation("Products_ProductBuilds_all")
+  // Note: this should only set CurrentReleaseId to null
+  CurrentRelease      ProductPublications?  @relation(name: "Products_ProductPublications_CurrentRelease", fields: [Id, CurrentReleaseId], references: [ProductId, BuildEngineReleaseId], onDelete: SetNull, onUpdate: NoAction, map: "FK_Products_ProductPublications_CurrentReleaseId")
+  ProductPublications ProductPublications[] @relation("Products_ProductPublications_all")
+  ProductTransitions  ProductTransitions[]
+  ProductDefinition   ProductDefinitions    @relation(fields: [ProductDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_ProductDefinitions_ProductDefinitionId")
+  Project             Projects              @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_Projects_ProjectId")
+  StoreLanguage       StoreLanguages?       @relation(fields: [StoreLanguageId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_StoreLanguages_StoreLanguageId")
+  Store               Stores                @relation(fields: [StoreId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_Stores_StoreId")
+  UserTasks           UserTasks[]
+  WorkflowInstance    WorkflowInstances?
+  ProductUserChanges  ProductUserChanges[]
+  SoftwareUpdates     SoftwareUpdates[]
 
+  @@unique([Id, CurrentBuildId])
+  @@unique([Id, CurrentReleaseId])
   @@index([ProductDefinitionId], map: "IX_Products_ProductDefinitionId")
   @@index([ProjectId], map: "IX_Products_ProjectId")
   @@index([StoreId], map: "IX_Products_StoreId")
