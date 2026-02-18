@@ -6,6 +6,7 @@
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -59,14 +60,16 @@
     <div class="flex flex-row justify-between gap-4 flex-wrap">
       <div class="grow">
         <LabeledFormInput key="orgMembership_email">
-          <input
-            type="email"
-            name="email"
-            placeholder="user@example.com"
-            class="input input-bordered w-full validator"
-            bind:value={$form.email}
-            required
-          />
+          <div class="input input-bordered w-full validator">
+            <IconContainer icon="ic:baseline-email" width={24} class="cursor-pointer" />
+            <input
+              type="email"
+              name="email"
+              placeholder="user@example.com"
+              bind:value={$form.email}
+              required
+            />
+          </div>
           <span class="validator-hint">
             {$form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty()}
           </span>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
@@ -34,12 +35,10 @@
         <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
       </LabeledFormInput>
       <LabeledFormInput key="project_orgContact">
-        <input
-          name="contact"
-          class="input input-bordered w-full validator"
-          type="email"
-          bind:value={$form.contact}
-        />
+        <div class="input input-bordered w-full validator">
+          <IconContainer icon="ic:baseline-email" width={24} class="cursor-pointer" />
+          <input type="email" name="contact" bind:value={$form.contact} />
+        </div>
         <span class="validator-hint">{m.formErrors_emailInvalid()}</span>
       </LabeledFormInput>
       <LabeledFormInput key="org_logoURL">
