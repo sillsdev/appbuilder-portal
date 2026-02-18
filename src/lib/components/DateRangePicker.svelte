@@ -1,7 +1,7 @@
 <script lang="ts">
   import sv_flatpickr, { themeChanger, themeNames } from 'svelte-flatpickr-plus';
-  import IconContainer from './IconContainer.svelte';
   import { browser } from '$app/environment';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   // This component is here because the range mode of the Flatpickr svelte package
   // is a bit broken. Essentially, the 'value' property is updated when the second
@@ -47,21 +47,23 @@
       ])
   }}
 >
-  <span class="input input-bordered flex items-center gap-2 w-full">
+  <label class="input input-bordered flex items-center gap-2 w-full">
+    <IconContainer icon="material-symbols:date-range" width={24} class="cursor-pointer" />
     <input name="dateRange" class="grow" {placeholder} data-input />
     {#if chosenDates?.some((d) => !!d)}
       <button
-        onclick={() => {
+        onclick={(e) => {
           //@ts-expect-error This is somehow how this is supposed to work according to the docs
           dateElement._flatpickr.clear();
           chosenDates = null;
+          e.preventDefault();
         }}
         title={m.common_clear()}
       >
         <IconContainer icon="mdi:close" class="ml-auto cursor-pointer" width={24} />
       </button>
     {/if}
-  </span>
+  </label>
 </div>
 
 <style>
