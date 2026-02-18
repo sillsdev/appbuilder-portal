@@ -33,9 +33,14 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
         `External Id (build: ${product.BuildEngineBuildId}) does not match expected (build: ${job.data.buildId})`
       );
     }
+    const response = await BuildEngine.Requests.deleteBuild(
+      { type: 'query', organizationId: job.data.organizationId },
+      job.data.jobId,
+      job.data.buildId
+    );
     await DatabaseWrites.productBuilds.deleteMany({ where: { Id: job.data.productBuildId } });
     job.updateProgress(100);
-    return { product };
+    return { product, response };
   }
   job.updateProgress(25);
   const response = await BuildEngine.Requests.getBuild(
@@ -99,6 +104,12 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
         `External Id (build: ${product.BuildEngineBuildId}, release: ${product.BuildEngineReleaseId}) does not match expected (build: ${job.data.buildId}, release: ${job.data.releaseId})`
       );
     }
+    const response = await BuildEngine.Requests.deleteRelease(
+      { type: 'query', organizationId: job.data.organizationId },
+      job.data.jobId,
+      job.data.buildId,
+      job.data.releaseId
+    );
     await DatabaseWrites.productPublications.deleteMany({
       where: {
         ProductBuildId: job.data.productBuildId,
@@ -106,7 +117,7 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
       }
     });
     job.updateProgress(100);
-    return { product };
+    return { product, response };
   }
   job.updateProgress(25);
   const response = await BuildEngine.Requests.getRelease(
