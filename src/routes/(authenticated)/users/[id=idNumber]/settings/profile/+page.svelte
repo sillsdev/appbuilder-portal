@@ -1,12 +1,15 @@
 <script lang="ts">
+  import Icon from '@iconify/svelte';
   import { getTimeZones } from '@vvo/tzdb';
   import Fuse from 'fuse.js';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { page } from '$app/state';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import Toggle from '$lib/components/settings/Toggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import type { RoleId } from '$lib/prisma';
   import { NotificationType } from '$lib/users';
@@ -93,35 +96,31 @@
       <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
     <LabeledFormInput key="profile_name">
-      <input
-        type="text"
-        name="displayName"
-        class="input input-bordered w-full validator"
-        bind:value={$form.displayName}
-        required
-      />
+      <div class="input input-bordered w-full validator">
+        <IconContainer icon="mdi:user" width={24} class="cursor-pointer" />
+        <input type="text" name="displayName" bind:value={$form.displayName} required />
+      </div>
       <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
     </LabeledFormInput>
     <LabeledFormInput key="profile_email">
-      <input
-        type="email"
-        name="email"
-        class="input input-bordered w-full validator"
-        bind:value={$form.email}
-        required
-      />
+      <div class="input input-bordered w-full validator">
+        <IconContainer icon="ic:baseline-email" width={24} class="cursor-pointer" />
+        <input type="email" name="email" bind:value={$form.email} required />
+      </div>
       <span class="validator-hint">
         {$form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty()}
       </span>
     </LabeledFormInput>
     <LabeledFormInput key="profile_phone">
-      <input
-        type="tel"
-        name="phone"
-        class="input input-bordered w-full validator"
-        bind:value={$form.phone}
-        pattern={regExpToInputPattern(phoneRegex)}
-      />
+      <div class="input input-bordered w-full validator">
+        <IconContainer icon="ic:baseline-phone" width={24} class="cursor-pointer" />
+        <input
+          type="tel"
+          name="phone"
+          bind:value={$form.phone}
+          pattern={regExpToInputPattern(phoneRegex)}
+        />
+      </div>
       <span class="validator-hint">&nbsp;</span>
     </LabeledFormInput>
     <LabeledFormInput key="profile_timezone">
@@ -138,6 +137,7 @@
           default: ['w-full', tzValue && !timeZoneMap.has(tzValue) && 'select-error'],
           dropdown: 'w-full bg-base-100'
         }}
+        icon="mdi:timezone"
       >
         {#snippet listElement(res, selected)}
           <div class="w-full right-0" class:selected>
@@ -146,18 +146,15 @@
         {/snippet}
       </TypeaheadInput>
     </LabeledFormInput>
-    <InputWithMessage
+    <Toggle
       class="mt-4"
       title={{ key: 'profile_notificationSettingsTitle' }}
       message={{ key: 'profile_optOutOfEmailOption' }}
-    >
-      <input
-        type="checkbox"
-        name="notifications"
-        class="toggle toggle-accent ml-4"
-        bind:checked={$form.notifications}
-      />
-    </InputWithMessage>
+      bind:checked={$form.notifications}
+      name="notifications"
+      onIcon="iconamoon:notification-fill"
+      offIcon="iconamoon:notification-off"
+    />
     {#if !$form.notifications}
       <LabeledFormInput
         key="profile_emailExceptions"
@@ -168,37 +165,40 @@
             message={{ key: 'profile_email_options', params: { option } }}
             class="my-1"
           >
-            <input
-              class="toggle toggle-info border-info"
-              type="checkbox"
-              bind:group={$form.emailOptions}
-              value={option}
-            />
+            <div
+              class={['toggle toggle-info', $form.emailOptions.includes(option) && 'border-info']}
+            >
+              <input
+                class="checked:bg-info checked:border-info rounded-full"
+                type="checkbox"
+                bind:group={$form.emailOptions}
+                value={option}
+              />
+              <Icon icon="iconamoon:notification-off" width={20} height={20} />
+              <Icon icon="iconamoon:notification-fill" width={20} height={20} color="white" />
+            </div>
           </InputWithMessage>
         {/each}
       </LabeledFormInput>
     {/if}
-    <InputWithMessage
+    <Toggle
       class="mt-4"
       title={{ key: 'profile_visibleProfile' }}
       message={{ key: 'profile_visibility_visible' }}
-    >
-      <input
-        type="checkbox"
-        name="visible"
-        class="toggle toggle-accent ml-4"
-        bind:checked={$form.visible}
-      />
-    </InputWithMessage>
-    <InputWithMessage class="mt-4" title={{ key: 'users_table_active' }}>
-      <input
-        type="checkbox"
-        name="active"
-        class="toggle toggle-accent ml-4"
-        disabled={page.data.session?.user.userId === data.subject.Id}
-        bind:checked={$form.active}
-      />
-    </InputWithMessage>
+      bind:checked={$form.visible}
+      name="visible"
+      onIcon="mdi:eye"
+      offIcon="mdi:eye-off-outline"
+    />
+    <Toggle
+      class="mt-4"
+      title={{ key: 'users_table_active' }}
+      name="active"
+      inputAttr={{ disabled: page.data.session?.user.userId === data.subject.Id }}
+      bind:checked={$form.active}
+      onIcon="mdi:lock-open-variant"
+      offIcon="mdi:lock"
+    />
     <div class="flex my-2">
       <button type="submit" class="btn btn-primary">{m.common_save()}</button>
     </div>

@@ -28,9 +28,9 @@
 </script>
 
 <InputWithMessage {title} {message} class={[classes, inputAttr.disabled && 'cursor-not-allowed']}>
-  <label
+  <div
     class={[
-      'toggle text-base-content',
+      'toggle',
       checked && 'border-accent',
       inputAttr.disabled && 'cursor-not-allowed opacity-50 pointer-events-none'
     ]}
@@ -45,5 +45,5 @@
     />
     <Icon icon={offIcon} width={20} height={20} />
     <Icon icon={onIcon} width={20} height={20} color="white" />
-  </label>
+  </div>
 </InputWithMessage>
