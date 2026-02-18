@@ -3,6 +3,7 @@
   import { enhance } from '$app/forms';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
   import { type ComputeType, computeTypes, getComputeType, updateComputeType } from '$lib/products';
 
@@ -94,10 +95,7 @@
           >
             {m.common_default()}
           </button>
-          <input
-            class="btn btn-primary"
-            type="submit"
-            value={m.common_save()}
+          <SubmitButton
             disabled={!ok}
             onclick={() => {
               modal?.close();

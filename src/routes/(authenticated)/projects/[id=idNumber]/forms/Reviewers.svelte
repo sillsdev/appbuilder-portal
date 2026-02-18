@@ -5,6 +5,7 @@
   import { enhance as svk_enhance } from '$app/forms';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import LocaleSelector, { getFlag } from '$lib/components/LocaleSelector.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
@@ -110,10 +111,11 @@
                 </span>
               {/snippet}
             </LocaleSelector>
-            <button type="submit" class="btn btn-primary" disabled={!($form.name && $form.email)}>
-              <IconContainer icon="mdi:eye-add" width={20} />
-              {m.reviewers_submit()}
-            </button>
+            <SubmitButton
+              disabled={!($form.name && $form.email)}
+              icon="mdi:eye-add"
+              key="reviewers_submit"
+            />
           </div>
         </div>
       </form>

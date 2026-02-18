@@ -2,6 +2,7 @@
   import { enhance } from '$app/forms';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
 </script>
@@ -42,6 +43,6 @@
     </LabeledFormInput>
   </div>
   <div class="mt-4">
-    <input type="submit" class="float-right btn btn-primary" value={m.common_save()} />
+    <SubmitButton class="float-right" />
   </div>
 </form>

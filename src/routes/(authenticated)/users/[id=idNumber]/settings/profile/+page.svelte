@@ -9,6 +9,7 @@
   import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import type { RoleId } from '$lib/prisma';
@@ -200,7 +201,7 @@
       offIcon="mdi:lock"
     />
     <div class="flex my-2">
-      <button type="submit" class="btn btn-primary">{m.common_save()}</button>
+      <SubmitButton />
     </div>
   </div>
 </form>

@@ -3,6 +3,7 @@
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -48,6 +49,6 @@
   </LabeledFormInput>
   <div class="my-4">
     <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <SubmitButton />
   </div>
 </form>

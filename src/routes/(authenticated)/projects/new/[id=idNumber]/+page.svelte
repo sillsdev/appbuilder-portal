@@ -6,6 +6,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -124,13 +125,12 @@
           {#snippet altContent()}
             {m.common_save()}
           {/snippet}
-          <button
-            class="btn btn-primary w-full max-w-xs"
+          <SubmitButton
+            class="w-full max-w-xs"
             disabled={!($form.Name.length && $form.Language.length)}
-            type="submit"
           >
             {@render altContent()}
-          </button>
+          </SubmitButton>
         </BlockIfJobsUnavailable>
       </div>
     </div>

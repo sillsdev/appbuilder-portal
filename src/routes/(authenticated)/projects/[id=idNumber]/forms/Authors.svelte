@@ -5,6 +5,7 @@
   import { enhance as svk_enhance } from '$app/forms';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -118,9 +119,9 @@
               <IconContainer icon="mdi:user-add" width={20} />
               {m.authors_submit()}
             {/snippet}
-            <button type="submit" class="btn btn-primary" disabled={!$form.author}>
+            <SubmitButton disabled={!$form.author}>
               {@render altContent()}
-            </button>
+            </SubmitButton>
           </BlockIfJobsUnavailable>
         </div>
       </form>

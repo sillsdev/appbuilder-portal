@@ -6,6 +6,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -99,11 +100,9 @@
         >
           {m.common_cancel()}
         </a>
-        <input
-          class="btn btn-primary w-full max-w-xs"
-          class:btn-disabled={!($form.name.length && $form.language.length)}
-          type="submit"
-          value={m.common_save()}
+        <SubmitButton
+          class="w-full max-w-xs"
+          disabled={!($form.name.length && $form.language.length)}
         />
       </div>
     </div>

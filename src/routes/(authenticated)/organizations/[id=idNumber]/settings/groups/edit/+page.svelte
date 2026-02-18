@@ -4,6 +4,7 @@
   import { enhance as svk_enhance } from '$app/forms';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import GroupUsers from '$lib/organizations/components/GroupUsers.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
@@ -68,7 +69,7 @@
   </LabeledFormInput>
   <div>
     <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <SubmitButton />
   </div>
 </form>
 <div class="m-4">
@@ -143,6 +144,6 @@
 {#if !data.group._count.Projects}
   <form class="m-4" method="post" action="?/deleteGroup" use:deleteEnhance>
     <input type="hidden" name="id" value={$deleteForm.id} />
-    <input type="submit" class="btn btn-error w-full" value={m.common_delete()} />
+    <SubmitButton class="btn-error! w-full" key="common_delete" icon="mdi:trash" />
   </form>
 {/if}

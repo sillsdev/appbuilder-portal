@@ -3,6 +3,7 @@
   import type { PageData } from './$types';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
 
@@ -59,6 +60,6 @@
     </div>
   </div>
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <SubmitButton />
   </div>
 </form>

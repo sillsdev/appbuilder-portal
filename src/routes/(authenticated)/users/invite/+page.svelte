@@ -9,6 +9,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
@@ -125,7 +126,9 @@
         {#snippet altContent()}
           {m.orgMembership_send()}
         {/snippet}
-        <input type="submit" class="btn btn-primary" value={m.orgMembership_send()} />
+        <SubmitButton>
+          {@render altContent()}
+        </SubmitButton>
       </BlockIfJobsUnavailable>
     </div>
   </form>

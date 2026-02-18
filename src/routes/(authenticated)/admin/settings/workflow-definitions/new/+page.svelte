@@ -5,6 +5,7 @@
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { WorkflowType } from '$lib/prisma';
@@ -115,7 +116,7 @@
   </InputWithMessage>
   <div class="my-4">
     <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
-    <input type="submit" class="btn btn-primary" value={m.common_save()} disabled={!propsOk} />
+    <SubmitButton disabled={!propsOk} />
   </div>
 </form>
 
