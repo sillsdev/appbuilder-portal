@@ -1,3 +1,4 @@
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
@@ -55,7 +56,7 @@ export async function update(
   const orgId = projectData.OrganizationId ?? existing!.OrganizationId;
   const groupId = projectData.GroupId ?? existing!.GroupId;
   const ownerId = projectData.OwnerId ?? existing!.OwnerId;
-  if (!(await validateProjectBase(orgId, groupId, ownerId))) return false;
+  if (!(await validateProjectBase(orgId, groupId, ownerId, id))) return false;
 
   // No additional verification steps
 
@@ -113,7 +114,12 @@ export async function createMany(projectData: RequirePrimitive<Prisma.ProjectsCr
 // }
 // export { deleteProject as delete };
 
-async function validateProjectBase(orgId: number, groupId: number, ownerId: number) {
+async function validateProjectBase(
+  orgId: number,
+  groupId: number,
+  ownerId: number,
+  projectId?: number
+) {
   // Each of the criteria for a valid project just needs to checked if
   // the relevant data is supplied. If it isn't, then this is an update
   // and the data was valid already, or PostgreSQL will catch it
@@ -131,11 +137,33 @@ async function validateProjectBase(orgId: number, groupId: number, ownerId: numb
   const userInOrg = !!user?.Organizations.length;
   /** disregard owner restrictions if owner is Super Admin */
   const userIsSuperAdmin = !!user?.UserRoles.length;
-  return !!(
-    // project group must be owned by project org
-    (
-      orgId === (await prisma.groups.findUnique({ where: { Id: groupId } }))?.OwnerId &&
-      ((userInGroup && userInOrg) || userIsSuperAdmin)
-    )
-  );
+
+  /* project group must be owned by project org */
+  const orgOwnsGroup =
+    orgId === (await prisma.groups.findUnique({ where: { Id: groupId } }))?.OwnerId;
+
+  const check = orgOwnsGroup && ((userInGroup && userInOrg) || userIsSuperAdmin);
+
+  if (!check) {
+    const span = trace.getActiveSpan();
+    if (span) {
+      const msg = `Project validation failed for ${projectId || 'new project'}`;
+      span.addEvent(msg, {
+        'project.organization-id': orgId,
+        'project.group-id': groupId,
+        'project.owner-id': ownerId,
+        'project.group-in-org': orgOwnsGroup,
+        'project.user-in-group': userInGroup,
+        'project.user-in-org': userInOrg
+      });
+
+      span.recordException(new Error(msg));
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: msg
+      });
+    }
+  }
+
+  return check;
 }
