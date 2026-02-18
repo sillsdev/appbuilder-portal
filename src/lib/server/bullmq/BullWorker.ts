@@ -61,6 +61,8 @@ export class Builds<J extends BullMQ.BuildJob> extends BullWorker<J> {
         return Executor.Build.product(job as Job<BullMQ.Build.Product>);
       case BullMQ.JobType.Build_PostProcess:
         return Executor.Build.postProcess(job as Job<BullMQ.Build.PostProcess>);
+      case BullMQ.JobType.Build_Delete:
+        return Executor.Build.deleteBuild(job as Job<BullMQ.Build.Delete>);
     }
   }
 }
@@ -194,6 +196,8 @@ export class Publishing<J extends BullMQ.PublishJob> extends BullWorker<J> {
         return Executor.Publish.product(job as Job<BullMQ.Publish.Product>);
       case BullMQ.JobType.Publish_PostProcess:
         return Executor.Publish.postProcess(job as Job<BullMQ.Publish.PostProcess>);
+      case BullMQ.JobType.Publish_Delete:
+        return Executor.Publish.deleteRelease(job as Job<BullMQ.Publish.Delete>);
     }
   }
 }

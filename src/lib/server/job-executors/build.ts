@@ -341,6 +341,23 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
   };
 }
 
+// This shouldn't need any notifications
+export async function deleteBuild(job: Job<BullMQ.Build.Delete>): Promise<unknown> {
+  const response = await BuildEngine.Requests.deleteBuild(
+    { type: 'query', organizationId: job.data.organizationId },
+    job.data.buildEngineJobId,
+    job.data.buildEngineBuildId
+  );
+  job.updateProgress(50);
+  if (response.responseType === 'error') {
+    job.log(response.message);
+    throw new Error(response.message);
+  } else {
+    job.updateProgress(100);
+    return response.status;
+  }
+}
+
 async function notifyConnectionFailed(
   productId: string,
   projectId: number,

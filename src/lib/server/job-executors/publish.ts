@@ -279,6 +279,24 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
   return { publication };
 }
 
+// This shouldn't need any notifications
+export async function deleteRelease(job: Job<BullMQ.Publish.Delete>): Promise<unknown> {
+  const response = await BuildEngine.Requests.deleteRelease(
+    { type: 'query', organizationId: job.data.organizationId },
+    job.data.buildEngineJobId,
+    job.data.buildEngineBuildId,
+    job.data.buildEngineReleaseId
+  );
+  job.updateProgress(50);
+  if (response.responseType === 'error') {
+    job.log(response.message);
+    throw new Error(response.message);
+  } else {
+    job.updateProgress(100);
+    return response.status;
+  }
+}
+
 async function notifyConnectionFailed(
   productId: string,
   projectId: number,

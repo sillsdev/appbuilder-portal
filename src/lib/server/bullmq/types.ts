@@ -40,6 +40,13 @@ export namespace Build {
     productBuildId: number;
     build: BuildResponse;
   }
+
+  export interface Delete extends BaseJob {
+    type: JobType.Build_Delete;
+    organizationId: number;
+    buildEngineJobId: number;
+    buildEngineBuildId: number;
+  }
 }
 
 export namespace Polling {
@@ -127,6 +134,14 @@ export namespace Publish {
     productId: string;
     productBuildId: number;
     release: ReleaseResponse;
+  }
+
+  export interface Delete extends BaseJob {
+    type: JobType.Publish_Delete;
+    organizationId: number;
+    buildEngineJobId: number;
+    buildEngineBuildId: number;
+    buildEngineReleaseId: number;
   }
 }
 
@@ -256,7 +271,10 @@ export namespace SvelteProjectSSE {
 
 export type Job = JobTypeMap[keyof JobTypeMap];
 
-export type BuildJob = JobTypeMap[JobType.Build_Product | JobType.Build_PostProcess];
+export type BuildJob = JobTypeMap[
+  | JobType.Build_Product
+  | JobType.Build_PostProcess
+  | JobType.Build_Delete];
 export type RecurringJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags];
@@ -264,7 +282,10 @@ export type StartupJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags
   | JobType.System_Migrate];
-export type PublishJob = JobTypeMap[JobType.Publish_Product | JobType.Publish_PostProcess];
+export type PublishJob = JobTypeMap[
+  | JobType.Publish_Product
+  | JobType.Publish_PostProcess
+  | JobType.Publish_Delete];
 export type PollJob = JobTypeMap[JobType.Poll_Build | JobType.Poll_Publish | JobType.Poll_Project];
 export type UserTasksJob = JobTypeMap[JobType.UserTasks_Modify];
 export type EmailJob = JobTypeMap[
@@ -291,6 +312,7 @@ export type ProjectJob = JobTypeMap[JobType.Project_Create | JobType.Project_Imp
 export type JobTypeMap = {
   [JobType.Build_Product]: Build.Product;
   [JobType.Build_PostProcess]: Build.PostProcess;
+  [JobType.Build_Delete]: Build.Delete;
   [JobType.Poll_Build]: Polling.Build;
   [JobType.Poll_Project]: Polling.Project;
   [JobType.Poll_Publish]: Polling.Publish;
@@ -303,6 +325,7 @@ export type JobTypeMap = {
   [JobType.Project_ImportProducts]: Project.ImportProducts;
   [JobType.Publish_Product]: Publish.Product;
   [JobType.Publish_PostProcess]: Publish.PostProcess;
+  [JobType.Publish_Delete]: Publish.Delete;
   [JobType.System_CheckEngineStatuses]: System.CheckEngineStatuses;
   [JobType.System_RefreshLangTags]: System.RefreshLangTags;
   [JobType.System_Migrate]: System.Migrate;

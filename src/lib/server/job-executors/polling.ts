@@ -10,10 +10,10 @@ import { NotificationType } from '$lib/users';
 export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
   const product = await DatabaseReads.products.findFirst({
     where: {
-      BuildEngineJobId: job.data.jobId,
-      BuildEngineBuildId: job.data.buildId
+      BuildEngineJobId: job.data.jobId
     },
     select: {
+      BuildEngineBuildId: true,
       WorkflowInstance: {
         select: {
           ProductId: true
@@ -21,12 +21,29 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
       }
     }
   });
-  if (!product?.WorkflowInstance) {
+  if (!product) {
+    return await build_notifyProductNotFound(job.data.productId);
+  }
+  if (!product.WorkflowInstance || product.BuildEngineBuildId !== job.data.buildId) {
     await getQueues().Polling.removeJobScheduler(job.name);
-    job.log('No WorkflowInstance found. Workflow cancelled?');
-    if (!product) {
-      return await build_notifyProductNotFound(job.data.productId);
+    if (!product.WorkflowInstance) {
+      job.log('No WorkflowInstance found. Workflow cancelled?');
+    } else {
+      job.log(
+        `External Id (build: ${product.BuildEngineBuildId}) does not match expected (build: ${job.data.buildId})`
+      );
     }
+    await getQueues().Builds.add(
+      `Delete Build #${job.data.jobId}/${job.data.buildId} from BuildEngine`,
+      {
+        type: BullMQ.JobType.Build_Delete,
+        organizationId: job.data.organizationId,
+        buildEngineJobId: job.data.jobId,
+        buildEngineBuildId: job.data.buildId
+      },
+      BullMQ.Retry0f600
+    );
+    await DatabaseWrites.productBuilds.deleteMany({ where: { Id: job.data.productBuildId } });
     job.updateProgress(100);
     return { product };
   }
@@ -64,11 +81,11 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
 export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown> {
   const product = await DatabaseReads.products.findFirst({
     where: {
-      BuildEngineJobId: job.data.jobId,
-      BuildEngineBuildId: job.data.buildId,
-      BuildEngineReleaseId: job.data.releaseId
+      BuildEngineJobId: job.data.jobId
     },
     select: {
+      BuildEngineBuildId: true,
+      BuildEngineReleaseId: true,
       WorkflowInstance: {
         select: {
           ProductId: true
@@ -76,12 +93,39 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
       }
     }
   });
-  if (!product?.WorkflowInstance) {
+  if (!product) {
+    return await publish_notifyProductNotFound(job.data.productId);
+  }
+  if (
+    !product.WorkflowInstance ||
+    product.BuildEngineBuildId !== job.data.buildId ||
+    product.BuildEngineReleaseId !== job.data.releaseId
+  ) {
     await getQueues().Polling.removeJobScheduler(job.name);
-    job.log('No WorkflowInstance found. Workflow cancelled?');
-    if (!product) {
-      return await publish_notifyProductNotFound(job.data.productId);
+    if (!product.WorkflowInstance) {
+      job.log('No WorkflowInstance found. Workflow cancelled?');
+    } else {
+      job.log(
+        `External Id (build: ${product.BuildEngineBuildId}, release: ${product.BuildEngineReleaseId}) does not match expected (build: ${job.data.buildId}, release: ${job.data.releaseId})`
+      );
     }
+    await getQueues().Publishing.add(
+      `Delete Release #${job.data.jobId}/${job.data.buildId}/${job.data.releaseId} from BuildEngine`,
+      {
+        type: BullMQ.JobType.Publish_Delete,
+        organizationId: job.data.organizationId,
+        buildEngineJobId: job.data.jobId,
+        buildEngineBuildId: job.data.buildId,
+        buildEngineReleaseId: job.data.releaseId
+      },
+      BullMQ.Retry0f600
+    );
+    await DatabaseWrites.productPublications.deleteMany({
+      where: {
+        ProductBuildId: job.data.productBuildId,
+        BuildEngineReleaseId: job.data.releaseId
+      }
+    });
     job.updateProgress(100);
     return { product };
   }
