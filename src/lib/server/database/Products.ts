@@ -12,7 +12,7 @@ export async function create(
     !(await validateProductBase(
       productData.ProjectId,
       productData.ProductDefinitionId,
-      productData.StoreId ?? undefined,
+      productData.StoreId,
       productData.StoreLanguageId ?? undefined
     ))
   )

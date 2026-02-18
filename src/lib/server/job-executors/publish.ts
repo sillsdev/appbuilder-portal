@@ -162,8 +162,6 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
     where: { Id: job.data.productId },
     select: {
       BuildEngineJobId: true,
-      CurrentBuildId: true,
-      CurrentReleaseId: true,
       ProductDefinition: {
         select: {
           Name: true
