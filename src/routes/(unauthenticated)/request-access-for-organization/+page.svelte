@@ -43,6 +43,6 @@
     </LabeledFormInput>
   </div>
   <div class="mt-4">
-    <SubmitButton class="float-right" />
+    <SubmitButton class="float-right" icon="material-symbols:send" />
   </div>
 </form>

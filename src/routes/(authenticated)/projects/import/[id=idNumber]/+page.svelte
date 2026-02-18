@@ -6,6 +6,7 @@
   import type { PageData } from './$types';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
@@ -171,6 +172,7 @@
       />
       <BlockIfJobsUnavailable class="btn btn-primary w-full max-w-xs">
         {#snippet altContent()}
+          <IconContainer icon="tdesign:import" width={20} />
           {m.common_save()}
         {/snippet}
         <SubmitButton class="w-full max-w-xs" disabled={!canSubmit}>

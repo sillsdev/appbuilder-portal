@@ -4,6 +4,7 @@
   import type { PageData } from './$types';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
@@ -122,6 +123,7 @@
         />
         <BlockIfJobsUnavailable class="btn btn-primary w-full max-w-xs">
           {#snippet altContent()}
+            <IconContainer icon="material-symbols:add-card-outline" width={20} />
             {m.common_save()}
           {/snippet}
           <SubmitButton

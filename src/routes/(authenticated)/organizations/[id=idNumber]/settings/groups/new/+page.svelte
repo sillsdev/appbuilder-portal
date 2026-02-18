@@ -111,7 +111,7 @@
   </GroupUsers>
   <div class="my-4">
     <CancelButton returnTo={localizeHref(base)} />
-    <SubmitButton />
+    <SubmitButton icon="fluent-mdl2:add-group" />
   </div>
 </form>
 

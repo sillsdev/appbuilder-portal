@@ -116,7 +116,7 @@
           </select>
           <BlockIfJobsUnavailable class="btn btn-primary">
             {#snippet altContent()}
-              <IconContainer icon="mdi:user-add" width={20} />
+              <IconContainer icon="mdi:pencil-add" width={20} />
               {m.authors_submit()}
             {/snippet}
             <SubmitButton disabled={!$form.author}>

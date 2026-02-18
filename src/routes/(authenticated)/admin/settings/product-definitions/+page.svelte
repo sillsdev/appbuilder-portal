@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -17,6 +18,7 @@
 <h2>{m.prodDefs_title()}</h2>
 
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
+  <IconContainer icon="system-uicons:box-add" width={20} />
   {m.prodDefs_add()}
 </a>
 

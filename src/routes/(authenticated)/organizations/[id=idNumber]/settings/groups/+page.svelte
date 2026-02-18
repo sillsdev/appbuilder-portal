@@ -16,6 +16,7 @@
 </script>
 
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
+  <IconContainer icon="fluent-mdl2:add-group" width={20} />
   {m.org_addGroupButton()}
 </a>
 
@@ -29,7 +30,7 @@
     >
       <IconContainer icon="mdi:account-group" width={20} />
       {group._count.Users}
-      <IconContainer icon="fa7-solid:diagram-project" width={20} />
+      <IconContainer icon="material-symbols:credit-card-outline" width={20} />
       {group._count.Projects}
     </DataDisplayBox>
   {/each}

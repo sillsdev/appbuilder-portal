@@ -123,6 +123,7 @@
         $form.source !== $form.destination &&
         $form.products.length
       )}
+      icon="bx:transfer"
     />
   </div>
 </form>

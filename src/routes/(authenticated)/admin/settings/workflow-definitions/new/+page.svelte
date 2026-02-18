@@ -117,7 +117,7 @@
   </InputWithMessage>
   <div class="my-4">
     <CancelButton returnTo={localizeHref(base)} />
-    <SubmitButton disabled={!propsOk} />
+    <SubmitButton disabled={!propsOk} icon="material-symbols:add" />
   </div>
 </form>
 

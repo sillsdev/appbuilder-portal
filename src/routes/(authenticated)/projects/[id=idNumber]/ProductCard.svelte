@@ -138,7 +138,7 @@
           <ul class="menu overflow-hidden rounded-md">
             <li class="w-full rounded-none">
               <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
-                <IconContainer icon="material-symbols:info" width={16} />
+                <IconContainer icon="mdi:info" width={16} />
                 {m.products_details()}
               </button>
             </li>
@@ -216,7 +216,7 @@
         class="text-nowrap btn btn-secondary btn-sm"
         onclick={() => showProductDetails(product.Id)}
       >
-        <IconContainer icon="material-symbols:info" width={20} />
+        <IconContainer icon="mdi:info" width={20} />
         {m.products_details()}
       </button>
       {#each product.actions as action}

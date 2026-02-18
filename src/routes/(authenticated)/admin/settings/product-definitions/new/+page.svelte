@@ -123,7 +123,7 @@
   </LabeledFormInput>
   <div class="my-4">
     <CancelButton returnTo={localizeHref(base)} />
-    <SubmitButton disabled={!propsOk} />
+    <SubmitButton disabled={!propsOk} icon="system-uicons:box-add" />
   </div>
 </form>
 

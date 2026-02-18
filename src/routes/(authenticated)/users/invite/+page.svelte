@@ -125,6 +125,7 @@
       <CancelButton returnTo={localizeHref(redirectUrl)} />
       <BlockIfJobsUnavailable class="btn btn-primary">
         {#snippet altContent()}
+          <IconContainer icon="material-symbols:send" width={20} />
           {m.orgMembership_send()}
         {/snippet}
         <SubmitButton>
