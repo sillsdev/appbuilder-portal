@@ -3,6 +3,7 @@
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import GroupUsers from '$lib/organizations/components/GroupUsers.svelte';
@@ -109,7 +110,7 @@
     {/snippet}
   </GroupUsers>
   <div class="my-4">
-    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
+    <CancelButton returnTo={localizeHref(base)} />
     <SubmitButton />
   </div>
 </form>
@@ -154,15 +155,11 @@
         </label>
       {/each}
       <div class="flex flex-row gap-2 mt-2">
-        <button
-          class="btn btn-secondary"
-          type="button"
+        <CancelButton
           onclick={() => {
             usersModal?.close();
           }}
-        >
-          {m.common_cancel()}
-        </button>
+        />
         <SubmitButton
           key="common_add"
           disabled={!$usersForm.groups.length}

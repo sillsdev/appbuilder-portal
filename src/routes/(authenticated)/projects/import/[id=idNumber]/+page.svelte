@@ -6,6 +6,7 @@
   import type { PageData } from './$types';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -164,12 +165,10 @@
       </ul>
     {/if}
     <div class="flex flex-wrap place-content-center gap-4 p-4">
-      <a
-        href={localizeHref(`/projects/own/${page.params.id}`)}
-        class="btn btn-secondary w-full max-w-xs"
-      >
-        {m.common_cancel()}
-      </a>
+      <CancelButton
+        returnTo={localizeHref(`/projects/own/${page.params.id}`)}
+        class="w-full max-w-xs"
+      />
       <BlockIfJobsUnavailable class="btn btn-primary w-full max-w-xs">
         {#snippet altContent()}
           {m.common_save()}

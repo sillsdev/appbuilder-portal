@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Prisma } from '@prisma/client';
   import { enhance } from '$app/forms';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
@@ -74,16 +75,12 @@
           <PropertiesEditor name="properties" class="w-full" bind:value bind:ok />
         </LabeledFormInput>
         <div class="flex flex-row gap-2">
-          <button
-            class="btn btn-secondary"
-            type="button"
+          <CancelButton
             onclick={() => {
               modal?.close();
               value = product.Properties;
             }}
-          >
-            {m.common_cancel()}
-          </button>
+          />
           <button
             class="btn btn-primary"
             type="button"

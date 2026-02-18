@@ -3,6 +3,7 @@
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
@@ -109,7 +110,7 @@
     />
   </InputWithMessage>
   <div class="my-4">
-    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
+    <CancelButton returnTo={localizeHref(base)} />
     <SubmitButton />
   </div>
 </form>

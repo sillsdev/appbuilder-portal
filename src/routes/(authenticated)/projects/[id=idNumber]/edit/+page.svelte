@@ -5,6 +5,7 @@
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -94,12 +95,10 @@
         </LabeledFormInput>
       </div>
       <div class="flex flex-row flex-wrap place-content-center gap-4 p-4 w-full">
-        <a
-          href={localizeHref(`/projects/${page.params.id}`)}
-          class="btn btn-secondary w-full max-w-xs"
-        >
-          {m.common_cancel()}
-        </a>
+        <CancelButton
+          returnTo={localizeHref(`/projects/${page.params.id}`)}
+          class="w-full max-w-xs"
+        />
         <SubmitButton
           class="w-full max-w-xs"
           disabled={!($form.name.length && $form.language.length)}

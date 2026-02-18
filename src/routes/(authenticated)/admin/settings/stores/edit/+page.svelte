@@ -2,6 +2,7 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -86,7 +87,7 @@
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <div class="my-4">
-    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
+    <CancelButton returnTo={localizeHref(base)} />
     <SubmitButton />
   </div>
 </form>

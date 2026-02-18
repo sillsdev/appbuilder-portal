@@ -4,6 +4,7 @@
   import { enhance } from '$app/forms';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
@@ -86,15 +87,11 @@
           />
         </label>
         <div class="flex flex-row gap-2">
-          <button
-            class="btn btn-secondary"
-            type="button"
+          <CancelButton
             onclick={() => {
               modal?.close();
             }}
-          >
-            {m.common_cancel()}
-          </button>
+          />
           <BlockIfJobsUnavailable class="btn btn-error">
             {#snippet altContent()}
               <IconContainer icon="mdi:trash" width={20} />

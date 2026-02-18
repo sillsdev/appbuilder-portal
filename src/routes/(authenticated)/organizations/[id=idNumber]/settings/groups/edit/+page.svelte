@@ -3,6 +3,7 @@
   import type { ActionData, PageData } from './$types';
   import { enhance as svk_enhance } from '$app/forms';
   import { goto } from '$app/navigation';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import GroupUsers from '$lib/organizations/components/GroupUsers.svelte';
@@ -68,7 +69,7 @@
     />
   </LabeledFormInput>
   <div>
-    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
+    <CancelButton returnTo={localizeHref(base)} />
     <SubmitButton />
   </div>
 </form>

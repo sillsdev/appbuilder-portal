@@ -9,6 +9,7 @@
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import { getActionIcon } from '$lib/icons';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
@@ -338,13 +339,7 @@
             </div>
           </div>
           <div class="flex flex-row justify-end gap-2">
-            <button
-              class="btn btn-secondary"
-              type="reset"
-              onclick={() => productSelectModal?.close()}
-            >
-              {m.common_cancel()}
-            </button>
+            <CancelButton resetForm onclick={() => productSelectModal?.close()} />
             <BlockIfJobsUnavailable class="btn btn-primary">
               {#snippet altContent()}
                 {m.products_acts_rebuild()}

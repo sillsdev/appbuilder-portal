@@ -8,6 +8,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -121,7 +122,7 @@
       </div>
     </div>
     <div class="my-4 flex justify-end gap-2">
-      <a class="btn btn-secondary" href={localizeHref(redirectUrl)}>{m.common_cancel()}</a>
+      <CancelButton returnTo={localizeHref(redirectUrl)} />
       <BlockIfJobsUnavailable class="btn btn-primary">
         {#snippet altContent()}
           {m.orgMembership_send()}
