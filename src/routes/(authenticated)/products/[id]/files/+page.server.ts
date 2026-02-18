@@ -51,6 +51,7 @@ export const load = (async ({ params, locals }) => {
           Success: true,
           DateUpdated: true,
           LogUrl: true,
+          PublishLink: true,
           DateResolved: true
         },
         orderBy: {
@@ -136,6 +137,7 @@ export const actions = {
             Success: true,
             DateUpdated: true,
             LogUrl: true,
+            PublishLink: true,
             DateResolved: true
           },
           orderBy: {

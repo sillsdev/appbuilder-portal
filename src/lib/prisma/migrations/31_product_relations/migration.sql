@@ -28,6 +28,7 @@ DROP INDEX "public"."IX_ProductBuilds_ProductId";
 -- AlterTable
 ALTER TABLE "ProductPublications" DROP CONSTRAINT "PK_ProductPublications_ProductBuildId_BuildEngineReleaseId";
 ALTER TABLE "ProductPublications" ADD COLUMN  "BuildEngineBuildId" INTEGER;
+ALTER TABLE "ProductPublications" ADD COLUMN  "PublishLink" TEXT;
 
 UPDATE "ProductPublications"
 SET "BuildEngineBuildId" = pb."BuildEngineBuildId"

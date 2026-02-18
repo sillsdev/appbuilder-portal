@@ -142,6 +142,7 @@ model ProductPublications {
   BuildEngineReleaseId Int
   Channel              String?
   LogUrl               String?
+  PublishLink          String?
   Success              Boolean?
   DateCreated          DateTime?     @default(now()) @db.Timestamp(6)
   DateUpdated          DateTime?     @updatedAt @db.Timestamp(6)

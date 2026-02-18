@@ -186,14 +186,16 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
   let packageName: string | undefined = undefined;
   const flow = await Workflow.restore(job.data.productId);
   job.updateProgress(25);
+  let publishLink: string | undefined = undefined;
   if (flow) {
     if (job.data.release.result === 'SUCCESS') {
       const publishUrlFile = job.data.release.artifacts['publishUrl'];
+      publishLink = publishUrlFile
+        ? ((await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined)
+        : undefined;
       await DatabaseWrites.products.update(job.data.productId, {
         DatePublished: new Date(),
-        PublishLink: publishUrlFile
-          ? ((await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined)
-          : undefined
+        PublishLink: publishLink
       });
       await notifyCompleted(
         job.data.buildId,
@@ -229,9 +231,9 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
         }
       });
       if (packageFile?.ProductBuild.ProductArtifacts[0]) {
-        packageName = await fetch(packageFile.ProductBuild.ProductArtifacts[0].Url!).then((r) =>
-          r.text()
-        );
+        packageName = (
+          await fetch(packageFile.ProductBuild.ProductArtifacts[0].Url!).then((r) => r.text())
+        )?.trim();
       }
     } else {
       await notifyFailed(
@@ -265,7 +267,8 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
     data: {
       Success: job.data.release.result === 'SUCCESS',
       LogUrl: job.data.release.consoleText,
-      Package: packageName?.trim()
+      Package: packageName,
+      PublishLink: publishLink
     }
   });
   job.updateProgress(100);

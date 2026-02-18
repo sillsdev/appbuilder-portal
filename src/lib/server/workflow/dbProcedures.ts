@@ -32,7 +32,8 @@ export async function markResolved(productId: string) {
       ProductPublications: {
         select: {
           ProductId: true,
-          BuildEngineReleaseId: true
+          BuildEngineReleaseId: true,
+          PublishLink: true
         },
         orderBy: {
           DateUpdated: 'desc'
@@ -52,7 +53,8 @@ export async function markResolved(productId: string) {
     });
 
     await DatabaseWrites.products.update(productId, {
-      DatePublished: resolved
+      DatePublished: resolved,
+      PublishLink: release.PublishLink ?? undefined
     });
   }
 }

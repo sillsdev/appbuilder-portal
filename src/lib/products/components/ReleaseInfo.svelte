@@ -1,3 +1,16 @@
+<script lang="ts" module>
+  export type Release = Prisma.ProductPublicationsGetPayload<{
+    select: {
+      Channel: true;
+      Success: true;
+      LogUrl: true;
+      PublishLink: true;
+      DateUpdated: true;
+      DateResolved: true;
+    };
+  }>;
+</script>
+
 <script lang="ts">
   import type { Prisma } from '@prisma/client';
   import type { ClassValue } from 'svelte/elements';
@@ -5,15 +18,7 @@
   import { getTimeDateString } from '$lib/utils/time';
 
   interface Props {
-    release?: Prisma.ProductPublicationsGetPayload<{
-      select: {
-        Channel: true;
-        Success: true;
-        LogUrl: true;
-        DateUpdated: true;
-        DateResolved: true;
-      };
-    }>;
+    release?: Release;
     class?: {
       default?: ClassValue;
       header?: ClassValue;
@@ -47,7 +52,13 @@
         <td>{getTimeDateString(release.DateUpdated)}</td>
       </tr>
       <tr>
-        <th class={[classes?.header]}>{m.publications_url()}</th>
+        <th class={[classes?.header]}>
+          {#if release.PublishLink}
+            <a href={release.PublishLink} class="link" target="_blank">{m.publications_url()}</a>
+          {:else}
+            {m.publications_url()}
+          {/if}
+        </th>
         <td>
           <a href={release.LogUrl} class="link" target="_blank">{m.publications_console()}</a>
         </td>
@@ -63,7 +74,13 @@
           <th>{m.publications_resolved()}</th>
         {/if}
         <th>{m.publications_date()}</th>
-        <th>{m.publications_url()}</th>
+        <th>
+          {#if release.PublishLink}
+            <a href={release.PublishLink} class="link" target="_blank">{m.publications_url()}</a>
+          {:else}
+            {m.publications_url()}
+          {/if}
+        </th>
       </tr>
     </thead>
     <tbody>
