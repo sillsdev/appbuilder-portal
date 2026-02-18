@@ -110,8 +110,8 @@
     class="py-1"
     name="publicByDefault"
     bind:checked={$form.publicByDefault}
-    onIcon="mdi:lock-open-variant"
-    offIcon="mdi:lock"
+    onIcon="mdi:eye"
+    offIcon="mdi:eye-off-outline"
   />
   <div class="my-4">
     <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>

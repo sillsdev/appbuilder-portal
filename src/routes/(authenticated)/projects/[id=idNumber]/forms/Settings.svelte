@@ -40,8 +40,8 @@
     offmsg={m.project_acts_isPublic_off()}
     title={{ key: 'project_visibility_title' }}
     message={{ key: 'project_visibility_description' }}
-    onIcon="mdi:lock-open-variant"
-    offIcon="mdi:lock"
+    onIcon="mdi:eye"
+    offIcon="mdi:eye-off-outline"
     {canEdit}
   />
 
@@ -54,6 +54,8 @@
     onmsg={m.project_acts_downloads_on()}
     offmsg={m.project_acts_downloads_off()}
     formVar={allowDownloads}
+    onIcon="material-symbols:download"
+    offIcon="material-symbols:file-download-off"
     {canEdit}
   />
 
@@ -67,6 +69,8 @@
       onmsg={m.project_acts_autoBuilds_on()}
       offmsg={m.project_acts_autoBuilds_off()}
       formVar={autoRebuild}
+      onIcon="ic:baseline-update"
+      offIcon="ic:baseline-update-disabled"
       {canEdit}
     />
 
@@ -79,6 +83,8 @@
       onmsg={m.project_acts_autoPublish_on()}
       offmsg={m.project_acts_autoPublish_off()}
       formVar={autoPublish}
+      onIcon="lucide:refresh-cw"
+      offIcon="lucide:refresh-cw-off"
       {canEdit}
     />
   {/if}

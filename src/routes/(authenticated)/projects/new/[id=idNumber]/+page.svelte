@@ -109,8 +109,8 @@
           name="IsPublic"
           inputAttr={{ onchange: () => {} }}
           bind:checked={$form.IsPublic}
-          onIcon="mdi:lock-open-variant"
-          offIcon="mdi:lock"
+          onIcon="mdi:eye"
+          offIcon="mdi:eye-off-outline"
         />
       </div>
       <div class="flex flex-row flex-wrap place-content-center gap-4 p-4 w-full">

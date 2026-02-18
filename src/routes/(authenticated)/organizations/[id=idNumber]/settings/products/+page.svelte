@@ -42,8 +42,8 @@
       inputAttr={{
         onchange: (e) => e.currentTarget.form?.requestSubmit()
       }}
-      onIcon="mdi:lock-open-variant"
-      offIcon="mdi:lock"
+      onIcon="mdi:eye"
+      offIcon="mdi:eye-off-outline"
     />
   </form>
   <MultiselectBox header={m.org_productSelectTitle()}>
