@@ -19,23 +19,28 @@
   menuItems={[
     {
       text: m.org_navBasic(),
-      route: 'info'
+      route: 'info',
+      icon: 'mdi:info'
     },
     {
       text: m.org_navProducts(),
-      route: 'products'
+      route: 'products',
+      icon: 'system-uicons:box'
     },
     {
       text: m.org_navStores(),
-      route: 'stores'
+      route: 'stores',
+      icon: 'hugeicons:store-04'
     },
     {
       text: m.org_navGroups(),
-      route: 'groups'
+      route: 'groups',
+      icon: 'mdi:account-group'
     },
     {
       text: m.org_navInfrastructure(),
-      route: 'infrastructure'
+      route: 'infrastructure',
+      icon: 'carbon:build-image'
     }
   ]}
   titleString={m.org_settingsTitle() + ': ' + data.organization.Name}

@@ -6,9 +6,9 @@
   import { m } from '$lib/paraglide/messages';
 
   let userSettingsLinks = [
-    { text: m.users_userProfile(), route: 'profile' },
-    { text: m.users_userRoles(), route: 'roles' },
-    { text: m.users_userGroups(), route: 'groups' }
+    { text: m.users_userProfile(), route: 'profile', icon: 'mdi:info' },
+    { text: m.users_userRoles(), route: 'roles', icon: 'oui:app-users-roles' },
+    { text: m.users_userGroups(), route: 'groups', icon: 'mdi:account-group' }
   ];
 
   interface Props {

@@ -10,6 +10,7 @@
     menuItems: {
       route: string;
       text: string;
+      icon?: string;
     }[];
     baseRouteId: Route;
     routeParams?: RouteParams<Route>;
@@ -83,6 +84,9 @@
                 class:active={isActive(item.route)}
                 href={localizeHref(`${base}/${item.route}`)}
               >
+                {#if item.icon}
+                  <IconContainer icon={item.icon} width={20} />
+                {/if}
                 {item.text}
               </a>
             </li>
