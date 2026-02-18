@@ -1,3 +1,4 @@
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import { delete as deleteInstance } from './WorkflowInstances';
@@ -59,7 +60,7 @@ export async function update(
   if (
     !(
       existing &&
-      (await validateProductBase(projectId, productDefinitionId, storeId, storeLanguageId))
+      (await validateProductBase(projectId, productDefinitionId, storeId, storeLanguageId, id))
     )
   )
     return false;
@@ -151,14 +152,11 @@ export { deleteProduct as delete };
 async function validateProductBase(
   projectId: number,
   productDefinitionId: number,
+  storeId: number,
   /** If this would be `null`, it is set to `undefined` by caller */
-  storeId?: number,
-  /** If this would be `null`, it is set to `undefined` by caller */
-  storeLanguageId?: number
+  storeLanguageId: number | undefined,
+  productId?: string
 ) {
-  if (storeId === undefined) {
-    return false;
-  }
   const productDefinition = await prisma.productDefinitions.findUnique({
     where: {
       Id: productDefinitionId
@@ -263,11 +261,36 @@ async function validateProductBase(
     productDefinition?.ApplicationTypes.find((at) => at.Id === project?.TypeId)
   );
 
-  return (
+  const check =
     storeInOrg &&
     storeMatchFlowStore &&
     optionalLanguageAllowed &&
     productInOrg &&
-    projectTypeAllowed
-  );
+    projectTypeAllowed;
+
+  if (!check) {
+    const span = trace.getActiveSpan();
+    if (span) {
+      const msg = `Product validation failed for ${productId || 'new product'}`;
+      span.addEvent(msg, {
+        'product.project-id': projectId,
+        'product.product-definition-id': productDefinitionId,
+        'product.store-id': storeId,
+        'product.store-language-id': storeLanguageId ?? false,
+        'product.store-in-org': storeInOrg,
+        'product.store-match-workflow': storeMatchFlowStore,
+        'product.language-allowed': optionalLanguageAllowed,
+        'product.product-definition-allowed': productInOrg,
+        'product.project-type-allowed': projectTypeAllowed
+      });
+
+      span.recordException(new Error(msg));
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: msg
+      });
+    }
+  }
+
+  return check;
 }
