@@ -15,6 +15,7 @@ export enum JobType {
   // Build Jobs
   Build_Product = 'Build Product',
   Build_PostProcess = 'Postprocess Build',
+  Build_Delete = 'Delete Build - BuildEngine',
   // Polling Jobs
   Poll_Build = 'Check Product Build',
   Poll_Project = 'Check Project Creation',
@@ -31,6 +32,7 @@ export enum JobType {
   // Publishing Jobs
   Publish_Product = 'Publish Product',
   Publish_PostProcess = 'Postprocess Publish',
+  Publish_Delete = 'Delete Release - BuildEngine',
   // System Jobs
   System_CheckEngineStatuses = 'Check BuildEngine Statuses',
   System_RefreshLangTags = 'Refresh langtags.json',

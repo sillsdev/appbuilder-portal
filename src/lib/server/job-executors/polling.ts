@@ -33,14 +33,19 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
         `External Id (build: ${product.BuildEngineBuildId}) does not match expected (build: ${job.data.buildId})`
       );
     }
-    const response = await BuildEngine.Requests.deleteBuild(
-      { type: 'query', organizationId: job.data.organizationId },
-      job.data.jobId,
-      job.data.buildId
+    await getQueues().Builds.add(
+      `Delete Build #${job.data.jobId}/${job.data.buildId} from BuildEngine`,
+      {
+        type: BullMQ.JobType.Build_Delete,
+        organizationId: job.data.organizationId,
+        buildEngineJobId: job.data.jobId,
+        buildEngineBuildId: job.data.buildId
+      },
+      BullMQ.Retry0f600
     );
     await DatabaseWrites.productBuilds.deleteMany({ where: { Id: job.data.productBuildId } });
     job.updateProgress(100);
-    return { product, response };
+    return { product };
   }
   job.updateProgress(25);
   const response = await BuildEngine.Requests.getBuild(
@@ -104,11 +109,16 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
         `External Id (build: ${product.BuildEngineBuildId}, release: ${product.BuildEngineReleaseId}) does not match expected (build: ${job.data.buildId}, release: ${job.data.releaseId})`
       );
     }
-    const response = await BuildEngine.Requests.deleteRelease(
-      { type: 'query', organizationId: job.data.organizationId },
-      job.data.jobId,
-      job.data.buildId,
-      job.data.releaseId
+    await getQueues().Publishing.add(
+      `Delete Release #${job.data.jobId}/${job.data.buildId}/${job.data.releaseId} from BuildEngine`,
+      {
+        type: BullMQ.JobType.Publish_Delete,
+        organizationId: job.data.organizationId,
+        buildEngineJobId: job.data.jobId,
+        buildEngineBuildId: job.data.buildId,
+        buildEngineReleaseId: job.data.releaseId
+      },
+      BullMQ.Retry0f600
     );
     await DatabaseWrites.productPublications.deleteMany({
       where: {
@@ -117,7 +127,7 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
       }
     });
     job.updateProgress(100);
-    return { product, response };
+    return { product };
   }
   job.updateProgress(25);
   const response = await BuildEngine.Requests.getRelease(
