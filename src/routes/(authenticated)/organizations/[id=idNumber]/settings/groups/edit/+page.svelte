@@ -61,11 +61,7 @@
     bind:value={$form.name}
   />
   <LabeledFormInput key="common_description" class="mb-8">
-    <textarea
-      name="description"
-      class="textarea w-full"
-      bind:value={$form.description}
-    ></textarea>
+    <textarea name="description" class="textarea w-full" bind:value={$form.description}></textarea>
   </LabeledFormInput>
   <div>
     <CancelButton returnTo={localizeHref(base)} />

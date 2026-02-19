@@ -5,7 +5,6 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { page } from '$app/state';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
@@ -76,54 +75,36 @@
 
 <form action="" method="post" use:enhance>
   <div class="flex flex-col px-4">
-    <LabeledFormInput key="profile_firstName">
-      <input
-        type="text"
-        name="firstName"
-        class="input input-bordered w-full validator"
-        bind:value={$form.firstName}
-        required
-      />
-      <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-    </LabeledFormInput>
-    <LabeledFormInput key="profile_lastName">
-      <input
-        type="text"
-        name="lastName"
-        class="input input-bordered w-full validator"
-        bind:value={$form.lastName}
-        required
-      />
-      <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-    </LabeledFormInput>
-    <LabeledFormInput key="profile_name">
-      <div class="input input-bordered w-full validator">
-        <IconContainer icon="mdi:user" width={24} class="cursor-pointer" />
-        <input type="text" name="displayName" bind:value={$form.displayName} required />
-      </div>
-      <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-    </LabeledFormInput>
-    <LabeledFormInput key="profile_email">
-      <div class="input input-bordered w-full validator">
-        <IconContainer icon="ic:baseline-email" width={24} class="cursor-pointer" />
-        <input type="email" name="email" bind:value={$form.email} required />
-      </div>
-      <span class="validator-hint">
-        {$form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty()}
-      </span>
-    </LabeledFormInput>
-    <LabeledFormInput key="profile_phone">
-      <div class="input input-bordered w-full validator">
-        <IconContainer icon="ic:baseline-phone" width={24} class="cursor-pointer" />
-        <input
-          type="tel"
-          name="phone"
-          bind:value={$form.phone}
-          pattern={regExpToInputPattern(phoneRegex)}
-        />
-      </div>
-      <span class="validator-hint">&nbsp;</span>
-    </LabeledFormInput>
+    <LabeledFormInput
+      key="profile_name"
+      input={{
+        name: 'name',
+        err: m.formErrors_nameEmpty(),
+        icon: 'mdi:rename',
+        required: true
+      }}
+      bind:value={$form.name}
+    />
+    <LabeledFormInput
+      key="profile_email"
+      input={{
+        name: 'email',
+        err: $form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty(),
+        icon: 'ic:baseline-email',
+        required: true
+      }}
+      bind:value={$form.email}
+    />
+    <LabeledFormInput
+      key="profile_phone"
+      input={{
+        type: 'tel',
+        name: 'phone',
+        icon: 'ic:baseline-phone',
+        pattern: regExpToInputPattern(phoneRegex)
+      }}
+      bind:value={$form.phone}
+    />
     <LabeledFormInput key="profile_timezone">
       <TypeaheadInput
         inputElProps={{ placeholder: m.profile_timezonePlaceholder() }}

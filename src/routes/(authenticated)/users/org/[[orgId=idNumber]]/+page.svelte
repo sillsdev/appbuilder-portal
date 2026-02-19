@@ -127,6 +127,7 @@
 {/snippet}
 
 {#snippet lock(user: (typeof users)[0])}
+  {@const disabled = data.session?.user.userId === user.I}
   <form
     method="POST"
     action="?/lock"
@@ -141,20 +142,23 @@
     }}
   >
     <input class="hidden" type="hidden" name="user" value={user.I} />
-    <input
-      class="toggle"
-      disabled={data.session?.user.userId === user.I}
-      type="checkbox"
-      name="active"
-      aria-label={m.users_table_active()}
-      bind:checked={user.A}
-      onchange={(e) => {
-        if (data.session?.user.userId !== user.I) {
-          // @ts-expect-error Just submit the form
-          e.currentTarget.parentElement?.requestSubmit();
-        }
-      }}
-    />
+    <label class={['toggle', disabled && 'cursor-not-allowed opacity-50 pointer-events-none']}>
+      <input
+        {disabled}
+        type="checkbox"
+        name="active"
+        aria-label={m.users_table_active()}
+        bind:checked={user.A}
+        onchange={(e) => {
+          if (data.session?.user.userId !== user.I) {
+            // @ts-expect-error Just submit the form
+            e.currentTarget.parentElement?.requestSubmit();
+          }
+        }}
+      />
+      <IconContainer icon="mdi:lock" width={16} />
+      <IconContainer icon="mdi:lock-open-variant" width={16} />
+    </label>
   </form>
 {/snippet}
 

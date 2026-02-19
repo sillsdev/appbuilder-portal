@@ -60,22 +60,19 @@
 
   <form class="m-4" method="post" action="?/new" use:enhance>
     <div class="flex flex-row justify-between gap-4 flex-wrap">
-      <div class="grow">
-        <LabeledFormInput key="orgMembership_email">
-          <div class="input input-bordered w-full validator">
-            <IconContainer icon="ic:baseline-email" width={24} class="cursor-pointer" />
-            <input
-              type="email"
-              name="email"
-              placeholder="user@example.com"
-              bind:value={$form.email}
-              required
-            />
-          </div>
-          <span class="validator-hint">
-            {$form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty()}
-          </span>
-        </LabeledFormInput>
+      <div class="grow max-w-1/2">
+        <LabeledFormInput
+          key="orgMembership_email"
+          input={{
+            type: 'email',
+            name: 'email',
+            placeholder: 'user@example.com',
+            err: $form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty(),
+            icon: 'ic:baseline-email',
+            required: true
+          }}
+          bind:value={$form.email}
+        />
         <LabeledFormInput key="project_org">
           <OrganizationDropdown
             class="w-full"
