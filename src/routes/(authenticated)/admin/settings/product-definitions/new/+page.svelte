@@ -49,16 +49,17 @@
 <h3 class="pl-4">{m.prodDefs_add()}</h3>
 
 <form class="m-4" method="post" action="?/new" use:enhance>
-  <LabeledFormInput key="prodDefs_name">
-    <input
-      type="text"
-      name="name"
-      class="input input-bordered validator"
-      bind:value={$form.name}
-      required
-    />
-    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-  </LabeledFormInput>
+  <LabeledFormInput
+    key="prodDefs_name"
+    class="md:max-w-xs"
+    input={{
+      name: 'name',
+      required: true,
+      err: m.formErrors_nameEmpty(),
+      icon: 'mdi:rename'
+    }}
+    bind:value={$form.name}
+  />
   <Toggle title={{ key: 'prodDefs_type_allowAll' }} name="allowAll" bind:checked={$form.allowAll} />
   {#if !$form.allowAll}
     <LabeledFormInput key="prodDefs_type" class="border border-warning p-1 my-4 rounded-lg">
@@ -128,12 +129,10 @@
 </form>
 
 <style>
-  input[type='text'],
   select {
     width: 100%;
   }
   @media (width >= 40rem) {
-    input[type='text'],
     select {
       max-width: var(--container-xs);
     }

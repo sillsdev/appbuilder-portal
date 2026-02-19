@@ -39,16 +39,17 @@
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
-  <LabeledFormInput key="flowDefs_name">
-    <input
-      type="text"
-      name="name"
-      class="input input-bordered validator"
-      bind:value={$form.name}
-      required
-    />
-    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-  </LabeledFormInput>
+  <LabeledFormInput
+    key="flowDefs_name"
+    class="md:max-w-xs"
+    input={{
+      name: 'name',
+      required: true,
+      err: m.formErrors_nameEmpty(),
+      icon: 'mdi:rename'
+    }}
+    bind:value={$form.name}
+  />
   <LabeledFormInput key="flowDefs_storeType">
     <select class="select validator" name="storeType" bind:value={$form.storeType} required>
       {#each data.storeTypes.toSorted((a, b) => byName(a, b, getLocale())) as type}
@@ -68,12 +69,11 @@
     <span class="validator-hint">{m.flowDefs_emptyProductType()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="common_description">
-    <input
-      type="text"
+    <textarea
       name="description"
-      class="input input-bordered"
+      class="textarea h-36 w-full"
       bind:value={$form.description}
-    />
+    ></textarea>
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_properties">
@@ -115,12 +115,10 @@
 </form>
 
 <style>
-  input[type='text'],
   select {
     width: 100%;
   }
   @media (width >= 40rem) {
-    input[type='text'],
     select {
       max-width: var(--container-xs);
     }
