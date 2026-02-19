@@ -92,7 +92,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
           to: to.Name!,
           count: targetHasSpecifiedRole
             ? (
-                await DatabaseWrites.userTasks.updateMany(productIds, {
+                await DatabaseWrites.userTasks.updateMany({
                   where: {
                     Role: u.withRole,
                     UserId: u.from,
@@ -133,7 +133,10 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
     job.updateProgress(90);
   } else {
     job.updateProgress(25);
-    const allUsers = await DatabaseWrites.users.byRole(projectId, job.data.operation.roles);
+    const allUsers = await DatabaseWrites.projects.getUsersByRole(
+      projectId,
+      job.data.operation.roles
+    );
     job.updateProgress(30);
     if (job.data.operation.type !== BullMQ.UserTasks.OpType.Create) {
       // Clear existing UserTasks
@@ -145,11 +148,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
             job.data.operation.type === BullMQ.UserTasks.OpType.Update
               ? undefined
               : {
-                  in:
-                    job.data.operation.users ??
-                    Array.from(
-                      new Set(Object.entries(allUsers).map(([user, roles]) => parseInt(user)))
-                    )
+                  in: job.data.operation.users ?? allUsers.keys().toArray()
                 },
           Role: job.data.operation.roles ? { in: job.data.operation.roles } : undefined
         }
@@ -172,17 +171,13 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
             ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
           );
           job.updateProgress(40 + ((i + 0.33) * 40) / products.length);
-          const toCreate = Array.from(
-            new Set(
-              Object.entries(allUsers)
-                .filter(([users, roles]) => !roleSet.isDisjointFrom(roles))
-                .map(([user, roles]) => parseInt(user))
-            )
-          )
-            .filter((u) => job.data.operation.users?.includes(u) ?? true)
-            .flatMap((user) =>
+          const toCreate = allUsers
+            .entries()
+            .filter((map) => !roleSet.isDisjointFrom(map[1]))
+            .filter((map) => job.data.operation.users?.includes(map[0]) ?? true)
+            .flatMap((map) =>
               Array.from(roleSet).map((r) => ({
-                UserId: user,
+                UserId: map[0],
                 ProductId: product.Id,
                 ActivityName: snap.state,
                 Status: snap.state,
@@ -190,7 +185,8 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
                 Role: r
               }))
             )
-            .filter((t) => allUsers[t.UserId].has(t.Role));
+            .filter((t) => allUsers.get(t.UserId)?.has(t.Role))
+            .toArray();
           await DatabaseWrites.userTasks.createMany({
             data: toCreate
           });

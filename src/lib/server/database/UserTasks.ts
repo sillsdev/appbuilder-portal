@@ -14,8 +14,11 @@ export async function createMany(createManyData: Prisma.UserTasksCreateManyArgs)
 }
 
 export async function deleteMany(deleteManyData: Prisma.UserTasksDeleteManyArgs) {
-  const rows = await prisma.userTasks.findMany({
-    where: deleteManyData.where
+  const users = await prisma.users.findMany({
+    where: { UserTasks: { some: deleteManyData.where } },
+    select: {
+      Id: true
+    }
   });
   const res = await prisma.userTasks.deleteMany({
     ...deleteManyData
@@ -23,39 +26,49 @@ export async function deleteMany(deleteManyData: Prisma.UserTasksDeleteManyArgs)
 
   getQueues().SvelteSSE.add(`Update UserTasks`, {
     type: BullMQ.JobType.SvelteSSE_UpdateUserTasks,
-    userIds: [...new Set(rows.map((r) => r.UserId))]
+    userIds: users.map((u) => u.Id)
   });
   return res;
 }
 
-export async function updateMany(
-  productIds: string[],
-  updateManyData: Prisma.UserTasksUpdateManyArgs
-) {
+export async function updateMany(updateManyData: Prisma.UserTasksUpdateManyArgs) {
   const beforeUsers = (
-    await prisma.userTasks.findMany({
+    await prisma.users.findMany({
       where: {
-        ProductId: {
-          in: productIds
+        UserTasks: {
+          some: updateManyData.where
         }
+      },
+      select: {
+        Id: true
       }
     })
-  ).map((r) => r.UserId);
+  ).map((u) => u.Id);
+  const after = new Date();
   const res = await prisma.userTasks.updateMany({
     ...updateManyData
   });
   const afterUsers = (
-    await prisma.userTasks.findMany({
+    await prisma.users.findMany({
       where: {
-        ProductId: {
-          in: productIds
-        }
+        UserTasks: {
+          some: {
+            ...updateManyData.where,
+            DateUpdated: {
+              gte: after
+            }
+          }
+        },
+        Id: { notIn: beforeUsers }
+      },
+      select: {
+        Id: true
       }
     })
-  ).map((r) => r.UserId);
+  ).map((u) => u.Id);
   getQueues().SvelteSSE.add(`Update UserTasks`, {
     type: BullMQ.JobType.SvelteSSE_UpdateUserTasks,
-    userIds: [...new Set([...beforeUsers, ...afterUsers])]
+    userIds: [...beforeUsers, ...afterUsers]
   });
   return res;
 }
