@@ -43,7 +43,7 @@
                 <span class="flex items-center">
                   <IconContainer
                     icon={getIcon(task.Product.ProductDefinition.Name ?? '')}
-                    width={38}
+                    width={30}
                   />
                   <span>
                     {task.Product.ProductDefinition.Name}
@@ -106,7 +106,7 @@
                 <span class="flex items-center">
                   <IconContainer
                     icon={getIcon(task.Product.ProductDefinition.Name ?? '')}
-                    width={38}
+                    width={30}
                   />
                   <span>
                     {task.Product.ProductDefinition.Name}
