@@ -17,9 +17,18 @@
       icon?: string;
     };
     value?: T;
+    validate?: boolean;
   }
 
-  let { key, params = {}, class: classes, children, input, value = $bindable() }: Props = $props();
+  let {
+    key,
+    params = {},
+    class: classes,
+    children,
+    input,
+    value = $bindable(),
+    validate = true
+  }: Props = $props();
 </script>
 
 <label class={['flex flex-col w-full', classes]}>
@@ -30,15 +39,17 @@
     </span>
   </div>
   {#if input}
-    <div class={['input input-bordered w-full validator']}>
+    <div class={['input input-bordered w-full', validate && 'validator']}>
       {#if input.icon}
         <IconContainer icon={input.icon} width={20} class="cursor-pointer opacity-80" />
       {/if}
       <input type="text" {...input} bind:value />
     </div>
-    <span class="validator-hint">
-      {#if input.err}{input.err}{:else}&nbsp;{/if}
-    </span>
+    {#if validate}
+      <span class="validator-hint">
+        {#if input.err}{input.err}{:else}&nbsp;{/if}
+      </span>
+    {/if}
   {:else}
     {@render children?.()}
   {/if}

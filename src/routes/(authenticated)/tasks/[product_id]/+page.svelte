@@ -171,61 +171,66 @@
         <TaskComment comment={data.previousTask.Comment} />
       </LabeledFormInput>
     {/if}
-    <div>
-      {#if data.fields.ownerName && data.fields.ownerEmail}
-        <div class="flex flex-col gap-x-3 w-full md:flex-row">
-          <LabeledFormInput key="projectTable_owner" class="md:w-2/4">
-            <div class="input input-bordered w-full">
-              <IconContainer icon="mdi:user" width={20} />
-              <input type="text" readonly value={data.fields.ownerName} />
-            </div>
-          </LabeledFormInput>
-          <LabeledFormInput key="profile_email" class="md:w-2/4">
-            <div class="input input-bordered w-full">
-              <IconContainer icon="mdi:email" width={20} />
-              <input type="text" readonly value={data.fields.ownerEmail} />
-            </div>
-          </LabeledFormInput>
-        </div>
+    <LabeledFormInput key="project_name">
+      <input
+        type="text"
+        class="input input-bordered w-full"
+        readonly
+        value={data.fields.projectName}
+      />
+    </LabeledFormInput>
+    <LabeledFormInput key="common_description">
+      <textarea class="textarea w-full" readonly value={data.fields.projectDescription}></textarea>
+    </LabeledFormInput>
+    <div id="fields" class="flex flex-col w-full md:flex-row md:flex-wrap">
+      {#if data.fields.ownerName}
+        <LabeledFormInput
+          key="projectTable_owner"
+          class="md:w-1/2"
+          input={{
+            readonly: true,
+            icon: 'mdi:user'
+          }}
+          value={data.fields.ownerName}
+          validate={false}
+        />{/if}{#if data.fields.ownerEmail}
+        <LabeledFormInput
+          key="profile_email"
+          class="md:w-1/2"
+          input={{
+            readonly: true,
+            icon: 'mdi:email'
+          }}
+          value={data.fields.ownerEmail}
+          validate={false}
+        />
       {/if}
-      <div class="flex flex-col gap-x-3 w-full md:flex-row">
-        <LabeledFormInput key="project_name" class="md:w-2/4">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            readonly
-            value={data.fields.projectName}
-          />
-        </LabeledFormInput>
-        <LabeledFormInput key="common_description" class="md:w-2/4">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            readonly
-            value={data.fields.projectDescription}
-          />
-        </LabeledFormInput>
-      </div>
       {#if data.fields.storeDescription}
-        <div class="flex flex-col gap-x-3 md:flex-row">
-          <LabeledFormInput key="stores_name" class="md:w-2/4">
-            <div class="input input-bordered w-full">
-              <IconContainer icon="ic:twotone-store" width={20} />
-              <input type="text" readonly value={data.fields.storeDescription} />
-            </div>
-          </LabeledFormInput>
-          {#if data.fields.listingLanguageCode}
-            <LabeledFormInput key="tasks_storeLanguage" class="md:w-2/4">
-              <div class="input input-bordered w-full">
-                <IconContainer icon="mdi:language" width={20} />
-                <input type="text" readonly value={data.fields.listingLanguageCode} />
-              </div>
-            </LabeledFormInput>
-          {/if}
-        </div>
+        <LabeledFormInput
+          key="stores_name"
+          class="md:w-1/2"
+          input={{
+            readonly: true,
+            icon: 'ic:twotone-store'
+          }}
+          value={data.fields.storeDescription}
+          validate={false}
+        />
+      {/if}
+      {#if data.fields.listingLanguageCode}
+        <LabeledFormInput
+          key="tasks_storeLanguage"
+          class="md:w-1/2"
+          input={{
+            readonly: true,
+            icon: 'mdi:google-play'
+          }}
+          value={data.fields.listingLanguageCode}
+          validate={false}
+        />
       {/if}
       {#if data.fields.projectURL}
-        <LabeledFormInput key="tasks_appProjectURL">
+        <LabeledFormInput key="tasks_appProjectURL" class="md:w-1/2">
           <span class="input input-bordered w-full flex flex-row gap-2 items-center">
             <IconContainer icon="solar:link-bold" width={20} />
             <input type="text" class="grow" readonly value={data.fields.projectURL} />
@@ -250,8 +255,8 @@
           </span>
         </LabeledFormInput>
       {/if}
-      {#if data.fields.displayProductDescription && data.fields.appType && data.fields.projectLanguageCode}
-        <LabeledFormInput key="tasks_product">
+      {#if data.fields.displayProductDescription}
+        <LabeledFormInput key="tasks_product" class="md:w-1/2">
           <input
             type="text"
             class="input input-bordered w-full"
@@ -259,7 +264,9 @@
             value={data.productDescription}
           />
         </LabeledFormInput>
-        <LabeledFormInput key="project_appType">
+      {/if}
+      {#if data.fields.appType}
+        <LabeledFormInput key="project_appType" class="md:w-1/2">
           <input
             type="text"
             class="input input-bordered w-full"
@@ -267,7 +274,9 @@
             value={data.fields.appType}
           />
         </LabeledFormInput>
-        <LabeledFormInput key="project_languageCode">
+      {/if}
+      {#if data.fields.projectLanguageCode}
+        <LabeledFormInput key="project_languageCode" class="md:w-1/2">
           <div class="input input-bordered w-full">
             <IconContainer icon="mdi:language" width={20} />
             <input type="text" readonly value={data.fields.projectLanguageCode} />
@@ -478,5 +487,16 @@
   #instructions :global(a) {
     cursor: pointer;
     text-decoration-line: underline;
+  }
+
+  #fields :global(label):nth-child(odd) {
+    padding-right: calc(var(--spacing) * 1);
+  }
+  #fields :global(label):nth-child(even) {
+    padding-left: calc(var(--spacing) * 1);
+  }
+  #fields :global(label):nth-child(odd):last-child {
+    padding-right: 0px;
+    width: 100%;
   }
 </style>
