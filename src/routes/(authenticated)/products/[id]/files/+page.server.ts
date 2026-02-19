@@ -33,7 +33,6 @@ export const load = (async ({ params, locals }) => {
       ProductId: params.id
     },
     select: {
-      Id: true,
       Version: true,
       BuildEngineBuildId: true,
       Success: true,
@@ -52,6 +51,7 @@ export const load = (async ({ params, locals }) => {
           Success: true,
           DateUpdated: true,
           LogUrl: true,
+          PublishLink: true,
           DateResolved: true
         },
         orderBy: {
@@ -67,7 +67,7 @@ export const load = (async ({ params, locals }) => {
       Id: params.id
     },
     select: {
-      BuildEngineBuildId: true,
+      CurrentBuildId: true,
       ProductDefinition: {
         select: {
           Name: true
@@ -120,7 +120,6 @@ export const actions = {
         ProductId: params.id
       },
       select: {
-        Id: true,
         Version: true,
         BuildEngineBuildId: true,
         Success: true,
@@ -138,6 +137,7 @@ export const actions = {
             Success: true,
             DateUpdated: true,
             LogUrl: true,
+            PublishLink: true,
             DateResolved: true
           },
           orderBy: {

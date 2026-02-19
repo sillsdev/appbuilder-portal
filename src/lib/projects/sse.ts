@@ -79,8 +79,8 @@ export async function getProjectDetails(id: number, userSession: Session['user']
                 }
               },
               BuildEngineJobId: isSuper,
-              BuildEngineBuildId: isSuper,
-              BuildEngineReleaseId: isSuper,
+              CurrentBuildId: isSuper,
+              CurrentReleaseId: isSuper,
               ProductBuilds: isSuper
                 ? {
                     select: {

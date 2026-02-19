@@ -23,7 +23,11 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
         }
       },
       BuildEngineJobId: true,
-      BuildEngineBuildId: true,
+      CurrentBuild: {
+        select: {
+          BuildEngineBuildId: true
+        }
+      },
       WorkflowInstance: {
         select: {
           ProductId: true
@@ -40,15 +44,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     return await notifyProductNotFound(job.data.productId);
   }
   job.updateProgress(10);
-  const productBuild = await DatabaseReads.productBuilds.findFirst({
-    where: {
-      BuildEngineBuildId: productData.BuildEngineBuildId
-    },
-    select: {
-      Id: true
-    }
-  });
-  if (!productData.BuildEngineBuildId || !productBuild) {
+  if (!productData.CurrentBuild) {
     // ISSUE: #1100 I don't like this, but it's the most appropriate message currently available
     await notifyProductNotFound(job.data.productId);
     const flow = await Workflow.restore(job.data.productId);
@@ -63,7 +59,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
   job.updateProgress(15);
   if (productData.WorkflowInstance) {
     await DatabaseWrites.products.update(job.data.productId, {
-      BuildEngineReleaseId: 0
+      CurrentReleaseId: null
     });
     job.updateProgress(20);
     const params = await getWorkflowParameters(productData.WorkflowInstance.ProductId, 'publish');
@@ -74,7 +70,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     const response = await BuildEngine.Requests.createRelease(
       { type: 'query', organizationId: productData.Project.OrganizationId },
       productData.BuildEngineJobId,
-      productData.BuildEngineBuildId,
+      productData.CurrentBuild.BuildEngineBuildId,
       {
         channel: channel,
         targets: params['targets'] ?? job.data.defaultTargets,
@@ -115,18 +111,18 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
       }
       throw new Error(message);
     } else {
-      await DatabaseWrites.products.update(job.data.productId, {
-        BuildEngineReleaseId: response.id
-      });
-      job.updateProgress(65);
-
       await DatabaseWrites.productPublications.create({
         data: {
           ProductId: job.data.productId,
-          ProductBuildId: productBuild.Id,
           BuildEngineReleaseId: response.id,
+          BuildEngineBuildId: productData.CurrentBuild.BuildEngineBuildId,
           Channel: channel
         }
+      });
+      job.updateProgress(65);
+
+      await DatabaseWrites.products.update(job.data.productId, {
+        CurrentReleaseId: response.id
       });
 
       job.updateProgress(85);
@@ -139,9 +135,8 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
           productId: job.data.productId,
           organizationId: productData.Project.OrganizationId,
           jobId: productData.BuildEngineJobId,
-          buildId: productData.BuildEngineBuildId,
+          buildId: productData.CurrentBuild.BuildEngineBuildId,
           releaseId: response.id,
-          productBuildId: productBuild.Id,
           transition: job.data.transition
         }
       });
@@ -167,8 +162,6 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
     where: { Id: job.data.productId },
     select: {
       BuildEngineJobId: true,
-      BuildEngineBuildId: true,
-      BuildEngineReleaseId: true,
       ProductDefinition: {
         select: {
           Name: true
@@ -193,17 +186,19 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
   let packageName: string | undefined = undefined;
   const flow = await Workflow.restore(job.data.productId);
   job.updateProgress(25);
+  let publishLink: string | undefined = undefined;
   if (flow) {
     if (job.data.release.result === 'SUCCESS') {
       const publishUrlFile = job.data.release.artifacts['publishUrl'];
+      publishLink = publishUrlFile
+        ? ((await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined)
+        : undefined;
       await DatabaseWrites.products.update(job.data.productId, {
         DatePublished: new Date(),
-        PublishLink: publishUrlFile
-          ? ((await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined)
-          : undefined
+        PublishLink: publishLink
       });
       await notifyCompleted(
-        job.data.productBuildId,
+        job.data.buildId,
         job.data.release.id,
         job.data.productId,
         product.Project.OwnerId,
@@ -214,8 +209,8 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
       flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
       const packageFile = await DatabaseReads.productPublications.findUnique({
         where: {
-          ProductBuildId_BuildEngineReleaseId: {
-            ProductBuildId: job.data.productBuildId,
+          ProductId_BuildEngineReleaseId: {
+            ProductId: job.data.productId,
             BuildEngineReleaseId: job.data.release.id
           }
         },
@@ -236,13 +231,13 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
         }
       });
       if (packageFile?.ProductBuild.ProductArtifacts[0]) {
-        packageName = await fetch(packageFile.ProductBuild.ProductArtifacts[0].Url!).then((r) =>
-          r.text()
-        );
+        packageName = (
+          await fetch(packageFile.ProductBuild.ProductArtifacts[0].Url!).then((r) => r.text())
+        )?.trim();
       }
     } else {
       await notifyFailed(
-        job.data.productBuildId,
+        job.data.buildId,
         job.data.release.id,
         job.data.productId,
         product,
@@ -264,15 +259,16 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
   job.updateProgress(75);
   const publication = await DatabaseWrites.productPublications.update({
     where: {
-      ProductBuildId_BuildEngineReleaseId: {
-        ProductBuildId: job.data.productBuildId,
+      ProductId_BuildEngineReleaseId: {
+        ProductId: job.data.productId,
         BuildEngineReleaseId: job.data.release.id
       }
     },
     data: {
       Success: job.data.release.result === 'SUCCESS',
       LogUrl: job.data.release.consoleText,
-      Package: packageName?.trim()
+      Package: packageName,
+      PublishLink: publishLink
     }
   });
   job.updateProgress(100);
@@ -340,7 +336,7 @@ async function notifyUnableToCreate(
   );
 }
 async function notifyCompleted(
-  productBuildId: number,
+  buildId: number,
   releaseId: number,
   productId: string,
   userId: number,
@@ -349,7 +345,7 @@ async function notifyCompleted(
   transition?: number
 ) {
   return getQueues().Emails.add(
-    `Notify Owner of Successful Completion of Release #${productBuildId} (${releaseId}) for Product #${productId}`,
+    `Notify Owner of Successful Completion of Release #${buildId}/${releaseId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToUser,
       userId,
@@ -364,14 +360,12 @@ async function notifyCompleted(
   );
 }
 async function notifyFailed(
-  productBuildId: number,
+  buildId: number,
   releaseId: number,
   productId: string,
   product: Prisma.ProductsGetPayload<{
     select: {
-      BuildEngineBuildId: true;
       BuildEngineJobId: true;
-      BuildEngineReleaseId: true;
       ProductDefinition: {
         select: { Name: true };
       };
@@ -389,7 +383,7 @@ async function notifyFailed(
 ) {
   const endpoint = await BuildEngine.Requests.queryURLandToken(product.Project.OrganizationId);
   return getQueues().Emails.add(
-    `Notify Owner/Admins of Failure to Create Release #${productBuildId} (${releaseId}) for Product #${productId}`,
+    `Notify Owner/Admins of Failure to Create Release #${buildId}/${releaseId} for Product #${productId}`,
     {
       type: BullMQ.JobType.Email_SendNotificationToOrgAdminsAndOwner,
       projectId: product.Project.Id,
@@ -399,11 +393,11 @@ async function notifyFailed(
         productName: product.ProductDefinition.Name!,
         releaseStatus: release.status,
         releaseError: release.error!,
-        buildEngineUrl: endpoint.url + '/release-admin/view?id=' + product.BuildEngineReleaseId,
+        buildEngineUrl: endpoint.url + '/release-admin/view?id=' + releaseId,
         consoleTextUrl: release.artifacts['consoleText'] ?? '',
         jobId: '' + product.BuildEngineJobId,
-        buildId: '' + product.BuildEngineBuildId,
-        publishId: '' + product.BuildEngineReleaseId,
+        buildId: '' + buildId,
+        publishId: '' + releaseId,
         projectId: '' + product.Project.Id,
         projectUrl: projectUrl(product.Project.Id)
       },

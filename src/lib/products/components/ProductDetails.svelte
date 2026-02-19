@@ -31,8 +31,8 @@
         Id: true;
         Store: { select: { Description: true } };
         BuildEngineJobId: true;
-        BuildEngineBuildId: true;
-        BuildEngineReleaseId: true;
+        CurrentBuildId: true;
+        CurrentReleaseId: true;
         ProductBuilds: {
           select: {
             BuildEngineBuildId: true;
@@ -84,18 +84,28 @@
 
   const isSuper = $derived(isSuperAdmin(page.data.session!.user.roles));
 
-  function getBuildOrPub(trans: Transition, prod: typeof product) {
-    let ret = undefined;
+  function getBuildOrPub(trans: Transition) {
+    const ret = {
+      BuildEngineJobId: product.BuildEngineJobId,
+      CurrentBuildId: product.CurrentBuildId,
+      CurrentReleaseId: product.CurrentReleaseId
+    };
     if (trans.InitialState === WorkflowState.Product_Build) {
-      ret = prod.ProductBuilds?.find(
+      const currentBuild = product.ProductBuilds?.find(
         (pb) => (pb.DateCreated?.valueOf() ?? 0) > (trans.DateTransition?.valueOf() ?? 0)
       );
+      if (currentBuild) {
+        ret.CurrentBuildId = currentBuild.BuildEngineBuildId;
+      }
     } else if (trans.InitialState === WorkflowState.Product_Publish) {
-      ret = prod.ProductPublications?.find(
+      const currentRelease = product.ProductPublications?.find(
         (pp) => (pp.DateCreated?.valueOf() ?? 0) > (trans.DateTransition?.valueOf() ?? 0)
       );
+      if (currentRelease) {
+        ret.CurrentReleaseId = currentRelease.BuildEngineReleaseId;
+      }
     }
-    return ret ?? {};
+    return ret;
   }
 </script>
 
@@ -111,7 +121,7 @@
         class="link"
         href={linkToBuildEngine(
           product.BuildEngineUrl!,
-          { ...product, ...getBuildOrPub(transition, product) },
+          getBuildOrPub(transition),
           transition.InitialState as WorkflowState
         )}
         target="_blank"

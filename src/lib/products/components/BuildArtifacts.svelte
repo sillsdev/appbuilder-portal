@@ -4,7 +4,7 @@
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
-  import ReleaseInfo from '$lib/products/components/ReleaseInfo.svelte';
+  import ReleaseInfo, { type Release } from '$lib/products/components/ReleaseInfo.svelte';
   import { bytesToHumanSize } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
@@ -26,16 +26,8 @@
         DateUpdated: true;
       };
     }>[];
-    release?: Prisma.ProductPublicationsGetPayload<{
-      select: {
-        Channel: true;
-        Success: true;
-        LogUrl: true;
-        DateUpdated: true;
-        DateResolved: true;
-      };
-    }>;
-    latestBuildId: number | undefined;
+    release?: Release;
+    latestBuildId: number | null | undefined;
     allowDownloads?: boolean;
   }
 

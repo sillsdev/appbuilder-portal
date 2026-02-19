@@ -70,8 +70,8 @@ export function linkToBuildEngine(
   product: Prisma.ProductsGetPayload<{
     select: {
       BuildEngineJobId: true;
-      BuildEngineBuildId: true;
-      BuildEngineReleaseId: true;
+      CurrentBuildId: true;
+      CurrentReleaseId: true;
     };
   }>,
   state: WorkflowState
@@ -80,9 +80,9 @@ export function linkToBuildEngine(
     case WorkflowState.Product_Creation:
       return `${url}/job-admin/view?id=${product.BuildEngineJobId}`;
     case WorkflowState.Product_Build:
-      return `${url}/build-admin/view?id=${product.BuildEngineBuildId}`;
+      return `${url}/build-admin/view?id=${product.CurrentBuildId}`;
     case WorkflowState.Product_Publish:
-      return `${url}/release-admin/view?id=${product.BuildEngineReleaseId}`;
+      return `${url}/release-admin/view?id=${product.CurrentReleaseId}`;
     default:
       return url;
   }

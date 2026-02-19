@@ -44,7 +44,7 @@ export const load = (async ({ params, locals, depends }) => {
       Id: params.product_id
     },
     select: {
-      BuildEngineBuildId: true,
+      CurrentBuildId: true,
       Project: {
         select: {
           Id: true,
@@ -119,31 +119,30 @@ export const load = (async ({ params, locals, depends }) => {
     }
   }))!;
 
-  const artifacts = snap.context.includeArtifacts
-    ? await DatabaseReads.productArtifacts.findMany({
-        where: {
-          ProductId: params.product_id,
-          ProductBuild: {
-            BuildEngineBuildId: product.BuildEngineBuildId
+  const artifacts =
+    snap.context.includeArtifacts && product.CurrentBuildId
+      ? await DatabaseReads.productArtifacts.findMany({
+          where: {
+            ProductId: params.product_id,
+            BuildEngineBuildId: product.CurrentBuildId,
+            //filter by artifact type
+            ArtifactType:
+              snap.context.includeArtifacts === 'all' || snap.context.includeArtifacts === 'error'
+                ? undefined
+                : {
+                    in: artifactLists(snap.context.includeArtifacts)
+                  }
           },
-          //filter by artifact type
-          ArtifactType:
-            snap.context.includeArtifacts === 'all' || snap.context.includeArtifacts === 'error'
-              ? undefined
-              : {
-                  in: artifactLists(snap.context.includeArtifacts)
-                }
-        },
-        select: {
-          ArtifactType: true,
-          FileSize: true,
-          Url: true
-        },
-        orderBy: {
-          ArtifactType: 'asc'
-        }
-      })
-    : [];
+          select: {
+            ArtifactType: true,
+            FileSize: true,
+            Url: true
+          },
+          orderBy: {
+            ArtifactType: 'asc'
+          }
+        })
+      : [];
 
   const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
   const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
