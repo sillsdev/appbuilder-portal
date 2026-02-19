@@ -115,7 +115,7 @@
         <li>
           <a
             class="link"
-            href={localizeHref(`/projects/org/${data.product?.Project.Organization.Id}`)}
+            href={localizeHref(`/projects/organization/${data.product?.Project.Organization.Id}`)}
           >
             {data.product?.Project.Organization.Name}
           </a>
