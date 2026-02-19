@@ -28,7 +28,6 @@ import type {
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
-import { byRole as allUsersByRole } from '../database/Users';
 import { WorkflowStateMachine } from './state-machine';
 
 /**
@@ -402,7 +401,7 @@ export class Workflow {
     state: XStateNode<WorkflowContext, WorkflowEvent>,
     productId: string,
     input: WorkflowInput,
-    users: Record<string, Set<RoleId>>
+    userNames: Map<string, Set<RoleId>>
   ) {
     const t = Workflow.filterTransitions(state.on, input)[0][0];
 
@@ -410,13 +409,12 @@ export class Workflow {
       ProductId: productId,
       AllowedUserNames:
         t.meta.type === ActionType.User
-          ? Array.from(
-              new Set(
-                Object.entries(users)
-                  .filter(([user, roles]) => roles.has(t.meta.user))
-                  .map(([user, roles]) => user)
-              )
-            ).join()
+          ? userNames
+              .entries()
+              .filter(([name, roles]) => name && roles.has(t.meta.user))
+              .map((user) => user[0])
+              .toArray()
+              .join(', ')
           : null,
       TransitionType: ProductTransitionType.Activity,
       InitialState: Workflow.stateName(state),
@@ -439,19 +437,19 @@ export class Workflow {
         ProjectId: true
       }
     }))!.ProjectId;
-    const allUsers = await allUsersByRole(projectId);
-    const users = Object.fromEntries(
+    const users = await DatabaseWrites.projects.getUsersByRole(projectId);
+    const userNames = new Map<string, Set<RoleId>>(
       (
         await DatabaseReads.users.findMany({
           where: {
-            Id: { in: Object.keys(allUsers).map((str) => parseInt(str)) }
+            Id: { in: users.keys().toArray() }
           },
           select: {
             Id: true,
             Name: true
           }
         })
-      ).map((u) => [u.Name, allUsers[u.Id]])
+      ).map((u) => [u.Name ?? '', users.get(u.Id)!])
     );
 
     const noDateWithRecords = new Set(
@@ -476,7 +474,7 @@ export class Workflow {
           : WorkflowStateMachine.getStateNodeById(Workflow.stateIdFromName(stateName)),
         productId,
         input,
-        users
+        userNames
       )
     ];
     while (ret.at(-1)!.DestinationState !== WorkflowState.Published) {
@@ -485,7 +483,7 @@ export class Workflow {
           Workflow.nodeFromName(ret.at(-1)!.DestinationState!),
           productId,
           input,
-          users
+          userNames
         )
       );
     }

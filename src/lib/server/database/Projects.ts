@@ -167,3 +167,79 @@ async function validateProjectBase(
 
   return check;
 }
+
+export async function getUsersByRole(projectId: number, roles?: RoleId[]) {
+  const users = await prisma.users.findMany({
+    where: {
+      OR: [
+        {
+          Projects: { some: { Id: projectId } }
+        },
+        {
+          UserRoles: {
+            some: {
+              RoleId: RoleId.OrgAdmin,
+              Organization: {
+                Projects: {
+                  some: { Id: projectId }
+                }
+              }
+            }
+          }
+        },
+        {
+          Authors: { some: { ProjectId: projectId } }
+        }
+      ]
+    },
+    select: {
+      Id: true,
+      Projects: {
+        where: {
+          Id: projectId
+        },
+        select: {
+          Id: true
+        }
+      },
+      UserRoles: {
+        where: {
+          RoleId: RoleId.OrgAdmin,
+          Organization: {
+            Projects: {
+              some: { Id: projectId }
+            }
+          }
+        },
+        select: {
+          RoleId: true
+        }
+      },
+      Authors: {
+        where: {
+          ProjectId: projectId
+        },
+        select: {
+          UserId: true
+        }
+      }
+    }
+  });
+
+  const includeOwner = !roles || roles.includes(RoleId.AppBuilder);
+  const includeAdmin = !roles || roles.includes(RoleId.OrgAdmin);
+  const includeAuthors = !roles || roles.includes(RoleId.Author);
+
+  return new Map<number, Set<RoleId>>(
+    users.map((u) => [
+      u.Id,
+      new Set(
+        [
+          includeOwner && u.Projects.length && RoleId.AppBuilder,
+          includeAdmin && u.UserRoles.length && RoleId.OrgAdmin,
+          includeAuthors && u.Authors.length && RoleId.Author
+        ].filter((r) => !!r)
+      )
+    ])
+  );
+}
