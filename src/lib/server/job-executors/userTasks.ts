@@ -146,10 +146,7 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
               ? undefined
               : {
                   in:
-                    job.data.operation.users ??
-                    Array.from(
-                      new Set(Object.entries(allUsers).map(([user, roles]) => parseInt(user)))
-                    )
+                    job.data.operation.users ?? Object.keys(allUsers).map((user) => parseInt(user))
                 },
           Role: job.data.operation.roles ? { in: job.data.operation.roles } : undefined
         }
@@ -172,13 +169,9 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
             ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
           );
           job.updateProgress(40 + ((i + 0.33) * 40) / products.length);
-          const toCreate = Array.from(
-            new Set(
-              Object.entries(allUsers)
-                .filter(([users, roles]) => !roleSet.isDisjointFrom(roles))
-                .map(([user, roles]) => parseInt(user))
-            )
-          )
+          const toCreate = Object.entries(allUsers)
+            .filter(([users, roles]) => !roleSet.isDisjointFrom(roles))
+            .map(([user, roles]) => parseInt(user))
             .filter((u) => job.data.operation.users?.includes(u) ?? true)
             .flatMap((user) =>
               Array.from(roleSet).map((r) => ({
