@@ -1,20 +1,6 @@
 /*
-  Warnings:
-
-  - The primary key for the `ProductArtifacts` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - You are about to drop the column `ProductBuildId` on the `ProductArtifacts` table. All the data in the column will be lost.
-  - The primary key for the `ProductBuilds` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - You are about to drop the column `Id` on the `ProductBuilds` table. All the data in the column will be lost.
-  - The primary key for the `ProductPublications` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - You are about to drop the column `ProductBuildId` on the `ProductPublications` table. All the data in the column will be lost.
-  - You are about to drop the column `BuildEngineBuildId` on the `Products` table. All the data in the column will be lost.
-  - You are about to drop the column `BuildEngineReleaseId` on the `Products` table. All the data in the column will be lost.
-  - A unique constraint covering the columns `[Id,CurrentBuildId]` on the table `Products` will be added. If there are existing duplicate values, this will fail.
-  - A unique constraint covering the columns `[Id,CurrentReleaseId]` on the table `Products` will be added. If there are existing duplicate values, this will fail.
-  - Added the required column `BuildEngineBuildId` to the `ProductArtifacts` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `BuildEngineBuildId` to the `ProductPublications` table without a default value. This is not possible if the table is not empty.
-  - Made the column `StoreId` on table `Products` required. This step will fail if there are existing NULL values in that column.
-
+  I manually edited this script to ensure that all fields are appropriately filled and primary keys are updated.
+  There shouldn't be any products with a null StoreId.
 */
 -- DropForeignKey
 ALTER TABLE "public"."ProductArtifacts" DROP CONSTRAINT "FK_ProductArtifacts_ProductBuilds_ProductBuildId";
@@ -29,7 +15,7 @@ DROP INDEX "public"."IX_ProductBuilds_ProductId";
 ALTER TABLE "ProductPublications" DROP CONSTRAINT "PK_ProductPublications_ProductBuildId_BuildEngineReleaseId";
 ALTER TABLE "ProductPublications" ADD COLUMN  "BuildEngineBuildId" INTEGER;
 ALTER TABLE "ProductPublications" ADD COLUMN  "PublishLink" TEXT;
-
+-- Update BuildEngineBuildId with appropriate value
 UPDATE "ProductPublications"
 SET "BuildEngineBuildId" = pb."BuildEngineBuildId"
 FROM "ProductBuilds" pb
@@ -42,7 +28,7 @@ ADD CONSTRAINT "PK_ProductPublications_ProductId_BuildEngineReleaseId" PRIMARY K
 -- AlterTable
 ALTER TABLE "ProductArtifacts" DROP CONSTRAINT "PK_ProductArtifacts_ProductBuildId_ArtifactType";
 ALTER TABLE "ProductArtifacts" ADD COLUMN  "BuildEngineBuildId" INTEGER;
-
+-- Update BuildEngineBuildId with appropriate value
 UPDATE "ProductArtifacts"
 SET "BuildEngineBuildId" = pb."BuildEngineBuildId"
 FROM "ProductBuilds" pb
