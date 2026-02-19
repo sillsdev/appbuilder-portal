@@ -401,7 +401,7 @@ export class Workflow {
     state: XStateNode<WorkflowContext, WorkflowEvent>,
     productId: string,
     input: WorkflowInput,
-    userNames: Map<string, Set<RoleId>>
+    userNames: [string, Set<RoleId>][]
   ) {
     const t = Workflow.filterTransitions(state.on, input)[0][0];
 
@@ -410,10 +410,8 @@ export class Workflow {
       AllowedUserNames:
         t.meta.type === ActionType.User
           ? userNames
-              .entries()
               .filter(([name, roles]) => name && roles.has(t.meta.user))
               .map((user) => user[0])
-              .toArray()
               .join(', ')
           : null,
       TransitionType: ProductTransitionType.Activity,
@@ -438,19 +436,17 @@ export class Workflow {
       }
     }))!.ProjectId;
     const users = await DatabaseWrites.projects.getUsersByRole(projectId);
-    const userNames = new Map<string, Set<RoleId>>(
-      (
-        await DatabaseReads.users.findMany({
-          where: {
-            Id: { in: users.keys().toArray() }
-          },
-          select: {
-            Id: true,
-            Name: true
-          }
-        })
-      ).map((u) => [u.Name ?? '', users.get(u.Id)!])
-    );
+    const userNames = (
+      await DatabaseReads.users.findMany({
+        where: {
+          Id: { in: users.keys().toArray() }
+        },
+        select: {
+          Id: true,
+          Name: true
+        }
+      })
+    ).map((u) => [u.Name ?? '', users.get(u.Id)!]) as [string, Set<RoleId>][];
 
     const noDateWithRecords = new Set(
       (

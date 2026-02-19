@@ -231,15 +231,17 @@ export async function getUsersByRole(projectId: number, roles?: RoleId[]) {
   const includeAuthors = !roles || roles.includes(RoleId.Author);
 
   return new Map<number, Set<RoleId>>(
-    users.map((u) => [
-      u.Id,
-      new Set(
-        [
-          includeOwner && u.Projects.length && RoleId.AppBuilder,
-          includeAdmin && u.UserRoles.length && RoleId.OrgAdmin,
-          includeAuthors && u.Authors.length && RoleId.Author
-        ].filter((r) => !!r)
-      )
-    ])
+    (
+      users.map((u) => [
+        u.Id,
+        new Set(
+          [
+            includeOwner && u.Projects.length && RoleId.AppBuilder,
+            includeAdmin && u.UserRoles.length && RoleId.OrgAdmin,
+            includeAuthors && u.Authors.length && RoleId.Author
+          ].filter((r) => !!r)
+        )
+      ]) as [number, Set<RoleId>][]
+    ).filter((u) => u[1].size)
   );
 }
