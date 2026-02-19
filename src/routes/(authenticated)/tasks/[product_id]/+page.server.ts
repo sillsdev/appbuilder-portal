@@ -74,6 +74,9 @@ export const load = (async ({ params, locals, depends }) => {
               UserRoles: {
                 where: {
                   RoleId: RoleId.OrgAdmin
+                },
+                select: {
+                  UserId: true
                 }
               }
             }
@@ -260,6 +263,9 @@ export const actions = {
                 UserRoles: {
                   where: {
                     RoleId: RoleId.OrgAdmin
+                  },
+                  select: {
+                    UserId: true
                   }
                 }
               }
