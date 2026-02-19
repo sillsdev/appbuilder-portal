@@ -21,7 +21,7 @@
 {#snippet langIcon(lang: string | null)}
   {#if lang}
     <span class="badge badge-primary mb-2 mr-4 [height:1.35rem]" title={m.projectTable_language()}>
-      <IconContainer icon="ph:globe" width={20} class="mr-1" />
+      <IconContainer icon="mdi:language" width={20} class="mr-1" />
       <!-- <LanguageIconContainer color="lightgray" size="20" /> -->
       <span class="overflow-auto text-center">
         {lang}

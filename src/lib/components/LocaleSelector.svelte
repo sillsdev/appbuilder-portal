@@ -48,7 +48,7 @@
 </script>
 
 {#snippet globe()}
-  <IconContainer icon="ph:globe-bold" width={28} />
+  <IconContainer icon="mdi:language" width={28} />
 {/snippet}
 
 {#key getLocale()}

@@ -163,7 +163,7 @@
     onLangCodeSelected?.(langCode);
   }}
   bind:inputElement={typeaheadInput}
-  icon="ph:globe"
+  icon="mdi:language"
 >
   <!-- This is a convenience option and unnecessary for a11y -->
   {#snippet custom()}

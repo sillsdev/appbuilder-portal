@@ -217,7 +217,7 @@
           {#if data.fields.listingLanguageCode}
             <LabeledFormInput key="tasks_storeLanguage" class="md:w-2/4">
               <div class="input input-bordered w-full">
-                <IconContainer icon="ph:globe" width={20} />
+                <IconContainer icon="mdi:language" width={20} />
                 <input type="text" readonly value={data.fields.listingLanguageCode} />
               </div>
             </LabeledFormInput>
@@ -269,7 +269,7 @@
         </LabeledFormInput>
         <LabeledFormInput key="project_languageCode">
           <div class="input input-bordered w-full">
-            <IconContainer icon="ph:globe" width={20} />
+            <IconContainer icon="mdi:language" width={20} />
             <input type="text" readonly value={data.fields.projectLanguageCode} />
           </div>
         </LabeledFormInput>

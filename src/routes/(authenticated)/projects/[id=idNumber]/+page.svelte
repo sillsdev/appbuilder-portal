@@ -127,7 +127,7 @@
           <div class="gridcont grid gap-x-6 gap-y-2">
             <div class="flex place-content-between">
               <span>
-                <IconContainer icon="ph:globe" width={20} />
+                <IconContainer icon="mdi:language" width={20} />
                 {m.project_details_language()}:
               </span>
               <span>
