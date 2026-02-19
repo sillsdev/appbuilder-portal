@@ -61,7 +61,7 @@ export async function updateMany(updateManyData: Prisma.UserTasksUpdateManyArgs)
   ).map((u) => u.Id);
   getQueues().SvelteSSE.add(`Update UserTasks`, {
     type: BullMQ.JobType.SvelteSSE_UpdateUserTasks,
-    userIds: [...beforeUsers, ...afterUsers]
+    userIds: [...new Set([...beforeUsers, ...afterUsers])]
   });
   return res;
 }
