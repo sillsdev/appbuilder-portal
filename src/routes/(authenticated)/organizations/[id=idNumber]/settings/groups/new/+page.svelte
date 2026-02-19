@@ -51,23 +51,22 @@
 <h2>{m.org_addGroupButton()}</h2>
 
 <form class="m-4" method="post" action="?/new" use:groupEnhance>
-  <LabeledFormInput key="common_name">
-    <input
-      type="text"
-      name="name"
-      class="input input-bordered w-full validator"
-      bind:value={$groupForm.name}
-      required
-    />
-    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-  </LabeledFormInput>
+  <LabeledFormInput
+    key="common_name"
+    input={{
+      name: 'name',
+      err: m.formErrors_nameEmpty(),
+      icon: 'mdi:rename',
+      required: true
+    }}
+    bind:value={$groupForm.name}
+  />
   <LabeledFormInput key="common_description" class="mb-8">
-    <input
-      type="text"
+    <textarea
       name="description"
-      class="input input-bordered w-full"
+      class="textarea w-full"
       bind:value={$groupForm.description}
-    />
+    ></textarea>
   </LabeledFormInput>
   <GroupUsers users={data.users}>
     {#snippet header()}
@@ -162,6 +161,7 @@
         />
         <SubmitButton
           key="common_add"
+          icon="material-symbols:group-add"
           disabled={!$usersForm.groups.length}
           onclick={() => {
             usersModal?.close();

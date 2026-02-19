@@ -50,23 +50,22 @@
 <h3 class="pl-4">{m.org_editGroupTitle()}</h3>
 
 <form class="m-4" method="post" action="?/edit" use:enhance>
-  <LabeledFormInput key="common_name">
-    <input
-      type="text"
-      name="name"
-      class="input input-bordered w-full validator"
-      bind:value={$form.name}
-      required
-    />
-    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-  </LabeledFormInput>
-  <LabeledFormInput key="common_description" class="mb-4">
-    <input
-      type="text"
+  <LabeledFormInput
+    key="common_name"
+    input={{
+      name: 'name',
+      err: m.formErrors_nameEmpty(),
+      icon: 'mdi:rename',
+      required: true
+    }}
+    bind:value={$form.name}
+  />
+  <LabeledFormInput key="common_description" class="mb-8">
+    <textarea
       name="description"
-      class="input input-bordered w-full"
+      class="textarea w-full"
       bind:value={$form.description}
-    />
+    ></textarea>
   </LabeledFormInput>
   <div>
     <CancelButton returnTo={localizeHref(base)} />
