@@ -4,14 +4,15 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
+  import IconContainer from '$lib/components/IconContainer.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
-  import { byName } from '$lib/utils/sorting';
   import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
 
   interface Props {
@@ -39,36 +40,42 @@
     <h1>{m.project_editProject()}</h1>
     <div class="flex flex-col gap-2 items-center">
       <div class="row">
-        <LabeledFormInput key="project_name" class="md:max-w-xs grow">
-          <input
-            type="text"
-            name="name"
-            class="input input-bordered validator"
-            bind:value={$form.name}
-            required
-          />
-          <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-        </LabeledFormInput>
+        <LabeledFormInput
+          key="project_name"
+          class="md:max-w-xs grow"
+          input={{
+            name: 'name',
+            err: m.formErrors_nameEmpty(),
+            icon: 'mdi:rename',
+            required: true
+          }}
+          bind:value={$form.name}
+        />
         <LabeledFormInput key="project_owner" class="md:max-w-xs">
           <BlockIfJobsUnavailable class="select">
             {#snippet altContent()}
+              <IconContainer icon="mdi:user" width={20} />
               {data.owners.find((o) => o.Id === $form.owner)?.Name}
             {/snippet}
-            <select name="owner" class="select" bind:value={$form.owner}>
-              {#each data.owners.toSorted((a, b) => byName(a, b, getLocale())) as owner}
-                <option value={owner.Id}>{owner.Name}</option>
-              {/each}
-            </select>
+            <SelectWithIcon
+              attr={{ name: 'owner' }}
+              bind:value={$form.owner}
+              items={data.owners}
+              icon="mdi:user"
+              class="w-full"
+            />
           </BlockIfJobsUnavailable>
         </LabeledFormInput>
       </div>
       <div class="row">
         <LabeledFormInput key="project_group" class="md:max-w-xs grow">
-          <select name="group" class="select" bind:value={$form.group}>
-            {#each data.groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
-              <option value={group.Id}>{group.Name}</option>
-            {/each}
-          </select>
+          <SelectWithIcon
+            attr={{ name: 'group' }}
+            bind:value={$form.group}
+            items={data.groups}
+            icon="mdi:user-group"
+            class="w-full"
+          />
         </LabeledFormInput>
         <LabeledFormInput key="project_languageCode" class="md:max-w-xs">
           <LanguageCodeTypeahead
@@ -114,7 +121,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     gap: calc(var(--spacing) * 2);
-    column-gap: calc(var(--spacing) * 4);
+    column-gap: calc(var(--spacing) * 8);
     width: 100%;
     justify-content: center;
   }

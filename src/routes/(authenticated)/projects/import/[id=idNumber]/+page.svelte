@@ -9,6 +9,7 @@
   import IconContainer from '$lib/components/IconContainer.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -16,7 +17,7 @@
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
-  import { byName, byString } from '$lib/utils/sorting';
+  import { byString } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -98,11 +99,11 @@
     </a>
     <div class="flex flex-row gap-4 flex-wrap place-content-center sm:place-content-start p-4">
       <LabeledFormInput key="project_group" class="max-w-xs">
-        <select name="group" class="select" bind:value={$form.group}>
-          {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
-            <option value={group.Id}>{group.Name}</option>
-          {/each}
-        </select>
+        <SelectWithIcon
+          bind:value={$form.group}
+          items={data.organization.Groups}
+          icon="mdi:user-group"
+        />
       </LabeledFormInput>
       <LabeledFormInput key="common_type" class="max-w-xs">
         <select name="type" class="select" bind:value={$form.type}>

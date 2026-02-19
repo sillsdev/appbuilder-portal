@@ -153,6 +153,7 @@
             <span>{m.project_location()}:</span>
             <br />
             <div class="flex rounded-md text-nowrap bg-base-200 p-3 pt-2 mt-2">
+              <IconContainer icon="solar:link-bold" width={20} class="opacity-80 mr-1" />
               <p>
                 {projectData.project.RepositoryUrl?.substring(0, 5) ?? ''}
               </p>

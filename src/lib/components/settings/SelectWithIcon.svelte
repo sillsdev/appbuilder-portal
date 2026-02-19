@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" generics="N extends string | null">
   import type { Snippet } from 'svelte';
   import type { ClassValue, HTMLOptionAttributes, HTMLSelectAttributes } from 'svelte/elements';
   import IconContainer from '$lib/components/IconContainer.svelte';
@@ -9,7 +9,7 @@
     class?: ClassValue;
     items: {
       Id: number;
-      Name: string;
+      Name: N;
       icon?: string;
       attr?: HTMLOptionAttributes;
     }[];

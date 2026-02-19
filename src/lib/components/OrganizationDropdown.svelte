@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { ClassValue, HTMLSelectAttributes } from 'svelte/elements';
-  import { org_allOrganizations } from '$lib/paraglide/messages';
-  import SelectWithIcon from './settings/SelectWithIcon.svelte';
   import type { Prisma } from '@prisma/client';
+  import type { ClassValue, HTMLSelectAttributes } from 'svelte/elements';
+  import SelectWithIcon from './settings/SelectWithIcon.svelte';
+  import { org_allOrganizations } from '$lib/paraglide/messages';
   interface Props {
     organizations: Prisma.OrganizationsGetPayload<{ select: { Id: true; Name: true } }>[];
     value: number | null;

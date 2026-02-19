@@ -51,8 +51,6 @@
       }
     }
   });
-
-  $inspect($form);
 </script>
 
 <div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
