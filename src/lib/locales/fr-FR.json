@@ -367,6 +367,7 @@
   "tasks_downloadURL": "Download URL",
   "tasks_submitted": "<b>{action}</b> submitted",
   "tasks_reloaded": "Task updated by Scriptoria",
+  "tasks_previousComment": "Previous Comment ({activityName})",
   "projects_noBuilds": "No Builds Yet",
   "projects_latestBuild": "Latest Build ({version})",
   "projects_buildPending": "Build Pending",

@@ -115,7 +115,18 @@ export const load = (async ({ params, locals, depends }) => {
               },
               take: 1
             }
-          : undefined
+          : undefined,
+      ProductTransitions: {
+        where: {
+          DateTransition: { not: null }
+        },
+        select: {
+          InitialState: true,
+          Comment: true
+        },
+        orderBy: { DateTransition: 'desc' },
+        take: 1
+      }
     }
   }))!;
 
@@ -147,6 +158,8 @@ export const load = (async ({ params, locals, depends }) => {
   const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
   const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
 
+  console.log(product.ProductTransitions);
+
   return {
     loadTime: new Date().valueOf(),
     actions: Workflow.availableTransitionsFromName(snap.state, snap.input)
@@ -161,6 +174,7 @@ export const load = (async ({ params, locals, depends }) => {
       )
       .map((a) => a[0].eventType as WorkflowAction),
     taskTitle: snap.state,
+    previousTask: product.ProductTransitions.at(0),
     instructions: snap.context.instructions,
     projectId: product.Project.Id,
     productDescription: product.ProductDefinition.Name,

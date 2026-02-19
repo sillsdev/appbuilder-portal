@@ -12,6 +12,7 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import ReleaseInfo from '$lib/products/components/ReleaseInfo.svelte';
+  import TaskComment from '$lib/products/components/TaskComment.svelte';
   import { userTasksSSE } from '$lib/stores';
   import { bytesToHumanSize, toast } from '$lib/utils';
   import { byName, byNumber, byString } from '$lib/utils/sorting';
@@ -162,6 +163,14 @@
     {waiting ? 'Waiting' : data.taskTitle}
   </h2>
   {#if !waiting}
+    {#if data.previousTask?.Comment}
+      <LabeledFormInput
+        key="tasks_previousComment"
+        params={{ activityName: data.previousTask.InitialState ?? '' }}
+      >
+        <TaskComment comment={data.previousTask.Comment} />
+      </LabeledFormInput>
+    {/if}
     <div>
       {#if data.fields.ownerName && data.fields.ownerEmail}
         <div class="flex flex-col gap-x-3 w-full md:flex-row">
@@ -203,7 +212,10 @@
       </div>
       {#if data.fields.storeDescription}
         <div class="flex flex-col gap-x-3 md:flex-row">
-          <LabeledFormInput key="stores_name" class="md:w-2/4">
+          <LabeledFormInput
+            key="stores_name"
+            class={['md:w-2/4', data.fields.listingLanguageCode || 'pr-1.5']}
+          >
             <input
               type="text"
               class="input input-bordered w-full"
