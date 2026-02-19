@@ -239,7 +239,7 @@
                 <li>
                   <BlockIfJobsUnavailable class="rounded-none">
                     {#snippet altContent()}
-                      <IconContainer icon="carbon:batch-job" width={24} />
+                      <IconContainer icon="clarity:dashboard-line" width={24} />
                       {m.sidebar_jobAdministration()}
                       <IconContainer icon="mdi:open-in-new" width="18" />
                     {/snippet}
