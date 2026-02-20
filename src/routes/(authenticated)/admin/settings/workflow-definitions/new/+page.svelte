@@ -8,7 +8,7 @@
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
-  import { Icons, getProductIcon, getStoreIcon } from '$lib/icons';
+  import { Icons, getProductIcon, getStoreIcon, getWorkflowIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { WorkflowType } from '$lib/prisma';
@@ -78,11 +78,16 @@
     <span class="validator-hint">{m.flowDefs_emptyProductType()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_type">
-    <select class="select validator" name="workflowType" bind:value={$form.workflowType} required>
-      {#each enumNumVals(WorkflowType) as type}
-        <option value={type}>{m.flowDefs_types({ type })}</option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.workflowType}
+      items={enumNumVals(WorkflowType).map((type) => ({
+        Id: type,
+        Name: m.flowDefs_types({ type }),
+        icon: getWorkflowIcon(type)
+      }))}
+      class="validator {mobileSizing}"
+      attr={{ name: 'workflowType', required: true }}
+    />
     <span class="validator-hint">{m.flowDefs_emptyType()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="common_description">
@@ -130,14 +135,3 @@
     <SubmitButton disabled={!propsOk} icon={Icons.AddGeneric} />
   </div>
 </form>
-
-<style>
-  select {
-    width: 100%;
-  }
-  @media (width >= 40rem) {
-    select {
-      max-width: var(--container-xs);
-    }
-  }
-</style>

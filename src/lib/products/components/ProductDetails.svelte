@@ -57,7 +57,7 @@
   import type { Prisma } from '@prisma/client';
   import TaskComment from './TaskComment.svelte';
   import { page } from '$app/state';
-  import { Icons, getStoreIcon } from '$lib/icons';
+  import { Icons, getStoreIcon, getWorkflowIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { ProductTransitionType } from '$lib/prisma';
@@ -133,6 +133,10 @@
   {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
     <IconContainer icon={Icons.Star} width={16} />&nbsp;{transition.InitialState}
   {:else}
+    {@const icon = getWorkflowIcon(transition.WorkflowType ?? 1)}
+    {#if icon}
+      <IconContainer {icon} width={16} />&nbsp;
+    {/if}
     {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
   {/if}
 {/snippet}

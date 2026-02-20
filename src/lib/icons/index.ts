@@ -1,5 +1,5 @@
 import type { Locale } from '$lib/paraglide/runtime';
-import { ApplicationType, RoleId, StoreType } from '$lib/prisma';
+import { ApplicationType, RoleId, StoreType, WorkflowType } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { ProductType } from '$lib/workflowTypes';
 
@@ -74,6 +74,19 @@ export function getStoreIcon(type: StoreType) {
       return 'material-symbols:cloud';
     default:
       return 'ic:twotone-store';
+  }
+}
+
+export function getWorkflowIcon(type: WorkflowType) {
+  switch (type) {
+    case WorkflowType.Startup:
+      return 'majesticons:rocket-3-start-line';
+    case WorkflowType.Rebuild:
+      return 'carbon:build-run';
+    case WorkflowType.Republish:
+      return 'carbon:ibm-elo-publishing';
+    default:
+      return '';
   }
 }
 
@@ -170,4 +183,5 @@ export type IconType =
       | typeof getProductIcon
       | typeof getRoleIcon
       | typeof getStoreIcon
+      | typeof getWorkflowIcon
     >;
