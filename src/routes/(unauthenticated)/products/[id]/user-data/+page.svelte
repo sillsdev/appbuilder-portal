@@ -18,6 +18,49 @@
   const iconSrc = app.icon ?? DEFAULT_ICON;
   let themeColor = $state(app.themeColor ?? '#0e795b');
 
+  function hexToRgb(hex: string) {
+    const clean = hex.replace('#', '');
+    const int = Number.parseInt(clean.length === 3 ? clean.replace(/./g, '$&$&') : clean, 16);
+    return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
+  }
+
+  function rgbToHex(r: number, g: number, b: number) {
+    return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+  }
+
+  function srgbChannelToLinear(channel: number) {
+    const c = channel / 255;
+    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  }
+
+  function getRelativeLuminance(hex: string) {
+    const { r, g, b } = hexToRgb(hex);
+    const R = srgbChannelToLinear(r);
+    const G = srgbChannelToLinear(g);
+    const B = srgbChannelToLinear(b);
+    return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+  }
+
+  function contrastRatio(a: string, b: string) {
+    const L1 = getRelativeLuminance(a);
+    const L2 = getRelativeLuminance(b);
+    const lighter = Math.max(L1, L2);
+    const darker = Math.min(L1, L2);
+    return (lighter + 0.05) / (darker + 0.05);
+  }
+
+  function getReadableTextHex(hex: string) {
+    const light = '#ffffff';
+    const dark = '#0f172a';
+    return contrastRatio(hex, dark) >= contrastRatio(hex, light) ? dark : light;
+  }
+
+  function lightenColor(hex: string, amount = 0.9) {
+    const { r, g, b } = hexToRgb(hex);
+    const mix = (channel: number) => Math.round(channel + (255 - channel) * amount);
+    return rgbToHex(mix(r), mix(g), mix(b));
+  }
+
   function hexToDaisyHSL(hex: string) {
     const clean = hex.replace('#', '').trim();
     const normalized =
@@ -60,49 +103,6 @@
     return `${(h * 360).toFixed(1)} ${(s * 100).toFixed(1)}% ${(l * 100).toFixed(1)}%`;
   }
 
-  function hexToRgb(hex: string) {
-    const clean = hex.replace('#', '');
-    const int = Number.parseInt(clean.length === 3 ? clean.replace(/./g, '$&$&') : clean, 16);
-    return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
-  }
-
-  function srgbChannelToLinear(channel: number) {
-    const c = channel / 255;
-    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-  }
-
-  function getRelativeLuminance(hex: string) {
-    const { r, g, b } = hexToRgb(hex);
-    const R = srgbChannelToLinear(r);
-    const G = srgbChannelToLinear(g);
-    const B = srgbChannelToLinear(b);
-    return 0.2126 * R + 0.7152 * G + 0.0722 * B;
-  }
-
-  function contrastRatio(a: string, b: string) {
-    const L1 = getRelativeLuminance(a);
-    const L2 = getRelativeLuminance(b);
-    const lighter = Math.max(L1, L2);
-    const darker = Math.min(L1, L2);
-    return (lighter + 0.05) / (darker + 0.05);
-  }
-
-  function getReadableTextHex(hex: string) {
-    const light = '#ffffff';
-    const dark = '#0f172a';
-    return contrastRatio(hex, dark) >= contrastRatio(hex, light) ? dark : light;
-  }
-
-  function lightenColor(hex: string, amount = 0.9) {
-    const { r, g, b } = hexToRgb(hex);
-    const mix = (channel: number) => Math.round(channel + (255 - channel) * amount);
-    return rgbToHex(mix(r), mix(g), mix(b));
-  }
-
-  function rgbToHex(r: number, g: number, b: number) {
-    return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
-  }
-
   function deriveColorFromIcon(iconSrc: string): Promise<string> {
     return new Promise((resolve) => {
       const img = new Image();
@@ -136,7 +136,6 @@
           if (!count) return resolve(themeColor);
           resolve(rgbToHex(Math.round(r / count), Math.round(g / count), Math.round(b / count)));
         } catch {
-          // Canvas can throw on cross-origin images without proper CORS headers.
           resolve(themeColor);
         }
       };
@@ -152,28 +151,20 @@
       return;
     }
 
-    const email = (document.getElementById('email') as HTMLInputElement)?.value;
+    const emailInput = document.getElementById('email') as HTMLInputElement | null;
+    const email = emailInput?.value;
 
     const res = await fetch('/api/delete-request', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email,
-        token: turnstileToken
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, token: turnstileToken })
     });
 
     const data = await res.json();
 
     if (!data.success) {
       alert('Verification failed.');
-
-      if ((window as any).turnstile) {
-        (window as any).turnstile.reset();
-      }
-
+      if (window.turnstile) window.turnstile.reset();
       turnstileToken = null;
       return;
     }
@@ -203,13 +194,11 @@
 
   onMount(() => {
     if (!app.themeColor) {
-      deriveColorFromIcon(iconSrc).then((hex) => {
-        themeColor = hex;
-      });
+      deriveColorFromIcon(iconSrc).then((hex) => (themeColor = hex));
     }
 
     // Expose callback globally for Turnstile
-    (window as any).handleTurnstileSuccess = (token: string) => {
+    window.handleTurnstileSuccess = (token: string) => {
       turnstileToken = token;
     };
   });
@@ -386,7 +375,7 @@
             class="btn w-full no-animation border border-black/10 shadow-sm"
             style="background-color: #0f172a; color: #ffffff;"
             type="button"
-            on:click={submitForm}
+            onclick={submitForm}
           >
             {m.udm_send_code()}
           </button>
