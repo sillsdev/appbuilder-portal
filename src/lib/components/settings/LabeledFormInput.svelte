@@ -39,7 +39,7 @@
     </span>
   </div>
   {#if input}
-    <div class={['input input-bordered w-full', validate && 'validator']}>
+    <div class={['input w-full', validate && 'validator']}>
       {#if input.icon}
         <IconContainer icon={input.icon} width={20} class="cursor-pointer opacity-80" />
       {/if}

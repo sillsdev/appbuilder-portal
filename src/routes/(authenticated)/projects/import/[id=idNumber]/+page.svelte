@@ -115,7 +115,7 @@
       <LabeledFormInput key="projectImport_file" class="max-w-xs">
         <input
           type="file"
-          class="file-input file-input-bordered"
+          class="file-input"
           accept="application/json"
           onchange={(e) => {
             if (e.currentTarget?.files?.length) {

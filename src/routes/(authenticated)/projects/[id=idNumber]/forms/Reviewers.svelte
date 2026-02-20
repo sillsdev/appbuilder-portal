@@ -78,7 +78,7 @@
               type="text"
               name="name"
               placeholder="Name"
-              class="input input-bordered grow validator"
+              class="input grow validator"
               bind:value={$form.name}
               required
             />
@@ -86,7 +86,7 @@
               type="email"
               name="email"
               placeholder="Email"
-              class="input input-bordered grow validator"
+              class="input grow validator"
               bind:value={$form.email}
               required
             />

@@ -49,7 +49,7 @@
     <input
       type="text"
       name="storeTypeDisplay"
-      class="input input-bordered validator"
+      class="input validator"
       value={data.store.StoreType.Description}
       readonly
       disabled

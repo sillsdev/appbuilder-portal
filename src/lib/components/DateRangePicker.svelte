@@ -47,7 +47,7 @@
       ])
   }}
 >
-  <label class="input input-bordered flex items-center gap-2 w-full">
+  <label class="input flex items-center gap-2 w-full">
     <IconContainer icon="material-symbols:date-range" width={24} class="cursor-pointer" />
     <input name="dateRange" class="grow" {placeholder} data-input />
     {#if chosenDates?.some((d) => !!d)}

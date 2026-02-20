@@ -36,19 +36,14 @@
     <input
       type="text"
       name="name"
-      class="input input-bordered w-full validator"
+      class="input w-full validator"
       bind:value={$form.name}
       required
     />
     <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="common_description">
-    <input
-      type="text"
-      name="description"
-      class="input input-bordered w-full"
-      bind:value={$form.description}
-    />
+    <input type="text" name="description" class="input w-full" bind:value={$form.description} />
   </LabeledFormInput>
   <div class="my-4">
     <CancelButton returnTo={localizeHref(base)} />

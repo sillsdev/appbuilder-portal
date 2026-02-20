@@ -104,7 +104,7 @@
         <LabeledFormInput key="common_description" class="max-w-2xl">
           <textarea
             name="Description"
-            class="textarea textarea-bordered h-48 w-full"
+            class="textarea h-48 w-full"
             bind:value={$form.Description}
           ></textarea>
           <span class="validator-hint">&nbsp;</span>

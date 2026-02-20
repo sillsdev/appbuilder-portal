@@ -26,20 +26,15 @@
   <div>
     <h1>{m.invitations_requestOrgInvite()}</h1>
     <LabeledFormInput key="invitations_orgName">
-      <input
-        class="input w-full input-bordered validator"
-        type="text"
-        name="organizationName"
-        required
-      />
+      <input class="input w-full validator" type="text" name="organizationName" required />
     </LabeledFormInput>
     <br />
     <LabeledFormInput key="invitations_orgAdminEmail">
-      <input class="input w-full input-bordered validator" type="email" name="email" required />
+      <input class="input w-full validator" type="email" name="email" required />
     </LabeledFormInput>
     <br />
     <LabeledFormInput key="invitations_orgUrl">
-      <input class="input w-full input-bordered validator" type="text" name="url" required />
+      <input class="input w-full validator" type="text" name="url" required />
     </LabeledFormInput>
   </div>
   <div class="mt-4">

@@ -96,7 +96,7 @@
         <LabeledFormInput key="common_description" class="w-full max-w-2xl">
           <textarea
             name="description"
-            class="textarea textarea-bordered h-48 w-full"
+            class="textarea h-48 w-full"
             bind:value={$form.description}
           ></textarea>
         </LabeledFormInput>

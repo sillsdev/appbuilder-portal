@@ -146,11 +146,7 @@
         </div>
       {/if}
       <LabeledFormInput key="transitions_comment">
-        <textarea
-          class="textarea textarea-bordered h-24 w-full"
-          name="comment"
-          bind:value={$form.comment}
-        ></textarea>
+        <textarea class="textarea h-24 w-full" name="comment" bind:value={$form.comment}></textarea>
       </LabeledFormInput>
       <input type="hidden" name="state" value={$form.state} />
       {#each options as opt}
@@ -172,12 +168,7 @@
       </LabeledFormInput>
     {/if}
     <LabeledFormInput key="project_name">
-      <input
-        type="text"
-        class="input input-bordered w-full"
-        readonly
-        value={data.fields.projectName}
-      />
+      <input type="text" class="input w-full" readonly value={data.fields.projectName} />
     </LabeledFormInput>
     <LabeledFormInput key="common_description">
       <textarea class="textarea w-full" readonly value={data.fields.projectDescription}></textarea>
@@ -231,7 +222,7 @@
       {/if}
       {#if data.fields.projectURL}
         <LabeledFormInput key="tasks_appProjectURL" class="md:w-1/2">
-          <span class="input input-bordered w-full flex flex-row gap-2 items-center">
+          <span class="input w-full flex flex-row gap-2 items-center">
             <IconContainer icon="solar:link-bold" width={20} />
             <input type="text" class="grow" readonly value={data.fields.projectURL} />
             <button
@@ -257,27 +248,17 @@
       {/if}
       {#if data.fields.displayProductDescription}
         <LabeledFormInput key="tasks_product" class="md:w-1/2">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            readonly
-            value={data.productDescription}
-          />
+          <input type="text" class="input w-full" readonly value={data.productDescription} />
         </LabeledFormInput>
       {/if}
       {#if data.fields.appType}
         <LabeledFormInput key="project_appType" class="md:w-1/2">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            readonly
-            value={data.fields.appType}
-          />
+          <input type="text" class="input w-full" readonly value={data.fields.appType} />
         </LabeledFormInput>
       {/if}
       {#if data.fields.projectLanguageCode}
         <LabeledFormInput key="project_languageCode" class="md:w-1/2">
-          <div class="input input-bordered w-full">
+          <div class="input w-full">
             <IconContainer icon="mdi:language" width={20} />
             <input type="text" readonly value={data.fields.projectLanguageCode} />
           </div>

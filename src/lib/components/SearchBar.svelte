@@ -35,7 +35,7 @@
 </script>
 
 <div class={[classes]} data-html="true">
-  <label class="input input-bordered flex items-center gap-2 w-full">
+  <label class="input flex items-center gap-2 w-full">
     <input
       type="search"
       placeholder={m.common_search()}

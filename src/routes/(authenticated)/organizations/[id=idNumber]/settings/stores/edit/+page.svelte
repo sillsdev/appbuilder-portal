@@ -38,7 +38,7 @@
     <input
       type="text"
       name="publisherId"
-      class="input input-bordered validator"
+      class="input validator"
       value={data.store.BuildEnginePublisherId}
       readonly
       disabled
@@ -49,7 +49,7 @@
     <input
       type="text"
       name="storeTypeDisplay"
-      class="input input-bordered validator"
+      class="input validator"
       value={data.store.StoreType.Description}
       readonly
       disabled
@@ -61,7 +61,7 @@
       <input
         type="text"
         name="gpTitle"
-        class="input input-bordered validator"
+        class="input validator"
         bind:value={$form.gpTitle}
         required
       />
@@ -69,12 +69,7 @@
     </LabeledFormInput>
   {/if}
   <LabeledFormInput key="common_description">
-    <input
-      type="text"
-      name="description"
-      class="input input-bordered"
-      bind:value={$form.description}
-    />
+    <input type="text" name="description" class="input" bind:value={$form.description} />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <InputWithMessage title={{ key: 'flowDefs_enabled' }}>

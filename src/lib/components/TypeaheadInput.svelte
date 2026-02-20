@@ -65,7 +65,7 @@
 </script>
 
 <div class="relative">
-  <label class={['input input-bordered', classes?.default]}>
+  <label class={['input', classes?.default]}>
     {#if icon}
       <IconContainer {icon} width={20} class="opacity-80 cursor-pointer" />
     {/if}
