@@ -4,7 +4,8 @@
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import type { ProjectActionSchema, ProjectForAction } from '$lib/projects';
   import { canArchive, canClaimProject, canReactivate } from '$lib/projects';
@@ -62,7 +63,7 @@
   }}
 >
   {#snippet label()}
-    <IconContainer icon="charm:menu-kebab" width={20} />
+    <IconContainer icon={Icons.Kebab} width={20} />
   {/snippet}
   {#snippet content()}
     <form method="POST" action="?/{endpoint}" use:enhance>
@@ -72,7 +73,7 @@
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable class="text-nowrap">
               {#snippet altContent()}
-                <IconContainer icon="material-symbols:archive" width={20} />
+                <IconContainer icon={Icons.Archive} width={20} />
                 {m.common_archive()}
               {/snippet}
               <label class="text-nowrap">
@@ -86,7 +87,7 @@
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable class="text-nowrap">
               {#snippet altContent()}
-                <IconContainer icon="mdi:archive-refresh" width={20} />
+                <IconContainer icon={Icons.ReactivateProject} width={20} />
                 {m.common_reactivate()}
               {/snippet}
               <label class="text-nowrap">
@@ -105,7 +106,7 @@
           <li class="w-full rounded-none">
             <BlockIfJobsUnavailable class="text-nowrap">
               {#snippet altContent()}
-                <IconContainer icon="material-symbols:add-card-outline" width={20} />
+                <IconContainer icon={Icons.AddProject} width={20} />
                 {m.project_claimOwnership()}
               {/snippet}
               <label class="text-nowrap">

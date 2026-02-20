@@ -5,7 +5,8 @@
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -80,7 +81,7 @@
     <div class="flex flex-col py-4">
       <div class="flex flex-col place-content-between px-4">
         <span class="items-center flex gap-x-1">
-          <IconContainer icon="clarity:organization-solid" width="20" />
+          <IconContainer icon={Icons.Organization} width="20" />
           {m.project_org()}
         </span>
         <span class="text-right">
@@ -90,7 +91,7 @@
       <div class="divider my-2"></div>
       <div class="flex flex-col place-content-between px-4 pr-2">
         <span>
-          <IconContainer icon="mdi:user" width="20" />
+          <IconContainer icon={Icons.User} width="20" />
           {m.project_owner()}
         </span>
         <span class="text-right flex place-content-end dropdown-wrapper">
@@ -108,7 +109,7 @@
                   {#snippet altContent()}
                     <span class="flex items-center pl-1">
                       {project?.Owner.Name}
-                      <IconContainer icon="gridicons:dropdown" width="20" />
+                      <IconContainer icon={Icons.Dropdown} width="20" />
                     </span>
                   {/snippet}
                   {@render altContent()}
@@ -148,7 +149,7 @@
       <div class="divider my-2"></div>
       <div class="flex flex-col place-content-between px-4 pr-2">
         <span class="grow text-nowrap">
-          <IconContainer icon="mdi:account-group" width={20} />
+          <IconContainer icon={Icons.Group} width={20} />
           {m.project_group()}
         </span>
         <span class="shrink text-right flex place-content-end items-center dropdown-wrapper">
@@ -164,7 +165,7 @@
               {#snippet label()}
                 <span class="flex items-center pl-1">
                   {project?.Group.Name}
-                  <IconContainer icon="gridicons:dropdown" width="20" />
+                  <IconContainer icon={Icons.Dropdown} width="20" />
                 </span>
               {/snippet}
               {#snippet content()}

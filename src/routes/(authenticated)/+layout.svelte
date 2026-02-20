@@ -8,11 +8,13 @@
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import LocaleSelector from '$lib/components/LocaleSelector.svelte';
+  import { Icons, getRoleIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { createl10nMapFromEntries, l10nMap } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeUrl, getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { RoleId } from '$lib/prisma';
   import { orgActive, userTasksSSE } from '$lib/stores';
   import { isAdminForAny, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { byName } from '$lib/utils/sorting';
@@ -132,7 +134,7 @@
                       class:open={selectingOrg}
                       class:hidden={data.organizations.length <= 1}
                     >
-                      <IconContainer icon="gridicons:dropdown" width={24} />
+                      <IconContainer icon={Icons.Dropdown} width={24} />
                     </div>
                   </button>
                 {:else}
@@ -145,7 +147,7 @@
                   type="button"
                   onclick={() => closeDrawer()}
                 >
-                  <IconContainer icon="mdi:close" width={16} class="opacity-80" />
+                  <IconContainer icon={Icons.Close} width={16} class="opacity-80" />
                 </button>
               </div>
             </li>
@@ -163,7 +165,7 @@
                   href={localizeHref('/tasks')}
                   onclick={closeDrawer}
                 >
-                  <IconContainer icon="grommet-icons:task" width={24} />
+                  <IconContainer icon={Icons.Tasks} width={24} />
                   {m.sidebar_myTasks({ count: userTasksLength })}
                 </a>
               </li>
@@ -174,7 +176,7 @@
                   href={activeOrgUrl(`/projects/own`)}
                   onclick={closeDrawer}
                 >
-                  <IconContainer icon="mdi:user" width={24} />
+                  <IconContainer icon={Icons.User} width={24} />
                   {m.sidebar_myProjects()}
                 </a>
               </li>
@@ -185,7 +187,7 @@
                   href={activeOrgUrl('/projects/organization')}
                   onclick={closeDrawer}
                 >
-                  <IconContainer icon="clarity:organization-solid" width={24} />
+                  <IconContainer icon={Icons.Organization} width={24} />
                   {m.sidebar_orgProjects()}
                 </a>
               </li>
@@ -197,7 +199,7 @@
                     href={activeOrgUrl('/projects/active')}
                     onclick={closeDrawer}
                   >
-                    <IconContainer icon="hugeicons:activity-03" width={24} />
+                    <IconContainer icon={Icons.Active} width={24} />
                     {m.sidebar_activeProjects()}
                   </a>
                 </li>
@@ -208,7 +210,7 @@
                     href={activeOrgUrl('/users/org')}
                     onclick={closeDrawer}
                   >
-                    <IconContainer icon="mdi:account-group" width={24} />
+                    <IconContainer icon={Icons.Group} width={24} />
                     {m.sidebar_users()}
                   </a>
                 </li>
@@ -219,7 +221,7 @@
                     href={activeOrgUrl('/organizations')}
                     onclick={closeDrawer}
                   >
-                    <IconContainer icon="material-symbols:settings" width={24} />
+                    <IconContainer icon={Icons.Settings} width={24} />
                     {m.sidebar_orgSettings()}
                   </a>
                 </li>
@@ -232,16 +234,16 @@
                     href={localizeHref('/admin/settings/organizations')}
                     onclick={closeDrawer}
                   >
-                    <IconContainer icon="eos-icons:admin" width={24} />
+                    <IconContainer icon={getRoleIcon(RoleId.OrgAdmin)} width={24} />
                     {m.sidebar_adminSettings()}
                   </a>
                 </li>
                 <li>
                   <BlockIfJobsUnavailable class="rounded-none">
                     {#snippet altContent()}
-                      <IconContainer icon="clarity:dashboard-line" width={24} />
+                      <IconContainer icon={Icons.Dashboard} width={24} />
                       {m.sidebar_jobAdministration()}
-                      <IconContainer icon="mdi:open-in-new" width="18" />
+                      <IconContainer icon={Icons.Open} width="18" />
                     {/snippet}
                     <a
                       class="rounded-none"
@@ -260,7 +262,7 @@
                     href={localizeHref('/workflow-instances')}
                     onclick={closeDrawer}
                   >
-                    <IconContainer icon="hugeicons:workflow-square-03" width={24} />
+                    <IconContainer icon={Icons.Workflow} width={24} />
                     {m.workflowInstances_title()}
                   </a>
                 </li>
@@ -272,7 +274,7 @@
                   href={localizeHref('/directory')}
                   onclick={closeDrawer}
                 >
-                  <IconContainer icon="lsicon:folder-files-filled" width={24} />
+                  <IconContainer icon={Icons.Directory} width={24} />
                   {m.sidebar_projectDirectory()}
                 </a>
               </li>
@@ -283,7 +285,7 @@
                   href={localizeHref('/open-source')}
                   onclick={closeDrawer}
                 >
-                  <IconContainer icon="mdi:info" width={24} />
+                  <IconContainer icon={Icons.Info} width={24} />
                   {m.opensource()}
                 </a>
               </li>
@@ -299,10 +301,9 @@
             for="primary-content-drawer"
             class="btn btn-ghost btn-circle p-1 drawer-button lg:hidden text-primary-content hover:text-base-content"
           >
-            <IconContainer icon="mdi:hamburger-menu" width={24} />
+            <IconContainer icon={Icons.Hamburger} width={24} />
           </label>
           <p class="uppercase text-white lg:ps-4">{m.appName()}</p>
-          <!-- <p>SCRIPTORIA</p> -->
         </div>
         <div class="navbar-end">
           <LocaleSelector
@@ -335,7 +336,7 @@
                       `/users/${page.data.session?.user?.userId ?? ''}/settings/profile`
                     )}
                   >
-                    <IconContainer icon="mdi:user" width={16} />
+                    <IconContainer icon={Icons.User} width={16} />
                     {m.header_myProfile()}
                   </a>
                 </li>
@@ -344,7 +345,7 @@
                     target="_blank"
                     href="https://community.scripture.software.sil.org/c/scriptoria/24"
                   >
-                    <IconContainer icon="charm:messages" width={16} />
+                    <IconContainer icon={Icons.Forum} width={16} />
                     {m.header_community()}
                   </a>
                 </li>
@@ -353,13 +354,13 @@
                     target="_blank"
                     href="https://app.scriptoria.io/docs/Help+Guide+for+Scriptoria.pdf"
                   >
-                    <IconContainer icon="material-symbols:help" width={16} />
+                    <IconContainer icon={Icons.Help} width={16} />
                     {m.header_help()}
                   </a>
                 </li>
                 <li>
                   <button onclick={() => signOut({ redirectTo: '/', redirect: true })}>
-                    <IconContainer icon="mdi:sign-out" width={16} />
+                    <IconContainer icon={Icons.LogOut} width={16} />
                     {m.header_signOut()}
                   </button>
                 </li>

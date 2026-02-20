@@ -3,9 +3,10 @@
   import { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
   import type { ReviewerSchema } from './valibot';
   import { enhance as svk_enhance } from '$app/forms';
-  import IconContainer from '$lib/components/IconContainer.svelte';
-  import LocaleSelector, { getFlag } from '$lib/components/LocaleSelector.svelte';
+  import LocaleSelector from '$lib/components/LocaleSelector.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons, getFlagIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
@@ -50,7 +51,7 @@
             <form action="?/{deleteEndpoint}" method="post" use:svk_enhance>
               <input type="hidden" name="id" value={reviewer.Id} />
               <button type="submit" class="cursor-pointer">
-                <IconContainer icon="mdi:close" width="24" />
+                <IconContainer icon={Icons.Close} width="24" />
               </button>
             </form>
           {/if}
@@ -104,16 +105,16 @@
               {#snippet label()}
                 <span class="flex items-center pl-1 w-full">
                   <span class="grow">
-                    <IconContainer icon="circle-flags:{getFlag($form.language)}" width="24" />
+                    <IconContainer icon={getFlagIcon($form.language)} width="24" />
                     {$form.language?.split('-')[0]}
                   </span>
-                  <IconContainer icon="gridicons:dropdown" width="20" />
+                  <IconContainer icon={Icons.Dropdown} width="20" />
                 </span>
               {/snippet}
             </LocaleSelector>
             <SubmitButton
               disabled={!($form.name && $form.email)}
-              icon="mdi:eye-add"
+              icon={Icons.AddReviewer}
               key="reviewers_submit"
             />
           </div>

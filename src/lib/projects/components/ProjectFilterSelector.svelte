@@ -3,7 +3,8 @@
   import type { ClassValue } from 'svelte/elements';
   import { page } from '$app/state';
   import Dropdown from '$lib/components/Dropdown.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
 
@@ -22,11 +23,11 @@
   let { filter, class: classes }: Props = $props();
 
   const textsForPaths = new Map([
-    ['all', { msg: m.projects_filter_all(), ic: 'fluent-mdl2:all-apps' }],
-    ['own', { msg: m.projects_filter_own(), ic: 'mdi:user' }],
-    ['organization', { msg: m.projects_filter_org(), ic: 'clarity:organization-solid' }],
-    ['active', { msg: m.projects_filter_active(), ic: 'hugeicons:activity-03' }],
-    ['archived', { msg: m.projects_filter_archived(), ic: 'mdi:archive' }]
+    ['all', { msg: m.projects_filter_all(), ic: Icons.Project }],
+    ['own', { msg: m.projects_filter_own(), ic: Icons.User }],
+    ['organization', { msg: m.projects_filter_org(), ic: Icons.Organization }],
+    ['active', { msg: m.projects_filter_active(), ic: Icons.Active }],
+    ['archived', { msg: m.projects_filter_archived(), ic: Icons.Archive }]
   ]);
   let open = $state(false);
 </script>
@@ -46,7 +47,7 @@
         <IconContainer icon={route.ic} width={24} class="mr-1" />
         {route.msg}
         <div class="dropdown-icon" class:open>
-          <Icon width="24" class="dropdown-icon" icon="gridicons:dropdown" />
+          <Icon width="24" class="dropdown-icon" icon={Icons.Dropdown} />
         </div>
       </div>
     </h1>

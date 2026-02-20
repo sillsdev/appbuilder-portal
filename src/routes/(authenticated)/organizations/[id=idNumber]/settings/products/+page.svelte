@@ -4,6 +4,7 @@
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -42,8 +43,8 @@
       inputAttr={{
         onchange: (e) => e.currentTarget.form?.requestSubmit()
       }}
-      onIcon="mdi:eye"
-      offIcon="mdi:eye-off-outline"
+      onIcon={Icons.Visible}
+      offIcon={Icons.Invisible}
     />
   </form>
   <MultiselectBox header={m.org_productSelectTitle()}>

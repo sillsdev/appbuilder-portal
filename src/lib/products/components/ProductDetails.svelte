@@ -57,7 +57,8 @@
   import type { Prisma } from '@prisma/client';
   import TaskComment from './TaskComment.svelte';
   import { page } from '$app/state';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { ProductTransitionType } from '$lib/prisma';
   import { isSuperAdmin } from '$lib/utils/roles';
@@ -130,7 +131,7 @@
       transition.InitialState ?? ''
     )}
   {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
-    <IconContainer icon="material-symbols:star" width={16} />&nbsp;{transition.InitialState}
+    <IconContainer icon={Icons.Star} width={16} />&nbsp;{transition.InitialState}
   {:else}
     {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
   {/if}
@@ -167,7 +168,7 @@
           detailsModal?.close();
         }}
       >
-        <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+        <IconContainer icon={Icons.Close} width={36} class="opacity-80" />
       </button>
     </div>
     <table class="table table-sm">

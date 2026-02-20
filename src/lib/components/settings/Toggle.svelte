@@ -2,6 +2,7 @@
   import Icon from '@iconify/svelte';
   import type { HTMLInputAttributes } from 'svelte/elements';
   import InputWithMessage from './InputWithMessage.svelte';
+  import { type IconType, Icons } from '$lib/icons';
   import type { ValueKey } from '$lib/locales.svelte';
 
   interface Props {
@@ -9,8 +10,8 @@
     message?: ValueKey;
     name?: string;
     checked: boolean;
-    onIcon?: string;
-    offIcon?: string;
+    onIcon?: IconType;
+    offIcon?: IconType;
     class?: string;
     inputAttr?: HTMLInputAttributes;
   }
@@ -20,8 +21,8 @@
     message,
     name,
     checked = $bindable(),
-    onIcon = '',
-    offIcon = '',
+    onIcon = Icons.Empty,
+    offIcon = Icons.Empty,
     class: classes,
     inputAttr = {}
   }: Props = $props();

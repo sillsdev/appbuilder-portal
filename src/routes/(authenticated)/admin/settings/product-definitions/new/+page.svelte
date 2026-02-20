@@ -8,6 +8,7 @@
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -56,7 +57,7 @@
       name: 'name',
       required: true,
       err: m.formErrors_nameEmpty(),
-      icon: 'mdi:rename'
+      icon: Icons.Name
     }}
     bind:value={$form.name}
   />
@@ -124,7 +125,7 @@
   </LabeledFormInput>
   <div class="my-4">
     <CancelButton returnTo={localizeHref(base)} />
-    <SubmitButton disabled={!propsOk} icon="system-uicons:box-add" />
+    <SubmitButton disabled={!propsOk} icon={Icons.AddProduct} />
   </div>
 </form>
 

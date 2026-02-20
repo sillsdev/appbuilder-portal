@@ -6,6 +6,7 @@
   import type { ClassValue, HTMLInputAttributes } from 'svelte/elements';
   import TypeaheadInput from './TypeaheadInput.svelte';
   import { page } from '$app/state';
+  import { Icons } from '$lib/icons';
   import { type LangInfo, l10nMap, localizeTagData } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
@@ -163,7 +164,7 @@
     onLangCodeSelected?.(langCode);
   }}
   bind:inputElement={typeaheadInput}
-  icon="mdi:language"
+  icon={Icons.Language}
 >
   <!-- This is a convenience option and unnecessary for a11y -->
   {#snippet custom()}

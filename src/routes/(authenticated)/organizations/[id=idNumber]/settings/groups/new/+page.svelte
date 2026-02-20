@@ -2,10 +2,11 @@
   import { type FormResult, superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import GroupUsers from '$lib/organizations/components/GroupUsers.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -56,7 +57,7 @@
     input={{
       name: 'name',
       err: m.formErrors_nameEmpty(),
-      icon: 'mdi:rename',
+      icon: Icons.Name,
       required: true
     }}
     bind:value={$groupForm.name}
@@ -77,7 +78,7 @@
           class="ml-2 btn btn-secondary btn-sm"
           onclick={() => usersModal?.showModal()}
         >
-          <IconContainer icon="material-symbols:group-add" width={20} />
+          <IconContainer icon={Icons.AddUsers} width={20} />
           {m.org_addUsers()}
         </button>
       {/if}
@@ -110,7 +111,7 @@
   </GroupUsers>
   <div class="my-4">
     <CancelButton returnTo={localizeHref(base)} />
-    <SubmitButton icon="fluent-mdl2:add-group" />
+    <SubmitButton icon={Icons.AddGroup} />
   </div>
 </form>
 
@@ -127,7 +128,7 @@
           usersModal?.close();
         }}
       >
-        <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+        <IconContainer icon={Icons.Close} width={36} class="opacity-80" />
       </button>
     </div>
     <form
@@ -145,7 +146,7 @@
               class="checkbox checkbox-accent mr-2 mt-2"
               value={group.Id}
             />
-            <IconContainer icon="mdi:account-group" width={20} />&nbsp;
+            <IconContainer icon={Icons.Group} width={20} />&nbsp;
             <b>
               {group.Name}
             </b>
@@ -161,7 +162,7 @@
         />
         <SubmitButton
           key="common_add"
-          icon="material-symbols:group-add"
+          icon={Icons.AddGroup}
           disabled={!$usersForm.groups.length}
           onclick={() => {
             usersModal?.close();

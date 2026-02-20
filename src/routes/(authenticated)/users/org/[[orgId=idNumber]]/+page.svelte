@@ -6,9 +6,10 @@
   import { afterNavigate } from '$app/navigation';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
@@ -156,8 +157,8 @@
           }
         }}
       />
-      <IconContainer icon="mdi:lock" width={16} />
-      <IconContainer icon="mdi:lock-open-variant" width={16} />
+      <IconContainer icon={Icons.Locked} width={16} />
+      <IconContainer icon={Icons.Unlocked} width={16} />
     </label>
   </form>
 {/snippet}
@@ -169,7 +170,7 @@
       {#if isAdminForAny(data.session?.user.roles)}
         <BlockIfJobsUnavailable class="btn btn-outline">
           {#snippet altContent()}
-            <IconContainer icon="mdi:user-add" width="20" />
+            <IconContainer icon={Icons.AddUser} width="20" />
             <span>{m.orgMembership_title()}</span>
           {/snippet}
           <a href={localizeHref('/users/invite')} class="btn btn-outline">

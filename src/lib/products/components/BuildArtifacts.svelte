@@ -1,8 +1,9 @@
 <script lang="ts">
   /* eslint-disable svelte/no-at-html-tags */
   import type { Prisma } from '@prisma/client';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import ReleaseInfo, { type Release } from '$lib/products/components/ReleaseInfo.svelte';
@@ -104,7 +105,7 @@
         <tbody>
           {#each artifacts.toSorted( (a, b) => byString(a.ArtifactType, b.ArtifactType, locale) ) as artifact, i}
             <tr>
-              <td><IconContainer icon="mdi:file" width="20" /> {artifact.ArtifactType}</td>
+              <td><IconContainer icon={Icons.File} width={20} /> {artifact.ArtifactType}</td>
               <td>
                 <Tooltip tip={getTimeDateString(artifact.DateUpdated)}>
                   {$artifactUpdated[i]}
@@ -114,7 +115,7 @@
               {#if allowDownloads}
                 <td class="text-right">
                   <a href={artifact.Url} download>
-                    <IconContainer icon="mdi:download" width="20" />
+                    <IconContainer icon={Icons.Download} width={20} />
                   </a>
                 </td>
               {/if}

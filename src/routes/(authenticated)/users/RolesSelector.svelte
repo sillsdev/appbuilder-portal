@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import { getRoleIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
@@ -11,18 +12,6 @@
   }
 
   let { selector }: Props = $props();
-
-  function getRoleIcon(role: RoleId) {
-    switch (role) {
-      case RoleId.SuperAdmin:
-      case RoleId.OrgAdmin:
-        return 'eos-icons:admin';
-      case RoleId.AppBuilder:
-        return 'mdi:worker';
-      case RoleId.Author:
-        return 'mdi:pencil';
-    }
-  }
 </script>
 
 <div class="flex w-full">

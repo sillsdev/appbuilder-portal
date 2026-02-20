@@ -3,6 +3,7 @@
   import type { PageData } from './$types';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
 
@@ -29,7 +30,7 @@
         input={{
           name: 'name',
           err: m.formErrors_nameEmpty(),
-          icon: 'mdi:rename',
+          icon: Icons.Name,
           required: true
         }}
         bind:value={$form.name}
@@ -40,7 +41,7 @@
           type: 'email',
           name: 'contact',
           err: m.formErrors_emailInvalid(),
-          icon: 'ic:baseline-email'
+          icon: Icons.Email
         }}
         bind:value={$form.contact}
       />
@@ -49,7 +50,7 @@
         input={{
           name: 'logoUrl',
           type: 'url',
-          icon: 'material-symbols:image'
+          icon: Icons.Image
         }}
         bind:value={$form.logoUrl}
       />

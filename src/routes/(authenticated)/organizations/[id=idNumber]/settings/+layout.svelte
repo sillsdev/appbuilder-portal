@@ -3,6 +3,7 @@
   import type { LayoutData } from './$types';
   import { page } from '$app/state';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
 
   interface Props {
@@ -20,27 +21,27 @@
     {
       text: m.org_navBasic(),
       route: 'info',
-      icon: 'mdi:info'
+      icon: Icons.Info
     },
     {
       text: m.org_navProducts(),
       route: 'products',
-      icon: 'system-uicons:box'
+      icon: Icons.Product
     },
     {
       text: m.org_navStores(),
       route: 'stores',
-      icon: 'hugeicons:store-04'
+      icon: Icons.StoreMenu
     },
     {
       text: m.org_navGroups(),
       route: 'groups',
-      icon: 'mdi:account-group'
+      icon: Icons.Group
     },
     {
       text: m.org_navInfrastructure(),
       route: 'infrastructure',
-      icon: 'carbon:build-image'
+      icon: Icons.BuildEngine
     }
   ]}
   titleString={m.org_settingsTitle() + ': ' + data.organization.Name}

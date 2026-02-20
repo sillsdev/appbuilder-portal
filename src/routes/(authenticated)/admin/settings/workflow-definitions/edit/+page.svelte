@@ -7,6 +7,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { enumNumVals, toast } from '$lib/utils';
@@ -46,7 +47,7 @@
       name: 'name',
       required: true,
       err: m.formErrors_nameEmpty(),
-      icon: 'mdi:rename'
+      icon: Icons.Name
     }}
     bind:value={$form.name}
   />

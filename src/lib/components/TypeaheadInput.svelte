@@ -1,7 +1,8 @@
 <script lang="ts" generics="T">
   import type { Snippet } from 'svelte';
   import type { ClassValue, HTMLInputAttributes } from 'svelte/elements';
-  import IconContainer from './IconContainer.svelte';
+  import IconContainer from '../icons/IconContainer.svelte';
+  import type { IconType } from '$lib/icons';
 
   let selectedIndex = $state(-1);
   let inputFocused = $state(false);
@@ -14,7 +15,7 @@
     custom?: Snippet;
     listElement?: Snippet<[T, boolean]>;
     onItemClicked?: (item: T) => void;
-    icon?: string;
+    icon?: IconType;
   }
 
   let {

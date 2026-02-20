@@ -1,24 +1,9 @@
-<script lang="ts" module>
-  export function getFlag(locale: Locale) {
-    switch (locale) {
-      case 'en-US':
-        return 'us';
-      case 'es-419':
-        return 'mx';
-      case 'fr-FR':
-        return 'fr';
-      default:
-        console.warn(`Unrecognized language tag ${locale} in getFlag, using default flag.`);
-        return 'un'; // UN flag as fallback
-    }
-  }
-</script>
-
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { ClassValue } from 'svelte/elements';
+  import IconContainer from '../icons/IconContainer.svelte';
   import Dropdown from './Dropdown.svelte';
-  import IconContainer from './IconContainer.svelte';
+  import { Icons, getFlagIcon } from '$lib/icons';
   import { l10nMap } from '$lib/locales.svelte';
   import { type Locale, getLocale, locales, setLocale } from '$lib/paraglide/runtime';
 
@@ -48,7 +33,7 @@
 </script>
 
 {#snippet defaultLabel()}
-  <IconContainer icon="mdi:language" width={24} />
+  <IconContainer icon={Icons.Language} width={24} />
 {/snippet}
 
 {#key getLocale()}
@@ -75,7 +60,7 @@
               role="button"
               tabindex="0"
             >
-              <IconContainer icon="circle-flags:{getFlag(locale)}" width="24" />
+              <IconContainer icon={getFlagIcon(locale)} width="24" />
               <span class="grow text-left">
                 {langMap?.get(locale) ?? langMap?.get(locale.split('-')[0])}
               </span>

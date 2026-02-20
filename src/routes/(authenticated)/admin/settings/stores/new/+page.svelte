@@ -6,6 +6,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
@@ -38,7 +39,7 @@
       bind:value={$form.owner}
       items={data.organizations}
       attr={{ name: 'owner' }}
-      icon="clarity:organization-solid"
+      icon={Icons.Organization}
     >
       {#snippet extra()}
         <option value={null}>{m.appName()}</option>
@@ -52,7 +53,7 @@
       name: 'publisherId',
       required: true,
       err: m.stores_publisherIdEmpty(),
-      icon: 'material-symbols:publish'
+      icon: Icons.Publish
     }}
     bind:value={$form.publisherId}
     class="md:max-w-xs"
@@ -72,7 +73,7 @@
         name: 'gpTitle',
         required: $form.owner === null,
         err: m.stores_gpTitleEmpty(),
-        icon: 'mdi:google-play'
+        icon: Icons.GooglePlay
       }}
       bind:value={$form.gpTitle}
       class="md:max-w-xs"
@@ -82,14 +83,14 @@
     key="common_description"
     input={{
       name: 'description',
-      icon: 'mdi:rename'
+      icon: Icons.Name
     }}
     bind:value={$form.description}
     class="md:max-w-xs"
   />
   <div class="my-4">
     <CancelButton returnTo={localizeHref(base)} />
-    <SubmitButton icon="hugeicons:store-add-02" />
+    <SubmitButton icon={Icons.AddStore} />
   </div>
 </form>
 

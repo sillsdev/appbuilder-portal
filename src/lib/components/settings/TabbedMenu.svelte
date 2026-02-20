@@ -1,16 +1,17 @@
 <script lang="ts" generics="Route extends RouteId">
   import type { Snippet } from 'svelte';
-  import IconContainer from '../IconContainer.svelte';
+  import IconContainer from '../../icons/IconContainer.svelte';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import type { RouteId, RouteParams } from '$app/types';
+  import { type IconType, Icons } from '$lib/icons';
   import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Props {
     menuItems: {
       route: string;
       text: string;
-      icon?: string;
+      icon?: IconType;
     }[];
     baseRouteId: Route;
     routeParams?: RouteParams<Route>;
@@ -54,7 +55,7 @@
                 page.route.id?.split(baseRouteId + '/')[1]?.startsWith(item.route)
               )?.text}
             </span>
-            <IconContainer icon="gridicons:dropdown" width="24" />
+            <IconContainer icon={Icons.Dropdown} width={24} />
           </div>
         </div>
         <div class="relative h-0">

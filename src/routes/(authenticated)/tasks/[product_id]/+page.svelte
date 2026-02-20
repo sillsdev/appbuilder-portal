@@ -6,9 +6,10 @@
   import { invalidate } from '$app/navigation';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import ReleaseInfo from '$lib/products/components/ReleaseInfo.svelte';
@@ -180,7 +181,7 @@
           class="md:w-1/2"
           input={{
             readonly: true,
-            icon: 'mdi:user'
+            icon: Icons.User
           }}
           value={data.fields.ownerName}
           validate={false}
@@ -190,7 +191,7 @@
           class="md:w-1/2"
           input={{
             readonly: true,
-            icon: 'mdi:email'
+            icon: Icons.Email
           }}
           value={data.fields.ownerEmail}
           validate={false}
@@ -202,7 +203,7 @@
           class="md:w-1/2"
           input={{
             readonly: true,
-            icon: 'ic:twotone-store'
+            icon: Icons.Store
           }}
           value={data.fields.storeDescription}
           validate={false}
@@ -214,7 +215,7 @@
           class="md:w-1/2"
           input={{
             readonly: true,
-            icon: 'mdi:google-play'
+            icon: Icons.GooglePlay
           }}
           value={data.fields.listingLanguageCode}
           validate={false}
@@ -223,7 +224,7 @@
       {#if data.fields.projectURL}
         <LabeledFormInput key="tasks_appProjectURL" class="md:w-1/2">
           <span class="input w-full flex flex-row gap-2 items-center">
-            <IconContainer icon="solar:link-bold" width={20} />
+            <IconContainer icon={Icons.URL} width={20} />
             <input type="text" class="grow" readonly value={data.fields.projectURL} />
             <button
               class="cursor-copy"
@@ -238,9 +239,9 @@
               }}
             >
               {#if urlCopied}
-                <IconContainer icon="mdi:check" width={24} class="text-success" />
+                <IconContainer icon={Icons.Checkmark} width={24} class="text-success" />
               {:else}
-                <IconContainer icon="mdi:content-copy" width={24} />
+                <IconContainer icon={Icons.Copy} width={24} />
               {/if}
             </button>
           </span>
@@ -259,7 +260,7 @@
       {#if data.fields.projectLanguageCode}
         <LabeledFormInput key="project_languageCode" class="md:w-1/2">
           <div class="input w-full">
-            <IconContainer icon="mdi:language" width={20} />
+            <IconContainer icon={Icons.Language} width={20} />
             <input type="text" readonly value={data.fields.projectLanguageCode} />
           </div>
         </LabeledFormInput>

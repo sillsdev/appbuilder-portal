@@ -6,6 +6,7 @@
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
   import GroupUsers from '$lib/organizations/components/GroupUsers.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
@@ -55,7 +56,7 @@
     input={{
       name: 'name',
       err: m.formErrors_nameEmpty(),
-      icon: 'mdi:rename',
+      icon: Icons.Name,
       required: true
     }}
     bind:value={$form.name}
@@ -140,6 +141,6 @@
 {#if !data.group._count.Projects}
   <form class="m-4" method="post" action="?/deleteGroup" use:deleteEnhance>
     <input type="hidden" name="id" value={$deleteForm.id} />
-    <SubmitButton class="btn-error! w-full" key="common_delete" icon="mdi:trash" />
+    <SubmitButton class="btn-error! w-full" key="common_delete" icon={Icons.Trash} />
   </form>
 {/if}

@@ -7,8 +7,9 @@
   import { AddProduct } from './modals';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -104,7 +105,7 @@
               href={localizeHref(`/projects/${projectData.project.Id}/edit`)}
               title={m.project_editProject()}
             >
-              <IconContainer width="24" icon="mdi:pencil" />
+              <IconContainer width="24" icon={Icons.Edit} />
             </a>
           </Tooltip>
         {/if}
@@ -127,7 +128,7 @@
           <div class="gridcont grid gap-x-6 gap-y-2">
             <div class="flex place-content-between">
               <span>
-                <IconContainer icon="mdi:language" width={20} />
+                <IconContainer icon={Icons.Language} width={20} />
                 {m.project_details_language()}:
               </span>
               <span>
@@ -153,7 +154,7 @@
             <span>{m.project_location()}:</span>
             <br />
             <div class="flex rounded-md text-nowrap bg-base-200 p-3 pt-2 mt-2">
-              <IconContainer icon="solar:link-bold" width={20} class="opacity-80 mr-1" />
+              <IconContainer icon={Icons.URL} width={20} class="opacity-80 mr-1" />
               <p>
                 {projectData.project.RepositoryUrl?.substring(0, 5) ?? ''}
               </p>
@@ -177,9 +178,9 @@
                   }}
                 >
                   {#if projectLocationCopied}
-                    <IconContainer icon="mdi:check" width={24} class="text-success" />
+                    <IconContainer icon={Icons.Checkmark} width={24} class="text-success" />
                   {:else}
-                    <IconContainer icon="mdi:content-copy" width={24} />
+                    <IconContainer icon={Icons.Copy} width={24} />
                   {/if}
                 </button>
               {/if}
@@ -196,7 +197,7 @@
           </div>
           <BlockIfJobsUnavailable class="btn btn-outline">
             {#snippet altContent()}
-              <IconContainer icon="system-uicons:box-add" width={20} />
+              <IconContainer icon={Icons.AddProduct} width={20} />
               {m.products_add()}
             {/snippet}
             <button

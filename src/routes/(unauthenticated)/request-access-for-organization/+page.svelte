@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
 </script>
@@ -38,6 +39,6 @@
     </LabeledFormInput>
   </div>
   <div class="mt-4">
-    <SubmitButton class="float-right" icon="material-symbols:send" />
+    <SubmitButton class="float-right" icon={Icons.Send} />
   </div>
 </form>

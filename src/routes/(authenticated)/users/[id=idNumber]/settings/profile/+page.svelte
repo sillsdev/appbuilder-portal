@@ -10,6 +10,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import type { RoleId } from '$lib/prisma';
   import { NotificationType } from '$lib/users';
@@ -80,7 +81,7 @@
       input={{
         name: 'name',
         err: m.formErrors_nameEmpty(),
-        icon: 'mdi:rename',
+        icon: Icons.Name,
         required: true
       }}
       bind:value={$form.name}
@@ -90,7 +91,7 @@
       input={{
         name: 'email',
         err: $form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty(),
-        icon: 'ic:baseline-email',
+        icon: Icons.Email,
         required: true
       }}
       bind:value={$form.email}
@@ -100,7 +101,7 @@
       input={{
         type: 'tel',
         name: 'phone',
-        icon: 'ic:baseline-phone',
+        icon: Icons.Phone,
         pattern: regExpToInputPattern(phoneRegex)
       }}
       bind:value={$form.phone}
@@ -119,7 +120,7 @@
           default: ['w-full', tzValue && !timeZoneMap.has(tzValue) && 'select-error'],
           dropdown: 'w-full bg-base-100'
         }}
-        icon="mdi:timezone"
+        icon={Icons.Timezone}
       >
         {#snippet listElement(res, selected)}
           <div class="w-full right-0" class:selected>
@@ -134,8 +135,8 @@
       message={{ key: 'profile_optOutOfEmailOption' }}
       bind:checked={$form.notifications}
       name="notifications"
-      onIcon="iconamoon:notification-fill"
-      offIcon="iconamoon:notification-off"
+      onIcon={Icons.NotifyOn}
+      offIcon={Icons.NotifyOff}
     />
     {#if !$form.notifications}
       <LabeledFormInput
@@ -156,8 +157,8 @@
                 bind:group={$form.emailOptions}
                 value={option}
               />
-              <Icon icon="iconamoon:notification-off" width={20} height={20} />
-              <Icon icon="iconamoon:notification-fill" width={20} height={20} color="white" />
+              <Icon icon={Icons.NotifyOn} width={20} height={20} />
+              <Icon icon={Icons.NotifyOff} width={20} height={20} color="white" />
             </div>
           </InputWithMessage>
         {/each}
@@ -169,8 +170,8 @@
       message={{ key: 'profile_visibility_visible' }}
       bind:checked={$form.visible}
       name="visible"
-      onIcon="mdi:eye"
-      offIcon="mdi:eye-off-outline"
+      onIcon={Icons.Visible}
+      offIcon={Icons.Invisible}
     />
     <Toggle
       class="mt-4"
@@ -178,8 +179,8 @@
       name="active"
       inputAttr={{ disabled: page.data.session?.user.userId === data.subject.Id }}
       bind:checked={$form.active}
-      onIcon="mdi:lock-open-variant"
-      offIcon="mdi:lock"
+      onIcon={Icons.Unlocked}
+      offIcon={Icons.Locked}
     />
     <div class="flex my-2">
       <SubmitButton />

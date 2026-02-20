@@ -5,7 +5,8 @@
 <script lang="ts" generics="RowItem extends Record<string, unknown>">
   import type { Snippet } from 'svelte';
   import type { ClassValue } from 'svelte/elements';
-  import IconContainer from './IconContainer.svelte';
+  import IconContainer from '../icons/IconContainer.svelte';
+  import { Icons } from '$lib/icons';
 
   interface Props {
     data: RowItem[];
@@ -95,9 +96,9 @@
               <span class="direction-arrow text-neutral-content">
                 {#if current.id === c.id && c.compare}
                   {#if descending}
-                    <IconContainer icon="bx:sort-z-a" width={24} />
+                    <IconContainer icon={Icons.SortDesc} width={24} />
                   {:else}
-                    <IconContainer icon="bx:sort-a-z" width={24} />
+                    <IconContainer icon={Icons.SortAsc} width={24} />
                   {/if}
                 {:else}
                   &nbsp;

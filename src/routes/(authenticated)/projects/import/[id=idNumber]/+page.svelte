@@ -6,11 +6,12 @@
   import type { PageData } from './$types';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { importJSONSchema } from '$lib/projects';
@@ -102,7 +103,7 @@
         <SelectWithIcon
           bind:value={$form.group}
           items={data.organization.Groups}
-          icon="mdi:user-group"
+          icon={Icons.Group}
         />
       </LabeledFormInput>
       <LabeledFormInput key="common_type" class="max-w-xs">
@@ -173,7 +174,7 @@
       />
       <BlockIfJobsUnavailable class="btn btn-primary w-full max-w-xs">
         {#snippet altContent()}
-          <IconContainer icon="tdesign:import" width={20} />
+          <IconContainer icon={Icons.Import} width={20} />
           {m.common_save()}
         {/snippet}
         <SubmitButton class="w-full max-w-xs" disabled={!canSubmit}>

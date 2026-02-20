@@ -1,8 +1,8 @@
 <script lang="ts">
   import { type FormResult, superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';

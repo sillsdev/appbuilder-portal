@@ -1,11 +1,12 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import IconContainer from '../IconContainer.svelte';
+  import IconContainer from '../../icons/IconContainer.svelte';
+  import { type IconType, Icons } from '$lib/icons';
   import type { ValueKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
 
   interface Props extends Partial<ValueKey> {
-    icon?: string;
+    icon?: IconType;
     onclick?: () => void;
     children?: Snippet;
     returnTo?: string;
@@ -14,7 +15,7 @@
 
   let {
     class: classes,
-    icon = 'icon-park-outline:return',
+    icon = Icons.Cancel,
     key = 'common_cancel',
     params,
     onclick,

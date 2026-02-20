@@ -2,11 +2,12 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -123,7 +124,7 @@
         $form.source !== $form.destination &&
         $form.products.length
       )}
-      icon="bx:transfer"
+      icon={Icons.Transfer}
     />
   </div>
 </form>

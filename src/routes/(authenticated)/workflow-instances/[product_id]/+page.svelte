@@ -6,7 +6,8 @@
   import { browser } from '$app/environment';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails, {
@@ -138,20 +139,20 @@
     <span class="navbar-end w-auto">
       <Dropdown class={{ label: 'px-1', content: 'top-12 right-0 p-1 min-w-36 w-auto' }}>
         {#snippet label()}
-          <IconContainer icon="charm:menu-kebab" width="20" />
+          <IconContainer icon={Icons.Kebab} width="20" />
         {/snippet}
         {#snippet content()}
           <ul class="menu overflow-hidden rounded-md">
             <li class="w-full rounded-none">
               <button class="text-nowrap" onclick={() => showProductDetails(data.product.Id)}>
-                <IconContainer icon="mdi:info" width={16} />
+                <IconContainer icon={Icons.Info} width={16} />
                 {m.products_details()}
               </button>
             </li>
             <li class="w-full rounded-none">
               <BlockIfJobsUnavailable class="text-nowrap">
                 {#snippet altContent()}
-                  <IconContainer icon="mdi:jump" width={16} />
+                  <IconContainer icon={Icons.Jump} width={16} />
                   {m.workflowInstances_jump({ state: $form.state })}
                 {/snippet}
                 <form method="POST" use:enhance>

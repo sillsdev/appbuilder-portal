@@ -1,11 +1,12 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import IconContainer from '../IconContainer.svelte';
+  import IconContainer from '../../icons/IconContainer.svelte';
+  import { type IconType, Icons } from '$lib/icons';
   import type { ValueKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
 
   interface Props extends Partial<ValueKey> {
-    icon?: string;
+    icon?: IconType;
     disabled?: boolean;
     onclick?: () => void;
     children?: Snippet;
@@ -13,7 +14,7 @@
 
   let {
     class: classes,
-    icon = 'material-symbols:save-outline',
+    icon = Icons.Save,
     disabled = false,
     key = 'common_save',
     params,

@@ -4,8 +4,9 @@
   import type { AuthorSchema } from './valibot';
   import { enhance as svk_enhance } from '$app/forms';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -66,7 +67,7 @@
           {#if canEdit}
             <BlockIfJobsUnavailable>
               {#snippet altContent()}
-                <IconContainer icon="mdi:close" width="24" />
+                <IconContainer icon={Icons.Close} width="24" />
               {/snippet}
               <form
                 action="?/{deleteEndpoint}"
@@ -83,7 +84,7 @@
               >
                 <input type="hidden" name="id" value={author.User.Id} />
                 <button type="submit" class="cursor-pointer">
-                  <IconContainer icon="mdi:close" width="24" />
+                  <IconContainer icon={Icons.Close} width="24" />
                 </button>
               </form>
             </BlockIfJobsUnavailable>
@@ -114,7 +115,7 @@
           </select>
           <BlockIfJobsUnavailable class="btn btn-primary">
             {#snippet altContent()}
-              <IconContainer icon="mdi:pencil-add" width={20} />
+              <IconContainer icon={Icons.AddAuthor} width={20} />
               {m.authors_submit()}
             {/snippet}
             <SubmitButton disabled={!$form.author}>

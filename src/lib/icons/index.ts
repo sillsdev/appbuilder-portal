@@ -1,3 +1,6 @@
+import type { getIcon } from './productDefinitionIcon';
+import type { Locale } from '$lib/paraglide/runtime';
+import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 
 export function getActionIcon(type: ProductActionType) {
@@ -8,7 +11,120 @@ export function getActionIcon(type: ProductActionType) {
       return 'carbon:ibm-elo-publishing';
     case ProductActionType.Cancel:
       return 'mdi:cancel-octagon';
-    default:
-      return '';
   }
 }
+
+export function getFlagIcon(locale: Locale) {
+  switch (locale) {
+    case 'en-US':
+      return 'circle-flags:us';
+    case 'es-419':
+      return 'circle-flags:mx';
+    case 'fr-FR':
+      return 'circle-flags:fr';
+    default:
+      console.warn(`Unrecognized language tag ${locale} in getFlag, using default flag.`);
+      return 'circle-flags:un'; // UN flag as fallback
+  }
+}
+
+export function getRoleIcon(role: RoleId) {
+  switch (role) {
+    case RoleId.SuperAdmin:
+    case RoleId.OrgAdmin:
+      return 'eos-icons:admin';
+    case RoleId.AppBuilder:
+      return 'mdi:worker';
+    case RoleId.Author:
+      return 'mdi:pencil';
+  }
+}
+
+export const Icons = {
+  Active: 'hugeicons:activity-03',
+  AddAuthor: 'mdi:pencil-add',
+  AddGeneric: 'material-symbols:add',
+  AddGroup: 'fluent-mdl2:add-group',
+  AddProduct: 'system-uicons:box-add',
+  AddProject: 'material-symbols:add-card-outline',
+  AddReviewer: 'mdi:eye-add',
+  AddStore: 'hugeicons:store-add-02',
+  AddStoreType: 'hugeicons:store-add-01',
+  AddUser: 'mdi:user-add',
+  AddUsers: 'material-symbols:group-add',
+  Archive: 'material-symbols:archive',
+  Back: 'mdi:arrow-left',
+  BuildEngine: 'carbon:build-image',
+  Cancel: 'icon-park-outline:return',
+  Checkmark: 'mdi:check',
+  Close: 'mdi:close',
+  Copy: 'mdi:content-copy',
+  Dashboard: 'clarity:dashboard-line',
+  DateRange: 'material-symbols:date-range',
+  Directory: 'lsicon:folder-files-filled',
+  Download: 'material-symbols:download',
+  DownloadOff: 'material-symbols:file-download-off',
+  Dropdown: 'gridicons:dropdown',
+  Edit: 'mdi:pencil',
+  Email: 'ic:baseline-email',
+  Empty: '',
+  File: 'mdi:file',
+  Forum: 'charm:messages',
+  GearOff: 'pepicons-pop:gear-off',
+  GearOn: 'pepicons-pop:gear',
+  GooglePlay: 'mdi:google-play',
+  Group: 'mdi:user-group',
+  Hamburger: 'mdi:hamburger-menu',
+  Help: 'material-symbols:help',
+  Image: 'material-symbols:image',
+  Import: 'tdesign:import',
+  Info: 'mdi:info',
+  InfoOutline: 'mdi:information-outline',
+  Invisible: 'mdi:eye-off-outline',
+  Jump: 'mdi:jump',
+  Kebab: 'charm:menu-kebab',
+  Key: 'material-symbols:key',
+  Language: 'mdi:language',
+  Locked: 'mdi:lock',
+  LogOut: 'mdi:sign-out',
+  Name: 'mdi:rename',
+  NotifyOff: 'iconamoon:notification-off',
+  NotifyOn: 'iconamoon:notification-fill',
+  Open: 'mdi:open-in-new',
+  Organization: 'clarity:organization-solid',
+  Phone: 'ic:baseline-phone',
+  Product: 'system-uicons:box',
+  Project: 'material-symbols:credit-card-outline',
+  Publish: 'material-symbols:publish',
+  ReactivateProject: 'mdi:archive-refresh',
+  RefreshOff: 'lucide:refresh-cw-off',
+  RefreshOn: 'lucide:refresh-cw',
+  Reset: 'ri:reset-right-line',
+  Roles: 'oui:app-users-roles',
+  Save: 'material-symbols:save-outline',
+  Search: 'mdi:search',
+  Send: 'material-symbols:send',
+  Settings: 'material-symbols:settings',
+  SortDesc: 'bx:sort-z-a',
+  SortAsc: 'bx:sort-a-z',
+  Star: 'material-symbols:star',
+  Store: 'ic:twotone-store',
+  StoreMenu: 'hugeicons:store-04',
+  StoreTypeMenu: 'hugeicons:store-management-01',
+  Tasks: 'grommet-icons:task',
+  Timezone: 'mdi:timezone',
+  Transfer: 'bx:transfer',
+  Trash: 'mdi:trash',
+  Unlocked: 'mdi:lock-open-variant',
+  UpdateOff: 'ic:baseline-update-disabled',
+  UpdateOn: 'ic:baseline-update',
+  URL: 'solar:link-bold',
+  User: 'mdi:user',
+  Visible: 'mdi:eye',
+  Web: 'mdi:web',
+  Workflow: 'hugeicons:workflow-square-03'
+} as const;
+
+export type IconType =
+  | (typeof Icons)[keyof typeof Icons]
+  | ReturnType<typeof getActionIcon | typeof getFlagIcon | typeof getIcon | typeof getRoleIcon>;

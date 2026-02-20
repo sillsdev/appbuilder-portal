@@ -7,6 +7,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
+  import { Icons } from '$lib/icons';
   import GroupUsers from '$lib/organizations/components/GroupUsers.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
@@ -43,7 +44,7 @@
     input={{
       name: 'name',
       err: m.formErrors_nameEmpty(),
-      icon: 'mdi:rename',
+      icon: Icons.Name,
       required: true
     }}
     bind:value={$form.name}
@@ -54,13 +55,13 @@
       type: 'email',
       name: 'contact',
       err: m.formErrors_emailInvalid(),
-      icon: 'ic:baseline-email'
+      icon: Icons.Email
     }}
     bind:value={$form.contact}
   />
   <LabeledFormInput
     key="org_websiteURL"
-    input={{ type: 'url', name: 'websiteUrl', icon: 'mdi:web' }}
+    input={{ type: 'url', name: 'websiteUrl', icon: Icons.Web }}
     bind:value={$form.websiteUrl}
   />
   <Toggle
@@ -68,8 +69,8 @@
     class="py-2"
     name="useDefaultBuildEngine"
     bind:checked={$form.useDefaultBuildEngine}
-    onIcon="pepicons-pop:gear"
-    offIcon="pepicons-pop:gear-off"
+    onIcon={Icons.GearOn}
+    offIcon={Icons.GearOff}
   />
   {#if !$form.useDefaultBuildEngine}
     <LabeledFormInput
@@ -79,7 +80,7 @@
         name: 'buildEngineUrl',
         required: !$form.useDefaultBuildEngine,
         err: m.org_emptyBuildEngineURL(),
-        icon: 'solar:link-bold'
+        icon: Icons.URL
       }}
       bind:value={$form.buildEngineUrl}
     />
@@ -89,7 +90,7 @@
         name: 'buildEngineApiAccessToken',
         required: !$form.useDefaultBuildEngine,
         err: m.org_emptyAccessToken(),
-        icon: 'material-symbols:key'
+        icon: Icons.Key
       }}
       bind:value={$form.buildEngineApiAccessToken}
     />
@@ -99,7 +100,7 @@
     input={{
       name: 'logoUrl',
       type: 'url',
-      icon: 'material-symbols:image'
+      icon: Icons.Image
     }}
     bind:value={$form.logoUrl}
   />
@@ -109,8 +110,8 @@
     class="py-1"
     name="publicByDefault"
     bind:checked={$form.publicByDefault}
-    onIcon="mdi:eye"
-    offIcon="mdi:eye-off-outline"
+    onIcon={Icons.Visible}
+    offIcon={Icons.Invisible}
   />
   <div class="my-4">
     <CancelButton returnTo={localizeHref(base)} />

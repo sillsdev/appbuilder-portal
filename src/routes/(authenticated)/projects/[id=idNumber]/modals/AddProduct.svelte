@@ -2,7 +2,8 @@
   import type { Prisma } from '@prisma/client';
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
@@ -71,7 +72,7 @@
               modal?.close();
             }}
           >
-            <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+            <IconContainer icon={Icons.Close} width={36} class="opacity-80" />
           </button>
         </div>
         <div class="flex flex-col pt-1 space-y-1">
@@ -104,7 +105,7 @@
               selectingStore = false;
             }}
           >
-            <IconContainer icon="mdi:arrow-left" width={36} class="opacity-80" />
+            <IconContainer icon={Icons.Back} width={36} class="opacity-80" />
           </button>
           <h2 class="text-lg grow font-bold pt-2">
             {m.products_storeSelect({
@@ -119,7 +120,7 @@
               setTimeout(() => (selectingStore = false), 300);
             }}
           >
-            <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+            <IconContainer icon={Icons.Close} width={36} class="opacity-80" />
           </button>
         </div>
         <div class="flex flex-col pt-1 space-y-1">

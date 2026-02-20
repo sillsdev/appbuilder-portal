@@ -4,13 +4,14 @@
   import type { PageData } from './$types';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
@@ -60,7 +61,7 @@
           input={{
             name: 'name',
             err: m.formErrors_nameEmpty(),
-            icon: 'mdi:rename',
+            icon: Icons.Name,
             required: true
           }}
           bind:value={$form.Name}
@@ -70,7 +71,7 @@
             attr={{ name: 'group' }}
             bind:value={$form.group}
             items={data.organization.Groups}
-            icon="mdi:user-group"
+            icon={Icons.Group}
             class="w-full"
           />
           <span class="validator-hint">&nbsp;</span>
@@ -118,8 +119,8 @@
           name="IsPublic"
           inputAttr={{ onchange: () => {} }}
           bind:checked={$form.IsPublic}
-          onIcon="mdi:eye"
-          offIcon="mdi:eye-off-outline"
+          onIcon={Icons.Visible}
+          offIcon={Icons.Invisible}
         />
       </div>
       <div class="flex flex-row flex-wrap place-content-center gap-4 p-4 w-full">
@@ -129,7 +130,7 @@
         />
         <BlockIfJobsUnavailable class="btn btn-primary w-full max-w-xs">
           {#snippet altContent()}
-            <IconContainer icon="material-symbols:add-card-outline" width={20} />
+            <IconContainer icon={Icons.AddProject} width={20} />
             {m.common_save()}
           {/snippet}
           <SubmitButton

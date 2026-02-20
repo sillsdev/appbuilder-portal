@@ -3,9 +3,10 @@
   import type { Prisma } from '@prisma/client';
   import { enhance } from '$app/forms';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { sanitizeInput, toast } from '$lib/utils';
@@ -94,7 +95,7 @@
           />
           <BlockIfJobsUnavailable class="btn btn-error">
             {#snippet altContent()}
-              <IconContainer icon="mdi:trash" width={20} />
+              <IconContainer icon={Icons.Trash} width={20} />
               {m.common_delete()}
             {/snippet}
             <SubmitButton

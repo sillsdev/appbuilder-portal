@@ -6,6 +6,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
@@ -40,7 +41,7 @@
       name: 'publisherId',
       readonly: true,
       disabled: true,
-      icon: 'material-symbols:publish'
+      icon: Icons.Publish
     }}
     value={data.store.BuildEnginePublisherId}
     class="md:max-w-xs"
@@ -61,7 +62,7 @@
       bind:value={$form.owner}
       items={data.organizations}
       attr={{ name: 'owner' }}
-      icon="clarity:organization-solid"
+      icon={Icons.Organization}
     >
       {#snippet extra()}
         <option value={null}>{m.appName()}</option>
@@ -76,7 +77,7 @@
         name: 'gpTitle',
         required: $form.owner === null,
         err: m.stores_gpTitleEmpty(),
-        icon: 'mdi:google-play'
+        icon: Icons.GooglePlay
       }}
       bind:value={$form.gpTitle}
       class="md:max-w-xs"
@@ -86,7 +87,7 @@
     key="common_description"
     input={{
       name: 'description',
-      icon: 'mdi:rename'
+      icon: Icons.Name
     }}
     bind:value={$form.description}
     class="md:max-w-xs"

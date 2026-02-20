@@ -2,6 +2,7 @@
   import type { Prisma } from '@prisma/client';
   import type { ClassValue, HTMLSelectAttributes } from 'svelte/elements';
   import SelectWithIcon from './settings/SelectWithIcon.svelte';
+  import { Icons } from '$lib/icons';
   import { org_allOrganizations } from '$lib/paraglide/messages';
   interface Props {
     organizations: Prisma.OrganizationsGetPayload<{ select: { Id: true; Name: true } }>[];
@@ -31,7 +32,7 @@
   items={organizations}
   attr={selectProperties}
   class={classes}
-  icon="clarity:organization-solid"
+  icon={Icons.Organization}
 >
   {#snippet extra()}
     {#if allowNull}

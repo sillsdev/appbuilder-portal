@@ -1,7 +1,8 @@
 <script lang="ts" generics="N extends string | null">
   import type { Snippet } from 'svelte';
   import type { ClassValue, HTMLOptionAttributes, HTMLSelectAttributes } from 'svelte/elements';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import type { IconType } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
 
@@ -10,13 +11,13 @@
     items: {
       Id: number;
       Name: N;
-      icon?: string;
+      icon?: IconType;
       attr?: HTMLOptionAttributes;
     }[];
     value: number | null;
     extra?: Snippet;
     attr?: HTMLSelectAttributes;
-    icon?: string;
+    icon?: IconType;
   }
 
   let { class: classes, items, value = $bindable(), extra, attr = {}, icon = '' }: Props = $props();

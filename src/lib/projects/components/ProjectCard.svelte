@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { getIcon } from '$lib/icons/productDefinitionIcon';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -21,7 +22,7 @@
 {#snippet langIcon(lang: string | null)}
   {#if lang}
     <span class="badge badge-primary mb-2 mr-4 [height:1.35rem]" title={m.projectTable_language()}>
-      <IconContainer icon="mdi:language" width={20} class="mr-1" />
+      <IconContainer icon={Icons.Language} width={20} class="mr-1" />
       <!-- <LanguageIconContainer color="lightgray" size="20" /> -->
       <span class="overflow-auto text-center">
         {lang}
@@ -49,15 +50,15 @@
     <div class="flex flex-wrap justify-between">
       <div class="mr-2">
         <span class="flex items-center" title={m.projectTable_owner()}>
-          <IconContainer icon="mdi:user" width={20} class="mr-1 shrink-0" />
+          <IconContainer icon={Icons.User} width={20} class="mr-1 shrink-0" />
           {project.OwnerName}
         </span>
         <span class="flex items-center" title={m.projectTable_org()}>
-          <IconContainer icon="clarity:organization-solid" width={20} class="mr-1 shrink-0" />
+          <IconContainer icon={Icons.Organization} width={20} class="mr-1 shrink-0" />
           {project.OrganizationName}
         </span>
         <span class="flex items-center [margin-right:0]" title={m.projectTable_group()}>
-          <IconContainer icon="mdi:account-group" width={20} class="mr-1 shrink-0" />
+          <IconContainer icon={Icons.Group} width={20} class="mr-1 shrink-0" />
           <span class=" text-nowrap">
             {project.GroupName}
           </span>

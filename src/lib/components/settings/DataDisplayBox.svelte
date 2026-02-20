@@ -3,8 +3,9 @@
     A container box with a title and rows of internationalized information   
 -->
 <script lang="ts" generics="T extends Record<string, unknown>">
-  import Icon from '@iconify/svelte';
   import type { Snippet } from 'svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import type { ValueKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
 
@@ -38,7 +39,7 @@
         title={editTitle ?? m.common_clickToEdit()}
         class="absolute right-2 top-2 cursor-pointer"
       >
-        <Icon width="24" icon="mdi:pencil" />
+        <IconContainer width={24} icon={Icons.Edit} />
       </a>
     {/if}
     {#each fields as field}

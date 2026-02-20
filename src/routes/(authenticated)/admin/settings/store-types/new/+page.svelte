@@ -5,6 +5,7 @@
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -45,6 +46,6 @@
   </LabeledFormInput>
   <div class="my-4">
     <CancelButton returnTo={localizeHref(base)} />
-    <SubmitButton icon="hugeicons:store-add-01" />
+    <SubmitButton icon={Icons.AddStoreType} />
   </div>
 </form>

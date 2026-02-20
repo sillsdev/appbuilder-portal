@@ -5,6 +5,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import Toggle from '$lib/components/settings/Toggle.svelte';
+  import type { IconType } from '$lib/icons';
   import type { ValueKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
@@ -17,8 +18,8 @@
     formVar: boolean;
     onmsg: string;
     offmsg: string;
-    onIcon?: string;
-    offIcon?: string;
+    onIcon?: IconType;
+    offIcon?: IconType;
     title: ValueKey;
     message: ValueKey;
     canEdit?: boolean;

@@ -4,12 +4,13 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -46,7 +47,7 @@
           input={{
             name: 'name',
             err: m.formErrors_nameEmpty(),
-            icon: 'mdi:rename',
+            icon: Icons.Name,
             required: true
           }}
           bind:value={$form.name}
@@ -54,14 +55,14 @@
         <LabeledFormInput key="project_owner" class="md:max-w-xs">
           <BlockIfJobsUnavailable class="select">
             {#snippet altContent()}
-              <IconContainer icon="mdi:user" width={20} />
+              <IconContainer icon={Icons.User} width={20} />
               {data.owners.find((o) => o.Id === $form.owner)?.Name}
             {/snippet}
             <SelectWithIcon
               attr={{ name: 'owner' }}
               bind:value={$form.owner}
               items={data.owners}
-              icon="mdi:user"
+              icon={Icons.User}
               class="w-full"
             />
           </BlockIfJobsUnavailable>
@@ -73,7 +74,7 @@
             attr={{ name: 'group' }}
             bind:value={$form.group}
             items={data.groups}
-            icon="mdi:user-group"
+            icon={Icons.Group}
             class="w-full"
           />
         </LabeledFormInput>

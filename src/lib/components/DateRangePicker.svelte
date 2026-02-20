@@ -1,7 +1,8 @@
 <script lang="ts">
   import sv_flatpickr, { themeChanger, themeNames } from 'svelte-flatpickr-plus';
   import { browser } from '$app/environment';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   // This component is here because the range mode of the Flatpickr svelte package
   // is a bit broken. Essentially, the 'value' property is updated when the second
@@ -48,7 +49,7 @@
   }}
 >
   <label class="input flex items-center gap-2 w-full">
-    <IconContainer icon="material-symbols:date-range" width={24} class="cursor-pointer" />
+    <IconContainer icon={Icons.DateRange} width={24} class="cursor-pointer" />
     <input name="dateRange" class="grow" {placeholder} data-input />
     {#if chosenDates?.some((d) => !!d)}
       <button
@@ -60,7 +61,7 @@
         }}
         title={m.common_clear()}
       >
-        <IconContainer icon="mdi:close" class="ml-auto cursor-pointer" width={24} />
+        <IconContainer icon={Icons.Close} class="ml-auto cursor-pointer" width={24} />
       </button>
     {/if}
   </label>

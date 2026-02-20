@@ -6,11 +6,12 @@
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
@@ -68,7 +69,7 @@
             name: 'email',
             placeholder: 'user@example.com',
             err: $form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty(),
-            icon: 'ic:baseline-email',
+            icon: Icons.Email,
             required: true
           }}
           bind:value={$form.email}
@@ -122,7 +123,7 @@
       <CancelButton returnTo={localizeHref(redirectUrl)} />
       <BlockIfJobsUnavailable class="btn btn-primary">
         {#snippet altContent()}
-          <IconContainer icon="material-symbols:send" width={20} />
+          <IconContainer icon={Icons.Send} width={20} />
           {m.orgMembership_send()}
         {/snippet}
         <SubmitButton>

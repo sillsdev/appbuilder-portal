@@ -4,6 +4,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
 
@@ -31,8 +32,8 @@
         class="py-2"
         name="useDefaultBuildEngine"
         bind:checked={$form.useDefaultBuildEngine}
-        onIcon="pepicons-pop:gear"
-        offIcon="pepicons-pop:gear-off"
+        onIcon={Icons.GearOn}
+        offIcon={Icons.GearOff}
       />
       {#if !$form.useDefaultBuildEngine}
         <LabeledFormInput
@@ -42,7 +43,7 @@
             name: 'buildEngineUrl',
             required: !$form.useDefaultBuildEngine,
             err: m.org_emptyBuildEngineURL(),
-            icon: 'solar:link-bold'
+            icon: Icons.URL
           }}
           bind:value={$form.buildEngineUrl}
         />
@@ -52,7 +53,7 @@
             name: 'buildEngineApiAccessToken',
             required: !$form.useDefaultBuildEngine,
             err: m.org_emptyAccessToken(),
-            icon: 'material-symbols:key'
+            icon: Icons.Key
           }}
           bind:value={$form.buildEngineApiAccessToken}
         />

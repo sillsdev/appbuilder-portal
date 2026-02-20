@@ -5,7 +5,8 @@
 <script lang="ts" generics="T">
   import type { Snippet } from 'svelte';
   import type { ClassValue, HTMLInputAttributes } from 'svelte/elements';
-  import IconContainer from '../IconContainer.svelte';
+  import IconContainer from '../../icons/IconContainer.svelte';
+  import type { IconType } from '$lib/icons';
   import type { ValueKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
 
@@ -14,7 +15,7 @@
     input?: HTMLInputAttributes & {
       class?: ClassValue;
       err?: string;
-      icon?: string;
+      icon?: IconType;
     };
     value?: T;
     validate?: boolean;
