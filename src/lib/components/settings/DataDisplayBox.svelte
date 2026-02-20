@@ -43,7 +43,7 @@
       </a>
     {/if}
     {#each fields as field}
-      <p
+      <div
         style="padding-left: 1rem; text-indent: -1rem"
         class:opacity-40={field.faint}
         class={['wrap-anywhere', field.class]}
@@ -55,7 +55,7 @@
         {:else}
           <span>{field.value ?? ''}</span>
         {/if}
-      </p>
+      </div>
     {/each}
     {@render children?.()}
   </div>
