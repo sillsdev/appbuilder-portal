@@ -27,6 +27,41 @@ export function getAppIcon(type: ApplicationType) {
   );
 }
 
+export function getFileIcon(fileType: string) {
+  switch (fileType) {
+    case 'aab':
+    case 'apk':
+      return getProductIcon(ProductType.Android_GooglePlay);
+    case 'version_code':
+    case 'version':
+      return 'mdi:tag';
+    case 'play-listing':
+    case 'asset-preview':
+      return Icons.Web;
+    case 'about':
+    case 'play-listing-manifest':
+    case 'package_name':
+    case 'whats_new':
+      return Icons.Info;
+    case 'cloudWatch':
+    case 'consoleText':
+      return 'mdi:console';
+    case 'html':
+    case 'pwa':
+    case 'asset-package':
+    case 'play-listing-download':
+      return Icons.Archive;
+    case 'encrypted_key':
+      return Icons.Key;
+    case 'data-safety-csv':
+      return 'mingcute:safety-certificate-fill';
+    case 'publish_properties':
+    case 'asset-notify':
+    default:
+      return Icons.File;
+  }
+}
+
 export function getFlagIcon(locale: Locale) {
   switch (locale) {
     case 'en-US':
@@ -179,6 +214,7 @@ export type IconType =
   | (typeof Icons)[keyof typeof Icons]
   | ReturnType<
       | typeof getActionIcon
+      | typeof getFileIcon
       | typeof getFlagIcon
       | typeof getProductIcon
       | typeof getRoleIcon

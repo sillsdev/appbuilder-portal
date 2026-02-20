@@ -2,7 +2,7 @@
   /* eslint-disable svelte/no-at-html-tags */
   import type { Prisma } from '@prisma/client';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { Icons } from '$lib/icons';
+  import { Icons, getFileIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
@@ -105,7 +105,10 @@
         <tbody>
           {#each artifacts.toSorted( (a, b) => byString(a.ArtifactType, b.ArtifactType, locale) ) as artifact, i}
             <tr>
-              <td><IconContainer icon={Icons.File} width={20} /> {artifact.ArtifactType}</td>
+              <td>
+                <IconContainer icon={getFileIcon(artifact.ArtifactType)} width={20} />
+                {artifact.ArtifactType}
+              </td>
               <td>
                 <Tooltip tip={getTimeDateString(artifact.DateUpdated)}>
                   {$artifactUpdated[i]}
