@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { Icons, getProductIcon } from '$lib/icons';
+  import { Icons, getAppIcon, getProductIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -35,10 +35,12 @@
     <span class="flex flex-row">
       {@render select?.()}
       <div class="flex flex-row flex-wrap grow">
-        <a href={localizeHref(`/${route}/${project.Id}`)}>
+        <a href={localizeHref(`/${route}/${project.Id}`)} class="flex flex-row gap-2 items-start">
           <b class="[color:#55f]">
             {project.Name}
           </b>
+          <!-- svelte-ignore a11y_missing_attribute -->
+          <img src={getAppIcon(project.TypeId)} width={20} />
         </a>
         <div class="grow"></div>
         <span class="hidden sm:inline">{@render langIcon(project.Language)}</span>
@@ -114,8 +116,14 @@
             </tr>
             <tr>
               <th class="text-left opacity-75">{m.projectTable_appBuilderVersion()}</th>
-              <td>
-                {product.AppBuilderVersion ?? '-'}
+              <td class="flex flex-row gap-1">
+                {#if product.AppBuilderVersion}
+                  <!-- svelte-ignore a11y_missing_attribute -->
+                  <img src={getAppIcon(project.TypeId)} width={20} />
+                  {product.AppBuilderVersion}
+                {:else}
+                  -
+                {/if}
               </td>
             </tr>
             <tr class="text-left opacity-75">
@@ -157,8 +165,14 @@
               <td>
                 {getTimeDateString(product.DateBuilt)}
               </td>
-              <td>
-                {product.AppBuilderVersion ?? '-'}
+              <td class="flex flex-row gap-1">
+                {#if product.AppBuilderVersion}
+                  <!-- svelte-ignore a11y_missing_attribute -->
+                  <img src={getAppIcon(project.TypeId)} width={20} />
+                  {product.AppBuilderVersion}
+                {:else}
+                  -
+                {/if}
               </td>
             </tr>
           {/each}
