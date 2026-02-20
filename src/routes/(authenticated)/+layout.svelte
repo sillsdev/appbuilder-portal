@@ -309,7 +309,7 @@
             class={{
               dropdown: 'dropdown-end',
               label:
-                'm-2 p-2 rounded-xl items-middle justify-center flex-nowrap text-primary-content hover:text-base-content'
+                'm-2 p-2 rounded-xl items-middle justify-center flex-nowrap text-primary-content hover:text-base-content focus-visible:text-base-content'
             }}
           />
           <Dropdown

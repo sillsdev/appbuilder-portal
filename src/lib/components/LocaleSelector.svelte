@@ -33,7 +33,7 @@
   }
 
   let {
-    label = globe,
+    label = defaultLabel,
     class: classes = {},
     currentLocale = getLocale,
     onselect = setLocale
@@ -47,8 +47,8 @@
   }
 </script>
 
-{#snippet globe()}
-  <IconContainer icon="mdi:language" width={28} />
+{#snippet defaultLabel()}
+  <IconContainer icon="mdi:language" width={24} />
 {/snippet}
 
 {#key getLocale()}
