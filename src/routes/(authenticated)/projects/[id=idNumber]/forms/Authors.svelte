@@ -53,7 +53,7 @@
   });
 </script>
 
-<div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
+<div class="card border border-slate-400 overflow-hidden rounded-md max-w-full">
   <div class="bg-neutral">
     <h2>{m.authors_title()}</h2>
   </div>

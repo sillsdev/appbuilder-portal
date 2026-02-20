@@ -36,8 +36,8 @@
   });
 </script>
 
-<div class="card card-bordered border-slate-400 rounded-md max-w-full">
-  <div class="bg-neutral">
+<div class="card border border-slate-400 rounded-md max-w-full">
+  <div class="bg-neutral rounded-t-md">
     <h2>{m.reviewers_title()}</h2>
   </div>
   <div class="p-2">
@@ -60,7 +60,7 @@
       <p class="p-2">{m.reviewers_empty()}</p>
     {/if}
   </div>
-  <div class="p-2 bg-neutral">
+  <div class="p-2 bg-neutral rounded-b-md">
     {#if canEdit}
       <form
         action="?/{createEndpoint}"

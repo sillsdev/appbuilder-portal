@@ -55,7 +55,7 @@
   let groupOpen = $state(false);
 </script>
 
-<div class="bg-neutral card card-bordered border-slate-400 rounded-md max-w-full">
+<div class="bg-neutral card border border-slate-400 rounded-md max-w-full">
   <form
     action="?/{endpoint}"
     bind:this={form}
