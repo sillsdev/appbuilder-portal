@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: 1234
       PGDATA: /var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
@@ -21,7 +21,7 @@ services:
     restart: always
     ports:
       # Host:Container
-      - "18080:8080"
+      - '18080:8080'
 
   portal:
     depends_on:
@@ -31,17 +31,17 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "6173:6173"
+      - '6173:6173'
     env_file: .env
     environment:
-      DATABASE_URL: "postgresql://db-user:1234@db:5432/development?schema=public"
+      DATABASE_URL: 'postgresql://db-user:1234@db:5432/development?schema=public'
       # MUST be included (the path the application will be accessed on) and MUST NOT have a trailing slash
-      ORIGIN: "http://localhost:6173"
+      ORIGIN: 'http://localhost:6173'
 
   valkey:
     image: valkey/valkey:latest
     ports:
-      - "6379:6379"
+      - '6379:6379'
     command: valkey-server --appendonly yes --appendfilename appendonly.aof --maxmemory-policy noeviction
     volumes:
       - valkey-data:/data
@@ -51,7 +51,7 @@ services:
       context: ./deployment/development
       dockerfile: Dockerfile.stg-tunnel
     ports:
-      - "8443:8443"
+      - '8443:8443'
     # yikes
     command: bash -c "cp -r /root/ssh /root/.ssh; chmod -R 600 /root/.ssh; ssh -N -L \*:8443:localhost:\$(ssh aps-stg \"docker ps --format '{{.Names}} {{.Ports}}' | grep -E 'buildengine.*web' | awk -F '->' '{print \\$1}' | awk -F ':' '{print \\$2}'\") aps-stg"
     volumes:
@@ -60,15 +60,15 @@ services:
   otel:
     image: otel/opentelemetry-collector-contrib:0.136.0
     ports:
-      - "6317:6317"   # gRPC
-      - "6318:6318"   # HTTP
-      - "55679:55679" # UI
+      - '6317:6317' # gRPC
+      - '6318:6318' # HTTP
+      - '55679:55679' # UI
     volumes:
       - ./src/lib/otel/development_config.yml:/etc/development_config.yml
       - ./src/lib/otel/receivers_config.yml:/etc/receivers_config.yml
-    command: ["--config", "/etc/development_config.yml", "--config", "/etc/receivers_config.yml"]
+    command: ['--config', '/etc/development_config.yml', '--config', '/etc/receivers_config.yml']
 
   jaeger:
     image: cr.jaegertracing.io/jaegertracing/jaeger:latest
     ports:
-      - "16686:16686"
+      - '16686:16686'
