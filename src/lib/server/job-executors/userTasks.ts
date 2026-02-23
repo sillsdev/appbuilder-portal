@@ -3,7 +3,7 @@ import type { Job } from 'bullmq';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
-import { RoleId } from '$lib/prisma';
+import { RoleId, TaskType } from '$lib/prisma';
 import { ActionType } from '$lib/workflowTypes';
 
 export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown> {
@@ -96,7 +96,8 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
                   where: {
                     Role: u.withRole,
                     UserId: u.from,
-                    ProductId: { in: productIds }
+                    ProductId: { in: productIds },
+                    Type: TaskType.Workflow
                   },
                   data: {
                     UserId: u.to,
@@ -127,7 +128,8 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
         UserId: { in: job.data.operation.userMapping.map((u) => u.to) },
         DateUpdated: {
           gte: timestamp
-        }
+        },
+        Type: TaskType.Workflow
       }
     });
     job.updateProgress(90);
@@ -150,7 +152,8 @@ export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown
               : {
                   in: job.data.operation.users ?? allUsers.keys().toArray()
                 },
-          Role: job.data.operation.roles ? { in: job.data.operation.roles } : undefined
+          Role: job.data.operation.roles ? { in: job.data.operation.roles } : undefined,
+          Type: TaskType.Workflow
         }
       });
       deletedCount = res.count;
