@@ -74,8 +74,7 @@
     <LabeledFormInput key="prodDefs_type" class="border border-warning p-1 my-4 rounded-lg">
       {#each data.options.applicationTypes.toSorted( (a, b) => byString(a.Description, b.Description, locale) ) as type}
         <span class="flex flex-row gap-1">
-          <!-- svelte-ignore a11y_missing_attribute -->
-          <img src={getAppIcon(type.Id)} width={24} />
+          <img src={getAppIcon(type.Id)} width={24} alt="" />
           <InputWithMessage
             message={{ key: 'common_passThrough', params: { value: type.Description } }}
             class="my-1 grow"

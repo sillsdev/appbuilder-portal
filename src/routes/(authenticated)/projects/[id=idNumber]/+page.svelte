@@ -143,8 +143,7 @@
             <div class="flex place-content-between">
               <span>{m.project_details_type()}:</span>
               <span class="flex flex-row gap-1">
-                <!-- svelte-ignore a11y_missing_attribute -->
-                <img src={getAppIcon(projectData.project.ApplicationType.Id)} width={24} />
+                <img src={getAppIcon(projectData.project.ApplicationType.Id)} width={24} alt="" />
                 {projectData.project.ApplicationType.Description}
               </span>
             </div>

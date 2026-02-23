@@ -48,8 +48,7 @@
   {#snippet label()}
     <div class="flex flex-row items-center gap-1 w-full">
       {#if current}
-        <!-- svelte-ignore a11y_missing_attribute -->
-        <img src={getAppIcon(current.Id)} width={24} />
+        <img src={getAppIcon(current.Id)} width={24} alt="" />
         <span class="grow text-left">
           {current.Description}
         </span>
@@ -74,8 +73,7 @@
             role="button"
             tabindex="0"
           >
-            <!-- svelte-ignore a11y_missing_attribute -->
-            <img src={getAppIcon(type.Id)} width={24} />
+            <img src={getAppIcon(type.Id)} width={24} alt="" />
             <span class="grow text-left">
               {type.Description}
             </span>

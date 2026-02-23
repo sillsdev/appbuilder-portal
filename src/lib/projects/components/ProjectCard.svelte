@@ -39,8 +39,7 @@
           <b class="[color:#55f]">
             {project.Name}
           </b>
-          <!-- svelte-ignore a11y_missing_attribute -->
-          <img src={getAppIcon(project.TypeId)} width={20} />
+          <img src={getAppIcon(project.TypeId)} width={20} alt="" />
         </a>
         <div class="grow"></div>
         <span class="hidden sm:inline">{@render langIcon(project.Language)}</span>
@@ -118,8 +117,7 @@
               <th class="text-left opacity-75">{m.projectTable_appBuilderVersion()}</th>
               <td class="flex flex-row gap-1">
                 {#if product.AppBuilderVersion}
-                  <!-- svelte-ignore a11y_missing_attribute -->
-                  <img src={getAppIcon(project.TypeId)} width={20} />
+                  <img src={getAppIcon(project.TypeId)} width={20} alt="" />
                   {product.AppBuilderVersion}
                 {:else}
                   -
@@ -167,8 +165,7 @@
               </td>
               <td class="flex flex-row gap-1">
                 {#if product.AppBuilderVersion}
-                  <!-- svelte-ignore a11y_missing_attribute -->
-                  <img src={getAppIcon(project.TypeId)} width={20} />
+                  <img src={getAppIcon(project.TypeId)} width={20} alt="" />
                   {product.AppBuilderVersion}
                 {:else}
                   -

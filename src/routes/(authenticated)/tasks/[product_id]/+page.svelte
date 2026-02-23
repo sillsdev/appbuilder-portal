@@ -274,8 +274,7 @@
       {#if data.fields.appType}
         <LabeledFormInput key="project_appType" class="md:w-1/2">
           <div class="input w-full">
-            <!-- svelte-ignore a11y_missing_attribute -->
-            <img src={getAppIcon(data.fields.appType.Id)} width={24} />
+            <img src={getAppIcon(data.fields.appType.Id)} width={24} alt="" />
             <input type="text" readonly value={data.fields.appType.Description} />
           </div>
         </LabeledFormInput>

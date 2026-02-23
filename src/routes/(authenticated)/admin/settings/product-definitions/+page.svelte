@@ -25,8 +25,7 @@
       <div class="flex flex-row flex-wrap gap-2 indent-0">
         {#each pD.ApplicationTypes.toSorted( (a, b) => byString(a.Description, b.Description, locale) ) as at}
           <span class="flex flex-row gap-1">
-            <!-- svelte-ignore a11y_missing_attribute -->
-            <img src={getAppIcon(at.Id)} width={24} />
+            <img src={getAppIcon(at.Id)} width={24} alt="" />
             {at.Description}
           </span>
         {/each}
