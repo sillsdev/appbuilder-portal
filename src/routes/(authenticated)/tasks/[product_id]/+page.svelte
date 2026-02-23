@@ -8,7 +8,13 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import { Icons, getAppIcon, getProductIcon, getStoreIcon } from '$lib/icons';
+  import {
+    Icons,
+    getAppIcon,
+    getProductIcon,
+    getStoreIcon,
+    getWorkflowActionIcon
+  } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -129,14 +135,15 @@
   {#if !waiting}
     <form method="POST" use:enhance>
       {#if data.actions?.length}
-        <div class="flex flex-row gap-x-3 py-4">
+        <div class="flex flex-col md:flex-row gap-3 py-4">
           {#each data.actions as action, i}
             {@const disabled = i === 0 && checksRemaining}
             <BlockIfJobsUnavailable class="btn btn-primary">
               {#snippet altContent()}
                 {action}
               {/snippet}
-              <label class="btn btn-primary" class:btn-disabled={disabled}>
+              <label class="btn btn-primary w-full md:w-3xs" class:btn-disabled={disabled}>
+                <IconContainer icon={getWorkflowActionIcon(action)} width={20} />
                 {action}<!-- ISSUE: #1104 i18n (after MVP) -->
                 <input
                   {disabled}

@@ -6,7 +6,7 @@
   import { browser } from '$app/environment';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
-  import { Icons, getProductIcon } from '$lib/icons';
+  import { Icons, getProductIcon, getWorkflowActionIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
@@ -15,6 +15,7 @@
   } from '$lib/products/components/ProductDetails.svelte';
   import { Springy } from '$lib/springyGraph';
   import { toast } from '$lib/utils';
+  import { WorkflowAction } from '$lib/workflowTypes';
 
   interface Props {
     data: PageData;
@@ -156,12 +157,12 @@
             <li class="w-full rounded-none">
               <BlockIfJobsUnavailable class="text-nowrap">
                 {#snippet altContent()}
-                  <IconContainer icon={Icons.Jump} width={16} />
+                  <IconContainer icon={getWorkflowActionIcon(WorkflowAction.Jump)} width={16} />
                   {m.workflowInstances_jump({ state: $form.state })}
                 {/snippet}
                 <form method="POST" use:enhance>
                   <input type="hidden" name="state" bind:value={$form.state} />
-                  <button class="text-nowrap" type="submit">
+                  <button class="text-nowrap cursor-pointer" type="submit">
                     {@render altContent()}
                   </button>
                 </form>

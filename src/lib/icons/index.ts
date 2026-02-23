@@ -1,7 +1,7 @@
 import type { Locale } from '$lib/paraglide/runtime';
 import { ApplicationType, RoleId, StoreType, WorkflowType } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
-import { ProductType } from '$lib/workflowTypes';
+import { ProductType, WorkflowAction } from '$lib/workflowTypes';
 
 export function getActionIcon(type: ProductActionType) {
   switch (type) {
@@ -125,6 +125,33 @@ export function getWorkflowIcon(type: WorkflowType) {
   }
 }
 
+export function getWorkflowActionIcon(type: WorkflowAction) {
+  switch (type) {
+    case WorkflowAction.Continue:
+      return 'wordpress:next';
+    case WorkflowAction.Approve:
+      return 'mdi:approve';
+    case WorkflowAction.Hold:
+      return 'gridicons:pause';
+    case WorkflowAction.Reject:
+      return 'mdi:cancel';
+    case WorkflowAction.Jump:
+      return 'mdi:jump';
+    case WorkflowAction.New_App:
+      return 'mingcute:file-new-line';
+    case WorkflowAction.Existing_App:
+      return Icons.GooglePlay;
+    case WorkflowAction.Transfer_to_Authors:
+      return Icons.Transfer;
+    case WorkflowAction.Take_Back:
+      return 'icon-park-outline:return';
+    case WorkflowAction.Email_Reviewers:
+      return Icons.Email;
+    default:
+      return '';
+  }
+}
+
 export const Icons = {
   Active: 'hugeicons:activity-03',
   AddAuthor: 'mdi:pencil-add',
@@ -166,7 +193,6 @@ export const Icons = {
   Info: 'mdi:info',
   InfoOutline: 'mdi:information-outline',
   Invisible: 'mdi:eye-off-outline',
-  Jump: 'mdi:jump',
   Kebab: 'charm:menu-kebab',
   Key: 'material-symbols:key',
   Language: 'mdi:language',
@@ -220,4 +246,5 @@ export type IconType =
       | typeof getRoleIcon
       | typeof getStoreIcon
       | typeof getWorkflowIcon
+      | typeof getWorkflowActionIcon
     >;
