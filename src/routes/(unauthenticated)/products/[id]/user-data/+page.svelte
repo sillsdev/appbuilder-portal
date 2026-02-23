@@ -9,7 +9,6 @@
   }
 
   let { data }: Props = $props();
-  let turnstileToken: string | null = null;
 
   const DEFAULT_ICON =
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MiA3MiIgZmlsbD0ibm9uZSI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjcyIiB5Mj0iNzIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iIzBlNzk1YiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxMmEzN2EiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI3MiIgaGVpZ2h0PSI3MiIgcng9IjE2IiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTIwIDQ4bDgtMjQgOCAxNiA4LTEyIDggMjAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIgc3Rya2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+';
@@ -145,31 +144,6 @@
     });
   }
 
-  async function submitForm() {
-    if (!turnstileToken) {
-      alert("Please verify you're human.");
-      return;
-    }
-
-    const emailInput = document.getElementById('email') as HTMLInputElement | null;
-    const email = emailInput?.value;
-
-    const res = await fetch('/api/delete-request', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, token: turnstileToken })
-    });
-
-    const data = await res.json();
-
-    if (!data.success) {
-      alert('Verification failed.');
-      if (window.turnstile) window.turnstile.reset();
-      turnstileToken = null;
-      return;
-    }
-  }
-
   const primaryHex = $derived(themeColor);
   const primaryContentHex = $derived(getReadableTextHex(primaryHex));
   const primaryHSL = $derived(hexToDaisyHSL(primaryHex));
@@ -196,16 +170,10 @@
     if (!app.themeColor) {
       deriveColorFromIcon(iconSrc).then((hex) => (themeColor = hex));
     }
-
-    // Expose callback globally for Turnstile
-    window.handleTurnstileSuccess = (token: string) => {
-      turnstileToken = token;
-    };
   });
 </script>
 
 <svelte:head>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
     :global(html),
     :global(body) {
@@ -362,12 +330,10 @@
                 {m.udm_verification_label()}
               </span>
             </p>
-            <div class="mt-2">
-              <div
-                class="cf-turnstile"
-                data-sitekey="0x4AAAAAACW5LHZjYD-EBWMs"
-                data-callback="handleTurnstileSuccess"
-              ></div>
+            <div
+              class="rounded-btn border border-base-300 bg-base-200/30 h-14 flex items-center justify-center text-xs opacity-50"
+            >
+              {m.udm_captcha_placeholder()}
             </div>
           </div>
 
@@ -375,7 +341,6 @@
             class="btn w-full no-animation border border-black/10 shadow-sm"
             style="background-color: #0f172a; color: #ffffff;"
             type="button"
-            onclick={submitForm}
           >
             {m.udm_send_code()}
           </button>
