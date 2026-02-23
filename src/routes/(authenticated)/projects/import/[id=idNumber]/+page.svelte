@@ -101,6 +101,7 @@
     <div class="flex flex-row gap-4 flex-wrap place-content-center sm:place-content-start p-4">
       <LabeledFormInput key="project_group" class="max-w-xs">
         <SelectWithIcon
+          attr={{ name: 'group' }}
           bind:value={$form.group}
           items={data.organization.Groups}
           icon={Icons.Group}

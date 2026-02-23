@@ -69,7 +69,12 @@
               type.Id === value ? 'btn-secondary' : 'btn-ghost'
             ]}
             onclick={() => onclick(type.Id)}
-            onkeypress={() => onclick(type.Id)}
+            onkeydown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onclick(type.Id);
+              }
+            }}
             role="button"
             tabindex="0"
           >

@@ -29,10 +29,14 @@
       title={group.Name}
       fields={[{ key: 'common_description', value: group.Description }]}
     >
-      <IconContainer icon={Icons.Group} width={20} />
-      {group._count.Users}
-      <IconContainer icon={Icons.Project} width={20} />
-      {group._count.Projects}
+      <span title={m.sidebar_users()}>
+        <IconContainer icon={Icons.Group} width={20} />
+        {group._count.Users}
+      </span>
+      <span title={m.common_projects()}>
+        <IconContainer icon={Icons.Project} width={20} />
+        {group._count.Projects}
+      </span>
     </DataDisplayBox>
   {/each}
 </div>

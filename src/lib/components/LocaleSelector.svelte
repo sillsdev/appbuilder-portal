@@ -52,7 +52,12 @@
                 locale === currentLocale() ? 'btn-accent' : 'btn-ghost'
               ]}
               onclick={() => onclick(locale)}
-              onkeypress={() => onclick(locale)}
+              onkeydown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onclick(locale);
+                }
+              }}
               role="button"
               tabindex="0"
             >

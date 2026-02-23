@@ -117,7 +117,7 @@
               <td class="text-right">{bytesToHumanSize(artifact.FileSize)}</td>
               {#if allowDownloads}
                 <td class="text-right">
-                  <a href={artifact.Url} download>
+                  <a href={artifact.Url} download title={m.tasks_downloadURL()}>
                     <IconContainer icon={Icons.Download} width={20} />
                   </a>
                 </td>
