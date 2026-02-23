@@ -5,27 +5,19 @@ import { DatabaseReads } from '$lib/server/database';
 import { getRebuildsForOrgIds } from '$lib/software-updates/sse';
 
 // Parse organization IDs from query parameter
-function parseIdsParam(idsParam: string | null): number[] {
-  if (!idsParam) return [];
-  return idsParam
-    .split(',')
-    .map((v) => Number(v))
-    .filter((v) => Number.isFinite(v));
-}
-
 // Handle POST requests to establish an SSE connection for rebuild data
-export async function POST(request) {
-  request.locals.security.requireAuthenticated();
+export async function POST({ locals, request }) {
+  locals.security.requireAuthenticated();
 
   // Get organization IDs from query params (passed from client)
-  const orgIds = parseIdsParam(request.url.searchParams.get('orgIds'));
+  const orgIds = request.body ? (await request.json()).orgIds : [];
 
   if (!orgIds.length) {
     return new Response('No organization IDs provided', { status: 400 });
   }
 
   // Check user permissions for organizations
-  request.locals.security.requireAdminOfOrgIn(orgIds);
+  locals.security.requireAdminOfOrgIn(orgIds);
 
   // Return SSE stream
   return produce(async function start({ emit }) {

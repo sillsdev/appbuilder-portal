@@ -28,11 +28,10 @@
   // Set up SSE connection for real-time updates on rebuilds related to the affected organizations.
   // The SSE endpoint will filter updates based on the org IDs provided in the query string.
   const softwareUpdatesSSE: Readable<SoftwareUpdatesSSE['rebuilds']> = $derived.by(() => {
-    const orgIdsQuery = data.organizationIds.length
-      ? `?orgIds=${encodeURIComponent(data.organizationIds.join(','))}`
-      : '';
-
-    return source(`${page.url.pathname}/sse${orgIdsQuery}`, {
+    return source(`${page.url.pathname}/sse`, {
+      options: {
+        body: JSON.stringify({ orgIds: data.organizationIds })
+      },
       close({ connect }) {
         setTimeout(() => {
           if (currentPageUrl !== page.url.pathname) {
