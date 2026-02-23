@@ -25,18 +25,20 @@
   }: Props = $props();
 </script>
 
-<button type={resetForm ? 'reset' : 'button'} class={['btn btn-secondary', classes]} {onclick}>
-  {#if children}
-    {@render children()}
-  {:else if href}
-    <a {href}>
-      <IconContainer {icon} width={20} />
-      <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
-      {m[key](params as any)}
-    </a>
-  {:else}
+{#if !children && href}
+  <a class={['btn btn-secondary', classes]} {href}>
     <IconContainer {icon} width={20} />
     <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
     {m[key](params as any)}
-  {/if}
-</button>
+  </a>
+{:else}
+  <button type={resetForm ? 'reset' : 'button'} class={['btn btn-secondary', classes]} {onclick}>
+    {#if children}
+      {@render children()}
+    {:else}
+      <IconContainer {icon} width={20} />
+      <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
+      {m[key](params as any)}
+    {/if}
+  </button>
+{/if}
