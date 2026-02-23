@@ -3,7 +3,7 @@ import { type Actions } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { PageServerLoad } from './$types';
-import { projectSearchSchema, pruneProjects } from '$lib/projects';
+import { projectSearchSchema, projectSelect, pruneProjects } from '$lib/projects';
 import { projectFilter } from '$lib/projects/server';
 import { DatabaseReads } from '$lib/server/database';
 
@@ -13,25 +13,7 @@ export const load = (async (event) => {
     where: {
       IsPublic: true
     },
-    include: {
-      Products: {
-        include: {
-          ProductDefinition: {
-            include: {
-              Workflow: true
-            }
-          },
-          WorkflowInstance: true,
-          ProductBuilds: {
-            orderBy: { DateUpdated: 'desc' },
-            take: 1
-          }
-        }
-      },
-      Owner: true,
-      Group: true,
-      Organization: true
-    },
+    select: projectSelect,
     take: 10,
     orderBy: [
       {
@@ -82,25 +64,7 @@ export const actions: Actions = {
 
     const projects = await DatabaseReads.projects.findMany({
       where: where,
-      include: {
-        Products: {
-          include: {
-            ProductDefinition: {
-              include: {
-                Workflow: true
-              }
-            },
-            WorkflowInstance: true,
-            ProductBuilds: {
-              orderBy: { DateUpdated: 'desc' },
-              take: 1
-            }
-          }
-        },
-        Owner: true,
-        Group: true,
-        Organization: true
-      },
+      select: projectSelect,
       skip: form.data.page.size * form.data.page.page,
       take: form.data.page.size,
       orderBy: [

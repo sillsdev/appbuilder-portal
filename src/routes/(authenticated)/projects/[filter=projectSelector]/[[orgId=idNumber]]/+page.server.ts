@@ -7,7 +7,12 @@ import type { Actions, PageServerLoad } from './$types';
 import { RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
-import { bulkProjectActionSchema, projectSearchSchema, pruneProjects } from '$lib/projects';
+import {
+  bulkProjectActionSchema,
+  projectSearchSchema,
+  projectSelect,
+  pruneProjects
+} from '$lib/projects';
 import { doProjectAction, projectFilter } from '$lib/projects/server';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
@@ -109,25 +114,7 @@ export const load = (async ({ params, locals }) => {
 
   const projects = await DatabaseReads.projects.findMany({
     where: whereStatements(params.filter, locals.security, orgIds),
-    include: {
-      Products: {
-        include: {
-          ProductDefinition: {
-            include: {
-              Workflow: true
-            }
-          },
-          WorkflowInstance: true,
-          ProductBuilds: {
-            orderBy: { DateUpdated: 'desc' },
-            take: 1
-          }
-        }
-      },
-      Owner: true,
-      Group: true,
-      Organization: true
-    },
+    select: projectSelect,
     take: 10,
     orderBy: [
       {
@@ -196,25 +183,7 @@ export const actions: Actions = {
 
     const projects = await DatabaseReads.projects.findMany({
       where,
-      include: {
-        Products: {
-          include: {
-            ProductDefinition: {
-              include: {
-                Workflow: true
-              }
-            },
-            WorkflowInstance: true,
-            ProductBuilds: {
-              orderBy: { DateUpdated: 'desc' },
-              take: 1
-            }
-          }
-        },
-        Owner: true,
-        Group: true,
-        Organization: true
-      },
+      select: projectSelect,
       skip: form.data.page.size * form.data.page.page,
       take: form.data.page.size,
       orderBy: [
