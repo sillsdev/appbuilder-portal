@@ -6,7 +6,7 @@ import { Workflow } from '../workflow';
 import { RoleId, TaskType } from '$lib/prisma';
 import { ActionType } from '$lib/workflowTypes';
 
-export async function modify(job: Job<BullMQ.UserTasks.Modify>): Promise<unknown> {
+export async function workflow(job: Job<BullMQ.UserTasks.Workflow>): Promise<unknown> {
   const products = await DatabaseReads.products.findMany({
     where: {
       Id: job.data.scope === 'Product' ? job.data.productId : undefined,

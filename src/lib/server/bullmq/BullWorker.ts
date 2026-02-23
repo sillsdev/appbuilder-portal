@@ -224,8 +224,8 @@ export class UserTasks<J extends BullMQ.UserTasksJob> extends BullWorker<J> {
   }
   async run(job: Job<J>) {
     switch (job.data.type) {
-      case BullMQ.JobType.UserTasks_Modify:
-        return Executor.UserTasks.modify(job as Job<BullMQ.UserTasks.Modify>);
+      case BullMQ.JobType.UserTasks_Workflow:
+        return Executor.UserTasks.workflow(job as Job<BullMQ.UserTasks.Workflow>);
     }
   }
 }

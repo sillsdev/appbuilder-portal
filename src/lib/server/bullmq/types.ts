@@ -175,7 +175,7 @@ export namespace UserTasks {
       };
 
   // Using type here instead of interface for easier composition
-  export type Modify = (
+  export type Workflow = (
     | {
         scope: 'Project';
         projectId: number;
@@ -185,7 +185,7 @@ export namespace UserTasks {
         productId: string;
       }
   ) & {
-    type: JobType.UserTasks_Modify;
+    type: JobType.UserTasks_Workflow;
     transition?: number; // added for compatibility with JobBase
     comment?: string; // just ignore comment for Delete and Reassign
     operation: Config;
@@ -284,7 +284,7 @@ export type PublishJob = JobTypeMap[
   | JobType.Publish_PostProcess
   | JobType.Publish_Delete];
 export type PollJob = JobTypeMap[JobType.Poll_Build | JobType.Poll_Publish | JobType.Poll_Project];
-export type UserTasksJob = JobTypeMap[JobType.UserTasks_Modify];
+export type UserTasksJob = JobTypeMap[JobType.UserTasks_Workflow];
 export type EmailJob = JobTypeMap[
   | JobType.Email_InviteUser
   | JobType.Email_SendNotificationToUser
@@ -326,7 +326,7 @@ export type JobTypeMap = {
   [JobType.System_CheckEngineStatuses]: System.CheckEngineStatuses;
   [JobType.System_RefreshLangTags]: System.RefreshLangTags;
   [JobType.System_Migrate]: System.Migrate;
-  [JobType.UserTasks_Modify]: UserTasks.Modify;
+  [JobType.UserTasks_Workflow]: UserTasks.Workflow;
   [JobType.Email_InviteUser]: Email.InviteUser;
   [JobType.Email_SendNotificationToUser]: Email.SendNotificationToUser;
   [JobType.Email_SendNotificationToReviewers]: Email.SendNotificationToReviewers;

@@ -80,7 +80,7 @@ export async function toggleRole(
       ).map((p) => ({
         name: `${enabled ? 'Add' : 'Remove'} OrgAdmin tasks for User #${UserId} on Project #${p.Id}`,
         data: {
-          type: BullMQ.JobType.UserTasks_Modify,
+          type: BullMQ.JobType.UserTasks_Workflow,
           scope: 'Project',
           projectId: p.Id,
           operation: {

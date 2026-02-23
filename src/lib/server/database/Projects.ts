@@ -70,7 +70,7 @@ export async function update(
     // If the owner has changed, we need to reassign all the user tasks related to this project
     if (ownerId && ownerId !== existing?.OwnerId) {
       await getQueues().UserTasks.add(`Reassign tasks for Project #${id} (New Owner)`, {
-        type: BullMQ.JobType.UserTasks_Modify,
+        type: BullMQ.JobType.UserTasks_Workflow,
         scope: 'Project',
         projectId: id,
         operation: {
