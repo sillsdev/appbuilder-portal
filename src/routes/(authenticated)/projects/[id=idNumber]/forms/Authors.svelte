@@ -83,7 +83,7 @@
                   }}
               >
                 <input type="hidden" name="id" value={author.User.Id} />
-                <button type="submit" class="cursor-pointer">
+                <button type="submit" class="cursor-pointer" title={m.common_delete()}>
                   <IconContainer icon={Icons.Close} width="24" />
                 </button>
               </form>

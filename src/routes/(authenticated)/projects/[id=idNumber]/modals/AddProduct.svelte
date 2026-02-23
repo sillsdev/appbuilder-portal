@@ -71,6 +71,7 @@
             onclick={() => {
               modal?.close();
             }}
+            title={m.common_close()}
           >
             <IconContainer icon={Icons.Close} width={36} class="opacity-80" />
           </button>
@@ -119,6 +120,7 @@
               modal?.close();
               setTimeout(() => (selectingStore = false), 300);
             }}
+            title={m.common_close()}
           >
             <IconContainer icon={Icons.Close} width={36} class="opacity-80" />
           </button>

@@ -146,6 +146,7 @@
                   class="btn btn-ghost h-full lg:hidden"
                   type="button"
                   onclick={() => closeDrawer()}
+                  title={m.common_close()}
                 >
                   <IconContainer icon={Icons.Close} width={16} class="opacity-80" />
                 </button>

@@ -127,6 +127,7 @@
         onclick={() => {
           usersModal?.close();
         }}
+        title={m.common_close()}
       >
         <IconContainer icon={Icons.Close} width={36} class="opacity-80" />
       </button>
