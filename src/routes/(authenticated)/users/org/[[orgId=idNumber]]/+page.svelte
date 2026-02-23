@@ -152,8 +152,7 @@
         bind:checked={user.A}
         onchange={(e) => {
           if (data.session?.user.userId !== user.I) {
-            // @ts-expect-error Just submit the form
-            e.currentTarget.parentElement?.requestSubmit();
+            e.currentTarget.form?.requestSubmit();
           }
         }}
       />
