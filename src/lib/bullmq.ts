@@ -39,6 +39,7 @@ export enum JobType {
   System_Migrate = 'Migrate Features from S1 to S2',
   // UserTasks Job
   UserTasks_Workflow = 'Modify Workflow UserTasks',
+  UserTasks_DeleteRequest = 'Modify Data Deletion UserTasks',
   // Email Jobs
   Email_InviteUser = 'Invite User',
   Email_SendNotificationToUser = 'Send Notification to User',

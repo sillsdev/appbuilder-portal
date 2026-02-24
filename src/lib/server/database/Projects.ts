@@ -78,6 +78,18 @@ export async function update(
           userMapping: [{ from: existing!.OwnerId, to: ownerId, withRole: RoleId.AppBuilder }]
         }
       });
+      await getQueues().UserTasks.add(
+        `Reassign data deletion requests for Project #${id} (New Owner)`,
+        {
+          type: BullMQ.JobType.UserTasks_DeleteRequest,
+          scope: 'Project',
+          projectId: id,
+          operation: {
+            type: BullMQ.UserTasks.OpType.Reassign,
+            userMapping: [{ from: existing!.OwnerId, to: ownerId, withRole: RoleId.AppBuilder }]
+          }
+        }
+      );
     }
   } catch {
     return false;

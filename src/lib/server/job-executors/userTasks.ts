@@ -2,6 +2,7 @@ import type { Prisma } from '@prisma/client';
 import type { Job } from 'bullmq';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
+import prismaInternal from '../database/prisma';
 import { Workflow } from '../workflow';
 import { RoleId, TaskType } from '$lib/prisma';
 import { ActionType } from '$lib/workflowTypes';
@@ -146,12 +147,11 @@ export async function workflow(job: Job<BullMQ.UserTasks.Workflow>): Promise<unk
         where: {
           ProductId: { in: productIds },
           UserId:
-            !(job.data.operation.users || job.data.operation.roles) ||
-            job.data.operation.type === BullMQ.UserTasks.OpType.Update
-              ? undefined
-              : {
+            job.data.operation.users || job.data.operation.roles
+              ? {
                   in: job.data.operation.users ?? allUsers.keys().toArray()
-                },
+                }
+              : undefined,
           Role: job.data.operation.roles ? { in: job.data.operation.roles } : undefined,
           Type: TaskType.Workflow
         }
@@ -190,7 +190,7 @@ export async function workflow(job: Job<BullMQ.UserTasks.Workflow>): Promise<unk
             )
             .filter((t) => allUsers.get(t.UserId)?.has(t.Role))
             .toArray();
-          await DatabaseWrites.userTasks.createMany({
+          await DatabaseWrites.userTasks.createManyAndReturn({
             data: toCreate
           });
           createdTasks = createdTasks.concat(toCreate);
@@ -269,6 +269,255 @@ export async function workflow(job: Job<BullMQ.UserTasks.Workflow>): Promise<unk
     },
     reassignMap: mapping,
     projectArchived: project.DateArchived ?? false,
+    notifications: notifications.length
+  };
+}
+
+export async function deleteRequest(job: Job<BullMQ.UserTasks.DeleteRequest>): Promise<unknown> {
+  const products = await DatabaseReads.products.findMany({
+    where: {
+      Id: job.data.scope === 'Product' ? job.data.productId : undefined,
+      ProjectId: job.data.scope === 'Project' ? job.data.projectId : undefined
+    },
+    select: {
+      Id: true,
+      ProjectId: true
+    }
+  });
+  job.updateProgress(10);
+  const projectId = job.data.scope === 'Project' ? job.data.projectId : products[0].ProjectId;
+
+  const project = await DatabaseReads.projects.findUniqueOrThrow({
+    where: { Id: projectId },
+    select: {
+      OrganizationId: true
+    }
+  });
+
+  const productIds = products.map((p) => p.Id);
+
+  let createdTasks: Prisma.UserTasksCreateManyInput[] = [];
+  let deletedCount = 0;
+
+  job.updateProgress(20);
+
+  let mapping: {
+    from: string;
+    to: string;
+    count: number;
+  }[] = [];
+
+  if (job.data.operation.type === BullMQ.UserTasks.OpType.Reassign) {
+    const timestamp = new Date();
+
+    mapping = await Promise.all(
+      job.data.operation.userMapping.map(async (u) => {
+        const to = await DatabaseReads.users.findUniqueOrThrow({
+          where: { Id: u.to },
+          select: {
+            Name: true,
+            UserRoles: true
+          }
+        });
+
+        const targetHasSpecifiedRole = !!(
+          !u.withRole ||
+          to.UserRoles.find(
+            ({ OrganizationId: o, RoleId: r }) =>
+              r === RoleId.SuperAdmin || (o === project.OrganizationId && r === u.withRole)
+          )
+        );
+
+        return {
+          from: (
+            await DatabaseReads.users.findUniqueOrThrow({
+              where: { Id: u.from },
+              select: { Name: true }
+            })
+          ).Name!,
+          to: to.Name!,
+          count: targetHasSpecifiedRole
+            ? (
+                await DatabaseWrites.userTasks.updateMany({
+                  where: {
+                    Role: u.withRole,
+                    UserId: u.from,
+                    ProductId: { in: productIds },
+                    Type: TaskType.DeletionRequest,
+                    ChangeRequests: job.data.requestId
+                      ? {
+                          some: {
+                            Id: job.data.requestId
+                          }
+                        }
+                      : undefined
+                  },
+                  data: {
+                    UserId: u.to,
+                    DateUpdated: timestamp
+                  }
+                })
+              ).count
+            : 0
+        };
+      })
+    );
+    job.updateProgress(80);
+    // Just in case the user had already existing tasks before the reassignment
+    createdTasks = await DatabaseReads.userTasks.findMany({
+      where: {
+        UserId: { in: job.data.operation.userMapping.map((u) => u.to) },
+        DateUpdated: {
+          gte: timestamp
+        },
+        Type: TaskType.DeletionRequest,
+        ChangeRequests: job.data.requestId
+          ? {
+              some: {
+                Id: job.data.requestId
+              }
+            }
+          : undefined
+      }
+    });
+    job.updateProgress(90);
+  } else {
+    job.updateProgress(25);
+    const allUsers = await DatabaseWrites.projects.getUsersByRole(
+      projectId,
+      job.data.operation.roles
+    );
+    job.updateProgress(30);
+    if (job.data.operation.type !== BullMQ.UserTasks.OpType.Create) {
+      // Clear existing UserTasks
+      const res = await DatabaseWrites.userTasks.deleteMany({
+        where: {
+          ProductId: { in: productIds },
+          UserId:
+            job.data.operation.users || job.data.operation.roles
+              ? {
+                  in: job.data.operation.users ?? allUsers.keys().toArray()
+                }
+              : undefined,
+          Role: job.data.operation.roles ? { in: job.data.operation.roles } : undefined,
+          Type: TaskType.DeletionRequest,
+          ChangeRequests: job.data.requestId
+            ? {
+                some: {
+                  Id: job.data.requestId
+                }
+              }
+            : undefined
+        }
+      });
+      deletedCount = res.count;
+      job.updateProgress(job.data.operation.type === BullMQ.UserTasks.OpType.Delete ? 90 : 40);
+    }
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+
+      // Create tasks for all users that could perform this activity
+      if (job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
+        const roleSet = new Set(job.data.operation.roles);
+        const toCreate = allUsers
+          .entries()
+          .filter(
+            (map) =>
+              !roleSet.isDisjointFrom(map[1]) ||
+              (job.data.operation.targetRole && map[1].has(job.data.operation.targetRole))
+          )
+          .filter((map) => job.data.operation.users?.includes(map[0]) ?? true)
+          .flatMap((map) =>
+            Array.from(roleSet).map(
+              (r) =>
+                ({
+                  UserId: map[0],
+                  ProductId: product.Id,
+                  ActivityName: 'Delete User Data',
+                  Status: 'Delete User Data',
+                  Comment: job.data.comment,
+                  Role: r
+                }) satisfies Prisma.UserTasksCreateManyInput
+            )
+          )
+          .filter((t) => allUsers.get(t.UserId)?.has(t.Role))
+          .toArray();
+        const res = await DatabaseWrites.userTasks.createManyAndReturn({
+          data: toCreate
+        });
+        createdTasks = createdTasks.concat(toCreate);
+        if (job.data.requestId) {
+          await prismaInternal.productUserChanges.update({
+            where: {
+              Id: job.data.requestId
+            },
+            data: {
+              Tasks: {
+                connect: res
+              }
+            }
+          });
+        }
+      }
+
+      job.updateProgress(40 + ((i + 1) * 40) / products.length);
+    }
+    job.updateProgress(80);
+  }
+
+  const notifications: BullMQ.Email.SendBatchUserTaskNotifications['notifications'] = [];
+  for (const task of createdTasks) {
+    const productInfo = await DatabaseReads.products.findUniqueOrThrow({
+      where: {
+        Id: task.ProductId
+      },
+      include: {
+        Project: {
+          include: {
+            Organization: true,
+            Owner: true
+          }
+        },
+        ProductDefinition: true
+      }
+    });
+    notifications.push({
+      activityName: task.ActivityName!,
+      project: productInfo.Project.Name!,
+      productName: productInfo.ProductDefinition.Name!,
+      status: task.Status!,
+      originator: productInfo.Project.Owner.Name!,
+      comment: task.Comment ?? '',
+      userId: task.UserId
+    });
+  }
+  // might be good to use one job type for all notification types
+  await getQueues().Emails.add('Email Notifications', {
+    type: BullMQ.JobType.Email_SendBatchUserTaskNotifications,
+    notifications
+  });
+  job.updateProgress(100);
+  const userNameMap = await DatabaseReads.users.findMany({
+    where: {
+      Id: { in: Array.from(new Set(createdTasks.map((t) => t.UserId))) }
+    },
+    select: {
+      Id: true,
+      Name: true
+    }
+  });
+  return {
+    deleted: deletedCount,
+    createdOrUpdated: {
+      count: createdTasks.length,
+      tasks: createdTasks.map((t) => ({
+        productId: t.ProductId,
+        user: userNameMap.find((m) => m.Id === t.UserId)?.Name,
+        task: t.ActivityName,
+        roles: t.Role
+      }))
+    },
+    reassignMap: mapping,
     notifications: notifications.length
   };
 }

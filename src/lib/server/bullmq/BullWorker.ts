@@ -226,6 +226,8 @@ export class UserTasks<J extends BullMQ.UserTasksJob> extends BullWorker<J> {
     switch (job.data.type) {
       case BullMQ.JobType.UserTasks_Workflow:
         return Executor.UserTasks.workflow(job as Job<BullMQ.UserTasks.Workflow>);
+      case BullMQ.JobType.UserTasks_DeleteRequest:
+        return Executor.UserTasks.deleteRequest(job as Job<BullMQ.UserTasks.DeleteRequest>);
     }
   }
 }
