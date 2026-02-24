@@ -441,21 +441,25 @@ async function createTasks(
 }
 
 async function report(tasks: Prisma.UserTasksCreateManyInput[]) {
-  const userNameMap = await DatabaseReads.users.findMany({
-    where: {
-      Id: { in: Array.from(new Set(tasks.map((t) => t.UserId))) }
-    },
-    select: {
-      Id: true,
-      Name: true
-    }
-  });
+  const userNameMap = new Map(
+    (
+      await DatabaseReads.users.findMany({
+        where: {
+          Id: { in: Array.from(new Set(tasks.map((t) => t.UserId))) }
+        },
+        select: {
+          Id: true,
+          Name: true
+        }
+      })
+    ).map((u) => [u.Id, u.Name])
+  );
 
   return {
     count: tasks.length,
     tasks: tasks.map((t) => ({
       productId: t.ProductId,
-      user: userNameMap.find((m) => m.Id === t.UserId)?.Name,
+      user: userNameMap.get(t.UserId),
       task: t.ActivityName,
       roles: t.Role
     }))
@@ -468,19 +472,22 @@ async function sendEmails(
   }>[],
   tasks: Prisma.UserTasksCreateManyInput[]
 ): Promise<BullMQ.Email.SendBatchUserTaskNotifications['notifications']> {
+  const productMap = new Map(products.map((p) => [p.Id, p.ProductDefinition.Name]));
   const notifications = tasks.map((task) => ({
     activityName: task.ActivityName!,
     project: project.Name,
-    productName: products.find((p) => p.Id === task.ProductId)?.ProductDefinition.Name ?? '',
+    productName: productMap.get(task.ProductId) ?? '',
     status: task.Status!,
     originator: project.Owner.Name ?? '',
     comment: task.Comment ?? '',
     userId: task.UserId
   }));
-  // might be good to use one job type for all notification types
-  await getQueues().Emails.add('Email Notifications', {
-    type: BullMQ.JobType.Email_SendBatchUserTaskNotifications,
-    notifications
-  });
+  if (tasks.length) {
+    // might be good to use one job type for all notification types
+    await getQueues().Emails.add('Email Notifications', {
+      type: BullMQ.JobType.Email_SendBatchUserTaskNotifications,
+      notifications
+    });
+  }
   return notifications;
 }
