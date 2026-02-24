@@ -18,7 +18,12 @@ export async function workflow(job: Job<BullMQ.UserTasks.Workflow>): Promise<unk
     },
     select: {
       Id: true,
-      ProjectId: true
+      ProjectId: true,
+      ProductDefinition: {
+        select: {
+          Name: true
+        }
+      }
     }
   });
   job.updateProgress(10);
@@ -27,6 +32,12 @@ export async function workflow(job: Job<BullMQ.UserTasks.Workflow>): Promise<unk
   const project = await DatabaseReads.projects.findUniqueOrThrow({
     where: { Id: projectId },
     select: {
+      Name: true,
+      Owner: {
+        select: {
+          Name: true
+        }
+      },
       DateArchived: true,
       OrganizationId: true,
       _count: { select: { Reviewers: true, Authors: true } }
@@ -215,32 +226,16 @@ export async function workflow(job: Job<BullMQ.UserTasks.Workflow>): Promise<unk
     job.updateProgress(80);
   }
 
-  const notifications: BullMQ.Email.SendBatchUserTaskNotifications['notifications'] = [];
-  for (const task of createdTasks) {
-    const productInfo = await DatabaseReads.products.findUniqueOrThrow({
-      where: {
-        Id: task.ProductId
-      },
-      include: {
-        Project: {
-          include: {
-            Organization: true,
-            Owner: true
-          }
-        },
-        ProductDefinition: true
-      }
-    });
-    notifications.push({
+  const notifications: BullMQ.Email.SendBatchUserTaskNotifications['notifications'] =
+    createdTasks.map((task) => ({
       activityName: task.ActivityName!,
-      project: productInfo.Project.Name!,
-      productName: productInfo.ProductDefinition.Name!,
+      project: project.Name,
+      productName: products.find((p) => p.Id === task.ProductId)?.ProductDefinition.Name ?? '',
       status: task.Status!,
-      originator: productInfo.Project.Owner.Name!,
+      originator: project.Owner.Name!,
       comment: task.Comment ?? '',
       userId: task.UserId
-    });
-  }
+    }));
   // might be good to use one job type for all notification types
   await getQueues().Emails.add('Email Notifications', {
     type: BullMQ.JobType.Email_SendBatchUserTaskNotifications,
@@ -281,7 +276,12 @@ export async function deleteRequest(job: Job<BullMQ.UserTasks.DeleteRequest>): P
     },
     select: {
       Id: true,
-      ProjectId: true
+      ProjectId: true,
+      ProductDefinition: {
+        select: {
+          Name: true
+        }
+      }
     }
   });
   job.updateProgress(10);
@@ -290,7 +290,13 @@ export async function deleteRequest(job: Job<BullMQ.UserTasks.DeleteRequest>): P
   const project = await DatabaseReads.projects.findUniqueOrThrow({
     where: { Id: projectId },
     select: {
-      OrganizationId: true
+      OrganizationId: true,
+      Name: true,
+      Owner: {
+        select: {
+          Name: true
+        }
+      }
     }
   });
 
@@ -465,32 +471,16 @@ export async function deleteRequest(job: Job<BullMQ.UserTasks.DeleteRequest>): P
     job.updateProgress(80);
   }
 
-  const notifications: BullMQ.Email.SendBatchUserTaskNotifications['notifications'] = [];
-  for (const task of createdTasks) {
-    const productInfo = await DatabaseReads.products.findUniqueOrThrow({
-      where: {
-        Id: task.ProductId
-      },
-      include: {
-        Project: {
-          include: {
-            Organization: true,
-            Owner: true
-          }
-        },
-        ProductDefinition: true
-      }
-    });
-    notifications.push({
+  const notifications: BullMQ.Email.SendBatchUserTaskNotifications['notifications'] =
+    createdTasks.map((task) => ({
       activityName: task.ActivityName!,
-      project: productInfo.Project.Name!,
-      productName: productInfo.ProductDefinition.Name!,
+      project: project.Name,
+      productName: products.find((p) => p.Id === task.ProductId)?.ProductDefinition.Name ?? '',
       status: task.Status!,
-      originator: productInfo.Project.Owner.Name!,
+      originator: project.Owner.Name!,
       comment: task.Comment ?? '',
       userId: task.UserId
-    });
-  }
+    }));
   // might be good to use one job type for all notification types
   await getQueues().Emails.add('Email Notifications', {
     type: BullMQ.JobType.Email_SendBatchUserTaskNotifications,
