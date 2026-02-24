@@ -185,6 +185,18 @@ export async function workflow(job: Job<BullMQ.UserTasks.Workflow>): Promise<unk
             ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
           );
           job.updateProgress(40 + ((i + 0.33) * 40) / products.length);
+
+          const comment =
+            job.data.comment ||
+            (
+              await DatabaseReads.userTasks.findFirst({
+                where: {
+                  ProductId: product.Id,
+                  Type: TaskType.Workflow
+                }
+              })
+            )?.Comment;
+
           const toCreate = allUsers
             .entries()
             .filter((map) => !roleSet.isDisjointFrom(map[1]))
@@ -195,7 +207,7 @@ export async function workflow(job: Job<BullMQ.UserTasks.Workflow>): Promise<unk
                 ProductId: product.Id,
                 ActivityName: snap.state,
                 Status: snap.state,
-                Comment: job.data.comment,
+                Comment: comment,
                 Role: r
               }))
             )
@@ -425,6 +437,21 @@ export async function deleteRequest(job: Job<BullMQ.UserTasks.DeleteRequest>): P
       // Create tasks for all users that could perform this activity
       if (job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
         const roleSet = new Set(job.data.operation.roles);
+
+        const comment =
+          job.data.comment ||
+          (
+            await DatabaseReads.userTasks.findFirst({
+              where: {
+                ProductId: product.Id,
+                Type: TaskType.DeletionRequest,
+                ChangeRequests: job.data.requestId
+                  ? { some: { Id: job.data.requestId } }
+                  : undefined
+              }
+            })
+          )?.Comment;
+
         const toCreate = allUsers
           .entries()
           .filter(
@@ -441,7 +468,7 @@ export async function deleteRequest(job: Job<BullMQ.UserTasks.DeleteRequest>): P
                   ProductId: product.Id,
                   ActivityName: 'Delete User Data',
                   Status: 'Delete User Data',
-                  Comment: job.data.comment,
+                  Comment: comment,
                   Role: r
                 }) satisfies Prisma.UserTasksCreateManyInput
             )
