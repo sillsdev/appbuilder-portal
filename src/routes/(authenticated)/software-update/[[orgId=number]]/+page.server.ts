@@ -33,8 +33,28 @@ async function getProductsForRebuild(
   searchOrgs: number[],
   selectedTypeIds?: number[]
 ): Promise<ProductToRebuild[]> {
-  // 1. Fetch all products that meet the initial Project/Organization criteria.
-  const eligibleProducts = await DatabaseReads.products.findMany({
+
+  // Get system versions into a table.
+  let systemVersions = (await DatabaseReads.systemVersions.findMany(
+    {
+      select: {
+        BuildEngineUrl: true,
+        ApplicationTypeId: true,
+        Version: true
+      }
+    })).reduce((acc, v) => {
+
+      if (!acc[v.BuildEngineUrl]) {
+        acc[v.BuildEngineUrl] = {};
+      }
+
+      acc[v.BuildEngineUrl][v.ApplicationTypeId] = v.Version;
+      return acc;
+    }, {});
+
+  // Get products eligible to rebuild.
+  // If a product's latest rebuild does not use its current build engine's version, it needs to be rebuilt.
+  const eligibleProducts = (await DatabaseReads.products.findMany({
     where: {
       Project: {
         OrganizationId: { in: searchOrgs },
@@ -59,80 +79,33 @@ async function getProductsForRebuild(
         select: {
           TypeId: true,
           Name: true,
-          OrganizationId: true
+          OrganizationId: true,
+          Organization: {
+            select: {
+              BuildEngineUrl: true
+            }
+          },
         }
       }
     }
-  });
+  })).map((product) => {
+    const buildEngineUrl = product.Project.Organization.BuildEngineUrl ?? '';
+    const organizationId = product.Project.OrganizationId;
+    const latestVersion = product.ProductBuilds[0]?.AppBuilderVersion ?? null;
+    const requiredVersion = systemVersions[buildEngineUrl][organizationId.toString()] ?? null;
+    return {
+      id: product.Id,
+      projectId: product.ProjectId,
+      projectName: product.Project.Name ?? '',
+      applicationTypeId: product.Project.TypeId,
+      buildEngineUrl,
+      organizationId,
+      latestVersion,
+      requiredVersion,
+    };
+  }).filter((product) => product.requiredVersion !== product.latestVersion);
 
-  const productsForRebuild: ProductToRebuild[] = [];
-
-  const orgIdToUrlMap = new Map<number, string>();
-
-  // Build unique keys and resolve URLs on-demand
-  const uniqueKeys = new Set<string>();
-  for (const product of eligibleProducts) {
-    const orgId = product.Project.OrganizationId;
-    if (!orgIdToUrlMap.has(orgId)) {
-      const { url } = await BuildEngine.Requests.queryURLandToken(orgId);
-      if (url) {
-        orgIdToUrlMap.set(orgId, url);
-      }
-    }
-    const buildEngineUrl = orgIdToUrlMap.get(orgId);
-    uniqueKeys.add(`${buildEngineUrl}|${product.Project.TypeId}`);
-  }
-
-  const systemVersionsRaw = uniqueKeys.size
-    ? await DatabaseReads.systemVersions.findMany({
-        where: {
-          OR: Array.from(uniqueKeys).map((key) => {
-            const [BuildEngineUrl, typeId] = key.split('|');
-            return {
-              BuildEngineUrl,
-              ApplicationTypeId: Number(typeId)
-            };
-          })
-        },
-        select: {
-          BuildEngineUrl: true,
-          ApplicationTypeId: true,
-          Version: true
-        }
-      })
-    : [];
-
-  const systemVersionsMap = new Map(
-    systemVersionsRaw.map((sv) => [`${sv.BuildEngineUrl}|${sv.ApplicationTypeId}`, sv.Version])
-  );
-
-  // 2. Iterate through eligible products to perform the cross-model version check.
-  for (const product of eligibleProducts) {
-    const latestProductBuild = product.ProductBuilds[0];
-    const latestVersion = latestProductBuild?.AppBuilderVersion ?? null;
-
-    // Get the resolved build engine URL and look up the required SystemVersion
-    const buildEngineUrl = orgIdToUrlMap.get(product.Project.OrganizationId) ?? '';
-    const key = `${buildEngineUrl}|${product.Project.TypeId}`;
-    const requiredVersion = systemVersionsMap.get(key) ?? null;
-
-    // 3. Apply the final filtering logic:
-    // Is the latest build version NOT equal to the required system version?
-    if (requiredVersion && latestVersion !== requiredVersion) {
-      productsForRebuild.push({
-        id: product.Id,
-        latestVersion: latestVersion,
-        requiredVersion: requiredVersion,
-        projectId: product.ProjectId,
-        projectName: product.Project.Name ?? '',
-        applicationTypeId: product.Project.TypeId,
-        buildEngineUrl: buildEngineUrl,
-        organizationId: product.Project.OrganizationId
-      });
-    }
-  }
-
-  return productsForRebuild;
+  return eligibleProducts;
 }
 
 const formSchema = v.object({
@@ -148,19 +121,19 @@ export const load = (async ({ locals, params }) => {
   }
 
   // Determine what organizations are being affected and fetch their names.
-  const organizations = await DatabaseReads.organizations.findMany({
+  const organizationIds = (await DatabaseReads.organizations.findMany({
     where: filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined),
     select: {
       Id: true,
-      Name: true
     }
-  });
+  })).map((o) => o.Id);
 
   // Get products that would be rebuilt
-  const productsToRebuild = await getProductsForRebuild(organizations.map((o) => o.Id));
+  const productsToRebuild = await getProductsForRebuild(organizationIds);
+  console.log(productsToRebuild);
 
   // Get current rebuilds for the affected organizations to show in the UI
-  const rebuildsData = await getRebuildsForOrgIds(organizations.map((o) => o.Id));
+  const rebuildsData = await getRebuildsForOrgIds(organizationIds);
 
   // Fetch all available ApplicationTypes for the form toggles
   const applicationTypes = await DatabaseReads.applicationTypes.findMany({
@@ -174,7 +147,7 @@ export const load = (async ({ locals, params }) => {
   const form = await superValidate(valibot(formSchema));
   return {
     form,
-    organizationIds: organizations.map((o) => o.Id),
+    organizationIds,
     productsToRebuild: productsToRebuild.map((p) => ({
       projectId: p.projectId,
       projectName: p.projectName,
