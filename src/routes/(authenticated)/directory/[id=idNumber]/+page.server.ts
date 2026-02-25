@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { queryURLandToken } from '$lib/server/build-engine-api/requests';
 import { DatabaseReads } from '$lib/server/database';
 
 export const load = (async ({ params, locals }) => {
@@ -115,6 +116,9 @@ export const load = (async ({ params, locals }) => {
           Groups: { select: { Id: true } }
         }
       })
-    ).Groups.map((gm) => gm.Id)
+    ).Groups.map((gm) => gm.Id),
+    buildEngineUrl: locals.security.isSuperAdmin
+      ? (await queryURLandToken(project.Organization.Id))?.url
+      : undefined
   };
 }) satisfies PageServerLoad;

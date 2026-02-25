@@ -7,6 +7,7 @@
       PublishLink: true;
       DateUpdated: true;
       DateResolved: true;
+      BuildEngineReleaseId: true;
     };
   }>;
 </script>
@@ -16,6 +17,7 @@
   import type { ClassValue } from 'svelte/elements';
   import { m } from '$lib/paraglide/messages';
   import { getTimeDateString } from '$lib/utils/time';
+  import { WorkflowState, linkToBuildEngine } from '$lib/workflowTypes';
 
   interface Props {
     release?: Release;
@@ -23,9 +25,10 @@
       default?: ClassValue;
       header?: ClassValue;
     };
+    buildEngineUrl?: string | null;
   }
 
-  let { release, class: classes }: Props = $props();
+  let { release, class: classes, buildEngineUrl }: Props = $props();
 </script>
 
 {#if release?.LogUrl}
@@ -38,7 +41,24 @@
       <tr>
         <th class={[classes?.header]}>{m.publications_status()}</th>
         <td>
-          {release.Success ? m.publications_succeeded() : m.publications_failed()}
+          {#if buildEngineUrl}
+            <a
+              class="link"
+              href={linkToBuildEngine(
+                buildEngineUrl,
+                {
+                  BuildEngineJobId: 0,
+                  CurrentBuildId: null,
+                  CurrentReleaseId: release.BuildEngineReleaseId
+                },
+                WorkflowState.Product_Publish
+              )}
+            >
+              {release.Success ? m.publications_succeeded() : m.publications_failed()}
+            </a>
+          {:else}
+            {release.Success ? m.publications_succeeded() : m.publications_failed()}
+          {/if}
         </td>
       </tr>
       {#if release.DateResolved}
@@ -87,7 +107,24 @@
       <tr>
         <td>{release.Channel}</td>
         <td>
-          {release.Success ? m.publications_succeeded() : m.publications_failed()}
+          {#if buildEngineUrl}
+            <a
+              class="link"
+              href={linkToBuildEngine(
+                buildEngineUrl,
+                {
+                  BuildEngineJobId: 0,
+                  CurrentBuildId: null,
+                  CurrentReleaseId: release.BuildEngineReleaseId
+                },
+                WorkflowState.Product_Publish
+              )}
+            >
+              {release.Success ? m.publications_succeeded() : m.publications_failed()}
+            </a>
+          {:else}
+            {release.Success ? m.publications_succeeded() : m.publications_failed()}
+          {/if}
         </td>
         {#if release.DateResolved}
           <td>{getTimeDateString(release.DateResolved)}</td>

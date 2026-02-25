@@ -60,6 +60,7 @@
         artifacts={build.ProductArtifacts}
         release={build.ProductPublications.at(0)}
         latestBuildId={data.product?.CurrentBuildId}
+        buildEngineUrl={data.buildEngineUrl}
       />
     {/each}
   </div>
