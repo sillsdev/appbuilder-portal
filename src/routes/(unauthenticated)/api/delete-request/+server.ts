@@ -3,11 +3,11 @@ import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
   // Security check
-  locals.security.requireAuthenticated();
+  locals.security.requireNothing();
 
   const { email, token } = await request.json();
 
-  if (!token) return json({ success: false }, { status: 400 });
+  if (!email || !token) return json({ success: false }, { status: 400 });
 
   const secret = process.env.TURNSTILE_SECRET_KEY;
   const formData = new URLSearchParams();
