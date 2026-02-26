@@ -16,6 +16,16 @@ export const load = (async (event) => {
   return {
     stores: (
       await DatabaseReads.stores.findMany({
+        where: {
+          OR: [
+            {
+              OwnerId: null
+            },
+            {
+              OwnerId: organization.Id
+            }
+          ]
+        },
         include: {
           Organizations: { where: { Id: organization.Id }, select: { Id: true } },
           StoreType: true,
