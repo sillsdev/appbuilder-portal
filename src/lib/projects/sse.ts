@@ -85,7 +85,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
                 ? {
                     select: {
                       BuildEngineBuildId: true,
-                      DateCreated: true
+                      TransitionId: true
                     },
                     orderBy: {
                       DateCreated: 'asc'
@@ -96,7 +96,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
                 ? {
                     select: {
                       BuildEngineReleaseId: true,
-                      DateCreated: true
+                      TransitionId: true
                     },
                     orderBy: {
                       DateCreated: 'asc'

@@ -7,6 +7,7 @@
 
   export type Transition = Prisma.ProductTransitionsGetPayload<{
     select: {
+      Id: true;
       TransitionType: true;
       InitialState: true;
       WorkflowType: true;
@@ -36,13 +37,13 @@
         ProductBuilds: {
           select: {
             BuildEngineBuildId: true;
-            DateCreated: true;
+            TransitionId: true;
           };
         };
         ProductPublications: {
           select: {
             BuildEngineReleaseId: true;
-            DateCreated: true;
+            TransitionId: true;
           };
         };
       };
@@ -97,15 +98,13 @@
       CurrentReleaseId: product.CurrentReleaseId
     };
     if (trans.InitialState === WorkflowState.Product_Build) {
-      const currentBuild = product.ProductBuilds?.find(
-        (pb) => (pb.DateCreated?.valueOf() ?? 0) > (trans.DateTransition?.valueOf() ?? 0)
-      );
+      const currentBuild = product.ProductBuilds?.find((pb) => pb.TransitionId === trans.Id);
       if (currentBuild) {
         ret.CurrentBuildId = currentBuild.BuildEngineBuildId;
       }
     } else if (trans.InitialState === WorkflowState.Product_Publish) {
       const currentRelease = product.ProductPublications?.find(
-        (pp) => (pp.DateCreated?.valueOf() ?? 0) > (trans.DateTransition?.valueOf() ?? 0)
+        (pp) => pp.TransitionId === trans.Id
       );
       if (currentRelease) {
         ret.CurrentReleaseId = currentRelease.BuildEngineReleaseId;

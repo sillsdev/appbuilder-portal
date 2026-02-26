@@ -27,7 +27,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       ProductBuilds: {
         select: {
           BuildEngineBuildId: true,
-          DateCreated: true
+          TransitionId: true
         },
         orderBy: {
           DateCreated: 'asc'
@@ -36,7 +36,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       ProductPublications: {
         select: {
           BuildEngineReleaseId: true,
-          DateCreated: true
+          TransitionId: true
         },
         orderBy: {
           DateCreated: 'asc'
@@ -103,6 +103,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     transitions: await DatabaseReads.productTransitions.findMany({
       where: { ProductId: params.product_id },
       select: {
+        Id: true,
         DateTransition: true,
         DestinationState: true,
         InitialState: true,
