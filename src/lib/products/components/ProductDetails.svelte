@@ -52,6 +52,7 @@
 </script>
 
 <script lang="ts">
+  /* eslint-disable svelte/no-at-html-tags */
   import type { Prisma } from '@prisma/client';
   import TaskComment from './TaskComment.svelte';
   import { page } from '$app/state';
@@ -60,7 +61,12 @@
   import { ProductTransitionType } from '$lib/prisma';
   import { isSuperAdmin } from '$lib/utils/roles';
   import { getTimeDateString } from '$lib/utils/time';
-  import { WorkflowState, isBackground, linkToBuildEngine } from '$lib/workflowTypes';
+  import {
+    WorkflowState,
+    formatBuildEngineLink,
+    isBackground,
+    linkToBuildEngine
+  } from '$lib/workflowTypes';
 
   let { product, transitions }: Props = $props();
 
@@ -111,26 +117,19 @@
 
 {#snippet transitionType(transition: (typeof transitions)[0], showRecs: boolean)}
   {#if transition.TransitionType === ProductTransitionType.Activity}
-    {@const showLink =
-      (transition.DateTransition &&
-        transition.InitialState &&
-        isBackground(transition.InitialState as WorkflowState)) ||
-      showRecs}
-    {#if showLink}
-      <a
-        class="link"
-        href={linkToBuildEngine(
-          product.BuildEngineUrl!,
-          getBuildOrPub(transition),
-          transition.InitialState as WorkflowState
-        )}
-        target="_blank"
-      >
-        {transition.InitialState}
-      </a>
-    {:else}
-      {transition.InitialState}
-    {/if}
+    {@html formatBuildEngineLink(
+      linkToBuildEngine(
+        (transition.DateTransition &&
+          transition.InitialState &&
+          isBackground(transition.InitialState as WorkflowState)) ||
+          showRecs
+          ? product.BuildEngineUrl
+          : undefined,
+        getBuildOrPub(transition),
+        transition.InitialState as WorkflowState
+      ),
+      transition.InitialState ?? ''
+    )}
   {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
     <IconContainer icon="material-symbols:star" width={16} />&nbsp;{transition.InitialState}
   {:else}

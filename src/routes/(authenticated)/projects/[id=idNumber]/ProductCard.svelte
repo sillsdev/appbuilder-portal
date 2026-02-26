@@ -22,7 +22,12 @@
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
   import type { WorkflowState } from '$lib/workflowTypes';
-  import { ProductType, isBackground, linkToBuildEngine } from '$lib/workflowTypes';
+  import {
+    ProductType,
+    formatBuildEngineLink,
+    isBackground,
+    linkToBuildEngine
+  } from '$lib/workflowTypes';
 
   interface Props {
     project: Prisma.ProjectsGetPayload<{
@@ -262,26 +267,23 @@
                 waitTime: $waitTime
               })}
             </span>
-            {#if isSuperAdmin(page.data.session!.user.roles) && product.WorkflowInstance && isBackground(product.WorkflowInstance.State as WorkflowState)}
-              {@const href = linkToBuildEngine(
-                product.BuildEngineUrl!,
-                product,
-                product.WorkflowInstance.State as WorkflowState
-              )}
-              {@html m.tasks_forNames({
-                allowedNames: sanitizeInput(
-                  product.ActiveTransition?.AllowedUserNames || m.appName()
+            {@html m.tasks_forNames({
+              allowedNames: sanitizeInput(
+                product.ActiveTransition?.AllowedUserNames || m.appName()
+              ),
+              activityName: formatBuildEngineLink(
+                linkToBuildEngine(
+                  isSuperAdmin(page.data.session!.user.roles) &&
+                    product.WorkflowInstance &&
+                    isBackground(product.WorkflowInstance.State as WorkflowState)
+                    ? product.BuildEngineUrl
+                    : undefined,
+                  product,
+                  product.WorkflowInstance?.State as WorkflowState
                 ),
-                activityName: `<a class="link" href="${href}">${sanitizeInput(product.ActiveTransition?.InitialState ?? '')}</a>`
-              })}
-            {:else}
-              {@html m.tasks_forNames({
-                allowedNames: sanitizeInput(
-                  product.ActiveTransition?.AllowedUserNames || m.appName()
-                ),
-                activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
-              })}
-            {/if}
+                product.ActiveTransition?.InitialState ?? ''
+              )
+            })}
           </span>
         {/if}
       </div>

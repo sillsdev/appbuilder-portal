@@ -1,4 +1,5 @@
 <script lang="ts">
+  /* eslint-disable svelte/no-at-html-tags */
   import type { Prisma } from '@prisma/client';
   import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
@@ -8,7 +9,7 @@
   import { bytesToHumanSize } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
-  import { WorkflowState, linkToBuildEngine } from '$lib/workflowTypes';
+  import { WorkflowState, formatBuildEngineLink, linkToBuildEngine } from '$lib/workflowTypes';
 
   interface Props {
     build: Prisma.ProductBuildsGetPayload<{
@@ -63,24 +64,18 @@
 <div class="rounded-md border border-slate-400 w-full my-2">
   <div class="bg-neutral p-2 flex flex-row flex-wrap rounded-t-md place-content-between">
     <span class="font-bold text-lg text-accent">
-      {#if buildEngineUrl}
-        <a
-          class="link"
-          href={linkToBuildEngine(
-            buildEngineUrl,
-            {
-              BuildEngineJobId: 0,
-              CurrentBuildId: build.BuildEngineBuildId,
-              CurrentReleaseId: null
-            },
-            WorkflowState.Product_Build
-          )}
-        >
-          {versionString(build)}
-        </a>
-      {:else}
-        {versionString(build)}
-      {/if}
+      {@html formatBuildEngineLink(
+        linkToBuildEngine(
+          buildEngineUrl,
+          {
+            BuildEngineJobId: 0,
+            CurrentBuildId: build.BuildEngineBuildId,
+            CurrentReleaseId: null
+          },
+          WorkflowState.Product_Build
+        ),
+        versionString(build)
+      )}
     </span>
     <span class="ml-2 text-lg grow opacity-75 hidden sm:inline">
       {m.projectTable_appBuilderVersion()}:&nbsp;{build.AppBuilderVersion ?? '-'}
