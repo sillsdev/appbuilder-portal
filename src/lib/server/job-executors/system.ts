@@ -597,7 +597,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
             DateTransition: true
           },
           orderBy: {
-            DateTransition: 'desc'
+            DateTransition: 'asc'
           }
         }
       }
@@ -606,12 +606,12 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     associatedBuilds = await Promise.all(
       products.map(async (p) => ({
         Id: p.Id,
-        // find first transition where ProductBuild.DateCreated is greater than Date Transition
+        // find first transition where DateTransition is greater than Build.DateCreated
         // problem, date transition isn't set until build is completed... so we only do this for completed builds
         ProductBuilds: await Promise.all(
           p.ProductBuilds.map((build) => {
             const id = p.ProductTransitions.find(
-              (pt) => pt.DateTransition!.valueOf() < build.DateCreated!.valueOf()
+              (pt) => pt.DateTransition!.valueOf() > build.DateCreated!.valueOf()
             )?.Id;
 
             if (id) {
@@ -676,7 +676,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
             DateTransition: true
           },
           orderBy: {
-            DateTransition: 'desc'
+            DateTransition: 'asc'
           }
         }
       }
@@ -685,12 +685,12 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     associatedReleases = await Promise.all(
       products.map(async (p) => ({
         Id: p.Id,
-        // find first transition where ProductPublication.DateCreated is greater than Date Transition
+        // find first transition where DateTransition is greater than Publication.DateCreated
         // problem, date transition isn't set until release is completed... so we only do this for completed releases
         ProductPublications: await Promise.all(
           p.ProductPublications.map((release) => {
             const id = p.ProductTransitions.find(
-              (pt) => pt.DateTransition!.valueOf() < release.DateCreated!.valueOf()
+              (pt) => pt.DateTransition!.valueOf() > release.DateCreated!.valueOf()
             )?.Id;
 
             if (id) {
