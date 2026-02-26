@@ -149,7 +149,7 @@ async function getLatestBuiltFile(
         }
       }
     },
-    orderBy: { Id: 'desc' }
+    orderBy: { BuildEngineBuildId: 'desc' }
   });
 
   for (const build of builds) {
