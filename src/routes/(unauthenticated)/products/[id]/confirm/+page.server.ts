@@ -9,7 +9,7 @@ import { EmailLayoutTemplate, addProperties } from '$lib/server/email-service/Em
 // import { sendEmail } from '$lib/server/email';
 
 export const actions: Actions = {
-  default: async ({ request, locals, params }) => {
+  sendCode: async ({ request, locals, params }) => {
     locals.security.requireNothing();
     const data = await request.formData();
     const email = data.get('email');
