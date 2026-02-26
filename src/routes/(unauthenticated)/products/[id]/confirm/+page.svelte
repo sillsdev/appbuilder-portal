@@ -229,7 +229,7 @@ This is placeholder content to demonstrate layout only.`
           Enter your email address to receive a verification code.
         </p>
 
-        <form method="POST" action="?/" use:enhance={handleSendCode}>
+        <form method="POST" action="?/sendCode" use:enhance={handleSendCode}>
           <div class="mb-6 flex flex-col gap-2">
             <input
               type="email"
