@@ -152,22 +152,37 @@
     }
 
     const emailInput = document.getElementById('email') as HTMLInputElement | null;
-    const email = emailInput?.value;
+    const email = emailInput?.value?.trim();
+    if (!email || !emailInput?.checkValidity()) {
+      alert('Please enter a valid email address.');
+      emailInput?.focus();
+      return;
+    }
 
-    const res = await fetch('/api/delete-request', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, token: turnstileToken })
-    });
+    let res: Response;
+    try {
+      res = await fetch('/api/delete-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, token: turnstileToken })
+      });
+    } catch {
+      alert('Verification failed.');
+      return;
+    }
 
     const data = await res.json();
 
-    if (!data.success) {
+    if (!res.ok || !data.success) {
       alert('Verification failed.');
       if (window.turnstile) window.turnstile.reset();
       turnstileToken = null;
       return;
     }
+
+    const confirmUrl = new URL('../confirm', window.location.href);
+    confirmUrl.searchParams.set('email', email);
+    window.location.assign(confirmUrl.toString());
   }
 
   const primaryHex = $derived(themeColor);
