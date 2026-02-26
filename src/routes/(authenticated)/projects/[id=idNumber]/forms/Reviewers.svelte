@@ -66,10 +66,8 @@
         method="post"
         use:enhance
         onreset={(e) => {
-          for (const el of e.currentTarget.elements) {
-            if (el instanceof HTMLInputElement) {
-              el.setCustomValidity('');
-            }
+          for (const el of e.currentTarget.querySelectorAll('input')) {
+            el.setCustomValidity('');
           }
         }}
       >
@@ -93,7 +91,7 @@
             />
           </div>
           <div class="flex flex-row space-x-2">
-            <input type="hidden" name="locale" value={$form.language} />
+            <input type="hidden" name="language" value={$form.language} />
             <LocaleSelector
               class={{
                 dropdown: 'dropdown-start w-full',
