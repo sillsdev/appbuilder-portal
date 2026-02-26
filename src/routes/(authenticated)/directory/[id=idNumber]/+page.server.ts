@@ -118,7 +118,7 @@ export const load = (async ({ params, locals }) => {
       })
     ).Groups.map((gm) => gm.Id),
     buildEngineUrl: locals.security.isSuperAdmin
-      ? (await queryURLandToken(project.Organization.Id))?.url
+      ? (await queryURLandToken(project.Organization.Id)).url
       : undefined
   };
 }) satisfies PageServerLoad;
