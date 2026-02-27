@@ -101,6 +101,7 @@
               artifacts={build.ProductArtifacts}
               latestBuildId={build.BuildEngineBuildId}
               allowDownloads={data.allowDownloads}
+              buildEngineUrl={data.buildEngineUrl}
             />
           {:else}
             <div class="p-4">

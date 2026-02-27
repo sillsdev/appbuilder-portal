@@ -2,7 +2,7 @@ import type { Prisma } from '@prisma/client';
 import { type TransitionConfig } from 'xstate';
 import { type RoleId, WorkflowType } from './prisma';
 import type { SetFilter, ValueFilter } from './utils';
-import { filterSet, filterValue } from './utils';
+import { filterSet, filterValue, sanitizeInput } from './utils';
 
 export enum ActionType {
   /** Automated Action */
@@ -66,7 +66,7 @@ export function isBackground(state: WorkflowState): state is BackgroundState {
 }
 
 export function linkToBuildEngine(
-  url: string,
+  buildEngineUrl: string | null | undefined,
   product: Prisma.ProductsGetPayload<{
     select: {
       BuildEngineJobId: true;
@@ -76,15 +76,33 @@ export function linkToBuildEngine(
   }>,
   state: WorkflowState
 ) {
+  if (!buildEngineUrl) return {};
   switch (state) {
     case WorkflowState.Product_Creation:
-      return `${url}/job-admin/view?id=${product.BuildEngineJobId}`;
+      return {
+        href: `${buildEngineUrl}/job-admin${product.BuildEngineJobId ? `/view?id=${product.BuildEngineJobId}` : ''}`,
+        id: product.BuildEngineJobId
+      };
     case WorkflowState.Product_Build:
-      return `${url}/build-admin/view?id=${product.CurrentBuildId}`;
+      return {
+        href: `${buildEngineUrl}/build-admin${product.CurrentBuildId ? `/view?id=${product.CurrentBuildId}` : ''}`,
+        id: product.CurrentBuildId
+      };
     case WorkflowState.Product_Publish:
-      return `${url}/release-admin/view?id=${product.CurrentReleaseId}`;
+      return {
+        href: `${buildEngineUrl}/release-admin${product.CurrentReleaseId ? `/view?id=${product.CurrentReleaseId}` : ''}`,
+        id: product.CurrentReleaseId
+      };
     default:
-      return url;
+      return {};
+  }
+}
+
+export function formatBuildEngineLink(args: ReturnType<typeof linkToBuildEngine>, rawText: string) {
+  if (args.href) {
+    return `<a href="${sanitizeInput(args.href)}" target="_blank" class="link${args.id ? '' : ' text-error!'}">${sanitizeInput(rawText)}${args.id ? ` [${args.id}]` : ''}</a>`;
+  } else {
+    return sanitizeInput(rawText);
   }
 }
 

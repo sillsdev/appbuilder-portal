@@ -106,13 +106,16 @@ model ProductBuilds {
   DateUpdated         DateTime?             @updatedAt @db.Timestamp(6)
   Success             Boolean?
   AppBuilderVersion   String?
+  TransitionId        Int?
   ProductArtifacts    ProductArtifacts[]
   Product             Products              @relation(name: "Products_ProductBuilds_all", fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductBuilds_Products_ProductId")
   Current             Products?             @relation("Products_ProductBuilds_CurrentBuild")
   // A build may have multiple publications if a SuperAdmin jumps directly from Synchronize Data to Product Publish
   ProductPublications ProductPublications[]
+  Transition          ProductTransitions?   @relation(fields: [TransitionId], references: [Id], onDelete: SetNull, onUpdate: NoAction, map: "FK_ProductBuilds_ProductTransitions_TransitionId")
 
   @@id([ProductId, BuildEngineBuildId], map: "PK_ProductBuilds_ProductId_BuildEngineBuildId")
+  @@index([TransitionId], map: "IX_ProductBuilds_TransitionId")
 }
 
 model ProductDefinitions {
@@ -137,43 +140,48 @@ model ProductDefinitions {
 }
 
 model ProductPublications {
-  ProductId            String        @db.Uuid
+  ProductId            String              @db.Uuid
   BuildEngineBuildId   Int
   BuildEngineReleaseId Int
   Channel              String?
   LogUrl               String?
   PublishLink          String?
   Success              Boolean?
-  DateCreated          DateTime?     @default(now()) @db.Timestamp(6)
-  DateUpdated          DateTime?     @updatedAt @db.Timestamp(6)
+  DateCreated          DateTime?           @default(now()) @db.Timestamp(6)
+  DateUpdated          DateTime?           @updatedAt @db.Timestamp(6)
   Package              String?
-  DateResolved         DateTime?     @db.Timestamp(6)
-  ProductBuild         ProductBuilds @relation(fields: [ProductId, BuildEngineBuildId], references: [ProductId, BuildEngineBuildId], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_ProductBuilds_ProductId_BEBuildId")
-  Product              Products      @relation(name: "Products_ProductPublications_all", fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_Products_ProductId")
-  Current              Products?     @relation("Products_ProductPublications_CurrentRelease")
+  DateResolved         DateTime?           @db.Timestamp(6)
+  TransitionId         Int?
+  ProductBuild         ProductBuilds       @relation(fields: [ProductId, BuildEngineBuildId], references: [ProductId, BuildEngineBuildId], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_ProductBuilds_ProductId_BEBuildId")
+  Product              Products            @relation(name: "Products_ProductPublications_all", fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_Products_ProductId")
+  Current              Products?           @relation("Products_ProductPublications_CurrentRelease")
+  Transition           ProductTransitions? @relation(fields: [TransitionId], references: [Id], onDelete: SetNull, onUpdate: NoAction, map: "FK_ProductPublications_ProductTransitions_TransitionId")
 
   @@id([ProductId, BuildEngineReleaseId], map: "PK_ProductPublications_ProductId_BuildEngineReleaseId")
   @@index([BuildEngineBuildId], map: "IX_ProductPublications_BuildEngineBuildId")
   @@index([Package], map: "IX_ProductPublications_Package")
   @@index([ProductId], map: "IX_ProductPublications_ProductId")
+  @@index([TransitionId], map: "IX_ProductPublications_TransitionId")
 }
 
 model ProductTransitions {
-  Id               Int            @id(map: "PK_ProductTransitions") @default(autoincrement())
-  ProductId        String         @db.Uuid
+  Id                  Int                   @id(map: "PK_ProductTransitions") @default(autoincrement())
+  ProductId           String                @db.Uuid
   // Since users are never deleted, only locked, this should be fine
-  UserId           Int?
-  AllowedUserNames String?
-  InitialState     String?
-  DestinationState String?
-  Command          String?
-  DateTransition   DateTime?      @db.Timestamp(6)
-  Comment          String?
-  TransitionType   Int            @default(1)
-  WorkflowType     Int?
-  Product          Products       @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductTransitions_Products_ProductId")
-  User             Users?         @relation(fields: [UserId], references: [Id])
-  QueueRecords     QueueRecords[]
+  UserId              Int?
+  AllowedUserNames    String?
+  InitialState        String?
+  DestinationState    String?
+  Command             String?
+  DateTransition      DateTime?             @db.Timestamp(6)
+  Comment             String?
+  TransitionType      Int                   @default(1)
+  WorkflowType        Int?
+  Product             Products              @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductTransitions_Products_ProductId")
+  User                Users?                @relation(fields: [UserId], references: [Id])
+  QueueRecords        QueueRecords[]
+  ProductBuilds       ProductBuilds[]
+  ProductPublications ProductPublications[]
 
   @@index([ProductId], map: "IX_ProductTransitions_ProductId")
 }

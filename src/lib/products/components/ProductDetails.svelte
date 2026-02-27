@@ -7,6 +7,7 @@
 
   export type Transition = Prisma.ProductTransitionsGetPayload<{
     select: {
+      Id: true;
       TransitionType: true;
       InitialState: true;
       WorkflowType: true;
@@ -36,13 +37,13 @@
         ProductBuilds: {
           select: {
             BuildEngineBuildId: true;
-            DateCreated: true;
+            TransitionId: true;
           };
         };
         ProductPublications: {
           select: {
             BuildEngineReleaseId: true;
-            DateCreated: true;
+            TransitionId: true;
           };
         };
       };
@@ -52,6 +53,7 @@
 </script>
 
 <script lang="ts">
+  /* eslint-disable svelte/no-at-html-tags */
   import type { Prisma } from '@prisma/client';
   import TaskComment from './TaskComment.svelte';
   import { page } from '$app/state';
@@ -60,7 +62,12 @@
   import { ProductTransitionType } from '$lib/prisma';
   import { isSuperAdmin } from '$lib/utils/roles';
   import { getTimeDateString } from '$lib/utils/time';
-  import { WorkflowState, isBackground, linkToBuildEngine } from '$lib/workflowTypes';
+  import {
+    WorkflowState,
+    formatBuildEngineLink,
+    isBackground,
+    linkToBuildEngine
+  } from '$lib/workflowTypes';
 
   let { product, transitions }: Props = $props();
 
@@ -87,19 +94,17 @@
   function getBuildOrPub(trans: Transition) {
     const ret = {
       BuildEngineJobId: product.BuildEngineJobId,
-      CurrentBuildId: product.CurrentBuildId,
-      CurrentReleaseId: product.CurrentReleaseId
+      CurrentBuildId: 0,
+      CurrentReleaseId: 0
     };
     if (trans.InitialState === WorkflowState.Product_Build) {
-      const currentBuild = product.ProductBuilds?.find(
-        (pb) => (pb.DateCreated?.valueOf() ?? 0) > (trans.DateTransition?.valueOf() ?? 0)
-      );
+      const currentBuild = product.ProductBuilds?.find((pb) => pb.TransitionId === trans.Id);
       if (currentBuild) {
         ret.CurrentBuildId = currentBuild.BuildEngineBuildId;
       }
     } else if (trans.InitialState === WorkflowState.Product_Publish) {
       const currentRelease = product.ProductPublications?.find(
-        (pp) => (pp.DateCreated?.valueOf() ?? 0) > (trans.DateTransition?.valueOf() ?? 0)
+        (pp) => pp.TransitionId === trans.Id
       );
       if (currentRelease) {
         ret.CurrentReleaseId = currentRelease.BuildEngineReleaseId;
@@ -111,26 +116,19 @@
 
 {#snippet transitionType(transition: (typeof transitions)[0], showRecs: boolean)}
   {#if transition.TransitionType === ProductTransitionType.Activity}
-    {@const showLink =
-      (transition.DateTransition &&
-        transition.InitialState &&
-        isBackground(transition.InitialState as WorkflowState)) ||
-      showRecs}
-    {#if showLink}
-      <a
-        class="link"
-        href={linkToBuildEngine(
-          product.BuildEngineUrl!,
-          getBuildOrPub(transition),
-          transition.InitialState as WorkflowState
-        )}
-        target="_blank"
-      >
-        {transition.InitialState}
-      </a>
-    {:else}
-      {transition.InitialState}
-    {/if}
+    {@html formatBuildEngineLink(
+      linkToBuildEngine(
+        (transition.DateTransition &&
+          transition.InitialState &&
+          isBackground(transition.InitialState as WorkflowState)) ||
+          showRecs
+          ? product.BuildEngineUrl
+          : undefined,
+        getBuildOrPub(transition),
+        transition.InitialState as WorkflowState
+      ),
+      transition.InitialState ?? ''
+    )}
   {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
     <IconContainer icon="material-symbols:star" width={16} />&nbsp;{transition.InitialState}
   {:else}

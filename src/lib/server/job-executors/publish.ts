@@ -116,7 +116,8 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
           ProductId: job.data.productId,
           BuildEngineReleaseId: response.id,
           BuildEngineBuildId: productData.CurrentBuild.BuildEngineBuildId,
-          Channel: channel
+          Channel: channel,
+          TransitionId: job.data.transition
         }
       });
       job.updateProgress(65);

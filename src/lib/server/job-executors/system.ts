@@ -8,7 +8,7 @@ import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { fetchPackageName } from '$lib/products';
-import { ProductType, WorkflowOptions } from '$lib/workflowTypes';
+import { ProductType, WorkflowOptions, WorkflowState } from '$lib/workflowTypes';
 
 export async function checkSystemStatuses(
   job: Job<BullMQ.System.CheckEngineStatuses>
@@ -409,12 +409,12 @@ async function processLocalizedNames(
 export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
   /**
    * Migration Tasks:
-   * 1. Delete UserTasks for archived projects
+   * 1. Delete UserTasks for archived projects (should be removed)
    * 2. (removed step)
    * 3. (removed step)
-   * 4. Populate Product.PackageName
-   * 5. (removed step)
-   * 6. Populate ProductBuild.AppBuilderVersion
+   * 4. Populate Product.PackageName (should be removed)
+   * 5. Populate ProductBuild/ProductPublications.TransitionId (remove after two deploys to master)
+   * 6. Populate ProductBuild.AppBuilderVersion (should be removed)
    */
 
   // 1. Delete UserTasks for archived projects
@@ -560,6 +560,164 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
 
   job.updateProgress(70);
 
+  // only try to associate completed builds
+  const orphanedBuilds = await DatabaseReads.productBuilds.groupBy({
+    where: { TransitionId: null, Success: { not: null } },
+    by: 'ProductId',
+    _count: true
+  });
+
+  let associatedBuilds: unknown[] = [];
+
+  if (orphanedBuilds.length) {
+    const products = await DatabaseReads.products.findMany({
+      where: {
+        Id: { in: orphanedBuilds.map((b) => b.ProductId) }
+      },
+      select: {
+        Id: true,
+        ProductBuilds: {
+          where: {
+            TransitionId: null,
+            Success: { not: null }
+          },
+          select: {
+            BuildEngineBuildId: true,
+            DateCreated: true
+          },
+          orderBy: { DateCreated: 'asc' }
+        },
+        ProductTransitions: {
+          where: {
+            InitialState: WorkflowState.Product_Build,
+            DateTransition: { not: null }
+          },
+          select: {
+            Id: true,
+            DateTransition: true
+          },
+          orderBy: {
+            DateTransition: 'asc'
+          }
+        }
+      }
+    });
+
+    associatedBuilds = await Promise.all(
+      products.map(async (p) => ({
+        Id: p.Id,
+        // find first transition where DateTransition is greater than Build.DateCreated
+        // problem, date transition isn't set until build is completed... so we only do this for completed builds
+        ProductBuilds: await Promise.all(
+          p.ProductBuilds.map((build) => {
+            const id = p.ProductTransitions.find(
+              (pt) => pt.DateTransition!.valueOf() > build.DateCreated!.valueOf()
+            )?.Id;
+
+            if (id) {
+              return DatabaseWrites.productBuilds.update({
+                where: {
+                  ProductId_BuildEngineBuildId: {
+                    ProductId: p.Id,
+                    BuildEngineBuildId: build.BuildEngineBuildId
+                  }
+                },
+                data: {
+                  TransitionId: id
+                },
+                select: {
+                  BuildEngineBuildId: true,
+                  TransitionId: true
+                }
+              });
+            } else {
+              return { BuildEngineBuildId: build.BuildEngineBuildId };
+            }
+          })
+        )
+      }))
+    );
+  }
+
+  // only try to associate completed releases
+  const orphanedReleases = await DatabaseReads.productPublications.groupBy({
+    where: { TransitionId: null, Success: { not: null } },
+    by: 'ProductId',
+    _count: true
+  });
+
+  let associatedReleases: unknown[] = [];
+
+  if (orphanedReleases.length) {
+    const products = await DatabaseReads.products.findMany({
+      where: {
+        Id: { in: orphanedReleases.map((b) => b.ProductId) }
+      },
+      select: {
+        Id: true,
+        ProductPublications: {
+          where: {
+            TransitionId: null,
+            Success: { not: null }
+          },
+          select: {
+            BuildEngineReleaseId: true,
+            DateCreated: true
+          },
+          orderBy: { DateCreated: 'asc' }
+        },
+        ProductTransitions: {
+          where: {
+            InitialState: WorkflowState.Product_Publish,
+            DateTransition: { not: null }
+          },
+          select: {
+            Id: true,
+            DateTransition: true
+          },
+          orderBy: {
+            DateTransition: 'asc'
+          }
+        }
+      }
+    });
+
+    associatedReleases = await Promise.all(
+      products.map(async (p) => ({
+        Id: p.Id,
+        // find first transition where DateTransition is greater than Publication.DateCreated
+        // problem, date transition isn't set until release is completed... so we only do this for completed releases
+        ProductPublications: await Promise.all(
+          p.ProductPublications.map((release) => {
+            const id = p.ProductTransitions.find(
+              (pt) => pt.DateTransition!.valueOf() > release.DateCreated!.valueOf()
+            )?.Id;
+
+            if (id) {
+              return DatabaseWrites.productPublications.update({
+                where: {
+                  ProductId_BuildEngineReleaseId: {
+                    ProductId: p.Id,
+                    BuildEngineReleaseId: release.BuildEngineReleaseId
+                  }
+                },
+                data: {
+                  TransitionId: id
+                },
+                select: {
+                  BuildEngineReleaseId: true,
+                  TransitionId: true
+                }
+              });
+            } else {
+              return { BuildEngineReleaseId: release.BuildEngineReleaseId };
+            }
+          })
+        )
+      }))
+    );
+  }
+
   job.updateProgress(80);
 
   // 6. Populate ProductBuilds.AppBuilderVersion
@@ -668,6 +826,8 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     deletedTasks: deletedTasks.count,
     updatedWorkflowDefinitions: workflowDefsNeedUpdate,
     updatedPackages,
+    associatedBuilds,
+    associatedReleases,
     updatedBuilds: {
       recent: mostRecentBuilds.length,
       updated: updatedBuilds.length,
