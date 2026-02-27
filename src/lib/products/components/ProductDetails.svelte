@@ -94,8 +94,8 @@
   function getBuildOrPub(trans: Transition) {
     const ret = {
       BuildEngineJobId: product.BuildEngineJobId,
-      CurrentBuildId: product.CurrentBuildId,
-      CurrentReleaseId: product.CurrentReleaseId
+      CurrentBuildId: 0,
+      CurrentReleaseId: 0
     };
     if (trans.InitialState === WorkflowState.Product_Build) {
       const currentBuild = product.ProductBuilds?.find((pb) => pb.TransitionId === trans.Id);
