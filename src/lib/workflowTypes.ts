@@ -100,7 +100,7 @@ export function linkToBuildEngine(
 
 export function formatBuildEngineLink(args: ReturnType<typeof linkToBuildEngine>, rawText: string) {
   if (args.href) {
-    return `<a href="${sanitizeInput(args.href)}" target="_blank" class="link${args.id ? '' : ' text-error'}">${sanitizeInput(rawText)}${args.id ? ` [${args.id}]` : ''}</a>`;
+    return `<a href="${sanitizeInput(args.href)}" target="_blank" class="link${args.id ? '' : ' text-error!'}">${sanitizeInput(rawText)}${args.id ? ` [${args.id}]` : ''}</a>`;
   } else {
     return sanitizeInput(rawText);
   }
