@@ -30,7 +30,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
           TransitionId: true
         },
         orderBy: {
-          DateCreated: 'asc'
+          DateCreated: 'desc'
         }
       },
       ProductPublications: {
@@ -39,7 +39,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
           TransitionId: true
         },
         orderBy: {
-          DateCreated: 'asc'
+          DateCreated: 'desc'
         }
       },
       Store: {

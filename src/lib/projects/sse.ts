@@ -88,7 +88,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
                       TransitionId: true
                     },
                     orderBy: {
-                      DateCreated: 'asc'
+                      DateCreated: 'desc'
                     }
                   }
                 : false,
@@ -99,7 +99,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
                       TransitionId: true
                     },
                     orderBy: {
-                      DateCreated: 'asc'
+                      DateCreated: 'desc'
                     }
                   }
                 : false,
