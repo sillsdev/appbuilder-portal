@@ -53,6 +53,7 @@
     <input name="dateRange" class="grow" {placeholder} data-input />
     {#if chosenDates?.some((d) => !!d)}
       <button
+        type="button"
         onclick={(e) => {
           //@ts-expect-error This is somehow how this is supposed to work according to the docs
           dateElement._flatpickr.clear();
