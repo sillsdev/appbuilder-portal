@@ -36,3 +36,8 @@ export enum WorkflowType {
 }
 
 export const WorkflowTypeString = ['', 'Startup', 'Rebuild', 'Republish'];
+
+export enum TaskType {
+  Workflow = 1,
+  DeletionRequest
+}

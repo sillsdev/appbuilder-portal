@@ -62,7 +62,7 @@ export async function doProductAction(productId: string, action: ProductActionTy
           await getQueues().UserTasks.add(
             `Delete UserTasks for canceled workflow (product #${productId})`,
             {
-              type: BullMQ.JobType.UserTasks_Modify,
+              type: BullMQ.JobType.UserTasks_Workflow,
               scope: 'Product',
               productId,
               operation: {

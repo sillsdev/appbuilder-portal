@@ -7,6 +7,7 @@ import { join } from 'path';
 import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
+import { TaskType } from '$lib/prisma';
 import { fetchPackageName } from '$lib/products';
 import { ProductType, WorkflowOptions, WorkflowState } from '$lib/workflowTypes';
 
@@ -424,7 +425,8 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
         Project: {
           DateArchived: { not: null }
         }
-      }
+      },
+      Type: TaskType.Workflow
     }
   });
   job.updateProgress(10);

@@ -161,21 +161,8 @@ export namespace UserTasks {
     Create = 'Create',
     Reassign = 'Reassign'
   }
-  type Config =
-    | {
-        type: OpType.Delete | OpType.Create | OpType.Update;
-        roles?: RoleId[];
-        users?: number[];
-      }
-    | {
-        type: OpType.Reassign;
-        userMapping: { from: number; to: number; withRole?: RoleId }[];
-        roles?: never;
-        users?: never;
-      };
 
-  // Using type here instead of interface for easier composition
-  export type Modify = (
+  type Scope =
     | {
         scope: 'Project';
         projectId: number;
@@ -183,12 +170,52 @@ export namespace UserTasks {
     | {
         scope: 'Product';
         productId: string;
-      }
-  ) & {
-    type: JobType.UserTasks_Modify;
+      };
+
+  // Using type here instead of interface for easier composition
+  export type Workflow = Scope & {
+    type: JobType.UserTasks_Workflow;
     transition?: number; // added for compatibility with JobBase
     comment?: string; // just ignore comment for Delete and Reassign
-    operation: Config;
+    operation:
+      | {
+          type: OpType.Update;
+          roles?: never;
+          users?: never;
+        }
+      | {
+          type: OpType.Delete | OpType.Create;
+          roles?: RoleId[];
+          users?: number[];
+        }
+      | {
+          type: OpType.Reassign;
+          userMapping: { from: number; to: number; withRole?: RoleId }[];
+          roles?: never;
+          users?: never;
+        };
+  };
+
+  export type DeleteRequest = Scope & {
+    type: JobType.UserTasks_DeleteRequest;
+    transition?: number; // added for compatibility with JobBase
+    comment?: string; // just ignore comment for Delete and Reassign
+    requestId?: string;
+    operation:
+      | { type: OpType.Update; targetRole: RoleId; roles?: never; users?: never }
+      | {
+          type: OpType.Delete | OpType.Create;
+          roles?: RoleId[];
+          users?: number[];
+          targetRole?: never;
+        }
+      | {
+          type: OpType.Reassign;
+          userMapping: { from: number; to: number; withRole?: RoleId }[];
+          roles?: never;
+          users?: never;
+          targetRole?: never;
+        };
   };
 }
 
@@ -284,7 +311,7 @@ export type PublishJob = JobTypeMap[
   | JobType.Publish_PostProcess
   | JobType.Publish_Delete];
 export type PollJob = JobTypeMap[JobType.Poll_Build | JobType.Poll_Publish | JobType.Poll_Project];
-export type UserTasksJob = JobTypeMap[JobType.UserTasks_Modify];
+export type UserTasksJob = JobTypeMap[JobType.UserTasks_Workflow | JobType.UserTasks_DeleteRequest];
 export type EmailJob = JobTypeMap[
   | JobType.Email_InviteUser
   | JobType.Email_SendNotificationToUser
@@ -326,7 +353,8 @@ export type JobTypeMap = {
   [JobType.System_CheckEngineStatuses]: System.CheckEngineStatuses;
   [JobType.System_RefreshLangTags]: System.RefreshLangTags;
   [JobType.System_Migrate]: System.Migrate;
-  [JobType.UserTasks_Modify]: UserTasks.Modify;
+  [JobType.UserTasks_Workflow]: UserTasks.Workflow;
+  [JobType.UserTasks_DeleteRequest]: UserTasks.DeleteRequest;
   [JobType.Email_InviteUser]: Email.InviteUser;
   [JobType.Email_SendNotificationToUser]: Email.SendNotificationToUser;
   [JobType.Email_SendNotificationToReviewers]: Email.SendNotificationToReviewers;
