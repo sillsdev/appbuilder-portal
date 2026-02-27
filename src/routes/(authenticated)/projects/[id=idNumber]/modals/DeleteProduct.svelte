@@ -3,6 +3,10 @@
   import type { Prisma } from '@prisma/client';
   import { enhance } from '$app/forms';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { sanitizeInput, toast } from '$lib/utils';
@@ -84,28 +88,24 @@
           />
         </label>
         <div class="flex flex-row gap-2">
-          <button
-            class="btn btn-secondary"
-            type="button"
+          <CancelButton
             onclick={() => {
               modal?.close();
             }}
-          >
-            {m.common_cancel()}
-          </button>
+          />
           <BlockIfJobsUnavailable class="btn btn-error">
             {#snippet altContent()}
+              <IconContainer icon={Icons.Trash} width={20} />
               {m.common_delete()}
             {/snippet}
-            <input
-              class="btn btn-error"
-              type="submit"
-              value={m.common_delete()}
+            <SubmitButton
               {disabled}
               onclick={() => {
                 modal?.close();
               }}
-            />
+            >
+              {@render altContent()}
+            </SubmitButton>
           </BlockIfJobsUnavailable>
         </div>
       </div>

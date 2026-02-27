@@ -6,9 +6,10 @@
   import { afterNavigate } from '$app/navigation';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
@@ -127,6 +128,7 @@
 {/snippet}
 
 {#snippet lock(user: (typeof users)[0])}
+  {@const disabled = data.session?.user.userId === user.I}
   <form
     method="POST"
     action="?/lock"
@@ -141,20 +143,22 @@
     }}
   >
     <input class="hidden" type="hidden" name="user" value={user.I} />
-    <input
-      class="toggle"
-      disabled={data.session?.user.userId === user.I}
-      type="checkbox"
-      name="active"
-      aria-label={m.users_table_active()}
-      bind:checked={user.A}
-      onchange={(e) => {
-        if (data.session?.user.userId !== user.I) {
-          // @ts-expect-error Just submit the form
-          e.currentTarget.parentElement?.requestSubmit();
-        }
-      }}
-    />
+    <label class={['toggle', disabled && 'cursor-not-allowed opacity-50 pointer-events-none']}>
+      <input
+        {disabled}
+        type="checkbox"
+        name="active"
+        aria-label={m.users_table_active()}
+        bind:checked={user.A}
+        onchange={(e) => {
+          if (data.session?.user.userId !== user.I) {
+            e.currentTarget.form?.requestSubmit();
+          }
+        }}
+      />
+      <IconContainer icon={Icons.Locked} width={16} />
+      <IconContainer icon={Icons.Unlocked} width={16} />
+    </label>
   </form>
 {/snippet}
 
@@ -165,7 +169,7 @@
       {#if isAdminForAny(data.session?.user.roles)}
         <BlockIfJobsUnavailable class="btn btn-outline">
           {#snippet altContent()}
-            <IconContainer icon="mdi:user-add" width="20" />
+            <IconContainer icon={Icons.AddUser} width="20" />
             <span>{m.orgMembership_title()}</span>
           {/snippet}
           <a href={localizeHref('/users/invite')} class="btn btn-outline">

@@ -1,40 +1,20 @@
-<script lang="ts" module>
-  export function getFlag(locale: Locale) {
-    switch (locale) {
-      case 'en-US':
-        return 'us';
-      case 'es-419':
-        return 'mx';
-      case 'fr-FR':
-        return 'fr';
-      default:
-        console.warn(`Unrecognized language tag ${locale} in getFlag, using default flag.`);
-        return 'un'; // UN flag as fallback
-    }
-  }
-</script>
-
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { ClassValue } from 'svelte/elements';
-  import Dropdown from './Dropdown.svelte';
-  import IconContainer from './IconContainer.svelte';
-  import { LanguageIcon } from '$lib/icons';
+  import IconContainer from '../icons/IconContainer.svelte';
+  import Dropdown, { type DropdownClasses } from './Dropdown.svelte';
+  import { Icons, getFlagIcon } from '$lib/icons';
   import { l10nMap } from '$lib/locales.svelte';
   import { type Locale, getLocale, locales, setLocale } from '$lib/paraglide/runtime';
 
   interface Props {
     label?: Snippet;
-    class?: {
-      dropdown?: ClassValue;
-      label?: ClassValue;
-    };
+    class?: DropdownClasses;
     currentLocale?: () => Locale;
     onselect?: (lang: Locale) => void;
   }
 
   let {
-    label = globe,
+    label = defaultLabel,
     class: classes = {},
     currentLocale = getLocale,
     onselect = setLocale
@@ -48,8 +28,8 @@
   }
 </script>
 
-{#snippet globe()}
-  <LanguageIcon color="white" />
+{#snippet defaultLabel()}
+  <IconContainer icon={Icons.Language} width={24} />
 {/snippet}
 
 {#key getLocale()}
@@ -57,7 +37,7 @@
   <Dropdown
     class={{
       ...classes,
-      content: 'overflow-y-auto min-w-52'
+      content: ['overflow-y-auto min-w-52', classes.content]
     }}
     bind:open
     {label}
@@ -69,14 +49,19 @@
             <div
               class={[
                 'btn flex-nowrap justify-start pl-2 pr-1',
-                locale === currentLocale() && 'bg-accent text-accent-content'
+                locale === currentLocale() ? 'btn-accent' : 'btn-ghost'
               ]}
               onclick={() => onclick(locale)}
-              onkeypress={() => onclick(locale)}
+              onkeydown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onclick(locale);
+                }
+              }}
               role="button"
               tabindex="0"
             >
-              <IconContainer icon="circle-flags:{getFlag(locale)}" width="24" />
+              <IconContainer icon={getFlagIcon(locale)} width="24" />
               <span class="grow text-left">
                 {langMap?.get(locale) ?? langMap?.get(locale.split('-')[0])}
               </span>

@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import { Icons, getProductIcon, getStoreIcon, getWorkflowIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
@@ -14,9 +16,25 @@
   const base = '/admin/settings/workflow-definitions';
 </script>
 
+{#snippet storeType(wd?: (typeof data)['workflowDefinitions'][number])}
+  {#if wd?.StoreType}
+    <IconContainer icon={getStoreIcon(wd.StoreType.Id)} width={16} class="mr-1" />{wd.StoreType
+      .Description}
+  {/if}
+{/snippet}
+
+{#snippet flowType(wd?: (typeof data)['workflowDefinitions'][number])}
+  {#if wd?.Type}
+    <IconContainer icon={getWorkflowIcon(wd.Type)} width={16} class="mr-1" />{m.flowDefs_types({
+      type: wd.Type
+    })}
+  {/if}
+{/snippet}
+
 <h2>{m.flowDefs_title()}</h2>
 
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
+  <IconContainer icon={Icons.AddGeneric} width={20} />
   {m.flowDefs_add()}
 </a>
 
@@ -25,7 +43,6 @@
     <DataDisplayBox
       editable
       editLink={localizeHref(`${base}/edit?id=${wd.Id}`)}
-      title={wd.Name}
       fields={[
         {
           key: 'common_description',
@@ -33,7 +50,7 @@
         },
         {
           key: 'flowDefs_storeType',
-          value: wd.StoreType?.Name
+          snippet: storeType
         },
         {
           key: 'flowDefs_productType',
@@ -41,7 +58,7 @@
         },
         {
           key: 'flowDefs_type',
-          value: m.flowDefs_types({ type: wd.Type })
+          snippet: flowType
         },
         {
           key: 'flowDefs_options_title',
@@ -49,7 +66,13 @@
         }
       ]}
       data={wd}
-    />
+    >
+      {#snippet title()}
+        <h3>
+          <IconContainer icon={getProductIcon(wd.ProductType)} width={24} class="mr-1" />{wd.Name}
+        </h3>
+      {/snippet}
+    </DataDisplayBox>
   {/each}
 </div>
 

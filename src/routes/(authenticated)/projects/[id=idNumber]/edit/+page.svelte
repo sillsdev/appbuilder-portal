@@ -5,11 +5,15 @@
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
-  import { byName } from '$lib/utils/sorting';
   import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
 
   interface Props {
@@ -37,36 +41,42 @@
     <h1>{m.project_editProject()}</h1>
     <div class="flex flex-col gap-2 items-center">
       <div class="row">
-        <LabeledFormInput key="project_name" class="md:max-w-xs grow">
-          <input
-            type="text"
-            name="name"
-            class="input input-bordered validator"
-            bind:value={$form.name}
-            required
-          />
-          <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-        </LabeledFormInput>
+        <LabeledFormInput
+          key="project_name"
+          class="md:max-w-xs grow"
+          input={{
+            name: 'name',
+            err: m.formErrors_nameEmpty(),
+            icon: Icons.Name,
+            required: true
+          }}
+          bind:value={$form.name}
+        />
         <LabeledFormInput key="project_owner" class="md:max-w-xs">
           <BlockIfJobsUnavailable class="select">
             {#snippet altContent()}
+              <IconContainer icon={Icons.User} width={20} />
               {data.owners.find((o) => o.Id === $form.owner)?.Name}
             {/snippet}
-            <select name="owner" class="select" bind:value={$form.owner}>
-              {#each data.owners.toSorted((a, b) => byName(a, b, getLocale())) as owner}
-                <option value={owner.Id}>{owner.Name}</option>
-              {/each}
-            </select>
+            <SelectWithIcon
+              attr={{ name: 'owner' }}
+              bind:value={$form.owner}
+              items={data.owners}
+              icon={Icons.User}
+              class="w-full"
+            />
           </BlockIfJobsUnavailable>
         </LabeledFormInput>
       </div>
       <div class="row">
         <LabeledFormInput key="project_group" class="md:max-w-xs grow">
-          <select name="group" class="select" bind:value={$form.group}>
-            {#each data.groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
-              <option value={group.Id}>{group.Name}</option>
-            {/each}
-          </select>
+          <SelectWithIcon
+            attr={{ name: 'group' }}
+            bind:value={$form.group}
+            items={data.groups}
+            icon={Icons.Group}
+            class="w-full"
+          />
         </LabeledFormInput>
         <LabeledFormInput key="project_languageCode" class="md:max-w-xs">
           <LanguageCodeTypeahead
@@ -87,23 +97,19 @@
         <LabeledFormInput key="common_description" class="w-full max-w-2xl">
           <textarea
             name="description"
-            class="textarea textarea-bordered h-48 w-full"
+            class="textarea h-48 w-full"
             bind:value={$form.description}
           ></textarea>
         </LabeledFormInput>
       </div>
       <div class="flex flex-row flex-wrap place-content-center gap-4 p-4 w-full">
-        <a
-          href={localizeHref(`/projects/${page.params.id}`)}
-          class="btn btn-secondary w-full max-w-xs"
-        >
-          {m.common_cancel()}
-        </a>
-        <input
-          class="btn btn-primary w-full max-w-xs"
-          class:btn-disabled={!($form.name.length && $form.language.length)}
-          type="submit"
-          value={m.common_save()}
+        <CancelButton
+          returnTo={localizeHref(`/projects/${page.params.id}`)}
+          class="w-full max-w-xs"
+        />
+        <SubmitButton
+          class="w-full max-w-xs"
+          disabled={!($form.name.length && $form.language.length)}
         />
       </div>
     </div>
@@ -116,7 +122,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     gap: calc(var(--spacing) * 2);
-    column-gap: calc(var(--spacing) * 4);
+    column-gap: calc(var(--spacing) * 8);
     width: 100%;
     justify-content: center;
   }

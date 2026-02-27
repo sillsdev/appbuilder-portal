@@ -1,8 +1,10 @@
 <script lang="ts">
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import Toggle from '$lib/components/settings/Toggle.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
 
@@ -25,39 +27,40 @@
 <form action="" class="m-4" method="post" use:enhance>
   <div class="flex flex-row">
     <div class="w-full">
-      <InputWithMessage title={{ key: 'org_useDefaultBuildEngine' }}>
-        <input
-          name="useDefaultBuildEngine"
-          class="toggle toggle-accent"
-          type="checkbox"
-          bind:checked={$form.useDefaultBuildEngine}
-        />
-      </InputWithMessage>
+      <Toggle
+        title={{ key: 'org_useDefaultBuildEngine' }}
+        class="py-2"
+        name="useDefaultBuildEngine"
+        bind:checked={$form.useDefaultBuildEngine}
+        onIcon={Icons.GearOn}
+        offIcon={Icons.GearOff}
+      />
       {#if !$form.useDefaultBuildEngine}
-        <LabeledFormInput key="org_buildEngineURL">
-          <input
-            type="url"
-            name="buildEngineUrl"
-            class="input input-bordered w-full validator"
-            bind:value={$form.buildEngineUrl}
-            required={!$form.useDefaultBuildEngine}
-          />
-          <span class="validator-hint">{m.org_emptyBuildEngineURL()}</span>
-        </LabeledFormInput>
-        <LabeledFormInput key="org_accessToken">
-          <input
-            type="text"
-            name="buildEngineApiAccessToken"
-            class="input input-bordered w-full validator"
-            bind:value={$form.buildEngineApiAccessToken}
-            required={!$form.useDefaultBuildEngine}
-          />
-          <span class="validator-hint">{m.org_emptyAccessToken()}</span>
-        </LabeledFormInput>
+        <LabeledFormInput
+          key="org_buildEngineURL"
+          input={{
+            type: 'url',
+            name: 'buildEngineUrl',
+            required: !$form.useDefaultBuildEngine,
+            err: m.org_emptyBuildEngineURL(),
+            icon: Icons.URL
+          }}
+          bind:value={$form.buildEngineUrl}
+        />
+        <LabeledFormInput
+          key="org_accessToken"
+          input={{
+            name: 'buildEngineApiAccessToken',
+            required: !$form.useDefaultBuildEngine,
+            err: m.org_emptyAccessToken(),
+            icon: Icons.Key
+          }}
+          bind:value={$form.buildEngineApiAccessToken}
+        />
       {/if}
     </div>
   </div>
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <SubmitButton />
   </div>
 </form>

@@ -6,7 +6,8 @@
   import { browser } from '$app/environment';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import { Icons, getProductIcon, getWorkflowActionIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import ProductDetails, {
@@ -14,6 +15,7 @@
   } from '$lib/products/components/ProductDetails.svelte';
   import { Springy } from '$lib/springyGraph';
   import { toast } from '$lib/utils';
+  import { WorkflowAction } from '$lib/workflowTypes';
 
   interface Props {
     data: PageData;
@@ -115,14 +117,14 @@
         <li>
           <a
             class="link"
-            href={localizeHref(`/projects/org/${data.product?.Project.Organization.Id}`)}
+            href={localizeHref(`/projects/organization/${data.product?.Project.Organization.Id}`)}
           >
-            {data.product?.Project.Organization.Name}
+            {data.product.Project.Organization.Name}
           </a>
         </li>
         <li>
-          <a class="link" href={localizeHref(`/projects/${data.product?.Project.Id}`)}>
-            {data.product?.Project.Name}
+          <a class="link" href={localizeHref(`/projects/${data.product.Project.Id}`)}>
+            {data.product.Project.Name}
           </a>
         </li>
         <li>
@@ -131,34 +133,38 @@
           </a>
         </li>
         <li>
-          {data.product?.ProductDefinition.Name}
+          <IconContainer
+            icon={getProductIcon(data.product.ProductDefinition.Workflow.ProductType)}
+            width={24}
+          />
+          {data.product.ProductDefinition.Name}
         </li>
       </ul>
     </div>
     <span class="navbar-end w-auto">
       <Dropdown class={{ label: 'px-1', content: 'top-12 right-0 p-1 min-w-36 w-auto' }}>
         {#snippet label()}
-          <IconContainer icon="charm:menu-kebab" width="20" />
+          <IconContainer icon={Icons.Kebab} width="20" />
         {/snippet}
         {#snippet content()}
-          <ul class="menu menu-sm overflow-hidden rounded-md">
+          <ul class="menu overflow-hidden rounded-md">
             <li class="w-full rounded-none">
               <button class="text-nowrap" onclick={() => showProductDetails(data.product.Id)}>
+                <IconContainer icon={Icons.Info} width={16} />
                 {m.products_details()}
               </button>
             </li>
             <li class="w-full rounded-none">
               <BlockIfJobsUnavailable class="text-nowrap">
                 {#snippet altContent()}
+                  <IconContainer icon={getWorkflowActionIcon(WorkflowAction.Jump)} width={16} />
                   {m.workflowInstances_jump({ state: $form.state })}
                 {/snippet}
                 <form method="POST" use:enhance>
                   <input type="hidden" name="state" bind:value={$form.state} />
-                  <input
-                    type="submit"
-                    class="text-nowrap"
-                    value={m.workflowInstances_jump({ state: $form.state })}
-                  />
+                  <button class="text-nowrap cursor-pointer" type="submit">
+                    {@render altContent()}
+                  </button>
                 </form>
               </BlockIfJobsUnavailable>
             </li>

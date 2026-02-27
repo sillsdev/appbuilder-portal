@@ -2,8 +2,11 @@
   import { type FormResult, superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import GroupUsers from '$lib/organizations/components/GroupUsers.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -49,23 +52,22 @@
 <h2>{m.org_addGroupButton()}</h2>
 
 <form class="m-4" method="post" action="?/new" use:groupEnhance>
-  <LabeledFormInput key="common_name">
-    <input
-      type="text"
-      name="name"
-      class="input input-bordered w-full validator"
-      bind:value={$groupForm.name}
-      required
-    />
-    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-  </LabeledFormInput>
+  <LabeledFormInput
+    key="common_name"
+    input={{
+      name: 'name',
+      err: m.formErrors_nameEmpty(),
+      icon: Icons.Name,
+      required: true
+    }}
+    bind:value={$groupForm.name}
+  />
   <LabeledFormInput key="common_description" class="mb-8">
-    <input
-      type="text"
+    <textarea
       name="description"
-      class="input input-bordered w-full"
+      class="textarea w-full"
       bind:value={$groupForm.description}
-    />
+    ></textarea>
   </LabeledFormInput>
   <GroupUsers users={data.users}>
     {#snippet header()}
@@ -76,7 +78,7 @@
           class="ml-2 btn btn-secondary btn-sm"
           onclick={() => usersModal?.showModal()}
         >
-          <IconContainer icon="material-symbols:group-add" width={20} />
+          <IconContainer icon={Icons.AddUsers} width={20} />
           {m.org_addUsers()}
         </button>
       {/if}
@@ -108,8 +110,8 @@
     {/snippet}
   </GroupUsers>
   <div class="my-4">
-    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <CancelButton returnTo={localizeHref(base)} />
+    <SubmitButton icon={Icons.AddGroup} />
   </div>
 </form>
 
@@ -125,8 +127,9 @@
         onclick={() => {
           usersModal?.close();
         }}
+        title={m.common_close()}
       >
-        <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+        <IconContainer icon={Icons.Close} width={36} class="opacity-80" />
       </button>
     </div>
     <form
@@ -144,7 +147,7 @@
               class="checkbox checkbox-accent mr-2 mt-2"
               value={group.Id}
             />
-            <IconContainer icon="mdi:account-group" width={20} />&nbsp;
+            <IconContainer icon={Icons.Group} width={20} />&nbsp;
             <b>
               {group.Name}
             </b>
@@ -153,19 +156,14 @@
         </label>
       {/each}
       <div class="flex flex-row gap-2 mt-2">
-        <button
-          class="btn btn-secondary"
-          type="button"
+        <CancelButton
           onclick={() => {
             usersModal?.close();
           }}
-        >
-          {m.common_cancel()}
-        </button>
-        <input
-          class="btn btn-primary"
-          type="submit"
-          value={m.common_add()}
+        />
+        <SubmitButton
+          key="common_add"
+          icon={Icons.AddGroup}
           disabled={!$usersForm.groups.length}
           onclick={() => {
             usersModal?.close();

@@ -8,7 +8,8 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
   import type { ClassValue } from 'svelte/elements';
-  import IconContainer from './IconContainer.svelte';
+  import IconContainer from '../icons/IconContainer.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
 
   interface Props {
@@ -35,7 +36,7 @@
 </script>
 
 <div class={[classes]} data-html="true">
-  <label class="input input-bordered flex items-center gap-2 w-full">
+  <label class="input flex items-center gap-2 w-full">
     <input
       type="search"
       placeholder={m.common_search()}
@@ -56,6 +57,6 @@
         setTimeout(() => target.setSelectionRange(value.length, value.length), 0);
       }}
     />
-    <IconContainer icon="mdi:search" class="ml-auto cursor-pointer" width={24} />
+    <IconContainer icon={Icons.Search} class="ml-auto cursor-pointer" width={24} />
   </label>
 </div>

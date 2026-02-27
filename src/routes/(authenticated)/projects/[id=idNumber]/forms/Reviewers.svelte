@@ -3,8 +3,10 @@
   import { type Infer, type SuperValidated, superForm } from 'sveltekit-superforms';
   import type { ReviewerSchema } from './valibot';
   import { enhance as svk_enhance } from '$app/forms';
-  import IconContainer from '$lib/components/IconContainer.svelte';
-  import LocaleSelector, { getFlag } from '$lib/components/LocaleSelector.svelte';
+  import LocaleSelector from '$lib/components/LocaleSelector.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons, getFlagIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
@@ -35,8 +37,8 @@
   });
 </script>
 
-<div class="card card-bordered border-slate-400 rounded-md max-w-full">
-  <div class="bg-neutral">
+<div class="card border border-slate-400 rounded-md max-w-full">
+  <div class="bg-neutral rounded-t-md">
     <h2>{m.reviewers_title()}</h2>
   </div>
   <div class="p-2">
@@ -48,8 +50,8 @@
           {#if canEdit}
             <form action="?/{deleteEndpoint}" method="post" use:svk_enhance>
               <input type="hidden" name="id" value={reviewer.Id} />
-              <button type="submit" class="cursor-pointer">
-                <IconContainer icon="mdi:close" width="24" />
+              <button type="submit" class="cursor-pointer" title={m.common_delete()}>
+                <IconContainer icon={Icons.Close} width="24" />
               </button>
             </form>
           {/if}
@@ -59,7 +61,7 @@
       <p class="p-2">{m.reviewers_empty()}</p>
     {/if}
   </div>
-  <div class="p-2 bg-neutral">
+  <div class="p-2 bg-neutral rounded-b-md">
     {#if canEdit}
       <form
         action="?/{createEndpoint}"
@@ -77,7 +79,7 @@
               type="text"
               name="name"
               placeholder="Name"
-              class="input input-bordered grow validator"
+              class="input grow validator"
               bind:value={$form.name}
               required
             />
@@ -85,7 +87,7 @@
               type="email"
               name="email"
               placeholder="Email"
-              class="input input-bordered grow validator"
+              class="input grow validator"
               bind:value={$form.email}
               required
             />
@@ -103,16 +105,18 @@
               {#snippet label()}
                 <span class="flex items-center pl-1 w-full">
                   <span class="grow">
-                    <IconContainer icon="circle-flags:{getFlag($form.language)}" width="24" />
+                    <IconContainer icon={getFlagIcon($form.language)} width="24" />
                     {$form.language?.split('-')[0]}
                   </span>
-                  <IconContainer icon="gridicons:dropdown" width="20" />
+                  <IconContainer icon={Icons.Dropdown} width="20" />
                 </span>
               {/snippet}
             </LocaleSelector>
-            <button type="submit" class="btn btn-primary">
-              {m.reviewers_submit()}
-            </button>
+            <SubmitButton
+              disabled={!($form.name && $form.email)}
+              icon={Icons.AddReviewer}
+              key="reviewers_submit"
+            />
           </div>
         </div>
       </form>

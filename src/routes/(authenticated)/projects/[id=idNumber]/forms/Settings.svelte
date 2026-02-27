@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Prisma } from '@prisma/client';
   import ToggleForm from '$lib/components/settings/ToggleForm.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
 
   interface Props {
@@ -40,8 +41,8 @@
     offmsg={m.project_acts_isPublic_off()}
     title={{ key: 'project_visibility_title' }}
     message={{ key: 'project_visibility_description' }}
-    onIcon="mdi:lock-open-variant"
-    offIcon="mdi:lock"
+    onIcon={Icons.Visible}
+    offIcon={Icons.Invisible}
     {canEdit}
   />
 
@@ -54,6 +55,8 @@
     onmsg={m.project_acts_downloads_on()}
     offmsg={m.project_acts_downloads_off()}
     formVar={allowDownloads}
+    onIcon={Icons.Download}
+    offIcon={Icons.DownloadOff}
     {canEdit}
   />
 
@@ -67,6 +70,8 @@
       onmsg={m.project_acts_autoBuilds_on()}
       offmsg={m.project_acts_autoBuilds_off()}
       formVar={autoRebuild}
+      onIcon={Icons.UpdateOn}
+      offIcon={Icons.UpdateOff}
       {canEdit}
     />
 
@@ -79,6 +84,8 @@
       onmsg={m.project_acts_autoPublish_on()}
       offmsg={m.project_acts_autoPublish_off()}
       formVar={autoPublish}
+      onIcon={Icons.RefreshOn}
+      offIcon={Icons.RefreshOff}
       {canEdit}
     />
   {/if}

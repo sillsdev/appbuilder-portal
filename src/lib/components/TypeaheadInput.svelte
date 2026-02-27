@@ -1,6 +1,8 @@
 <script lang="ts" generics="T">
   import type { Snippet } from 'svelte';
   import type { ClassValue, HTMLInputAttributes } from 'svelte/elements';
+  import IconContainer from '../icons/IconContainer.svelte';
+  import type { IconType } from '$lib/icons';
 
   let selectedIndex = $state(-1);
   let inputFocused = $state(false);
@@ -13,6 +15,7 @@
     custom?: Snippet;
     listElement?: Snippet<[T, boolean]>;
     onItemClicked?: (item: T) => void;
+    icon?: IconType;
   }
 
   let {
@@ -23,7 +26,8 @@
     inputElement = $bindable(undefined!),
     custom,
     listElement,
-    onItemClicked
+    onItemClicked,
+    icon
   }: Props = $props();
 
   function keypress(event: KeyboardEvent) {
@@ -62,16 +66,20 @@
 </script>
 
 <div class="relative">
-  <input
-    type="text"
-    class={['input input-bordered', classes?.default]}
-    bind:value={search}
-    onkeydown={keypress}
-    onfocus={onFocus}
-    onblur={() => (inputFocused = false)}
-    bind:this={inputElement}
-    {...inputElProps}
-  />
+  <label class={['input', classes?.default]}>
+    {#if icon}
+      <IconContainer {icon} width={20} class="opacity-80 cursor-pointer" />
+    {/if}
+    <input
+      type="text"
+      bind:value={search}
+      onkeydown={keypress}
+      onfocus={onFocus}
+      onblur={() => (inputFocused = false)}
+      bind:this={inputElement}
+      {...inputElProps}
+    />
+  </label>
   {@render custom?.()}
   {#if list.length}
     <ul

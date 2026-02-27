@@ -3,9 +3,11 @@
   import type { ActionData, PageData } from './$types';
   import { enhance as svk_enhance } from '$app/forms';
   import { goto } from '$app/navigation';
-  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
+  import { Icons } from '$lib/icons';
   import GroupUsers from '$lib/organizations/components/GroupUsers.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
@@ -37,85 +39,83 @@
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
-  <LabeledFormInput key="org_name">
-    <input
-      class="input w-full input-bordered validator"
-      type="text"
-      name="name"
-      bind:value={$form.name}
-      required
-    />
-    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-  </LabeledFormInput>
-  <LabeledFormInput key="project_orgContact">
-    <input
-      name="contact"
-      class="input input-bordered w-full validator"
-      type="email"
-      bind:value={$form.contact}
-    />
-    <span class="validator-hint">{m.formErrors_emailInvalid()}</span>
-  </LabeledFormInput>
-  <LabeledFormInput key="org_websiteURL">
-    <input
-      name="websiteUrl"
-      class="input input-bordered w-full validator"
-      type="url"
-      bind:value={$form.websiteUrl}
-    />
-    <span class="validator-hint">&nbsp;</span>
-  </LabeledFormInput>
-  <InputWithMessage title={{ key: 'org_useDefaultBuildEngine' }} class="py-2">
-    <input
-      name="useDefaultBuildEngine"
-      class="toggle toggle-accent"
-      type="checkbox"
-      bind:checked={$form.useDefaultBuildEngine}
-    />
-  </InputWithMessage>
+  <LabeledFormInput
+    key="org_name"
+    input={{
+      name: 'name',
+      err: m.formErrors_nameEmpty(),
+      icon: Icons.Name,
+      required: true
+    }}
+    bind:value={$form.name}
+  />
+  <LabeledFormInput
+    key="project_orgContact"
+    input={{
+      type: 'email',
+      name: 'contact',
+      err: m.formErrors_emailInvalid(),
+      icon: Icons.Email
+    }}
+    bind:value={$form.contact}
+  />
+  <LabeledFormInput
+    key="org_websiteURL"
+    input={{ type: 'url', name: 'websiteUrl', icon: Icons.Web }}
+    bind:value={$form.websiteUrl}
+  />
+  <Toggle
+    title={{ key: 'org_useDefaultBuildEngine' }}
+    class="py-2"
+    name="useDefaultBuildEngine"
+    bind:checked={$form.useDefaultBuildEngine}
+    onIcon={Icons.GearOn}
+    offIcon={Icons.GearOff}
+  />
   {#if !$form.useDefaultBuildEngine}
-    <LabeledFormInput key="org_buildEngineURL">
-      <input
-        type="url"
-        name="buildEngineUrl"
-        class="input input-bordered w-full validator"
-        bind:value={$form.buildEngineUrl}
-        required={!$form.useDefaultBuildEngine}
-      />
-      <span class="validator-hint">{m.org_emptyBuildEngineURL()}</span>
-    </LabeledFormInput>
-    <LabeledFormInput key="org_accessToken">
-      <input
-        type="text"
-        name="buildEngineApiAccessToken"
-        class="input input-bordered w-full validator"
-        bind:value={$form.buildEngineApiAccessToken}
-        required={!$form.useDefaultBuildEngine}
-      />
-      <span class="validator-hint">{m.org_emptyAccessToken()}</span>
-    </LabeledFormInput>
-  {/if}
-  <LabeledFormInput key="org_logoURL">
-    <input
-      name="logoUrl"
-      class="input input-bordered w-full validator"
-      type="url"
-      bind:value={$form.logoUrl}
+    <LabeledFormInput
+      key="org_buildEngineURL"
+      input={{
+        type: 'url',
+        name: 'buildEngineUrl',
+        required: !$form.useDefaultBuildEngine,
+        err: m.org_emptyBuildEngineURL(),
+        icon: Icons.URL
+      }}
+      bind:value={$form.buildEngineUrl}
     />
-    <span class="validator-hint">&nbsp;</span>
-  </LabeledFormInput>
+    <LabeledFormInput
+      key="org_accessToken"
+      input={{
+        name: 'buildEngineApiAccessToken',
+        required: !$form.useDefaultBuildEngine,
+        err: m.org_emptyAccessToken(),
+        icon: Icons.Key
+      }}
+      bind:value={$form.buildEngineApiAccessToken}
+    />
+  {/if}
+  <LabeledFormInput
+    key="org_logoURL"
+    input={{
+      name: 'logoUrl',
+      type: 'url',
+      icon: Icons.Image
+    }}
+    bind:value={$form.logoUrl}
+  />
   <Toggle
     title={{ key: 'org_publicByDefault' }}
     message={{ key: 'org_publicByDefaultDescription' }}
     class="py-1"
     name="publicByDefault"
     bind:checked={$form.publicByDefault}
-    onIcon="mdi:lock-open-variant"
-    offIcon="mdi:lock"
+    onIcon={Icons.Visible}
+    offIcon={Icons.Invisible}
   />
   <div class="my-4">
-    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <CancelButton returnTo={localizeHref(base)} />
+    <SubmitButton />
   </div>
 </form>
 

@@ -4,6 +4,8 @@
   import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
   import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
+  import { Icons, getProductIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -42,8 +44,8 @@
       inputAttr={{
         onchange: (e) => e.currentTarget.form?.requestSubmit()
       }}
-      onIcon="mdi:lock-open-variant"
-      offIcon="mdi:lock"
+      onIcon={Icons.Visible}
+      offIcon={Icons.Invisible}
     />
   </form>
   <MultiselectBox header={m.org_productSelectTitle()}>
@@ -65,14 +67,18 @@
       >
         <input type="hidden" name="prodDefId" value={productDef.Id} />
         <MultiselectBoxElement
-          title={productDef.Name ?? ''}
           description={productDef?.Description ?? ''}
           checked={productDef.enabled}
           checkProps={{
             name: 'enabled',
             onchange: (e) => e.currentTarget.form?.requestSubmit()
           }}
-        />
+        >
+          {#snippet title()}
+            <IconContainer icon={getProductIcon(productDef.Workflow.ProductType)} width={24} />
+            {productDef.Name ?? ''}
+          {/snippet}
+        </MultiselectBoxElement>
       </form>
     {/each}
   </MultiselectBox>

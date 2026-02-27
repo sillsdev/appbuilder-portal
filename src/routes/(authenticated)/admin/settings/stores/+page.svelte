@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import StoreListDisplay from '$lib/organizations/components/StoreListDisplay.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -17,6 +19,7 @@
 <h2>{m.admin_nav_stores()}</h2>
 
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
+  <IconContainer icon={Icons.AddStore} width={20} />
   {m.models_add({ name: m.stores_name() })}
 </a>
 

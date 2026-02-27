@@ -2,6 +2,8 @@
   import { enhance } from '$app/forms';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
 </script>
@@ -25,23 +27,18 @@
   <div>
     <h1>{m.invitations_requestOrgInvite()}</h1>
     <LabeledFormInput key="invitations_orgName">
-      <input
-        class="input w-full input-bordered validator"
-        type="text"
-        name="organizationName"
-        required
-      />
+      <input class="input w-full validator" type="text" name="organizationName" required />
     </LabeledFormInput>
     <br />
     <LabeledFormInput key="invitations_orgAdminEmail">
-      <input class="input w-full input-bordered validator" type="email" name="email" required />
+      <input class="input w-full validator" type="email" name="email" required />
     </LabeledFormInput>
     <br />
     <LabeledFormInput key="invitations_orgUrl">
-      <input class="input w-full input-bordered validator" type="text" name="url" required />
+      <input class="input w-full validator" type="text" name="url" required />
     </LabeledFormInput>
   </div>
   <div class="mt-4">
-    <input type="submit" class="float-right btn btn-primary" value={m.common_save()} />
+    <SubmitButton class="float-right" icon={Icons.Send} />
   </div>
 </form>

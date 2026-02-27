@@ -30,7 +30,7 @@
     product: Prisma.ProductsGetPayload<{
       select: {
         Id: true;
-        Store: { select: { Description: true } };
+        Store: { select: { StoreTypeId: true; Description: true } };
         BuildEngineJobId: true;
         CurrentBuildId: true;
         CurrentReleaseId: true;
@@ -57,7 +57,8 @@
   import type { Prisma } from '@prisma/client';
   import TaskComment from './TaskComment.svelte';
   import { page } from '$app/state';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import { Icons, getStoreIcon, getWorkflowIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { ProductTransitionType } from '$lib/prisma';
   import { isSuperAdmin } from '$lib/utils/roles';
@@ -130,8 +131,12 @@
       transition.InitialState ?? ''
     )}
   {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
-    <IconContainer icon="material-symbols:star" width={16} />&nbsp;{transition.InitialState}
+    <IconContainer icon={Icons.Star} width={16} />&nbsp;{transition.InitialState}
   {:else}
+    {@const icon = getWorkflowIcon(transition.WorkflowType ?? 1)}
+    {#if icon}
+      <IconContainer {icon} width={16} />&nbsp;
+    {/if}
     {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
   {/if}
 {/snippet}
@@ -166,8 +171,9 @@
         onclick={() => {
           detailsModal?.close();
         }}
+        title={m.common_close()}
       >
-        <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+        <IconContainer icon={Icons.Close} width={36} class="opacity-80" />
       </button>
     </div>
     <table class="table table-sm">
@@ -179,6 +185,11 @@
       <tbody>
         <tr>
           <td>
+            <IconContainer
+              icon={getStoreIcon(product.Store?.StoreTypeId ?? 0)}
+              width={24}
+              class="mr-1"
+            />
             {product.Store?.Description}
           </td>
         </tr>

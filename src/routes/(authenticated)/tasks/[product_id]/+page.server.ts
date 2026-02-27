@@ -23,11 +23,11 @@ type Fields = {
   ownerEmail?: string; //Product.Project.Owner.Email
   projectName: string; //Product.Project.Name
   projectDescription: string; //Product.Project.Description
-  storeDescription?: string; //Product.Store.Description
+  store?: { StoreTypeId: number; Description: string }; //Product.Store.Description
   listingLanguageCode?: string; //Product.StoreLanguage.Name
   projectURL?: string; // Origin URL + /projects/[Project.Id]
   displayProductDescription: boolean; //Product.ProductDefinition.Description
-  appType?: string; //Product.ProductDefinition.ApplicationTypes.Description
+  appType?: { Id: number; Description: string }; //Product.ProductDefinition.ApplicationTypes.Description
   projectLanguageCode?: string; //Product.Project.Language
 };
 
@@ -83,6 +83,7 @@ export const load = (async ({ params, locals, depends }) => {
           },
           ApplicationType: {
             select: {
+              Id: true,
               Description: true
             }
           }
@@ -90,7 +91,8 @@ export const load = (async ({ params, locals, depends }) => {
       },
       Store: {
         select: {
-          Description: true
+          Description: true,
+          StoreTypeId: true
         }
       },
       StoreLanguage: {
@@ -101,7 +103,12 @@ export const load = (async ({ params, locals, depends }) => {
       ProductDefinition: {
         select: {
           Id: true,
-          Name: true
+          Name: true,
+          Workflow: {
+            select: {
+              ProductType: true
+            }
+          }
         }
       },
       ProductPublications:
@@ -169,22 +176,20 @@ export const load = (async ({ params, locals, depends }) => {
     instructions: snap.context.instructions,
     projectId: product.Project.Id,
     productDescription: product.ProductDefinition.Name,
+    productType: product.ProductDefinition.Workflow.ProductType,
     fields: {
       projectName: product.Project.Name,
       projectDescription: product.Project.Description,
       ownerName: product.Project.Owner.Name,
       ownerEmail: product.Project.Owner.Email,
-      storeDescription:
-        snap.context.includeFields.includes('storeDescription') && product.Store?.Description,
+      store: snap.context.includeFields.includes('storeDescription') && product.Store,
       listingLanguageCode:
         snap.context.includeFields.includes('listingLanguageCode') &&
         product.StoreLanguage?.Description,
       projectURL:
         snap.context.includeFields.includes('projectURL') && projectUrl(product.Project.Id),
       displayProductDescription: snap.context.includeFields.includes('productDescription'),
-      appType:
-        snap.context.includeFields.includes('appType') &&
-        product.Project.ApplicationType.Description,
+      appType: snap.context.includeFields.includes('appType') && product.Project.ApplicationType,
       projectLanguageCode: product.Project.Language
     } as Fields,
     files: artifacts,

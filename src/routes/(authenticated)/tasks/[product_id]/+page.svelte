@@ -6,9 +6,16 @@
   import { invalidate } from '$app/navigation';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import {
+    Icons,
+    getAppIcon,
+    getProductIcon,
+    getStoreIcon,
+    getWorkflowActionIcon
+  } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import ReleaseInfo from '$lib/products/components/ReleaseInfo.svelte';
@@ -116,21 +123,27 @@
             {data.fields.projectName}
           </a>
         </li>
-        <li>{data.productDescription}</li>
+        <li>
+          <IconContainer
+            icon={getProductIcon(data.productType)}
+            width={24}
+          />{data.productDescription}
+        </li>
       </ul>
     </div>
   </div>
   {#if !waiting}
     <form method="POST" use:enhance>
       {#if data.actions?.length}
-        <div class="flex flex-row gap-x-3 py-4">
+        <div class="flex flex-col md:flex-row gap-3 py-4">
           {#each data.actions as action, i}
             {@const disabled = i === 0 && checksRemaining}
             <BlockIfJobsUnavailable class="btn btn-primary">
               {#snippet altContent()}
                 {action}
               {/snippet}
-              <label class="btn btn-primary" class:btn-disabled={disabled}>
+              <label class="btn btn-primary w-full md:w-3xs" class:btn-disabled={disabled}>
+                <IconContainer icon={getWorkflowActionIcon(action)} width={20} />
                 {action}<!-- ISSUE: #1104 i18n (after MVP) -->
                 <input
                   {disabled}
@@ -146,11 +159,7 @@
         </div>
       {/if}
       <LabeledFormInput key="transitions_comment">
-        <textarea
-          class="textarea textarea-bordered h-24 w-full"
-          name="comment"
-          bind:value={$form.comment}
-        ></textarea>
+        <textarea class="textarea h-24 w-full" name="comment" bind:value={$form.comment}></textarea>
       </LabeledFormInput>
       <input type="hidden" name="state" value={$form.state} />
       {#each options as opt}
@@ -171,73 +180,63 @@
         <TaskComment comment={data.previousTask.Comment} />
       </LabeledFormInput>
     {/if}
-    <div>
-      {#if data.fields.ownerName && data.fields.ownerEmail}
-        <div class="flex flex-col gap-x-3 w-full md:flex-row">
-          <LabeledFormInput key="projectTable_owner" class="md:w-2/4">
-            <input
-              type="text"
-              class="input input-bordered w-full"
-              readonly
-              value={data.fields.ownerName}
-            />
-          </LabeledFormInput>
-          <LabeledFormInput key="profile_email" class="md:w-2/4">
-            <input
-              type="text"
-              class="input input-bordered w-full"
-              readonly
-              value={data.fields.ownerEmail}
-            />
-          </LabeledFormInput>
-        </div>
+    <LabeledFormInput key="project_name">
+      <input type="text" class="input w-full" readonly value={data.fields.projectName} />
+    </LabeledFormInput>
+    <LabeledFormInput key="common_description">
+      <textarea class="textarea w-full" readonly value={data.fields.projectDescription}></textarea>
+    </LabeledFormInput>
+    <div id="fields" class="flex flex-col w-full md:flex-row md:flex-wrap">
+      {#if data.fields.ownerName}
+        <LabeledFormInput
+          key="projectTable_owner"
+          class="md:w-1/2"
+          input={{
+            readonly: true,
+            icon: Icons.User
+          }}
+          value={data.fields.ownerName}
+          validate={false}
+        />{/if}{#if data.fields.ownerEmail}
+        <LabeledFormInput
+          key="profile_email"
+          class="md:w-1/2"
+          input={{
+            readonly: true,
+            icon: Icons.Email
+          }}
+          value={data.fields.ownerEmail}
+          validate={false}
+        />
       {/if}
-      <div class="flex flex-col gap-x-3 w-full md:flex-row">
-        <LabeledFormInput key="project_name" class="md:w-2/4">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            readonly
-            value={data.fields.projectName}
-          />
-        </LabeledFormInput>
-        <LabeledFormInput key="common_description" class="md:w-2/4">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            readonly
-            value={data.fields.projectDescription}
-          />
-        </LabeledFormInput>
-      </div>
-      {#if data.fields.storeDescription}
-        <div class="flex flex-col gap-x-3 md:flex-row">
-          <LabeledFormInput
-            key="stores_name"
-            class={['md:w-2/4', data.fields.listingLanguageCode || 'pr-1.5']}
-          >
-            <input
-              type="text"
-              class="input input-bordered w-full"
-              readonly
-              value={data.fields.storeDescription}
-            />
-          </LabeledFormInput>
-          {#if data.fields.listingLanguageCode}
-            <LabeledFormInput key="tasks_storeLanguage" class="md:w-2/4">
-              <input
-                type="text"
-                class="input input-bordered w-full"
-                readonly
-                value={data.fields.listingLanguageCode}
-              />
-            </LabeledFormInput>
-          {/if}
-        </div>
+      {#if data.fields.store}
+        <LabeledFormInput
+          key="stores_name"
+          class="md:w-1/2"
+          input={{
+            readonly: true,
+            icon: getStoreIcon(data.fields.store.StoreTypeId)
+          }}
+          value={data.fields.store.Description}
+          validate={false}
+        />
+      {/if}
+      {#if data.fields.listingLanguageCode}
+        <LabeledFormInput
+          key="tasks_storeLanguage"
+          class="md:w-1/2"
+          input={{
+            readonly: true,
+            icon: Icons.GooglePlay
+          }}
+          value={data.fields.listingLanguageCode}
+          validate={false}
+        />
       {/if}
       {#if data.fields.projectURL}
-        <LabeledFormInput key="tasks_appProjectURL">
-          <span class="input input-bordered w-full flex flex-row gap-2 items-center">
+        <LabeledFormInput key="tasks_appProjectURL" class="md:w-1/2">
+          <span class="input w-full flex flex-row gap-2 items-center">
+            <IconContainer icon={Icons.URL} width={20} />
             <input type="text" class="grow" readonly value={data.fields.projectURL} />
             <button
               class="cursor-copy"
@@ -252,38 +251,40 @@
               }}
             >
               {#if urlCopied}
-                <IconContainer icon="mdi:check" width={24} class="text-success" />
+                <IconContainer icon={Icons.Checkmark} width={24} class="text-success" />
               {:else}
-                <IconContainer icon="mdi:content-copy" width={24} />
+                <IconContainer icon={Icons.Copy} width={24} />
               {/if}
             </button>
           </span>
         </LabeledFormInput>
       {/if}
-      {#if data.fields.displayProductDescription && data.fields.appType && data.fields.projectLanguageCode}
-        <LabeledFormInput key="tasks_product">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            readonly
-            value={data.productDescription}
-          />
+      {#if data.fields.displayProductDescription}
+        <LabeledFormInput
+          key="tasks_product"
+          class="md:w-1/2"
+          input={{
+            readonly: true,
+            icon: getProductIcon(data.productType)
+          }}
+          value={data.productDescription}
+          validate={false}
+        />
+      {/if}
+      {#if data.fields.appType}
+        <LabeledFormInput key="project_appType" class="md:w-1/2">
+          <div class="input w-full">
+            <img src={getAppIcon(data.fields.appType.Id)} width={24} alt="" />
+            <input type="text" readonly value={data.fields.appType.Description} />
+          </div>
         </LabeledFormInput>
-        <LabeledFormInput key="project_appType">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            readonly
-            value={data.fields.appType}
-          />
-        </LabeledFormInput>
-        <LabeledFormInput key="project_languageCode">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            readonly
-            value={data.fields.projectLanguageCode}
-          />
+      {/if}
+      {#if data.fields.projectLanguageCode}
+        <LabeledFormInput key="project_languageCode" class="md:w-1/2">
+          <div class="input w-full">
+            <IconContainer icon={Icons.Language} width={20} />
+            <input type="text" readonly value={data.fields.projectLanguageCode} />
+          </div>
         </LabeledFormInput>
       {/if}
     </div>
@@ -490,5 +491,16 @@
   #instructions :global(a) {
     cursor: pointer;
     text-decoration-line: underline;
+  }
+
+  #fields :global(label):nth-child(odd) {
+    padding-right: calc(var(--spacing) * 1);
+  }
+  #fields :global(label):nth-child(even) {
+    padding-left: calc(var(--spacing) * 1);
+  }
+  #fields :global(label):nth-child(odd):last-child {
+    padding-right: 0px;
+    width: 100%;
   }
 </style>

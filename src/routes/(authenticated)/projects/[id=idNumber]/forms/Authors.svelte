@@ -4,7 +4,9 @@
   import type { AuthorSchema } from './valibot';
   import { enhance as svk_enhance } from '$app/forms';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -52,7 +54,7 @@
   });
 </script>
 
-<div class="card card-bordered border-slate-400 overflow-hidden rounded-md max-w-full">
+<div class="card border border-slate-400 overflow-hidden rounded-md max-w-full">
   <div class="bg-neutral">
     <h2>{m.authors_title()}</h2>
   </div>
@@ -65,7 +67,7 @@
           {#if canEdit}
             <BlockIfJobsUnavailable>
               {#snippet altContent()}
-                <IconContainer icon="mdi:close" width="24" />
+                <IconContainer icon={Icons.Close} width="24" />
               {/snippet}
               <form
                 action="?/{deleteEndpoint}"
@@ -81,8 +83,8 @@
                   }}
               >
                 <input type="hidden" name="id" value={author.User.Id} />
-                <button type="submit" class="cursor-pointer">
-                  <IconContainer icon="mdi:close" width="24" />
+                <button type="submit" class="cursor-pointer" title={m.common_delete()}>
+                  <IconContainer icon={Icons.Close} width="24" />
                 </button>
               </form>
             </BlockIfJobsUnavailable>
@@ -113,11 +115,12 @@
           </select>
           <BlockIfJobsUnavailable class="btn btn-primary">
             {#snippet altContent()}
+              <IconContainer icon={Icons.AddAuthor} width={20} />
               {m.authors_submit()}
             {/snippet}
-            <button type="submit" class="btn btn-primary">
-              {m.authors_submit()}
-            </button>
+            <SubmitButton disabled={!$form.author}>
+              {@render altContent()}
+            </SubmitButton>
           </BlockIfJobsUnavailable>
         </div>
       </form>

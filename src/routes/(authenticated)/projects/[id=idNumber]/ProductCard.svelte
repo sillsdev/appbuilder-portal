@@ -7,12 +7,12 @@
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { Icons, getActionIcon, getProductIcon, getStoreIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
-  import { type ProductActionType, getActionIcon } from '$lib/products';
+  import { type ProductActionType } from '$lib/products';
   import ProductDetails, {
     type Props as ProductDetailProps,
     type Transition,
@@ -120,7 +120,10 @@
 <div class="rounded-md border border-slate-400 w-full my-2">
   <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
     <div class="flex flex-row items-start">
-      <IconContainer icon={getIcon(product.ProductDefinition.Name ?? '')} width="32" />
+      <IconContainer
+        icon={getProductIcon(product.ProductDefinition.Workflow.ProductType)}
+        width={30}
+      />
       <span class="min-w-0 grow">
         {product.ProductDefinition.Name}
       </span>
@@ -131,26 +134,26 @@
         }}
       >
         {#snippet label()}
-          <IconContainer icon="charm:menu-kebab" width="20" class="" />
+          <IconContainer icon={Icons.Kebab} width="20" class="" />
         {/snippet}
         {#snippet content()}
           <ul class="menu overflow-hidden rounded-md">
             <li class="w-full rounded-none">
               <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
-                <IconContainer icon="material-symbols:info" width={16} />
+                <IconContainer icon={Icons.Info} width={16} />
                 {m.products_details()}
               </button>
             </li>
             <li class="w-full rounded-none">
               <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
-                <IconContainer icon="lsicon:folder-files-filled" width={16} />
+                <IconContainer icon={Icons.Directory} width={16} />
                 {m.project_productFiles()}
               </a>
             </li>
             {#if isAdminForOrg(project.OrganizationId, page.data.session!.user.roles)}
               <li class="w-full rounded-none">
                 <button class="text-nowrap" onclick={() => updateProductModal?.showModal()}>
-                  <IconContainer icon="material-symbols:settings" width={16} />
+                  <IconContainer icon={Icons.Settings} width={16} />
                   {m.products_properties_title()}
                 </button>
               </li>
@@ -159,7 +162,7 @@
               <li class="w-full rounded-none">
                 <BlockIfJobsUnavailable class="text-nowrap text-error">
                   {#snippet altContent()}
-                    <IconContainer icon="mdi:trash" width={16} />
+                    <IconContainer icon={Icons.Trash} width={16} />
                     {m.models_delete({ name: m.tasks_product() })}
                   {/snippet}
                   <button
@@ -184,7 +187,7 @@
       </div>
       {#if product.PublishLink}
         <a class="link" href={product.PublishLink} target="_blank">
-          <IconContainer icon="ic:twotone-store" width={24} />
+          <IconContainer icon={getStoreIcon(product.Store?.StoreTypeId ?? 0)} width={24} />
         </a>
       {/if}
     </div>
@@ -205,7 +208,7 @@
               : 'apk'}"
             target="_blank"
           >
-            <IconContainer icon="material-symbols:download" width={24} />
+            <IconContainer icon={Icons.Download} width={24} />
           </a>
         {/if}
       {/if}
@@ -215,7 +218,7 @@
         class="text-nowrap btn btn-secondary btn-sm"
         onclick={() => showProductDetails(product.Id)}
       >
-        <IconContainer icon="material-symbols:info" width={20} />
+        <IconContainer icon={Icons.Info} width={20} />
         {m.products_details()}
       </button>
       {#each product.actions as action}

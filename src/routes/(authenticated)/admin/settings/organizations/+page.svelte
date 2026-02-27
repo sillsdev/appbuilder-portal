@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
@@ -16,6 +18,7 @@
 <h2>{m.org_title()}</h2>
 
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
+  <IconContainer icon={Icons.AddGeneric} width={20} />
   {m.org_add()}
 </a>
 

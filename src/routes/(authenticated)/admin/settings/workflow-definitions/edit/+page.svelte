@@ -2,13 +2,17 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
+  import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons, getProductIcon, getStoreIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { enumNumVals, toast } from '$lib/utils';
-  import { byName } from '$lib/utils/sorting';
+  import { byString } from '$lib/utils/sorting';
   import { ProductType, WorkflowOptions } from '$lib/workflowTypes';
 
   interface Props {
@@ -30,6 +34,8 @@
   });
 
   let propsOk = $state(true);
+
+  const mobileSizing = 'w-full md:max-w-xs';
 </script>
 
 <h3 class="pl-4">{m.flowDefs_edit()}</h3>
@@ -37,41 +43,47 @@
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
-  <LabeledFormInput key="flowDefs_name">
-    <input
-      type="text"
-      name="name"
-      class="input input-bordered validator"
-      bind:value={$form.name}
-      required
-    />
-    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-  </LabeledFormInput>
+  <LabeledFormInput
+    key="flowDefs_name"
+    class="md:max-w-xs"
+    input={{
+      name: 'name',
+      required: true,
+      err: m.formErrors_nameEmpty(),
+      icon: Icons.Name
+    }}
+    bind:value={$form.name}
+  />
   <LabeledFormInput key="flowDefs_storeType">
-    <select class="select validator" name="storeType" bind:value={$form.storeType} required>
-      {#each data.storeTypes.toSorted((a, b) => byName(a, b, getLocale())) as type}
-        <option value={type.Id}>{type.Name}</option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.storeType}
+      items={data.storeTypes
+        .toSorted((a, b) => byString(a.Description, b.Description, getLocale()))
+        .map((st) => ({ ...st, Name: st.Description ?? st.Name, icon: getStoreIcon(st.Id) }))}
+      class="validator {mobileSizing}"
+      attr={{ name: 'storeType', required: true }}
+    />
     <span class="validator-hint">{m.flowDefs_emptyStoreType()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_productType">
-    <select class="select validator" name="productType" bind:value={$form.productType} required>
-      {#each enumNumVals(ProductType) as type}
-        <option value={type}>
-          {m.flowDefs_productTypes({ type })}
-        </option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.productType}
+      items={enumNumVals(ProductType).map((type) => ({
+        Id: type,
+        Name: m.flowDefs_productTypes({ type }),
+        icon: getProductIcon(type)
+      }))}
+      class="validator {mobileSizing}"
+      attr={{ name: 'productType', required: true }}
+    />
     <span class="validator-hint">{m.flowDefs_emptyProductType()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="common_description">
-    <input
-      type="text"
+    <textarea
       name="description"
-      class="input input-bordered"
+      class="textarea h-36 w-full"
       bind:value={$form.description}
-    />
+    ></textarea>
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_properties">
@@ -107,20 +119,7 @@
     />
   </InputWithMessage>
   <div class="my-4">
-    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
-    <input type="submit" class="btn btn-primary" value={m.common_save()} disabled={!propsOk} />
+    <CancelButton returnTo={localizeHref(base)} />
+    <SubmitButton disabled={!propsOk} />
   </div>
 </form>
-
-<style>
-  input[type='text'],
-  select {
-    width: 100%;
-  }
-  @media (width >= 40rem) {
-    input[type='text'],
-    select {
-      max-width: var(--container-xs);
-    }
-  }
-</style>

@@ -1,10 +1,11 @@
 <script lang="ts">
+  import type { Prisma } from '@prisma/client';
   import type { ClassValue, HTMLSelectAttributes } from 'svelte/elements';
+  import SelectWithIcon from './settings/SelectWithIcon.svelte';
+  import { Icons } from '$lib/icons';
   import { org_allOrganizations } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
-  import { byName } from '$lib/utils/sorting';
   interface Props {
-    organizations: { Id: number; Name: string | null }[];
+    organizations: Prisma.OrganizationsGetPayload<{ select: { Id: true; Name: true } }>[];
     value: number | null;
     class?: ClassValue;
     allowNull?: boolean;
@@ -26,15 +27,16 @@
   });
 </script>
 
-<select class={['select', classes]} bind:value {...selectProperties}>
-  {#if organizations.length === 1}
-    <option selected value={organizations[0].Id}>{organizations[0].Name}</option>
-  {:else}
+<SelectWithIcon
+  bind:value
+  items={organizations}
+  attr={selectProperties}
+  class={classes}
+  icon={Icons.Organization}
+>
+  {#snippet extra()}
     {#if allowNull}
       <option value={null} selected>{org_allOrganizations()}</option>
     {/if}
-    {#each organizations.toSorted((a, b) => byName(a, b, getLocale())) as organization}
-      <option value={organization.Id}>{organization.Name}</option>
-    {/each}
-  {/if}
-</select>
+  {/snippet}
+</SelectWithIcon>

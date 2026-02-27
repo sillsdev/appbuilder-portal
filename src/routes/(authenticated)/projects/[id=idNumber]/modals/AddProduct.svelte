@@ -2,8 +2,8 @@
   import type { Prisma } from '@prisma/client';
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
-  import IconContainer from '$lib/components/IconContainer.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { Icons, getProductIcon, getStoreIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { displayStoreGPTitle } from '$lib/prisma';
@@ -19,6 +19,7 @@
         Description: true;
         Workflow: {
           select: {
+            ProductType: true;
             StoreTypeId: true;
           };
         };
@@ -70,8 +71,9 @@
             onclick={() => {
               modal?.close();
             }}
+            title={m.common_close()}
           >
-            <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+            <IconContainer icon={Icons.Close} width={36} class="opacity-80" />
           </button>
         </div>
         <div class="flex flex-col pt-1 space-y-1">
@@ -86,7 +88,7 @@
               }}
             >
               <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
-                <IconContainer icon={getIcon(productDef.Name ?? '')} width="24" />
+                <IconContainer icon={getProductIcon(productDef.Workflow.ProductType)} width={24} />
                 {productDef.Name}
               </div>
               <p class="p-2 text-sm text-neutral-400">{productDef.Description}</p>
@@ -104,7 +106,7 @@
               selectingStore = false;
             }}
           >
-            <IconContainer icon="mdi:arrow-left" width={36} class="opacity-80" />
+            <IconContainer icon={Icons.Back} width={36} class="opacity-80" />
           </button>
           <h2 class="text-lg grow font-bold pt-2">
             {m.products_storeSelect({
@@ -118,8 +120,9 @@
               modal?.close();
               setTimeout(() => (selectingStore = false), 300);
             }}
+            title={m.common_close()}
           >
-            <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+            <IconContainer icon={Icons.Close} width={36} class="opacity-80" />
           </button>
         </div>
         <div class="flex flex-col pt-1 space-y-1">
@@ -133,6 +136,7 @@
                 class="flex flex-col border border-secondary rounded-sm text-left cursor-pointer"
               >
                 <div class="flex flex-row bg-neutral-300 p-2 w-full text-black">
+                  <IconContainer icon={getStoreIcon(store.StoreTypeId)} width="24" class="mr-1" />
                   {display(store)}
                 </div>
                 {#if displayStoreGPTitle(store)}

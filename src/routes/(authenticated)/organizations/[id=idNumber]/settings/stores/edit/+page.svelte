@@ -2,8 +2,11 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { getStoreIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
@@ -36,30 +39,27 @@
     <input
       type="text"
       name="publisherId"
-      class="input input-bordered validator"
+      class="input validator"
       value={data.store.BuildEnginePublisherId}
       readonly
       disabled
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
-  <LabeledFormInput key="common_type">
-    <input
-      type="text"
-      name="storeTypeDisplay"
-      class="input input-bordered validator"
-      value={data.store.StoreType.Description}
-      readonly
-      disabled
-    />
-    <span class="validator-hint">&nbsp;</span>
-  </LabeledFormInput>
+  <LabeledFormInput
+    key="common_type"
+    input={{
+      readonly: true,
+      icon: getStoreIcon(data.store.StoreTypeId)
+    }}
+    value={data.store.StoreType.Description}
+  />
   {#if data.store.StoreTypeId === StoreType.GooglePlay}
     <LabeledFormInput key="stores_gpTitle">
       <input
         type="text"
         name="gpTitle"
-        class="input input-bordered validator"
+        class="input validator"
         bind:value={$form.gpTitle}
         required
       />
@@ -67,12 +67,7 @@
     </LabeledFormInput>
   {/if}
   <LabeledFormInput key="common_description">
-    <input
-      type="text"
-      name="description"
-      class="input input-bordered"
-      bind:value={$form.description}
-    />
+    <input type="text" name="description" class="input" bind:value={$form.description} />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <InputWithMessage title={{ key: 'flowDefs_enabled' }}>
@@ -84,8 +79,8 @@
     />
   </InputWithMessage>
   <div class="my-4">
-    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <CancelButton returnTo={localizeHref(base)} />
+    <SubmitButton />
   </div>
 </form>
 

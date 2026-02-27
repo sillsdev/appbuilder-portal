@@ -2,12 +2,15 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons, getStoreIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import { StoreType } from '$lib/prisma';
   import { toast } from '$lib/utils';
-  import { byName } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -32,73 +35,62 @@
 <!-- <SuperDebug data={superForm} /> -->
 <form class="m-4" method="post" action="?/edit" use:enhance>
   <input type="hidden" name="id" value={$form.id} />
-  <LabeledFormInput key="stores_publisherId">
-    <input
-      type="text"
-      name="publisherId"
-      class="input input-bordered validator"
-      value={data.store.BuildEnginePublisherId}
-      readonly
-      disabled
-    />
-    <span class="validator-hint">&nbsp;</span>
-  </LabeledFormInput>
-  <LabeledFormInput key="common_type">
-    <input
-      type="text"
-      name="storeTypeDisplay"
-      class="input input-bordered validator"
-      value={data.store.StoreType.Description}
-      readonly
-      disabled
-    />
-    <span class="validator-hint">&nbsp;</span>
-  </LabeledFormInput>
+  <LabeledFormInput
+    key="stores_publisherId"
+    input={{
+      name: 'publisherId',
+      readonly: true,
+      disabled: true,
+      icon: Icons.Publish
+    }}
+    value={data.store.BuildEnginePublisherId}
+    class="md:max-w-xs"
+  />
+  <LabeledFormInput
+    key="common_type"
+    input={{
+      readonly: true,
+      icon: getStoreIcon(data.store.StoreTypeId)
+    }}
+    value={data.store.StoreType.Description}
+  />
   <LabeledFormInput key="projectTable_owner">
-    <select class="select validator" name="owner" bind:value={$form.owner}>
-      <option value={null}>{m.appName()}</option>
-      {#each data.organizations.toSorted((a, b) => byName(a, b, getLocale())) as org}
-        <option value={org.Id}>{org.Name}</option>
-      {/each}
-    </select>
+    <SelectWithIcon
+      bind:value={$form.owner}
+      items={data.organizations}
+      attr={{ name: 'owner' }}
+      icon={Icons.Organization}
+    >
+      {#snippet extra()}
+        <option value={null}>{m.appName()}</option>
+      {/snippet}
+    </SelectWithIcon>
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   {#if data.store.StoreTypeId === StoreType.GooglePlay}
-    <LabeledFormInput key="stores_gpTitle">
-      <input
-        type="text"
-        name="gpTitle"
-        class="input input-bordered validator"
-        bind:value={$form.gpTitle}
-        required={$form.owner === null}
-      />
-      <span class="validator-hint">{m.stores_gpTitleEmpty()}</span>
-    </LabeledFormInput>
-  {/if}
-  <LabeledFormInput key="common_description">
-    <input
-      type="text"
-      name="description"
-      class="input input-bordered"
-      bind:value={$form.description}
+    <LabeledFormInput
+      key="stores_gpTitle"
+      input={{
+        name: 'gpTitle',
+        required: $form.owner === null,
+        err: m.stores_gpTitleEmpty(),
+        icon: Icons.GooglePlay
+      }}
+      bind:value={$form.gpTitle}
+      class="md:max-w-xs"
     />
-    <span class="validator-hint">&nbsp;</span>
-  </LabeledFormInput>
+  {/if}
+  <LabeledFormInput
+    key="common_description"
+    input={{
+      name: 'description',
+      icon: Icons.Name
+    }}
+    bind:value={$form.description}
+    class="md:max-w-xs"
+  />
   <div class="my-4">
-    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <CancelButton returnTo={localizeHref(base)} />
+    <SubmitButton />
   </div>
 </form>
-
-<style>
-  input[type='text'],
-  select {
-    width: 100%;
-  }
-  @media (width >= 40rem) {
-    input[type='text'],
-    select {
-      max-width: var(--container-xs);
-    }
-  }
-</style>

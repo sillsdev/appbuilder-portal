@@ -1,9 +1,9 @@
 <script lang="ts">
   import { type FormResult, superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { getProductIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import BuildArtifacts from '$lib/products/components/BuildArtifacts.svelte';
@@ -39,15 +39,15 @@
     <div class="breadcrumbs text-sm pl-4">
       <ul>
         <li>
-          <a class="link" href={localizeHref(`/projects/${data.product?.Project.Id}`)}>
-            {data.product?.Project.Name}
+          <a class="link" href={localizeHref(`/projects/${data.product.Project.Id}`)}>
+            {data.product.Project.Name}
           </a>
         </li>
         <li>
           <IconContainer
-            icon={getIcon(data.product?.ProductDefinition.Name ?? '')}
+            icon={getProductIcon(data.product.ProductDefinition.Workflow.ProductType)}
             width="24"
-          />{data.product?.ProductDefinition.Name}
+          />{data.product.ProductDefinition.Name}
         </li>
       </ul>
     </div>
@@ -59,7 +59,7 @@
         {build}
         artifacts={build.ProductArtifacts}
         release={build.ProductPublications.at(0)}
-        latestBuildId={data.product?.CurrentBuildId}
+        latestBuildId={data.product.CurrentBuildId}
         buildEngineUrl={data.buildEngineUrl}
       />
     {/each}

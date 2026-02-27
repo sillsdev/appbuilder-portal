@@ -3,13 +3,14 @@
     A container box with a title and rows of internationalized information   
 -->
 <script lang="ts" generics="T extends Record<string, unknown>">
-  import Icon from '@iconify/svelte';
   import type { Snippet } from 'svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import type { ValueKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
 
   interface Props {
-    title: string | null;
+    title: string | Snippet<[T | undefined]>;
     data?: T;
     fields: (ValueKey & {
       value?: string | null;
@@ -27,18 +28,22 @@
 
 <div class="flex flex-row border border-slate-600 p-2 mx-4 m-1 rounded-md">
   <div class="relative w-full">
-    <h3>{title}</h3>
+    {#if typeof title === 'string'}
+      <h3>{title}</h3>
+    {:else}
+      {@render title(data)}
+    {/if}
     {#if editable && editLink}
       <a
         href={editLink}
         title={editTitle ?? m.common_clickToEdit()}
         class="absolute right-2 top-2 cursor-pointer"
       >
-        <Icon width="24" icon="mdi:pencil" />
+        <IconContainer width={24} icon={Icons.Edit} />
       </a>
     {/if}
     {#each fields as field}
-      <p
+      <div
         style="padding-left: 1rem; text-indent: -1rem"
         class:opacity-40={field.faint}
         class={['wrap-anywhere', field.class]}
@@ -50,7 +55,7 @@
         {:else}
           <span>{field.value ?? ''}</span>
         {/if}
-      </p>
+      </div>
     {/each}
     {@render children?.()}
   </div>
