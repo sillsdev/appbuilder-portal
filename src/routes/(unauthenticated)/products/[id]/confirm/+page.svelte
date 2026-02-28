@@ -2,6 +2,13 @@
   import Icon from '@iconify/svelte';
   import { enhance } from '$app/forms';
   import { onMount } from 'svelte';
+  import type { PageData } from './$types';
+
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 
   // TODO: This should pull from whatever product ID. Implement based off of the initial page for this
   const BLUE_ICON =
@@ -145,8 +152,9 @@ This is placeholder content to demonstrate layout only.`
     }
   });
 
-  let step = $state('email');
-  let email = $state('');
+  const initialEmail = data.email ?? '';
+  let step = $state(initialEmail ? 'code' : 'email');
+  let email = $state(initialEmail);
   let code = $state('');
   let error = $state('');
   let loading = $state(false);
