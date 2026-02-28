@@ -1,5 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 
 // Mock types for your DB and Email providers
 import { DatabaseReads } from '$lib/server/database';
@@ -7,6 +7,12 @@ import { DatabaseWrites } from '$lib/server/database';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
 import { EmailLayoutTemplate, addProperties } from '$lib/server/email-service/EmailTemplates';
 // import { sendEmail } from '$lib/server/email';
+
+export const load: PageServerLoad = async ({ url, locals }) => {
+  locals.security.requireNothing();
+  const email = url.searchParams.get('email')?.trim().toLowerCase() ?? '';
+  return { email };
+};
 
 export const actions: Actions = {
   sendCode: async ({ request, locals, params }) => {
@@ -17,6 +23,7 @@ export const actions: Actions = {
     if (typeof email !== 'string' || !email) {
       return fail(400, { email, missing: true });
     }
+    const normalizedEmail = email.trim().toLowerCase();
 
     // 1. Generate a random 6-digit code
     const code = Math.floor(100000 + Math.random() * 900000).toString();
@@ -27,7 +34,7 @@ export const actions: Actions = {
     await DatabaseWrites.productUserChanges.create({
       data: {
         ProductId: params.id,
-        Email: email,
+        Email: normalizedEmail,
         Change: 'User data deletion request verification',
         DateCreated: new Date(),
         DateUpdated: new Date(),
@@ -41,7 +48,7 @@ export const actions: Actions = {
     const locale = 'en';
 
     await sendEmail(
-      [{ email: email, name: email }],
+      [{ email: normalizedEmail, name: normalizedEmail }],
       'Your verification code',
       addProperties(EmailLayoutTemplate, {
         INSERT_SUBJECT: `Your code is: ${code}`,
@@ -49,9 +56,9 @@ export const actions: Actions = {
       })
     );
 
-    //console.log(`Debug: Code for ${email} is ${code}`);
+    console.log(`[UDM TEST] Verification code for ${normalizedEmail} (product ${params.id}): ${code}`);
 
-    return { success: true, email, step: 'verify' as const };
+    return { success: true, email: normalizedEmail, step: 'verify' as const };
   },
 
   verifyCode: async ({ request, locals, params }) => {
@@ -63,13 +70,19 @@ export const actions: Actions = {
     if (typeof email !== 'string' || typeof userCode !== 'string') {
       return fail(400, { error: 'Invalid submission.' });
     }
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedCode = userCode.trim();
 
     // 1. Fetch record from DB
     // const record = await db.emailVerifications.findUnique({ where: { email } });
     const userChange = await DatabaseReads.productUserChanges.findFirst({
       where: {
-        Email: email,
-        ProductId: params.id
+        Email: normalizedEmail,
+        ProductId: params.id,
+        DateConfirmed: null
+      },
+      orderBy: {
+        DateCreated: 'desc'
       }
     });
 
@@ -80,7 +93,7 @@ export const actions: Actions = {
     if (new Date() > userChange.DateExpires) return fail(400, { error: 'Code expired.' });
 
     // 3. Compare
-    if (userChange.ConfirmationCode !== userCode) {
+    if (userChange.ConfirmationCode !== normalizedCode) {
       // If wrong code, move expiration up by minute to act as attempt counter
       await DatabaseWrites.productUserChanges.update({
         where: {
@@ -90,7 +103,7 @@ export const actions: Actions = {
           DateExpires: new Date(userChange.DateExpires.getTime() - 1 * 60 * 1000) // 1 minute
         }
       });
-      return fail(400, { error: 'Invalid code.', email, step: 'verify' as const });
+      return fail(400, { error: 'Invalid code.', email: normalizedEmail, step: 'verify' as const });
     }
 
     // 4. Success logic
