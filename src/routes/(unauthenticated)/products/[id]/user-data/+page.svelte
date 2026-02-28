@@ -147,6 +147,13 @@
 
   async function submitForm() {
     if (!turnstileToken) {
+      const tokenFromWidget = (window as any).turnstile?.getResponse?.();
+      if (typeof tokenFromWidget === 'string' && tokenFromWidget.length > 0) {
+        turnstileToken = tokenFromWidget;
+      }
+    }
+
+    if (!turnstileToken) {
       alert("Please verify you're human.");
       return;
     }
@@ -164,7 +171,7 @@
       res = await fetch('/api/delete-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, token: turnstileToken })
+        body: JSON.stringify({ email, token: turnstileToken, productId: app.id })
       });
     } catch {
       alert('Verification failed.');
@@ -180,7 +187,7 @@
       return;
     }
 
-    const confirmUrl = new URL('../confirm', window.location.href);
+    const confirmUrl = new URL(`/products/${app.id}/confirm`, window.location.origin);
     confirmUrl.searchParams.set('email', email);
     window.location.assign(confirmUrl.toString());
   }
