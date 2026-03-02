@@ -144,7 +144,8 @@ export async function POST({ params, locals, request }) {
           TransitionType: ProductTransitionType.ProjectAccess,
           InitialState: 'Project ' + use,
           UserId: user.Id,
-          DateTransition: new Date()
+          DateTransition: new Date(),
+          Command: use
         }))
       },
       projectId

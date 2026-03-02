@@ -226,7 +226,11 @@
                 {transition.User?.Name || transition.AllowedUserNames || m.appName()}
               {/if}
             </td>
-            <td>{transition.Command}</td>
+            <td>
+              {transition.TransitionType === ProductTransitionType.Activity
+                ? transition.Command
+                : ''}
+            </td>
             <td>
               {getTimeDateString(transition.DateTransition)}
             </td>
@@ -276,7 +280,11 @@
               <td>
                 {transition.User?.Name || transition.AllowedUserNames || m.appName()}
               </td>
-              <td>{transition.Command}</td>
+              <td>
+                {transition.TransitionType === ProductTransitionType.Activity
+                  ? transition.Command
+                  : ''}
+              </td>
             </tr>
           {/if}
           {#if showRecs}
