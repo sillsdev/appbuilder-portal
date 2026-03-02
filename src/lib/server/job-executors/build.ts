@@ -94,11 +94,15 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
       await DatabaseWrites.productBuilds.create({
         data: {
           ProductId: job.data.productId,
-          BuildEngineBuildId: response.id,
-          TransitionId: job.data.transition
+          BuildEngineBuildId: response.id
         }
       });
-
+      await DatabaseWrites.productTransitions.tryConnect(
+        job.data.productId,
+        response.id,
+        'build',
+        job.data.transition
+      );
       job.updateProgress(65);
 
       await DatabaseWrites.products.update(job.data.productId, {
