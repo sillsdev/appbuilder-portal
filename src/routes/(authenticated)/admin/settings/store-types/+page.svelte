@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import { Icons, getStoreIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
@@ -17,6 +19,7 @@
 <h2>{m.storeTypes_title()}</h2>
 
 <a href={localizeHref(`${base}/new`)} class="btn btn-outline m-4 mt-0">
+  <IconContainer icon={Icons.AddStoreType} width={20} />
   {m.storeTypes_add()}
 </a>
 
@@ -25,8 +28,17 @@
     <DataDisplayBox
       editable
       editLink={localizeHref(`${base}/edit?id=${storeType.Id}`)}
-      title={storeType.Name}
       fields={[{ key: 'common_description', value: storeType.Description }]}
-    />
+    >
+      {#snippet title()}
+        <h3>
+          <IconContainer
+            icon={getStoreIcon(storeType.Id)}
+            width={20}
+            class="mr-1"
+          />{storeType.Name}
+        </h3>
+      {/snippet}
+    </DataDisplayBox>
   {/each}
 </div>

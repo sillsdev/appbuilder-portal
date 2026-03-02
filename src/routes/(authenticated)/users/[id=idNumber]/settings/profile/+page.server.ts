@@ -8,9 +8,7 @@ import { NotificationType } from '$lib/users';
 import { idSchema, phoneRegex } from '$lib/valibot';
 
 const profileSchema = v.object({
-  firstName: v.nullable(v.string()),
-  lastName: v.nullable(v.string()),
-  displayName: v.nullable(v.string()),
+  name: v.nullable(v.string()),
   email: v.nullable(v.pipe(v.string(), v.email())),
   phone: v.nullable(v.pipe(v.string(), v.maxLength(24), v.regex(phoneRegex))),
   timezone: v.nullable(v.string()),
@@ -33,9 +31,7 @@ export const load = (async (event) => {
   return {
     form: await superValidate(
       {
-        firstName: user.GivenName,
-        lastName: user.FamilyName,
-        displayName: user.Name,
+        name: user.Name,
         email: user.Email,
         phone: user.Phone,
         timezone: user.Timezone,
@@ -64,9 +60,7 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false });
 
     await DatabaseWrites.users.update(user.Id, {
-      GivenName: form.data.firstName,
-      FamilyName: form.data.lastName,
-      Name: form.data.displayName,
+      Name: form.data.name,
       Email: form.data.email,
       Phone: form.data.phone,
       Timezone: form.data.timezone,

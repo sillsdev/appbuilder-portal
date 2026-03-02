@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
-  import { getIcon } from '$lib/icons/productDefinitionIcon';
+  import { Icons, getAppIcon, getProductIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import type { PrunedProject } from '$lib/projects';
@@ -21,7 +21,7 @@
 {#snippet langIcon(lang: string | null)}
   {#if lang}
     <span class="badge badge-primary mb-2 mr-4 [height:1.35rem]" title={m.projectTable_language()}>
-      <IconContainer icon="ph:globe" width={20} class="mr-1" />
+      <IconContainer icon={Icons.Language} width={20} class="mr-1" />
       <!-- <LanguageIconContainer color="lightgray" size="20" /> -->
       <span class="overflow-auto text-center">
         {lang}
@@ -35,10 +35,11 @@
     <span class="flex flex-row">
       {@render select?.()}
       <div class="flex flex-row flex-wrap grow">
-        <a href={localizeHref(`/${route}/${project.Id}`)}>
+        <a href={localizeHref(`/${route}/${project.Id}`)} class="flex flex-row gap-2 items-start">
           <b class="[color:#55f]">
             {project.Name}
           </b>
+          <img src={getAppIcon(project.TypeId)} width={20} alt="" />
         </a>
         <div class="grow"></div>
         <span class="hidden sm:inline">{@render langIcon(project.Language)}</span>
@@ -49,15 +50,15 @@
     <div class="flex flex-wrap justify-between">
       <div class="mr-2">
         <span class="flex items-center" title={m.projectTable_owner()}>
-          <IconContainer icon="mdi:user" width={20} class="mr-1 shrink-0" />
+          <IconContainer icon={Icons.User} width={20} class="mr-1 shrink-0" />
           {project.OwnerName}
         </span>
         <span class="flex items-center" title={m.projectTable_org()}>
-          <IconContainer icon="clarity:organization-solid" width={20} class="mr-1 shrink-0" />
+          <IconContainer icon={Icons.Organization} width={20} class="mr-1 shrink-0" />
           {project.OrganizationName}
         </span>
         <span class="flex items-center [margin-right:0]" title={m.projectTable_group()}>
-          <IconContainer icon="mdi:account-group" width={20} class="mr-1 shrink-0" />
+          <IconContainer icon={Icons.Group} width={20} class="mr-1 shrink-0" />
           <span class=" text-nowrap">
             {project.GroupName}
           </span>
@@ -107,15 +108,20 @@
             <tr>
               <td class="py-2" colspan="2">
                 <div class="flex items-center">
-                  <IconContainer icon={getIcon(product.ProductDefinitionName ?? '')} width={30} />
+                  <IconContainer icon={getProductIcon(product.Type)} width={30} />
                   {product.ProductDefinitionName}
                 </div>
               </td>
             </tr>
             <tr>
               <th class="text-left opacity-75">{m.projectTable_appBuilderVersion()}</th>
-              <td>
-                {product.AppBuilderVersion ?? '-'}
+              <td class="flex flex-row gap-1">
+                {#if product.AppBuilderVersion}
+                  <img src={getAppIcon(project.TypeId)} width={20} alt="" />
+                  {product.AppBuilderVersion}
+                {:else}
+                  -
+                {/if}
               </td>
             </tr>
             <tr class="text-left opacity-75">
@@ -147,7 +153,7 @@
             <tr class="row">
               <td class="p-2">
                 <div class="flex items-center">
-                  <IconContainer icon={getIcon(product.ProductDefinitionName ?? '')} width={30} />
+                  <IconContainer icon={getProductIcon(product.Type)} width={30} />
                   {product.ProductDefinitionName}
                 </div>
               </td>
@@ -157,8 +163,13 @@
               <td>
                 {getTimeDateString(product.DateBuilt)}
               </td>
-              <td>
-                {product.AppBuilderVersion ?? '-'}
+              <td class="flex flex-row gap-1">
+                {#if product.AppBuilderVersion}
+                  <img src={getAppIcon(project.TypeId)} width={20} alt="" />
+                  {product.AppBuilderVersion}
+                {:else}
+                  -
+                {/if}
               </td>
             </tr>
           {/each}

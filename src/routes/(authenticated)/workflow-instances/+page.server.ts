@@ -31,7 +31,12 @@ export const load: PageServerLoad = async (event) => {
           Id: true,
           ProductDefinition: {
             select: {
-              Name: true
+              Name: true,
+              Workflow: {
+                select: {
+                  ProductType: true
+                }
+              }
             }
           },
           Project: {
@@ -67,7 +72,12 @@ export const load: PageServerLoad = async (event) => {
     productDefinitions: await DatabaseReads.productDefinitions.findMany({
       select: {
         Id: true,
-        Name: true
+        Name: true,
+        Workflow: {
+          select: {
+            ProductType: true
+          }
+        }
       }
     })
   };
@@ -165,7 +175,12 @@ export const actions: Actions = {
             Id: true,
             ProductDefinition: {
               select: {
-                Name: true
+                Name: true,
+                Workflow: {
+                  select: {
+                    ProductType: true
+                  }
+                }
               }
             },
             Project: {

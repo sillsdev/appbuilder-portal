@@ -6,14 +6,19 @@
   import type { PageData } from './$types';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import { importJSONSchema } from '$lib/projects';
+  import AppTypeSelector from '$lib/projects/components/AppTypeSelector.svelte';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
-  import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -95,23 +100,25 @@
     </a>
     <div class="flex flex-row gap-4 flex-wrap place-content-center sm:place-content-start p-4">
       <LabeledFormInput key="project_group" class="max-w-xs">
-        <select name="group" class="select" bind:value={$form.group}>
-          {#each data.organization.Groups.toSorted((a, b) => byName(a, b, getLocale())) as group}
-            <option value={group.Id}>{group.Name}</option>
-          {/each}
-        </select>
+        <SelectWithIcon
+          attr={{ name: 'group' }}
+          bind:value={$form.group}
+          items={data.organization.Groups}
+          icon={Icons.Group}
+        />
       </LabeledFormInput>
       <LabeledFormInput key="common_type" class="max-w-xs">
-        <select name="type" class="select" bind:value={$form.type}>
-          {#each data.types.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as type}
-            <option value={type.Id}>{type.Description}</option>
-          {/each}
-        </select>
+        <AppTypeSelector
+          types={data.types}
+          bind:value={$form.type}
+          class={{ dropdown: 'validator' }}
+          attr={{ name: 'type' }}
+        />
       </LabeledFormInput>
       <LabeledFormInput key="projectImport_file" class="max-w-xs">
         <input
           type="file"
-          class="file-input file-input-bordered"
+          class="file-input"
           accept="application/json"
           onchange={(e) => {
             if (e.currentTarget?.files?.length) {
@@ -163,19 +170,18 @@
       </ul>
     {/if}
     <div class="flex flex-wrap place-content-center gap-4 p-4">
-      <a
-        href={localizeHref(`/projects/own/${page.params.id}`)}
-        class="btn btn-secondary w-full max-w-xs"
-      >
-        {m.common_cancel()}
-      </a>
+      <CancelButton
+        returnTo={localizeHref(`/projects/own/${page.params.id}`)}
+        class="w-full max-w-xs"
+      />
       <BlockIfJobsUnavailable class="btn btn-primary w-full max-w-xs">
         {#snippet altContent()}
+          <IconContainer icon={Icons.Import} width={20} />
           {m.common_save()}
         {/snippet}
-        <button class="btn btn-primary w-full max-w-xs" disabled={!canSubmit} type="submit">
+        <SubmitButton class="w-full max-w-xs" disabled={!canSubmit}>
           {@render altContent()}
-        </button>
+        </SubmitButton>
       </BlockIfJobsUnavailable>
     </div>
   </form>

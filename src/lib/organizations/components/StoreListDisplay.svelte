@@ -6,9 +6,10 @@
 >
   import type { Prisma } from '@prisma/client';
   import type { Snippet } from 'svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import { Icons, getStoreIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import type { ValidI13nKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { StoreType, displayStoreGPTitle } from '$lib/prisma';
@@ -31,14 +32,13 @@
 
 {#snippet gpTitleError()}
   <Tooltip tip={m.stores_gpTitleEmpty()} class="indent-0">
-    <IconContainer icon="mdi:information-outline" width={18} />
+    <IconContainer icon={Icons.InfoOutline} width={18} />
   </Tooltip>
 {/snippet}
 
 <DataDisplayBox
   {editable}
   {editLink}
-  title={getTitle(store)}
   fields={[
     { key: 'projectTable_owner', value: store.Owner?.Name ?? m.appName() },
     ...(showDescription
@@ -59,4 +59,11 @@
   ]}
 >
   {@render extra?.(store)}
+  {#snippet title()}
+    <h3>
+      <IconContainer icon={getStoreIcon(store.StoreTypeId)} width={20} class="mr-1" />{getTitle(
+        store
+      )}
+    </h3>
+  {/snippet}
 </DataDisplayBox>

@@ -3,6 +3,8 @@
   import { QueueName } from '$lib/bullmq';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import { Icons, getAppIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byName, byString } from '$lib/utils/sorting';
@@ -21,21 +23,33 @@
   const applications = $derived(new Map(data.applications.map((a) => [a.Id, a])));
 </script>
 
-{#snippet date(engine?: (typeof buildEngines)[0] & { i: number })}
+{#snippet date(engine?: (typeof buildEngines)[number] & { i: number })}
   <Tooltip class="indent-0" tip={getTimeDateString(engine?.DateUpdated ?? null)}>
     {engine ? $dates[engine.i] : '-'}
   </Tooltip>
 {/snippet}
 
-{#snippet versions(engine?: (typeof buildEngines)[0])}
+{#snippet versions(engine?: (typeof buildEngines)[number])}
   <ul>
     {#each data.versions
       .filter((v) => v.BuildEngineUrl === engine?.BuildEngineUrl)
       .map((v) => ({ ...v, Name: applications.get(v.ApplicationTypeId)?.Description }))
       .toSorted((a, b) => byName(a, b, getLocale())) as version}
-      <li>{version.Name}: {version.Version} ({version.DateUpdated?.toLocaleDateString()})</li>
+      <li class="flex flex-row gap-1 indent-0 mt-1">
+        <img src={getAppIcon(version.ApplicationTypeId)} width={24} alt="" />
+        {version.Name}: {version.Version} ({version.DateUpdated?.toLocaleDateString()})
+      </li>
     {/each}
   </ul>
+{/snippet}
+
+{#snippet title(buildEngine?: (typeof buildEngines)[number])}
+  <h3>
+    <a href={buildEngine?.BuildEngineUrl} class="link" target="_blank">
+      {buildEngine?.BuildEngineUrl}
+      <IconContainer icon={Icons.Open} width={16} />
+    </a>
+  </h3>
 {/snippet}
 
 <h2>{m.buildEngines_title()}</h2>
@@ -54,7 +68,7 @@
   {/if}
   {#each buildEngines.toSorted( (a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, getLocale()) ) as buildEngine, i}
     <DataDisplayBox
-      title={buildEngine.BuildEngineUrl}
+      {title}
       data={{ ...buildEngine, i }}
       fields={[
         {

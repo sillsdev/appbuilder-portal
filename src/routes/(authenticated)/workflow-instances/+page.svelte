@@ -7,10 +7,12 @@
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
+  import { getProductIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { localizeHref } from '$lib/paraglide/runtime';
+  import ProductDefinitionFilter from '$lib/projects/components/ProductDefinitionFilter.svelte';
   import { orgActive } from '$lib/stores';
-  import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
   interface Props {
@@ -77,12 +79,11 @@
       </div>
     </div>
     <div class="flex flex-row flex-wrap gap-1 place-content-start px-4 pt-1 {mobileSizing}">
-      <select class="select {mobileSizing}" bind:value={$form.productDefinitionId}>
-        <option value={null} selected>{m.filters_allProdDefs()}</option>
-        {#each data.productDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as pD}
-          <option value={pD.Id}>{pD.Name}</option>
-        {/each}
-      </select>
+      <ProductDefinitionFilter
+        bind:value={$form.productDefinitionId}
+        productDefinitions={data.productDefinitions}
+        class={mobileSizing}
+      />
       <DateRangePicker
         bind:chosenDates={$form.dateUpdatedRange}
         placeholder={m.filters_dateRange()}
@@ -137,6 +138,7 @@
           <tr class="cursor-pointer hover:bg-neutral row">
             <td class="border border-b-base-content/50" colspan="2">
               <a class="link" href={localizeHref(`/workflow-instances/${instance.Product.Id}`)}>
+                <IconContainer icon={getProductIcon(prodDef.Workflow.ProductType)} width={24} />
                 {prodDef.Name}
               </a>
             </td>
@@ -194,6 +196,7 @@
             </td>
             <td class="border">
               <a class="link" href={localizeHref(`/workflow-instances/${instance.Product.Id}`)}>
+                <IconContainer icon={getProductIcon(prodDef.Workflow.ProductType)} width={24} />
                 {prodDef.Name}
               </a>
             </td>

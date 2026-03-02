@@ -20,7 +20,10 @@ export const load = (async (event) => {
   return {
     allProductDefs: (
       await DatabaseReads.productDefinitions.findMany({
-        include: { Organizations: { where: { Id: organization.Id }, select: { Id: true } } }
+        include: {
+          Organizations: { where: { Id: organization.Id }, select: { Id: true } },
+          Workflow: { select: { ProductType: true } }
+        }
       })
     ).map((pd) => ({
       ...pd,

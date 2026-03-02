@@ -72,7 +72,12 @@ export const load = (async ({ params, locals }) => {
       CurrentBuildId: true,
       ProductDefinition: {
         select: {
-          Name: true
+          Name: true,
+          Workflow: {
+            select: {
+              ProductType: true
+            }
+          }
         }
       },
       Project: {

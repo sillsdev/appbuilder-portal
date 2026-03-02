@@ -13,6 +13,13 @@ export enum StoreType {
   Cloud
 }
 
+export enum ApplicationType {
+  SAB = 1,
+  RAB,
+  DAB,
+  KAB
+}
+
 // returns store.GooglePlayTitle iff store is a GooglePlay store
 export function displayStoreGPTitle(
   store: Prisma.StoresGetPayload<{ select: { GooglePlayTitle: true; StoreTypeId: true } }>
