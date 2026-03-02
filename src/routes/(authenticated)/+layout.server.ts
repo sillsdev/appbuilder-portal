@@ -6,7 +6,6 @@ import type { LayoutServerLoad } from './$types';
 import { langtagSchema } from '$lib/ldml';
 import { readLDML } from '$lib/ldml/server';
 import { locales } from '$lib/paraglide/runtime';
-import { getUserTasks } from '$lib/projects/sse';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
 
@@ -31,7 +30,9 @@ export const load: LayoutServerLoad = async (event) => {
 
   return {
     organizations,
-    userTasks: await getUserTasks(sec.userId),
+    userTasksCount: await DatabaseReads.products.count({
+      where: { UserTasks: { some: { UserId: sec.userId } } }
+    }),
     // streaming promise
     langtags: await readFile(join(localDir, 'langtags.dev'))
       .then((j) => {
