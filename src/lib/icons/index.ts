@@ -89,7 +89,7 @@ export function getFlagIcon(locale: Locale) {
   }
 }
 
-export function getProductIcon(type: ProductType) {
+export function getProductIcon(type?: ProductType) {
   switch (type) {
     case ProductType.Web:
       return 'mdi:web';

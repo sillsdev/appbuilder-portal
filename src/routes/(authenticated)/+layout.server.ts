@@ -5,7 +5,6 @@ import { safeParse } from 'valibot';
 import type { LayoutServerLoad } from './$types';
 import { type L10NEntries, type L10NKeys, langtagsSchema } from '$lib/locales.svelte';
 import { type Locale, locales } from '$lib/paraglide/runtime';
-import { getUserTasks } from '$lib/projects/sse';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
 import type { Entries } from '$lib/utils';
@@ -31,7 +30,9 @@ export const load: LayoutServerLoad = async (event) => {
 
   return {
     organizations,
-    userTasks: await getUserTasks(sec.userId),
+    userTasksCount: await DatabaseReads.products.count({
+      where: { UserTasks: { some: { UserId: sec.userId } } }
+    }),
     // streaming promise
     langtags: await readFile(join(localDir, 'langtags.json'))
       .then((j) => {
