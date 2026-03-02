@@ -319,43 +319,89 @@ export async function getProjectDetails(id: number, userSession: Session['user']
   });
 }
 
+/**
+ * S = Status
+ * C = Comment
+ * U = DateUpdated
+ * P = ProductId
+ * Pj = ProjectId
+ * PD = ProductDefinitionId
+ */
 export type UserTaskDataSSE = Awaited<ReturnType<typeof getUserTasks>>;
 export async function getUserTasks(userId: number) {
-  const tasks = await DatabaseReads.userTasks.findMany({
+  const projects = await DatabaseReads.projects.findMany({
     where: {
-      UserId: userId
-    },
-    select: {
-      Status: true,
-      Comment: true,
-      DateUpdated: true,
-      ProductId: true,
-      Product: {
-        select: {
-          ProductDefinition: {
-            select: {
-              Name: true,
-              Workflow: {
-                select: {
-                  ProductType: true
-                }
-              }
-            }
-          },
-          ProjectId: true,
-          Project: {
-            select: {
-              Name: true
+      Products: {
+        some: {
+          UserTasks: {
+            some: {
+              UserId: userId
             }
           }
         }
       }
     },
-    distinct: 'ProductId',
-    orderBy: {
-      // most recent first
-      DateUpdated: 'desc'
+    select: {
+      Id: true,
+      Name: true,
+      Products: {
+        where: {
+          UserTasks: {
+            some: {
+              UserId: userId
+            }
+          }
+        },
+        select: {
+          Id: true,
+          ProductDefinitionId: true,
+          UserTasks: {
+            select: {
+              Status: true,
+              Comment: true,
+              DateUpdated: true,
+              ProductId: true
+            },
+            orderBy: {
+              DateUpdated: 'desc'
+            },
+            take: 1
+          }
+        }
+      }
     }
   });
-  return tasks;
+  return {
+    tasks: projects.flatMap((pj) =>
+      pj.Products.flatMap((p) =>
+        p.UserTasks.map((u) => ({
+          S: u.Status,
+          C: u.Comment,
+          U: u.DateUpdated,
+          P: u.ProductId,
+          Pj: pj.Id,
+          PD: p.ProductDefinitionId
+        }))
+      )
+    ),
+    projects: new Map(projects.map((p) => [p.Id, p.Name])),
+    products: new Map(
+      (
+        await DatabaseReads.productDefinitions.findMany({
+          where: {
+            Products: { some: { Id: { in: projects.flatMap((p) => p.Products.map((p) => p.Id)) } } }
+          },
+          select: {
+            Id: true,
+            Name: true,
+            Workflow: {
+              select: {
+                ProductType: true
+              }
+            }
+          }
+        })
+      ).map((pd) => [pd.Id, { N: pd.Name, T: pd.Workflow.ProductType }])
+    )
+  };
 }
