@@ -132,12 +132,19 @@
     )}
   {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
     <IconContainer icon={Icons.Star} width={16} />&nbsp;{transition.InitialState}
-  {:else}
+  {:else if isLandmark(transition.TransitionType)}
     {@const icon = getWorkflowIcon(transition.WorkflowType ?? 1)}
     {#if icon}
       <IconContainer {icon} width={16} />&nbsp;
     {/if}
     {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
+  {:else}
+    <b>
+      {m.transitions_types({
+        type: transition.TransitionType,
+        workflowType: ''
+      })}
+    </b>
   {/if}
 {/snippet}
 

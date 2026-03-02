@@ -260,7 +260,9 @@
         "type=3": "{workflowType} Workflow Completed",
         "type=4": "{workflowType} Workflow Cancelled",
         "type=5": "{workflowType} Project Access",
-        "type=6": "Workflow Migration"
+        "type=6": "Workflow Migration",
+        "type=7": "Archivado",
+        "type=8": "Reactivado"
       }
     }
   ],
