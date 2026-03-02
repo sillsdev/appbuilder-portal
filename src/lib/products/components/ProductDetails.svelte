@@ -57,7 +57,7 @@
   import type { Prisma } from '@prisma/client';
   import TaskComment from './TaskComment.svelte';
   import { page } from '$app/state';
-  import { Icons, getStoreIcon, getWorkflowIcon } from '$lib/icons';
+  import { Icons, getStoreIcon, getTransitionIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { ProductTransitionType } from '$lib/prisma';
@@ -130,21 +130,27 @@
       ),
       transition.InitialState ?? ''
     )}
-  {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
-    <IconContainer icon={Icons.Star} width={16} />&nbsp;{transition.InitialState}
-  {:else if isLandmark(transition.TransitionType)}
-    {@const icon = getWorkflowIcon(transition.WorkflowType ?? 1)}
+  {:else}
+    {@const icon = getTransitionIcon(
+      transition.TransitionType,
+      transition.WorkflowType ?? 1,
+      transition.Command ?? transition.InitialState?.match(/(Download|Upload)/)?.at(1) ?? null
+    )}
     {#if icon}
       <IconContainer {icon} width={16} />&nbsp;
     {/if}
-    {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
-  {:else}
-    <b>
-      {m.transitions_types({
-        type: transition.TransitionType,
-        workflowType: ''
-      })}
-    </b>
+    {#if transition.TransitionType === ProductTransitionType.ProjectAccess}
+      {transition.InitialState}
+    {:else if isLandmark(transition.TransitionType)}
+      {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
+    {:else}
+      <b>
+        {m.transitions_types({
+          type: transition.TransitionType,
+          workflowType: ''
+        })}
+      </b>
+    {/if}
   {/if}
 {/snippet}
 
