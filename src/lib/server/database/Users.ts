@@ -77,19 +77,34 @@ export async function toggleRole(
           where: { OrganizationId },
           select: { Id: true }
         })
-      ).map((p) => ({
-        name: `${enabled ? 'Add' : 'Remove'} OrgAdmin tasks for User #${UserId} on Project #${p.Id}`,
-        data: {
-          type: BullMQ.JobType.UserTasks_Modify,
-          scope: 'Project',
-          projectId: p.Id,
-          operation: {
-            type: enabled ? BullMQ.UserTasks.OpType.Create : BullMQ.UserTasks.OpType.Delete,
-            users: [UserId],
-            roles: [RoleId.OrgAdmin]
+      ).flatMap((p) => [
+        {
+          name: `${enabled ? 'Add' : 'Remove'} OrgAdmin tasks for User #${UserId} on Project #${p.Id}`,
+          data: {
+            type: BullMQ.JobType.UserTasks_Workflow,
+            scope: 'Project',
+            projectId: p.Id,
+            operation: {
+              type: enabled ? BullMQ.UserTasks.OpType.Create : BullMQ.UserTasks.OpType.Delete,
+              users: [UserId],
+              roles: [RoleId.OrgAdmin]
+            }
+          }
+        },
+        {
+          name: `${enabled ? 'Add' : 'Remove'} OrgAdmin data deletion requests for User #${UserId} on Project #${p.Id}`,
+          data: {
+            type: BullMQ.JobType.UserTasks_DeleteRequest,
+            scope: 'Project',
+            projectId: p.Id,
+            operation: {
+              type: enabled ? BullMQ.UserTasks.OpType.Create : BullMQ.UserTasks.OpType.Delete,
+              users: [UserId],
+              roles: [RoleId.OrgAdmin]
+            }
           }
         }
-      }))
+      ])
     );
   }
   return true;

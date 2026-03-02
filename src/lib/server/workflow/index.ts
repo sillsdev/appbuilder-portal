@@ -103,7 +103,7 @@ export class Workflow {
     flow.flow.start();
     await flow.createSnapshot(flow.flow.getSnapshot().context);
     await getQueues().UserTasks.add(`Create UserTasks for Product #${productId}`, {
-      type: BullMQ.JobType.UserTasks_Modify,
+      type: BullMQ.JobType.UserTasks_Workflow,
       scope: 'Product',
       productId: productId,
       operation: {
@@ -332,7 +332,7 @@ export class Workflow {
         await this.createSnapshot(xSnap.context);
         // This will also create the dummy entries in the ProductTransitions table
         await getQueues().UserTasks.add(`Update UserTasks for Product #${this.productId}`, {
-          type: BullMQ.JobType.UserTasks_Modify,
+          type: BullMQ.JobType.UserTasks_Workflow,
           scope: 'Product',
           productId: this.productId,
           comment: jump ? undefined : event.comment,

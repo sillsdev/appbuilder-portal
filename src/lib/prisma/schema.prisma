@@ -392,17 +392,20 @@ model UserRoles {
 }
 
 model UserTasks {
-  Id           Int       @id(map: "PK_UserTasks") @default(autoincrement())
-  UserId       Int
-  ProductId    String    @db.Uuid
-  ActivityName String?
-  Status       String?
-  Comment      String?
-  DateCreated  DateTime? @default(now()) @db.Timestamp(6)
-  DateUpdated  DateTime? @updatedAt @db.Timestamp(6)
-  Role         Int       @default(3) // AppBuilder (i.e. the Project Owner)
-  Product      Products  @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserTasks_Products_ProductId")
-  User         Users     @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserTasks_Users_UserId")
+  Id             Int                  @id(map: "PK_UserTasks") @default(autoincrement())
+  UserId         Int
+  ProductId      String               @db.Uuid
+  ActivityName   String?
+  Status         String?
+  Comment        String?
+  DateCreated    DateTime?            @default(now()) @db.Timestamp(6)
+  DateUpdated    DateTime?            @updatedAt @db.Timestamp(6)
+  Role           Int                  @default(3) // AppBuilder (i.e. the Project Owner)
+  Type           Int                  @default(1) // Workflow
+  Product        Products             @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserTasks_Products_ProductId")
+  User           Users                @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_UserTasks_Users_UserId")
+  // This is defined as a separate table so we don't have to add a new field to UserTasks
+  ChangeRequests ProductUserChanges[]
 
   @@index([ProductId], map: "IX_UserTasks_ProductId")
   @@index([UserId], map: "IX_UserTasks_UserId")
@@ -456,17 +459,18 @@ model WorkflowDefinitions {
 }
 
 model ProductUserChanges {
-  Id               String    @id(map: "PK_ProductUserChanges") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  ProductId        String    @db.Uuid
+  Id               String      @id(map: "PK_ProductUserChanges") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  ProductId        String      @db.Uuid
   Email            String?
   Change           String?
-  DateCreated      DateTime? @default(now()) @db.Timestamp(6)
-  DateUpdated      DateTime? @updatedAt @db.Timestamp(6)
-  DateCompleted    DateTime? @db.Timestamp(6)
+  DateCreated      DateTime?   @default(now()) @db.Timestamp(6)
+  DateUpdated      DateTime?   @updatedAt @db.Timestamp(6)
+  DateCompleted    DateTime?   @db.Timestamp(6)
   ConfirmationCode String
-  DateExpires      DateTime  @db.Timestamp(6)
-  DateConfirmed    DateTime? @db.Timestamp(6)
-  Product          Products  @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductUserChanges_Products_ProductId")
+  DateExpires      DateTime    @db.Timestamp(6)
+  DateConfirmed    DateTime?   @db.Timestamp(6)
+  Product          Products    @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductUserChanges_Products_ProductId")
+  Tasks            UserTasks[]
 
   @@index([ProductId], map: "IX_ProductUserChanges_ProductId")
 }

@@ -130,7 +130,7 @@ export async function doProjectAction(
       DateArchived: new Date()
     });
     await getQueues().UserTasks.add(`Delete UserTasks for Archived Project #${project.Id}`, {
-      type: BullMQ.JobType.UserTasks_Modify,
+      type: BullMQ.JobType.UserTasks_Workflow,
       scope: 'Project',
       projectId: project.Id,
       operation: {
@@ -142,7 +142,7 @@ export async function doProjectAction(
       DateArchived: null
     });
     await getQueues().UserTasks.add(`Create UserTasks for Reactivated Project #${project.Id}`, {
-      type: BullMQ.JobType.UserTasks_Modify,
+      type: BullMQ.JobType.UserTasks_Workflow,
       scope: 'Project',
       projectId: project.Id,
       operation: {

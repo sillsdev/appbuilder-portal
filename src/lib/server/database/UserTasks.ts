@@ -2,9 +2,12 @@ import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
 
-export async function createMany(createManyData: Prisma.UserTasksCreateManyArgs) {
-  const res = await prisma.userTasks.createMany({
-    ...createManyData
+export async function createManyAndReturn(createManyData: Prisma.UserTasksCreateManyArgs) {
+  const res = await prisma.userTasks.createManyAndReturn({
+    ...createManyData,
+    select: {
+      Id: true
+    }
   });
   getQueues().SvelteSSE.add(`Update UserTasks`, {
     type: BullMQ.JobType.SvelteSSE_UpdateUserTasks,
