@@ -1,3 +1,4 @@
+import { trace } from '@opentelemetry/api';
 import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
@@ -94,7 +95,7 @@ export async function tryConnect(
 ) {
   try {
     if (transitionId) {
-      await prisma.$transaction(async (tx) => {
+      return await prisma.$transaction(async (tx) => {
         const transition = await tx.productTransitions.findFirst({
           where: { Id: transitionId, ProductId: productId },
           select: { InitialState: true }
@@ -120,7 +121,14 @@ export async function tryConnect(
         }
       });
     }
-  } catch {
-    /* empty */
+  } catch (e) {
+    trace.getActiveSpan()?.addEvent('ProductTransitions failed to connect', {
+      'product-id': productId,
+      'build-or-release-id': buildOrReleaseId,
+      scope: scope,
+      'transition-id': transitionId ?? 0,
+      error: (e as Error).message
+    });
   }
+  return false;
 }
