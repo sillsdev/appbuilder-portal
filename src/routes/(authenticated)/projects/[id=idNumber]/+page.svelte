@@ -209,7 +209,8 @@
               disabled={!(
                 canEdit &&
                 projectData.productsToAdd.length &&
-                projectData.project.RepositoryUrl
+                projectData.project.RepositoryUrl &&
+                !projectData.project.DateArchived
               )}
             >
               {@render altContent()}
