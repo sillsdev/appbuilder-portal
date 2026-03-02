@@ -229,7 +229,7 @@
     <div class="px-5">
       <a
         class="btn btn-ghost btn-sm border border-base-300 mb-4 w-full justify-center"
-        href="./user-data/about"
+        href="./file/about"
       >
         {m.udm_about_button()}
       </a>
