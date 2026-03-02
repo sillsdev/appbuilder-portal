@@ -1,7 +1,24 @@
 import type { Locale } from '$lib/paraglide/runtime';
-import { ApplicationType, RoleId, StoreType, WorkflowType } from '$lib/prisma';
+import {
+  ApplicationType,
+  ProductTransitionType,
+  RoleId,
+  StoreType,
+  WorkflowType
+} from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { ProductType, WorkflowAction } from '$lib/workflowTypes';
+
+export function getAccessIcon(use: string | null) {
+  switch (use) {
+    case 'Upload':
+      return 'material-symbols:upload';
+    case 'Download':
+      return Icons.Download;
+    default:
+      return Icons.Star;
+  }
+}
 
 export function getActionIcon(type: ProductActionType) {
   switch (type) {
@@ -109,6 +126,31 @@ export function getStoreIcon(type: StoreType) {
       return 'material-symbols:cloud';
     default:
       return 'ic:twotone-store';
+  }
+}
+
+export function getTransitionIcon(
+  transitionType: ProductTransitionType,
+  workflowType: WorkflowType,
+  command: string | null
+) {
+  switch (transitionType) {
+    case ProductTransitionType.Activity:
+      return '';
+    case ProductTransitionType.StartWorkflow:
+      return getWorkflowIcon(workflowType);
+    case ProductTransitionType.EndWorkflow:
+      return Icons.Checkmark;
+    case ProductTransitionType.CancelWorkflow:
+      return getActionIcon(ProductActionType.Cancel);
+    case ProductTransitionType.ProjectAccess:
+      return getAccessIcon(command);
+    case ProductTransitionType.Migration:
+      return Icons.Transfer;
+    case ProductTransitionType.Archival:
+      return Icons.Archive;
+    case ProductTransitionType.Reactivation:
+      return Icons.ReactivateProject;
   }
 }
 
@@ -245,6 +287,7 @@ export type IconType =
       | typeof getProductIcon
       | typeof getRoleIcon
       | typeof getStoreIcon
+      | typeof getTransitionIcon
       | typeof getWorkflowIcon
       | typeof getWorkflowActionIcon
     >;

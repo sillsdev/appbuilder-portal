@@ -6,6 +6,7 @@ import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 
 const TOKEN_USE_HEADER = 'Use';
 const TOKEN_USE_UPLOAD = 'Upload';
+const TOKEN_USE_STATUS = 'Status';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TOKEN_USE_DOWNLOAD = 'Download';
 
@@ -134,19 +135,22 @@ export async function POST({ params, locals, request }) {
     select: { Id: true }
   });
 
-  await DatabaseWrites.productTransitions.createMany(
-    {
-      data: products.map((p) => ({
-        ProductId: p.Id,
-        AllowedUserNames: user.Name,
-        TransitionType: ProductTransitionType.ProjectAccess,
-        InitialState: 'Project ' + use,
-        UserId: user.Id,
-        DateTransition: new Date()
-      }))
-    },
-    projectId
-  );
+  if (use !== TOKEN_USE_STATUS) {
+    await DatabaseWrites.productTransitions.createMany(
+      {
+        data: products.map((p) => ({
+          ProductId: p.Id,
+          AllowedUserNames: user.Name,
+          TransitionType: ProductTransitionType.ProjectAccess,
+          InitialState: 'Project ' + use,
+          UserId: user.Id,
+          DateTransition: new Date(),
+          Command: use
+        }))
+      },
+      projectId
+    );
+  }
 
   return json({ data: projectToken });
 }
