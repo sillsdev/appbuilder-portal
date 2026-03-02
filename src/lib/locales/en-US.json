@@ -22,13 +22,8 @@
   "localePicker_placeholder": "Search by Language...",
   "localePicker_region": [
     {
-      "declarations": [
-        "input count",
-        "local countPlural = count: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "countPlural=one": "Region",
         "countPlural=other": "Regions"
@@ -37,13 +32,8 @@
   ],
   "localePicker_name": [
     {
-      "declarations": [
-        "input count",
-        "local countPlural = count: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "countPlural=one": "Name",
         "countPlural=other": "Names"
@@ -52,13 +42,8 @@
   ],
   "localePicker_tag": [
     {
-      "declarations": [
-        "input count",
-        "local countPlural = count: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "countPlural=one": "Tag",
         "countPlural=other": "Tags"
@@ -67,13 +52,8 @@
   ],
   "localePicker_variant": [
     {
-      "declarations": [
-        "input count",
-        "local countPlural = count: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "countPlural=one": "Variant",
         "countPlural=other": "Variants"
@@ -276,12 +256,8 @@
   "products_unpublished": "Unpublished",
   "products_numArtifacts": [
     {
-      "declarations": [
-        "local countPlural = amount: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["local countPlural = amount: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "amount=0": "No Product Files",
         "countPlural=one": "{amount} Product File",
@@ -600,5 +576,33 @@
   "system_buildFailed": "Build failed",
   "system_publishFailed": "Publish failed",
   "system_unavailable": "Scriptoria is currently unable to process background tasks",
+  "udm_manage_title": "Manage my data",
+  "udm_manage_subtitle": "Request account or data deletion for this app.",
+  "udm_about_button": "About this app",
+  "udm_deletion_request_title": "Deletion Request",
+  "udm_deletion_intro_1": "Enter the email address associated with your account to request data deletion. We'll send a one-time verification code to confirm your identity.",
+  "udm_deletion_intro_2": "Once confirmed, your request will be processed within 30 days, in accordance with our data retention obligations. Deletions are permanent and cannot be undone. Some information may be retained where required by law or for legitimate compliance purposes.",
+  "udm_email_label": "Email",
+  "udm_email_placeholder": "you@example.com",
+  "udm_email_help": "Use the email associated with your account.",
+  "udm_scope_label": "Deletion Scope",
+  "udm_scope_data_title": "Delete my data",
+  "udm_scope_data_desc": "Your login remains active, but your personal content will be permanently deleted.",
+  "udm_scope_account_title": "Delete my account and all associated data",
+  "udm_scope_account_desc": "This will permanently remove your login and saved content.",
+  "udm_scope_warning": "Warning: Deletions are permanent and cannot be undone. Some data may be retained for legal or compliance purposes.",
+  "udm_items_removed_title": "Items to be removed",
+  "udm_item_bookmarks": "Bookmarks",
+  "udm_item_notes": "Notes",
+  "udm_item_highlights": "Highlights",
+  "udm_item_reading_progress": "Reading plan progress",
+  "udm_verification_label": "Verification",
+  "udm_captcha_placeholder": "Captcha widget placeholder (Turnstile)",
+  "udm_send_code": "Send verification code",
+  "udm_footer_text": "This page is provided for {appName} on Google Play. Need help? ",
+  "udm_contact_support": "Contact support",
+  "udm_about_title": "About this app",
+  "udm_show_more": "Show more",
+  "udm_back_manage": "Back to Manage my data",
   "downloads_title": "Downloads"
 }

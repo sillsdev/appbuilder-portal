@@ -129,7 +129,8 @@
   }
   @media (prefers-color-scheme: dark) {
     .select {
-      &, & select {
+      &,
+      & select {
         &::picker(select) {
           border: var(--border) solid var(--color-base-content);
         }

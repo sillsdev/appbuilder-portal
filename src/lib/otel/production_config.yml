@@ -39,7 +39,7 @@ processors:
               type: string_attribute
               string_attribute:
                 key: svelte.route_id
-                values: ["/(authenticated)/admin/jobs/[...path]"]
+                values: ['/(authenticated)/admin/jobs/[...path]']
             - name: Throttle noisy routes
               type: probabilistic
               probabilistic:
@@ -68,7 +68,7 @@ processors:
               boolean_attribute:
                 key: do_not_sample
                 value: true
-                
+
 connectors:
   routing:
     default_pipelines: [traces/default]

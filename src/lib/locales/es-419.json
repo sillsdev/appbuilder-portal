@@ -22,13 +22,8 @@
   "localePicker_placeholder": "Buscar por idioma...",
   "localePicker_region": [
     {
-      "declarations": [
-        "input count",
-        "local countPlural = count: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "countPlural=one": "Region",
         "countPlural=other": "Region"
@@ -37,13 +32,8 @@
   ],
   "localePicker_name": [
     {
-      "declarations": [
-        "input count",
-        "local countPlural = count: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "countPlural=one": "Name",
         "countPlural=other": "Names"
@@ -52,13 +42,8 @@
   ],
   "localePicker_tag": [
     {
-      "declarations": [
-        "input count",
-        "local countPlural = count: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "countPlural=one": "Tag",
         "countPlural=other": "Tags"
@@ -67,13 +52,8 @@
   ],
   "localePicker_variant": [
     {
-      "declarations": [
-        "input count",
-        "local countPlural = count: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "countPlural=one": "Variant",
         "countPlural=other": "Variants"
@@ -276,12 +256,8 @@
   "products_unpublished": "Sin publicar",
   "products_numArtifacts": [
     {
-      "declarations": [
-        "local countPlural = amount: plural"
-      ],
-      "selectors": [
-        "countPlural"
-      ],
+      "declarations": ["local countPlural = amount: plural"],
+      "selectors": ["countPlural"],
       "match": {
         "amount=0": "No hay archivos de producto",
         "countPlural=one": "{amount} Product File",
@@ -600,5 +576,33 @@
   "system_buildFailed": "Build failed",
   "system_publishFailed": "Publish failed",
   "system_unavailable": "Scriptoria actualmente no puede procesar tareas",
+  "udm_manage_title": "Administrar mis datos",
+  "udm_manage_subtitle": "Solicita la eliminacion de la cuenta o de los datos de esta app.",
+  "udm_about_button": "Acerca de esta app",
+  "udm_deletion_request_title": "Solicitud de eliminacion",
+  "udm_deletion_intro_1": "Ingresa el correo asociado a tu cuenta para solicitar la eliminacion de datos. Enviaremos un codigo de verificacion de un solo uso para confirmar tu identidad.",
+  "udm_deletion_intro_2": "Una vez confirmada, tu solicitud se procesara en un plazo de 30 dias, de acuerdo con nuestras obligaciones de retencion de datos. Las eliminaciones son permanentes y no se pueden deshacer. Es posible que conservemos cierta informacion cuando la ley o el cumplimiento normativo lo exijan.",
+  "udm_email_label": "Correo",
+  "udm_email_placeholder": "tu@ejemplo.com",
+  "udm_email_help": "Usa el correo asociado a tu cuenta.",
+  "udm_scope_label": "Alcance de la eliminacion",
+  "udm_scope_data_title": "Eliminar mis datos",
+  "udm_scope_data_desc": "Tu inicio de sesion seguira activo, pero tu contenido personal se eliminara de forma permanente.",
+  "udm_scope_account_title": "Eliminar mi cuenta y todos los datos asociados",
+  "udm_scope_account_desc": "Esto eliminara permanentemente tu inicio de sesion y tu contenido guardado.",
+  "udm_scope_warning": "Advertencia: Las eliminaciones son permanentes y no se pueden deshacer. Algunos datos pueden conservarse por razones legales o de cumplimiento.",
+  "udm_items_removed_title": "Elementos que se eliminaran",
+  "udm_item_bookmarks": "Marcadores",
+  "udm_item_notes": "Notas",
+  "udm_item_highlights": "Resaltados",
+  "udm_item_reading_progress": "Progreso del plan de lectura",
+  "udm_verification_label": "Verificacion",
+  "udm_captcha_placeholder": "Marcador de posicion del captcha (Turnstile)",
+  "udm_send_code": "Enviar codigo de verificacion",
+  "udm_footer_text": "Esta pagina se proporciona para {appName} en Google Play. Necesitas ayuda? ",
+  "udm_contact_support": "Contactar soporte",
+  "udm_about_title": "Acerca de esta app",
+  "udm_show_more": "Mostrar mas",
+  "udm_back_manage": "Volver a Administrar mis datos",
   "downloads_title": "Downloads"
 }
