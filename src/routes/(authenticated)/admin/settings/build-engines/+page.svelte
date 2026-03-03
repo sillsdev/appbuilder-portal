@@ -31,10 +31,7 @@
 
 {#snippet versions(engine?: (typeof buildEngines)[number])}
   <ul>
-    {#each data.versions
-      .filter((v) => v.BuildEngineUrl === engine?.BuildEngineUrl)
-      .map((v) => ({ ...v, Name: applications.get(v.ApplicationTypeId)?.Description }))
-      .toSorted((a, b) => byName(a, b, getLocale())) as version}
+    {#each engine?.SupportedVersions.map( (v) => ({ ...v, Name: applications.get(v.ApplicationTypeId)?.Description }) ).toSorted( (a, b) => byName(a, b, getLocale()) ) as version}
       <li class="flex flex-row gap-1 indent-0 mt-1">
         <img src={getAppIcon(version.ApplicationTypeId)} width={24} alt="" />
         {version.Name}: {version.Version} ({version.DateUpdated?.toLocaleDateString()})
@@ -46,6 +43,9 @@
 {#snippet title(buildEngine?: (typeof buildEngines)[number])}
   <h3>
     <a href={buildEngine?.BuildEngineUrl} class="link" target="_blank">
+      {#if buildEngine?.Default}
+        [{m.common_default()}]
+      {/if}
       {buildEngine?.BuildEngineUrl}
       <IconContainer icon={Icons.Open} width={16} />
     </a>
