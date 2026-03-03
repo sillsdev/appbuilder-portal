@@ -1,6 +1,7 @@
 // src/routes/admin/settings/build-engines/+page.server.ts
 
 import type { PageServerLoad } from './$types';
+import { activeSystems } from '$lib/organizations/server';
 import { DatabaseReads } from '$lib/server/database';
 
 export const load = (async (event) => {
@@ -8,9 +9,7 @@ export const load = (async (event) => {
 
   return {
     buildEngines: await DatabaseReads.systemStatuses.findMany({
-      where: {
-        Active: true
-      },
+      where: activeSystems,
       include: {
         SupportedVersions: true,
         Organizations: { select: { Name: true }, orderBy: { Name: 'asc' } }

@@ -6,13 +6,14 @@ import { join } from 'path';
 import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
+import { activeSystems } from '$lib/organizations/server';
 import { WorkflowState } from '$lib/workflowTypes';
 
 export async function checkSystemStatuses(
   job: Job<BullMQ.System.CheckEngineStatuses>
 ): Promise<unknown> {
   const statuses = await Promise.all(
-    (await DatabaseReads.systemStatuses.findMany({ where: { Active: true } })).map(async (s) => {
+    (await DatabaseReads.systemStatuses.findMany({ where: activeSystems })).map(async (s) => {
       const res = await BuildEngine.Requests.systemCheck({
         type: 'provided',
         url: s.BuildEngineUrl,
@@ -123,12 +124,13 @@ export async function checkSystemStatuses(
     statuses,
     versions,
     connected: await DatabaseReads.systemStatuses.count({
-      where: { SystemAvailable: true, Active: true }
+      where: { SystemAvailable: true, ...activeSystems }
     }),
     disconnected: await DatabaseReads.systemStatuses.count({
-      where: { SystemAvailable: false, Active: true }
+      where: { SystemAvailable: false, ...activeSystems }
     }),
     inactive: await DatabaseReads.systemStatuses.count({ where: { Active: false } })
+    inactive: await DatabaseReads.systemStatuses.count({ where: { NOT: activeSystems } })
   };
 }
 
@@ -367,8 +369,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
         BuildEngineUrl: defaultCredentials.url,
         BuildEngineApiAccessToken: defaultCredentials.token,
         SystemAvailable: false,
-        Default: true,
-        Active: true
+        Default: true
       }
     });
   } else if (
@@ -377,7 +378,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
   ) {
     await DatabaseWrites.systemStatuses.update({
       where: { Id: existingDefault[0].Id },
-      data: { Default: true, Active: true }
+      data: { Default: true }
     });
   }
 
