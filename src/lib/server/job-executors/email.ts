@@ -228,7 +228,8 @@ export async function notifySuperAdminsOfOfflineSystems(
 ): Promise<unknown> {
   const statuses = await DatabaseReads.systemStatuses.findMany({
     where: {
-      SystemAvailable: false
+      SystemAvailable: false,
+      Active: true
     }
   });
   if (statuses.length === 0) {
