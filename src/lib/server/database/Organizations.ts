@@ -24,15 +24,50 @@ export async function createInvite(
 }
 
 export async function create(data: RequirePrimitive<Prisma.OrganizationsUncheckedCreateInput>) {
-  return await prisma.organizations.create({
+  const org = await prisma.organizations.create({
     data
   });
+
+  if (org && data.BuildEngineUrl && data.BuildEngineApiAccessToken) {
+    await prisma.systemStatuses.create({
+      data: {
+        BuildEngineUrl: data.BuildEngineUrl,
+        BuildEngineApiAccessToken: data.BuildEngineApiAccessToken,
+        SystemAvailable: false,
+        OrganizationId: org.Id
+      },
+      select: {
+        Id: true
+      }
+    });
+  }
+
+  return org;
 }
 
 export async function update(
   id: number,
   data: RequirePrimitive<Prisma.OrganizationsUncheckedUpdateInput>
 ) {
+  if (data.BuildEngineApiAccessToken !== undefined || data.BuildEngineUrl !== undefined) {
+    const existing = await prisma.systemStatuses.findFirst({
+      where: { OrganizationId: id },
+      select: {
+        Id: true,
+        BuildEngineUrl: true,
+        BuildEngineApiAccessToken: true
+      }
+    });
+    if (existing) {
+      await prisma.systemStatuses.update({
+        where: { Id: existing.Id },
+        data: {
+          BuildEngineUrl: data.BuildEngineUrl ?? undefined,
+          BuildEngineApiAccessToken: data.BuildEngineApiAccessToken ?? undefined
+        }
+      });
+    }
+  }
   return await prisma.organizations.update({
     where: { Id: id },
     data
