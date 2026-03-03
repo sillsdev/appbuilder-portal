@@ -2,6 +2,7 @@ import { SpanStatusCode, trace } from '@opentelemetry/api';
 import type { Prisma } from '@prisma/client';
 import { DatabaseReads } from '../database/prisma';
 import * as Types from './types';
+import { env } from '$env/dynamic/private';
 
 const tracer = trace.getTracer('build-engine-api');
 
@@ -103,7 +104,7 @@ export async function request(resource: string, auth: Types.Auth, opts?: Types.R
 }
 
 export function tryGetDefaultBuildEngineParameters() {
-  if (!(process.env.DEFAULT_BUILDENGINE_URL || process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN)) {
+  if (!(env.DEFAULT_BUILDENGINE_URL || env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN)) {
     console.error(
       'NO DEFAULT BUILD ENGINE URL SET (ENV.DEFAULT_BUILDENGINE_URL/DEFAULT_BUILDENGINE_API_ACCESS_TOKEN)'
     );
@@ -114,8 +115,8 @@ export function tryGetDefaultBuildEngineParameters() {
   }
 
   return {
-    url: process.env.DEFAULT_BUILDENGINE_URL,
-    token: process.env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
+    url: env.DEFAULT_BUILDENGINE_URL,
+    token: env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
   };
 }
 export async function queryURLandToken(organizationId: number) {
@@ -124,9 +125,13 @@ export async function queryURLandToken(organizationId: number) {
       Id: organizationId
     },
     select: {
-      BuildEngineUrl: true,
-      BuildEngineApiAccessToken: true,
-      UseDefaultBuildEngine: true
+      UseDefaultBuildEngine: true,
+      System: {
+        select: {
+          BuildEngineUrl: true,
+          BuildEngineApiAccessToken: true
+        }
+      }
     }
   });
 
@@ -138,14 +143,22 @@ export async function queryURLandToken(organizationId: number) {
 }
 export function getURLandToken(
   org: Prisma.OrganizationsGetPayload<{
-    select: { BuildEngineUrl: true; BuildEngineApiAccessToken: true; UseDefaultBuildEngine: true };
+    select: {
+      UseDefaultBuildEngine: true;
+      System: {
+        select: {
+          BuildEngineUrl: true;
+          BuildEngineApiAccessToken: true;
+        };
+      };
+    };
   }>
 ) {
-  return org.UseDefaultBuildEngine
+  return org.UseDefaultBuildEngine || !org.System
     ? tryGetDefaultBuildEngineParameters()
     : {
-        url: org.BuildEngineUrl,
-        token: org.BuildEngineApiAccessToken
+        url: org.System.BuildEngineUrl,
+        token: org.System.BuildEngineApiAccessToken
       };
 }
 

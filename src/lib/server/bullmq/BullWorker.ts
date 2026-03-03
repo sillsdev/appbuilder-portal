@@ -128,21 +128,21 @@ export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
     super(BullMQ.QueueName.System_Startup);
     const startupJobs = [
       [
-        'Check System Statuses (Startup)',
-        {
-          type: BullMQ.JobType.System_CheckEngineStatuses
-        }
-      ],
-      [
         'Refresh LangTags (Startup)',
         {
           type: BullMQ.JobType.System_RefreshLangTags
         }
       ],
       [
-        'Migrate Features from S1 to S2 (Startup)',
+        'Migrate Features (Startup)',
         {
           type: BullMQ.JobType.System_Migrate
+        }
+      ],
+      [
+        'Check System Statuses (Startup)',
+        {
+          type: BullMQ.JobType.System_CheckEngineStatuses
         }
       ]
     ] as const;

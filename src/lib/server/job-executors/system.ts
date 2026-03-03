@@ -8,89 +8,18 @@ import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { JobSchedulerId } from '$lib/bullmq';
+import { activeSystems } from '$lib/organizations/server';
 import { WorkflowState } from '$lib/workflowTypes';
 
 export async function checkSystemStatuses(
   job: Job<BullMQ.System.CheckEngineStatuses>
 ): Promise<unknown> {
-  const organizations = await DatabaseReads.organizations.findMany({
-    where: {
-      // treat null same as false
-      NOT: { UseDefaultBuildEngine: true },
-      BuildEngineUrl: { not: null },
-      BuildEngineApiAccessToken: { not: null }
-    },
-    select: {
-      BuildEngineUrl: true,
-      BuildEngineApiAccessToken: true
-    }
-  });
-  // Add defaults
-  const defaults = BuildEngine.Requests.tryGetDefaultBuildEngineParameters();
-  if (defaults.url && defaults.token) {
-    organizations.push({
-      BuildEngineUrl: defaults.url,
-      BuildEngineApiAccessToken: defaults.token
-    });
-  } else {
-    job.log(
-      'No default build engine is set (env.DEFAULT_BUILDENGINE_URL). Continuing with ' +
-        organizations.length +
-        ' organizations'
-    );
-    if (!organizations.length) {
-      throw new Error('No build engines to check');
-    }
-  }
-  const uniquePairs = Array.from(new Set(organizations.map((o) => JSON.stringify(o)))).map((e) =>
-    JSON.parse(e)
-  ) as typeof organizations;
-  job.updateProgress(10);
-  // remove statuses that do not correspond to organizations
-  const removed = await DatabaseWrites.systemStatuses.deleteMany({
-    where: {
-      OR: [
-        {
-          BuildEngineUrl: {
-            // we know these can't be null because that is handled by the query...
-            notIn: uniquePairs.map((o) => o.BuildEngineUrl!)
-          }
-        },
-        {
-          BuildEngineApiAccessToken: {
-            notIn: uniquePairs.map((o) => o.BuildEngineApiAccessToken!)
-          }
-        }
-      ]
-    }
-  });
-  job.updateProgress(20);
-  const systems = await DatabaseReads.systemStatuses.findMany({
-    select: {
-      BuildEngineUrl: true,
-      BuildEngineApiAccessToken: true
-    }
-  });
-  // Filter out url/token pairs that already exist in the status table
-  const filteredOrgs = uniquePairs.filter(
-    (o) =>
-      !systems.find(
-        (s) =>
-          s.BuildEngineUrl === o.BuildEngineUrl &&
-          s.BuildEngineApiAccessToken === o.BuildEngineApiAccessToken
-      )
-  );
-  job.updateProgress(30);
-  await DatabaseWrites.systemStatuses.createMany({
-    data: filteredOrgs.map((o) => ({ ...o, SystemAvailable: false }))
-  });
-  job.updateProgress(50);
   const statuses = await Promise.all(
-    (await DatabaseReads.systemStatuses.findMany()).map(async (s) => {
+    (await DatabaseReads.systemStatuses.findMany({ where: activeSystems })).map(async (s) => {
       const res = await BuildEngine.Requests.systemCheck({
         type: 'provided',
-        url: s.BuildEngineUrl ?? '',
-        token: s.BuildEngineApiAccessToken ?? ''
+        url: s.BuildEngineUrl,
+        token: s.BuildEngineApiAccessToken
       });
       const available = res.status === 200;
       if (s.SystemAvailable !== available) {
@@ -104,6 +33,7 @@ export async function checkSystemStatuses(
         });
       }
       return {
+        id: s.Id,
         url: s.BuildEngineUrl,
         // return first 4 characters of token for differentiation purposes
         partialToken: s.BuildEngineApiAccessToken?.substring(0, 4),
@@ -116,9 +46,9 @@ export async function checkSystemStatuses(
     })
   );
 
-  job.updateProgress(65);
+  job.updateProgress(50);
 
-  const applications = new Map<string, number>(
+  const applications = new Map(
     (
       await DatabaseReads.applicationTypes.findMany({
         select: {
@@ -126,15 +56,15 @@ export async function checkSystemStatuses(
           Name: true
         }
       })
-    ).map((a) => [a.Name!, a.Id])
+    ).map((a) => [a.Name, a.Id])
   );
 
   const versionInfo = statuses.flatMap((s) =>
     s.versionInfo
       ? Object.entries(s.versionInfo.versions)
-          .filter(([key]) => applications.get(key) && s.url)
+          .filter(([key]) => applications.get(key))
           .map(([Name, Version]) => ({
-            BuildEngineUrl: s.url!,
+            SystemId: s.id,
             ApplicationTypeId: applications.get(Name)!,
             Version,
             ImageHash: s.versionInfo!.imageHash
@@ -147,13 +77,13 @@ export async function checkSystemStatuses(
       versionInfo.map(async (vi) => {
         return await DatabaseWrites.systemVersions.upsert({
           where: {
-            BuildEngineUrl_ApplicationTypeId: {
-              BuildEngineUrl: vi.BuildEngineUrl,
+            SystemId_ApplicationTypeId: {
+              SystemId: vi.SystemId,
               ApplicationTypeId: vi.ApplicationTypeId
             }
           },
           create: {
-            BuildEngineUrl: vi.BuildEngineUrl,
+            SystemId: vi.SystemId,
             ApplicationTypeId: vi.ApplicationTypeId,
             Version: vi.Version,
             ImageHash: vi.ImageHash
@@ -171,10 +101,6 @@ export async function checkSystemStatuses(
   // If there are offline systems, send an email to the super admins
   const offlineSystems = statuses.filter((s) => s.status !== 200);
   if (offlineSystems.length) {
-    const brokenUrls = new Map();
-    offlineSystems.forEach((s) => {
-      brokenUrls.set(s.url, s);
-    });
     const minutesSinceHalfHour = Math.floor((Date.now() / 1000 / 60) % 30);
     if (!(await getQueues().Emails.getJobScheduler(BullMQ.JobSchedulerId.SystemStatusEmail))) {
       await getQueues().Emails.upsertJobScheduler(
@@ -197,11 +123,15 @@ export async function checkSystemStatuses(
   }
   job.updateProgress(100);
   return {
-    removed: removed.count,
-    added: filteredOrgs.length,
-    total: statuses.length,
     statuses,
-    versions
+    versions,
+    connected: await DatabaseReads.systemStatuses.count({
+      where: { SystemAvailable: true, ...activeSystems }
+    }),
+    disconnected: await DatabaseReads.systemStatuses.count({
+      where: { SystemAvailable: false, ...activeSystems }
+    }),
+    inactive: await DatabaseReads.systemStatuses.count({ where: { NOT: activeSystems } })
   };
 }
 
@@ -407,7 +337,65 @@ async function processLocalizedNames(
 }
 
 export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
-  return 'No features to migrate';
+  /**
+   * 1. Pre-populate SystemStatuses
+   */
+
+  // 1a. Ensure default buildengine exists
+  const defaultCredentials = BuildEngine.Requests.tryGetDefaultBuildEngineParameters();
+  const existingDefault = await DatabaseReads.systemStatuses.findMany({
+    where: {
+      OR: [
+        {
+          OrganizationId: null
+        },
+        {
+          BuildEngineUrl: defaultCredentials.url,
+          BuildEngineApiAccessToken: defaultCredentials.token
+        }
+      ]
+    }
+  });
+  if (!existingDefault.length || !existingDefault.some((s) => !s.OrganizationId)) {
+    await DatabaseWrites.systemStatuses.create({
+      data: {
+        BuildEngineUrl: defaultCredentials.url,
+        BuildEngineApiAccessToken: defaultCredentials.token,
+        SystemAvailable: false
+      }
+    });
+  }
+
+  job.updateProgress(50);
+
+  // 1b. Populate SystemStatuses from Organizations
+
+  const organizations = await DatabaseReads.organizations.findMany({
+    where: { System: null },
+    select: {
+      Id: true,
+      UseDefaultBuildEngine: true,
+      BuildEngineUrl: true,
+      BuildEngineApiAccessToken: true
+    }
+  });
+
+  if (organizations.length) {
+    await DatabaseWrites.systemStatuses.createMany({
+      data: organizations
+        .filter((o) => o.BuildEngineUrl && o.BuildEngineApiAccessToken)
+        .map((o) => ({
+          BuildEngineUrl: o.BuildEngineUrl!,
+          BuildEngineApiAccessToken: o.BuildEngineApiAccessToken!,
+          SystemAvailable: false,
+          OrganizationId: o.Id
+        }))
+    });
+  }
+
+  job.updateProgress(100);
+
+  return { existingDefault, organizations };
 }
 
 export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
