@@ -4,6 +4,7 @@
   import { goto } from '$app/navigation';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import PasswordInput from '$lib/components/settings/PasswordInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
   import { Icons } from '$lib/icons';
@@ -77,13 +78,12 @@
       }}
       bind:value={$form.buildEngineUrl}
     />
-    <LabeledFormInput
+    <PasswordInput
       key="org_accessToken"
       input={{
         name: 'buildEngineApiAccessToken',
         required: !$form.useDefaultBuildEngine,
-        err: m.org_emptyAccessToken(),
-        icon: Icons.Key
+        err: m.org_emptyAccessToken()
       }}
       bind:value={$form.buildEngineApiAccessToken}
     />

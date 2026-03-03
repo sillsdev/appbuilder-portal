@@ -1,4 +1,3 @@
-import type { Prisma } from '@prisma/client';
 import type { Job } from 'bullmq';
 import { XMLParser } from 'fast-xml-parser';
 import { existsSync } from 'fs';
@@ -7,91 +6,18 @@ import { join } from 'path';
 import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
-import { TaskType } from '$lib/prisma';
-import { fetchPackageName } from '$lib/products';
-import { ProductType, WorkflowOptions, WorkflowState } from '$lib/workflowTypes';
+import { activeSystems } from '$lib/organizations/server';
+import { WorkflowState } from '$lib/workflowTypes';
 
 export async function checkSystemStatuses(
   job: Job<BullMQ.System.CheckEngineStatuses>
 ): Promise<unknown> {
-  const organizations = await DatabaseReads.organizations.findMany({
-    where: {
-      // treat null same as false
-      NOT: { UseDefaultBuildEngine: true },
-      BuildEngineUrl: { not: null },
-      BuildEngineApiAccessToken: { not: null }
-    },
-    select: {
-      BuildEngineUrl: true,
-      BuildEngineApiAccessToken: true
-    }
-  });
-  // Add defaults
-  const defaults = BuildEngine.Requests.tryGetDefaultBuildEngineParameters();
-  if (defaults.url && defaults.token) {
-    organizations.push({
-      BuildEngineUrl: defaults.url,
-      BuildEngineApiAccessToken: defaults.token
-    });
-  } else {
-    job.log(
-      'No default build engine is set (env.DEFAULT_BUILDENGINE_URL). Continuing with ' +
-        organizations.length +
-        ' organizations'
-    );
-    if (!organizations.length) {
-      throw new Error('No build engines to check');
-    }
-  }
-  const uniquePairs = Array.from(new Set(organizations.map((o) => JSON.stringify(o)))).map((e) =>
-    JSON.parse(e)
-  ) as typeof organizations;
-  job.updateProgress(10);
-  // remove statuses that do not correspond to organizations
-  const removed = await DatabaseWrites.systemStatuses.deleteMany({
-    where: {
-      OR: [
-        {
-          BuildEngineUrl: {
-            // we know these can't be null because that is handled by the query...
-            notIn: uniquePairs.map((o) => o.BuildEngineUrl!)
-          }
-        },
-        {
-          BuildEngineApiAccessToken: {
-            notIn: uniquePairs.map((o) => o.BuildEngineApiAccessToken!)
-          }
-        }
-      ]
-    }
-  });
-  job.updateProgress(20);
-  const systems = await DatabaseReads.systemStatuses.findMany({
-    select: {
-      BuildEngineUrl: true,
-      BuildEngineApiAccessToken: true
-    }
-  });
-  // Filter out url/token pairs that already exist in the status table
-  const filteredOrgs = uniquePairs.filter(
-    (o) =>
-      !systems.find(
-        (s) =>
-          s.BuildEngineUrl === o.BuildEngineUrl &&
-          s.BuildEngineApiAccessToken === o.BuildEngineApiAccessToken
-      )
-  );
-  job.updateProgress(30);
-  await DatabaseWrites.systemStatuses.createMany({
-    data: filteredOrgs.map((o) => ({ ...o, SystemAvailable: false }))
-  });
-  job.updateProgress(50);
   const statuses = await Promise.all(
-    (await DatabaseReads.systemStatuses.findMany()).map(async (s) => {
+    (await DatabaseReads.systemStatuses.findMany({ where: activeSystems })).map(async (s) => {
       const res = await BuildEngine.Requests.systemCheck({
         type: 'provided',
-        url: s.BuildEngineUrl ?? '',
-        token: s.BuildEngineApiAccessToken ?? ''
+        url: s.BuildEngineUrl,
+        token: s.BuildEngineApiAccessToken
       });
       const available = res.status === 200;
       if (s.SystemAvailable !== available) {
@@ -105,6 +31,7 @@ export async function checkSystemStatuses(
         });
       }
       return {
+        id: s.Id,
         url: s.BuildEngineUrl,
         // return first 4 characters of token for differentiation purposes
         partialToken: s.BuildEngineApiAccessToken?.substring(0, 4),
@@ -117,9 +44,9 @@ export async function checkSystemStatuses(
     })
   );
 
-  job.updateProgress(65);
+  job.updateProgress(50);
 
-  const applications = new Map<string, number>(
+  const applications = new Map(
     (
       await DatabaseReads.applicationTypes.findMany({
         select: {
@@ -127,15 +54,15 @@ export async function checkSystemStatuses(
           Name: true
         }
       })
-    ).map((a) => [a.Name!, a.Id])
+    ).map((a) => [a.Name, a.Id])
   );
 
   const versionInfo = statuses.flatMap((s) =>
     s.versionInfo
       ? Object.entries(s.versionInfo.versions)
-          .filter(([key]) => applications.get(key) && s.url)
+          .filter(([key]) => applications.get(key))
           .map(([Name, Version]) => ({
-            BuildEngineUrl: s.url!,
+            SystemId: s.id,
             ApplicationTypeId: applications.get(Name)!,
             Version,
             ImageHash: s.versionInfo!.imageHash
@@ -148,13 +75,13 @@ export async function checkSystemStatuses(
       versionInfo.map(async (vi) => {
         return await DatabaseWrites.systemVersions.upsert({
           where: {
-            BuildEngineUrl_ApplicationTypeId: {
-              BuildEngineUrl: vi.BuildEngineUrl,
+            SystemId_ApplicationTypeId: {
+              SystemId: vi.SystemId,
               ApplicationTypeId: vi.ApplicationTypeId
             }
           },
           create: {
-            BuildEngineUrl: vi.BuildEngineUrl,
+            SystemId: vi.SystemId,
             ApplicationTypeId: vi.ApplicationTypeId,
             Version: vi.Version,
             ImageHash: vi.ImageHash
@@ -172,10 +99,6 @@ export async function checkSystemStatuses(
   // If there are offline systems, send an email to the super admins
   const offlineSystems = statuses.filter((s) => s.status !== 200);
   if (offlineSystems.length) {
-    const brokenUrls = new Map();
-    offlineSystems.forEach((s) => {
-      brokenUrls.set(s.url, s);
-    });
     const minutesSinceHalfHour = Math.floor((Date.now() / 1000 / 60) % 30);
     if (!(await getQueues().Emails.getJobScheduler(BullMQ.JobSchedulerId.SystemStatusEmail))) {
       await getQueues().Emails.upsertJobScheduler(
@@ -198,11 +121,18 @@ export async function checkSystemStatuses(
   }
   job.updateProgress(100);
   return {
-    removed: removed.count,
-    added: filteredOrgs.length,
-    total: statuses.length,
     statuses,
-    versions
+    versions,
+    connected: await DatabaseReads.systemStatuses.count({
+      where: { SystemAvailable: true, ...activeSystems }
+    }),
+    disconnected: await DatabaseReads.systemStatuses.count({
+      where: { SystemAvailable: false, ...activeSystems }
+    }),
+    inactive: await DatabaseReads.systemStatuses.count({ where: { NOT: activeSystems } }),
+    deleted: await DatabaseWrites.systemStatuses.deleteMany({
+      where: { Default: false, Organizations: { none: {} } }
+    })
   };
 }
 
@@ -410,156 +340,97 @@ async function processLocalizedNames(
 export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
   /**
    * Migration Tasks:
-   * 1. Delete UserTasks for archived projects (should be removed)
-   * 2. (removed step)
+   * 1. (removed step)
+   * 2. Pre-populate SystemStatuses
    * 3. (removed step)
-   * 4. Populate Product.PackageName (should be removed)
+   * 4. (removed step)
    * 5. Populate ProductBuild/ProductPublications.TransitionId (remove after two deploys to master)
-   * 6. Populate ProductBuild.AppBuilderVersion (should be removed)
+   * 6. (removed step)
    */
 
-  // 1. Delete UserTasks for archived projects
-  const deletedTasks = await DatabaseWrites.userTasks.deleteMany({
-    where: {
-      Product: {
-        Project: {
-          DateArchived: { not: null }
-        }
-      },
-      Type: TaskType.Workflow
-    }
-  });
   job.updateProgress(10);
 
-  job.updateProgress(40);
-  // Update WorkflowDefinitions ProductType and WorkflowOptions
-  const workflowDefsNeedUpdate =
-    (await DatabaseReads.workflowDefinitions.count({
-      where: {
-        ProductType: 0
+  // 2a. Ensure default buildengine exists
+  const defaultCredentials = BuildEngine.Requests.tryGetDefaultBuildEngineParameters();
+  const existingDefault = await DatabaseReads.systemStatuses.findMany({
+    where: {
+      OR: [
+        {
+          Default: true
+        },
+        {
+          BuildEngineUrl: defaultCredentials.url,
+          BuildEngineApiAccessToken: defaultCredentials.token
+        }
+      ]
+    }
+  });
+  if (!existingDefault.length) {
+    await DatabaseWrites.systemStatuses.create({
+      data: {
+        BuildEngineUrl: defaultCredentials.url,
+        BuildEngineApiAccessToken: defaultCredentials.token,
+        SystemAvailable: false,
+        Default: true
       }
-    })) === 14;
-  if (workflowDefsNeedUpdate) {
-    const workflowDefs: Parameters<typeof DatabaseWrites.workflowDefinitions.updateMany>[0][] = [
-      {
+    });
+  } else if (
+    existingDefault.length === 1 ||
+    existingDefault.filter((s) => !s.Default).length === existingDefault.length
+  ) {
+    await DatabaseWrites.systemStatuses.update({
+      where: { Id: existingDefault[0].Id },
+      data: { Default: true }
+    });
+  }
+
+  // 2b. Populate SystemStatuses from Organizations
+
+  const organizations = await DatabaseReads.organizations.findMany({
+    where: { SystemId: null },
+    select: {
+      Id: true,
+      UseDefaultBuildEngine: true,
+      BuildEngineUrl: true,
+      BuildEngineApiAccessToken: true,
+      SystemId: true
+    }
+  });
+  for (const o of organizations) {
+    if (o.BuildEngineUrl && o.BuildEngineApiAccessToken) {
+      // find existing system status
+      const existing = await DatabaseReads.systemStatuses.findFirst({
         where: {
-          Name: {
-            contains: 'google_play'
+          BuildEngineUrl: o.BuildEngineUrl,
+          BuildEngineApiAccessToken: o.BuildEngineApiAccessToken,
+          Organizations: { none: { Id: o.Id } }
+        }
+      });
+
+      if (existing) {
+        await DatabaseWrites.organizations.update(o.Id, { SystemId: existing.Id });
+        o.SystemId = existing.Id;
+      } else {
+        const newSystem = await DatabaseWrites.systemStatuses.create({
+          data: {
+            BuildEngineUrl: o.BuildEngineUrl,
+            BuildEngineApiAccessToken: o.BuildEngineApiAccessToken,
+            SystemAvailable: false
+          },
+          select: {
+            Id: true
           }
-        },
-        data: {
-          ProductType: ProductType.Android_GooglePlay
-        }
-      },
-      {
-        where: {
-          Name: {
-            contains: 's3'
-          }
-        },
-        data: {
-          ProductType: ProductType.Android_S3
-        }
-      },
-      {
-        where: {
-          Name: {
-            contains: 'cloud'
-          }
-        },
-        data: {
-          ProductType: ProductType.Web
-        }
-      },
-      {
-        where: {
-          Name: {
-            contains: 'asset_package'
-          }
-        },
-        data: {
-          ProductType: ProductType.AssetPackage
-        }
-      },
-      {
-        where: {
-          Name: 'sil_android_google_play'
-        },
-        data: {
-          WorkflowOptions: [WorkflowOptions.AdminStoreAccess, WorkflowOptions.ApprovalProcess]
-        }
-      },
-      {
-        where: {
-          Name: 'sil_android_s3'
-        },
-        data: {
-          WorkflowOptions: [WorkflowOptions.ApprovalProcess]
-        }
-      },
-      {
-        where: {
-          Name: 'la_android_google_play'
-        },
-        data: {
-          WorkflowOptions: [WorkflowOptions.AdminStoreAccess]
-        }
+        });
+
+        await DatabaseWrites.organizations.update(o.Id, { SystemId: newSystem.Id });
+
+        o.SystemId = newSystem.Id;
       }
-    ];
-    for (const def of workflowDefs) {
-      await DatabaseWrites.workflowDefinitions.updateMany(def);
     }
   }
+
+  job.updateProgress(40);
   job.updateProgress(50);
-
-  // 4. Populate Product.PackageName
-
-  const artifactWhere: Prisma.ProductArtifactsWhereInput = {
-    ArtifactType: 'package_name',
-    ContentType: 'text/plain'
-  };
-
-  const buildWhere: Prisma.ProductBuildsWhereInput = {
-    Success: true,
-    ProductArtifacts: {
-      some: artifactWhere
-    }
-  };
-
-  const updatedPackages = await Promise.all(
-    (
-      await DatabaseReads.products.findMany({
-        where: {
-          PackageName: null,
-          ProductBuilds: {
-            some: buildWhere
-          }
-        },
-        select: {
-          Id: true,
-          ProductBuilds: {
-            where: buildWhere,
-            select: {
-              ProductArtifacts: {
-                where: artifactWhere,
-                take: 1
-              }
-            },
-            orderBy: { DateUpdated: 'desc' },
-            take: 1
-          }
-        }
-      })
-    ).map(async (p) => {
-      const PackageName = await fetchPackageName(p.ProductBuilds[0].ProductArtifacts[0].Url);
-      // populate package name if publish link is not set
-      if (PackageName) {
-        await DatabaseWrites.products.update(p.Id, { PackageName });
-      }
-      return PackageName;
-    })
-  );
-
   job.updateProgress(70);
 
   // only try to associate completed builds
@@ -722,118 +593,12 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
 
   job.updateProgress(80);
 
-  // 6. Populate ProductBuilds.AppBuilderVersion
-
-  const recentBuildFilter: Prisma.ProductBuildsWhereInput = {
-    Success: true,
-    AND: [
-      {
-        ProductArtifacts: {
-          some: {
-            ArtifactType: 'consoleText'
-          }
-        }
-      },
-      {
-        ProductArtifacts: {
-          some: {
-            ArtifactType: 'version'
-          }
-        }
-      }
-    ]
-  };
-
-  const mostRecentBuilds = await DatabaseReads.products.findMany({
-    where: {
-      ProductBuilds: {
-        some: recentBuildFilter
-      }
-    },
-    select: {
-      Id: true,
-      ProductBuilds: {
-        where: recentBuildFilter,
-        orderBy: { DateCreated: 'desc' },
-        take: 1,
-        select: {
-          BuildEngineBuildId: true,
-          AppBuilderVersion: true,
-          ProductArtifacts: {
-            where: {
-              ArtifactType: { in: ['consoleText', 'version'] }
-            },
-            select: {
-              ArtifactType: true,
-              Url: true
-            }
-          }
-        }
-      }
-    }
-  });
-
-  const builtVersions = new Set<string>();
-  const vnum = /\d+\.\d+(\.\d+)?/;
-  const preferredRgx = new RegExp(`APPBUILDER_SCRIPT_VERSION=(${vnum.source})`);
-  const altRgx = new RegExp(`Version (${vnum.source})`);
-
-  const updatedBuilds = await Promise.all(
-    mostRecentBuilds
-      .filter((p) => !p.ProductBuilds[0].AppBuilderVersion)
-      .map(async (p) => {
-        try {
-          const logUrl = p.ProductBuilds[0].ProductArtifacts.find(
-            (pa) => pa.ArtifactType === 'consoleText'
-          )?.Url;
-          const versionJSON = p.ProductBuilds[0].ProductArtifacts.find(
-            (pa) => pa.ArtifactType === 'version'
-          );
-          if (logUrl && versionJSON?.Url) {
-            // fetch version.json first
-            const parsedJSON = JSON.parse(await fetch(versionJSON.Url).then((r) => r.text()));
-            let appVersion: string = parsedJSON['appbuilderVersion'] ?? '';
-
-            // if appbuilderVersion not present, try parsing console.
-            if (!appVersion) {
-              const log = await fetch(logUrl).then((r) => r.text());
-              const preferred = log.match(preferredRgx)?.at(1);
-              const alts = log.match(altRgx)?.at(1);
-
-              appVersion ||= preferred ?? alts ?? '';
-            }
-
-            if (appVersion) {
-              builtVersions.add(appVersion);
-              await DatabaseWrites.productBuilds.update({
-                where: {
-                  ProductId_BuildEngineBuildId: {
-                    ProductId: p.Id,
-                    BuildEngineBuildId: p.ProductBuilds[0].BuildEngineBuildId
-                  }
-                },
-                data: { AppBuilderVersion: appVersion }
-              });
-            }
-          }
-        } catch (e) {
-          job.log(`Update Build for Product ${p.Id} Error: ${e}`);
-        }
-      })
-  );
-
   job.updateProgress(100);
 
   return {
-    deletedTasks: deletedTasks.count,
-    updatedWorkflowDefinitions: workflowDefsNeedUpdate,
-    updatedPackages,
+    existingDefault,
+    organizations,
     associatedBuilds,
-    associatedReleases,
-    updatedBuilds: {
-      recent: mostRecentBuilds.length,
-      updated: updatedBuilds.length,
-      versions: Array.from(builtVersions).sort((a, b) => a.localeCompare(b, 'en-US'))
-    }
+    associatedReleases
   };
 }

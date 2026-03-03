@@ -2,7 +2,7 @@
   import type { PageData } from './$types';
   import { QueueName } from '$lib/bullmq';
   import Tooltip from '$lib/components/Tooltip.svelte';
-  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import SecureDisplay from '$lib/components/settings/SecureDisplay.svelte';
   import { Icons, getAppIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -19,38 +19,7 @@
     data.buildEngines.toSorted((a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, getLocale()))
   );
   let dates = $derived(getRelativeTime(buildEngines.map((engine) => engine.DateUpdated)));
-
-  const applications = $derived(new Map(data.applications.map((a) => [a.Id, a])));
 </script>
-
-{#snippet date(engine?: (typeof buildEngines)[number] & { i: number })}
-  <Tooltip class="indent-0" tip={getTimeDateString(engine?.DateUpdated ?? null)}>
-    {engine ? $dates[engine.i] : '-'}
-  </Tooltip>
-{/snippet}
-
-{#snippet versions(engine?: (typeof buildEngines)[number])}
-  <ul>
-    {#each data.versions
-      .filter((v) => v.BuildEngineUrl === engine?.BuildEngineUrl)
-      .map((v) => ({ ...v, Name: applications.get(v.ApplicationTypeId)?.Description }))
-      .toSorted((a, b) => byName(a, b, getLocale())) as version}
-      <li class="flex flex-row gap-1 indent-0 mt-1">
-        <img src={getAppIcon(version.ApplicationTypeId)} width={24} alt="" />
-        {version.Name}: {version.Version} ({version.DateUpdated?.toLocaleDateString()})
-      </li>
-    {/each}
-  </ul>
-{/snippet}
-
-{#snippet title(buildEngine?: (typeof buildEngines)[number])}
-  <h3>
-    <a href={buildEngine?.BuildEngineUrl} class="link" target="_blank">
-      {buildEngine?.BuildEngineUrl}
-      <IconContainer icon={Icons.Open} width={16} />
-    </a>
-  </h3>
-{/snippet}
 
 <h2>{m.buildEngines_title()}</h2>
 
@@ -66,24 +35,57 @@
       </a>
     </i>
   {/if}
-  {#each buildEngines.toSorted( (a, b) => byString(a.BuildEngineUrl, b.BuildEngineUrl, getLocale()) ) as buildEngine, i}
-    <DataDisplayBox
-      {title}
-      data={{ ...buildEngine, i }}
-      fields={[
-        {
-          key: 'buildEngines_accessToken',
-          value: buildEngine.BuildEngineApiAccessToken
-        },
-        {
-          key: 'buildEngines_status',
-          value: buildEngine.SystemAvailable
-            ? m.buildEngines_connected()
-            : m.buildEngines_disconnected()
-        },
-        { key: 'buildEngines_lastUpdated', snippet: date },
-        { key: 'projectTable_appBuilderVersion', snippet: versions }
-      ]}
-    />
+  {#each buildEngines as buildEngine, i}
+    <div class="flex flex-col border border-slate-600 p-2 mx-4 m-1 rounded-md">
+      <h3 class="flex flex-col-reverse md:flex-row gap-2">
+        <div>
+          <span class="badge badge-error" class:badge-success={buildEngine.SystemAvailable}>
+            {buildEngine.SystemAvailable
+              ? m.buildEngines_connected()
+              : m.buildEngines_disconnected()}
+          </span>
+          {#if buildEngine.Default}
+            <span class="badge badge-info">
+              {m.common_default()}
+            </span>
+          {/if}
+        </div>
+        <a href={buildEngine.BuildEngineUrl} class="link" target="_blank">
+          {buildEngine?.BuildEngineUrl}
+          <IconContainer icon={Icons.Open} width={16} />
+        </a>
+      </h3>
+      <div>
+        <IconContainer icon={Icons.RefreshOn} width={16} tooltip={m.buildEngines_lastUpdated()} />
+        <Tooltip class="indent-0" tip={getTimeDateString(buildEngine.DateUpdated ?? null)}>
+          {buildEngine ? $dates[i] : '-'}
+        </Tooltip>
+      </div>
+      <div>
+        <IconContainer icon={Icons.Key} width={16} tooltip={m.buildEngines_accessToken()} />
+        <SecureDisplay value={buildEngine.BuildEngineApiAccessToken} />
+      </div>
+      <div>
+        <IconContainer icon={Icons.Organization} width={16} />
+        {#if buildEngine.Default}
+          {data.defaultUsers}
+        {:else}
+          <span>
+            {buildEngine.Organizations.map((o) => o.Name).join(', ')}
+          </span>
+        {/if}
+      </div>
+      <b>{m.projectTable_appBuilderVersion()}:</b>
+      <ul>
+        {#each buildEngine.SupportedVersions.map( (v) => ({ ...v, Name: data.applications.get(v.ApplicationTypeId) }) ).toSorted( (a, b) => byName(a, b, getLocale()) ) as version}
+          <li class="flex flex-row gap-1 indent-0 mt-1">
+            <img src={getAppIcon(version.ApplicationTypeId)} width={24} alt="" />
+            <Tooltip tip={version.ImageHash}>
+              {version.Name}: {version.Version} ({version.DateUpdated?.toLocaleDateString()})
+            </Tooltip>
+          </li>
+        {/each}
+      </ul>
+    </div>
   {/each}
 </div>

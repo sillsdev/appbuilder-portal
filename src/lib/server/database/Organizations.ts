@@ -24,6 +24,20 @@ export async function createInvite(
 }
 
 export async function create(data: RequirePrimitive<Prisma.OrganizationsUncheckedCreateInput>) {
+  if (data.BuildEngineUrl && data.BuildEngineApiAccessToken) {
+    const system = await prisma.systemStatuses.create({
+      data: {
+        BuildEngineUrl: data.BuildEngineUrl,
+        BuildEngineApiAccessToken: data.BuildEngineApiAccessToken,
+        SystemAvailable: false
+      },
+      select: {
+        Id: true
+      }
+    });
+
+    data.SystemId = system.Id;
+  }
   return await prisma.organizations.create({
     data
   });
@@ -33,6 +47,45 @@ export async function update(
   id: number,
   data: RequirePrimitive<Prisma.OrganizationsUncheckedUpdateInput>
 ) {
+  if (data.BuildEngineApiAccessToken !== undefined || data.BuildEngineUrl !== undefined) {
+    const existing = await prisma.organizations.findFirst({
+      where: { Id: id },
+      select: {
+        System: {
+          select: {
+            Id: true,
+            BuildEngineUrl: true,
+            BuildEngineApiAccessToken: true,
+            _count: { select: { Organizations: true } }
+          }
+        }
+      }
+    });
+    if (existing?.System) {
+      if (existing.System._count.Organizations > 1) {
+        const system = await prisma.systemStatuses.create({
+          data: {
+            BuildEngineUrl: data.BuildEngineUrl ?? existing.System.BuildEngineUrl,
+            BuildEngineApiAccessToken:
+              data.BuildEngineApiAccessToken ?? existing.System.BuildEngineApiAccessToken,
+            SystemAvailable: false
+          },
+          select: {
+            Id: true
+          }
+        });
+        data.SystemId = system.Id;
+      } else {
+        await prisma.systemStatuses.update({
+          where: { Id: existing.System.Id },
+          data: {
+            BuildEngineUrl: data.BuildEngineUrl ?? undefined,
+            BuildEngineApiAccessToken: data.BuildEngineApiAccessToken ?? undefined
+          }
+        });
+      }
+    }
+  }
   return await prisma.organizations.update({
     where: { Id: id },
     data

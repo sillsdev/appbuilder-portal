@@ -65,12 +65,13 @@ model Organizations {
   Id                            Int                             @id(map: "PK_Organizations") @default(autoincrement())
   Name                          String
   WebsiteUrl                    String?
-  BuildEngineUrl                String?
-  BuildEngineApiAccessToken     String?
+  BuildEngineUrl                String? // remove at a later date
+  BuildEngineApiAccessToken     String? // remove at a later date
   LogoUrl                       String?
   UseDefaultBuildEngine         Boolean                         @default(true)
   PublicByDefault               Boolean                         @default(true)
   ContactEmail                  String?
+  SystemId                      Int?
   Groups                        Groups[]
   OrganizationMembershipInvites OrganizationMembershipInvites[]
   Users                         Users[]
@@ -80,6 +81,7 @@ model Organizations {
   UserRoles                     UserRoles[]
   Stores                        Stores[]                        @relation("OrganizationsToStores")
   ManagedStores                 Stores[]                        @relation("ManagedStores")
+  System                        SystemStatuses?                 @relation(fields: [SystemId], references: [Id], onDelete: SetNull, onUpdate: NoAction, map: "FK_Organizations_SystemStatuses_SystemStatusId")
 }
 
 model ProductArtifacts {
@@ -343,24 +345,28 @@ model Stores {
 }
 
 model SystemStatuses {
-  Id                        Int       @id(map: "PK_SystemStatuses") @default(autoincrement())
-  BuildEngineUrl            String?
-  BuildEngineApiAccessToken String?
+  Id                        Int              @id(map: "PK_SystemStatuses") @default(autoincrement())
+  BuildEngineUrl            String
+  BuildEngineApiAccessToken String
   SystemAvailable           Boolean
-  DateCreated               DateTime? @default(now()) @db.Timestamp(6)
-  DateUpdated               DateTime? @updatedAt @db.Timestamp(6)
+  Default                   Boolean          @default(false)
+  DateCreated               DateTime?        @default(now()) @db.Timestamp(6)
+  DateUpdated               DateTime?        @updatedAt @db.Timestamp(6)
+  Organizations             Organizations[]
+  SupportedVersions         SystemVersions[]
 }
 
 model SystemVersions {
-  BuildEngineUrl    String // weak link to SystemStatuses table
+  SystemId          Int
   ApplicationTypeId Int
   Version           String?          @default("13.2") // defaulting to 13.2 because this is what BuildEngine supports at this time
   DateCreated       DateTime?        @default(now()) @db.Timestamp(6)
   DateUpdated       DateTime?        @updatedAt @db.Timestamp(6)
   ImageHash         String?
+  System            SystemStatuses   @relation(fields: [SystemId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_SystemVersions_SystemStatuses_SystemId")
   ApplicationType   ApplicationTypes @relation(fields: [ApplicationTypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_SystemVersions_ApplicationTypes_ ApplicationTypeId")
 
-  @@id([BuildEngineUrl, ApplicationTypeId], map: "PK_SystemVersions_BuildEngineUrl_ApplicationTypeId")
+  @@id([SystemId, ApplicationTypeId], map: "PK_SystemVersions_SystemId_ApplicationTypeId")
 }
 
 model SoftwareUpdates {
