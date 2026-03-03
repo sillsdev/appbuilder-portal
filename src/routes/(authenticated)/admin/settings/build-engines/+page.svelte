@@ -2,6 +2,7 @@
   import type { PageData } from './$types';
   import { QueueName } from '$lib/bullmq';
   import Tooltip from '$lib/components/Tooltip.svelte';
+  import SecureDisplay from '$lib/components/settings/SecureDisplay.svelte';
   import { Icons, getAppIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -62,7 +63,7 @@
       </div>
       <div>
         <IconContainer icon={Icons.Key} width={16} tooltip={m.buildEngines_accessToken()} />
-        {buildEngine.BuildEngineApiAccessToken}
+        <SecureDisplay value={buildEngine.BuildEngineApiAccessToken} />
       </div>
       <div>
         <IconContainer icon={Icons.Organization} width={16} />
