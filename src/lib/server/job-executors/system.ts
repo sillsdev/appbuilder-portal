@@ -129,8 +129,10 @@ export async function checkSystemStatuses(
     disconnected: await DatabaseReads.systemStatuses.count({
       where: { SystemAvailable: false, ...activeSystems }
     }),
-    inactive: await DatabaseReads.systemStatuses.count({ where: { Active: false } })
-    inactive: await DatabaseReads.systemStatuses.count({ where: { NOT: activeSystems } })
+    inactive: await DatabaseReads.systemStatuses.count({ where: { NOT: activeSystems } }),
+    deleted: await DatabaseWrites.systemStatuses.deleteMany({
+      where: { Default: false, Organizations: { none: {} } }
+    })
   };
 }
 
@@ -413,8 +415,7 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
           data: {
             BuildEngineUrl: o.BuildEngineUrl,
             BuildEngineApiAccessToken: o.BuildEngineApiAccessToken,
-            SystemAvailable: false,
-            Active: !o.UseDefaultBuildEngine
+            SystemAvailable: false
           },
           select: {
             Id: true
