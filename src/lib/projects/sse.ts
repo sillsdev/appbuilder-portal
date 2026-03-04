@@ -127,23 +127,6 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               Id: true,
               Name: true
             }
-          },
-          Authors: {
-            select: {
-              User: {
-                select: {
-                  Id: true,
-                  Name: true
-                }
-              }
-            }
-          },
-          Reviewers: {
-            select: {
-              Id: true,
-              Name: true,
-              Email: true
-            }
           }
         }
       });
@@ -255,8 +238,61 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         productsToAdd: productDefinitions.filter(
           (pd) => !projectProductDefinitionIds.includes(pd.Id)
         ),
-        stores: organization?.Stores ?? [],
-        possibleProjectOwners: await DatabaseReads.users.findMany({
+        stores: organization?.Stores ?? []
+      };
+    } catch (e) {
+      span.recordException(e as Error);
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: (e as Error).message
+      });
+    } finally {
+      span.end();
+    }
+  });
+}
+
+export type ProjectGroupsSSE = Awaited<ReturnType<typeof getProjectGroupData>>;
+export async function getProjectGroupData(id: number, userSession: Session['user']) {
+  // permissions checked in auth
+  return tracer.startActiveSpan('getProjectGroups', async (span) => {
+    span.setAttributes({
+      'project.id': id,
+      'project.userId': userSession.userId
+    });
+    try {
+      const project = await DatabaseReads.projects.findUniqueOrThrow({
+        where: {
+          Id: id
+        },
+        select: {
+          OrganizationId: true,
+          OwnerId: true,
+          GroupId: true,
+          Authors: {
+            select: {
+              User: {
+                select: {
+                  Id: true,
+                  Name: true
+                }
+              }
+            }
+          },
+          Reviewers: {
+            select: {
+              Id: true,
+              Name: true,
+              Email: true
+            }
+          }
+        }
+      });
+
+      return {
+        authors: project.Authors,
+        reviewers: project.Reviewers,
+        possibleOwners: await DatabaseReads.users.findMany({
           where: {
             Organizations: {
               some: {
@@ -265,9 +301,13 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             },
             Groups: {
               some: {
-                Id: project.Group.Id
+                Id: project.GroupId
               }
             }
+          },
+          select: {
+            Id: true,
+            Name: true
           }
         }),
         // possibleGroups are ones owned by the same org as the project and contain the project's owner
@@ -276,18 +316,17 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             OwnerId: project.OrganizationId,
             Users: {
               some: {
-                Id: project.Owner.Id
+                Id: project.OwnerId
               }
             }
           }
         }),
         // All users who are members of the group and have the author role in the project's organization
-        // May be a more efficient way to search this, by referencing group memberships instead of users
-        authorsToAdd: await DatabaseReads.users.findMany({
+        possibleAuthors: await DatabaseReads.users.findMany({
           where: {
             Groups: {
               some: {
-                Id: project?.Group.Id
+                Id: project.GroupId
               }
             },
             UserRoles: {
@@ -298,9 +337,13 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             },
             Authors: {
               none: {
-                ProjectId: project.Id
+                ProjectId: id
               }
             }
+          },
+          select: {
+            Id: true,
+            Name: true
           }
         }),
         userGroups: (await userGroupsForOrg(userSession.userId, project.OrganizationId)).map(
