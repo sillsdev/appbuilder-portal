@@ -40,9 +40,8 @@
       {@const prefix = content.substring(0, matchStart)}
       {@const match = content.substring(matchStart, matchEnd)}
       {@const suffix = content.substring(matchEnd)}
-      <pre class="font-sans">
-{prefix}<span class="highlight">{match}</span>{suffix}
-</pre>
+      <!-- prettier-ignore -->
+      <span>{prefix}<span class="highlight">{match}</span>{suffix}</span>
     {:else}
       {content}
     {/if}
