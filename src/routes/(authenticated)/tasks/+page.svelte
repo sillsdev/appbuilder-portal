@@ -42,7 +42,7 @@
               <td colspan="3">
                 <span class="flex items-center">
                   <IconContainer
-                    icon={getProductIcon(userTasks.products.get(task.PD)?.T!)}
+                    icon={getProductIcon(userTasks.products.get(task.PD)?.T)}
                     width={30}
                   />
                   <span>
@@ -101,7 +101,7 @@
               <td>
                 <span class="flex items-center">
                   <IconContainer
-                    icon={getProductIcon(userTasks.products.get(task.PD)?.T!)}
+                    icon={getProductIcon(userTasks.products.get(task.PD)?.T)}
                     width={30}
                   />
                   <span>
