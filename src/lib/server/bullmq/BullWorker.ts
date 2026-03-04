@@ -304,6 +304,9 @@ export class SvelteSSE<J extends BullMQ.SvelteSSEJob> extends BullWorker<J> {
       case BullMQ.JobType.SvelteSSE_UpdateProject:
         SSEPageUpdates.emit('projectPage', job.data.projectIds);
         break;
+      case BullMQ.JobType.SvelteSSE_UpdateProjectGroups:
+        SSEPageUpdates.emit('projectGroups', job.data.projectIds);
+        break;
       case BullMQ.JobType.SvelteSSE_UpdateUserTasks:
         SSEPageUpdates.emit('userTasksPage', job.data.userIds);
         break;

@@ -91,13 +91,22 @@ export async function update(
         }
       );
     }
+
+    // If the group has changed
+    if (groupId && groupId !== existing?.GroupId) {
+      getQueues().SvelteSSE.add(`Update Project #${id} (update groups)`, {
+        type: BullMQ.JobType.SvelteSSE_UpdateProjectGroups,
+        projectIds: [id]
+      });
+    }
+
+    getQueues().SvelteSSE.add(`Update Project #${id} (update details)`, {
+      type: BullMQ.JobType.SvelteSSE_UpdateProject,
+      projectIds: [id]
+    });
   } catch {
     return false;
   }
-  getQueues().SvelteSSE.add(`Update Project #${id} (update details)`, {
-    type: BullMQ.JobType.SvelteSSE_UpdateProject,
-    projectIds: [id]
-  });
   return true;
 }
 

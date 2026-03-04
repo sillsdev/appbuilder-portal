@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 
 export const SSEPageUpdates = new EventEmitter<{
   projectPage: [number[]];
+  projectGroups: [number[]];
   userTasksPage: [number[]];
 }>().setMaxListeners(400);
 // Allow 400 listeners (in the last 10 seconds)

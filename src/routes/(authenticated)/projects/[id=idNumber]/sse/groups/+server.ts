@@ -1,0 +1,51 @@
+import { stringify } from 'devalue';
+import { produce } from 'sveltekit-sse';
+import { SSEPageUpdates } from '$lib/projects/listener';
+import { getProjectGroupData } from '$lib/projects/sse';
+import { DatabaseReads } from '$lib/server/database';
+
+export async function POST(request) {
+  request.locals.security.requireAuthenticated();
+  request.locals.security.requireProjectReadAccess(
+    await DatabaseReads.groups.findMany({
+      where: { Users: { some: { Id: request.locals.security.userId } } },
+      select: { Id: true }
+    }),
+    await DatabaseReads.projects.findUnique({
+      where: { Id: parseInt(request.params.id) }
+    })
+  );
+  const { id: strId } = request.params;
+  return produce(async function start({ emit, lock }) {
+    const id = parseInt(strId);
+    // User will be allowed to see project updates until they reload
+    // even if their permission is revoked during the SSE connection.
+    const { error } = emit(
+      'groupData',
+      stringify(await getProjectGroupData(id, request.locals.security.sessionForm))
+    );
+    if (error) {
+      return;
+    }
+    async function updateCb(updateId: number[]) {
+      // This is a little wasteful because it will calculate much of the same data
+      // multiple times if multiple users are connected to the same project page.
+      if (updateId.includes(id)) {
+        // console.log(`Project page SSE update for project ${id}`);
+        const groupData = await getProjectGroupData(id, request.locals.security.sessionForm);
+        const { error } = emit('groupData', stringify(groupData));
+        if (error) {
+          SSEPageUpdates.off('projectGroups', updateCb);
+          clearInterval(pingInterval);
+        }
+      }
+    }
+    SSEPageUpdates.on('projectGroups', updateCb);
+    const pingInterval = setInterval(function onDisconnect() {
+      const { error } = emit('ping', '');
+      if (!error) return;
+      SSEPageUpdates.off('projectGroups', updateCb);
+      clearInterval(pingInterval);
+    }, 10000).unref();
+  });
+}
