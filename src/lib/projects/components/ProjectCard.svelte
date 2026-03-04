@@ -175,13 +175,15 @@
               <td>
                 {getTimeDateString(product.DateBuilt)}
               </td>
-              <td class="flex flex-row gap-1">
-                {#if product.AppBuilderVersion}
-                  <img src={getAppIcon(project.TypeId)} width={20} alt="" />
-                  {product.AppBuilderVersion}
-                {:else}
-                  -
-                {/if}
+              <td>
+                <span class="flex flex-row gap-1">
+                  {#if product.AppBuilderVersion}
+                    <img src={getAppIcon(project.TypeId)} width={20} alt="" />
+                    {product.AppBuilderVersion}
+                  {:else}
+                    -
+                  {/if}
+                </span>
               </td>
             </tr>
           {/each}
