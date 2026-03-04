@@ -5,19 +5,14 @@ import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { isAdminForOrg } from '$lib/utils/roles';
 
-function typeFilter(search: string): ApplicationType | null {
+function typeFilter(search: string): ApplicationType[] {
   const lowered = search.toLowerCase().trim();
-  if (lowered.includes('sab') || lowered.includes('scrip')) {
-    return ApplicationType.SAB;
-  } else if (lowered.includes('rab') || lowered.includes('read')) {
-    return ApplicationType.RAB;
-  } else if (lowered.includes('dab') || lowered.includes('dict')) {
-    return ApplicationType.DAB;
-  } else if (lowered.includes('kab') || lowered.includes('keyb')) {
-    return ApplicationType.KAB;
-  } else {
-    return null;
-  }
+  return [
+    (lowered.includes('sab') || lowered.includes('scrip')) && ApplicationType.SAB,
+    (lowered.includes('rab') || lowered.includes('read')) && ApplicationType.RAB,
+    (lowered.includes('dab') || lowered.includes('dict')) && ApplicationType.DAB,
+    (lowered.includes('kab') || lowered.includes('keyb')) && ApplicationType.KAB
+  ].filter((t) => !!t);
 }
 
 export function projectFilter(args: {
@@ -27,7 +22,7 @@ export function projectFilter(args: {
   dateUpdatedRange: [Date, Date | null] | null;
   search: string;
 }) {
-  const TypeId = typeFilter(args.search);
+  const types = typeFilter(args.search);
   return {
     OrganizationId: args.organizationId !== null ? args.organizationId : undefined,
     Language: args.langCode
@@ -108,7 +103,7 @@ export function projectFilter(args: {
                   }
                 }
               },
-              ...(TypeId ? [{ TypeId }] : [])
+              ...(types.length ? [{ TypeId: { in: types } }] : [])
             ]
           : undefined
       }
