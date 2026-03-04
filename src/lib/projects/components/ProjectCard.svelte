@@ -134,7 +134,7 @@
                   {product.ProductDefinitionName}
                 </div>
                 {#if product.PackageName}
-                  <div class="wrap-anywhere ml-8">
+                  <div class="wrap-anywhere ml-8 opacity-70 font-bold italic">
                     {@render highlight(product.PackageName)}
                   </div>
                 {/if}
@@ -185,7 +185,7 @@
                   {product.ProductDefinitionName}
                 </div>
                 {#if product.PackageName}
-                  <div class="wrap-anywhere ml-8">
+                  <div class="wrap-anywhere ml-8 opacity-70 font-bold italic">
                     {@render highlight(product.PackageName)}
                   </div>
                 {/if}
