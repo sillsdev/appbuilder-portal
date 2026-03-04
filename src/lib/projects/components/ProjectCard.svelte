@@ -98,6 +98,7 @@
     {#if project.Products.length > 0}
       {@const locale = getLocale()}
       <table class="w-full sm:hidden">
+        <!-- Mobile Display -->
         <thead>
           <tr class="text-left">
             <th colspan="2">{m.projectTable_products()}</th>
@@ -111,6 +112,11 @@
                   <IconContainer icon={getProductIcon(product.Type)} width={30} />
                   {product.ProductDefinitionName}
                 </div>
+                {#if product.PackageName}
+                  <div class="wrap-anywhere ml-8">
+                    {product.PackageName}
+                  </div>
+                {/if}
               </td>
             </tr>
             <tr>
@@ -140,6 +146,7 @@
         </tbody>
       </table>
       <table class="w-full hidden sm:table">
+        <!-- Desktop Display -->
         <thead>
           <tr class="text-left">
             <th>{m.projectTable_products()}</th>
@@ -156,6 +163,11 @@
                   <IconContainer icon={getProductIcon(product.Type)} width={30} />
                   {product.ProductDefinitionName}
                 </div>
+                {#if product.PackageName}
+                  <div class="wrap-anywhere ml-8">
+                    {product.PackageName}
+                  </div>
+                {/if}
               </td>
               <td>
                 {product.VersionBuilt ?? '-'}
