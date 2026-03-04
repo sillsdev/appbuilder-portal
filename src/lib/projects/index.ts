@@ -39,7 +39,8 @@ export const projectSelect = {
         },
         orderBy: { DateUpdated: 'desc' },
         take: 1
-      }
+      },
+      PackageName: true
     }
   },
   Owner: {
@@ -100,7 +101,8 @@ export function pruneProjects(
           DateBuilt,
           WorkflowInstance,
           DatePublished,
-          ProductBuilds
+          ProductBuilds,
+          PackageName
         }) => ({
           Id: Id,
           ProductDefinitionId: ProductDefinition.Id,
@@ -109,6 +111,7 @@ export function pruneProjects(
           VersionBuilt,
           AppBuilderVersion: ProductBuilds.at(0)?.AppBuilderVersion ?? null,
           DateBuilt,
+          PackageName,
           CanRebuild: !!(
             !WorkflowInstance &&
             DatePublished &&
@@ -125,7 +128,7 @@ export function pruneProjects(
   );
 }
 
-export type PrunedProject = ReturnType<typeof pruneProjects>[0];
+export type PrunedProject = ReturnType<typeof pruneProjects>[number];
 
 export const projectSearchSchema = v.object({
   organizationId: v.nullable(idSchema),
