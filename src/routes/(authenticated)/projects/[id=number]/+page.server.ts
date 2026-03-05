@@ -17,7 +17,7 @@ import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { projectActionSchema } from '$lib/projects';
 import { doProjectAction, userGroupsForOrg } from '$lib/projects/server';
-import { getProjectDetails, getProjectGroupData } from '$lib/projects/sse';
+import { getProjectDetails, getProjectGroupData, getProjectOrgData } from '$lib/projects/sse';
 import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { deleteSchema, idSchema, propertiesSchema, stringIdSchema } from '$lib/valibot';
@@ -61,6 +61,7 @@ export const load = (async ({ locals, params }) => {
   return {
     projectData: await getProjectDetails(projectId, locals.security.sessionForm),
     groupData: await getProjectGroupData(projectId, locals.security.sessionForm),
+    orgData: await getProjectOrgData(projectId, locals.security.sessionForm),
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
