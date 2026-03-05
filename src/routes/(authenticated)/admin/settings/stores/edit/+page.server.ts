@@ -38,7 +38,10 @@ export const load = (async ({ url, locals }) => {
       },
       valibot(editSchema)
     ),
-    options: await DatabaseReads.storeTypes.findMany()
+    options: await DatabaseReads.storeTypes.findMany(),
+    orgCount: await DatabaseReads.organizations.count({
+      where: { Projects: { some: { Products: { some: { StoreId: id } } } } }
+    })
   };
 }) satisfies PageServerLoad;
 
