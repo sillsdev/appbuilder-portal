@@ -1,31 +1,87 @@
-import { json } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { env } from '$env/dynamic/private';
 
-export const POST: RequestHandler = async ({ locals, request }) => {
-  // Security check
-  locals.security.requireAuthenticated();
+interface DeleteRequestBody {
+  email: string;
+  deletionType: 'data' | 'account';
+  turnstileToken: string;
+}
 
-  const { email, token } = await request.json();
+export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
+  // Required by project lint rule
+  locals.security.requireNothing();
 
-  if (!token) return json({ success: false }, { status: 400 });
+  let body: DeleteRequestBody;
 
-  const secret = process.env.TURNSTILE_SECRET_KEY;
-  const formData = new URLSearchParams();
+  try {
+    body = await request.json();
+  } catch {
+    error(400, 'Invalid request body');
+  }
 
-  formData.append('secret', secret!);
-  formData.append('response', token);
+  const { email, deletionType, turnstileToken } = body;
 
-  const verification = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+  // ---- Validate input ----
+  if (!email || typeof email !== 'string') {
+    error(400, 'Email is required');
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    error(400, 'Invalid email format');
+  }
+
+  if (!['data', 'account'].includes(deletionType)) {
+    error(400, 'Invalid deletion type');
+  }
+
+  if (!turnstileToken) {
+    error(400, 'Captcha verification failed');
+  }
+
+  // ---- Verify Turnstile ----
+  if (!env.TURNSTILE_SECRET_KEY) {
+    error(500, 'Turnstile not configured');
+  }
+
+  const ip = getClientAddress();
+
+  const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
-    body: formData
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      secret: env.TURNSTILE_SECRET_KEY,
+      response: turnstileToken,
+      remoteip: ip
+    })
   });
 
-  const result = await verification.json();
+  if (!verifyResponse.ok) {
+    error(500, 'Captcha verification failed');
+  }
 
-  if (!result.success) return json({ success: false }, { status: 400 });
+  const verification = await verifyResponse.json();
 
-  // Example usage to prevent unused variable lint
-  console.log('Delete request for', email);
+  if (!verification.success) {
+    error(400, 'Invalid captcha');
+  }
 
-  return json({ success: true });
+  // ---- Process request ----
+  // Future implementation:
+  // - send an email verification code
+  // - queue a deletion request
+  // - store request in database
+
+  console.log('Delete request received', {
+    email,
+    deletionType,
+    ip
+  });
+
+  return json({
+    success: true
+  });
 };

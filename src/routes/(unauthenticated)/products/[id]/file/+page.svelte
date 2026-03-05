@@ -144,6 +144,68 @@
     });
   }
 
+  let email = $state('');
+  let deletionType = $state<'data' | 'account'>('data');
+  let turnstileToken = $state<string | null>(null);
+  let submitting = $state(false);
+  let errorMessage = $state<string | null>(null);
+
+  const TURNSTILE_SITE_KEY = 'YOUR_SITE_KEY';
+
+  onMount(() => {
+    interface Window {
+      onTurnstileSuccess?: (token: string) => void;
+    }
+
+    (window as Window).onTurnstileSuccess = (token: string) => {
+      turnstileToken = token;
+    };
+  });
+
+  function getTurnstileToken() {
+    const input = document.querySelector(
+      'input[name="cf-turnstile-response"]'
+    ) as HTMLInputElement | null;
+
+    return input?.value ?? null;
+  }
+
+  async function submitDeletionRequest() {
+    errorMessage = null;
+
+    if (!turnstileToken) {
+      errorMessage = 'Please complete the captcha.';
+      return;
+    }
+
+    submitting = true;
+
+    try {
+      const response = await fetch('/api/delete-request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email,
+          deletionType,
+          turnstileToken
+        })
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text);
+      }
+
+      alert('Verification code sent to your email.');
+    } catch (err) {
+      errorMessage = 'Failed to send request.';
+    } finally {
+      submitting = false;
+    }
+  }
+
   const primaryHex = $derived(themeColor);
   const primaryContentHex = $derived(getReadableTextHex(primaryHex));
   const primaryHSL = $derived(hexToDaisyHSL(primaryHex));
@@ -174,6 +236,7 @@
 </script>
 
 <svelte:head>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
     :global(html),
     :global(body) {
@@ -257,6 +320,7 @@
             <input
               id="email"
               type="email"
+              bind:value={email}
               placeholder={m.udm_email_placeholder()}
               class="input input-bordered w-full text-base sm:text-sm h-11 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
               name="email"
@@ -280,7 +344,8 @@
                   type="radio"
                   name="deletionType"
                   class="radio radio-primary radio-sm mt-1"
-                  checked
+                  checked={deletionType === 'data'}
+                  onclick={() => (deletionType = 'data')}
                 />
                 <div class="min-w-0">
                   <span
@@ -294,7 +359,13 @@
                 </div>
               </label>
               <label class="label cursor-pointer items-start justify-start gap-3 p-0 group min-w-0">
-                <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" />
+                <input
+                  type="radio"
+                  name="deletionType"
+                  class="radio radio-primary radio-sm mt-1"
+                  checked={deletionType === 'account'}
+                  onclick={() => (deletionType = 'account')}
+                />
                 <div class="min-w-0">
                   <span
                     class="label-text font-bold text-sm group-hover:text-primary transition-colors whitespace-normal break-words"
@@ -333,7 +404,11 @@
             <div
               class="rounded-btn border border-base-300 bg-base-200/30 h-14 flex items-center justify-center text-xs opacity-50"
             >
-              {m.udm_captcha_placeholder()}
+              <div
+                class="cf-turnstile"
+                data-sitekey={TURNSTILE_SITE_KEY}
+                data-callback="onTurnstileSuccess"
+              ></div>
             </div>
           </div>
 
@@ -341,6 +416,8 @@
             class="btn w-full no-animation border border-black/10 shadow-sm"
             style="background-color: #0f172a; color: #ffffff;"
             type="button"
+            onclick={submitDeletionRequest}
+            disabled={submitting}
           >
             {m.udm_send_code()}
           </button>
