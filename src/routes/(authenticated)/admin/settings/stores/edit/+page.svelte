@@ -50,6 +50,7 @@
     key="common_type"
     input={{
       readonly: true,
+      disabled: true,
       icon: getStoreIcon(data.store.StoreTypeId)
     }}
     value={data.store.StoreType.Description}
