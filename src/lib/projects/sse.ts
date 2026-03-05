@@ -336,44 +336,62 @@ export async function getProjectOrgData(id: number, userSession: Session['user']
         }
       });
       span.addEvent('Project fetched');
-      return await DatabaseReads.organizations.findUniqueOrThrow({
-        where: {
-          Id: project.OrganizationId
-        },
-        select: {
-          Stores: {
-            select: {
-              Id: true,
-              BuildEnginePublisherId: true,
-              GooglePlayTitle: true,
-              Description: true,
-              StoreTypeId: true
-            }
+      return {
+        Stores: await DatabaseReads.stores.findMany({
+          where: {
+            OR: [
+              { Organizations: { some: { Id: project.OrganizationId } } },
+              { Products: { some: { ProjectId: id } } }
+            ]
           },
-          ProductDefinitions: {
-            where: {
-              Organizations: { some: { Id: project.OrganizationId } },
-              OR: [
-                { AllowAllApplicationTypes: true },
-                { ApplicationTypes: { some: { Id: project.TypeId } } }
-              ]
-            },
-            select: {
-              Id: true,
-              Name: true,
-              Description: true,
-              Workflow: {
-                select: {
-                  ProductType: true,
-                  StoreTypeId: true
-                }
-              },
-              RebuildWorkflowId: true,
-              RepublishWorkflowId: true
+          select: {
+            Id: true,
+            BuildEnginePublisherId: true,
+            GooglePlayTitle: true,
+            Description: true,
+            StoreTypeId: true,
+            _count: {
+              select: {
+                Organizations: { where: { Id: project.OrganizationId } }
+              }
             }
           }
-        }
-      });
+        }),
+        ProductDefinitions: await DatabaseReads.productDefinitions.findMany({
+          where: {
+            OR: [
+              {
+                Organizations: { some: { Id: project.OrganizationId } },
+                OR: [
+                  { AllowAllApplicationTypes: true },
+                  { ApplicationTypes: { some: { Id: project.TypeId } } }
+                ]
+              },
+              {
+                Products: { some: { ProjectId: id } }
+              }
+            ]
+          },
+          select: {
+            Id: true,
+            Name: true,
+            Description: true,
+            Workflow: {
+              select: {
+                ProductType: true,
+                StoreTypeId: true
+              }
+            },
+            RebuildWorkflowId: true,
+            RepublishWorkflowId: true,
+            _count: {
+              select: {
+                Organizations: { where: { Id: project.OrganizationId } }
+              }
+            }
+          }
+        })
+      };
     } catch (e) {
       span.recordException(e as Error);
       span.setStatus({
