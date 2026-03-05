@@ -13,20 +13,40 @@
     route?: string;
     select?: Snippet;
     actions?: Snippet;
+    search?: string;
   }
 
-  let { project, route = 'projects', select, actions }: Props = $props();
+  let { project, route = 'projects', select, actions, search }: Props = $props();
 </script>
 
 {#snippet langIcon(lang: string | null)}
   {#if lang}
     <span class="badge badge-primary mb-2 mr-4 [height:1.35rem]" title={m.projectTable_language()}>
       <IconContainer icon={Icons.Language} width={20} class="mr-1" />
-      <!-- <LanguageIconContainer color="lightgray" size="20" /> -->
       <span class="overflow-auto text-center">
-        {lang}
+        {@render highlight(lang)}
       </span>
     </span>
+  {/if}
+{/snippet}
+
+{#snippet highlight(content: string)}
+  {#if search && content}
+    {@const matchStart = content
+      .toLocaleLowerCase(getLocale())
+      .indexOf(search.toLocaleLowerCase(getLocale()))}
+    {#if matchStart >= 0}
+      {@const matchEnd = matchStart + search.length}
+      {@const prefix = content.substring(0, matchStart)}
+      {@const match = content.substring(matchStart, matchEnd)}
+      {@const suffix = content.substring(matchEnd)}
+      <!-- prettier-ignore -->
+      <span>{prefix}<span class="highlight">{match}</span>{suffix}</span>
+    {:else}
+      {content}
+    {/if}
+  {:else}
+    {content}
   {/if}
 {/snippet}
 
@@ -37,7 +57,7 @@
       <div class="flex flex-row flex-wrap grow">
         <a href={localizeHref(`/${route}/${project.Id}`)} class="flex flex-row gap-2 items-start">
           <b class="[color:#55f]">
-            {project.Name}
+            {@render highlight(project.Name)}
           </b>
           <img src={getAppIcon(project.TypeId)} width={20} alt="" />
         </a>
@@ -51,16 +71,16 @@
       <div class="mr-2">
         <span class="flex items-center" title={m.projectTable_owner()}>
           <IconContainer icon={Icons.User} width={20} class="mr-1 shrink-0" />
-          {project.OwnerName}
+          {@render highlight(project.OwnerName ?? '')}
         </span>
         <span class="flex items-center" title={m.projectTable_org()}>
           <IconContainer icon={Icons.Organization} width={20} class="mr-1 shrink-0" />
-          {project.OrganizationName}
+          {@render highlight(project.OrganizationName)}
         </span>
         <span class="flex items-center [margin-right:0]" title={m.projectTable_group()}>
           <IconContainer icon={Icons.Group} width={20} class="mr-1 shrink-0" />
           <span class=" text-nowrap">
-            {project.GroupName}
+            {@render highlight(project.GroupName)}
           </span>
         </span>
       </div>
@@ -98,6 +118,7 @@
     {#if project.Products.length > 0}
       {@const locale = getLocale()}
       <table class="w-full sm:hidden">
+        <!-- Mobile Display -->
         <thead>
           <tr class="text-left">
             <th colspan="2">{m.projectTable_products()}</th>
@@ -111,6 +132,11 @@
                   <IconContainer icon={getProductIcon(product.Type)} width={30} />
                   {product.ProductDefinitionName}
                 </div>
+                {#if product.PackageName}
+                  <div class="wrap-anywhere ml-8 opacity-70 font-bold italic">
+                    {@render highlight(product.PackageName)}
+                  </div>
+                {/if}
               </td>
             </tr>
             <tr>
@@ -140,6 +166,7 @@
         </tbody>
       </table>
       <table class="w-full hidden sm:table">
+        <!-- Desktop Display -->
         <thead>
           <tr class="text-left">
             <th>{m.projectTable_products()}</th>
@@ -156,6 +183,11 @@
                   <IconContainer icon={getProductIcon(product.Type)} width={30} />
                   {product.ProductDefinitionName}
                 </div>
+                {#if product.PackageName}
+                  <div class="wrap-anywhere ml-8 opacity-70 font-bold italic">
+                    {@render highlight(product.PackageName)}
+                  </div>
+                {/if}
               </td>
               <td>
                 {product.VersionBuilt ?? '-'}
@@ -163,13 +195,15 @@
               <td>
                 {getTimeDateString(product.DateBuilt)}
               </td>
-              <td class="flex flex-row gap-1">
-                {#if product.AppBuilderVersion}
-                  <img src={getAppIcon(project.TypeId)} width={20} alt="" />
-                  {product.AppBuilderVersion}
-                {:else}
-                  -
-                {/if}
+              <td>
+                <span class="flex flex-row gap-1">
+                  {#if product.AppBuilderVersion}
+                    <img src={getAppIcon(project.TypeId)} width={20} alt="" />
+                    {product.AppBuilderVersion}
+                  {:else}
+                    -
+                  {/if}
+                </span>
               </td>
             </tr>
           {/each}
@@ -191,5 +225,10 @@
 
   tr:where(.row) > td {
     padding-bottom: var(--spacing);
+  }
+
+  .highlight {
+    background-color: var(--color-accent);
+    color: var(--color-accent-content);
   }
 </style>

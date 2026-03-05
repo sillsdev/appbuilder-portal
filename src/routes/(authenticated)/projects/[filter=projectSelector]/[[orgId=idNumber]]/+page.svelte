@@ -423,7 +423,7 @@
     {@const locale = getLocale()}
     <div class="w-full relative p-4">
       {#each projects.toSorted((a, b) => byName(a, b, locale)) as project}
-        <ProjectCard {project}>
+        <ProjectCard {project} search={$pageForm.search}>
           {#snippet select()}
             {#if canModifyProjects}
               <input

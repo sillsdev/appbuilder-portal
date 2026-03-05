@@ -1,9 +1,19 @@
 import type { Prisma } from '@prisma/client';
-import { ProductTransitionType, RoleId } from '$lib/prisma';
+import { ApplicationType, ProductTransitionType, RoleId } from '$lib/prisma';
 import { type ProjectForAction, canClaimProject } from '$lib/projects';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { isAdminForOrg } from '$lib/utils/roles';
+
+function typeFilter(search: string): ApplicationType[] {
+  const lowered = search.toLowerCase().trim();
+  return [
+    (lowered.includes('sab') || lowered.includes('scrip')) && ApplicationType.SAB,
+    (lowered.includes('rab') || lowered.includes('read')) && ApplicationType.RAB,
+    (lowered.includes('dab') || lowered.includes('dict')) && ApplicationType.DAB,
+    (lowered.includes('kab') || lowered.includes('keyb')) && ApplicationType.KAB
+  ].filter((t) => !!t);
+}
 
 export function projectFilter(args: {
   organizationId: number | null;
@@ -12,6 +22,7 @@ export function projectFilter(args: {
   dateUpdatedRange: [Date, Date | null] | null;
   search: string;
 }) {
+  const types = typeFilter(args.search);
   return {
     OrganizationId: args.organizationId !== null ? args.organizationId : undefined,
     Language: args.langCode
@@ -91,7 +102,8 @@ export function projectFilter(args: {
                     }
                   }
                 }
-              }
+              },
+              ...(types.length ? [{ TypeId: { in: types } }] : [])
             ]
           : undefined
       }

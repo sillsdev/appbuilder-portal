@@ -107,7 +107,7 @@
   {#if projects.length > 0}
     <div class="w-full relative p-4">
       {#each projects as project}
-        <ProjectCard {project} route="directory" />
+        <ProjectCard {project} route="directory" search={$form.search} />
       {/each}
     </div>
   {:else}
