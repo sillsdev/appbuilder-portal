@@ -79,7 +79,9 @@
     const activeProducts = new Set(projectData.project.Products.map((p) => p.ProductDefinition.Id));
     return {
       productMap: new Map(orgData.ProductDefinitions.map((pd) => [pd.Id, pd])),
-      availableProducts: orgData.ProductDefinitions.filter((pd) => !activeProducts.has(pd.Id))
+      availableProducts: orgData.ProductDefinitions.filter(
+        (pd) => !activeProducts.has(pd.Id) && pd._count.Organizations
+      )
     };
   });
 </script>
@@ -232,7 +234,7 @@
             <AddProduct
               bind:modal={addProductModal}
               prodDefs={availableProducts}
-              stores={orgData.Stores}
+              stores={orgData.Stores.filter((s) => !!s._count.Organizations)}
               endpoint="addProduct"
             />
           {/if}
