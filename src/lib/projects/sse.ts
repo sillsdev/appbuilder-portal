@@ -323,6 +323,12 @@ export async function getProjectGroupData(id: number, userSession: Session['user
               some: {
                 Id: project.GroupId
               }
+            },
+            UserRoles: {
+              some: {
+                OrganizationId: project.OrganizationId,
+                RoleId: { in: [RoleId.AppBuilder, RoleId.OrgAdmin] }
+              }
             }
           },
           select: {
