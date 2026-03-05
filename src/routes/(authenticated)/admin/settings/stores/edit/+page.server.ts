@@ -27,6 +27,10 @@ export const load = (async ({ url, locals }) => {
   });
   if (!store) return redirect(302, localizeHref('/admin/settings/stores'));
 
+  const userCount = await DatabaseReads.organizations.count({
+    where: { Projects: { some: { Products: { some: { StoreId: id } } } } }
+  });
+
   return {
     store,
     form: await superValidate(
@@ -38,7 +42,8 @@ export const load = (async ({ url, locals }) => {
       },
       valibot(editSchema)
     ),
-    options: await DatabaseReads.storeTypes.findMany()
+    options: await DatabaseReads.storeTypes.findMany(),
+    userCount
   };
 }) satisfies PageServerLoad;
 
