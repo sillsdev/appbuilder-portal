@@ -64,47 +64,65 @@ export async function toggleRole(
     });
   }
 
-  /*
-   * Only enqueue tasks when:
-   * 1. The role is OrgAdmin AND
-   * 2. Either we're adding a role that hasn't already been added or removing a role.
+  /**
+   * Only update when:
+   * 1. Either we're adding a role that hasn't already been added or removing a role.
    * This prevents duplicate task enqueuing when adding an already-added role
    */
-  if (role === RoleId.OrgAdmin && !(enabled && existing)) {
-    await getQueues().UserTasks.addBulk(
-      (
-        await prisma.projects.findMany({
-          where: { OrganizationId },
-          select: { Id: true }
-        })
-      ).flatMap((p) => [
-        {
-          name: `${enabled ? 'Add' : 'Remove'} OrgAdmin tasks for User #${UserId} on Project #${p.Id}`,
-          data: {
-            type: BullMQ.JobType.UserTasks_Workflow,
-            scope: 'Project',
-            projectId: p.Id,
-            operation: {
-              type: enabled ? BullMQ.UserTasks.OpType.Create : BullMQ.UserTasks.OpType.Delete,
-              users: [UserId],
-              roles: [RoleId.OrgAdmin]
+  if (!(enabled && existing)) {
+    /*
+     * Only enqueue tasks when:
+     * 1. The role is OrgAdmin
+     */
+    if (role === RoleId.OrgAdmin) {
+      await getQueues().UserTasks.addBulk(
+        (
+          await prisma.projects.findMany({
+            where: { OrganizationId },
+            select: { Id: true }
+          })
+        ).flatMap((p) => [
+          {
+            name: `${enabled ? 'Add' : 'Remove'} OrgAdmin tasks for User #${UserId} on Project #${p.Id}`,
+            data: {
+              type: BullMQ.JobType.UserTasks_Workflow,
+              scope: 'Project',
+              projectId: p.Id,
+              operation: {
+                type: enabled ? BullMQ.UserTasks.OpType.Create : BullMQ.UserTasks.OpType.Delete,
+                users: [UserId],
+                roles: [RoleId.OrgAdmin]
+              }
+            }
+          },
+          {
+            name: `${enabled ? 'Add' : 'Remove'} OrgAdmin data deletion requests for User #${UserId} on Project #${p.Id}`,
+            data: {
+              type: BullMQ.JobType.UserTasks_DeleteRequest,
+              scope: 'Project',
+              projectId: p.Id,
+              operation: {
+                type: enabled ? BullMQ.UserTasks.OpType.Create : BullMQ.UserTasks.OpType.Delete,
+                users: [UserId],
+                roles: [RoleId.OrgAdmin]
+              }
             }
           }
-        },
-        {
-          name: `${enabled ? 'Add' : 'Remove'} OrgAdmin data deletion requests for User #${UserId} on Project #${p.Id}`,
-          data: {
-            type: BullMQ.JobType.UserTasks_DeleteRequest,
-            scope: 'Project',
-            projectId: p.Id,
-            operation: {
-              type: enabled ? BullMQ.UserTasks.OpType.Create : BullMQ.UserTasks.OpType.Delete,
-              users: [UserId],
-              roles: [RoleId.OrgAdmin]
-            }
-          }
-        }
-      ])
+        ])
+      );
+    }
+
+    getQueues().SvelteSSE.add(
+      `Update Projects for Org #${OrganizationId} (role #${role} user #${UserId} ${enabled ? 'added' : 'removed'})`,
+      {
+        type: BullMQ.JobType.SvelteSSE_UpdateProjectGroups,
+        projectIds: (
+          await prisma.projects.findMany({
+            where: { OrganizationId },
+            select: { Id: true }
+          })
+        ).map((p) => p.Id)
+      }
     );
   }
   return true;
@@ -135,7 +153,7 @@ export async function toggleGroup(
     select: { Id: true }
   });
 
-  return (
+  const updated =
     orgOwnsGroup &&
     userInOrg &&
     (enabled || !userHasProjectInGroup) &&
@@ -151,8 +169,24 @@ export async function toggleGroup(
       select: {
         Id: true
       }
-    }))
-  );
+    }));
+
+  if (updated) {
+    getQueues().SvelteSSE.add(
+      `Update Projects for Group #${GroupId} (user #${UserId} ${enabled ? 'added' : 'removed'})`,
+      {
+        type: BullMQ.JobType.SvelteSSE_UpdateProjectGroups,
+        projectIds: (
+          await prisma.projects.findMany({
+            where: { GroupId },
+            select: { Id: true }
+          })
+        ).map((p) => p.Id)
+      }
+    );
+  }
+
+  return updated;
 }
 
 export async function acceptInvite(userId: number, inviteToken: string) {
@@ -217,6 +251,20 @@ export async function acceptInvite(userId: number, inviteToken: string) {
       Redeemed: true
     }
   });
+
+  getQueues().SvelteSSE.add(
+    `Update Projects for Org #${invite.OrganizationId} (user #${userId} added)`,
+    {
+      type: BullMQ.JobType.SvelteSSE_UpdateProjectGroups,
+      projectIds: (
+        await prisma.projects.findMany({
+          where: { OrganizationId: invite.OrganizationId },
+          select: { Id: true }
+        })
+      ).map((p) => p.Id)
+    }
+  );
+
   return true;
 }
 
