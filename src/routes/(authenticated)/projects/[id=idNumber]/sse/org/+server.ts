@@ -1,4 +1,4 @@
-import { createProducer, getProjectGroupData } from '$lib/projects/sse';
+import { createProducer, getProjectOrgData } from '$lib/projects/sse';
 import { DatabaseReads } from '$lib/server/database';
 
 export async function POST({ locals, params }) {
@@ -16,8 +16,8 @@ export async function POST({ locals, params }) {
   return createProducer(
     id,
     locals.security.sessionForm,
-    'projectGroups',
-    'groupData',
-    getProjectGroupData
+    'projectOrg',
+    'orgData',
+    getProjectOrgData
   );
 }

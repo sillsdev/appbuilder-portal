@@ -1,8 +1,10 @@
 import type { Session } from '@auth/sveltekit';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { error } from '@sveltejs/kit';
+import { stringify } from 'devalue';
+import { produce } from 'sveltekit-sse';
+import { type SSEPageEvents, SSEPageUpdates } from './listener';
 import { RoleId } from '$lib/prisma';
-import { getProductActions } from '$lib/products';
-import { canModifyProject } from '$lib/projects';
 import { userGroupsForOrg } from '$lib/projects/server';
 import { getURLandToken } from '$lib/server/build-engine-api/requests';
 import { DatabaseReads } from '$lib/server/database';
@@ -52,15 +54,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               Properties: true,
               ProductDefinition: {
                 select: {
-                  Id: true,
-                  Name: true,
-                  RebuildWorkflowId: true,
-                  RepublishWorkflowId: true,
-                  Workflow: {
-                    select: {
-                      ProductType: true
-                    }
-                  }
+                  Id: true
                 }
               },
               // Probably don't need to optimize this. Unless it's a really large org,
@@ -73,12 +67,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
                   UserId: true
                 }
               },
-              Store: {
-                select: {
-                  StoreTypeId: true,
-                  Description: true
-                }
-              },
+              StoreId: true,
               BuildEngineJobId: isSuper,
               CurrentBuildId: isSuper,
               CurrentReleaseId: isSuper,
@@ -136,15 +125,6 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           Id: project.OrganizationId
         },
         select: {
-          Stores: {
-            select: {
-              Id: true,
-              BuildEnginePublisherId: true,
-              GooglePlayTitle: true,
-              Description: true,
-              StoreTypeId: true
-            }
-          },
           System: isSuper,
           UseDefaultBuildEngine: isSuper
         }
@@ -189,32 +169,6 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         transitions.find((tr) => tr.ProductId === p.Id && tr.DateTransition === null)!
       ]);
 
-      const productDefinitions = await DatabaseReads.productDefinitions.findMany({
-        where: {
-          Organizations: { some: { Id: project.OrganizationId } },
-          OR: [
-            { AllowAllApplicationTypes: true },
-            { ApplicationTypes: { some: { Id: project.ApplicationType.Id } } }
-          ]
-        },
-        select: {
-          Id: true,
-          Name: true,
-          Description: true,
-          Workflow: {
-            select: {
-              ProductType: true,
-              StoreTypeId: true
-            }
-          }
-        }
-      });
-
-      const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
-      span.addEvent('Product definitions fetched');
-
-      const canEdit = canModifyProject(userSession, project.Owner.Id, project.OrganizationId);
-
       return {
         project: {
           ...project,
@@ -229,16 +183,9 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             ActiveTransition: strippedTransitions.find(
               (t) => (t[0] ?? t[1])?.ProductId === product.Id
             )?.[1],
-            actions: canEdit
-              ? getProductActions(product, project.Owner.Id, userSession.userId)
-              : [],
             BuildEngineUrl: isSuper ? `${getURLandToken(organization).url}` : undefined
           }))
-        },
-        productsToAdd: productDefinitions.filter(
-          (pd) => !projectProductDefinitionIds.includes(pd.Id)
-        ),
-        stores: organization?.Stores ?? []
+        }
       };
     } catch (e) {
       span.recordException(e as Error);
@@ -362,6 +309,76 @@ export async function getProjectGroupData(id: number, userSession: Session['user
   });
 }
 
+export type ProjectOrgsSSE = Awaited<ReturnType<typeof getProjectOrgData>>;
+export async function getProjectOrgData(id: number, userSession: Session['user']) {
+  // permissions checked in auth
+  return tracer.startActiveSpan('getProjectOrg', async (span) => {
+    span.setAttributes({
+      'project.id': id,
+      'project.userId': userSession.userId
+    });
+    try {
+      const project = await DatabaseReads.projects.findUniqueOrThrow({
+        where: {
+          Id: id
+        },
+        select: {
+          OrganizationId: true,
+          TypeId: true
+        }
+      });
+      span.addEvent('Project fetched');
+      return await DatabaseReads.organizations.findUniqueOrThrow({
+        where: {
+          Id: project.OrganizationId
+        },
+        select: {
+          Stores: {
+            select: {
+              Id: true,
+              BuildEnginePublisherId: true,
+              GooglePlayTitle: true,
+              Description: true,
+              StoreTypeId: true
+            }
+          },
+          ProductDefinitions: {
+            where: {
+              Organizations: { some: { Id: project.OrganizationId } },
+              OR: [
+                { AllowAllApplicationTypes: true },
+                { ApplicationTypes: { some: { Id: project.TypeId } } }
+              ]
+            },
+            select: {
+              Id: true,
+              Name: true,
+              Description: true,
+              Workflow: {
+                select: {
+                  ProductType: true,
+                  StoreTypeId: true
+                }
+              },
+              RebuildWorkflowId: true,
+              RepublishWorkflowId: true
+            }
+          }
+        }
+      });
+    } catch (e) {
+      span.recordException(e as Error);
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: (e as Error).message
+      });
+      throw error(500);
+    } finally {
+      span.end();
+    }
+  });
+}
+
 /**
  * S = Status
  * C = Comment
@@ -447,4 +464,41 @@ export async function getUserTasks(userId: number) {
       ).map((pd) => [pd.Id, { N: pd.Name, T: pd.Workflow.ProductType }])
     )
   };
+}
+
+export function createProducer<T>(
+  id: number,
+  userSession: Session['user'],
+  stream: keyof SSEPageEvents,
+  event: string,
+  query: (id: number, userSession: Session['user']) => Promise<T>
+) {
+  return produce(async function start({ emit, lock }) {
+    // User will be allowed to see project updates until they reload
+    // even if their permission is revoked during the SSE connection.
+    const { error } = emit(event, stringify(await query(id, userSession)));
+    if (error) {
+      return;
+    }
+    async function updateCb(updateId: number[]) {
+      // This is a little wasteful because it will calculate much of the same data
+      // multiple times if multiple users are connected to the same project page.
+      if (updateId.includes(id)) {
+        // console.log(`Project page SSE update for project ${id}`);
+        const data = await query(id, userSession);
+        const { error } = emit(event, stringify(data));
+        if (error) {
+          SSEPageUpdates.off(stream, updateCb);
+          clearInterval(pingInterval);
+        }
+      }
+    }
+    SSEPageUpdates.on(stream, updateCb);
+    const pingInterval = setInterval(function onDisconnect() {
+      const { error } = emit('ping', '');
+      if (!error) return;
+      SSEPageUpdates.off(stream, updateCb);
+      clearInterval(pingInterval);
+    }, 10000).unref();
+  });
 }

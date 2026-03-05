@@ -12,7 +12,7 @@
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
-  import { type ProductActionType } from '$lib/products';
+  import { getProductActions } from '$lib/products';
   import ProductDetails, {
     type Props as ProductDetailProps,
     type Transition,
@@ -35,6 +35,7 @@
         Name: true;
         DateArchived: true;
         OrganizationId: true;
+        OwnerId: true;
       };
     }>;
     product: Prisma.ProductsGetPayload<{
@@ -51,6 +52,8 @@
                 ProductType: true;
               };
             };
+            RebuildWorkflowId: true;
+            RepublishWorkflowId: true;
           };
         };
         UserTasks: {
@@ -62,12 +65,16 @@
         WorkflowInstance: {
           select: {
             State: true;
+            WorkflowDefinition: {
+              select: {
+                Type: true;
+              };
+            };
           };
         };
       };
     }> & {
       Transitions: Transition[];
-      actions: ProductActionType[];
       ActiveTransition?: Transition;
       PreviousTransition?: Transition;
     } & ProductDetailProps['product'];
@@ -83,6 +90,10 @@
   let deleteProductModal: HTMLDialogElement | undefined = $state(undefined);
   let updateProductModal: HTMLDialogElement | undefined = $state(undefined);
   const showTaskWaiting = $derived(!!product.WorkflowInstance);
+
+  const actions = $derived(
+    canEdit ? getProductActions(product, project.OwnerId, page.data.session?.user.userId ?? -1) : []
+  );
 
   async function handleProductAction(productId: string, action: string) {
     try {
@@ -221,7 +232,7 @@
         <IconContainer icon={Icons.Info} width={20} />
         {m.products_details()}
       </button>
-      {#each product.actions as action}
+      {#each actions as action}
         {@const message =
           //@ts-expect-error this is in fact correct
           m['products_acts_' + action]()}

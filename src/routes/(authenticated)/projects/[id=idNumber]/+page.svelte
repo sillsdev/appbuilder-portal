@@ -15,7 +15,7 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { canClaimProject, canModifyProject } from '$lib/projects';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
-  import type { ProjectDataSSE, ProjectGroupsSSE } from '$lib/projects/sse';
+  import type { ProjectDataSSE, ProjectGroupsSSE, ProjectOrgsSSE } from '$lib/projects/sse';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
@@ -46,9 +46,11 @@
 
   const projectDataSSE: Readable<ProjectDataSSE> = createSource('', 'projectData');
   const groupDataSSE: Readable<ProjectGroupsSSE> = createSource('/groups', 'groupData');
+  const orgDataSSE: Readable<ProjectOrgsSSE> = createSource('/org', 'orgData');
 
   const projectData = $derived($projectDataSSE ?? data.projectData);
   const groupData = $derived($groupDataSSE ?? data.groupData);
+  const orgData = $derived($orgDataSSE ?? data.orgData);
   const dateCreated = $derived(getRelativeTime(projectData?.project?.DateCreated ?? null));
   const dateArchived = $derived(getRelativeTime(projectData?.project?.DateArchived ?? null));
 
@@ -68,6 +70,16 @@
       groupData?.userGroups ?? []
     )
   );
+
+  const { productMap, availableProducts } = $derived.by(() => {
+    const activeProducts = new Set(
+      projectData?.project.Products.map((p) => p.ProductDefinition.Id)
+    );
+    return {
+      productMap: new Map(orgData.ProductDefinitions.map((pd) => [pd.Id, pd])),
+      availableProducts: orgData.ProductDefinitions.filter((pd) => !activeProducts.has(pd.Id))
+    };
+  });
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
@@ -214,7 +226,7 @@
               onclick={() => addProductModal?.showModal()}
               disabled={!(
                 canEdit &&
-                projectData.productsToAdd.length &&
+                availableProducts.length &&
                 projectData.project.RepositoryUrl &&
                 !projectData.project.DateArchived
               )}
@@ -225,8 +237,8 @@
           {#if canEdit}
             <AddProduct
               bind:modal={addProductModal}
-              prodDefs={projectData.productsToAdd}
-              stores={projectData.stores}
+              prodDefs={availableProducts}
+              stores={orgData.Stores}
               endpoint="addProduct"
             />
           {/if}
@@ -236,7 +248,12 @@
           {#if !projectData?.project?.Products.length}
             {m.projectTable_noProducts()}
           {:else}
-            {#each projectData.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, getLocale()) ) as product}
+            {@const products = projectData.project.Products.map((p) => ({
+              ...p,
+              ProductDefinition: productMap.get(p.ProductDefinition.Id)!,
+              Store: orgData.Stores.find((s) => s.Id === p.StoreId)!
+            }))}
+            {#each products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, getLocale()) ) as product}
               <ProductCard
                 {product}
                 project={projectData.project}
