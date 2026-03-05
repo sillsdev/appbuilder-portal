@@ -51,30 +51,28 @@
   const projectData = $derived($projectDataSSE ?? data.projectData);
   const groupData = $derived($groupDataSSE ?? data.groupData);
   const orgData = $derived($orgDataSSE ?? data.orgData);
-  const dateCreated = $derived(getRelativeTime(projectData?.project?.DateCreated ?? null));
-  const dateArchived = $derived(getRelativeTime(projectData?.project?.DateArchived ?? null));
+  const dateCreated = $derived(getRelativeTime(projectData.project.DateCreated ?? null));
+  const dateArchived = $derived(getRelativeTime(projectData.project.DateArchived ?? null));
 
   const canEdit = $derived(
     canModifyProject(
       data.session.user,
-      projectData?.project.OwnerId ?? -1,
-      projectData?.project.OrganizationId ?? -1
+      projectData.project.OwnerId,
+      projectData.project.OrganizationId
     )
   );
   const canClaim = $derived(
     canClaimProject(
       data.session.user,
-      projectData?.project.OwnerId ?? -1,
-      projectData?.project.OrganizationId ?? -1,
-      projectData?.project.GroupId ?? -1,
-      groupData?.userGroups ?? []
+      projectData.project.OwnerId,
+      projectData.project.OrganizationId,
+      projectData.project.GroupId,
+      groupData.userGroups
     )
   );
 
   const { productMap, availableProducts } = $derived.by(() => {
-    const activeProducts = new Set(
-      projectData?.project.Products.map((p) => p.ProductDefinition.Id)
-    );
+    const activeProducts = new Set(projectData.project.Products.map((p) => p.ProductDefinition.Id));
     return {
       productMap: new Map(orgData.ProductDefinitions.map((pd) => [pd.Id, pd])),
       availableProducts: orgData.ProductDefinitions.filter((pd) => !activeProducts.has(pd.Id))
@@ -92,7 +90,7 @@
     <div class="flex p-6">
       <div class="shrink">
         <h1 class="p-0">
-          {projectData.project?.Name}
+          {projectData.project.Name}
         </h1>
         <div>
           <span class="font-bold">
@@ -106,7 +104,7 @@
             </Tooltip>
           </span>
         </div>
-        {#if projectData?.project?.DateArchived}
+        {#if projectData.project.DateArchived}
           <span>
             {m.project_archivedOn()}
             <Tooltip tip={getTimeDateString(projectData.project.DateArchived)}>
@@ -245,7 +243,7 @@
         </div>
         <!-- Products List -->
         <div>
-          {#if !projectData?.project?.Products.length}
+          {#if !projectData.project.Products.length}
             {m.projectTable_noProducts()}
           {:else}
             {@const products = projectData.project.Products.map((p) => ({
