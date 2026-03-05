@@ -8,9 +8,9 @@ import { notifyProductNotFound as publish_notifyProductNotFound } from './publis
 import { NotificationType } from '$lib/users';
 
 export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
-  const product = await DatabaseReads.products.findFirst({
+  const product = await DatabaseReads.products.findUnique({
     where: {
-      BuildEngineJobId: job.data.jobId
+      Id: job.data.productId
     },
     select: {
       CurrentBuildId: true,
@@ -80,9 +80,9 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
 }
 
 export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown> {
-  const product = await DatabaseReads.products.findFirst({
+  const product = await DatabaseReads.products.findUnique({
     where: {
-      BuildEngineJobId: job.data.jobId
+      Id: job.data.productId
     },
     select: {
       CurrentReleaseId: true,
