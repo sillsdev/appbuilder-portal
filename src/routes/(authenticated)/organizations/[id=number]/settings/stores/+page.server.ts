@@ -29,7 +29,18 @@ export const load = (async (event) => {
         include: {
           Organizations: { where: { Id: organization.Id }, select: { Id: true } },
           StoreType: true,
-          Owner: { select: { Name: true } }
+          Owner: { select: { Name: true } },
+          _count: {
+            select: {
+              Products: {
+                where: {
+                  Project: {
+                    OrganizationId: organization.Id
+                  }
+                }
+              }
+            }
+          }
         }
       })
     ).map((s) => ({
