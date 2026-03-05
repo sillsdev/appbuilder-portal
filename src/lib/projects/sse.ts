@@ -266,6 +266,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         code: SpanStatusCode.ERROR,
         message: (e as Error).message
       });
+      throw error(500);
     } finally {
       span.end();
     }
@@ -382,6 +383,7 @@ export async function getProjectGroupData(id: number, userSession: Session['user
         code: SpanStatusCode.ERROR,
         message: (e as Error).message
       });
+      throw error(500);
     } finally {
       span.end();
     }
