@@ -1,9 +1,10 @@
 import type { Prisma } from '@prisma/client';
+import { BullMQ, getQueues } from '../bullmq';
 import prisma from './prisma';
 import type { RequirePrimitive } from './utility';
 
 export async function toggleForOrg(StoreId: number, OrganizationId: number, enabled: boolean) {
-  return !!(await prisma.stores.update({
+  const updated = !!(await prisma.stores.update({
     where: {
       Id: StoreId,
       OR: [
@@ -26,6 +27,20 @@ export async function toggleForOrg(StoreId: number, OrganizationId: number, enab
       Id: true
     }
   }));
+
+  if (updated) {
+    getQueues().SvelteSSE.add(
+      `Update Projects for Org #${OrganizationId} (store #${StoreId} ${enabled ? 'enabled' : 'disabled'})`,
+      {
+        type: BullMQ.JobType.SvelteSSE_UpdateProjectOrg,
+        projectIds: (
+          await prisma.projects.findMany({ where: { OrganizationId }, select: { Id: true } })
+        ).map((p) => p.Id)
+      }
+    );
+  }
+
+  return updated;
 }
 
 export async function create(data: RequirePrimitive<Prisma.StoresUncheckedCreateInput>) {
@@ -36,8 +51,11 @@ export async function create(data: RequirePrimitive<Prisma.StoresUncheckedCreate
 
 export async function update(
   id: number,
-  data: RequirePrimitive<Prisma.StoresUncheckedUpdateInput>
+  data: RequirePrimitive<
+    Omit<Prisma.StoresUncheckedUpdateInput, 'BuildEnginePublisherId' | 'StoreTypeId'>
+  >
 ) {
+  // don't need SSE, as the only features updated are display features
   return await prisma.stores.update({
     where: { Id: id },
     data

@@ -1,5 +1,5 @@
 interface NamedEntity {
-  Name: string | null | undefined;
+  Name?: string | null | undefined;
 }
 
 export function byName(
