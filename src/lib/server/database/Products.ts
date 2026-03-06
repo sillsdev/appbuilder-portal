@@ -147,9 +147,9 @@ export { deleteProduct as delete };
 /** A product is valid if:
  * 1. The store's type matches the Workflow's store type
  * 2. The project has a RepositoryUrl
- * 3. The store is allowed by the organization
+ * 3. The store (if being set) is allowed by the organization
  * 4. The language is allowed by the store
- * 5. The product type is allowed by the organization
+ * 5. The product type (if being set) is allowed by the organization
  * 6. The product type allows the project type
  */
 async function validateProductBase(
@@ -160,6 +160,18 @@ async function validateProductBase(
   storeLanguageId: number | undefined,
   productId?: string
 ) {
+  let newDefinition = true;
+  let newStore = true;
+  if (productId) {
+    const product = await prisma.products.findUnique({
+      where: { Id: productId },
+      select: { ProductDefinitionId: true, StoreId: true }
+    });
+    if (product) {
+      newDefinition = product.ProductDefinitionId !== productDefinitionId;
+      newStore = product.StoreId !== storeId;
+    }
+  }
   const productDefinition = await prisma.productDefinitions.findUnique({
     where: {
       Id: productDefinitionId
@@ -196,34 +208,10 @@ async function validateProductBase(
           // Store must be allowed by Organization
           Stores: {
             where: {
-              Id: storeId,
-              // The language, if specified, is allowed by the store
-              StoreType:
-                storeLanguageId !== undefined
-                  ? {
-                      StoreLanguages: {
-                        some: {
-                          Id: storeLanguageId
-                        }
-                      }
-                    }
-                  : undefined
+              Id: storeId
             },
             select: {
-              StoreType: {
-                select: {
-                  // Store type must match Workflow store type
-                  Id: true,
-                  StoreLanguages: {
-                    where: {
-                      Id: storeLanguageId
-                    },
-                    select: {
-                      Id: true
-                    }
-                  }
-                }
-              }
+              Id: true
             }
           },
           // Product type must be allowed by Organization
@@ -237,26 +225,47 @@ async function validateProductBase(
     }
   });
 
-  /** 3. The store is allowed by the organization */
-  const storeInOrg = (project?.Organization.Stores.length ?? 0) > 0;
+  const store = await prisma.stores.findUnique({
+    where: { Id: storeId },
+    select: {
+      StoreType: {
+        select: {
+          Id: true,
+          StoreLanguages: {
+            // The language, if specified, is allowed by the store
+            where: {
+              Id: storeLanguageId
+            },
+            select: {
+              Id: true
+            },
+            take: 1
+          }
+        }
+      }
+    }
+  });
 
-  const prodDefStore = productDefinition?.Workflow.StoreTypeId;
-  const orgStore = project?.Organization.Stores[0]?.StoreType.Id;
+  /** 3. The store is allowed by the organization */
+  const storeAllowed = !newStore || (project?.Organization.Stores.length ?? 0) > 0;
+
+  const prodDefStoreType = productDefinition?.Workflow.StoreTypeId;
+  const storeType = store?.StoreType.Id;
   /** 1. The store's type matches the Workflow's store type
    *
    * Note: if both are undefined, this would be `true`; however, under those circumstances,
    * condition #3 would evaluate to `false`, rendering the whole check `false`.
    */
-  const storeMatchFlowStore = prodDefStore === orgStore;
+  const storeMatchFlowStore = prodDefStoreType === storeType;
 
-  const storeLang = project?.Organization.Stores.at(0)?.StoreType.StoreLanguages.at(0);
+  const storeLang = store?.StoreType.StoreLanguages.at(0);
   /** 4. The language, if specified, is allowed by the store */
   const optionalLanguageAllowed =
     storeLanguageId === undefined || storeLang?.Id === storeLanguageId;
 
   const numOrgProdDefs = project?.Organization.ProductDefinitions.length;
   /** 5. The product type is allowed by the organization */
-  const productInOrg = (numOrgProdDefs ?? 0) > 0;
+  const productAllowed = !newDefinition || (numOrgProdDefs ?? 0) > 0;
 
   /** 6. The product definition allows the project type */
   const projectTypeAllowed = !!(
@@ -265,10 +274,10 @@ async function validateProductBase(
   );
 
   const check =
-    storeInOrg &&
+    storeAllowed &&
     storeMatchFlowStore &&
     optionalLanguageAllowed &&
-    productInOrg &&
+    productAllowed &&
     projectTypeAllowed;
 
   if (!check) {
@@ -280,11 +289,13 @@ async function validateProductBase(
         'product.product-definition-id': productDefinitionId,
         'product.store-id': storeId,
         'product.store-language-id': storeLanguageId ?? false,
-        'product.store-in-org': storeInOrg,
+        'product.store-in-org': storeAllowed,
         'product.store-match-workflow': storeMatchFlowStore,
         'product.language-allowed': optionalLanguageAllowed,
-        'product.product-definition-allowed': productInOrg,
-        'product.project-type-allowed': projectTypeAllowed
+        'product.product-definition-allowed': productAllowed,
+        'product.project-type-allowed': projectTypeAllowed,
+        'product.new-store': newStore,
+        'product.new-definition': newDefinition
       });
 
       span.recordException(new Error(msg));
