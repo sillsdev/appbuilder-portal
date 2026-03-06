@@ -15,7 +15,12 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { canClaimProject, canModifyProject } from '$lib/projects';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
-  import type { ProjectDataSSE, ProjectGroupsSSE, ProjectOrgsSSE } from '$lib/projects/sse';
+  import type {
+    ProjectDataSSE,
+    ProjectGroupsSSE,
+    ProjectOrgsSSE,
+    ProjectProductsSSE
+  } from '$lib/projects/sse';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
@@ -47,10 +52,13 @@
   const projectDataSSE: Readable<ProjectDataSSE> = createSource('', 'projectData');
   const groupDataSSE: Readable<ProjectGroupsSSE> = createSource('/groups', 'groupData');
   const orgDataSSE: Readable<ProjectOrgsSSE> = createSource('/org', 'orgData');
+  const productDataSSE: Readable<ProjectProductsSSE> = createSource('/products', 'productData');
 
   const projectData = $derived($projectDataSSE ?? data.projectData);
   const groupData = $derived($groupDataSSE ?? data.groupData);
   const orgData = $derived($orgDataSSE ?? data.orgData);
+  const productData = $derived($productDataSSE ?? data.productData);
+
   const dateCreated = $derived(getRelativeTime(projectData.project.DateCreated ?? null));
   const dateArchived = $derived(getRelativeTime(projectData.project.DateArchived ?? null));
 
@@ -72,7 +80,7 @@
   );
 
   const { productMap, availableProducts } = $derived.by(() => {
-    const activeProducts = new Set(projectData.project.Products.map((p) => p.ProductDefinition.Id));
+    const activeProducts = new Set(productData.products.map((p) => p.ProductDefinition.Id));
     return {
       productMap: new Map(orgData.ProductDefinitions.map((pd) => [pd.Id, pd])),
       availableProducts: orgData.ProductDefinitions.filter(
@@ -245,10 +253,10 @@
         </div>
         <!-- Products List -->
         <div>
-          {#if !projectData.project.Products.length}
+          {#if !productData.products.length}
             {m.projectTable_noProducts()}
           {:else}
-            {@const products = projectData.project.Products.map((p) => ({
+            {@const products = productData.products.map((p) => ({
               ...p,
               ProductDefinition: productMap.get(p.ProductDefinition.Id)!,
               Store: orgData.Stores.find((s) => s.Id === p.StoreId)!

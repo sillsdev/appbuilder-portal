@@ -13,7 +13,7 @@ export async function create(createData: Prisma.ProductTransitionsCreateArgs) {
     await getQueues().SvelteSSE.add(
       `Update Project #${res.Product.ProjectId} (transition created)`,
       {
-        type: BullMQ.JobType.SvelteSSE_UpdateProject,
+        type: BullMQ.JobType.SvelteSSE_UpdateProjectProducts,
         projectIds: [res.Product.ProjectId]
       }
     );
@@ -32,7 +32,7 @@ export async function createMany(
       ...createManyData
     });
     await getQueues().SvelteSSE.add(`Update Project #${projectId} (transitions created)`, {
-      type: BullMQ.JobType.SvelteSSE_UpdateProject,
+      type: BullMQ.JobType.SvelteSSE_UpdateProjectProducts,
       projectIds: [projectId]
     });
     return res;
@@ -50,7 +50,7 @@ export async function update(updateData: Prisma.ProductTransitionsUpdateArgs) {
     await getQueues().SvelteSSE.add(
       `Update Project #${res.Product.ProjectId} (transition updated)`,
       {
-        type: BullMQ.JobType.SvelteSSE_UpdateProject,
+        type: BullMQ.JobType.SvelteSSE_UpdateProjectProducts,
         projectIds: [res.Product.ProjectId]
       }
     );
@@ -68,7 +68,7 @@ export async function updateMany(
     const res = await prisma.productTransitions.updateMany(updateData);
     if (projectId !== false)
       await getQueues().SvelteSSE.add(`Update Project #${projectId} (transitions updated)`, {
-        type: BullMQ.JobType.SvelteSSE_UpdateProject,
+        type: BullMQ.JobType.SvelteSSE_UpdateProjectProducts,
         projectIds: [projectId]
       });
     return res;
@@ -84,7 +84,7 @@ export async function deleteMany(
   try {
     const res = await prisma.productTransitions.deleteMany(deleteWhere);
     await getQueues().SvelteSSE.add(`Update Project #${projectId} (transitions deleted)`, {
-      type: BullMQ.JobType.SvelteSSE_UpdateProject,
+      type: BullMQ.JobType.SvelteSSE_UpdateProjectProducts,
       projectIds: [projectId]
     });
     return res;
