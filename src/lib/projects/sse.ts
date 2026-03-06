@@ -21,7 +21,6 @@ export async function getProjectDetails(id: number, userSession: Session['user']
       'project.userId': userSession.userId
     });
     try {
-      const isSuper = isSuperAdmin(userSession.roles);
       const project = await DatabaseReads.projects.findUniqueOrThrow({
         where: {
           Id: id
@@ -46,72 +45,14 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             }
           },
           OrganizationId: true,
-          Products: {
-            select: {
-              Id: true,
-              DateUpdated: true,
-              DatePublished: true,
-              PublishLink: true,
-              Properties: true,
-              ProductDefinition: {
-                select: {
-                  Id: true
-                }
-              },
-              // Probably don't need to optimize this. Unless it's a really large org,
-              // there probably won't be very many of these records for an individual
-              // product. In most cases, there will only be zero or one. The only times
-              // there will be more is if it's an admin task or an author task.
-              UserTasks: {
-                select: {
-                  DateCreated: true,
-                  UserId: true
-                }
-              },
-              StoreId: true,
-              BuildEngineJobId: isSuper,
-              CurrentBuildId: isSuper,
-              CurrentReleaseId: isSuper,
-              ProductBuilds: {
-                select: {
-                  BuildEngineBuildId: true,
-                  TransitionId: true,
-                  Status: true
-                },
-                orderBy: {
-                  DateCreated: 'desc'
-                },
-                take: isSuper ? undefined : 1
-              },
-              ProductPublications: {
-                select: {
-                  BuildEngineReleaseId: true,
-                  TransitionId: true,
-                  Status: true
-                },
-                orderBy: {
-                  DateCreated: 'desc'
-                },
-                take: isSuper ? undefined : 1
-              },
-              WorkflowInstance: {
-                select: {
-                  State: true,
-                  WorkflowDefinition: {
-                    select: {
-                      Type: true
-                    }
-                  }
-                }
-              }
-            }
-          },
+          OwnerId: true,
           Owner: {
             select: {
               Id: true,
               Name: true
             }
           },
+          GroupId: true,
           Group: {
             select: {
               Id: true,
@@ -139,73 +80,9 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         }
       });
       span.addEvent('Project fetched');
-      const organization = await DatabaseReads.organizations.findUniqueOrThrow({
-        where: {
-          Id: project.OrganizationId
-        },
-        select: {
-          System: isSuper,
-          UseDefaultBuildEngine: isSuper
-        }
-      });
-      span.addEvent('Organization fetched');
-
-      const transitions = await DatabaseReads.productTransitions.findMany({
-        where: {
-          ProductId: {
-            in: project.Products.map((p) => p.Id)
-          }
-          // DateTransition: null
-        },
-        orderBy: [
-          {
-            DateTransition: 'asc'
-          },
-          {
-            Id: 'asc'
-          }
-        ],
-        include: {
-          User: {
-            select: {
-              Id: true,
-              Name: true
-            }
-          },
-          QueueRecords: isSuper
-            ? {
-                select: {
-                  Queue: true,
-                  JobId: true,
-                  JobType: true
-                }
-              }
-            : false
-        }
-      });
-      span.addEvent('Product transitions fetched');
-      const strippedTransitions = project.Products.map((p) => [
-        transitions.findLast((tr) => tr.ProductId === p.Id && tr.DateTransition !== null)!,
-        transitions.find((tr) => tr.ProductId === p.Id && tr.DateTransition === null)!
-      ]);
 
       return {
-        project: {
-          ...project,
-          OwnerId: project.Owner.Id,
-          GroupId: project.Group.Id,
-          Products: project.Products.map((product) => ({
-            ...product,
-            Transitions: transitions.filter((t) => t.ProductId === product.Id),
-            PreviousTransition: strippedTransitions.find(
-              (t) => (t[0] ?? t[1])?.ProductId === product.Id
-            )?.[0],
-            ActiveTransition: strippedTransitions.find(
-              (t) => (t[0] ?? t[1])?.ProductId === product.Id
-            )?.[1],
-            BuildEngineUrl: isSuper ? `${getURLandToken(organization).url}` : undefined
-          }))
-        },
+        project,
         actionParams: {
           users: await DatabaseReads.users.findMany({
             where: {
@@ -464,6 +341,156 @@ export async function getProjectOrgData(id: number, userSession: Session['user']
             }
           }
         })
+      };
+    } catch (e) {
+      span.recordException(e as Error);
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: (e as Error).message
+      });
+      throw error(500);
+    } finally {
+      span.end();
+    }
+  });
+}
+
+export type ProjectProductsSSE = Awaited<ReturnType<typeof getProjectProducts>>;
+export async function getProjectProducts(id: number, userSession: Session['user']) {
+  // permissions checked in auth
+  return tracer.startActiveSpan('getProductTransitions', async (span) => {
+    span.setAttributes({
+      'project.id': id,
+      'project.userId': userSession.userId
+    });
+    try {
+      const isSuper = isSuperAdmin(userSession.roles);
+
+      const BuildEngineUrl = isSuper
+        ? `${
+            getURLandToken(
+              await DatabaseReads.organizations.findFirstOrThrow({
+                where: {
+                  Projects: {
+                    some: { Id: id }
+                  }
+                },
+                select: {
+                  System: {
+                    select: {
+                      BuildEngineApiAccessToken: true,
+                      BuildEngineUrl: true
+                    }
+                  },
+                  UseDefaultBuildEngine: true
+                }
+              })
+            ).url
+          }`
+        : undefined;
+
+      const products = await DatabaseReads.products.findMany({
+        where: {
+          ProjectId: id
+        },
+        select: {
+          Id: true,
+          DateUpdated: true,
+          DatePublished: true,
+          PublishLink: true,
+          Properties: true,
+          ProductDefinition: {
+            select: {
+              Id: true
+            }
+          },
+          // Probably don't need to optimize this. Unless it's a really large org,
+          // there probably won't be very many of these records for an individual
+          // product. In most cases, there will only be zero or one. The only times
+          // there will be more is if it's an admin task or an author task.
+          UserTasks: {
+            select: {
+              DateCreated: true,
+              UserId: true
+            }
+          },
+          StoreId: true,
+          BuildEngineJobId: isSuper,
+          CurrentBuildId: isSuper,
+          CurrentReleaseId: isSuper,
+          ProductBuilds: {
+            select: {
+              BuildEngineBuildId: true,
+              TransitionId: true,
+              Status: true
+            },
+            orderBy: {
+              DateCreated: 'desc'
+            },
+            take: isSuper ? undefined : 1
+          },
+          ProductPublications: {
+            select: {
+              BuildEngineReleaseId: true,
+              TransitionId: true,
+              Status: true
+            },
+            orderBy: {
+              DateCreated: 'desc'
+            },
+            take: isSuper ? undefined : 1
+          },
+          WorkflowInstance: {
+            select: {
+              State: true,
+              WorkflowDefinition: {
+                select: {
+                  Type: true
+                }
+              }
+            }
+          },
+          ProductTransitions: {
+            orderBy: [
+              {
+                DateTransition: 'asc'
+              },
+              {
+                Id: 'asc'
+              }
+            ],
+            include: {
+              User: {
+                select: {
+                  Id: true,
+                  Name: true
+                }
+              },
+              QueueRecords: isSuper
+                ? {
+                    select: {
+                      Queue: true,
+                      JobId: true,
+                      JobType: true
+                    }
+                  }
+                : false
+            }
+          }
+        }
+      });
+
+      return {
+        products: products.map((p) => ({
+          ...p,
+          PreviousTransition: p.ProductTransitions.findLast(
+            (tr) => tr.ProductId === p.Id && tr.DateTransition !== null
+          ),
+          ActiveTransition: p.ProductTransitions.find(
+            (tr) => tr.ProductId === p.Id && tr.DateTransition === null
+          ),
+          BuildEngineUrl
+        }))
       };
     } catch (e) {
       span.recordException(e as Error);

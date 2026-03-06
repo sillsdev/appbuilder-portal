@@ -54,6 +54,7 @@ export enum JobType {
   SvelteSSE_UpdateProject = 'Update Project',
   SvelteSSE_UpdateProjectGroups = 'Update Project Groups',
   SvelteSSE_UpdateProjectOrg = 'Update Project Org',
+  SvelteSSE_UpdateProjectProducts = 'Update Project Products',
   SvelteSSE_UpdateUserTasks = 'Update UserTasks'
 }
 

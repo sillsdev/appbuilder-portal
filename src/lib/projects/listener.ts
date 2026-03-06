@@ -5,6 +5,7 @@ export type SSEPageEvents = {
   projectPage: [number[]];
   projectGroups: [number[]];
   projectOrg: [number[]];
+  projectProducts: [number[]];
   userTasksPage: [number[]];
 };
 
