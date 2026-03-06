@@ -50,9 +50,11 @@
     key="common_type"
     input={{
       readonly: true,
+      disabled: true,
       icon: getStoreIcon(data.store.StoreTypeId)
     }}
     value={data.store.StoreType.Description}
+    class="md:max-w-xs"
   />
   {#if data.store.StoreTypeId === StoreType.GooglePlay}
     <LabeledFormInput key="stores_gpTitle">

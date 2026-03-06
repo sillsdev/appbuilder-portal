@@ -54,6 +54,7 @@
       icon: getStoreIcon(data.store.StoreTypeId)
     }}
     value={data.store.StoreType.Description}
+    class="md:max-w-xs"
   />
   <LabeledFormInput key="projectTable_owner">
     <SelectWithIcon
