@@ -22,7 +22,18 @@ export const load = (async (event) => {
       await DatabaseReads.productDefinitions.findMany({
         include: {
           Organizations: { where: { Id: organization.Id }, select: { Id: true } },
-          Workflow: { select: { ProductType: true } }
+          Workflow: { select: { ProductType: true } },
+          _count: {
+            select: {
+              Products: {
+                where: {
+                  Project: {
+                    OrganizationId: organization.Id
+                  }
+                }
+              }
+            }
+          }
         }
       })
     ).map((pd) => ({
