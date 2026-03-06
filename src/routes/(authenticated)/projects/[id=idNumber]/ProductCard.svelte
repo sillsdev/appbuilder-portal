@@ -88,7 +88,7 @@
         };
       };
     }> & {
-      Transitions: Transition[];
+      ProductTransitions: Transition[];
       ActiveTransition?: Transition;
       PreviousTransition?: Transition;
     } & ProductDetailProps['product'];
@@ -384,5 +384,5 @@
       </div>
     </div>
   {/if}
-  <ProductDetails {product} transitions={product.Transitions} {projectActions} />
+  <ProductDetails {product} transitions={product.ProductTransitions} {projectActions} />
 </div>
