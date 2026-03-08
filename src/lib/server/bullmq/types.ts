@@ -291,6 +291,11 @@ export namespace SvelteProjectSSE {
     type: JobType.SvelteSSE_UpdateUserTasks;
     userIds: number[];
   }
+
+  export interface UpdateSoftwareUpdates extends BaseJob {
+    type: JobType.SvelteSSE_UpdateSoftwareUpdates;
+    projectIds: number[];
+  }
 }
 
 export type Job = JobTypeMap[keyof JobTypeMap];
@@ -324,7 +329,8 @@ export type EmailJob = JobTypeMap[
   | JobType.Email_ProjectImportReport];
 export type SvelteSSEJob = JobTypeMap[
   | JobType.SvelteSSE_UpdateProject
-  | JobType.SvelteSSE_UpdateUserTasks];
+  | JobType.SvelteSSE_UpdateUserTasks
+  | JobType.SvelteSSE_UpdateSoftwareUpdates];
 export type ProductJob = JobTypeMap[
   | JobType.Product_Create
   | JobType.Product_Delete
@@ -366,5 +372,6 @@ export type JobTypeMap = {
   [JobType.Email_ProjectImportReport]: Email.ProjectImportReport;
   [JobType.SvelteSSE_UpdateProject]: SvelteProjectSSE.UpdateProject;
   [JobType.SvelteSSE_UpdateUserTasks]: SvelteProjectSSE.UpdateUserTasks;
+  [JobType.SvelteSSE_UpdateSoftwareUpdates]: SvelteProjectSSE.UpdateSoftwareUpdates;
   // Add more mappings here as needed
 };
