@@ -10,23 +10,12 @@
 
   let { data }: Props = $props();
 
-  // TODO: This should pull from whatever product ID. Implement based off of the initial page for this
-  const BLUE_ICON =
-    'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MiA3MiIgZmlsbD0ibm9uZSI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjcyIiB5Mj0iNzIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iIzE1NjNmZiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMzZmE5ZmYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI3MiIgaGVpZ2h0PSI3MiIgcng9IjE2IiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTIwIDQ4bDgtMjQgOCAxNiA4LTEyIDggMjAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIgc3Rya2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+';
+  const DEFAULT_ICON =
+    'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MiA3MiIgZmlsbD0ibm9uZSI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjcyIiB5Mj0iNzIiIGdyYWRpZW50VW5pdHM9InVzZXRTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iIzBlNzk1YiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxMmEzN2EiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI3MiIgaGVpZ2h0PSI3MiIgcng9IjE2IiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTIwIDQ4bDgtMjQgOCAxNiA4LTEyIDggMjAiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIgc3Rya2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+';
 
-    // TODO: This should pull from whatever product ID. Implement based on initial email page for this.
-  const app = {
-    icon: BLUE_ICON,
-    name: 'Blue Sample App',
-    developer: 'Azure Labs',
-    themeColor: '#1563ff',
-    shortDesc: 'A concise store listing blurb to confirm this page is official.',
-    longDesc: `A longer store listing description for users who want details.
-
-This is placeholder content to demonstrate layout only.`
-  };
-
-  let themeColor = $state(app.themeColor);
+  const app = data.app;
+  const iconSrc = app.icon ?? DEFAULT_ICON;
+  let themeColor = $state(app.themeColor ?? '#0e795b');
 
   function hexToDaisyHSL(hex: string) {
     const clean = hex.replace('#', '').trim();
@@ -75,10 +64,31 @@ This is placeholder content to demonstrate layout only.`
     };
   }
 
-  function getReadableTextHex(hex: string) {
+  function srgbChannelToLinear(channel: number) {
+    const c = channel / 255;
+    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  }
+
+  function getRelativeLuminance(hex: string) {
     const { r, g, b } = hexToRgb(hex);
-    const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-    return luminance > 0.55 ? '#0f172a' : '#ffffff';
+    const R = srgbChannelToLinear(r);
+    const G = srgbChannelToLinear(g);
+    const B = srgbChannelToLinear(b);
+    return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+  }
+
+  function contrastRatio(a: string, b: string) {
+    const L1 = getRelativeLuminance(a);
+    const L2 = getRelativeLuminance(b);
+    const lighter = Math.max(L1, L2);
+    const darker = Math.min(L1, L2);
+    return (lighter + 0.05) / (darker + 0.05);
+  }
+
+  function getReadableTextHex(hex: string) {
+    const light = '#ffffff';
+    const dark = '#0f172a';
+    return contrastRatio(hex, dark) >= contrastRatio(hex, light) ? dark : light;
   }
 
   function lightenColor(hex: string, amount = 0.9) {
@@ -104,24 +114,28 @@ This is placeholder content to demonstrate layout only.`
         const ctx = canvas.getContext('2d');
         if (!ctx) return resolve(themeColor);
 
-        ctx.drawImage(img, 0, 0, width, height);
-        const { data } = ctx.getImageData(0, 0, width, height);
+        try {
+          ctx.drawImage(img, 0, 0, width, height);
+          const { data } = ctx.getImageData(0, 0, width, height);
 
-        let r = 0,
-          g = 0,
-          b = 0,
-          count = 0;
-        for (let i = 0; i < data.length; i += 4) {
-          const alpha = data[i + 3];
-          if (alpha === 0) continue;
-          r += data[i];
-          g += data[i + 1];
-          b += data[i + 2];
-          count++;
+          let r = 0,
+            g = 0,
+            b = 0,
+            count = 0;
+          for (let i = 0; i < data.length; i += 4) {
+            const alpha = data[i + 3];
+            if (alpha === 0) continue;
+            r += data[i];
+            g += data[i + 1];
+            b += data[i + 2];
+            count++;
+          }
+
+          if (!count) return resolve(themeColor);
+          resolve(rgbToHex(Math.round(r / count), Math.round(g / count), Math.round(b / count)));
+        } catch {
+          resolve(themeColor);
         }
-
-        if (!count) return resolve(themeColor);
-        resolve(rgbToHex(Math.round(r / count), Math.round(g / count), Math.round(b / count)));
       };
 
       img.onerror = () => resolve(themeColor);
@@ -158,7 +172,6 @@ This is placeholder content to demonstrate layout only.`
   let code = $state('');
   let error = $state('');
   let loading = $state(false);
-  let redirectUrl = $state('');
 
   const handleSendCode = () => {
     loading = true;
@@ -182,7 +195,6 @@ This is placeholder content to demonstrate layout only.`
         step = 'verified';
       } else if (result.type === 'redirect') {
         step = 'verified';
-        redirectUrl = result.location;
       } else if (result.type === 'failure') {
         error = result.data?.message || 'Invalid code. Please check your email and try again.';
       }
@@ -190,9 +202,11 @@ This is placeholder content to demonstrate layout only.`
   };
 
   onMount(() => {
-    deriveColorFromIcon(app.icon).then((hex) => {
-      themeColor = hex;
-    });
+    if (!app.themeColor) {
+      deriveColorFromIcon(iconSrc).then((hex) => {
+        themeColor = hex;
+      });
+    }
   });
 </script>
 
@@ -206,8 +220,8 @@ This is placeholder content to demonstrate layout only.`
         {#if step !== 'verified'}
           <div class="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center">
             <img
-              src={app.icon}
-              alt="App icon"
+              src={iconSrc}
+              alt={`${app.name} icon`}
               class="w-12 h-12 rounded-2xl shadow-sm bg-primary/5 p-0.5"
             />
           </div>
@@ -317,15 +331,8 @@ This is placeholder content to demonstrate layout only.`
         <div class="text-center flex flex-col gap-4">
           <p class="text-lg font-bold text-base-content">Verification Complete</p>
           <p class="text-base-content/70 text-[0.95rem]">
-            The process has been completed and your information was removed.
+            A request was submitted to delete your data.
           </p>
-          <button
-            class="btn btn-outline btn-primary mt-4 rounded-xl"
-            onclick={() =>
-              redirectUrl ? (window.location.href = redirectUrl) : window.location.reload()}
-          >
-            Done
-          </button>
         </div>
       {/if}
     </div>
