@@ -450,7 +450,7 @@ export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unkn
       }
     },
     take: chunkSize,
-    skip: Math.max(0, randomInt(countBuilds) - chunkSize)
+    skip: Math.max(0, randomInt(countBuilds || 1) - chunkSize)
   });
 
   const associatedBuilds = await Promise.all(
@@ -515,7 +515,7 @@ export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unkn
       }
     },
     take: chunkSize,
-    skip: Math.max(0, randomInt(countReleases) - chunkSize)
+    skip: Math.max(0, randomInt(countReleases || 1) - chunkSize)
   });
 
   const associatedReleases = await Promise.all(
