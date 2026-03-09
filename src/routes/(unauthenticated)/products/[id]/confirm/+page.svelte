@@ -1,8 +1,9 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
-  import { enhance } from '$app/forms';
+  import type { SubmitFunction } from '@sveltejs/kit';
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
+  import { enhance } from '$app/forms';
 
   interface Props {
     data: PageData;
@@ -20,7 +21,12 @@
   function hexToDaisyHSL(hex: string) {
     const clean = hex.replace('#', '').trim();
     const normalized =
-      clean.length === 3 ? clean.split('').map((ch) => ch + ch).join('') : clean;
+      clean.length === 3
+        ? clean
+            .split('')
+            .map((ch) => ch + ch)
+            .join('')
+        : clean;
     const int = Number.parseInt(normalized, 16);
     if (Number.isNaN(int)) return '0 0% 0%';
 
@@ -173,30 +179,32 @@
   let error = $state('');
   let loading = $state(false);
 
-  const handleSendCode = () => {
+  const handleSendCode: SubmitFunction = () => {
     loading = true;
     error = '';
-    return async ({ result }: any) => {
+    return async ({ result }) => {
       loading = false;
       if (result.type === 'success') {
         step = 'code';
       } else if (result.type === 'failure') {
-        error = result.data?.message || 'Failed to send code. Please try again.';
+        const message = (result.data as { message?: string } | undefined)?.message;
+        error = message || 'Failed to send code. Please try again.';
       }
     };
   };
 
-  const handleVerifyCode = () => {
+  const handleVerifyCode: SubmitFunction = () => {
     loading = true;
     error = '';
-    return async ({ result }: any) => {
+    return async ({ result }) => {
       loading = false;
       if (result.type === 'success') {
         step = 'verified';
       } else if (result.type === 'redirect') {
         step = 'verified';
       } else if (result.type === 'failure') {
-        error = result.data?.message || 'Invalid code. Please check your email and try again.';
+        const message = (result.data as { message?: string } | undefined)?.message;
+        error = message || 'Invalid code. Please check your email and try again.';
       }
     };
   };
@@ -280,8 +288,8 @@
         </form>
       {:else if step === 'code'}
         <p class="text-base-content/70 text-center leading-relaxed mb-8">
-          We've sent a 6-digit verification code to <strong>{email}</strong>. Enter it below to complete
-          the process.
+          We've sent a 6-digit verification code to <strong>{email}</strong>
+          . Enter it below to complete the process.
         </p>
 
         <form method="POST" action="?/verifyCode" use:enhance={handleVerifyCode}>
