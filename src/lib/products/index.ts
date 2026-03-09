@@ -101,6 +101,16 @@ export function getComputeType(properties: string | null) {
   return null;
 }
 
+/**
+ * I: ProductId
+ * J: BuildEngineJobId
+ * CB: CurrentBuildId
+ * CR: CurrentReleaseId
+ * PB: ProductBuilds { I: BuildEngineBuildId, T: TransitionId }
+ * PR: ProductPublications { I: BuildEngineReleaseId, T: TransitionId }
+ * PR: ProductTransitions
+ * BE: BuildEngineUrl
+ */
 export type MinifiedProductDetails = ReturnType<typeof minifyProductDetails>;
 export function minifyProductDetails(
   product: Prisma.ProductsGetPayload<{
@@ -164,6 +174,18 @@ type Transition = Prisma.ProductTransitionsGetPayload<{
   };
 }>;
 
+/**
+ * I: ProductTransitionId
+ * T: TransitionType
+ * S: Initial State
+ * W: WorkflowType
+ * AU: AllowedUserNames
+ * Cd: Command
+ * Ct: Comment
+ * D: DateTransition
+ * U: User.Name
+ * QR: QueueRecords { Q: Queue, I: JobId, T: JobType }
+ */
 export type MinifiedTransition = ReturnType<typeof minifyTransition>;
 export function minifyTransition(pt: Transition) {
   return {
@@ -180,6 +202,19 @@ export function minifyTransition(pt: Transition) {
   };
 }
 
+/**
+ * I: ProductId
+ * DP: DatePublished
+ * DU: DateUpdated
+ * L: PublishLink
+ * S: StoreId
+ * PD: ProductDefinitionId
+ * UT: UserTasks { U: UserId, D: DateCreated }
+ * WS: WorkflowInstance.State
+ * WT: WorkflowInstance.Type
+ * Act: ActiveTransition
+ * PrT: PreviousTransition.Date
+ */
 export type MinifiedProductCard = ReturnType<typeof minifyProductCard>;
 export function minifyProductCard(
   product: Prisma.ProductsGetPayload<{
