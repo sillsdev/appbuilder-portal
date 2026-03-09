@@ -3,6 +3,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { minifyProductDetails } from '$lib/products';
 import { getURLandToken } from '$lib/server/build-engine-api/requests';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads } from '$lib/server/database';
@@ -81,64 +82,70 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   const snap = await Workflow.getSnapshot(params.product_id);
   if (!(flow && snap)) return error(404);
 
-  const workflowDefinition = await DatabaseReads.workflowDefinitions.findUnique({
-    where: {
-      Id: snap.definitionId
-    },
-    select: {
-      Name: true
-    }
-  });
-
   return {
-    product: {
-      ...product,
-      BuildEngineUrl: getURLandToken(product.Project.Organization).url ?? undefined
-    },
+    product,
     snapshot: snap,
     machine: snap ? flow.serializeForVisualization() : [],
-    definition: workflowDefinition,
+    definition: await DatabaseReads.workflowDefinitions.findUnique({
+      where: {
+        Id: snap.definitionId
+      },
+      select: {
+        Name: true
+      }
+    }),
     form: await superValidate(
       {
         state: snap?.state
       },
       valibot(jumpStateSchema)
     ),
-    transitions: await DatabaseReads.productTransitions.findMany({
-      where: { ProductId: params.product_id },
-      select: {
-        Id: true,
-        DateTransition: true,
-        DestinationState: true,
-        InitialState: true,
-        Command: true,
-        TransitionType: true,
-        WorkflowType: true,
-        AllowedUserNames: true,
-        Comment: true,
-        User: {
-          select: {
-            Id: true,
-            Name: true
-          }
+    details: minifyProductDetails(
+      await DatabaseReads.products.findUniqueOrThrow({
+        where: {
+          Id: params.product_id
         },
-        QueueRecords: {
-          select: {
-            Queue: true,
-            JobId: true,
-            JobType: true
+        select: {
+          Id: true,
+          BuildEngineJobId: true,
+          CurrentBuildId: true,
+          CurrentReleaseId: true,
+          ProductBuilds: {
+            select: {
+              BuildEngineBuildId: true,
+              TransitionId: true
+            }
+          },
+          ProductPublications: {
+            select: {
+              BuildEngineReleaseId: true,
+              TransitionId: true
+            }
+          },
+          ProductTransitions: {
+            select: {
+              Id: true,
+              TransitionType: true,
+              InitialState: true,
+              WorkflowType: true,
+              AllowedUserNames: true,
+              Command: true,
+              Comment: true,
+              DateTransition: true,
+              User: { select: { Id: true, Name: true } },
+              QueueRecords: {
+                select: {
+                  Queue: true,
+                  JobId: true,
+                  JobType: true
+                }
+              }
+            }
           }
         }
-      },
-      orderBy: [
-        {
-          DateTransition: 'asc'
-        },
-        {
-          Id: 'asc'
-        }
-      ]
-    }),
+      }),
+      getURLandToken(product.Project.Organization).url ?? undefined
+    ),
     jobsAvailable: QueueConnected()
   };
 };

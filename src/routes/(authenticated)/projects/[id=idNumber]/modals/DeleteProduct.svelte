@@ -9,21 +9,21 @@
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
+  import type { MinifiedProductCard } from '$lib/products';
   import { sanitizeInput, toast } from '$lib/utils';
 
   interface Props {
     modal?: HTMLDialogElement;
     product: Prisma.ProductsGetPayload<{
       select: {
-        Id: true;
-        DatePublished: true;
         ProductDefinition: {
           select: {
             Name: true;
           };
         };
       };
-    }>;
+    }> &
+      MinifiedProductCard;
     endpoint: string;
     project: string;
   }
@@ -58,8 +58,8 @@
         })}
       </h2>
       <div class="flex flex-col gap-2 items-center w-full pt-2 text-left">
-        <input type="hidden" name="productId" value={product.Id} />
-        {#if product.DatePublished}
+        <input type="hidden" name="productId" value={product.I} />
+        {#if product.DP}
           <div class="border-2 border-error p-2 w-full rounded-md">
             {@html m.deletePrompt_warningIfPublished()}
           </div>
