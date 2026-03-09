@@ -1,12 +1,11 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import { getPublishedFile } from '$lib/products/server';
 
 // Mock types for your DB and Email providers
-import { DatabaseReads } from '$lib/server/database';
-import { DatabaseWrites } from '$lib/server/database';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
 import { EmailLayoutTemplate, addProperties } from '$lib/server/email-service/EmailTemplates';
-import { getPublishedFile } from '$lib/products/server';
 // import { sendEmail } from '$lib/server/email';
 
 type PlayListingManifest = {
@@ -168,7 +167,9 @@ export const actions: Actions = {
       })
     );
 
-    console.log(`[UDM TEST] Verification code for ${normalizedEmail} (product ${params.id}): ${code}`);
+    console.log(
+      `[UDM TEST] Verification code for ${normalizedEmail} (product ${params.id}): ${code}`
+    );
 
     return { success: true, email: normalizedEmail, step: 'verify' as const };
   },
