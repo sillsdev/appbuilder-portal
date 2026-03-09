@@ -3,6 +3,16 @@
 
 // Security class type because this file cannot import anything
 declare global {
+  interface TurnstileApi {
+    getResponse?: () => string;
+    reset?: () => void;
+  }
+
+  interface Window {
+    turnstile?: TurnstileApi;
+    handleTurnstileSuccess?: (token: string) => void;
+  }
+
   interface SecurityLike {
     userId: number;
     roles: Map<number, number[]>;
@@ -67,4 +77,4 @@ declare global {
   }
 }
 
-export {};
+export { };
