@@ -10,25 +10,16 @@ export enum ProductActionType {
 export function getProductActions(
   product: Prisma.ProductsGetPayload<{
     select: {
-      WorkflowInstance: {
-        select: {
-          WorkflowDefinition: {
-            select: {
-              Type: true;
-            };
-          };
-        };
-      };
-      DatePublished: true;
       ProductDefinition: { select: { RebuildWorkflowId: true; RepublishWorkflowId: true } };
     };
-  }>,
+  }> &
+    MinifiedProductCard,
   projectOwnerId: number,
   userId: number
 ) {
   const ret: ProductActionType[] = [];
-  if (!product.WorkflowInstance) {
-    if (product.DatePublished) {
+  if (!product.WT) {
+    if (product.DP) {
       if (product.ProductDefinition.RebuildWorkflowId !== null) {
         ret.push(ProductActionType.Rebuild);
       }
@@ -36,10 +27,7 @@ export function getProductActions(
         ret.push(ProductActionType.Republish);
       }
     }
-  } else if (
-    projectOwnerId === userId &&
-    product.WorkflowInstance.WorkflowDefinition.Type !== WorkflowType.Startup
-  ) {
+  } else if (projectOwnerId === userId && product.WT !== WorkflowType.Startup) {
     ret.push(ProductActionType.Cancel);
   }
 
@@ -111,4 +99,135 @@ export function getComputeType(properties: string | null) {
     /* empty */
   }
   return null;
+}
+
+export type MinifiedProductDetails = ReturnType<typeof minifyProductDetails>;
+export function minifyProductDetails(
+  product: Prisma.ProductsGetPayload<{
+    select: {
+      Id: true;
+      BuildEngineJobId: true;
+      CurrentBuildId: true;
+      CurrentReleaseId: true;
+      ProductBuilds: {
+        select: {
+          BuildEngineBuildId: true;
+          TransitionId: true;
+        };
+      };
+      ProductPublications: {
+        select: {
+          BuildEngineReleaseId: true;
+          TransitionId: true;
+        };
+      };
+    };
+  }> & { ProductTransitions: Transition[] },
+  buildEngineUrl?: string
+) {
+  return {
+    I: product.Id,
+    J: product.BuildEngineJobId,
+    CB: product.CurrentBuildId,
+    CR: product.CurrentReleaseId,
+    PB: product.ProductBuilds.map(({ BuildEngineBuildId, TransitionId }) => ({
+      I: BuildEngineBuildId,
+      T: TransitionId
+    })),
+    PR: product.ProductPublications.map(({ BuildEngineReleaseId, TransitionId }) => ({
+      I: BuildEngineReleaseId,
+      T: TransitionId
+    })),
+    PT: product.ProductTransitions.map(minifyTransition),
+    BE: buildEngineUrl
+  };
+}
+
+type Transition = Prisma.ProductTransitionsGetPayload<{
+  select: {
+    Id: true;
+    TransitionType: true;
+    InitialState: true;
+    WorkflowType: true;
+    AllowedUserNames: true;
+    Command: true;
+    Comment: true;
+    DateTransition: true;
+    User: { select: { Name: true } };
+    QueueRecords: {
+      select: {
+        Queue: true;
+        JobId: true;
+        JobType: true;
+      };
+    };
+  };
+}>;
+
+export type MinifiedTransition = ReturnType<typeof minifyTransition>;
+export function minifyTransition(pt: Transition) {
+  return {
+    I: pt.Id,
+    T: pt.TransitionType,
+    S: pt.InitialState,
+    W: pt.WorkflowType,
+    AU: pt.AllowedUserNames,
+    Cd: pt.Command,
+    Ct: pt.Comment,
+    D: pt.DateTransition,
+    U: pt.User?.Name,
+    QR: pt.QueueRecords?.map((qr) => ({ Q: qr.Queue, I: qr.JobId, T: qr.JobType }))
+  };
+}
+
+export type MinifiedProductCard = ReturnType<typeof minifyProductCard>;
+export function minifyProductCard(
+  product: Prisma.ProductsGetPayload<{
+    select: {
+      Id: true;
+      DatePublished: true;
+      DateUpdated: true;
+      Properties: true;
+      PublishLink: true;
+      StoreId: true;
+      ProductDefinition: {
+        select: {
+          Id: true;
+        };
+      };
+      UserTasks: {
+        select: {
+          UserId: true;
+          DateCreated: true;
+        };
+      };
+      WorkflowInstance: {
+        select: {
+          State: true;
+          WorkflowDefinition: {
+            select: {
+              Type: true;
+            };
+          };
+        };
+      };
+    };
+  }>,
+  ActiveTransition: Transition | undefined,
+  PreviousTransition: Transition | undefined
+) {
+  return {
+    I: product.Id,
+    DP: product.DatePublished,
+    DU: product.DateUpdated,
+    P: product.Properties,
+    L: product.PublishLink,
+    S: product.StoreId,
+    PD: product.ProductDefinition.Id,
+    UT: product.UserTasks.map((ut) => ({ U: ut.UserId, D: ut.DateCreated })),
+    WS: product.WorkflowInstance && product.WorkflowInstance.State,
+    WT: product.WorkflowInstance && product.WorkflowInstance.WorkflowDefinition.Type,
+    AcT: ActiveTransition && minifyTransition(ActiveTransition),
+    PrT: PreviousTransition && minifyTransition(PreviousTransition)
+  };
 }

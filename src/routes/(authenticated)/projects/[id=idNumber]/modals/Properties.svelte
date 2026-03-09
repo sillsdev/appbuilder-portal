@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Prisma } from '@prisma/client';
   import { enhance } from '$app/forms';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
@@ -8,23 +7,24 @@
   import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { type ComputeType, computeTypes, getComputeType, updateComputeType } from '$lib/products';
+  import {
+    type ComputeType,
+    type MinifiedProductCard,
+    computeTypes,
+    getComputeType,
+    updateComputeType
+  } from '$lib/products';
 
   interface Props {
     modal?: HTMLDialogElement;
-    product: Prisma.ProductsGetPayload<{
-      select: {
-        Id: true;
-        Properties: true;
-      };
-    }>;
+    product: MinifiedProductCard;
     endpoint: string;
   }
 
   let { modal = $bindable(), product, endpoint }: Props = $props();
 
   let ok = $state(true);
-  let value = $state(product.Properties);
+  let value = $state(product.P);
 
   let computeType: ComputeType | null = $state(null);
 
@@ -50,7 +50,7 @@
       </h2>
       <hr />
       <div class="flex flex-col gap-2 items-center w-full pt-2 text-left">
-        <input type="hidden" name="productId" value={product.Id} />
+        <input type="hidden" name="productId" value={product.I} />
         <LabeledFormInput key="products_properties_computeType" class="w-full">
           <select
             class="select w-full"
@@ -80,7 +80,7 @@
           <CancelButton
             onclick={() => {
               modal?.close();
-              value = product.Properties;
+              value = product.P;
             }}
           />
           <button

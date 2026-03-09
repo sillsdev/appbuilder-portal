@@ -1,6 +1,6 @@
-import type { Prisma } from '@prisma/client';
 import { type TransitionConfig } from 'xstate';
 import { type RoleId, WorkflowType } from './prisma';
+import type { MinifiedProductDetails } from './products';
 import type { SetFilter, ValueFilter } from './utils';
 import { filterSet, filterValue, sanitizeInput } from './utils';
 
@@ -67,31 +67,25 @@ export function isBackground(state: WorkflowState): state is BackgroundState {
 
 export function linkToBuildEngine(
   buildEngineUrl: string | null | undefined,
-  product: Prisma.ProductsGetPayload<{
-    select: {
-      BuildEngineJobId: true;
-      CurrentBuildId: true;
-      CurrentReleaseId: true;
-    };
-  }>,
+  product: Pick<MinifiedProductDetails, 'J' | 'CB' | 'CR'>,
   state: WorkflowState
 ) {
   if (!buildEngineUrl) return {};
   switch (state) {
     case WorkflowState.Product_Creation:
       return {
-        href: `${buildEngineUrl}/job-admin${product.BuildEngineJobId ? `/view?id=${product.BuildEngineJobId}` : ''}`,
-        id: product.BuildEngineJobId
+        href: `${buildEngineUrl}/job-admin${product.J ? `/view?id=${product.J}` : ''}`,
+        id: product.J
       };
     case WorkflowState.Product_Build:
       return {
-        href: `${buildEngineUrl}/build-admin${product.CurrentBuildId ? `/view?id=${product.CurrentBuildId}` : ''}`,
-        id: product.CurrentBuildId
+        href: `${buildEngineUrl}/build-admin${product.CB ? `/view?id=${product.CB}` : ''}`,
+        id: product.CB
       };
     case WorkflowState.Product_Publish:
       return {
-        href: `${buildEngineUrl}/release-admin${product.CurrentReleaseId ? `/view?id=${product.CurrentReleaseId}` : ''}`,
-        id: product.CurrentReleaseId
+        href: `${buildEngineUrl}/release-admin${product.CR ? `/view?id=${product.CR}` : ''}`,
+        id: product.CR
       };
     default:
       return {};

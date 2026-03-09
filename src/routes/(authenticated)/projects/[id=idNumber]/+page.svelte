@@ -80,7 +80,7 @@
   );
 
   const { productMap, availableProducts } = $derived.by(() => {
-    const activeProducts = new Set(productData.products.map((p) => p.ProductDefinition.Id));
+    const activeProducts = new Set(productData.products.map((p) => p.PD));
     return {
       productMap: new Map(orgData.ProductDefinitions.map((pd) => [pd.Id, pd])),
       availableProducts: orgData.ProductDefinitions.filter(
@@ -258,8 +258,8 @@
           {:else}
             {@const products = productData.products.map((p) => ({
               ...p,
-              ProductDefinition: productMap.get(p.ProductDefinition.Id)!,
-              Store: orgData.Stores.find((s) => s.Id === p.StoreId)!
+              ProductDefinition: productMap.get(p.PD)!,
+              Store: orgData.Stores.find((s) => s.Id === p.S)!
             }))}
             {#each products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, getLocale()) ) as product}
               <ProductCard

@@ -5,6 +5,7 @@ import { stringify } from 'devalue';
 import { produce } from 'sveltekit-sse';
 import { type SSEPageEvents, SSEPageUpdates } from './listener';
 import { RoleId } from '$lib/prisma';
+import { minifyProductCard, minifyProductDetails } from '$lib/products';
 import { userGroupsForOrg } from '$lib/projects/server';
 import { getURLandToken } from '$lib/server/build-engine-api/requests';
 import { DatabaseReads } from '$lib/server/database';
@@ -409,14 +410,14 @@ export async function getProjectProducts(id: number, userSession: Session['user'
 
       return {
         products: products.map((p) => ({
-          ...p,
-          PreviousTransition: p.ProductTransitions.findLast(
-            (tr) => tr.ProductId === p.Id && tr.DateTransition !== null
+          ...minifyProductCard(
+            p,
+            p.ProductTransitions.findLast(
+              (tr) => tr.ProductId === p.Id && tr.DateTransition !== null
+            ),
+            p.ProductTransitions.find((tr) => tr.ProductId === p.Id && tr.DateTransition === null)
           ),
-          ActiveTransition: p.ProductTransitions.find(
-            (tr) => tr.ProductId === p.Id && tr.DateTransition === null
-          ),
-          BuildEngineUrl
+          ...minifyProductDetails(p, BuildEngineUrl)
         }))
       };
     } catch (e) {
