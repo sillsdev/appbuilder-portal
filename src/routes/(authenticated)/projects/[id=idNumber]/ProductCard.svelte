@@ -94,7 +94,7 @@
       console.error('Error performing product action:', error);
     }
   }
-  const waitTime = $derived(getRelativeTime(product.UT.slice(-1)[0]?.D ?? product.PrT?.D ?? null));
+  const waitTime = $derived(getRelativeTime(product.UT.slice(-1)[0]?.D ?? product.PrT ?? null));
   const updatedTime = $derived(getRelativeTime(product.DU));
   const publishedTime = $derived(getRelativeTime(product.DP));
 </script>

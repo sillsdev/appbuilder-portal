@@ -328,11 +328,7 @@ export async function getProjectProducts(id: number, userSession: Session['user'
           DatePublished: true,
           PublishLink: true,
           Properties: true,
-          ProductDefinition: {
-            select: {
-              Id: true
-            }
-          },
+          ProductDefinitionId: true,
           // Probably don't need to optimize this. Unless it's a really large org,
           // there probably won't be very many of these records for an individual
           // product. In most cases, there will only be zero or one. The only times

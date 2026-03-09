@@ -190,11 +190,7 @@ export function minifyProductCard(
       Properties: true;
       PublishLink: true;
       StoreId: true;
-      ProductDefinition: {
-        select: {
-          Id: true;
-        };
-      };
+      ProductDefinitionId: true;
       UserTasks: {
         select: {
           UserId: true;
@@ -223,11 +219,11 @@ export function minifyProductCard(
     P: product.Properties,
     L: product.PublishLink,
     S: product.StoreId,
-    PD: product.ProductDefinition.Id,
+    PD: product.ProductDefinitionId,
     UT: product.UserTasks.map((ut) => ({ U: ut.UserId, D: ut.DateCreated })),
     WS: product.WorkflowInstance && product.WorkflowInstance.State,
     WT: product.WorkflowInstance && product.WorkflowInstance.WorkflowDefinition.Type,
     AcT: ActiveTransition && minifyTransition(ActiveTransition),
-    PrT: PreviousTransition && minifyTransition(PreviousTransition)
+    PrT: PreviousTransition && PreviousTransition.DateTransition
   };
 }
