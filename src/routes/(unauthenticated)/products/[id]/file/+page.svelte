@@ -153,11 +153,9 @@
   const TURNSTILE_SITE_KEY = 'YOUR_SITE_KEY';
 
   onMount(() => {
-    interface Window {
-      handleTurnstileSuccess?: (token: string) => void;
-    }
-
-    (window as Window).handleTurnstileSuccess = (token: string) => {
+    (
+      window as typeof window & { handleTurnstileSuccess?: (token: string) => void }
+    ).handleTurnstileSuccess = (token: string) => {
       turnstileToken = token;
     };
   });
@@ -238,21 +236,6 @@
 
 <div
   class="min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
-  style="
-      --color-primary: {primaryHex};
-      --color-primary-content: {primaryContentHex};
-      --color-base-100: #ffffff;
-      --color-base-200: #f5f7fa;
-      --color-base-300: #e5e7eb;
-      --color-base-content: #1f2937;
-      --p: {primaryHSL};
-      --pf: {primaryHSL};
-      --pc: {primaryContentHSL};
-      --b1: 0 0% 100%;
-      --b2: 210 20% 98%;
-      --bc: 220 13% 18%;
-      word-break: break-word;
-      overflow-wrap: anywhere;"
 >
   <div class="w-full bg-white min-h-screen sm:max-w-xl sm:mx-auto">
     <div class="px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-4 bg-[#eef3f3]">
