@@ -141,15 +141,8 @@ async function getLatestBuiltFile(
 ): Promise<ArtifactRef | null> {
   const builds = await DatabaseReads.productBuilds.findMany({
     where: { ProductId: productId },
-    include: {
-      ProductArtifacts: {
-        select: {
-          ArtifactType: true,
-          Url: true
-        }
-      }
-    },
-    orderBy: { Id: 'desc' }
+    include: { ProductArtifacts: true },
+    orderBy: { BuildEngineBuildId: 'desc' } // fixed
   });
 
   for (const build of builds) {
@@ -167,12 +160,10 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
   // Basic product/project context (used for a fallback "developer" value).
   const product = await DatabaseReads.products.findUnique({
     where: { Id: params.id },
-    select: {
-      Id: true,
+    include: {
       Project: {
-        select: {
-          Name: true,
-          Organization: { select: { Name: true } }
+        include: {
+          Organization: true
         }
       }
     }
