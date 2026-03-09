@@ -1,4 +1,4 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
 // Mock types for your DB and Email providers
@@ -6,12 +6,126 @@ import { DatabaseReads } from '$lib/server/database';
 import { DatabaseWrites } from '$lib/server/database';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
 import { EmailLayoutTemplate, addProperties } from '$lib/server/email-service/EmailTemplates';
+import { getPublishedFile } from '$lib/products/server';
 // import { sendEmail } from '$lib/server/email';
 
-export const load: PageServerLoad = async ({ url, locals }) => {
+type PlayListingManifest = {
+  url: string;
+  icon: string;
+  color: string;
+};
+
+type AppInfo = {
+  id: string;
+  icon: string | null;
+  name: string;
+  developer: string;
+  themeColor: string | null;
+};
+
+type ArtifactRef = {
+  Url: string | null;
+};
+
+function resolveIconUrl(icon: string | null | undefined, baseUrl: URL, artifactUrl: URL) {
+  if (!icon) return null;
+  try {
+    const iconUrl = new URL(icon);
+    iconUrl.host = artifactUrl.host;
+    iconUrl.protocol = artifactUrl.protocol;
+    return iconUrl.toString();
+  } catch {
+    return new URL(icon, baseUrl).toString();
+  }
+}
+
+async function getLatestBuiltFile(
+  productId: string,
+  artifactType: string
+): Promise<ArtifactRef | null> {
+  const builds = await DatabaseReads.productBuilds.findMany({
+    where: { ProductId: productId },
+    include: {
+      ProductArtifacts: {
+        select: {
+          ArtifactType: true,
+          Url: true
+        }
+      }
+    },
+    orderBy: { BuildEngineBuildId: 'desc' }
+  });
+
+  for (const build of builds) {
+    const artifact = build.ProductArtifacts.find((a) => a.ArtifactType === artifactType);
+    if (artifact?.Url) return artifact;
+  }
+
+  return null;
+}
+
+export const load: PageServerLoad = async ({ url, locals, params }) => {
   locals.security.requireNothing();
+
   const email = url.searchParams.get('email')?.trim().toLowerCase() ?? '';
-  return { email };
+
+  const product = await DatabaseReads.products.findUnique({
+    where: { Id: params.id },
+    select: {
+      Id: true,
+      Project: {
+        select: {
+          Name: true,
+          Organization: { select: { Name: true } }
+        }
+      }
+    }
+  });
+
+  if (!product) throw error(404);
+
+  const developer =
+    product.Project.Organization?.Name ?? product.Project.Name ?? 'Unknown developer';
+
+  const app: AppInfo = {
+    id: product.Id,
+    icon: null,
+    name: product.Project.Name ?? 'App',
+    developer,
+    themeColor: null
+  };
+
+  const manifestArtifact =
+    (await getPublishedFile(product.Id, 'play-listing-manifest')) ??
+    (await getLatestBuiltFile(product.Id, 'play-listing-manifest'));
+
+  if (!manifestArtifact?.Url) return { email, app };
+
+  let manifest: PlayListingManifest | null = null;
+  try {
+    manifest = (await fetch(manifestArtifact.Url).then((res) => res.json())) as PlayListingManifest;
+  } catch {
+    manifest = null;
+  }
+
+  if (!manifest) return { email, app };
+
+  const artifactUrl = new URL(manifestArtifact.Url);
+  let baseUrl: URL | null = null;
+  try {
+    baseUrl = new URL(manifest.url);
+    baseUrl.host = artifactUrl.host;
+    baseUrl.protocol = artifactUrl.protocol;
+  } catch {
+    baseUrl = null;
+  }
+
+  if (!baseUrl) return { email, app };
+
+  app.icon = resolveIconUrl(manifest.icon, baseUrl, artifactUrl);
+  app.themeColor = manifest.color || null;
+
+  return { email, app };
 };
 
 export const actions: Actions = {
@@ -45,8 +159,6 @@ export const actions: Actions = {
     });
 
     // 3. Send the email
-    const locale = 'en';
-
     await sendEmail(
       [{ email: normalizedEmail, name: normalizedEmail }],
       'Your verification code',
