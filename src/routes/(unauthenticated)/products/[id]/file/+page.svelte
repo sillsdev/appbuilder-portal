@@ -154,10 +154,10 @@
 
   onMount(() => {
     interface Window {
-      onTurnstileSuccess?: (token: string) => void;
+      handleTurnstileSuccess?: (token: string) => void;
     }
 
-    (window as Window).onTurnstileSuccess = (token: string) => {
+    (window as Window).handleTurnstileSuccess = (token: string) => {
       turnstileToken = token;
     };
   });
@@ -397,7 +397,7 @@
               <div
                 class="cf-turnstile"
                 data-sitekey={TURNSTILE_SITE_KEY}
-                data-callback="onTurnstileSuccess"
+                data-callback="handleTurnstileSuccess"
               ></div>
             </div>
           </div>
