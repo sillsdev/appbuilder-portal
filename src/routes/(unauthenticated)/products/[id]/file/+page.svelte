@@ -162,45 +162,35 @@
     };
   });
 
-  function getTurnstileToken() {
-    const input = document.querySelector(
-      'input[name="cf-turnstile-response"]'
-    ) as HTMLInputElement | null;
-
-    return input?.value ?? null;
-  }
-
-  async function submitDeletionRequest() {
+  async function submitDeleteRequest() {
+    submitting = true;
     errorMessage = null;
 
-    if (!turnstileToken) {
-      errorMessage = 'Please complete the captcha.';
-      return;
-    }
-
-    submitting = true;
-
     try {
-      const response = await fetch('/api/delete-request', {
+      const token = turnstileToken;
+
+      if (!token) {
+        errorMessage = 'Please complete the verification.';
+        submitting = false;
+        return;
+      }
+
+      const res = await fetch('/api/delete-request', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
           deletionType,
-          turnstileToken
+          turnstileToken: token
         })
       });
 
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text);
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        errorMessage = data?.message ?? 'Failed to submit request.';
       }
-
-      alert('Verification code sent to your email.');
-    } catch (err) {
-      errorMessage = 'Failed to send request.';
+    } catch {
+      errorMessage = 'Unexpected error.';
     } finally {
       submitting = false;
     }
@@ -412,12 +402,18 @@
             </div>
           </div>
 
+          {#if errorMessage}
+            <div class="alert alert-error text-sm">
+              {errorMessage}
+            </div>
+          {/if}
+
           <button
             class="btn w-full no-animation border border-black/10 shadow-sm"
             style="background-color: #0f172a; color: #ffffff;"
             type="button"
-            onclick={submitDeletionRequest}
-            disabled={submitting}
+            onclick={submitDeleteRequest}
+            disabled={submitting || !turnstileToken}
           >
             {m.udm_send_code()}
           </button>
