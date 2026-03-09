@@ -38,7 +38,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-  console.log(`[UDM TEST] Verification code for ${normalizedEmail} (product ${productId}): ${code}`);
+  console.log(
+    `[UDM TEST] Verification code for ${normalizedEmail} (product ${productId}): ${code}`
+  );
 
   await DatabaseWrites.productUserChanges.create({
     data: {
