@@ -1,4 +1,3 @@
-import type { Prisma } from '@prisma/client';
 import type { Job } from 'bullmq';
 import { XMLParser } from 'fast-xml-parser';
 import { existsSync } from 'fs';
@@ -7,9 +6,7 @@ import { join } from 'path';
 import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
-import { TaskType } from '$lib/prisma';
-import { fetchPackageName } from '$lib/products';
-import { ProductType, WorkflowOptions, WorkflowState } from '$lib/workflowTypes';
+import { WorkflowState } from '$lib/workflowTypes';
 
 export async function checkSystemStatuses(
   job: Job<BullMQ.System.CheckEngineStatuses>
@@ -410,157 +407,8 @@ async function processLocalizedNames(
 export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
   /**
    * Migration Tasks:
-   * 1. Delete UserTasks for archived projects (should be removed)
-   * 2. (removed step)
-   * 3. (removed step)
-   * 4. Populate Product.PackageName (should be removed)
-   * 5. Populate ProductBuild/ProductPublications.TransitionId (remove after two deploys to master)
-   * 6. Populate ProductBuild.AppBuilderVersion (should be removed)
+   * 1. Populate ProductBuild/ProductPublications.TransitionId (remove after two deploys to master)
    */
-
-  // 1. Delete UserTasks for archived projects
-  const deletedTasks = await DatabaseWrites.userTasks.deleteMany({
-    where: {
-      Product: {
-        Project: {
-          DateArchived: { not: null }
-        }
-      },
-      Type: TaskType.Workflow
-    }
-  });
-  job.updateProgress(10);
-
-  job.updateProgress(40);
-  // Update WorkflowDefinitions ProductType and WorkflowOptions
-  const workflowDefsNeedUpdate =
-    (await DatabaseReads.workflowDefinitions.count({
-      where: {
-        ProductType: 0
-      }
-    })) === 14;
-  if (workflowDefsNeedUpdate) {
-    const workflowDefs: Parameters<typeof DatabaseWrites.workflowDefinitions.updateMany>[0][] = [
-      {
-        where: {
-          Name: {
-            contains: 'google_play'
-          }
-        },
-        data: {
-          ProductType: ProductType.Android_GooglePlay
-        }
-      },
-      {
-        where: {
-          Name: {
-            contains: 's3'
-          }
-        },
-        data: {
-          ProductType: ProductType.Android_S3
-        }
-      },
-      {
-        where: {
-          Name: {
-            contains: 'cloud'
-          }
-        },
-        data: {
-          ProductType: ProductType.Web
-        }
-      },
-      {
-        where: {
-          Name: {
-            contains: 'asset_package'
-          }
-        },
-        data: {
-          ProductType: ProductType.AssetPackage
-        }
-      },
-      {
-        where: {
-          Name: 'sil_android_google_play'
-        },
-        data: {
-          WorkflowOptions: [WorkflowOptions.AdminStoreAccess, WorkflowOptions.ApprovalProcess]
-        }
-      },
-      {
-        where: {
-          Name: 'sil_android_s3'
-        },
-        data: {
-          WorkflowOptions: [WorkflowOptions.ApprovalProcess]
-        }
-      },
-      {
-        where: {
-          Name: 'la_android_google_play'
-        },
-        data: {
-          WorkflowOptions: [WorkflowOptions.AdminStoreAccess]
-        }
-      }
-    ];
-    for (const def of workflowDefs) {
-      await DatabaseWrites.workflowDefinitions.updateMany(def);
-    }
-  }
-  job.updateProgress(50);
-
-  // 4. Populate Product.PackageName
-
-  const artifactWhere: Prisma.ProductArtifactsWhereInput = {
-    ArtifactType: 'package_name',
-    ContentType: 'text/plain'
-  };
-
-  const buildWhere: Prisma.ProductBuildsWhereInput = {
-    Success: true,
-    ProductArtifacts: {
-      some: artifactWhere
-    }
-  };
-
-  const updatedPackages = await Promise.all(
-    (
-      await DatabaseReads.products.findMany({
-        where: {
-          PackageName: null,
-          ProductBuilds: {
-            some: buildWhere
-          }
-        },
-        select: {
-          Id: true,
-          ProductBuilds: {
-            where: buildWhere,
-            select: {
-              ProductArtifacts: {
-                where: artifactWhere,
-                take: 1
-              }
-            },
-            orderBy: { DateUpdated: 'desc' },
-            take: 1
-          }
-        }
-      })
-    ).map(async (p) => {
-      const PackageName = await fetchPackageName(p.ProductBuilds[0].ProductArtifacts[0].Url);
-      // populate package name if publish link is not set
-      if (PackageName) {
-        await DatabaseWrites.products.update(p.Id, { PackageName });
-      }
-      return PackageName;
-    })
-  );
-
-  job.updateProgress(70);
 
   // only try to associate completed builds
   const orphanedBuilds = await DatabaseReads.productBuilds.groupBy({
@@ -641,6 +489,8 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     );
   }
 
+  job.updateProgress(50);
+
   // only try to associate completed releases
   const orphanedReleases = await DatabaseReads.productPublications.groupBy({
     where: { TransitionId: null, Success: { not: null } },
@@ -720,120 +570,10 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     );
   }
 
-  job.updateProgress(80);
-
-  // 6. Populate ProductBuilds.AppBuilderVersion
-
-  const recentBuildFilter: Prisma.ProductBuildsWhereInput = {
-    Success: true,
-    AND: [
-      {
-        ProductArtifacts: {
-          some: {
-            ArtifactType: 'consoleText'
-          }
-        }
-      },
-      {
-        ProductArtifacts: {
-          some: {
-            ArtifactType: 'version'
-          }
-        }
-      }
-    ]
-  };
-
-  const mostRecentBuilds = await DatabaseReads.products.findMany({
-    where: {
-      ProductBuilds: {
-        some: recentBuildFilter
-      }
-    },
-    select: {
-      Id: true,
-      ProductBuilds: {
-        where: recentBuildFilter,
-        orderBy: { DateCreated: 'desc' },
-        take: 1,
-        select: {
-          BuildEngineBuildId: true,
-          AppBuilderVersion: true,
-          ProductArtifacts: {
-            where: {
-              ArtifactType: { in: ['consoleText', 'version'] }
-            },
-            select: {
-              ArtifactType: true,
-              Url: true
-            }
-          }
-        }
-      }
-    }
-  });
-
-  const builtVersions = new Set<string>();
-  const vnum = /\d+\.\d+(\.\d+)?/;
-  const preferredRgx = new RegExp(`APPBUILDER_SCRIPT_VERSION=(${vnum.source})`);
-  const altRgx = new RegExp(`Version (${vnum.source})`);
-
-  const updatedBuilds = await Promise.all(
-    mostRecentBuilds
-      .filter((p) => !p.ProductBuilds[0].AppBuilderVersion)
-      .map(async (p) => {
-        try {
-          const logUrl = p.ProductBuilds[0].ProductArtifacts.find(
-            (pa) => pa.ArtifactType === 'consoleText'
-          )?.Url;
-          const versionJSON = p.ProductBuilds[0].ProductArtifacts.find(
-            (pa) => pa.ArtifactType === 'version'
-          );
-          if (logUrl && versionJSON?.Url) {
-            // fetch version.json first
-            const parsedJSON = JSON.parse(await fetch(versionJSON.Url).then((r) => r.text()));
-            let appVersion: string = parsedJSON['appbuilderVersion'] ?? '';
-
-            // if appbuilderVersion not present, try parsing console.
-            if (!appVersion) {
-              const log = await fetch(logUrl).then((r) => r.text());
-              const preferred = log.match(preferredRgx)?.at(1);
-              const alts = log.match(altRgx)?.at(1);
-
-              appVersion ||= preferred ?? alts ?? '';
-            }
-
-            if (appVersion) {
-              builtVersions.add(appVersion);
-              await DatabaseWrites.productBuilds.update({
-                where: {
-                  ProductId_BuildEngineBuildId: {
-                    ProductId: p.Id,
-                    BuildEngineBuildId: p.ProductBuilds[0].BuildEngineBuildId
-                  }
-                },
-                data: { AppBuilderVersion: appVersion }
-              });
-            }
-          }
-        } catch (e) {
-          job.log(`Update Build for Product ${p.Id} Error: ${e}`);
-        }
-      })
-  );
-
   job.updateProgress(100);
 
   return {
-    deletedTasks: deletedTasks.count,
-    updatedWorkflowDefinitions: workflowDefsNeedUpdate,
-    updatedPackages,
     associatedBuilds,
-    associatedReleases,
-    updatedBuilds: {
-      recent: mostRecentBuilds.length,
-      updated: updatedBuilds.length,
-      versions: Array.from(builtVersions).sort((a, b) => a.localeCompare(b, 'en-US'))
-    }
+    associatedReleases
   };
 }
