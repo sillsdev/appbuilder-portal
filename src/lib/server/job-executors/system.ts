@@ -1,4 +1,5 @@
 import type { Job } from 'bullmq';
+import { randomInt } from 'crypto';
 import { XMLParser } from 'fast-xml-parser';
 import { existsSync } from 'fs';
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
@@ -6,6 +7,7 @@ import { join } from 'path';
 import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
+import { JobSchedulerId } from '$lib/bullmq';
 import { WorkflowState } from '$lib/workflowTypes';
 
 export async function checkSystemStatuses(
@@ -405,175 +407,162 @@ async function processLocalizedNames(
 }
 
 export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
+  return 'No features to migrate';
+}
+
+export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
   /**
    * Migration Tasks:
-   * 1. Populate ProductBuild/ProductPublications.TransitionId (remove after two deploys to master)
+   * 1. Populate ProductBuild/ProductPublications.TransitionId
    */
 
+  const filter = { TransitionId: null, Success: { not: null } };
+  const chunkSize = 20;
+
   // only try to associate completed builds
-  const orphanedBuilds = await DatabaseReads.productBuilds.groupBy({
-    where: { TransitionId: null, Success: { not: null } },
-    by: 'ProductId',
-    _count: true
+  const countBuilds = await DatabaseReads.products.count({
+    where: { ProductBuilds: { some: filter } }
   });
-
-  let associatedBuilds: unknown[] = [];
-
-  if (orphanedBuilds.length) {
-    const products = await DatabaseReads.products.findMany({
-      where: {
-        Id: { in: orphanedBuilds.map((b) => b.ProductId) }
-      },
-      select: {
-        Id: true,
-        ProductBuilds: {
-          where: {
-            TransitionId: null,
-            Success: { not: null }
-          },
-          select: {
-            BuildEngineBuildId: true,
-            DateCreated: true
-          },
-          orderBy: { DateCreated: 'asc' }
+  const orphanedBuilds = await DatabaseReads.products.findMany({
+    where: { ProductBuilds: { some: filter } },
+    select: {
+      Id: true,
+      ProductBuilds: {
+        where: filter,
+        select: {
+          BuildEngineBuildId: true,
+          DateCreated: true
         },
-        ProductTransitions: {
-          where: {
-            InitialState: WorkflowState.Product_Build,
-            DateTransition: { not: null }
-          },
-          select: {
-            Id: true,
-            DateTransition: true
-          },
-          orderBy: {
-            DateTransition: 'asc'
-          }
+        orderBy: { DateCreated: 'asc' }
+      },
+      ProductTransitions: {
+        where: {
+          InitialState: WorkflowState.Product_Build,
+          DateTransition: { not: null }
+        },
+        select: {
+          Id: true,
+          DateTransition: true
+        },
+        orderBy: {
+          DateTransition: 'asc'
         }
       }
-    });
+    },
+    take: chunkSize,
+    skip: Math.max(0, randomInt(countBuilds) - chunkSize)
+  });
 
-    associatedBuilds = await Promise.all(
-      products.map(async (p) => ({
-        Id: p.Id,
-        // find first transition where DateTransition is greater than Build.DateCreated
-        // problem, date transition isn't set until build is completed... so we only do this for completed builds
-        ProductBuilds: await Promise.all(
-          p.ProductBuilds.map((build) => {
-            const id = p.ProductTransitions.find(
-              (pt) => pt.DateTransition!.valueOf() > build.DateCreated!.valueOf()
-            )?.Id;
+  const associatedBuilds = await Promise.all(
+    orphanedBuilds.map(async (p) => ({
+      Id: p.Id,
+      // find first transition where DateTransition is greater than Build.DateCreated
+      // problem, date transition isn't set until build is completed... so we only do this for completed builds
+      ProductBuilds: await Promise.all(
+        p.ProductBuilds.map((build) => {
+          const id = p.ProductTransitions.find(
+            (pt) =>
+              pt.DateTransition!.valueOf() > build.DateCreated!.valueOf() ||
+              // or within 5 seconds
+              Math.abs(pt.DateTransition!.valueOf() - build.DateCreated!.valueOf()) < 5000
+          )?.Id;
 
-            if (id) {
-              return DatabaseWrites.productBuilds.update({
-                where: {
-                  ProductId_BuildEngineBuildId: {
-                    ProductId: p.Id,
-                    BuildEngineBuildId: build.BuildEngineBuildId
-                  }
-                },
-                data: {
-                  TransitionId: id
-                },
-                select: {
-                  BuildEngineBuildId: true,
-                  TransitionId: true
-                }
-              });
-            } else {
-              return { BuildEngineBuildId: build.BuildEngineBuildId };
-            }
-          })
-        )
-      }))
-    );
-  }
+          if (id) {
+            return DatabaseWrites.productTransitions.tryConnect(
+              p.Id,
+              build.BuildEngineBuildId,
+              'build',
+              id
+            );
+          } else {
+            return { BuildEngineBuildId: build.BuildEngineBuildId };
+          }
+        })
+      )
+    }))
+  );
 
   job.updateProgress(50);
 
   // only try to associate completed releases
-  const orphanedReleases = await DatabaseReads.productPublications.groupBy({
-    where: { TransitionId: null, Success: { not: null } },
-    by: 'ProductId',
-    _count: true
+  const countReleases = await DatabaseReads.products.count({
+    where: { ProductPublications: { some: filter } }
   });
-
-  let associatedReleases: unknown[] = [];
-
-  if (orphanedReleases.length) {
-    const products = await DatabaseReads.products.findMany({
-      where: {
-        Id: { in: orphanedReleases.map((b) => b.ProductId) }
-      },
-      select: {
-        Id: true,
-        ProductPublications: {
-          where: {
-            TransitionId: null,
-            Success: { not: null }
-          },
-          select: {
-            BuildEngineReleaseId: true,
-            DateCreated: true
-          },
-          orderBy: { DateCreated: 'asc' }
+  const orphanedReleases = await DatabaseReads.products.findMany({
+    where: { ProductPublications: { some: filter } },
+    select: {
+      Id: true,
+      ProductPublications: {
+        where: filter,
+        select: {
+          BuildEngineReleaseId: true,
+          DateCreated: true
         },
-        ProductTransitions: {
-          where: {
-            InitialState: WorkflowState.Product_Publish,
-            DateTransition: { not: null }
-          },
-          select: {
-            Id: true,
-            DateTransition: true
-          },
-          orderBy: {
-            DateTransition: 'asc'
-          }
+        orderBy: { DateCreated: 'asc' }
+      },
+      ProductTransitions: {
+        where: {
+          InitialState: WorkflowState.Product_Publish,
+          DateTransition: { not: null }
+        },
+        select: {
+          Id: true,
+          DateTransition: true
+        },
+        orderBy: {
+          DateTransition: 'asc'
         }
       }
-    });
+    },
+    take: chunkSize,
+    skip: Math.max(0, randomInt(countReleases) - chunkSize)
+  });
 
-    associatedReleases = await Promise.all(
-      products.map(async (p) => ({
-        Id: p.Id,
-        // find first transition where DateTransition is greater than Publication.DateCreated
-        // problem, date transition isn't set until release is completed... so we only do this for completed releases
-        ProductPublications: await Promise.all(
-          p.ProductPublications.map((release) => {
-            const id = p.ProductTransitions.find(
-              (pt) => pt.DateTransition!.valueOf() > release.DateCreated!.valueOf()
-            )?.Id;
+  const associatedReleases = await Promise.all(
+    orphanedReleases.map(async (p) => ({
+      Id: p.Id,
+      // find first transition where DateTransition is greater than Publication.DateCreated
+      // problem, date transition isn't set until release is completed... so we only do this for completed releases
+      ProductPublications: await Promise.all(
+        p.ProductPublications.map((release) => {
+          const id = p.ProductTransitions.find(
+            (pt) =>
+              pt.DateTransition!.valueOf() > release.DateCreated!.valueOf() ||
+              // or within 5 seconds
+              Math.abs(pt.DateTransition!.valueOf() - release.DateCreated!.valueOf()) < 5000
+          )?.Id;
 
-            if (id) {
-              return DatabaseWrites.productPublications.update({
-                where: {
-                  ProductId_BuildEngineReleaseId: {
-                    ProductId: p.Id,
-                    BuildEngineReleaseId: release.BuildEngineReleaseId
-                  }
-                },
-                data: {
-                  TransitionId: id
-                },
-                select: {
-                  BuildEngineReleaseId: true,
-                  TransitionId: true
-                }
-              });
-            } else {
-              return { BuildEngineReleaseId: release.BuildEngineReleaseId };
-            }
-          })
-        )
-      }))
-    );
+          if (id) {
+            return DatabaseWrites.productTransitions.tryConnect(
+              p.Id,
+              release.BuildEngineReleaseId,
+              'release',
+              id
+            );
+          } else {
+            return { BuildEngineReleaseId: release.BuildEngineReleaseId };
+          }
+        })
+      )
+    }))
+  );
+
+  if (!countBuilds && !countReleases) {
+    await getQueues().SystemRecurring.removeJobScheduler(JobSchedulerId.MigrateChunks);
   }
 
   job.updateProgress(100);
 
   return {
-    associatedBuilds,
-    associatedReleases
+    builds: {
+      count: countBuilds,
+      orphaned: orphanedBuilds,
+      updated: associatedBuilds
+    },
+    releases: {
+      count: countReleases,
+      orphaned: orphanedReleases,
+      updated: associatedReleases
+    }
   };
 }

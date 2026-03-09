@@ -96,6 +96,19 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         }
       }
     );
+    getQueues().SystemRecurring.upsertJobScheduler(
+      BullMQ.JobSchedulerId.MigrateChunks,
+      {
+        pattern: '*/15 * * * *', // every 15 minutes
+        immediately: false
+      },
+      {
+        name: 'Migrate Features (chunked)',
+        data: {
+          type: BullMQ.JobType.System_Migrate
+        }
+      }
+    );
   }
   async run(job: Job<J>) {
     switch (job.data.type) {
@@ -103,6 +116,8 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         return Executor.System.checkSystemStatuses(job as Job<BullMQ.System.CheckEngineStatuses>);
       case BullMQ.JobType.System_RefreshLangTags:
         return Executor.System.refreshLangTags(job as Job<BullMQ.System.RefreshLangTags>);
+      case BullMQ.JobType.System_Migrate:
+        return Executor.System.lazyMigrate(job as Job<BullMQ.System.Migrate>);
     }
   }
 }
