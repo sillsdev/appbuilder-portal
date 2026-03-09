@@ -5,6 +5,7 @@ import { stringify } from 'devalue';
 import { produce } from 'sveltekit-sse';
 import { type SSEPageEvents, SSEPageUpdates } from './listener';
 import { ProjectActionString, ProjectActionType, RoleId } from '$lib/prisma';
+import { minifyProductCard, minifyProductDetails } from '$lib/products';
 import { userGroupsForOrg } from '$lib/projects/server';
 import { getURLandToken } from '$lib/server/build-engine-api/requests';
 import { DatabaseReads } from '$lib/server/database';
@@ -367,26 +368,24 @@ export async function getProjectProducts(id: number, userSession: Session['user'
       const isSuper = isSuperAdmin(userSession.roles);
 
       const BuildEngineUrl = isSuper
-        ? `${
-            getURLandToken(
-              await DatabaseReads.organizations.findFirstOrThrow({
-                where: {
-                  Projects: {
-                    some: { Id: id }
+        ? getURLandToken(
+            await DatabaseReads.organizations.findFirstOrThrow({
+              where: {
+                Projects: {
+                  some: { Id: id }
+                }
+              },
+              select: {
+                System: {
+                  select: {
+                    BuildEngineApiAccessToken: true,
+                    BuildEngineUrl: true
                   }
                 },
-                select: {
-                  System: {
-                    select: {
-                      BuildEngineApiAccessToken: true,
-                      BuildEngineUrl: true
-                    }
-                  },
-                  UseDefaultBuildEngine: true
-                }
-              })
-            ).url
-          }`
+                UseDefaultBuildEngine: true
+              }
+            })
+          ).url
         : undefined;
 
       const products = await DatabaseReads.products.findMany({
@@ -399,11 +398,7 @@ export async function getProjectProducts(id: number, userSession: Session['user'
           DatePublished: true,
           PublishLink: true,
           Properties: true,
-          ProductDefinition: {
-            select: {
-              Id: true
-            }
-          },
+          ProductDefinitionId: true,
           // Probably don't need to optimize this. Unless it's a really large org,
           // there probably won't be very many of these records for an individual
           // product. In most cases, there will only be zero or one. The only times
@@ -482,14 +477,14 @@ export async function getProjectProducts(id: number, userSession: Session['user'
 
       return {
         products: products.map((p) => ({
-          ...p,
-          PreviousTransition: p.ProductTransitions.findLast(
-            (tr) => tr.ProductId === p.Id && tr.DateTransition !== null
+          ...minifyProductCard(
+            p,
+            p.ProductTransitions.findLast(
+              (tr) => tr.ProductId === p.Id && tr.DateTransition !== null
+            ),
+            p.ProductTransitions.find((tr) => tr.ProductId === p.Id && tr.DateTransition === null)
           ),
-          ActiveTransition: p.ProductTransitions.find(
-            (tr) => tr.ProductId === p.Id && tr.DateTransition === null
-          ),
-          BuildEngineUrl
+          ...minifyProductDetails(p, BuildEngineUrl)
         }))
       };
     } catch (e) {
