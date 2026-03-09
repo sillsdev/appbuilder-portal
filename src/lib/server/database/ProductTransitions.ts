@@ -10,13 +10,10 @@ export async function create(createData: Prisma.ProductTransitionsCreateArgs) {
       ...createData,
       include: { Product: { select: { ProjectId: true } } }
     });
-    await getQueues().SvelteSSE.add(
-      `Update Project #${res.Product.ProjectId} (transition created)`,
-      {
-        type: BullMQ.JobType.SvelteSSE_UpdateProjectProducts,
-        projectIds: [res.Product.ProjectId]
-      }
-    );
+    getQueues().SvelteSSE.add(`Update Project #${res.Product.ProjectId} (transition created)`, {
+      type: BullMQ.JobType.SvelteSSE_UpdateProjectProducts,
+      projectIds: [res.Product.ProjectId]
+    });
     return res;
   } catch {
     return false;
@@ -31,7 +28,7 @@ export async function createMany(
     const res = await prisma.productTransitions.createMany({
       ...createManyData
     });
-    await getQueues().SvelteSSE.add(`Update Project #${projectId} (transitions created)`, {
+    getQueues().SvelteSSE.add(`Update Project #${projectId} (transitions created)`, {
       type: BullMQ.JobType.SvelteSSE_UpdateProjectProducts,
       projectIds: [projectId]
     });
@@ -47,13 +44,10 @@ export async function update(updateData: Prisma.ProductTransitionsUpdateArgs) {
       ...updateData,
       include: { Product: { select: { ProjectId: true } } }
     });
-    await getQueues().SvelteSSE.add(
-      `Update Project #${res.Product.ProjectId} (transition updated)`,
-      {
-        type: BullMQ.JobType.SvelteSSE_UpdateProjectProducts,
-        projectIds: [res.Product.ProjectId]
-      }
-    );
+    getQueues().SvelteSSE.add(`Update Project #${res.Product.ProjectId} (transition updated)`, {
+      type: BullMQ.JobType.SvelteSSE_UpdateProjectProducts,
+      projectIds: [res.Product.ProjectId]
+    });
     return res;
   } catch {
     return false;
@@ -67,7 +61,7 @@ export async function updateMany(
   try {
     const res = await prisma.productTransitions.updateMany(updateData);
     if (projectId !== false)
-      await getQueues().SvelteSSE.add(`Update Project #${projectId} (transitions updated)`, {
+      getQueues().SvelteSSE.add(`Update Project #${projectId} (transitions updated)`, {
         type: BullMQ.JobType.SvelteSSE_UpdateProjectProducts,
         projectIds: [projectId]
       });
@@ -83,7 +77,7 @@ export async function deleteMany(
 ) {
   try {
     const res = await prisma.productTransitions.deleteMany(deleteWhere);
-    await getQueues().SvelteSSE.add(`Update Project #${projectId} (transitions deleted)`, {
+    getQueues().SvelteSSE.add(`Update Project #${projectId} (transitions deleted)`, {
       type: BullMQ.JobType.SvelteSSE_UpdateProjectProducts,
       projectIds: [projectId]
     });

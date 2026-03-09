@@ -60,7 +60,7 @@
     <SelectWithIcon
       bind:value={$form.owner}
       items={data.organizations}
-      attr={{ name: 'owner', disabled: $form.owner === null && data.userCount > 1 }}
+      attr={{ name: 'owner', disabled: $form.owner === null && data.orgCount > 1 }}
       icon={Icons.Organization}
     >
       {#snippet extra()}

@@ -116,7 +116,7 @@ export async function toggleUser(OrganizationId: number, UserId: number, enabled
         }
       });
     }
-    await getQueues().SvelteSSE.add(
+    getQueues().SvelteSSE.add(
       `Update Projects for Org #${OrganizationId} (user #${UserId} ${enabled ? 'added' : 'removed'})`,
       {
         type: BullMQ.JobType.SvelteSSE_UpdateProjectGroups,

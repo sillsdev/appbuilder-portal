@@ -112,7 +112,7 @@ export async function toggleRole(
       );
     }
 
-    await getQueues().SvelteSSE.add(
+    getQueues().SvelteSSE.add(
       `Update Projects for Org #${OrganizationId} (role #${role} user #${UserId} ${enabled ? 'added' : 'removed'})`,
       {
         type: BullMQ.JobType.SvelteSSE_UpdateProjectGroups,
@@ -172,7 +172,7 @@ export async function toggleGroup(
     }));
 
   if (updated) {
-    await getQueues().SvelteSSE.add(
+    getQueues().SvelteSSE.add(
       `Update Projects for Group #${GroupId} (user #${UserId} ${enabled ? 'added' : 'removed'})`,
       {
         type: BullMQ.JobType.SvelteSSE_UpdateProjectGroups,
@@ -252,7 +252,7 @@ export async function acceptInvite(userId: number, inviteToken: string) {
     }
   });
 
-  await getQueues().SvelteSSE.add(
+  getQueues().SvelteSSE.add(
     `Update Projects for Org #${invite.OrganizationId} (user #${userId} added)`,
     {
       type: BullMQ.JobType.SvelteSSE_UpdateProjectGroups,

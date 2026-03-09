@@ -113,26 +113,27 @@ export function getComputeType(properties: string | null) {
  */
 export type MinifiedProductDetails = ReturnType<typeof minifyProductDetails>;
 export function minifyProductDetails(
-  product: Prisma.ProductsGetPayload<{
-    select: {
-      Id: true;
-      BuildEngineJobId: true;
-      CurrentBuildId: true;
-      CurrentReleaseId: true;
-      ProductBuilds: {
-        select: {
-          BuildEngineBuildId: true;
-          TransitionId: true;
+  product: Partial<
+    Prisma.ProductsGetPayload<{
+      select: {
+        BuildEngineJobId: true;
+        CurrentBuildId: true;
+        CurrentReleaseId: true;
+        ProductBuilds: {
+          select: {
+            BuildEngineBuildId: true;
+            TransitionId: true;
+          };
+        };
+        ProductPublications: {
+          select: {
+            BuildEngineReleaseId: true;
+            TransitionId: true;
+          };
         };
       };
-      ProductPublications: {
-        select: {
-          BuildEngineReleaseId: true;
-          TransitionId: true;
-        };
-      };
-    };
-  }> & { ProductTransitions: Transition[] },
+    }>
+  > & { Id: string; ProductTransitions: Transition[] },
   buildEngineUrl?: string
 ) {
   return {
@@ -140,11 +141,11 @@ export function minifyProductDetails(
     J: product.BuildEngineJobId,
     CB: product.CurrentBuildId,
     CR: product.CurrentReleaseId,
-    PB: product.ProductBuilds.map(({ BuildEngineBuildId, TransitionId }) => ({
+    PB: product.ProductBuilds?.map(({ BuildEngineBuildId, TransitionId }) => ({
       I: BuildEngineBuildId,
       T: TransitionId
     })),
-    PR: product.ProductPublications.map(({ BuildEngineReleaseId, TransitionId }) => ({
+    PR: product.ProductPublications?.map(({ BuildEngineReleaseId, TransitionId }) => ({
       I: BuildEngineReleaseId,
       T: TransitionId
     })),

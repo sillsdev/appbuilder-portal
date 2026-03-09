@@ -29,7 +29,7 @@ export async function toggleForOrg(StoreId: number, OrganizationId: number, enab
   }));
 
   if (updated) {
-    await getQueues().SvelteSSE.add(
+    getQueues().SvelteSSE.add(
       `Update Projects for Org #${OrganizationId} (store #${StoreId} ${enabled ? 'enabled' : 'disabled'})`,
       {
         type: BullMQ.JobType.SvelteSSE_UpdateProjectOrg,

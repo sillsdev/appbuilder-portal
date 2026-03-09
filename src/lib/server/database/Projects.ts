@@ -94,13 +94,13 @@ export async function update(
 
     // If the group has changed
     if (groupId && groupId !== existing?.GroupId) {
-      await getQueues().SvelteSSE.add(`Update Project #${id} (update groups)`, {
+      getQueues().SvelteSSE.add(`Update Project #${id} (update groups)`, {
         type: BullMQ.JobType.SvelteSSE_UpdateProjectGroups,
         projectIds: [id]
       });
     }
 
-    await getQueues().SvelteSSE.add(`Update Project #${id} (update details)`, {
+    getQueues().SvelteSSE.add(`Update Project #${id} (update details)`, {
       type: BullMQ.JobType.SvelteSSE_UpdateProject,
       projectIds: [id]
     });

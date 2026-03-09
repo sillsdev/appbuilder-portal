@@ -23,7 +23,7 @@ export async function toggleForOrg(
   }));
 
   if (updated) {
-    await getQueues().SvelteSSE.add(
+    getQueues().SvelteSSE.add(
       `Update Projects for Org #${OrganizationId} (product #${ProductDefinitionId} ${enabled ? 'enabled' : 'disabled'})`,
       {
         type: BullMQ.JobType.SvelteSSE_UpdateProjectOrg,
@@ -74,7 +74,7 @@ export async function update(
   }));
 
   if (updated) {
-    await getQueues().SvelteSSE.add(`Update Projects (product #${id} modified)`, {
+    getQueues().SvelteSSE.add(`Update Projects (product #${id} modified)`, {
       type: BullMQ.JobType.SvelteSSE_UpdateProjectOrg,
       projectIds: (
         await prisma.projects.findMany({
