@@ -109,7 +109,7 @@ export const actions = {
     await getQueues().UserTasks.add(
       `Remove UserTasks for Project #${ProjectId} Author #${form.data.id}`,
       {
-        type: BullMQ.JobType.UserTasks_Modify,
+        type: BullMQ.JobType.UserTasks_Workflow,
         scope: 'Project',
         projectId: parseInt(event.params.id),
         operation: {
@@ -256,7 +256,7 @@ export const actions = {
     await getQueues().UserTasks.add(
       `Add UserTasks for Project #${projectId} Author #${form.data.author}`,
       {
-        type: BullMQ.JobType.UserTasks_Modify,
+        type: BullMQ.JobType.UserTasks_Workflow,
         scope: 'Project',
         projectId,
         operation: {

@@ -77,19 +77,34 @@ export async function toggleRole(
           where: { OrganizationId },
           select: { Id: true }
         })
-      ).map((p) => ({
-        name: `${enabled ? 'Add' : 'Remove'} OrgAdmin tasks for User #${UserId} on Project #${p.Id}`,
-        data: {
-          type: BullMQ.JobType.UserTasks_Modify,
-          scope: 'Project',
-          projectId: p.Id,
-          operation: {
-            type: enabled ? BullMQ.UserTasks.OpType.Create : BullMQ.UserTasks.OpType.Delete,
-            users: [UserId],
-            roles: [RoleId.OrgAdmin]
+      ).flatMap((p) => [
+        {
+          name: `${enabled ? 'Add' : 'Remove'} OrgAdmin tasks for User #${UserId} on Project #${p.Id}`,
+          data: {
+            type: BullMQ.JobType.UserTasks_Workflow,
+            scope: 'Project',
+            projectId: p.Id,
+            operation: {
+              type: enabled ? BullMQ.UserTasks.OpType.Create : BullMQ.UserTasks.OpType.Delete,
+              users: [UserId],
+              roles: [RoleId.OrgAdmin]
+            }
+          }
+        },
+        {
+          name: `${enabled ? 'Add' : 'Remove'} OrgAdmin data deletion requests for User #${UserId} on Project #${p.Id}`,
+          data: {
+            type: BullMQ.JobType.UserTasks_DeleteRequest,
+            scope: 'Project',
+            projectId: p.Id,
+            operation: {
+              type: enabled ? BullMQ.UserTasks.OpType.Create : BullMQ.UserTasks.OpType.Delete,
+              users: [UserId],
+              roles: [RoleId.OrgAdmin]
+            }
           }
         }
-      }))
+      ])
     );
   }
   return true;
@@ -211,67 +226,4 @@ export async function byExternalId(externalId: string) {
       ExternalId: externalId
     }
   });
-}
-
-export async function byRole(
-  projectId: number,
-  roles?: RoleId[]
-): Promise<Record<number, Set<RoleId>>> {
-  const project = await prisma.projects.findUnique({
-    where: {
-      Id: projectId
-    },
-    select: {
-      OrganizationId: true,
-      OwnerId: !roles || roles.includes(RoleId.AppBuilder),
-      Authors:
-        !roles || roles.includes(RoleId.Author)
-          ? {
-              select: {
-                UserId: true
-              }
-            }
-          : undefined
-    }
-  });
-
-  if (!project) return {};
-
-  const admins =
-    !roles || roles.includes(RoleId.OrgAdmin)
-      ? await prisma.userRoles.findMany({
-          where: {
-            OrganizationId: project.OrganizationId,
-            RoleId: RoleId.OrgAdmin
-          },
-          select: {
-            UserId: true
-          }
-        })
-      : [];
-
-  const ret: Record<number, Set<RoleId>> = {};
-
-  if (!roles || roles.includes(RoleId.OrgAdmin)) {
-    admins.forEach((u) => {
-      ret[u.UserId] = new Set([RoleId.OrgAdmin]);
-    });
-  }
-  if (!roles || roles.includes(RoleId.Author)) {
-    project.Authors.forEach((u) => {
-      if (u.UserId in ret) {
-        ret[u.UserId].add(RoleId.Author);
-      } else {
-        ret[u.UserId] = new Set([RoleId.Author]);
-      }
-    });
-  }
-  if (!roles || roles.includes(RoleId.AppBuilder)) {
-    if (project.OwnerId in ret) {
-      ret[project.OwnerId].add(RoleId.AppBuilder);
-    } else {
-      ret[project.OwnerId] = new Set([RoleId.AppBuilder]);
-    }
-  }
-  return ret;
 }

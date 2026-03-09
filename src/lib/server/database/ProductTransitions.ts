@@ -1,6 +1,8 @@
+import { trace } from '@opentelemetry/api';
 import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
+import { WorkflowState } from '$lib/workflowTypes';
 
 export async function create(createData: Prisma.ProductTransitionsCreateArgs) {
   try {
@@ -83,4 +85,50 @@ export async function deleteMany(
   } catch {
     return false;
   }
+}
+
+export async function tryConnect(
+  productId: string,
+  buildOrReleaseId: number,
+  scope: 'build' | 'release',
+  transitionId?: number | null
+) {
+  try {
+    if (transitionId) {
+      return await prisma.$transaction(async (tx) => {
+        const transition = await tx.productTransitions.findFirst({
+          where: { Id: transitionId, ProductId: productId },
+          select: { InitialState: true }
+        });
+
+        if (scope === 'build' && transition?.InitialState === WorkflowState.Product_Build) {
+          return await tx.productBuilds.updateMany({
+            where: { ProductId: productId, BuildEngineBuildId: buildOrReleaseId },
+            data: {
+              TransitionId: transitionId
+            }
+          });
+        } else if (
+          scope === 'release' &&
+          transition?.InitialState === WorkflowState.Product_Publish
+        ) {
+          return await tx.productPublications.updateMany({
+            where: { ProductId: productId, BuildEngineReleaseId: buildOrReleaseId },
+            data: {
+              TransitionId: transitionId
+            }
+          });
+        }
+      });
+    }
+  } catch (e) {
+    trace.getActiveSpan()?.addEvent('ProductTransitions failed to connect', {
+      'product-id': productId,
+      'build-or-release-id': buildOrReleaseId,
+      scope: scope,
+      'transition-id': transitionId ?? 0,
+      error: (e as Error).message
+    });
+  }
+  return false;
 }

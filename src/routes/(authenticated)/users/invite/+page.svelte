@@ -7,7 +7,11 @@
   import { goto } from '$app/navigation';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
@@ -57,20 +61,19 @@
 
   <form class="m-4" method="post" action="?/new" use:enhance>
     <div class="flex flex-row justify-between gap-4 flex-wrap">
-      <div class="grow">
-        <LabeledFormInput key="orgMembership_email">
-          <input
-            type="email"
-            name="email"
-            placeholder="user@example.com"
-            class="input input-bordered w-full validator"
-            bind:value={$form.email}
-            required
-          />
-          <span class="validator-hint">
-            {$form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty()}
-          </span>
-        </LabeledFormInput>
+      <div class="grow max-w-1/2">
+        <LabeledFormInput
+          key="orgMembership_email"
+          input={{
+            type: 'email',
+            name: 'email',
+            placeholder: 'user@example.com',
+            err: $form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty(),
+            icon: Icons.Email,
+            required: true
+          }}
+          bind:value={$form.email}
+        />
         <LabeledFormInput key="project_org">
           <OrganizationDropdown
             class="w-full"
@@ -117,12 +120,15 @@
       </div>
     </div>
     <div class="my-4 flex justify-end gap-2">
-      <a class="btn btn-secondary" href={localizeHref(redirectUrl)}>{m.common_cancel()}</a>
+      <CancelButton returnTo={localizeHref(redirectUrl)} />
       <BlockIfJobsUnavailable class="btn btn-primary">
         {#snippet altContent()}
+          <IconContainer icon={Icons.Send} width={20} />
           {m.orgMembership_send()}
         {/snippet}
-        <input type="submit" class="btn btn-primary" value={m.orgMembership_send()} />
+        <SubmitButton>
+          {@render altContent()}
+        </SubmitButton>
       </BlockIfJobsUnavailable>
     </div>
   </form>

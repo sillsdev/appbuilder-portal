@@ -68,7 +68,7 @@
             class="toggle toggle-accent"
             checked={!!group._count.Users}
             onchange={(e) => {
-              (e.currentTarget.parentElement as HTMLFormElement).requestSubmit();
+              e.currentTarget.form?.requestSubmit();
             }}
           />
         </form>

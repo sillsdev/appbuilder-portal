@@ -5,27 +5,72 @@ import { RoleId } from '$lib/prisma';
 import { isAdminForOrg } from '$lib/utils/roles';
 import { idSchema, langtagRegex, paginateSchema, requiredString } from '$lib/valibot';
 
+export const projectSelect = {
+  Id: true,
+  Name: true,
+  Language: true,
+  TypeId: true,
+  DateActive: true,
+  DateArchived: true,
+  DateUpdated: true,
+  Products: {
+    select: {
+      Id: true,
+      ProductDefinition: {
+        select: {
+          Id: true,
+          Name: true,
+          Workflow: {
+            select: {
+              ProductType: true
+            }
+          },
+          RebuildWorkflowId: true,
+          RepublishWorkflowId: true
+        }
+      },
+      VersionBuilt: true,
+      DateBuilt: true,
+      WorkflowInstance: true,
+      DatePublished: true,
+      ProductBuilds: {
+        select: {
+          AppBuilderVersion: true
+        },
+        orderBy: { DateUpdated: 'desc' },
+        take: 1
+      }
+    }
+  },
+  Owner: {
+    select: {
+      Id: true,
+      Name: true
+    }
+  },
+  Group: {
+    select: {
+      Id: true,
+      Name: true
+    }
+  },
+  Organization: {
+    select: {
+      Id: true,
+      Name: true
+    }
+  }
+} as const satisfies Prisma.ProjectsSelect;
+
 export function pruneProjects(
-  projects: Prisma.ProjectsGetPayload<{
-    include: {
-      Products: {
-        include: {
-          ProductDefinition: true;
-          WorkflowInstance: true;
-          ProductBuilds: true;
-        };
-      };
-      Owner: true;
-      Group: true;
-      Organization: true;
-    };
-  }>[]
+  projects: Prisma.ProjectsGetPayload<{ select: typeof projectSelect }>[]
 ) {
   return projects.map(
     ({
       Name,
       Id,
       Language,
+      TypeId,
       Owner: { Name: OwnerName, Id: OwnerId },
       Organization: { Name: OrganizationName, Id: OrganizationId },
       Group: { Name: GroupName, Id: GroupId },
@@ -37,6 +82,7 @@ export function pruneProjects(
       Name,
       Id,
       Language,
+      TypeId,
       OwnerId,
       OwnerName,
       OrganizationName,
@@ -59,6 +105,7 @@ export function pruneProjects(
           Id: Id,
           ProductDefinitionId: ProductDefinition.Id,
           ProductDefinitionName: ProductDefinition.Name,
+          Type: ProductDefinition.Workflow.ProductType,
           VersionBuilt,
           AppBuilderVersion: ProductBuilds.at(0)?.AppBuilderVersion ?? null,
           DateBuilt,

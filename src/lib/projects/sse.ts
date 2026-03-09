@@ -75,20 +75,21 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               },
               Store: {
                 select: {
+                  StoreTypeId: true,
                   Description: true
                 }
               },
               BuildEngineJobId: isSuper,
-              BuildEngineBuildId: isSuper,
-              BuildEngineReleaseId: isSuper,
+              CurrentBuildId: isSuper,
+              CurrentReleaseId: isSuper,
               ProductBuilds: isSuper
                 ? {
                     select: {
                       BuildEngineBuildId: true,
-                      DateCreated: true
+                      TransitionId: true
                     },
                     orderBy: {
-                      DateCreated: 'asc'
+                      DateCreated: 'desc'
                     }
                   }
                 : false,
@@ -96,10 +97,10 @@ export async function getProjectDetails(id: number, userSession: Session['user']
                 ? {
                     select: {
                       BuildEngineReleaseId: true,
-                      DateCreated: true
+                      TransitionId: true
                     },
                     orderBy: {
-                      DateCreated: 'asc'
+                      DateCreated: 'desc'
                     }
                   }
                 : false,
@@ -220,6 +221,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           Description: true,
           Workflow: {
             select: {
+              ProductType: true,
               StoreTypeId: true
             }
           }
@@ -333,7 +335,12 @@ export async function getUserTasks(userId: number) {
         select: {
           ProductDefinition: {
             select: {
-              Name: true
+              Name: true,
+              Workflow: {
+                select: {
+                  ProductType: true
+                }
+              }
             }
           },
           ProjectId: true,

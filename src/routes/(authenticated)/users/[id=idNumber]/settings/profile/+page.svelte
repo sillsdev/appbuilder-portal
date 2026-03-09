@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '@iconify/svelte';
   import { getTimeZones } from '@vvo/tzdb';
   import Fuse from 'fuse.js';
   import { superForm } from 'sveltekit-superforms';
@@ -7,6 +8,9 @@
   import TypeaheadInput from '$lib/components/TypeaheadInput.svelte';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import Toggle from '$lib/components/settings/Toggle.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import type { RoleId } from '$lib/prisma';
   import { NotificationType } from '$lib/users';
@@ -72,58 +76,36 @@
 
 <form action="" method="post" use:enhance>
   <div class="flex flex-col px-4">
-    <LabeledFormInput key="profile_firstName">
-      <input
-        type="text"
-        name="firstName"
-        class="input input-bordered w-full validator"
-        bind:value={$form.firstName}
-        required
-      />
-      <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-    </LabeledFormInput>
-    <LabeledFormInput key="profile_lastName">
-      <input
-        type="text"
-        name="lastName"
-        class="input input-bordered w-full validator"
-        bind:value={$form.lastName}
-        required
-      />
-      <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-    </LabeledFormInput>
-    <LabeledFormInput key="profile_name">
-      <input
-        type="text"
-        name="displayName"
-        class="input input-bordered w-full validator"
-        bind:value={$form.displayName}
-        required
-      />
-      <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-    </LabeledFormInput>
-    <LabeledFormInput key="profile_email">
-      <input
-        type="email"
-        name="email"
-        class="input input-bordered w-full validator"
-        bind:value={$form.email}
-        required
-      />
-      <span class="validator-hint">
-        {$form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty()}
-      </span>
-    </LabeledFormInput>
-    <LabeledFormInput key="profile_phone">
-      <input
-        type="tel"
-        name="phone"
-        class="input input-bordered w-full validator"
-        bind:value={$form.phone}
-        pattern={regExpToInputPattern(phoneRegex)}
-      />
-      <span class="validator-hint">&nbsp;</span>
-    </LabeledFormInput>
+    <LabeledFormInput
+      key="profile_name"
+      input={{
+        name: 'name',
+        err: m.formErrors_nameEmpty(),
+        icon: Icons.Name,
+        required: true
+      }}
+      bind:value={$form.name}
+    />
+    <LabeledFormInput
+      key="profile_email"
+      input={{
+        name: 'email',
+        err: $form.email ? m.formErrors_emailInvalid() : m.formErrors_emailEmpty(),
+        icon: Icons.Email,
+        required: true
+      }}
+      bind:value={$form.email}
+    />
+    <LabeledFormInput
+      key="profile_phone"
+      input={{
+        type: 'tel',
+        name: 'phone',
+        icon: Icons.Phone,
+        pattern: regExpToInputPattern(phoneRegex)
+      }}
+      bind:value={$form.phone}
+    />
     <LabeledFormInput key="profile_timezone">
       <TypeaheadInput
         inputElProps={{ placeholder: m.profile_timezonePlaceholder() }}
@@ -138,6 +120,7 @@
           default: ['w-full', tzValue && !timeZoneMap.has(tzValue) && 'select-error'],
           dropdown: 'w-full bg-base-100'
         }}
+        icon={Icons.Timezone}
       >
         {#snippet listElement(res, selected)}
           <div class="w-full right-0" class:selected>
@@ -146,18 +129,15 @@
         {/snippet}
       </TypeaheadInput>
     </LabeledFormInput>
-    <InputWithMessage
+    <Toggle
       class="mt-4"
       title={{ key: 'profile_notificationSettingsTitle' }}
       message={{ key: 'profile_optOutOfEmailOption' }}
-    >
-      <input
-        type="checkbox"
-        name="notifications"
-        class="toggle toggle-accent ml-4"
-        bind:checked={$form.notifications}
-      />
-    </InputWithMessage>
+      bind:checked={$form.notifications}
+      name="notifications"
+      onIcon={Icons.NotifyOn}
+      offIcon={Icons.NotifyOff}
+    />
     {#if !$form.notifications}
       <LabeledFormInput
         key="profile_emailExceptions"
@@ -168,39 +148,42 @@
             message={{ key: 'profile_email_options', params: { option } }}
             class="my-1"
           >
-            <input
-              class="toggle toggle-info border-info"
-              type="checkbox"
-              bind:group={$form.emailOptions}
-              value={option}
-            />
+            <div
+              class={['toggle toggle-info', $form.emailOptions.includes(option) && 'border-info']}
+            >
+              <input
+                class="checked:bg-info checked:border-info rounded-full"
+                type="checkbox"
+                bind:group={$form.emailOptions}
+                value={option}
+              />
+              <Icon icon={Icons.NotifyOn} width={20} height={20} />
+              <Icon icon={Icons.NotifyOff} width={20} height={20} color="white" />
+            </div>
           </InputWithMessage>
         {/each}
       </LabeledFormInput>
     {/if}
-    <InputWithMessage
+    <Toggle
       class="mt-4"
       title={{ key: 'profile_visibleProfile' }}
       message={{ key: 'profile_visibility_visible' }}
-    >
-      <input
-        type="checkbox"
-        name="visible"
-        class="toggle toggle-accent ml-4"
-        bind:checked={$form.visible}
-      />
-    </InputWithMessage>
-    <InputWithMessage class="mt-4" title={{ key: 'users_table_active' }}>
-      <input
-        type="checkbox"
-        name="active"
-        class="toggle toggle-accent ml-4"
-        disabled={page.data.session?.user.userId === data.subject.Id}
-        bind:checked={$form.active}
-      />
-    </InputWithMessage>
+      bind:checked={$form.visible}
+      name="visible"
+      onIcon={Icons.Visible}
+      offIcon={Icons.Invisible}
+    />
+    <Toggle
+      class="mt-4"
+      title={{ key: 'users_table_active' }}
+      name="active"
+      inputAttr={{ disabled: page.data.session?.user.userId === data.subject.Id }}
+      bind:checked={$form.active}
+      onIcon={Icons.Unlocked}
+      offIcon={Icons.Locked}
+    />
     <div class="flex my-2">
-      <button type="submit" class="btn btn-primary">{m.common_save()}</button>
+      <SubmitButton />
     </div>
   </div>
 </form>

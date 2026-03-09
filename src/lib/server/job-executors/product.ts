@@ -161,7 +161,7 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
       Id: job.data.productId
     },
     select: {
-      BuildEngineBuildId: true,
+      CurrentBuildId: true,
       BuildEngineJobId: true,
       Project: {
         select: {
@@ -176,24 +176,12 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
     }
   });
   job.updateProgress(30);
-  if (product?.BuildEngineBuildId && product?.BuildEngineJobId) {
-    const productBuild = await DatabaseReads.productBuilds.findFirst({
-      where: {
-        ProductId: job.data.productId,
-        BuildEngineBuildId: product.BuildEngineBuildId
-      },
-      select: {
-        Id: true
-      }
-    });
-    if (!productBuild) {
-      return 0;
-    }
+  if (product?.CurrentBuildId && product?.BuildEngineJobId) {
     job.updateProgress(45);
     const versionCodeArtifact = await DatabaseReads.productArtifacts.findFirstOrThrow({
       where: {
         ProductId: job.data.productId,
-        ProductBuildId: productBuild.Id,
+        BuildEngineBuildId: product.CurrentBuildId,
         ArtifactType: 'version'
       },
       select: {
@@ -227,7 +215,7 @@ export async function getVersionCode(job: Job<BullMQ.Product.GetVersionCode>): P
         ...ctx,
         environment: {
           ...ctx.environment,
-          [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID]: '' + product.BuildEngineBuildId,
+          [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_BUILD_ID]: '' + product.CurrentBuildId,
           [ENVKeys.PUBLISH_GOOGLE_PLAY_UPLOADED_VERSION_CODE]: '' + versionCode
         }
       } as WorkflowInstanceContext)
@@ -243,9 +231,7 @@ export async function createLocal(job: Job<BullMQ.Product.CreateLocal>): Promise
       ProjectId: job.data.projectId,
       ProductDefinitionId: job.data.productDefinitionId,
       StoreId: job.data.storeId,
-      BuildEngineBuildId: 0,
-      BuildEngineJobId: 0,
-      BuildEngineReleaseId: 0
+      BuildEngineJobId: 0
     });
     if (!productId) return false;
 

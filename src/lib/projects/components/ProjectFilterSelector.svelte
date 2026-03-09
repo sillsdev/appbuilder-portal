@@ -1,46 +1,51 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
   import { page } from '$app/state';
-  import Dropdown from '$lib/components/Dropdown.svelte';
+  import Dropdown, { type DropdownClasses } from '$lib/components/Dropdown.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Props {
     filter: string;
+    class?: DropdownClasses;
   }
 
-  let { filter }: Props = $props();
+  let { filter, class: classes }: Props = $props();
 
   const textsForPaths = new Map([
-    ['all', m.projects_filter_all()],
-    ['own', m.projects_filter_own()],
-    ['organization', m.projects_filter_org()],
-    ['active', m.projects_filter_active()],
-    ['archived', m.projects_filter_archived()]
+    ['all', { msg: m.projects_filter_all(), ic: Icons.Project }],
+    ['own', { msg: m.projects_filter_own(), ic: Icons.User }],
+    ['organization', { msg: m.projects_filter_org(), ic: Icons.Organization }],
+    ['active', { msg: m.projects_filter_active(), ic: Icons.Active }],
+    ['archived', { msg: m.projects_filter_archived(), ic: Icons.Archive }]
   ]);
   let open = $state(false);
 </script>
 
 <Dropdown
   class={{
-    dropdown: 'dropdown-start',
-    label: 'no-animation hover:bg-transparent',
-    content: 'overflow-y-auto left-2 p-2 border m-2'
+    dropdown: ['dropdown-start', classes?.dropdown],
+    label: ['no-animation hover:bg-transparent', classes?.label],
+    content: ['overflow-y-auto left-2 p-2 border m-2', classes?.content]
   }}
   bind:open
 >
   {#snippet label()}
+    {@const route = textsForPaths.get(filter)!}
     <h1 class="p-4 pl-6 cursor-pointer">
       <div class="flex flex-row items-center">
-        {textsForPaths.get(filter)}
+        <IconContainer icon={route.ic} width={24} class="mr-1" />
+        {route.msg}
         <div class="dropdown-icon" class:open>
-          <Icon width="24" class="dropdown-icon" icon="gridicons:dropdown" />
+          <Icon width="24" class="dropdown-icon" icon={Icons.Dropdown} />
         </div>
       </div>
     </h1>
   {/snippet}
   {#snippet content()}
-    <div class="px-4">
+    <div class="px-1">
       {#each textsForPaths as route}
         <a
           href={localizeHref(
@@ -49,7 +54,8 @@
           class:font-extrabold={filter === route[0]}
           class="p-1 text-nowrap block"
         >
-          {route[1]}
+          <IconContainer icon={route[1].ic} width={20} />
+          {route[1].msg}
         </a>
       {/each}
     </div>

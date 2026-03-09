@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import { error } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -22,11 +23,11 @@ type Fields = {
   ownerEmail?: string; //Product.Project.Owner.Email
   projectName: string; //Product.Project.Name
   projectDescription: string; //Product.Project.Description
-  storeDescription?: string; //Product.Store.Description
+  store?: { StoreTypeId: number; Description: string }; //Product.Store.Description
   listingLanguageCode?: string; //Product.StoreLanguage.Name
   projectURL?: string; // Origin URL + /projects/[Project.Id]
   displayProductDescription: boolean; //Product.ProductDefinition.Description
-  appType?: string; //Product.ProductDefinition.ApplicationTypes.Description
+  appType?: { Id: number; Description: string }; //Product.ProductDefinition.ApplicationTypes.Description
   projectLanguageCode?: string; //Product.Project.Language
 };
 
@@ -44,7 +45,7 @@ export const load = (async ({ params, locals, depends }) => {
       Id: params.product_id
     },
     select: {
-      BuildEngineBuildId: true,
+      CurrentBuildId: true,
       Project: {
         select: {
           Id: true,
@@ -73,12 +74,16 @@ export const load = (async ({ params, locals, depends }) => {
               UserRoles: {
                 where: {
                   RoleId: RoleId.OrgAdmin
+                },
+                select: {
+                  UserId: true
                 }
               }
             }
           },
           ApplicationType: {
             select: {
+              Id: true,
               Description: true
             }
           }
@@ -86,18 +91,24 @@ export const load = (async ({ params, locals, depends }) => {
       },
       Store: {
         select: {
-          Description: true
+          Description: true,
+          StoreTypeId: true
         }
       },
       StoreLanguage: {
         select: {
-          Name: true
+          Description: true
         }
       },
       ProductDefinition: {
         select: {
           Id: true,
-          Name: true
+          Name: true,
+          Workflow: {
+            select: {
+              ProductType: true
+            }
+          }
         }
       },
       ProductPublications:
@@ -115,71 +126,70 @@ export const load = (async ({ params, locals, depends }) => {
               },
               take: 1
             }
-          : undefined
+          : undefined,
+      ProductTransitions: {
+        where: {
+          DateTransition: { not: null }
+        },
+        select: {
+          InitialState: true,
+          Comment: true
+        },
+        orderBy: { DateTransition: 'desc' },
+        take: 1
+      }
     }
   }))!;
 
-  const artifacts = snap.context.includeArtifacts
-    ? await DatabaseReads.productArtifacts.findMany({
-        where: {
-          ProductId: params.product_id,
-          ProductBuild: {
-            BuildEngineBuildId: product.BuildEngineBuildId
+  const artifacts =
+    snap.context.includeArtifacts && product.CurrentBuildId
+      ? await DatabaseReads.productArtifacts.findMany({
+          where: {
+            ProductId: params.product_id,
+            BuildEngineBuildId: product.CurrentBuildId,
+            //filter by artifact type
+            ArtifactType:
+              snap.context.includeArtifacts === 'all' || snap.context.includeArtifacts === 'error'
+                ? undefined
+                : {
+                    in: artifactLists(snap.context.includeArtifacts)
+                  }
           },
-          //filter by artifact type
-          ArtifactType:
-            snap.context.includeArtifacts === 'all' || snap.context.includeArtifacts === 'error'
-              ? undefined
-              : {
-                  in: artifactLists(snap.context.includeArtifacts)
-                }
-        },
-        select: {
-          ArtifactType: true,
-          FileSize: true,
-          Url: true
-        },
-        orderBy: {
-          ArtifactType: 'asc'
-        }
-      })
-    : [];
-
-  const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
-  const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
+          select: {
+            ArtifactType: true,
+            FileSize: true,
+            Url: true
+          },
+          orderBy: {
+            ArtifactType: 'asc'
+          }
+        })
+      : [];
 
   return {
     loadTime: new Date().valueOf(),
     actions: Workflow.availableTransitionsFromName(snap.state, snap.input)
-      .filter((a) =>
-        filterAvailableActions(
-          a,
-          locals.security.userId,
-          product.Project.Owner.Id,
-          authorIds,
-          orgAdminIds
-        )
-      )
+      .filter((a) => filterAvailableActions(a, locals.security.userId, product.Project))
       .map((a) => a[0].eventType as WorkflowAction),
     taskTitle: snap.state,
+    previousTask: product.ProductTransitions.at(0),
     instructions: snap.context.instructions,
     projectId: product.Project.Id,
     productDescription: product.ProductDefinition.Name,
+    productType: product.ProductDefinition.Workflow.ProductType,
     fields: {
       projectName: product.Project.Name,
       projectDescription: product.Project.Description,
       ownerName: product.Project.Owner.Name,
       ownerEmail: product.Project.Owner.Email,
-      storeDescription:
-        snap.context.includeFields.includes('storeDescription') && product.Store?.Description,
+      store: snap.context.includeFields.includes('storeDescription') && product.Store,
       listingLanguageCode:
-        snap.context.includeFields.includes('listingLanguageCode') && product.StoreLanguage?.Name,
+        snap.context.includeFields.includes('listingLanguageCode') &&
+        product.StoreLanguage?.Description,
       projectURL:
         snap.context.includeFields.includes('projectURL') && projectUrl(product.Project.Id),
       displayProductDescription: snap.context.includeFields.includes('productDescription'),
-      appType:
-        snap.context.includeFields.includes('appType') &&
-        product.Project.ApplicationType.Description,
+      appType: snap.context.includeFields.includes('appType') && product.Project.ApplicationType,
       projectLanguageCode: product.Project.Language
     } as Fields,
     files: artifacts,
@@ -258,6 +268,9 @@ export const actions = {
                 UserRoles: {
                   where: {
                     RoleId: RoleId.OrgAdmin
+                  },
+                  select: {
+                    UserId: true
                   }
                 }
               }
@@ -267,18 +280,8 @@ export const actions = {
       }
     }))!;
 
-    const authorIds = new Set(product.Project.Authors.map((a) => a.UserId));
-    const orgAdminIds = new Set(product.Project.Organization.UserRoles.map((a) => a.UserId));
     const transition = Workflow.availableTransitionsFromName(old, snap.input)
-      .filter((a) =>
-        filterAvailableActions(
-          a,
-          locals.security.userId,
-          product.Project.Owner.Id,
-          authorIds,
-          orgAdminIds
-        )
-      )
+      .filter((a) => filterAvailableActions(a, locals.security.userId, product.Project))
       .find((t) => t[0].eventType === form.data.flowAction)
       ?.at(0);
     if (transition && form.data.state === flow.state()) {
@@ -293,13 +296,7 @@ export const actions = {
 
       const availableTransitions = targetState
         ? Workflow.availableTransitionsFromNode(targetState[0], snap.input).filter((a) =>
-            filterAvailableActions(
-              a,
-              locals.security.userId,
-              product.Project.Owner.Id,
-              authorIds,
-              orgAdminIds
-            )
+            filterAvailableActions(a, locals.security.userId, product.Project)
           )
         : [];
 
@@ -339,19 +336,27 @@ async function verifyCanViewTask(security: Security, productId: string): Promise
 function filterAvailableActions(
   action: ReturnType<typeof Workflow.availableTransitionsFromName>[number],
   userId: number | undefined,
-  ownerId: number,
-  authors: Set<number>,
-  orgAdmins: Set<number>
+  project: Prisma.ProjectsGetPayload<{
+    select: {
+      Owner: { select: { Id: true } };
+      Authors: { select: { UserId: true } };
+      Organization: {
+        select: {
+          UserRoles: { select: { UserId: true } };
+        };
+      };
+    };
+  }>
 ): boolean {
   if (userId === undefined) return false;
   return action.some((a) => {
     switch (a.meta?.user) {
       case RoleId.AppBuilder:
-        return userId === ownerId;
+        return userId === project.Owner.Id;
       case RoleId.Author:
-        return authors.has(userId);
+        return !!project.Authors.find((u) => u.UserId === userId);
       case RoleId.OrgAdmin:
-        return orgAdmins.has(userId);
+        return !!project.Organization.UserRoles.find((u) => u.UserId === userId);
       default:
         return false;
     }

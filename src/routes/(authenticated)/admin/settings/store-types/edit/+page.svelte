@@ -2,7 +2,9 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -34,22 +36,17 @@
     <input
       type="text"
       name="name"
-      class="input input-bordered w-full validator"
+      class="input w-full validator"
       bind:value={$form.name}
       required
     />
     <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
   </LabeledFormInput>
   <LabeledFormInput key="common_description">
-    <input
-      type="text"
-      name="description"
-      class="input input-bordered w-full"
-      bind:value={$form.description}
-    />
+    <input type="text" name="description" class="input w-full" bind:value={$form.description} />
   </LabeledFormInput>
   <div class="my-4">
-    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <CancelButton returnTo={localizeHref(base)} />
+    <SubmitButton />
   </div>
 </form>

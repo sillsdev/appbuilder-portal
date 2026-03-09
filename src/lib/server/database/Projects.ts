@@ -1,3 +1,4 @@
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
@@ -55,7 +56,7 @@ export async function update(
   const orgId = projectData.OrganizationId ?? existing!.OrganizationId;
   const groupId = projectData.GroupId ?? existing!.GroupId;
   const ownerId = projectData.OwnerId ?? existing!.OwnerId;
-  if (!(await validateProjectBase(orgId, groupId, ownerId))) return false;
+  if (!(await validateProjectBase(orgId, groupId, ownerId, id))) return false;
 
   // No additional verification steps
 
@@ -69,7 +70,7 @@ export async function update(
     // If the owner has changed, we need to reassign all the user tasks related to this project
     if (ownerId && ownerId !== existing?.OwnerId) {
       await getQueues().UserTasks.add(`Reassign tasks for Project #${id} (New Owner)`, {
-        type: BullMQ.JobType.UserTasks_Modify,
+        type: BullMQ.JobType.UserTasks_Workflow,
         scope: 'Project',
         projectId: id,
         operation: {
@@ -77,6 +78,18 @@ export async function update(
           userMapping: [{ from: existing!.OwnerId, to: ownerId, withRole: RoleId.AppBuilder }]
         }
       });
+      await getQueues().UserTasks.add(
+        `Reassign data deletion requests for Project #${id} (New Owner)`,
+        {
+          type: BullMQ.JobType.UserTasks_DeleteRequest,
+          scope: 'Project',
+          projectId: id,
+          operation: {
+            type: BullMQ.UserTasks.OpType.Reassign,
+            userMapping: [{ from: existing!.OwnerId, to: ownerId, withRole: RoleId.AppBuilder }]
+          }
+        }
+      );
     }
   } catch {
     return false;
@@ -113,7 +126,12 @@ export async function createMany(projectData: RequirePrimitive<Prisma.ProjectsCr
 // }
 // export { deleteProject as delete };
 
-async function validateProjectBase(orgId: number, groupId: number, ownerId: number) {
+async function validateProjectBase(
+  orgId: number,
+  groupId: number,
+  ownerId: number,
+  projectId?: number
+) {
   // Each of the criteria for a valid project just needs to checked if
   // the relevant data is supplied. If it isn't, then this is an update
   // and the data was valid already, or PostgreSQL will catch it
@@ -131,11 +149,111 @@ async function validateProjectBase(orgId: number, groupId: number, ownerId: numb
   const userInOrg = !!user?.Organizations.length;
   /** disregard owner restrictions if owner is Super Admin */
   const userIsSuperAdmin = !!user?.UserRoles.length;
-  return !!(
-    // project group must be owned by project org
+
+  /* project group must be owned by project org */
+  const orgOwnsGroup =
+    orgId === (await prisma.groups.findUnique({ where: { Id: groupId } }))?.OwnerId;
+
+  const check = orgOwnsGroup && ((userInGroup && userInOrg) || userIsSuperAdmin);
+
+  if (!check) {
+    const span = trace.getActiveSpan();
+    if (span) {
+      const msg = `Project validation failed for ${projectId || 'new project'}`;
+      span.addEvent(msg, {
+        'project.organization-id': orgId,
+        'project.group-id': groupId,
+        'project.owner-id': ownerId,
+        'project.group-in-org': orgOwnsGroup,
+        'project.user-in-group': userInGroup,
+        'project.user-in-org': userInOrg
+      });
+
+      span.recordException(new Error(msg));
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: msg
+      });
+    }
+  }
+
+  return check;
+}
+
+export async function getUsersByRole(projectId: number, roles?: RoleId[]) {
+  const users = await prisma.users.findMany({
+    where: {
+      OR: [
+        {
+          Projects: { some: { Id: projectId } }
+        },
+        {
+          UserRoles: {
+            some: {
+              RoleId: RoleId.OrgAdmin,
+              Organization: {
+                Projects: {
+                  some: { Id: projectId }
+                }
+              }
+            }
+          }
+        },
+        {
+          Authors: { some: { ProjectId: projectId } }
+        }
+      ]
+    },
+    select: {
+      Id: true,
+      Projects: {
+        where: {
+          Id: projectId
+        },
+        select: {
+          Id: true
+        }
+      },
+      UserRoles: {
+        where: {
+          RoleId: RoleId.OrgAdmin,
+          Organization: {
+            Projects: {
+              some: { Id: projectId }
+            }
+          }
+        },
+        select: {
+          RoleId: true
+        }
+      },
+      Authors: {
+        where: {
+          ProjectId: projectId
+        },
+        select: {
+          UserId: true
+        }
+      }
+    }
+  });
+
+  const includeOwner = !roles || roles.includes(RoleId.AppBuilder);
+  const includeAdmin = !roles || roles.includes(RoleId.OrgAdmin);
+  const includeAuthors = !roles || roles.includes(RoleId.Author);
+
+  return new Map<number, Set<RoleId>>(
     (
-      orgId === (await prisma.groups.findUnique({ where: { Id: groupId } }))?.OwnerId &&
-      ((userInGroup && userInOrg) || userIsSuperAdmin)
-    )
+      users.map((u) => [
+        u.Id,
+        new Set(
+          [
+            includeOwner && u.Projects.length && RoleId.AppBuilder,
+            includeAdmin && u.UserRoles.length && RoleId.OrgAdmin,
+            includeAuthors && u.Authors.length && RoleId.Author
+          ].filter((r) => !!r)
+        )
+      ]) as [number, Set<RoleId>][]
+    ).filter((u) => u[1].size)
   );
 }

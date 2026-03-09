@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { ActionData, PageData } from './$types';
   import { enhance } from '$app/forms';
-  import { goto } from '$app/navigation';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import StoreListDisplay from '$lib/organizations/components/StoreListDisplay.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -24,7 +24,7 @@
   <h2>{m.org_storesTitle()}</h2>
   <BlockIfJobsUnavailable class="btn btn-outline">
     {#snippet altContent()}
-      <IconContainer icon="bx:transfer" width="20" />
+      <IconContainer icon={Icons.Transfer} width="20" />
       <span>{m.org_storesTransfer()}</span>
     {/snippet}
     <a href={localizeHref(`${base}/transfer`)} class="btn btn-outline">
@@ -37,7 +37,7 @@
   {#each data.stores.toSorted( (a, b) => byString(a.Description || a.BuildEnginePublisherId, b.Description || b.BuildEnginePublisherId, getLocale()) ) as store}
     <StoreListDisplay
       editable={store.OwnerId === data.organization.Id}
-      onEdit={() => goto(localizeHref(`${base}/edit?id=${store.Id}`))}
+      editLink={localizeHref(`${base}/edit?id=${store.Id}`)}
       {store}
       getTitle={(store) => store.Description ?? ''}
     >

@@ -18,7 +18,15 @@ export const load = (async (event) => {
     storeTypes: await DatabaseReads.storeTypes.findMany(),
     stores: await DatabaseReads.stores.findMany({
       where: {
-        Organizations: { some: { Id: organization.Id } }
+        Organizations: { some: { Id: organization.Id } },
+        OR: [
+          {
+            OwnerId: null
+          },
+          {
+            OwnerId: organization.Id
+          }
+        ]
       },
       include: {
         Products: {
@@ -32,7 +40,12 @@ export const load = (async (event) => {
             Id: true,
             ProductDefinition: {
               select: {
-                Name: true
+                Name: true,
+                Workflow: {
+                  select: {
+                    ProductType: true
+                  }
+                }
               }
             },
             Project: {
@@ -60,7 +73,15 @@ export const actions = {
         Id: form.data.source,
         Organizations: {
           some: { Id: orgId }
-        }
+        },
+        OR: [
+          {
+            OwnerId: null
+          },
+          {
+            OwnerId: orgId
+          }
+        ]
       },
       select: {
         Products: {
@@ -75,7 +96,15 @@ export const actions = {
         Id: form.data.destination,
         Organizations: {
           some: { Id: orgId }
-        }
+        },
+        OR: [
+          {
+            OwnerId: null
+          },
+          {
+            OwnerId: orgId
+          }
+        ]
       }
     });
 

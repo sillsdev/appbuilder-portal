@@ -24,7 +24,7 @@
 <div class="w-full">
   <textarea
     {name}
-    class={['textarea textarea-bordered h-48', classes]}
+    class={['textarea h-48', classes]}
     onfocus={() => {
       showErrors = false;
     }}

@@ -3,12 +3,13 @@
   import type { LayoutData } from './$types';
   import { page } from '$app/state';
   import TabbedMenu from '$lib/components/settings/TabbedMenu.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
 
   let userSettingsLinks = [
-    { text: m.users_userProfile(), route: 'profile' },
-    { text: m.users_userRoles(), route: 'roles' },
-    { text: m.users_userGroups(), route: 'groups' }
+    { text: m.users_userProfile(), route: 'profile', icon: Icons.Info },
+    { text: m.users_userRoles(), route: 'roles', icon: Icons.Roles },
+    { text: m.users_userGroups(), route: 'groups', icon: Icons.Group }
   ];
 
   interface Props {

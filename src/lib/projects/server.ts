@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client';
-import { RoleId } from '$lib/prisma';
+import { ProductTransitionType, RoleId } from '$lib/prisma';
 import { type ProjectForAction, canClaimProject } from '$lib/projects';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
@@ -126,11 +126,28 @@ export async function doProjectAction(
   groups: number[]
 ) {
   if (operation === 'archive' && !project?.DateArchived) {
+    const timestamp = new Date();
     await DatabaseWrites.projects.update(project.Id, {
-      DateArchived: new Date()
+      DateArchived: timestamp
     });
+    await DatabaseWrites.productTransitions.createMany(
+      {
+        data: (
+          await DatabaseReads.products.findMany({
+            where: { ProjectId: project.Id },
+            select: { Id: true }
+          })
+        ).map((p) => ({
+          ProductId: p.Id,
+          UserId: security.userId,
+          DateTransition: timestamp,
+          TransitionType: ProductTransitionType.Archival
+        }))
+      },
+      project.Id
+    );
     await getQueues().UserTasks.add(`Delete UserTasks for Archived Project #${project.Id}`, {
-      type: BullMQ.JobType.UserTasks_Modify,
+      type: BullMQ.JobType.UserTasks_Workflow,
       scope: 'Project',
       projectId: project.Id,
       operation: {
@@ -138,11 +155,28 @@ export async function doProjectAction(
       }
     });
   } else if (operation === 'reactivate' && !!project?.DateArchived) {
+    const timestamp = new Date();
     await DatabaseWrites.projects.update(project.Id, {
       DateArchived: null
     });
+    await DatabaseWrites.productTransitions.createMany(
+      {
+        data: (
+          await DatabaseReads.products.findMany({
+            where: { ProjectId: project.Id },
+            select: { Id: true }
+          })
+        ).map((p) => ({
+          ProductId: p.Id,
+          UserId: security.userId,
+          DateTransition: timestamp,
+          TransitionType: ProductTransitionType.Reactivation
+        }))
+      },
+      project.Id
+    );
     await getQueues().UserTasks.add(`Create UserTasks for Reactivated Project #${project.Id}`, {
-      type: BullMQ.JobType.UserTasks_Modify,
+      type: BullMQ.JobType.UserTasks_Workflow,
       scope: 'Project',
       projectId: project.Id,
       operation: {

@@ -2,6 +2,8 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
 
@@ -23,34 +25,35 @@
 <form action="" class="m-4" method="post" use:enhance>
   <div class="flex flex-row">
     <div class="w-full">
-      <LabeledFormInput key="org_name">
-        <input
-          type="text"
-          name="name"
-          class="input w-full input-bordered validator"
-          bind:value={$form.name}
-          required
-        />
-        <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-      </LabeledFormInput>
-      <LabeledFormInput key="project_orgContact">
-        <input
-          name="contact"
-          class="input input-bordered w-full validator"
-          type="email"
-          bind:value={$form.contact}
-        />
-        <span class="validator-hint">{m.formErrors_emailInvalid()}</span>
-      </LabeledFormInput>
-      <LabeledFormInput key="org_logoURL">
-        <input
-          type="url"
-          name="logoUrl"
-          class="input w-full input-bordered"
-          bind:value={$form.logoUrl}
-        />
-        <span>{m.org_logoURL_note()}</span>
-      </LabeledFormInput>
+      <LabeledFormInput
+        key="org_name"
+        input={{
+          name: 'name',
+          err: m.formErrors_nameEmpty(),
+          icon: Icons.Name,
+          required: true
+        }}
+        bind:value={$form.name}
+      />
+      <LabeledFormInput
+        key="project_orgContact"
+        input={{
+          type: 'email',
+          name: 'contact',
+          err: m.formErrors_emailInvalid(),
+          icon: Icons.Email
+        }}
+        bind:value={$form.contact}
+      />
+      <LabeledFormInput
+        key="org_logoURL"
+        input={{
+          name: 'logoUrl',
+          type: 'url',
+          icon: Icons.Image
+        }}
+        bind:value={$form.logoUrl}
+      />
       <div class="w-1/3 mx-auto sm:hidden">
         <img src={$form.logoUrl} alt="Logo" class="object-contain" />
       </div>
@@ -60,6 +63,6 @@
     </div>
   </div>
   <div class="my-4">
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <SubmitButton />
   </div>
 </form>

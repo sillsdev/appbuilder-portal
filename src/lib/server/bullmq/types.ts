@@ -37,8 +37,14 @@ export namespace Build {
   export interface PostProcess extends BaseJob {
     type: JobType.Build_PostProcess;
     productId: string;
-    productBuildId: number;
     build: BuildResponse;
+  }
+
+  export interface Delete extends BaseJob {
+    type: JobType.Build_Delete;
+    organizationId: number;
+    buildEngineJobId: number;
+    buildEngineBuildId: number;
   }
 }
 
@@ -49,7 +55,6 @@ export namespace Polling {
     productId: string;
     jobId: number;
     buildId: number;
-    productBuildId: number;
   }
 
   export interface Project extends BaseJob {
@@ -66,7 +71,6 @@ export namespace Polling {
     jobId: number;
     buildId: number;
     releaseId: number;
-    productBuildId: number;
   }
 }
 
@@ -125,8 +129,16 @@ export namespace Publish {
   export interface PostProcess extends BaseJob {
     type: JobType.Publish_PostProcess;
     productId: string;
-    productBuildId: number;
+    buildId: number;
     release: ReleaseResponse;
+  }
+
+  export interface Delete extends BaseJob {
+    type: JobType.Publish_Delete;
+    organizationId: number;
+    buildEngineJobId: number;
+    buildEngineBuildId: number;
+    buildEngineReleaseId: number;
   }
 }
 
@@ -149,21 +161,8 @@ export namespace UserTasks {
     Create = 'Create',
     Reassign = 'Reassign'
   }
-  type Config =
-    | {
-        type: OpType.Delete | OpType.Create | OpType.Update;
-        roles?: RoleId[];
-        users?: number[];
-      }
-    | {
-        type: OpType.Reassign;
-        userMapping: { from: number; to: number; withRole?: RoleId }[];
-        roles?: never;
-        users?: never;
-      };
 
-  // Using type here instead of interface for easier composition
-  export type Modify = (
+  type Scope =
     | {
         scope: 'Project';
         projectId: number;
@@ -171,12 +170,52 @@ export namespace UserTasks {
     | {
         scope: 'Product';
         productId: string;
-      }
-  ) & {
-    type: JobType.UserTasks_Modify;
+      };
+
+  // Using type here instead of interface for easier composition
+  export type Workflow = Scope & {
+    type: JobType.UserTasks_Workflow;
     transition?: number; // added for compatibility with JobBase
     comment?: string; // just ignore comment for Delete and Reassign
-    operation: Config;
+    operation:
+      | {
+          type: OpType.Update;
+          roles?: never;
+          users?: never;
+        }
+      | {
+          type: OpType.Delete | OpType.Create;
+          roles?: RoleId[];
+          users?: number[];
+        }
+      | {
+          type: OpType.Reassign;
+          userMapping: { from: number; to: number; withRole?: RoleId }[];
+          roles?: never;
+          users?: never;
+        };
+  };
+
+  export type DeleteRequest = Scope & {
+    type: JobType.UserTasks_DeleteRequest;
+    transition?: number; // added for compatibility with JobBase
+    comment?: string; // just ignore comment for Delete and Reassign
+    requestId?: string;
+    operation:
+      | { type: OpType.Update; targetRole: RoleId; roles?: never; users?: never }
+      | {
+          type: OpType.Delete | OpType.Create;
+          roles?: RoleId[];
+          users?: number[];
+          targetRole?: never;
+        }
+      | {
+          type: OpType.Reassign;
+          userMapping: { from: number; to: number; withRole?: RoleId }[];
+          roles?: never;
+          users?: never;
+          targetRole?: never;
+        };
   };
 }
 
@@ -256,7 +295,10 @@ export namespace SvelteProjectSSE {
 
 export type Job = JobTypeMap[keyof JobTypeMap];
 
-export type BuildJob = JobTypeMap[JobType.Build_Product | JobType.Build_PostProcess];
+export type BuildJob = JobTypeMap[
+  | JobType.Build_Product
+  | JobType.Build_PostProcess
+  | JobType.Build_Delete];
 export type RecurringJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags];
@@ -264,9 +306,12 @@ export type StartupJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags
   | JobType.System_Migrate];
-export type PublishJob = JobTypeMap[JobType.Publish_Product | JobType.Publish_PostProcess];
+export type PublishJob = JobTypeMap[
+  | JobType.Publish_Product
+  | JobType.Publish_PostProcess
+  | JobType.Publish_Delete];
 export type PollJob = JobTypeMap[JobType.Poll_Build | JobType.Poll_Publish | JobType.Poll_Project];
-export type UserTasksJob = JobTypeMap[JobType.UserTasks_Modify];
+export type UserTasksJob = JobTypeMap[JobType.UserTasks_Workflow | JobType.UserTasks_DeleteRequest];
 export type EmailJob = JobTypeMap[
   | JobType.Email_InviteUser
   | JobType.Email_SendNotificationToUser
@@ -291,6 +336,7 @@ export type ProjectJob = JobTypeMap[JobType.Project_Create | JobType.Project_Imp
 export type JobTypeMap = {
   [JobType.Build_Product]: Build.Product;
   [JobType.Build_PostProcess]: Build.PostProcess;
+  [JobType.Build_Delete]: Build.Delete;
   [JobType.Poll_Build]: Polling.Build;
   [JobType.Poll_Project]: Polling.Project;
   [JobType.Poll_Publish]: Polling.Publish;
@@ -303,10 +349,12 @@ export type JobTypeMap = {
   [JobType.Project_ImportProducts]: Project.ImportProducts;
   [JobType.Publish_Product]: Publish.Product;
   [JobType.Publish_PostProcess]: Publish.PostProcess;
+  [JobType.Publish_Delete]: Publish.Delete;
   [JobType.System_CheckEngineStatuses]: System.CheckEngineStatuses;
   [JobType.System_RefreshLangTags]: System.RefreshLangTags;
   [JobType.System_Migrate]: System.Migrate;
-  [JobType.UserTasks_Modify]: UserTasks.Modify;
+  [JobType.UserTasks_Workflow]: UserTasks.Workflow;
+  [JobType.UserTasks_DeleteRequest]: UserTasks.DeleteRequest;
   [JobType.Email_InviteUser]: Email.InviteUser;
   [JobType.Email_SendNotificationToUser]: Email.SendNotificationToUser;
   [JobType.Email_SendNotificationToReviewers]: Email.SendNotificationToReviewers;

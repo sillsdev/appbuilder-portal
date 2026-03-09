@@ -3,7 +3,10 @@
   import type { ActionData, PageData } from './$types';
   import { enhance as svk_enhance } from '$app/forms';
   import { goto } from '$app/navigation';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
   import GroupUsers from '$lib/organizations/components/GroupUsers.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
@@ -48,27 +51,22 @@
 <h3 class="pl-4">{m.org_editGroupTitle()}</h3>
 
 <form class="m-4" method="post" action="?/edit" use:enhance>
-  <LabeledFormInput key="common_name">
-    <input
-      type="text"
-      name="name"
-      class="input input-bordered w-full validator"
-      bind:value={$form.name}
-      required
-    />
-    <span class="validator-hint">{m.formErrors_nameEmpty()}</span>
-  </LabeledFormInput>
-  <LabeledFormInput key="common_description" class="mb-4">
-    <input
-      type="text"
-      name="description"
-      class="input input-bordered w-full"
-      bind:value={$form.description}
-    />
+  <LabeledFormInput
+    key="common_name"
+    input={{
+      name: 'name',
+      err: m.formErrors_nameEmpty(),
+      icon: Icons.Name,
+      required: true
+    }}
+    bind:value={$form.name}
+  />
+  <LabeledFormInput key="common_description" class="mb-8">
+    <textarea name="description" class="textarea w-full" bind:value={$form.description}></textarea>
   </LabeledFormInput>
   <div>
-    <a class="btn btn-secondary" href={localizeHref(base)}>{m.common_cancel()}</a>
-    <input type="submit" class="btn btn-primary" value={m.common_save()} />
+    <CancelButton returnTo={localizeHref(base)} />
+    <SubmitButton />
   </div>
 </form>
 <div class="m-4">
@@ -143,6 +141,6 @@
 {#if !data.group._count.Projects}
   <form class="m-4" method="post" action="?/deleteGroup" use:deleteEnhance>
     <input type="hidden" name="id" value={$deleteForm.id} />
-    <input type="submit" class="btn btn-error w-full" value={m.common_delete()} />
+    <SubmitButton class="btn-error! w-full" key="common_delete" icon={Icons.Trash} />
   </form>
 {/if}

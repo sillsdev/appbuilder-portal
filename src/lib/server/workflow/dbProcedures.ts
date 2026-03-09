@@ -31,8 +31,9 @@ export async function markResolved(productId: string) {
     select: {
       ProductPublications: {
         select: {
-          ProductBuildId: true,
-          BuildEngineReleaseId: true
+          ProductId: true,
+          BuildEngineReleaseId: true,
+          PublishLink: true
         },
         orderBy: {
           DateUpdated: 'desc'
@@ -42,12 +43,18 @@ export async function markResolved(productId: string) {
     }
   });
   if (product?.ProductPublications.length) {
+    const resolved = new Date();
     const release = product.ProductPublications[0];
     await DatabaseWrites.productPublications.update({
-      where: { ProductBuildId_BuildEngineReleaseId: release },
+      where: { ProductId_BuildEngineReleaseId: release },
       data: {
-        DateResolved: new Date()
+        DateResolved: resolved
       }
+    });
+
+    await DatabaseWrites.products.update(productId, {
+      DatePublished: resolved,
+      PublishLink: release.PublishLink ?? undefined
     });
   }
 }

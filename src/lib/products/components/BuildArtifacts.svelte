@@ -1,13 +1,16 @@
 <script lang="ts">
+  /* eslint-disable svelte/no-at-html-tags */
   import type { Prisma } from '@prisma/client';
-  import IconContainer from '$lib/components/IconContainer.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
+  import { Icons, getFileIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
-  import ReleaseInfo from '$lib/products/components/ReleaseInfo.svelte';
+  import ReleaseInfo, { type Release } from '$lib/products/components/ReleaseInfo.svelte';
   import { bytesToHumanSize } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
+  import { WorkflowState, formatBuildEngineLink, linkToBuildEngine } from '$lib/workflowTypes';
 
   interface Props {
     build: Prisma.ProductBuildsGetPayload<{
@@ -26,20 +29,20 @@
         DateUpdated: true;
       };
     }>[];
-    release?: Prisma.ProductPublicationsGetPayload<{
-      select: {
-        Channel: true;
-        Success: true;
-        LogUrl: true;
-        DateUpdated: true;
-        DateResolved: true;
-      };
-    }>;
-    latestBuildId: number | undefined;
+    release?: Release;
+    latestBuildId: number | null | undefined;
     allowDownloads?: boolean;
+    buildEngineUrl?: string | null;
   }
 
-  let { build, artifacts, release, latestBuildId, allowDownloads = true }: Props = $props();
+  let {
+    build,
+    artifacts,
+    release,
+    latestBuildId,
+    allowDownloads = true,
+    buildEngineUrl
+  }: Props = $props();
   const artifactUpdated = $derived(getRelativeTime(artifacts.map((a) => a.DateUpdated)));
 
   function versionString(b: typeof build): string {
@@ -62,7 +65,18 @@
 <div class="rounded-md border border-slate-400 w-full my-2">
   <div class="bg-neutral p-2 flex flex-row flex-wrap rounded-t-md place-content-between">
     <span class="font-bold text-lg text-accent">
-      {versionString(build)}
+      {@html formatBuildEngineLink(
+        linkToBuildEngine(
+          buildEngineUrl,
+          {
+            BuildEngineJobId: 0,
+            CurrentBuildId: build.BuildEngineBuildId,
+            CurrentReleaseId: null
+          },
+          WorkflowState.Product_Build
+        ),
+        versionString(build)
+      )}
     </span>
     <span class="ml-2 text-lg grow opacity-75 hidden sm:inline">
       {m.projectTable_appBuilderVersion()}:&nbsp;{build.AppBuilderVersion ?? '-'}
@@ -91,7 +105,10 @@
         <tbody>
           {#each artifacts.toSorted( (a, b) => byString(a.ArtifactType, b.ArtifactType, locale) ) as artifact, i}
             <tr>
-              <td><IconContainer icon="mdi:file" width="20" /> {artifact.ArtifactType}</td>
+              <td>
+                <IconContainer icon={getFileIcon(artifact.ArtifactType)} width={20} />
+                {artifact.ArtifactType}
+              </td>
               <td>
                 <Tooltip tip={getTimeDateString(artifact.DateUpdated)}>
                   {$artifactUpdated[i]}
@@ -100,8 +117,8 @@
               <td class="text-right">{bytesToHumanSize(artifact.FileSize)}</td>
               {#if allowDownloads}
                 <td class="text-right">
-                  <a href={artifact.Url} download>
-                    <IconContainer icon="mdi:download" width="20" />
+                  <a href={artifact.Url} download title={m.tasks_downloadURL()}>
+                    <IconContainer icon={Icons.Download} width={20} />
                   </a>
                 </td>
               {/if}
@@ -111,7 +128,7 @@
       </table>
     {/if}
   </div>
-  <div class="p-2"><ReleaseInfo {release} /></div>
+  <div class="p-2"><ReleaseInfo {release} {buildEngineUrl} /></div>
 </div>
 
 <style>

@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { queryURLandToken } from '$lib/server/build-engine-api/requests';
 import { DatabaseReads } from '$lib/server/database';
 
 export const load = (async ({ params, locals }) => {
@@ -48,7 +49,12 @@ export const load = (async ({ params, locals }) => {
           Id: true,
           ProductDefinition: {
             select: {
-              Name: true
+              Name: true,
+              Workflow: {
+                select: {
+                  ProductType: true
+                }
+              }
             }
           },
           ProductPublications: {
@@ -62,7 +68,6 @@ export const load = (async ({ params, locals }) => {
             select: {
               ProductBuild: {
                 select: {
-                  Id: true,
                   Version: true,
                   BuildEngineBuildId: true,
                   Success: true,
@@ -116,6 +121,9 @@ export const load = (async ({ params, locals }) => {
           Groups: { select: { Id: true } }
         }
       })
-    ).Groups.map((gm) => gm.Id)
+    ).Groups.map((gm) => gm.Id),
+    buildEngineUrl: locals.security.isSuperAdmin
+      ? (await queryURLandToken(project.Organization.Id)).url
+      : undefined
   };
 }) satisfies PageServerLoad;

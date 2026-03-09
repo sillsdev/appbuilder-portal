@@ -13,6 +13,13 @@ export enum StoreType {
   Cloud
 }
 
+export enum ApplicationType {
+  SAB = 1,
+  RAB,
+  DAB,
+  KAB
+}
+
 // returns store.GooglePlayTitle iff store is a GooglePlay store
 export function displayStoreGPTitle(
   store: Prisma.StoresGetPayload<{ select: { GooglePlayTitle: true; StoreTypeId: true } }>
@@ -26,7 +33,9 @@ export enum ProductTransitionType {
   EndWorkflow,
   CancelWorkflow,
   ProjectAccess,
-  Migration
+  Migration,
+  Archival,
+  Reactivation
 }
 
 export enum WorkflowType {
@@ -36,3 +45,8 @@ export enum WorkflowType {
 }
 
 export const WorkflowTypeString = ['', 'Startup', 'Rebuild', 'Republish'];
+
+export enum TaskType {
+  Workflow = 1,
+  DeletionRequest
+}

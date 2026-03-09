@@ -7,19 +7,6 @@ export enum ProductActionType {
   Cancel = 'cancel'
 }
 
-export function getActionIcon(type: ProductActionType) {
-  switch (type) {
-    case 'rebuild':
-      return 'carbon:build-run';
-    case 'republish':
-      return 'carbon:ibm-elo-publishing';
-    case 'cancel':
-      return 'mdi:cancel-octagon';
-    default:
-      return '';
-  }
-}
-
 export function getProductActions(
   product: Prisma.ProductsGetPayload<{
     select: {

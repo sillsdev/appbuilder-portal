@@ -2,6 +2,7 @@ import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
+import { queryURLandToken } from '$lib/server/build-engine-api/requests';
 import { DatabaseReads } from '$lib/server/database';
 import { paginateSchema } from '$lib/valibot';
 
@@ -33,7 +34,6 @@ export const load = (async ({ params, locals }) => {
       ProductId: params.id
     },
     select: {
-      Id: true,
       Version: true,
       BuildEngineBuildId: true,
       Success: true,
@@ -52,7 +52,9 @@ export const load = (async ({ params, locals }) => {
           Success: true,
           DateUpdated: true,
           LogUrl: true,
-          DateResolved: true
+          PublishLink: true,
+          DateResolved: true,
+          BuildEngineReleaseId: true
         },
         orderBy: {
           DateUpdated: 'desc'
@@ -62,27 +64,36 @@ export const load = (async ({ params, locals }) => {
     },
     take: 3
   });
-  const product = await DatabaseReads.products.findUnique({
+  const product = await DatabaseReads.products.findUniqueOrThrow({
     where: {
       Id: params.id
     },
     select: {
-      BuildEngineBuildId: true,
+      CurrentBuildId: true,
       ProductDefinition: {
         select: {
-          Name: true
+          Name: true,
+          Workflow: {
+            select: {
+              ProductType: true
+            }
+          }
         }
       },
       Project: {
         select: {
           Id: true,
-          Name: true
+          Name: true,
+          OrganizationId: true
         }
       }
     }
   });
   return {
     product,
+    buildEngineUrl: locals.security.isSuperAdmin
+      ? (await queryURLandToken(product.Project.OrganizationId)).url
+      : undefined,
     builds,
     form: await superValidate({ page: 0, size: 3 }, valibot(paginateSchema)),
     count: await DatabaseReads.productBuilds.count({ where: { ProductId: params.id } })
@@ -120,7 +131,6 @@ export const actions = {
         ProductId: params.id
       },
       select: {
-        Id: true,
         Version: true,
         BuildEngineBuildId: true,
         Success: true,
@@ -138,7 +148,9 @@ export const actions = {
             Success: true,
             DateUpdated: true,
             LogUrl: true,
-            DateResolved: true
+            PublishLink: true,
+            DateResolved: true,
+            BuildEngineReleaseId: true
           },
           orderBy: {
             DateUpdated: 'desc'

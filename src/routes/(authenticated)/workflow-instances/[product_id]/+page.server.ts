@@ -22,28 +22,29 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     select: {
       Id: true,
       BuildEngineJobId: true,
-      BuildEngineBuildId: true,
-      BuildEngineReleaseId: true,
+      CurrentBuildId: true,
+      CurrentReleaseId: true,
       ProductBuilds: {
         select: {
           BuildEngineBuildId: true,
-          DateCreated: true
+          TransitionId: true
         },
         orderBy: {
-          DateCreated: 'asc'
+          DateCreated: 'desc'
         }
       },
       ProductPublications: {
         select: {
           BuildEngineReleaseId: true,
-          DateCreated: true
+          TransitionId: true
         },
         orderBy: {
-          DateCreated: 'asc'
+          DateCreated: 'desc'
         }
       },
       Store: {
         select: {
+          StoreTypeId: true,
           Description: true
         }
       },
@@ -64,7 +65,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       },
       ProductDefinition: {
         select: {
-          Name: true
+          Name: true,
+          Workflow: {
+            select: {
+              ProductType: true
+            }
+          }
         }
       }
     }
@@ -103,6 +109,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     transitions: await DatabaseReads.productTransitions.findMany({
       where: { ProductId: params.product_id },
       select: {
+        Id: true,
         DateTransition: true,
         DestinationState: true,
         InitialState: true,

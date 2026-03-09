@@ -3,12 +3,22 @@ import prisma from './prisma';
 import type { RequirePrimitive } from './utility';
 
 export async function toggleForOrg(StoreId: number, OrganizationId: number, enabled: boolean) {
-  return !!(await prisma.organizations.update({
-    where: { Id: OrganizationId },
+  return !!(await prisma.stores.update({
+    where: {
+      Id: StoreId,
+      OR: [
+        {
+          OwnerId: null
+        },
+        {
+          OwnerId: OrganizationId
+        }
+      ]
+    },
     data: {
-      Stores: {
+      Organizations: {
         [enabled ? 'connect' : 'disconnect']: {
-          Id: StoreId
+          Id: OrganizationId
         }
       }
     },

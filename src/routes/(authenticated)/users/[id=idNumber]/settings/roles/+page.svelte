@@ -64,7 +64,7 @@
             class="toggle toggle-accent"
             checked={!!rolesForOrg.find((ro) => ro.RoleId === role)}
             onchange={(e) => {
-              (e.currentTarget.parentElement as HTMLFormElement).requestSubmit();
+              e.currentTarget.form?.requestSubmit();
             }}
           />
         </form>

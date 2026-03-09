@@ -240,7 +240,9 @@
         "type=3": "{workflowType} Workflow Completed",
         "type=4": "{workflowType} Workflow Cancelled",
         "type=5": "{workflowType} Project Access",
-        "type=6": "Workflow Migration"
+        "type=6": "Workflow Migration",
+        "type=7": "Archived",
+        "type=8": "Reactivated"
       }
     }
   ],
@@ -343,6 +345,7 @@
   "tasks_downloadURL": "Download URL",
   "tasks_submitted": "<b>{action}</b> submitted",
   "tasks_reloaded": "Task updated by Scriptoria",
+  "tasks_previousComment": "Previous Comment ({activityName})",
   "projects_noBuilds": "No Builds Yet",
   "projects_latestBuild": "Latest Build ({version})",
   "projects_buildPending": "Build Pending",

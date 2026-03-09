@@ -9,10 +9,9 @@
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
   import type { PrunedProject } from '$lib/projects';
+  import ProductDefinitionFilter from '$lib/projects/components/ProductDefinitionFilter.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
-  import { byName } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
@@ -94,12 +93,11 @@
           class={{ input: 'w-full md:max-w-xs' }}
         />
       </div>
-      <select class="select {mobileSizing}" bind:value={$form.productDefinitionId}>
-        <option value={null} selected>{m.filters_allProdDefs()}</option>
-        {#each data.productDefinitions.toSorted((a, b) => byName(a, b, getLocale())) as pD}
-          <option value={pD.Id}>{pD.Name}</option>
-        {/each}
-      </select>
+      <ProductDefinitionFilter
+        bind:value={$form.productDefinitionId}
+        productDefinitions={data.productDefinitions}
+        class={mobileSizing}
+      />
       <DateRangePicker
         bind:chosenDates={$form.dateUpdatedRange}
         placeholder={m.filters_dateRange()}

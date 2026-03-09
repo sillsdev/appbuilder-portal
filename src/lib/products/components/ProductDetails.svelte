@@ -7,6 +7,7 @@
 
   export type Transition = Prisma.ProductTransitionsGetPayload<{
     select: {
+      Id: true;
       TransitionType: true;
       InitialState: true;
       WorkflowType: true;
@@ -29,20 +30,20 @@
     product: Prisma.ProductsGetPayload<{
       select: {
         Id: true;
-        Store: { select: { Description: true } };
+        Store: { select: { StoreTypeId: true; Description: true } };
         BuildEngineJobId: true;
-        BuildEngineBuildId: true;
-        BuildEngineReleaseId: true;
+        CurrentBuildId: true;
+        CurrentReleaseId: true;
         ProductBuilds: {
           select: {
             BuildEngineBuildId: true;
-            DateCreated: true;
+            TransitionId: true;
           };
         };
         ProductPublications: {
           select: {
             BuildEngineReleaseId: true;
-            DateCreated: true;
+            TransitionId: true;
           };
         };
       };
@@ -52,15 +53,22 @@
 </script>
 
 <script lang="ts">
+  /* eslint-disable svelte/no-at-html-tags */
   import type { Prisma } from '@prisma/client';
   import TaskComment from './TaskComment.svelte';
   import { page } from '$app/state';
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import { Icons, getStoreIcon, getTransitionIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { ProductTransitionType } from '$lib/prisma';
   import { isSuperAdmin } from '$lib/utils/roles';
   import { getTimeDateString } from '$lib/utils/time';
-  import { WorkflowState, isBackground, linkToBuildEngine } from '$lib/workflowTypes';
+  import {
+    WorkflowState,
+    formatBuildEngineLink,
+    isBackground,
+    linkToBuildEngine
+  } from '$lib/workflowTypes';
 
   let { product, transitions }: Props = $props();
 
@@ -84,47 +92,65 @@
 
   const isSuper = $derived(isSuperAdmin(page.data.session!.user.roles));
 
-  function getBuildOrPub(trans: Transition, prod: typeof product) {
-    let ret = undefined;
+  function getBuildOrPub(trans: Transition) {
+    const ret = {
+      BuildEngineJobId: product.BuildEngineJobId,
+      CurrentBuildId: 0,
+      CurrentReleaseId: 0
+    };
     if (trans.InitialState === WorkflowState.Product_Build) {
-      ret = prod.ProductBuilds?.find(
-        (pb) => (pb.DateCreated?.valueOf() ?? 0) > (trans.DateTransition?.valueOf() ?? 0)
-      );
+      const currentBuild = product.ProductBuilds?.find((pb) => pb.TransitionId === trans.Id);
+      if (currentBuild) {
+        ret.CurrentBuildId = currentBuild.BuildEngineBuildId;
+      }
     } else if (trans.InitialState === WorkflowState.Product_Publish) {
-      ret = prod.ProductPublications?.find(
-        (pp) => (pp.DateCreated?.valueOf() ?? 0) > (trans.DateTransition?.valueOf() ?? 0)
+      const currentRelease = product.ProductPublications?.find(
+        (pp) => pp.TransitionId === trans.Id
       );
+      if (currentRelease) {
+        ret.CurrentReleaseId = currentRelease.BuildEngineReleaseId;
+      }
     }
-    return ret ?? {};
+    return ret;
   }
 </script>
 
 {#snippet transitionType(transition: (typeof transitions)[0], showRecs: boolean)}
   {#if transition.TransitionType === ProductTransitionType.Activity}
-    {@const showLink =
-      (transition.DateTransition &&
-        transition.InitialState &&
-        isBackground(transition.InitialState as WorkflowState)) ||
-      showRecs}
-    {#if showLink}
-      <a
-        class="link"
-        href={linkToBuildEngine(
-          product.BuildEngineUrl!,
-          { ...product, ...getBuildOrPub(transition, product) },
-          transition.InitialState as WorkflowState
-        )}
-        target="_blank"
-      >
-        {transition.InitialState}
-      </a>
-    {:else}
-      {transition.InitialState}
-    {/if}
-  {:else if transition.TransitionType === ProductTransitionType.ProjectAccess}
-    <IconContainer icon="material-symbols:star" width={16} />&nbsp;{transition.InitialState}
+    {@html formatBuildEngineLink(
+      linkToBuildEngine(
+        (transition.DateTransition &&
+          transition.InitialState &&
+          isBackground(transition.InitialState as WorkflowState)) ||
+          showRecs
+          ? product.BuildEngineUrl
+          : undefined,
+        getBuildOrPub(transition),
+        transition.InitialState as WorkflowState
+      ),
+      transition.InitialState ?? ''
+    )}
   {:else}
-    {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
+    {@const icon = getTransitionIcon(
+      transition.TransitionType,
+      transition.WorkflowType ?? 1,
+      transition.Command ?? transition.InitialState?.match(/(Download|Upload)/)?.at(1) ?? null
+    )}
+    {#if icon}
+      <IconContainer {icon} width={16} />&nbsp;
+    {/if}
+    {#if transition.TransitionType === ProductTransitionType.ProjectAccess}
+      {transition.InitialState}
+    {:else if isLandmark(transition.TransitionType)}
+      {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
+    {:else}
+      <b>
+        {m.transitions_types({
+          type: transition.TransitionType,
+          workflowType: ''
+        })}
+      </b>
+    {/if}
   {/if}
 {/snippet}
 
@@ -158,8 +184,9 @@
         onclick={() => {
           detailsModal?.close();
         }}
+        title={m.common_close()}
       >
-        <IconContainer icon="mdi:close" width={36} class="opacity-80" />
+        <IconContainer icon={Icons.Close} width={36} class="opacity-80" />
       </button>
     </div>
     <table class="table table-sm">
@@ -171,6 +198,11 @@
       <tbody>
         <tr>
           <td>
+            <IconContainer
+              icon={getStoreIcon(product.Store?.StoreTypeId ?? 0)}
+              width={24}
+              class="mr-1"
+            />
             {product.Store?.Description}
           </td>
         </tr>
@@ -200,7 +232,11 @@
                 {transition.User?.Name || transition.AllowedUserNames || m.appName()}
               {/if}
             </td>
-            <td>{transition.Command}</td>
+            <td>
+              {transition.TransitionType === ProductTransitionType.Activity
+                ? transition.Command
+                : ''}
+            </td>
             <td>
               {getTimeDateString(transition.DateTransition)}
             </td>
@@ -250,7 +286,11 @@
               <td>
                 {transition.User?.Name || transition.AllowedUserNames || m.appName()}
               </td>
-              <td>{transition.Command}</td>
+              <td>
+                {transition.TransitionType === ProductTransitionType.Activity
+                  ? transition.Command
+                  : ''}
+              </td>
             </tr>
           {/if}
           {#if showRecs}
