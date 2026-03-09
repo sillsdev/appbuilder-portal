@@ -147,7 +147,7 @@
 
   async function submitForm() {
     if (!turnstileToken) {
-      const tokenFromWidget = (window as any).turnstile?.getResponse?.();
+      const tokenFromWidget = window.turnstile?.getResponse?.();
       if (typeof tokenFromWidget === 'string' && tokenFromWidget.length > 0) {
         turnstileToken = tokenFromWidget;
       }
@@ -182,7 +182,7 @@
 
     if (!res.ok || !data.success) {
       alert('Verification failed.');
-      if (window.turnstile) window.turnstile.reset();
+      window.turnstile?.reset?.();
       turnstileToken = null;
       return;
     }
