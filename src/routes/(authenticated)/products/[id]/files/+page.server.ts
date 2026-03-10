@@ -25,11 +25,9 @@ export const load = (async ({ params, locals }) => {
     project
   );
   const builds = await DatabaseReads.productBuilds.findMany({
-    orderBy: [
-      {
-        DateUpdated: 'desc'
-      }
-    ],
+    orderBy: {
+      DateCreated: 'desc'
+    },
     where: {
       ProductId: params.id
     },
@@ -122,11 +120,9 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false });
 
     const builds = await DatabaseReads.productBuilds.findMany({
-      orderBy: [
-        {
-          DateUpdated: 'desc'
-        }
-      ],
+      orderBy: {
+        DateCreated: 'desc'
+      },
       where: {
         ProductId: params.id
       },
