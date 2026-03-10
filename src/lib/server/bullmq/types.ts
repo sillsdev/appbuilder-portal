@@ -301,7 +301,8 @@ export type BuildJob = JobTypeMap[
   | JobType.Build_Delete];
 export type RecurringJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
-  | JobType.System_RefreshLangTags];
+  | JobType.System_RefreshLangTags
+  | JobType.System_Migrate];
 export type StartupJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags

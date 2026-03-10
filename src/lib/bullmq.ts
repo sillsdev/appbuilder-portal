@@ -59,5 +59,5 @@ export enum JobSchedulerId {
   SystemStatusEmail = 'SystemStatusEmail',
   RefreshLangTags = 'RefreshLangTags',
   CheckSystemStatuses = 'CheckSystemStatuses',
-  PruneUsers = 'PruneUsers'
+  MigrateChunks = 'MigrateChunks'
 }

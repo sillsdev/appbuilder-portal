@@ -1,5 +1,5 @@
-import type { Prisma } from '@prisma/client';
 import type { Job } from 'bullmq';
+import { randomInt } from 'crypto';
 import { XMLParser } from 'fast-xml-parser';
 import { existsSync } from 'fs';
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
@@ -7,9 +7,8 @@ import { join } from 'path';
 import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
-import { TaskType } from '$lib/prisma';
-import { fetchPackageName } from '$lib/products';
-import { ProductType, WorkflowOptions, WorkflowState } from '$lib/workflowTypes';
+import { JobSchedulerId } from '$lib/bullmq';
+import { WorkflowState } from '$lib/workflowTypes';
 
 export async function checkSystemStatuses(
   job: Job<BullMQ.System.CheckEngineStatuses>
@@ -408,432 +407,162 @@ async function processLocalizedNames(
 }
 
 export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
+  return 'No features to migrate';
+}
+
+export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
   /**
    * Migration Tasks:
-   * 1. Delete UserTasks for archived projects (should be removed)
-   * 2. (removed step)
-   * 3. (removed step)
-   * 4. Populate Product.PackageName (should be removed)
-   * 5. Populate ProductBuild/ProductPublications.TransitionId (remove after two deploys to master)
-   * 6. Populate ProductBuild.AppBuilderVersion (should be removed)
+   * 1. Populate ProductBuild/ProductPublications.TransitionId
    */
 
-  // 1. Delete UserTasks for archived projects
-  const deletedTasks = await DatabaseWrites.userTasks.deleteMany({
-    where: {
-      Product: {
-        Project: {
-          DateArchived: { not: null }
-        }
-      },
-      Type: TaskType.Workflow
-    }
-  });
-  job.updateProgress(10);
-
-  job.updateProgress(40);
-  // Update WorkflowDefinitions ProductType and WorkflowOptions
-  const workflowDefsNeedUpdate =
-    (await DatabaseReads.workflowDefinitions.count({
-      where: {
-        ProductType: 0
-      }
-    })) === 14;
-  if (workflowDefsNeedUpdate) {
-    const workflowDefs: Parameters<typeof DatabaseWrites.workflowDefinitions.updateMany>[0][] = [
-      {
-        where: {
-          Name: {
-            contains: 'google_play'
-          }
-        },
-        data: {
-          ProductType: ProductType.Android_GooglePlay
-        }
-      },
-      {
-        where: {
-          Name: {
-            contains: 's3'
-          }
-        },
-        data: {
-          ProductType: ProductType.Android_S3
-        }
-      },
-      {
-        where: {
-          Name: {
-            contains: 'cloud'
-          }
-        },
-        data: {
-          ProductType: ProductType.Web
-        }
-      },
-      {
-        where: {
-          Name: {
-            contains: 'asset_package'
-          }
-        },
-        data: {
-          ProductType: ProductType.AssetPackage
-        }
-      },
-      {
-        where: {
-          Name: 'sil_android_google_play'
-        },
-        data: {
-          WorkflowOptions: [WorkflowOptions.AdminStoreAccess, WorkflowOptions.ApprovalProcess]
-        }
-      },
-      {
-        where: {
-          Name: 'sil_android_s3'
-        },
-        data: {
-          WorkflowOptions: [WorkflowOptions.ApprovalProcess]
-        }
-      },
-      {
-        where: {
-          Name: 'la_android_google_play'
-        },
-        data: {
-          WorkflowOptions: [WorkflowOptions.AdminStoreAccess]
-        }
-      }
-    ];
-    for (const def of workflowDefs) {
-      await DatabaseWrites.workflowDefinitions.updateMany(def);
-    }
-  }
-  job.updateProgress(50);
-
-  // 4. Populate Product.PackageName
-
-  const artifactWhere: Prisma.ProductArtifactsWhereInput = {
-    ArtifactType: 'package_name',
-    ContentType: 'text/plain'
-  };
-
-  const buildWhere: Prisma.ProductBuildsWhereInput = {
-    Success: true,
-    ProductArtifacts: {
-      some: artifactWhere
-    }
-  };
-
-  const updatedPackages = await Promise.all(
-    (
-      await DatabaseReads.products.findMany({
-        where: {
-          PackageName: null,
-          ProductBuilds: {
-            some: buildWhere
-          }
-        },
-        select: {
-          Id: true,
-          ProductBuilds: {
-            where: buildWhere,
-            select: {
-              ProductArtifacts: {
-                where: artifactWhere,
-                take: 1
-              }
-            },
-            orderBy: { DateUpdated: 'desc' },
-            take: 1
-          }
-        }
-      })
-    ).map(async (p) => {
-      const PackageName = await fetchPackageName(p.ProductBuilds[0].ProductArtifacts[0].Url);
-      // populate package name if publish link is not set
-      if (PackageName) {
-        await DatabaseWrites.products.update(p.Id, { PackageName });
-      }
-      return PackageName;
-    })
-  );
-
-  job.updateProgress(70);
+  const filter = { TransitionId: null, Success: { not: null } };
+  const chunkSize = 20;
 
   // only try to associate completed builds
-  const orphanedBuilds = await DatabaseReads.productBuilds.groupBy({
-    where: { TransitionId: null, Success: { not: null } },
-    by: 'ProductId',
-    _count: true
+  const countBuilds = await DatabaseReads.products.count({
+    where: { ProductBuilds: { some: filter } }
   });
-
-  let associatedBuilds: unknown[] = [];
-
-  if (orphanedBuilds.length) {
-    const products = await DatabaseReads.products.findMany({
-      where: {
-        Id: { in: orphanedBuilds.map((b) => b.ProductId) }
-      },
-      select: {
-        Id: true,
-        ProductBuilds: {
-          where: {
-            TransitionId: null,
-            Success: { not: null }
-          },
-          select: {
-            BuildEngineBuildId: true,
-            DateCreated: true
-          },
-          orderBy: { DateCreated: 'asc' }
-        },
-        ProductTransitions: {
-          where: {
-            InitialState: WorkflowState.Product_Build,
-            DateTransition: { not: null }
-          },
-          select: {
-            Id: true,
-            DateTransition: true
-          },
-          orderBy: {
-            DateTransition: 'asc'
-          }
-        }
-      }
-    });
-
-    associatedBuilds = await Promise.all(
-      products.map(async (p) => ({
-        Id: p.Id,
-        // find first transition where DateTransition is greater than Build.DateCreated
-        // problem, date transition isn't set until build is completed... so we only do this for completed builds
-        ProductBuilds: await Promise.all(
-          p.ProductBuilds.map((build) => {
-            const id = p.ProductTransitions.find(
-              (pt) => pt.DateTransition!.valueOf() > build.DateCreated!.valueOf()
-            )?.Id;
-
-            if (id) {
-              return DatabaseWrites.productBuilds.update({
-                where: {
-                  ProductId_BuildEngineBuildId: {
-                    ProductId: p.Id,
-                    BuildEngineBuildId: build.BuildEngineBuildId
-                  }
-                },
-                data: {
-                  TransitionId: id
-                },
-                select: {
-                  BuildEngineBuildId: true,
-                  TransitionId: true
-                }
-              });
-            } else {
-              return { BuildEngineBuildId: build.BuildEngineBuildId };
-            }
-          })
-        )
-      }))
-    );
-  }
-
-  // only try to associate completed releases
-  const orphanedReleases = await DatabaseReads.productPublications.groupBy({
-    where: { TransitionId: null, Success: { not: null } },
-    by: 'ProductId',
-    _count: true
-  });
-
-  let associatedReleases: unknown[] = [];
-
-  if (orphanedReleases.length) {
-    const products = await DatabaseReads.products.findMany({
-      where: {
-        Id: { in: orphanedReleases.map((b) => b.ProductId) }
-      },
-      select: {
-        Id: true,
-        ProductPublications: {
-          where: {
-            TransitionId: null,
-            Success: { not: null }
-          },
-          select: {
-            BuildEngineReleaseId: true,
-            DateCreated: true
-          },
-          orderBy: { DateCreated: 'asc' }
-        },
-        ProductTransitions: {
-          where: {
-            InitialState: WorkflowState.Product_Publish,
-            DateTransition: { not: null }
-          },
-          select: {
-            Id: true,
-            DateTransition: true
-          },
-          orderBy: {
-            DateTransition: 'asc'
-          }
-        }
-      }
-    });
-
-    associatedReleases = await Promise.all(
-      products.map(async (p) => ({
-        Id: p.Id,
-        // find first transition where DateTransition is greater than Publication.DateCreated
-        // problem, date transition isn't set until release is completed... so we only do this for completed releases
-        ProductPublications: await Promise.all(
-          p.ProductPublications.map((release) => {
-            const id = p.ProductTransitions.find(
-              (pt) => pt.DateTransition!.valueOf() > release.DateCreated!.valueOf()
-            )?.Id;
-
-            if (id) {
-              return DatabaseWrites.productPublications.update({
-                where: {
-                  ProductId_BuildEngineReleaseId: {
-                    ProductId: p.Id,
-                    BuildEngineReleaseId: release.BuildEngineReleaseId
-                  }
-                },
-                data: {
-                  TransitionId: id
-                },
-                select: {
-                  BuildEngineReleaseId: true,
-                  TransitionId: true
-                }
-              });
-            } else {
-              return { BuildEngineReleaseId: release.BuildEngineReleaseId };
-            }
-          })
-        )
-      }))
-    );
-  }
-
-  job.updateProgress(80);
-
-  // 6. Populate ProductBuilds.AppBuilderVersion
-
-  const recentBuildFilter: Prisma.ProductBuildsWhereInput = {
-    Success: true,
-    AND: [
-      {
-        ProductArtifacts: {
-          some: {
-            ArtifactType: 'consoleText'
-          }
-        }
-      },
-      {
-        ProductArtifacts: {
-          some: {
-            ArtifactType: 'version'
-          }
-        }
-      }
-    ]
-  };
-
-  const mostRecentBuilds = await DatabaseReads.products.findMany({
-    where: {
-      ProductBuilds: {
-        some: recentBuildFilter
-      }
-    },
+  const orphanedBuilds = await DatabaseReads.products.findMany({
+    where: { ProductBuilds: { some: filter } },
     select: {
       Id: true,
       ProductBuilds: {
-        where: recentBuildFilter,
-        orderBy: { DateCreated: 'desc' },
-        take: 1,
+        where: filter,
         select: {
           BuildEngineBuildId: true,
-          AppBuilderVersion: true,
-          ProductArtifacts: {
-            where: {
-              ArtifactType: { in: ['consoleText', 'version'] }
-            },
-            select: {
-              ArtifactType: true,
-              Url: true
-            }
-          }
+          DateCreated: true
+        },
+        orderBy: { DateCreated: 'asc' }
+      },
+      ProductTransitions: {
+        where: {
+          InitialState: WorkflowState.Product_Build,
+          DateTransition: { not: null }
+        },
+        select: {
+          Id: true,
+          DateTransition: true
+        },
+        orderBy: {
+          DateTransition: 'asc'
         }
       }
-    }
+    },
+    take: chunkSize,
+    skip: Math.max(0, randomInt(countBuilds || 1) - chunkSize)
   });
 
-  const builtVersions = new Set<string>();
-  const vnum = /\d+\.\d+(\.\d+)?/;
-  const preferredRgx = new RegExp(`APPBUILDER_SCRIPT_VERSION=(${vnum.source})`);
-  const altRgx = new RegExp(`Version (${vnum.source})`);
+  const associatedBuilds = await Promise.all(
+    orphanedBuilds.map(async (p) => ({
+      Id: p.Id,
+      // find first transition where DateTransition is greater than Build.DateCreated
+      // problem, date transition isn't set until build is completed... so we only do this for completed builds
+      ProductBuilds: await Promise.all(
+        p.ProductBuilds.map((build) => {
+          const id = p.ProductTransitions.find(
+            (pt) =>
+              pt.DateTransition!.valueOf() > build.DateCreated!.valueOf() ||
+              // or within 5 seconds
+              Math.abs(pt.DateTransition!.valueOf() - build.DateCreated!.valueOf()) < 5000
+          )?.Id;
 
-  const updatedBuilds = await Promise.all(
-    mostRecentBuilds
-      .filter((p) => !p.ProductBuilds[0].AppBuilderVersion)
-      .map(async (p) => {
-        try {
-          const logUrl = p.ProductBuilds[0].ProductArtifacts.find(
-            (pa) => pa.ArtifactType === 'consoleText'
-          )?.Url;
-          const versionJSON = p.ProductBuilds[0].ProductArtifacts.find(
-            (pa) => pa.ArtifactType === 'version'
-          );
-          if (logUrl && versionJSON?.Url) {
-            // fetch version.json first
-            const parsedJSON = JSON.parse(await fetch(versionJSON.Url).then((r) => r.text()));
-            let appVersion: string = parsedJSON['appbuilderVersion'] ?? '';
-
-            // if appbuilderVersion not present, try parsing console.
-            if (!appVersion) {
-              const log = await fetch(logUrl).then((r) => r.text());
-              const preferred = log.match(preferredRgx)?.at(1);
-              const alts = log.match(altRgx)?.at(1);
-
-              appVersion ||= preferred ?? alts ?? '';
-            }
-
-            if (appVersion) {
-              builtVersions.add(appVersion);
-              await DatabaseWrites.productBuilds.update({
-                where: {
-                  ProductId_BuildEngineBuildId: {
-                    ProductId: p.Id,
-                    BuildEngineBuildId: p.ProductBuilds[0].BuildEngineBuildId
-                  }
-                },
-                data: { AppBuilderVersion: appVersion }
-              });
-            }
+          if (id) {
+            return DatabaseWrites.productTransitions.tryConnect(
+              p.Id,
+              build.BuildEngineBuildId,
+              'build',
+              id
+            );
+          } else {
+            return { BuildEngineBuildId: build.BuildEngineBuildId };
           }
-        } catch (e) {
-          job.log(`Update Build for Product ${p.Id} Error: ${e}`);
-        }
-      })
+        })
+      )
+    }))
   );
+
+  job.updateProgress(50);
+
+  // only try to associate completed releases
+  const countReleases = await DatabaseReads.products.count({
+    where: { ProductPublications: { some: filter } }
+  });
+  const orphanedReleases = await DatabaseReads.products.findMany({
+    where: { ProductPublications: { some: filter } },
+    select: {
+      Id: true,
+      ProductPublications: {
+        where: filter,
+        select: {
+          BuildEngineReleaseId: true,
+          DateCreated: true
+        },
+        orderBy: { DateCreated: 'asc' }
+      },
+      ProductTransitions: {
+        where: {
+          InitialState: WorkflowState.Product_Publish,
+          DateTransition: { not: null }
+        },
+        select: {
+          Id: true,
+          DateTransition: true
+        },
+        orderBy: {
+          DateTransition: 'asc'
+        }
+      }
+    },
+    take: chunkSize,
+    skip: Math.max(0, randomInt(countReleases || 1) - chunkSize)
+  });
+
+  const associatedReleases = await Promise.all(
+    orphanedReleases.map(async (p) => ({
+      Id: p.Id,
+      // find first transition where DateTransition is greater than Publication.DateCreated
+      // problem, date transition isn't set until release is completed... so we only do this for completed releases
+      ProductPublications: await Promise.all(
+        p.ProductPublications.map((release) => {
+          const id = p.ProductTransitions.find(
+            (pt) =>
+              pt.DateTransition!.valueOf() > release.DateCreated!.valueOf() ||
+              // or within 5 seconds
+              Math.abs(pt.DateTransition!.valueOf() - release.DateCreated!.valueOf()) < 5000
+          )?.Id;
+
+          if (id) {
+            return DatabaseWrites.productTransitions.tryConnect(
+              p.Id,
+              release.BuildEngineReleaseId,
+              'release',
+              id
+            );
+          } else {
+            return { BuildEngineReleaseId: release.BuildEngineReleaseId };
+          }
+        })
+      )
+    }))
+  );
+
+  if (!countBuilds && !countReleases) {
+    await getQueues().SystemRecurring.removeJobScheduler(JobSchedulerId.MigrateChunks);
+  }
 
   job.updateProgress(100);
 
   return {
-    deletedTasks: deletedTasks.count,
-    updatedWorkflowDefinitions: workflowDefsNeedUpdate,
-    updatedPackages,
-    associatedBuilds,
-    associatedReleases,
-    updatedBuilds: {
-      recent: mostRecentBuilds.length,
-      updated: updatedBuilds.length,
-      versions: Array.from(builtVersions).sort((a, b) => a.localeCompare(b, 'en-US'))
+    builds: {
+      count: countBuilds,
+      orphaned: orphanedBuilds,
+      updated: associatedBuilds
+    },
+    releases: {
+      count: countReleases,
+      orphaned: orphanedReleases,
+      updated: associatedReleases
     }
   };
 }
