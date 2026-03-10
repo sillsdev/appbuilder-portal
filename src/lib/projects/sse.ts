@@ -1,5 +1,6 @@
 import type { Session } from '@auth/sveltekit';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { error } from '@sveltejs/kit';
 import { stringify } from 'devalue';
 import { produce } from 'sveltekit-sse';
@@ -144,6 +145,10 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         code: SpanStatusCode.ERROR,
         message: (e as Error).message
       });
+      // not found
+      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw error(404);
+      }
       throw error(500);
     } finally {
       span.end();
@@ -261,6 +266,10 @@ export async function getProjectGroupData(id: number, userSession: Session['user
         code: SpanStatusCode.ERROR,
         message: (e as Error).message
       });
+      // not found
+      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw error(404);
+      }
       throw error(500);
     } finally {
       span.end();
@@ -349,6 +358,10 @@ export async function getProjectOrgData(id: number, userSession: Session['user']
         code: SpanStatusCode.ERROR,
         message: (e as Error).message
       });
+      // not found
+      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw error(404);
+      }
       throw error(500);
     } finally {
       span.end();
@@ -493,6 +506,10 @@ export async function getProjectProducts(id: number, userSession: Session['user'
         code: SpanStatusCode.ERROR,
         message: (e as Error).message
       });
+      // not found
+      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw error(404);
+      }
       throw error(500);
     } finally {
       span.end();
