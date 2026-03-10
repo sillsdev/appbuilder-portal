@@ -108,7 +108,7 @@ export function getComputeType(properties: string | null) {
  * CR: CurrentReleaseId
  * PB: ProductBuilds { I: BuildEngineBuildId, T: TransitionId }
  * PR: ProductPublications { I: BuildEngineReleaseId, T: TransitionId }
- * PR: ProductTransitions
+ * PT: ProductTransitions
  * BE: BuildEngineUrl
  */
 export type MinifiedProductDetails = ReturnType<typeof minifyProductDetails>;
@@ -213,7 +213,7 @@ export function minifyTransition(pt: Transition) {
  * UT: UserTasks { U: UserId, D: DateCreated }
  * WS: WorkflowInstance.State
  * WT: WorkflowInstance.Type
- * Act: ActiveTransition
+ * AcT: ActiveTransition
  * PrT: PreviousTransition.Date
  */
 export type MinifiedProductCard = ReturnType<typeof minifyProductCard>;
