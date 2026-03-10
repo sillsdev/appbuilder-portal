@@ -115,8 +115,8 @@ export function tryGetDefaultBuildEngineParameters() {
   }
 
   return {
-    url: env.DEFAULT_BUILDENGINE_URL,
-    token: env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN
+    url: env.DEFAULT_BUILDENGINE_URL!,
+    token: env.DEFAULT_BUILDENGINE_API_ACCESS_TOKEN!
   };
 }
 export async function queryURLandToken(organizationId: number) {

@@ -12,7 +12,7 @@
 </script>
 
 <span class="inline-flex flex-row gap-x-1">
-  <input type={visible ? 'text' : 'password'} {value} readonly disabled size={value?.length} />
+  <input type={visible ? 'text' : 'password'} {value} readonly size={value?.length} />
   <button type="button" onclick={() => (visible = !visible)}>
     <IconContainer icon={visible ? Icons.Visible : Icons.Invisible} width={16} />
   </button>

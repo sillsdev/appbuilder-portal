@@ -24,25 +24,27 @@ export async function createInvite(
 }
 
 export async function create(data: RequirePrimitive<Prisma.OrganizationsUncheckedCreateInput>) {
-  const org = await prisma.organizations.create({
-    data
-  });
-
-  if (org && data.BuildEngineUrl && data.BuildEngineApiAccessToken) {
-    await prisma.systemStatuses.create({
-      data: {
-        BuildEngineUrl: data.BuildEngineUrl,
-        BuildEngineApiAccessToken: data.BuildEngineApiAccessToken,
-        SystemAvailable: false,
-        OrganizationId: org.Id
-      },
-      select: {
-        Id: true
-      }
+  return await prisma.$transaction(async (tx) => {
+    const org = await tx.organizations.create({
+      data
     });
-  }
 
-  return org;
+    if (org && data.BuildEngineUrl && data.BuildEngineApiAccessToken) {
+      await tx.systemStatuses.create({
+        data: {
+          BuildEngineUrl: data.BuildEngineUrl,
+          BuildEngineApiAccessToken: data.BuildEngineApiAccessToken,
+          SystemAvailable: false,
+          OrganizationId: org.Id
+        },
+        select: {
+          Id: true
+        }
+      });
+    }
+
+    return org;
+  });
 }
 
 export async function update(
@@ -50,23 +52,19 @@ export async function update(
   data: RequirePrimitive<Prisma.OrganizationsUncheckedUpdateInput>
 ) {
   if (data.BuildEngineApiAccessToken !== undefined || data.BuildEngineUrl !== undefined) {
-    const existing = await prisma.systemStatuses.findFirst({
+    await prisma.systemStatuses.upsert({
       where: { OrganizationId: id },
-      select: {
-        Id: true,
-        BuildEngineUrl: true,
-        BuildEngineApiAccessToken: true
+      update: {
+        BuildEngineUrl: data.BuildEngineUrl ?? undefined,
+        BuildEngineApiAccessToken: data.BuildEngineApiAccessToken ?? undefined
+      },
+      create: {
+        OrganizationId: id,
+        SystemAvailable: false,
+        BuildEngineUrl: data.BuildEngineUrl ?? '',
+        BuildEngineApiAccessToken: data.BuildEngineApiAccessToken ?? ''
       }
     });
-    if (existing) {
-      await prisma.systemStatuses.update({
-        where: { Id: existing.Id },
-        data: {
-          BuildEngineUrl: data.BuildEngineUrl ?? undefined,
-          BuildEngineApiAccessToken: data.BuildEngineApiAccessToken ?? undefined
-        }
-      });
-    }
   }
   return await prisma.organizations.update({
     where: { Id: id },

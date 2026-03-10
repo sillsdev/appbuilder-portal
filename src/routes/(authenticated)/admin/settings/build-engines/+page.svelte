@@ -75,7 +75,7 @@
           <li class="flex flex-row gap-1 indent-0 mt-1">
             <img src={getAppIcon(version.ApplicationTypeId)} width={24} alt="" />
             <Tooltip tip={version.ImageHash}>
-              {version.Name}: {version.Version} ({version.DateUpdated?.toLocaleDateString()})
+              {version.Name}: {version.Version} ({getTimeDateString(version.DateUpdated)})
             </Tooltip>
           </li>
         {/each}

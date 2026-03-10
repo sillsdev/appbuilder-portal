@@ -343,28 +343,28 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
 
   // 1a. Ensure default buildengine exists
   const defaultCredentials = BuildEngine.Requests.tryGetDefaultBuildEngineParameters();
-  const existingDefault = await DatabaseReads.systemStatuses.findMany({
+  let existingDefault = await DatabaseReads.systemStatuses.findFirst({
     where: {
-      OR: [
-        {
-          OrganizationId: null
+      OrganizationId: null
+    }
+  });
+  existingDefault = existingDefault
+    ? await DatabaseWrites.systemStatuses.update({
+        where: {
+          Id: existingDefault.Id
         },
-        {
+        data: {
           BuildEngineUrl: defaultCredentials.url,
           BuildEngineApiAccessToken: defaultCredentials.token
         }
-      ]
-    }
-  });
-  if (!existingDefault.length || !existingDefault.some((s) => !s.OrganizationId)) {
-    await DatabaseWrites.systemStatuses.create({
-      data: {
-        BuildEngineUrl: defaultCredentials.url,
-        BuildEngineApiAccessToken: defaultCredentials.token,
-        SystemAvailable: false
-      }
-    });
-  }
+      })
+    : await DatabaseWrites.systemStatuses.create({
+        data: {
+          BuildEngineUrl: defaultCredentials.url,
+          BuildEngineApiAccessToken: defaultCredentials.token,
+          SystemAvailable: false
+        }
+      });
 
   job.updateProgress(50);
 
@@ -395,7 +395,16 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
 
   job.updateProgress(100);
 
-  return { existingDefault, organizations };
+  return {
+    default: {
+      ...existingDefault,
+      BuildEngineApiAccessToken: existingDefault.BuildEngineApiAccessToken.substring(0, 4)
+    },
+    organizations: organizations.map((o) => ({
+      ...o,
+      BuildEngineApiAccessToken: o.BuildEngineApiAccessToken?.substring(0, 4)
+    }))
+  };
 }
 
 export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
