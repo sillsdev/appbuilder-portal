@@ -134,7 +134,7 @@ export function minifyProductDetails(
       };
     }>
   > & { Id: string; ProductTransitions: Transition[] },
-  buildEngineUrl?: string
+  buildEngineUrl?: string | null
 ) {
   return {
     I: product.Id,

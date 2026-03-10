@@ -296,26 +296,24 @@ export async function getProjectProducts(id: number, userSession: Session['user'
       const isSuper = isSuperAdmin(userSession.roles);
 
       const BuildEngineUrl = isSuper
-        ? `${
-            getURLandToken(
-              await DatabaseReads.organizations.findFirstOrThrow({
-                where: {
-                  Projects: {
-                    some: { Id: id }
+        ? getURLandToken(
+            await DatabaseReads.organizations.findFirstOrThrow({
+              where: {
+                Projects: {
+                  some: { Id: id }
+                }
+              },
+              select: {
+                System: {
+                  select: {
+                    BuildEngineApiAccessToken: true,
+                    BuildEngineUrl: true
                   }
                 },
-                select: {
-                  System: {
-                    select: {
-                      BuildEngineApiAccessToken: true,
-                      BuildEngineUrl: true
-                    }
-                  },
-                  UseDefaultBuildEngine: true
-                }
-              })
-            ).url
-          }`
+                UseDefaultBuildEngine: true
+              }
+            })
+          ).url
         : undefined;
 
       const products = await DatabaseReads.products.findMany({
