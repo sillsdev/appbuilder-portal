@@ -57,7 +57,7 @@ export const load = (async ({ params, locals }) => {
           BuildEngineReleaseId: true
         },
         orderBy: {
-          DateUpdated: 'desc'
+          DateCreated: 'desc'
         },
         take: 1
       }
@@ -132,6 +132,7 @@ export const actions = {
       },
       select: {
         Version: true,
+        AppBuilderVersion: true,
         BuildEngineBuildId: true,
         Success: true,
         ProductArtifacts: {
@@ -153,7 +154,7 @@ export const actions = {
             BuildEngineReleaseId: true
           },
           orderBy: {
-            DateUpdated: 'desc'
+            DateCreated: 'desc'
           },
           take: 1
         }
