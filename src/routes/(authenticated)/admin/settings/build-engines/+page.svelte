@@ -67,16 +67,18 @@
       </div>
       <div>
         <IconContainer icon={Icons.Organization} width={16} />
-        {buildEngine.Organization?.Name ?? data.defaultUsers}
+        {buildEngine.Organization?.Name ??
+          data.defaultUsers
+            .toSorted((a, b) => byName(a, b, getLocale()))
+            .map((u) => u.Name)
+            .join(', ')}
       </div>
       <b>{m.projectTable_appBuilderVersion()}:</b>
       <ul>
         {#each buildEngine.SystemVersions.map( (v) => ({ ...v, Name: data.applications.get(v.ApplicationTypeId) }) ).toSorted( (a, b) => byName(a, b, getLocale()) ) as version}
           <li class="flex flex-row gap-1 indent-0 mt-1">
             <img src={getAppIcon(version.ApplicationTypeId)} width={24} alt="" />
-            <Tooltip tip={version.ImageHash}>
-              {version.Name}: {version.Version} ({getTimeDateString(version.DateUpdated)})
-            </Tooltip>
+            {version.Name}: {version.Version} ({getTimeDateString(version.DateUpdated)})
           </li>
         {/each}
       </ul>

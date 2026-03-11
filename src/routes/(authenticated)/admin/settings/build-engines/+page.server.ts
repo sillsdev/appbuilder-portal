@@ -22,8 +22,11 @@ export const load = (async (event) => {
         })
       ).map((t) => [t.Id, t.Description])
     ),
-    defaultUsers: await DatabaseReads.organizations.count({
-      where: { UseDefaultBuildEngine: true }
+    defaultUsers: await DatabaseReads.organizations.findMany({
+      where: { UseDefaultBuildEngine: true },
+      select: {
+        Name: true
+      }
     })
   };
 }) satisfies PageServerLoad;
