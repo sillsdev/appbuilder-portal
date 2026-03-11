@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import type { Job } from 'bullmq';
 import { randomInt } from 'crypto';
 import { XMLParser } from 'fast-xml-parser';
@@ -7,6 +8,7 @@ import { join } from 'path';
 import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
+import prismaInternal from '../database/prisma';
 import { JobSchedulerId } from '$lib/bullmq';
 import { activeSystems } from '$lib/organizations/server';
 import { WorkflowState } from '$lib/workflowTypes';
@@ -413,153 +415,111 @@ export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unkn
    * 1. Populate ProductBuild/ProductPublications.TransitionId
    */
 
-  const filter = { TransitionId: null, Success: { not: null } };
-  const chunkSize = 20;
+  const builds = await associateBuildsOrReleases('build');
 
-  // only try to associate completed builds
-  const countBuilds = await DatabaseReads.products.count({
-    where: { ProductBuilds: { some: filter } }
-  });
-  const orphanedBuilds = await DatabaseReads.products.findMany({
-    where: { ProductBuilds: { some: filter } },
-    select: {
-      Id: true,
-      ProductBuilds: {
-        where: filter,
-        select: {
-          BuildEngineBuildId: true,
-          DateCreated: true
-        },
-        orderBy: { DateCreated: 'asc' }
-      },
-      ProductTransitions: {
-        where: {
-          InitialState: WorkflowState.Product_Build,
-          DateTransition: { not: null }
-        },
-        select: {
-          Id: true,
-          DateTransition: true
-        },
-        orderBy: {
-          DateTransition: 'asc'
-        }
-      }
-    },
-    take: chunkSize,
-    skip: Math.max(0, randomInt(countBuilds || 1) - chunkSize)
-  });
+  job.updateProgress(66);
 
-  const associatedBuilds = await Promise.all(
-    orphanedBuilds.map(async (p) => ({
-      Id: p.Id,
-      // find first transition where DateTransition is greater than Build.DateCreated
-      // problem, date transition isn't set until build is completed... so we only do this for completed builds
-      ProductBuilds: await Promise.all(
-        p.ProductBuilds.map((build) => {
-          const id = p.ProductTransitions.find(
-            (pt) =>
-              pt.DateTransition!.valueOf() > build.DateCreated!.valueOf() ||
-              // or within 5 seconds
-              Math.abs(pt.DateTransition!.valueOf() - build.DateCreated!.valueOf()) < 5000
-          )?.Id;
+  const releases = await associateBuildsOrReleases('release');
 
-          if (id) {
-            return DatabaseWrites.productTransitions.tryConnect(
-              p.Id,
-              build.BuildEngineBuildId,
-              'build',
-              id
-            );
-          } else {
-            return { BuildEngineBuildId: build.BuildEngineBuildId };
-          }
-        })
-      )
-    }))
-  );
-
-  job.updateProgress(50);
-
-  // only try to associate completed releases
-  const countReleases = await DatabaseReads.products.count({
-    where: { ProductPublications: { some: filter } }
-  });
-  const orphanedReleases = await DatabaseReads.products.findMany({
-    where: { ProductPublications: { some: filter } },
-    select: {
-      Id: true,
-      ProductPublications: {
-        where: filter,
-        select: {
-          BuildEngineReleaseId: true,
-          DateCreated: true
-        },
-        orderBy: { DateCreated: 'asc' }
-      },
-      ProductTransitions: {
-        where: {
-          InitialState: WorkflowState.Product_Publish,
-          DateTransition: { not: null }
-        },
-        select: {
-          Id: true,
-          DateTransition: true
-        },
-        orderBy: {
-          DateTransition: 'asc'
-        }
-      }
-    },
-    take: chunkSize,
-    skip: Math.max(0, randomInt(countReleases || 1) - chunkSize)
-  });
-
-  const associatedReleases = await Promise.all(
-    orphanedReleases.map(async (p) => ({
-      Id: p.Id,
-      // find first transition where DateTransition is greater than Publication.DateCreated
-      // problem, date transition isn't set until release is completed... so we only do this for completed releases
-      ProductPublications: await Promise.all(
-        p.ProductPublications.map((release) => {
-          const id = p.ProductTransitions.find(
-            (pt) =>
-              pt.DateTransition!.valueOf() > release.DateCreated!.valueOf() ||
-              // or within 5 seconds
-              Math.abs(pt.DateTransition!.valueOf() - release.DateCreated!.valueOf()) < 5000
-          )?.Id;
-
-          if (id) {
-            return DatabaseWrites.productTransitions.tryConnect(
-              p.Id,
-              release.BuildEngineReleaseId,
-              'release',
-              id
-            );
-          } else {
-            return { BuildEngineReleaseId: release.BuildEngineReleaseId };
-          }
-        })
-      )
-    }))
-  );
-
-  if (!countBuilds && !countReleases) {
+  if (!transitions.remaining && !builds.remaining && !releases.remaining) {
     await getQueues().SystemRecurring.removeJobScheduler(JobSchedulerId.MigrateChunks);
   }
 
   job.updateProgress(100);
 
   return {
-    builds: {
-      count: countBuilds,
-      orphaned: orphanedBuilds,
-      updated: associatedBuilds
-    },
-    releases: {
-      count: countReleases,
-      orphaned: orphanedReleases,
-      updated: associatedReleases
-    }
+    builds,
+    releases
   };
+}
+
+async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scope: Scope) {
+  const filter = { TransitionId: null, Success: { not: null } };
+  const chunkSize = 20;
+
+  const members = { build: 'ProductBuilds', release: 'ProductPublications' } as const;
+  const member = members[scope];
+  const idTypes = { build: 'BuildEngineBuildId', release: 'BuildEngineReleaseId' } as const;
+  const idType = idTypes[scope];
+
+  type Build = Prisma.ProductBuildsGetPayload<{
+    select: { BuildEngineBuildId: true; DateCreated: true };
+  }>;
+  type Release = Prisma.ProductPublicationsGetPayload<{
+    select: { BuildEngineReleaseId: true; DateCreated: true };
+  }>;
+
+  // only try to associate completed builds/releases
+  const count = await DatabaseReads.products.count({
+    where: { [member]: { some: filter } }
+  });
+  const orphaned = (await DatabaseReads.products.findMany({
+    where: { [member]: { some: filter } },
+    select: {
+      Id: true,
+      [member]: {
+        where: filter,
+        select: {
+          [idType]: true,
+          DateCreated: true
+        },
+        orderBy: { DateCreated: 'asc' }
+      },
+      ProductTransitions: {
+        where: {
+          InitialState:
+            scope === 'build' ? WorkflowState.Product_Build : WorkflowState.Product_Publish,
+          DateTransition: { not: null }
+        },
+        select: {
+          Id: true,
+          DateTransition: true
+        },
+        orderBy: {
+          DateTransition: 'asc'
+        }
+      }
+    },
+    take: chunkSize,
+    skip: Math.max(0, randomInt(count || 1) - chunkSize)
+  })) as unknown as (Prisma.ProductsGetPayload<{
+    select: {
+      Id: true;
+      ProductTransitions: { select: { Id: true; DateTransition: true } };
+    };
+  }> & { ProductBuilds: Build[]; ProductPublications: Release[] })[];
+
+  const associated = await Promise.all(
+    orphaned.map(async (p) => ({
+      Id: p.Id,
+      // find first transition where DateTransition is greater than Build.DateCreated
+      // problem, date transition isn't set until build is completed... so we only do this for completed builds
+      [member]: await Promise.all(
+        p[member].map((obj) => {
+          const narrowed = obj as Scope extends 'build' ? Build : Release;
+          const id = p.ProductTransitions.find(
+            (pt) =>
+              pt.DateTransition!.valueOf() > obj.DateCreated!.valueOf() ||
+              // or within 5 seconds
+              Math.abs(pt.DateTransition!.valueOf() - obj.DateCreated!.valueOf()) < 5000
+          )?.Id;
+
+          //@ts-expect-error this is actually correct. I am tired of fighting the type system further
+          const objId: number = narrowed[idType];
+
+          if (id) {
+            return DatabaseWrites.productTransitions.tryConnect(p.Id, objId, scope, id);
+          } else {
+            return { [idType]: objId };
+          }
+        })
+      )
+    }))
+  );
+
+  const remaining = await DatabaseReads.products.count({
+    where: { [member]: { some: filter } }
+  });
+
+  return { count, orphaned, associated, remaining };
 }
