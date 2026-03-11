@@ -56,9 +56,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
             select: {
               Id: true,
               Name: true,
-              BuildEngineUrl: true,
-              BuildEngineApiAccessToken: true,
-              UseDefaultBuildEngine: true
+              UseDefaultBuildEngine: true,
+              System: {
+                select: {
+                  BuildEngineUrl: true,
+                  BuildEngineApiAccessToken: true
+                }
+              }
             }
           }
         }

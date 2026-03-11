@@ -24,8 +24,26 @@ export async function createInvite(
 }
 
 export async function create(data: RequirePrimitive<Prisma.OrganizationsUncheckedCreateInput>) {
-  return await prisma.organizations.create({
-    data
+  return await prisma.$transaction(async (tx) => {
+    const org = await tx.organizations.create({
+      data
+    });
+
+    if (org && data.BuildEngineUrl && data.BuildEngineApiAccessToken) {
+      await tx.systemStatuses.create({
+        data: {
+          BuildEngineUrl: data.BuildEngineUrl,
+          BuildEngineApiAccessToken: data.BuildEngineApiAccessToken,
+          SystemAvailable: false,
+          OrganizationId: org.Id
+        },
+        select: {
+          Id: true
+        }
+      });
+    }
+
+    return org;
   });
 }
 
@@ -33,6 +51,21 @@ export async function update(
   id: number,
   data: RequirePrimitive<Prisma.OrganizationsUncheckedUpdateInput>
 ) {
+  if (data.BuildEngineApiAccessToken !== undefined || data.BuildEngineUrl !== undefined) {
+    await prisma.systemStatuses.upsert({
+      where: { OrganizationId: id },
+      update: {
+        BuildEngineUrl: data.BuildEngineUrl ?? undefined,
+        BuildEngineApiAccessToken: data.BuildEngineApiAccessToken ?? undefined
+      },
+      create: {
+        OrganizationId: id,
+        SystemAvailable: false,
+        BuildEngineUrl: data.BuildEngineUrl ?? '',
+        BuildEngineApiAccessToken: data.BuildEngineApiAccessToken ?? ''
+      }
+    });
+  }
   return await prisma.organizations.update({
     where: { Id: id },
     data

@@ -162,8 +162,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               StoreTypeId: true
             }
           },
-          BuildEngineUrl: isSuper,
-          BuildEngineApiAccessToken: isSuper,
+          System: isSuper,
           UseDefaultBuildEngine: isSuper
         }
       });
