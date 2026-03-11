@@ -36,7 +36,7 @@ export async function markResolved(productId: string) {
           PublishLink: true
         },
         orderBy: {
-          DateUpdated: 'desc'
+          DateCreated: 'desc'
         },
         take: 1
       }

@@ -83,7 +83,7 @@ export async function sendNotificationToReviewers(
           }
         },
         orderBy: {
-          DateUpdated: 'desc'
+          DateCreated: 'desc'
         },
         take: 1
       },

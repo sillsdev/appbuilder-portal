@@ -111,7 +111,7 @@ export async function getPublishedFile(productId: string, type: string) {
       }
     },
     orderBy: {
-      DateUpdated: 'desc'
+      DateCreated: 'desc'
     }
   });
   for (const publication of publications) {
