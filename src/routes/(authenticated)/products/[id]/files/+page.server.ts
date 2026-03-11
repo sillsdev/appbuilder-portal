@@ -100,6 +100,7 @@ export const load = (async ({ params, locals }) => {
 
 export const actions = {
   page: async ({ request, params, locals }) => {
+    locals.security.requireAuthenticated();
     const project = (
       await DatabaseReads.products.findUnique({
         where: { Id: params.id },
@@ -109,7 +110,6 @@ export const actions = {
       })
     )?.Project;
     if (!project) error(404);
-    locals.security.requireAuthenticated();
     locals.security.requireProjectReadAccess(
       await DatabaseReads.groups.findMany({
         where: { Users: { some: { Id: locals.security.userId } }, Id: project.GroupId }
