@@ -443,6 +443,7 @@ async function renameTransitions() {
   const chunkSize = 100;
   const filter = {
     InitialState: {
+      // these states are deprecated and confuse the build/release association process
       in: ['Product Rebuild', 'Product Republish', 'Check Product Build', 'Check Product Publish']
     },
     DateTransition: { not: null }
@@ -504,9 +505,12 @@ async function renameTransitions() {
         data?: Prisma.ProductTransitionsUpdateInput;
       };
       const operations: Operation[] = p.ProductTransitions.flatMap((t, i, arr) => {
+        // rename/reassociate Check transitions
         if (t.InitialState?.match(/Check Product (Build|Publish)/)) {
           const prev = arr.at(i + 1);
           if (prev?.InitialState?.match(/Product (Build|Rebuild|Republish|Publish)/)) {
+            // if previous transition is the appropriate type,
+            // persist comment to previous transition, then delete old one
             return [
               {
                 id: prev.Id,
@@ -517,6 +521,7 @@ async function renameTransitions() {
               }
             ] as Operation[];
           } else {
+            // otherwise rename transition
             return [
               {
                 id: t.Id,
