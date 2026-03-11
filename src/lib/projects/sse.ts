@@ -1,8 +1,12 @@
 import type { Session } from '@auth/sveltekit';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { error } from '@sveltejs/kit';
+import { stringify } from 'devalue';
+import { produce } from 'sveltekit-sse';
+import { type SSEPageEvents, SSEPageUpdates } from './listener';
 import { RoleId } from '$lib/prisma';
-import { getProductActions } from '$lib/products';
-import { canModifyProject } from '$lib/projects';
+import { minifyProductCard, minifyProductDetails } from '$lib/products';
 import { userGroupsForOrg } from '$lib/projects/server';
 import { getURLandToken } from '$lib/server/build-engine-api/requests';
 import { DatabaseReads } from '$lib/server/database';
@@ -18,7 +22,6 @@ export async function getProjectDetails(id: number, userSession: Session['user']
       'project.userId': userSession.userId
     });
     try {
-      const isSuper = isSuperAdmin(userSession.roles);
       const project = await DatabaseReads.projects.findUniqueOrThrow({
         where: {
           Id: id
@@ -43,91 +46,61 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             }
           },
           OrganizationId: true,
-          Products: {
-            select: {
-              Id: true,
-              DateUpdated: true,
-              DatePublished: true,
-              PublishLink: true,
-              Properties: true,
-              ProductDefinition: {
-                select: {
-                  Id: true,
-                  Name: true,
-                  RebuildWorkflowId: true,
-                  RepublishWorkflowId: true,
-                  Workflow: {
-                    select: {
-                      ProductType: true
-                    }
-                  }
-                }
-              },
-              // Probably don't need to optimize this. Unless it's a really large org,
-              // there probably won't be very many of these records for an individual
-              // product. In most cases, there will only be zero or one. The only times
-              // there will be more is if it's an admin task or an author task.
-              UserTasks: {
-                select: {
-                  DateCreated: true,
-                  UserId: true
-                }
-              },
-              Store: {
-                select: {
-                  StoreTypeId: true,
-                  Description: true
-                }
-              },
-              BuildEngineJobId: isSuper,
-              CurrentBuildId: isSuper,
-              CurrentReleaseId: isSuper,
-              ProductBuilds: isSuper
-                ? {
-                    select: {
-                      BuildEngineBuildId: true,
-                      TransitionId: true
-                    },
-                    orderBy: {
-                      DateCreated: 'desc'
-                    }
-                  }
-                : false,
-              ProductPublications: isSuper
-                ? {
-                    select: {
-                      BuildEngineReleaseId: true,
-                      TransitionId: true
-                    },
-                    orderBy: {
-                      DateCreated: 'desc'
-                    }
-                  }
-                : false,
-              WorkflowInstance: {
-                select: {
-                  State: true,
-                  WorkflowDefinition: {
-                    select: {
-                      Type: true
-                    }
-                  }
-                }
-              }
-            }
-          },
+          OwnerId: true,
           Owner: {
             select: {
               Id: true,
               Name: true
             }
           },
+          GroupId: true,
           Group: {
             select: {
               Id: true,
               Name: true
             }
-          },
+          }
+        }
+      });
+      span.addEvent('Project fetched');
+
+      return {
+        project
+      };
+    } catch (e) {
+      span.recordException(e as Error);
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: (e as Error).message
+      });
+      // not found
+      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw error(404);
+      }
+      throw error(500);
+    } finally {
+      span.end();
+    }
+  });
+}
+
+export type ProjectGroupsSSE = Awaited<ReturnType<typeof getProjectGroupData>>;
+export async function getProjectGroupData(id: number, userSession: Session['user']) {
+  // permissions checked in auth
+  return tracer.startActiveSpan('getProjectGroups', async (span) => {
+    span.setAttributes({
+      'project.id': id,
+      'project.userId': userSession.userId
+    });
+    try {
+      const project = await DatabaseReads.projects.findUniqueOrThrow({
+        where: {
+          Id: id
+        },
+        select: {
+          OrganizationId: true,
+          OwnerId: true,
+          GroupId: true,
           Authors: {
             select: {
               User: {
@@ -147,116 +120,11 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           }
         }
       });
-      span.addEvent('Project fetched');
-      const organization = await DatabaseReads.organizations.findUniqueOrThrow({
-        where: {
-          Id: project.OrganizationId
-        },
-        select: {
-          Stores: {
-            select: {
-              Id: true,
-              BuildEnginePublisherId: true,
-              GooglePlayTitle: true,
-              Description: true,
-              StoreTypeId: true
-            }
-          },
-          System: isSuper,
-          UseDefaultBuildEngine: isSuper
-        }
-      });
-      span.addEvent('Organization fetched');
-
-      const transitions = await DatabaseReads.productTransitions.findMany({
-        where: {
-          ProductId: {
-            in: project.Products.map((p) => p.Id)
-          }
-          // DateTransition: null
-        },
-        orderBy: [
-          {
-            DateTransition: 'asc'
-          },
-          {
-            Id: 'asc'
-          }
-        ],
-        include: {
-          User: {
-            select: {
-              Name: true
-            }
-          },
-          QueueRecords: isSuper
-            ? {
-                select: {
-                  Queue: true,
-                  JobId: true,
-                  JobType: true
-                }
-              }
-            : false
-        }
-      });
-      span.addEvent('Product transitions fetched');
-      const strippedTransitions = project.Products.map((p) => [
-        transitions.findLast((tr) => tr.ProductId === p.Id && tr.DateTransition !== null)!,
-        transitions.find((tr) => tr.ProductId === p.Id && tr.DateTransition === null)!
-      ]);
-
-      const productDefinitions = await DatabaseReads.productDefinitions.findMany({
-        where: {
-          Organizations: { some: { Id: project.OrganizationId } },
-          OR: [
-            { AllowAllApplicationTypes: true },
-            { ApplicationTypes: { some: { Id: project.ApplicationType.Id } } }
-          ]
-        },
-        select: {
-          Id: true,
-          Name: true,
-          Description: true,
-          Workflow: {
-            select: {
-              ProductType: true,
-              StoreTypeId: true
-            }
-          }
-        }
-      });
-
-      const projectProductDefinitionIds = project.Products.map((p) => p.ProductDefinition.Id);
-      span.addEvent('Product definitions fetched');
-
-      const canEdit = canModifyProject(userSession, project.Owner.Id, project.OrganizationId);
 
       return {
-        project: {
-          ...project,
-          OwnerId: project.Owner.Id,
-          GroupId: project.Group.Id,
-          Products: project.Products.map((product) => ({
-            ...product,
-            Transitions: transitions.filter((t) => t.ProductId === product.Id),
-            PreviousTransition: strippedTransitions.find(
-              (t) => (t[0] ?? t[1])?.ProductId === product.Id
-            )?.[0],
-            ActiveTransition: strippedTransitions.find(
-              (t) => (t[0] ?? t[1])?.ProductId === product.Id
-            )?.[1],
-            actions: canEdit
-              ? getProductActions(product, project.Owner.Id, userSession.userId)
-              : [],
-            BuildEngineUrl: isSuper ? `${getURLandToken(organization).url}` : undefined
-          }))
-        },
-        productsToAdd: productDefinitions.filter(
-          (pd) => !projectProductDefinitionIds.includes(pd.Id)
-        ),
-        stores: organization?.Stores ?? [],
-        possibleProjectOwners: await DatabaseReads.users.findMany({
+        authors: project.Authors,
+        reviewers: project.Reviewers,
+        possibleOwners: await DatabaseReads.users.findMany({
           where: {
             Organizations: {
               some: {
@@ -265,9 +133,19 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             },
             Groups: {
               some: {
-                Id: project.Group.Id
+                Id: project.GroupId
+              }
+            },
+            UserRoles: {
+              some: {
+                OrganizationId: project.OrganizationId,
+                RoleId: { in: [RoleId.AppBuilder, RoleId.OrgAdmin] }
               }
             }
+          },
+          select: {
+            Id: true,
+            Name: true
           }
         }),
         // possibleGroups are ones owned by the same org as the project and contain the project's owner
@@ -276,18 +154,17 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             OwnerId: project.OrganizationId,
             Users: {
               some: {
-                Id: project.Owner.Id
+                Id: project.OwnerId
               }
             }
           }
         }),
         // All users who are members of the group and have the author role in the project's organization
-        // May be a more efficient way to search this, by referencing group memberships instead of users
-        authorsToAdd: await DatabaseReads.users.findMany({
+        possibleAuthors: await DatabaseReads.users.findMany({
           where: {
             Groups: {
               some: {
-                Id: project?.Group.Id
+                Id: project.GroupId
               }
             },
             UserRoles: {
@@ -298,9 +175,13 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             },
             Authors: {
               none: {
-                ProjectId: project.Id
+                ProjectId: id
               }
             }
+          },
+          select: {
+            Id: true,
+            Name: true
           }
         }),
         userGroups: (await userGroupsForOrg(userSession.userId, project.OrganizationId)).map(
@@ -313,49 +194,380 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         code: SpanStatusCode.ERROR,
         message: (e as Error).message
       });
+      // not found
+      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw error(404);
+      }
+      throw error(500);
     } finally {
       span.end();
     }
   });
 }
 
-export type UserTaskDataSSE = Awaited<ReturnType<typeof getUserTasks>>;
-export async function getUserTasks(userId: number) {
-  const tasks = await DatabaseReads.userTasks.findMany({
-    where: {
-      UserId: userId
-    },
-    select: {
-      Status: true,
-      Comment: true,
-      DateUpdated: true,
-      ProductId: true,
-      Product: {
+export type ProjectOrgsSSE = Awaited<ReturnType<typeof getProjectOrgData>>;
+export async function getProjectOrgData(id: number, userSession: Session['user']) {
+  // permissions checked in auth
+  return tracer.startActiveSpan('getProjectOrg', async (span) => {
+    span.setAttributes({
+      'project.id': id,
+      'project.userId': userSession.userId
+    });
+    try {
+      const project = await DatabaseReads.projects.findUniqueOrThrow({
+        where: {
+          Id: id
+        },
         select: {
-          ProductDefinition: {
+          OrganizationId: true,
+          TypeId: true
+        }
+      });
+      span.addEvent('Project fetched');
+      return {
+        Stores: await DatabaseReads.stores.findMany({
+          where: {
+            OR: [
+              { Organizations: { some: { Id: project.OrganizationId } } },
+              { Products: { some: { ProjectId: id } } }
+            ]
+          },
+          select: {
+            Id: true,
+            BuildEnginePublisherId: true,
+            GooglePlayTitle: true,
+            Description: true,
+            StoreTypeId: true,
+            _count: {
+              select: {
+                Organizations: { where: { Id: project.OrganizationId } }
+              }
+            }
+          }
+        }),
+        ProductDefinitions: await DatabaseReads.productDefinitions.findMany({
+          where: {
+            OR: [
+              {
+                Organizations: { some: { Id: project.OrganizationId } },
+                OR: [
+                  { AllowAllApplicationTypes: true },
+                  { ApplicationTypes: { some: { Id: project.TypeId } } }
+                ]
+              },
+              {
+                Products: { some: { ProjectId: id } }
+              }
+            ]
+          },
+          select: {
+            Id: true,
+            Name: true,
+            Description: true,
+            Workflow: {
+              select: {
+                ProductType: true,
+                StoreTypeId: true
+              }
+            },
+            RebuildWorkflowId: true,
+            RepublishWorkflowId: true,
+            _count: {
+              select: {
+                Organizations: { where: { Id: project.OrganizationId } }
+              }
+            }
+          }
+        })
+      };
+    } catch (e) {
+      span.recordException(e as Error);
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: (e as Error).message
+      });
+      // not found
+      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw error(404);
+      }
+      throw error(500);
+    } finally {
+      span.end();
+    }
+  });
+}
+
+export type ProjectProductsSSE = Awaited<ReturnType<typeof getProjectProducts>>;
+export async function getProjectProducts(id: number, userSession: Session['user']) {
+  // permissions checked in auth
+  return tracer.startActiveSpan('getProductTransitions', async (span) => {
+    span.setAttributes({
+      'project.id': id,
+      'project.userId': userSession.userId
+    });
+    try {
+      const isSuper = isSuperAdmin(userSession.roles);
+
+      const BuildEngineUrl = isSuper
+        ? getURLandToken(
+            await DatabaseReads.organizations.findFirstOrThrow({
+              where: {
+                Projects: {
+                  some: { Id: id }
+                }
+              },
+              select: {
+                System: {
+                  select: {
+                    BuildEngineApiAccessToken: true,
+                    BuildEngineUrl: true
+                  }
+                },
+                UseDefaultBuildEngine: true
+              }
+            })
+          ).url
+        : undefined;
+
+      const products = await DatabaseReads.products.findMany({
+        where: {
+          ProjectId: id
+        },
+        select: {
+          Id: true,
+          DateUpdated: true,
+          DatePublished: true,
+          PublishLink: true,
+          Properties: true,
+          ProductDefinitionId: true,
+          // Probably don't need to optimize this. Unless it's a really large org,
+          // there probably won't be very many of these records for an individual
+          // product. In most cases, there will only be zero or one. The only times
+          // there will be more is if it's an admin task or an author task.
+          UserTasks: {
             select: {
-              Name: true,
-              Workflow: {
+              DateCreated: true,
+              UserId: true
+            }
+          },
+          StoreId: true,
+          BuildEngineJobId: isSuper,
+          CurrentBuildId: isSuper,
+          CurrentReleaseId: isSuper,
+          ProductBuilds: isSuper
+            ? {
                 select: {
-                  ProductType: true
+                  BuildEngineBuildId: true,
+                  TransitionId: true
+                },
+                orderBy: {
+                  DateCreated: 'desc'
+                }
+              }
+            : false,
+          ProductPublications: isSuper
+            ? {
+                select: {
+                  BuildEngineReleaseId: true,
+                  TransitionId: true
+                },
+                orderBy: {
+                  DateCreated: 'desc'
+                }
+              }
+            : false,
+          WorkflowInstance: {
+            select: {
+              State: true,
+              WorkflowDefinition: {
+                select: {
+                  Type: true
                 }
               }
             }
           },
-          ProjectId: true,
-          Project: {
-            select: {
-              Name: true
+          ProductTransitions: {
+            orderBy: [
+              {
+                DateTransition: 'asc'
+              },
+              {
+                Id: 'asc'
+              }
+            ],
+            include: {
+              User: {
+                select: {
+                  Name: true
+                }
+              },
+              QueueRecords: isSuper
+                ? {
+                    select: {
+                      Queue: true,
+                      JobId: true,
+                      JobType: true
+                    }
+                  }
+                : false
+            }
+          }
+        }
+      });
+
+      return {
+        products: products.map((p) => ({
+          ...minifyProductCard(
+            p,
+            p.ProductTransitions.findLast(
+              (tr) => tr.ProductId === p.Id && tr.DateTransition !== null
+            ),
+            p.ProductTransitions.find((tr) => tr.ProductId === p.Id && tr.DateTransition === null)
+          ),
+          ...minifyProductDetails(p, BuildEngineUrl)
+        }))
+      };
+    } catch (e) {
+      span.recordException(e as Error);
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: (e as Error).message
+      });
+      // not found
+      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw error(404);
+      }
+      throw error(500);
+    } finally {
+      span.end();
+    }
+  });
+}
+
+/**
+ * S = Status
+ * C = Comment
+ * U = DateUpdated
+ * P = ProductId
+ * Pj = ProjectId
+ * PD = ProductDefinitionId
+ */
+export type UserTaskDataSSE = Awaited<ReturnType<typeof getUserTasks>>;
+export async function getUserTasks(userId: number) {
+  const projects = await DatabaseReads.projects.findMany({
+    where: {
+      Products: {
+        some: {
+          UserTasks: {
+            some: {
+              UserId: userId
             }
           }
         }
       }
     },
-    distinct: 'ProductId',
-    orderBy: {
-      // most recent first
-      DateUpdated: 'desc'
+    select: {
+      Id: true,
+      Name: true,
+      Products: {
+        where: {
+          UserTasks: {
+            some: {
+              UserId: userId
+            }
+          }
+        },
+        select: {
+          Id: true,
+          ProductDefinitionId: true,
+          UserTasks: {
+            select: {
+              Status: true,
+              Comment: true,
+              DateUpdated: true,
+              ProductId: true
+            },
+            orderBy: {
+              DateUpdated: 'desc'
+            },
+            take: 1
+          }
+        }
+      }
     }
   });
-  return tasks;
+  return {
+    tasks: projects.flatMap((pj) =>
+      pj.Products.flatMap((p) =>
+        p.UserTasks.map((u) => ({
+          S: u.Status,
+          C: u.Comment,
+          U: u.DateUpdated,
+          P: u.ProductId,
+          Pj: pj.Id,
+          PD: p.ProductDefinitionId
+        }))
+      )
+    ),
+    projects: new Map(projects.map((p) => [p.Id, p.Name])),
+    products: new Map(
+      (
+        await DatabaseReads.productDefinitions.findMany({
+          where: {
+            Products: { some: { Id: { in: projects.flatMap((p) => p.Products.map((p) => p.Id)) } } }
+          },
+          select: {
+            Id: true,
+            Name: true,
+            Workflow: {
+              select: {
+                ProductType: true
+              }
+            }
+          }
+        })
+      ).map((pd) => [pd.Id, { N: pd.Name, T: pd.Workflow.ProductType }])
+    )
+  };
+}
+
+export function createProducer<T>(
+  id: number,
+  userSession: Session['user'],
+  stream: keyof SSEPageEvents,
+  event: string,
+  query: (id: number, userSession: Session['user']) => Promise<T>
+) {
+  return produce(async function start({ emit, lock }) {
+    // User will be allowed to see project updates until they reload
+    // even if their permission is revoked during the SSE connection.
+    const { error } = emit(event, stringify(await query(id, userSession)));
+    if (error) {
+      return;
+    }
+    async function updateCb(updateId: number[]) {
+      // This is a little wasteful because it will calculate much of the same data
+      // multiple times if multiple users are connected to the same project page.
+      if (updateId.includes(id)) {
+        try {
+          const data = await query(id, userSession);
+          const { error } = emit(event, stringify(data));
+          if (error) {
+            SSEPageUpdates.off(stream, updateCb);
+            clearInterval(pingInterval);
+          }
+        } catch {
+          SSEPageUpdates.off(stream, updateCb);
+          clearInterval(pingInterval);
+        }
+      }
+    }
+    SSEPageUpdates.on(stream, updateCb);
+    const pingInterval = setInterval(function onDisconnect() {
+      const { error } = emit('ping', '');
+      if (!error) return;
+      SSEPageUpdates.off(stream, updateCb);
+      clearInterval(pingInterval);
+    }, 10000).unref();
+  });
 }

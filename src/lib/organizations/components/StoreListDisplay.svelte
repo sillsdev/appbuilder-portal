@@ -6,13 +6,17 @@
 >
   import type { Prisma } from '@prisma/client';
   import type { Snippet } from 'svelte';
+  import { page } from '$app/state';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { Icons, getStoreIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import type { ValidI13nKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   import { StoreType, displayStoreGPTitle } from '$lib/prisma';
+  import { isSuperAdmin } from '$lib/utils/roles';
+  import { byName } from '$lib/utils/sorting';
 
   interface Props {
     editable: boolean;
@@ -21,9 +25,10 @@
     getTitle: (store: Store) => string;
     extra?: Snippet<[Store]>;
     showDescription?: boolean;
+    users?: (Prisma.OrganizationsGetPayload<{ select: { Name: true } }> & { Products: number })[];
   }
 
-  let { editable, editLink, store, getTitle, extra, showDescription }: Props = $props();
+  let { editable, editLink, store, getTitle, extra, showDescription, users }: Props = $props();
 
   const missingGPTitle = $derived(
     store.StoreTypeId === StoreType.GooglePlay && editable && !store.GooglePlayTitle
@@ -53,6 +58,17 @@
             value: store.GooglePlayTitle,
             class: { 'text-error': missingGPTitle },
             snippet: missingGPTitle ? gpTitleError : undefined
+          }
+        ]
+      : []),
+    ...(users?.length && isSuperAdmin(page.data.session!.user.roles)
+      ? [
+          {
+            key: 'org_title' as ValidI13nKey,
+            value: users
+              .toSorted((a, b) => byName(a, b, getLocale()))
+              .map((u) => `${u.Name} (${u.Products})`)
+              .join(', ')
           }
         ]
       : [])

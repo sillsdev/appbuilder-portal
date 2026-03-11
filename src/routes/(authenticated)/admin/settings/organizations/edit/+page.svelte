@@ -172,7 +172,7 @@
                 e.currentTarget.form?.requestSubmit();
               }}
               class="checkbox checkbox-accent mr-2 mt-2"
-              disabled={!!user._count.Projects}
+              disabled={!!(user._count.Organizations && user._count.Projects)}
               checked={!!user._count.Organizations}
             />
             <b>
