@@ -7,6 +7,7 @@ import { DatabaseReads } from '$lib/server/database';
 import { paginateSchema } from '$lib/valibot';
 
 export const load = (async ({ params, locals }) => {
+  locals.security.requireAuthenticated();
   const project = (
     await DatabaseReads.products.findUnique({
       where: { Id: params.id },
@@ -17,7 +18,6 @@ export const load = (async ({ params, locals }) => {
     })
   )?.Project;
   if (!project) error(404);
-  locals.security.requireAuthenticated();
   locals.security.requireProjectReadAccess(
     await DatabaseReads.groups.findMany({
       where: { Users: { some: { Id: locals.security.userId } }, Id: project.GroupId }
