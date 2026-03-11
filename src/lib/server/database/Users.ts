@@ -258,7 +258,7 @@ export async function acceptInvite(userId: number, inviteToken: string) {
       type: BullMQ.JobType.SvelteSSE_UpdateProjectGroups,
       projectIds: (
         await prisma.projects.findMany({
-          where: { GroupId: { in: invite.Groups } },
+          where: { OrganizationId: invite.OrganizationId },
           select: { Id: true }
         })
       ).map((p) => p.Id)

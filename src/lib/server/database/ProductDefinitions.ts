@@ -78,7 +78,12 @@ export async function update(
       type: BullMQ.JobType.SvelteSSE_UpdateProjectOrg,
       projectIds: (
         await prisma.projects.findMany({
-          where: { Organization: { ProductDefinitions: { some: { Id: id } } } },
+          where: {
+            OR: [
+              { Organization: { ProductDefinitions: { some: { Id: id } } } },
+              { Products: { some: { ProductDefinitionId: id } } }
+            ]
+          },
           select: { Id: true }
         })
       ).map((p) => p.Id)

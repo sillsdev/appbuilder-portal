@@ -74,7 +74,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         message: (e as Error).message
       });
       // not found
-      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2001') {
+      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
         throw error(404);
       }
       throw error(500);
@@ -195,7 +195,7 @@ export async function getProjectGroupData(id: number, userSession: Session['user
         message: (e as Error).message
       });
       // not found
-      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2001') {
+      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
         throw error(404);
       }
       throw error(500);
@@ -287,7 +287,7 @@ export async function getProjectOrgData(id: number, userSession: Session['user']
         message: (e as Error).message
       });
       // not found
-      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2001') {
+      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
         throw error(404);
       }
       throw error(500);
@@ -434,7 +434,7 @@ export async function getProjectProducts(id: number, userSession: Session['user'
         message: (e as Error).message
       });
       // not found
-      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2001') {
+      if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
         throw error(404);
       }
       throw error(500);
