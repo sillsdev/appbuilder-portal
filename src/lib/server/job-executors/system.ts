@@ -415,8 +415,13 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
 export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
   /**
    * Migration Tasks:
-   * 1. Populate ProductBuild/ProductPublications.TransitionId
+   * 1. Rename transition states
+   * 2. Populate ProductBuild/ProductPublications.TransitionId
    */
+
+  const transitions = await renameTransitions();
+
+  job.updateProgress(33);
 
   const builds = await associateBuildsOrReleases('build');
 
@@ -431,9 +436,142 @@ export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unkn
   job.updateProgress(100);
 
   return {
+    transitions,
     builds,
     releases
   };
+}
+
+async function renameTransitions() {
+  const chunkSize = 100;
+  const filter = {
+    InitialState: {
+      in: ['Product Rebuild', 'Product Republish', 'Check Product Build', 'Check Product Publish']
+    },
+    DateTransition: { not: null }
+  };
+  const count = await DatabaseReads.products.count({
+    where: { ProductTransitions: { some: filter } }
+  });
+  const products = await DatabaseReads.products.findMany({
+    where: {
+      ProductTransitions: {
+        some: filter
+      }
+    },
+    select: {
+      Id: true,
+      ProjectId: true,
+      ProductTransitions: {
+        select: {
+          Id: true,
+          InitialState: true,
+          DestinationState: true,
+          Comment: true
+        },
+        orderBy: { DateTransition: 'desc' }
+      }
+    },
+    take: chunkSize,
+    skip: Math.max(0, randomInt(count || 1) - chunkSize)
+  });
+
+  const updated = await Promise.all(
+    products.map(async (p) => {
+      const renamedInits = await DatabaseWrites.productTransitions.updateMany(
+        {
+          where: {
+            ProductId: p.Id,
+            InitialState: { in: ['Product Rebuild', 'Product Republish'] }
+          },
+          data: {
+            InitialState: 'Product Build'
+          }
+        },
+        p.ProjectId
+      );
+      const renamedDests = await DatabaseWrites.productTransitions.updateMany(
+        {
+          where: {
+            ProductId: p.Id,
+            DestinationState: { in: ['Product Rebuild', 'Product Republish'] }
+          },
+          data: {
+            DestinationState: 'Product Build'
+          }
+        },
+        p.ProjectId
+      );
+      type Operation = {
+        id: number;
+        data?: Prisma.ProductTransitionsUpdateInput;
+      };
+      const operations: Operation[] = p.ProductTransitions.flatMap((t, i, arr) => {
+        if (t.InitialState?.match(/Check Product (Build|Publish)/)) {
+          const prev = arr.at(i + 1);
+          if (prev?.InitialState?.match(/Product (Build|Rebuild|Republish|Publish)/)) {
+            return [
+              {
+                id: prev.Id,
+                data: { DestinationState: t.DestinationState, Comment: t.Comment }
+              },
+              {
+                id: t.Id
+              }
+            ] as Operation[];
+          } else {
+            return [
+              {
+                id: t.Id,
+                data: {
+                  InitialState: t.InitialState.endsWith('Build')
+                    ? WorkflowState.Product_Build
+                    : WorkflowState.Product_Publish
+                }
+              }
+            ] as Operation[];
+          }
+        }
+        return [];
+      });
+      return {
+        projectId: p.ProjectId,
+        renamedInits,
+        renamedDests,
+        updated: await prismaInternal.$transaction((tx) =>
+          Promise.all(
+            operations.map((o) =>
+              o.data
+                ? tx.productTransitions.update({
+                    where: { Id: o.id },
+                    data: o.data,
+                    select: {
+                      InitialState: true,
+                      DestinationState: true,
+                      Comment: true
+                    }
+                  })
+                : tx.productTransitions.delete({
+                    where: { Id: o.id },
+                    select: { Id: true, InitialState: true }
+                  })
+            )
+          )
+        )
+      };
+    })
+  );
+
+  getQueues().SvelteSSE.add(`Update Projects (transitions updated)`, {
+    type: BullMQ.JobType.SvelteSSE_UpdateProject,
+    projectIds: Array.from(new Set(products.map((p) => p.ProjectId)))
+  });
+
+  const remaining = await DatabaseReads.products.count({
+    where: { ProductTransitions: { some: filter } }
+  });
+
+  return { count, products, updated, remaining };
 }
 
 async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scope: Scope) {
