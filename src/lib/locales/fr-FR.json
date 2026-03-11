@@ -133,7 +133,7 @@
       }
     }
   ],
-  "directory_searchHelp": "This allows you to search over: <br />• Project Name<br />• Project Type (e.g. SAB)<br />• Project Language <br />• Owner Name<br />• Organization Name<br />• Group Name<br />• Package Name",
+  "directory_searchHelp": "This allows you to search over: <br />• Project Name<br />• Project Language <br />• Owner Name<br />• Organization Name<br />• Group Name<br />• Package Name",
   "header_myProfile": "My Profile",
   "header_community": "Community",
   "header_help": "Help",
@@ -382,6 +382,7 @@
   "projects_bulk_buildModal_title": "Perform Bulk Rebuild/Republish",
   "filters_allProdDefs": "All projects that contain...",
   "filters_dateRange": "Last Updated Date Between",
+  "filters_allAppTypes": "All application types",
   "projectImport_title": "Import Projects",
   "projectImport_help": "Import Projects Help",
   "projectImport_file": "Import JSON File",

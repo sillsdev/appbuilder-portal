@@ -130,7 +130,9 @@ export function pruneProjects(
 
 export type PrunedProject = ReturnType<typeof pruneProjects>[number];
 
+export type ProjectSearch = v.InferOutput<typeof projectSearchSchema>;
 export const projectSearchSchema = v.object({
+  appType: v.nullable(idSchema),
   organizationId: v.nullable(idSchema),
   langCode: v.string(),
   productDefinitionId: v.nullable(idSchema),

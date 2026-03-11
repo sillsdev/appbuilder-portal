@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { Prisma } from '@prisma/client';
-  import type { Snippet } from 'svelte';
   import type { HTMLSelectAttributes } from 'svelte/elements';
   import Dropdown, { type DropdownClasses } from '$lib/components/Dropdown.svelte';
   import { getAppIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
+  import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byString } from '$lib/utils/sorting';
 
@@ -17,17 +17,23 @@
       };
     }>[];
     value: number | null;
-    extra?: Snippet;
+    allowNull?: boolean;
     attr?: HTMLSelectAttributes;
   }
 
-  let { class: classes = {}, types, value = $bindable(), extra, attr = {} }: Props = $props();
+  let {
+    class: classes = {},
+    types,
+    value = $bindable(),
+    allowNull = false,
+    attr = {}
+  }: Props = $props();
 
   const current = $derived(types.find((type) => type.Id === value));
 
   let open = $state(false);
 
-  function onclick(val: number) {
+  function onclick(val: number | null) {
     open = false;
     value = val;
   }
@@ -53,14 +59,33 @@
           {current.Description}
         </span>
       {:else}
-        <span class="grow">&nbsp;</span>
+        <span class="grow font-normal text-left">{m.filters_allAppTypes()}</span>
       {/if}
       <IconContainer icon="gridicons:dropdown" width={20} />
     </div>
   {/snippet}
   {#snippet content()}
     <ul class="menu menu-sm gap-1 p-2">
-      {@render extra?.()}
+      {#if allowNull}
+        <li class="w-full">
+          <div
+            class={['btn btn-ghost flex-nowrap justify-start pl-2 pr-1']}
+            onclick={() => onclick(null)}
+            onkeydown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onclick(null);
+              }
+            }}
+            role="button"
+            tabindex="0"
+          >
+            <span class="grow text-left">
+              {m.filters_allAppTypes()}
+            </span>
+          </div>
+        </li>
+      {/if}
       {#each types.toSorted((a, b) => byString(a.Description, b.Description, getLocale())) as type}
         <li class="w-full">
           <div
