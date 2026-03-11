@@ -1,28 +1,11 @@
 import type { Prisma } from '@prisma/client';
-import { ApplicationType, ProductTransitionType, RoleId } from '$lib/prisma';
-import { type ProjectForAction, canClaimProject } from '$lib/projects';
+import { ProductTransitionType, RoleId } from '$lib/prisma';
+import { type ProjectForAction, type ProjectSearch, canClaimProject } from '$lib/projects';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { isAdminForOrg } from '$lib/utils/roles';
 
-function typeFilter(search: string): ApplicationType[] {
-  const lowered = search.toLowerCase().trim();
-  return [
-    (lowered.includes('sab') || lowered.includes('scrip')) && ApplicationType.SAB,
-    (lowered.includes('rab') || lowered.includes('read')) && ApplicationType.RAB,
-    (lowered.includes('dab') || lowered.includes('dict')) && ApplicationType.DAB,
-    (lowered.includes('kab') || lowered.includes('keyb')) && ApplicationType.KAB
-  ].filter((t) => !!t);
-}
-
-export function projectFilter(args: {
-  organizationId: number | null;
-  langCode: string;
-  productDefinitionId: number | null;
-  dateUpdatedRange: [Date, Date | null] | null;
-  search: string;
-}) {
-  const types = typeFilter(args.search);
+export function projectFilter(args: ProjectSearch) {
   return {
     OrganizationId: args.organizationId !== null ? args.organizationId : undefined,
     Language: args.langCode
@@ -39,6 +22,7 @@ export function projectFilter(args: {
             }
           }
         : undefined,
+    TypeId: args.appType ? args.appType : undefined,
     AND: [
       {
         OR:
@@ -102,8 +86,7 @@ export function projectFilter(args: {
                     }
                   }
                 }
-              },
-              ...(types.length ? [{ TypeId: { in: types } }] : [])
+              }
             ]
           : undefined
       }
