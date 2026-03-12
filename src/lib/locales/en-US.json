@@ -382,6 +382,7 @@
   "projects_bulk_buildModal_title": "Perform Bulk Rebuild/Republish",
   "filters_allProdDefs": "All projects that contain...",
   "filters_dateRange": "Last Updated Date Between",
+  "filters_allAppTypes": "All application types",
   "projectImport_title": "Import Projects",
   "projectImport_help": "Import Projects Help",
   "projectImport_file": "Import JSON File",
