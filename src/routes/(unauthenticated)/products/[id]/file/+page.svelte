@@ -5,7 +5,9 @@
   import { m } from '$lib/paraglide/messages';
 
   interface Props {
-    data: PageData;
+    data: PageData & {
+      turnstileSiteKey: string;
+    };
   }
 
   let { data }: Props = $props();
@@ -149,8 +151,7 @@
   let turnstileToken = $state<string | null>(null);
   let submitting = $state(false);
   let errorMessage = $state<string | null>(null);
-
-  const TURNSTILE_SITE_KEY = 'YOUR_SITE_KEY';
+  const turnstileSiteKey = data.turnstileSiteKey;
 
   onMount(() => {
     (
@@ -379,7 +380,7 @@
             >
               <div
                 class="cf-turnstile"
-                data-sitekey={TURNSTILE_SITE_KEY}
+                data-sitekey={turnstileSiteKey}
                 data-callback="handleTurnstileSuccess"
               ></div>
             </div>
