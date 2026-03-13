@@ -1,8 +1,8 @@
 {
-"compilerOptions": {
+  "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
     "skipLibCheck": true
-}
+  }
 }
