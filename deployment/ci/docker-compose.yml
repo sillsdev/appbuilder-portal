@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:17
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_DB: development
       POSTGRES_USER: db-user
@@ -17,21 +17,21 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "6173:6173"
+      - '6173:6173'
     environment:
-      DATABASE_URL: "postgresql://db-user:1234@db:5432/development?schema=public"
-      MAIL_SENDER: "LogEmail"
-      ADMIN_EMAIL: "noreply@scriptoria.io"
-      DEFAULT_BUILDENGINE_URL: "http://stg-tunnel:8443"
-      VALKEY_HOST: "valkey"
-      DEFAULT_BUILDENGINE_API_ACCESS_TOKEN: "${BUILDENGINE_TOKEN}"
-      AUTH0_SECRET: "${AUTH0_SECRET}"
-      AUTH0_CLIENT_SECRET: "${AUTH0_CLIENT_SECRET}"
-      AUTH0_CLIENT_ID: "${AUTH0_CLIENT_ID}"
-      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
-      AUTH0_CONNECTION: "${AUTH0_CONNECTION}"
+      DATABASE_URL: 'postgresql://db-user:1234@db:5432/development?schema=public'
+      MAIL_SENDER: 'LogEmail'
+      ADMIN_EMAIL: 'noreply@scriptoria.io'
+      DEFAULT_BUILDENGINE_URL: 'http://stg-tunnel:8443'
+      VALKEY_HOST: 'valkey'
+      DEFAULT_BUILDENGINE_API_ACCESS_TOKEN: '${BUILDENGINE_TOKEN}'
+      AUTH0_SECRET: '${AUTH0_SECRET}'
+      AUTH0_CLIENT_SECRET: '${AUTH0_CLIENT_SECRET}'
+      AUTH0_CLIENT_ID: '${AUTH0_CLIENT_ID}'
+      AUTH0_DOMAIN: '${AUTH0_DOMAIN}'
+      AUTH0_CONNECTION: '${AUTH0_CONNECTION}'
       # MUST be included (the path the application will be accessed on) and MUST NOT have a trailing slash
-      ORIGIN: "http://localhost:6173"
+      ORIGIN: 'http://localhost:6173'
   valkey:
     image: valkey/valkey:latest
     command: valkey-server --appendonly yes --appendfilename appendonly.aof --maxmemory-policy noeviction
