@@ -4,6 +4,14 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  optimizeDeps: {
+    exclude: [
+      '@ethnolib/language-chooser-svelte-daisyui',
+      '@ethnolib/language-chooser-controller',
+      '@ethnolib/find-language',
+      '@ethnolib/state-management-svelte'
+    ]
+  },
   server: {
     port: 6173
   },
