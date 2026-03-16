@@ -43,6 +43,8 @@ AUTH0_SECRET=
 AUTH0_CLIENT_SECRET=
 DEFAULT_BUILDENGINE_API_ACCESS_TOKEN=
 ADMIN_EMAIL=
+TURNSTILE_SITE_KEY=
+TURNSTILE_SECRET_KEY=
 ```
 
 > **Note:** Contact [@sillsdev/scriptoria-developers](https://github.com/orgs/sillsdev/teams/scriptoria-developers/members) for help obtaining the secret values.
