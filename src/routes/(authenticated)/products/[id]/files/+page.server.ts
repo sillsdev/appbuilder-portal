@@ -48,7 +48,7 @@ export const load = (async ({ params, locals }) => {
         select: {
           Channel: true,
           Success: true,
-          DateUpdated: true,
+          DateCreated: true,
           LogUrl: true,
           PublishLink: true,
           DateResolved: true,
@@ -143,7 +143,7 @@ export const actions = {
           select: {
             Channel: true,
             Success: true,
-            DateUpdated: true,
+            DateCreated: true,
             LogUrl: true,
             PublishLink: true,
             DateResolved: true,

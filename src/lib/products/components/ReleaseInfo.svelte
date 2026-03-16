@@ -5,7 +5,7 @@
       Success: true;
       LogUrl: true;
       PublishLink: true;
-      DateUpdated: true;
+      DateCreated: true;
       DateResolved: true;
       BuildEngineReleaseId: true;
     };
@@ -64,7 +64,7 @@
       {/if}
       <tr>
         <th class={[classes?.header]}>{m.publications_date()}</th>
-        <td>{getTimeDateString(release.DateUpdated)}</td>
+        <td>{getTimeDateString(release.DateCreated)}</td>
       </tr>
       <tr>
         <th class={[classes?.header]}>
@@ -118,7 +118,7 @@
         {#if release.DateResolved}
           <td>{getTimeDateString(release.DateResolved)}</td>
         {/if}
-        <td>{getTimeDateString(release.DateUpdated)}</td>
+        <td>{getTimeDateString(release.DateCreated)}</td>
         <td>
           <a href={release.LogUrl} class="link" target="_blank">{m.publications_console()}</a>
         </td>
