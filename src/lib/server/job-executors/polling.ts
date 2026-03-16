@@ -21,12 +21,11 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
       }
     }
   });
-  if (!product) {
-    return await build_notifyProductNotFound(job.data.productId);
-  }
-  if (!product.WorkflowInstance || product.CurrentBuildId !== job.data.buildId) {
+  if (!product?.WorkflowInstance || product.CurrentBuildId !== job.data.buildId) {
     await getQueues().Polling.removeJobScheduler(job.name);
-    if (!product.WorkflowInstance) {
+    if (!product) {
+      await build_notifyProductNotFound(job.data.productId);
+    } else if (!product.WorkflowInstance) {
       job.log('No WorkflowInstance found. Workflow cancelled?');
     } else {
       job.log(
@@ -93,12 +92,11 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
       }
     }
   });
-  if (!product) {
-    return await publish_notifyProductNotFound(job.data.productId);
-  }
-  if (!product.WorkflowInstance || product.CurrentReleaseId !== job.data.releaseId) {
+  if (!product?.WorkflowInstance || product.CurrentReleaseId !== job.data.releaseId) {
     await getQueues().Polling.removeJobScheduler(job.name);
-    if (!product.WorkflowInstance) {
+    if (!product) {
+      return await publish_notifyProductNotFound(job.data.productId);
+    } else if (!product.WorkflowInstance) {
       job.log('No WorkflowInstance found. Workflow cancelled?');
     } else {
       job.log(
