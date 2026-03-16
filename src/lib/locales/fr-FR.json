@@ -22,8 +22,13 @@
   "localePicker_placeholder": "Search by Language...",
   "localePicker_region": [
     {
-      "declarations": ["input count", "local countPlural = count: plural"],
-      "selectors": ["countPlural"],
+      "declarations": [
+        "input count",
+        "local countPlural = count: plural"
+      ],
+      "selectors": [
+        "countPlural"
+      ],
       "match": {
         "countPlural=one": "Region",
         "countPlural=other": "Regions"
@@ -32,8 +37,13 @@
   ],
   "localePicker_name": [
     {
-      "declarations": ["input count", "local countPlural = count: plural"],
-      "selectors": ["countPlural"],
+      "declarations": [
+        "input count",
+        "local countPlural = count: plural"
+      ],
+      "selectors": [
+        "countPlural"
+      ],
       "match": {
         "countPlural=one": "Name",
         "countPlural=other": "Names"
@@ -42,8 +52,13 @@
   ],
   "localePicker_tag": [
     {
-      "declarations": ["input count", "local countPlural = count: plural"],
-      "selectors": ["countPlural"],
+      "declarations": [
+        "input count",
+        "local countPlural = count: plural"
+      ],
+      "selectors": [
+        "countPlural"
+      ],
       "match": {
         "countPlural=one": "Tag",
         "countPlural=other": "Tags"
@@ -52,8 +67,13 @@
   ],
   "localePicker_variant": [
     {
-      "declarations": ["input count", "local countPlural = count: plural"],
-      "selectors": ["countPlural"],
+      "declarations": [
+        "input count",
+        "local countPlural = count: plural"
+      ],
+      "selectors": [
+        "countPlural"
+      ],
       "match": {
         "countPlural=one": "Variant",
         "countPlural=other": "Variants"
@@ -262,8 +282,12 @@
   "products_unpublished": "Unpublished",
   "products_numArtifacts": [
     {
-      "declarations": ["local countPlural = amount: plural"],
-      "selectors": ["countPlural"],
+      "declarations": [
+        "local countPlural = amount: plural"
+      ],
+      "selectors": [
+        "countPlural"
+      ],
       "match": {
         "amount=0": "No Product Files",
         "countPlural=one": "{amount} Product File",
@@ -585,33 +609,33 @@
   "system_buildFailed": "Build failed",
   "system_publishFailed": "Publish failed",
   "system_unavailable": "Scriptoria is currently unable to process background tasks",
-  "udm_manage_title": "Gerer mes donnees",
-  "udm_manage_subtitle": "Demandez la suppression du compte ou des donnees pour cette application.",
-  "udm_about_button": "A propos de cette application",
+  "udm_manage_title": "Gérer mes données",
+  "udm_manage_subtitle": "Demandez la suppression du compte ou des données pour cette application.",
+  "udm_about_button": "À propos de cette application",
   "udm_deletion_request_title": "Demande de suppression",
-  "udm_deletion_intro_1": "Saisissez l'adresse e-mail associee a votre compte pour demander la suppression des donnees. Nous enverrons un code de verification a usage unique pour confirmer votre identite.",
-  "udm_deletion_intro_2": "Une fois confirmee, votre demande sera traitee sous 30 jours, conformement a nos obligations de conservation des donnees. Les suppressions sont definitives et ne peuvent pas etre annulees. Certaines informations peuvent etre conservees lorsque la loi ou des obligations de conformite l'exigent.",
+  "udm_deletion_intro_1": "Saisissez l'adresse e-mail associée à votre compte pour demander la suppression des données. Nous enverrons un code de vérification à usage unique pour confirmer votre identité.",
+  "udm_deletion_intro_2": "Une fois confirmée, votre demande sera traitée sous 30 jours, conformément à nos obligations de conservation des données. Les suppressions sont définitives et ne peuvent pas être annulées. Certaines informations peuvent être conservées lorsque la loi ou des obligations de conformité l'exigent.",
   "udm_email_label": "E-mail",
   "udm_email_placeholder": "vous@exemple.com",
-  "udm_email_help": "Utilisez l'adresse e-mail associee a votre compte.",
-  "udm_scope_label": "Portee de la suppression",
-  "udm_scope_data_title": "Supprimer mes donnees",
-  "udm_scope_data_desc": "Votre connexion reste active, mais votre contenu personnel sera supprime de facon definitive.",
-  "udm_scope_account_title": "Supprimer mon compte et toutes les donnees associees",
-  "udm_scope_account_desc": "Cela supprimera definitivement votre connexion et le contenu enregistre.",
-  "udm_scope_warning": "Attention: les suppressions sont definitives et ne peuvent pas etre annulees. Certaines donnees peuvent etre conservees pour des raisons juridiques ou de conformite.",
-  "udm_items_removed_title": "Elements a supprimer",
+  "udm_email_help": "Utilisez l'adresse e-mail associée à votre compte.",
+  "udm_scope_label": "Portée de la suppression",
+  "udm_scope_data_title": "Supprimer mes données",
+  "udm_scope_data_desc": "Votre connexion reste active, mais votre contenu personnel sera supprimé de façon définitive.",
+  "udm_scope_account_title": "Supprimer mon compte et toutes les données associées",
+  "udm_scope_account_desc": "Cela supprimera définitivement votre connexion et le contenu enregistré.",
+  "udm_scope_warning": "Attention : les suppressions sont définitives et ne peuvent pas être annulées. Certaines données peuvent être conservées pour des raisons juridiques ou de conformité.",
+  "udm_items_removed_title": "Éléments à supprimer",
   "udm_item_bookmarks": "Signets",
   "udm_item_notes": "Notes",
   "udm_item_highlights": "Surlignages",
   "udm_item_reading_progress": "Progression du plan de lecture",
-  "udm_verification_label": "Verification",
+  "udm_verification_label": "Vérification",
   "udm_captcha_placeholder": "Emplacement du widget captcha (Turnstile)",
-  "udm_send_code": "Envoyer le code de verification",
+  "udm_send_code": "Envoyer le code de vérification",
   "udm_footer_text": "Cette page est fournie pour {appName} sur Google Play. Besoin d'aide ? ",
   "udm_contact_support": "Contacter le support",
-  "udm_about_title": "A propos de cette application",
+  "udm_about_title": "À propos de cette application",
   "udm_show_more": "Afficher plus",
-  "udm_back_manage": "Retour a Gerer mes donnees",
+  "udm_back_manage": "Retour à Gérer mes données",
   "downloads_title": "Downloads"
 }
