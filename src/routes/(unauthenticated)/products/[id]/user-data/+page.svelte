@@ -266,7 +266,7 @@
     <div class="px-5">
       <a
         class="btn btn-ghost btn-sm border border-base-300 mb-4 w-full justify-center"
-        href="./file/about"
+        href="./user-data/about"
       >
         {m.udm_about_button()}
       </a>
@@ -375,9 +375,7 @@
                 {m.udm_verification_label()}
               </span>
             </p>
-            <div
-              class="rounded-btn border border-base-300 bg-base-200/30 h-14 flex items-center justify-center text-xs opacity-50"
-            >
+            <div class="flex justify-center py-2">
               <div
                 class="cf-turnstile"
                 data-sitekey={turnstileSiteKey}
