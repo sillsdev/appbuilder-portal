@@ -154,10 +154,23 @@
   const turnstileSiteKey = data.turnstileSiteKey;
 
   onMount(() => {
-    (
-      window as typeof window & { handleTurnstileSuccess?: (token: string) => void }
-    ).handleTurnstileSuccess = (token: string) => {
+    const w = window as typeof window & {
+      handleTurnstileSuccess?: (token: string) => void;
+      handleTurnstileExpired?: () => void;
+      handleTurnstileError?: () => void;
+    };
+
+    w.handleTurnstileSuccess = (token: string) => {
       turnstileToken = token;
+    };
+
+    w.handleTurnstileExpired = () => {
+      turnstileToken = null;
+      errorMessage = 'Verification expired. Please verify again.';
+    };
+
+    w.handleTurnstileError = () => {
+      turnstileToken = null;
     };
   });
 
@@ -380,6 +393,8 @@
                 class="cf-turnstile"
                 data-sitekey={turnstileSiteKey}
                 data-callback="handleTurnstileSuccess"
+                data-expired-callback="handleTurnstileExpired"
+                data-error-callback="handleTurnstileError"
               ></div>
             </div>
           </div>
