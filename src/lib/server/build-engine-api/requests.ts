@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client';
 import { DatabaseReads } from '../database/prisma';
 import * as Types from './types';
 import { env } from '$env/dynamic/private';
+import { activeSystems } from '$lib/organizations/server';
 
 const tracer = trace.getTracer('build-engine-api');
 
@@ -32,7 +33,8 @@ export async function request(resource: string, auth: Types.Auth, opts?: Types.R
       const check = await DatabaseReads.systemStatuses.findFirst({
         where: {
           BuildEngineUrl: url,
-          BuildEngineApiAccessToken: token
+          BuildEngineApiAccessToken: token,
+          ...activeSystems
         },
         select: {
           SystemAvailable: true
