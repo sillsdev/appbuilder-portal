@@ -118,7 +118,7 @@ export async function deleteProduct(job: Job<BullMQ.Product.Delete>): Promise<un
       job.data.buildEngineJobId
     );
     job.updateProgress(50);
-    if (response.responseType === 'error') {
+    if (response.responseType === 'error' && response.status !== 404) {
       job.log(response.message);
       throw new Error(response.message);
     } else {

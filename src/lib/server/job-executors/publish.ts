@@ -290,7 +290,7 @@ export async function deleteRelease(job: Job<BullMQ.Publish.Delete>): Promise<un
     job.data.buildEngineReleaseId
   );
   job.updateProgress(50);
-  if (response.responseType === 'error') {
+  if (response.responseType === 'error' && response.status !== 404) {
     job.log(response.message);
     throw new Error(response.message);
   } else {
