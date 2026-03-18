@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { randomInt } from 'crypto';
 import type { RequestHandler } from './$types';
 import { DatabaseWrites } from '$lib/server/database';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
@@ -14,9 +15,13 @@ export const POST: RequestHandler = async ({ locals, request }) => {
   const normalizedEmail = String(email).trim().toLowerCase();
 
   const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) {
+    console.error('Turnstile secret key is not configured');
+    return json({ success: false }, { status: 500 });
+  }
   const formData = new URLSearchParams();
 
-  formData.append('secret', secret!);
+  formData.append('secret', secret);
   formData.append('response', token);
 
   const verification = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
@@ -35,20 +40,21 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     return json({ success: false }, { status: 400 });
   }
 
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  // Generate a verification code and store it with an expiration time. This expiration time is 10 minutes, and is automatically reduced by a minute if the user types the wrong code to prevent brute-force attempts.
+  const code = randomInt(100000, 999999).toString();
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-  console.log(
-    `[UDM TEST] Verification code for ${normalizedEmail} (product ${productId}): ${code}`
-  );
+  if (process.env.NODE_ENV === 'development') {
+    console.log(
+      `[UDM TEST] Verification code for ${normalizedEmail} (product ${productId}): ${code}`
+    );
+  }
 
   await DatabaseWrites.productUserChanges.create({
     data: {
       ProductId: productId,
       Email: normalizedEmail,
       Change: 'User data deletion request verification',
-      DateCreated: new Date(),
-      DateUpdated: new Date(),
       ConfirmationCode: code,
       DateExpires: expiresAt,
       DateConfirmed: null
