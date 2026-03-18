@@ -425,7 +425,13 @@ export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unkn
       const op = migrationSteps[step];
       const res = await ('a' in op ? op.f(op.a) : op.f());
       if (res.before && !res.after) {
-        // send email
+        await getQueues().Emails.add(`Notify SuperAdmins of Finished Migration Step: ${step}`, {
+          type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
+          messageKey: 'migrationStepFinished',
+          messageProperties: {
+            step
+          }
+        });
       }
       results.push([step, res]);
       job.updateProgress(((i + 1) * 100) / steps.length);

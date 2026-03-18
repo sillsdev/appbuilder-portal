@@ -36,7 +36,8 @@
       "reviewProductWithComment": "<p>{{reviewerName}},</p><p>You have been asked to review the following app:<br>Project: {{projectName}}<br>Product: {{productName}}<br>Comment: {{comment}}</p><p>Here are the product files to be reviewed:<br>{{files}} </p><p>Send feedback to: {{ownerName}} ({{ownerEmail}})</p>",
       "rejectionEmail": "<p>The organization administrator has returned {{projectName}} to state {{newState}} from state {{previousState}} with the following comment:<br><br>{{comment}}</p>",
       "recordNotFound": "<p>Task {{taskName}} Failed: Unable to find record:</p><ul><li>recordName={{recordName}}</li><li>id={{recordId}}</li></ul>",
-      "retryBuild": "<p>Build for product: {{productName}} project {{projectName}} failed.</p><p>Project URL: {{projectUrl}}</p><p>Retrying build with compute type set to 'medium'.</p>"
+      "retryBuild": "<p>Build for product: {{productName}} project {{projectName}} failed.</p><p>Project URL: {{projectUrl}}</p><p>Retrying build with compute type set to 'medium'.</p>",
+      "migrationStepFinished": "<p>Migration step \"{{step}}\" has finished and can be safely removed.</p>"
     },
     "subject": {
       "userTaskAdded": "Scriptoria: {{activityName}} Assigned For {{productName}} - {{project}}",
@@ -72,7 +73,8 @@
       "reviewProductWithComment": "{{projectName}} app - ready for review",
       "rejectionEmail": "Scriptoria: {{projectName}} {{productName}} Returned",
       "recordNotFound": "Scriptoria: Task {{taskName}} Failed",
-      "retryBuild": "Scriptoria: Retrying Build {{projectName}} {{productName}} With Medium Compute"
+      "retryBuild": "Scriptoria: Retrying Build {{projectName}} {{productName}} With Medium Compute",
+      "migrationStepFinished": "Scriptoria: Migration step \"{{step}}\" has finished"
     },
     "notification": {
       "userTaskAdded": "Task {{activityName}} assigned for {{productName}} - {{project}}.",
