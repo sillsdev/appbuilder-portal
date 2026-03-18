@@ -410,33 +410,36 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
 }
 
 export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
-  /**
-   * Migration Tasks:
-   * 1. Rename transition states
-   * 2. Populate ProductBuild/ProductPublications.TransitionId
-   */
+  const steps = Object.keys(migrationSteps).filter((k) =>
+    job.data.steps?.includes(k as MigrationStep)
+  ) as MigrationStep[];
 
-  const transitions = await renameTransitions();
+  const results: [
+    string,
+    Error | Awaited<ReturnType<(typeof migrationSteps)[MigrationStep]['f']>>
+  ][] = [];
 
-  job.updateProgress(33);
-
-  const builds = await associateBuildsOrReleases('build');
-
-  job.updateProgress(66);
-
-  const releases = await associateBuildsOrReleases('release');
-
-  if (!transitions.remaining && !builds.remaining && !releases.remaining) {
-    await getQueues().SystemRecurring.removeJobScheduler(JobSchedulerId.MigrateChunks);
+  for (let i = 0; i < steps.length; i++) {
+    const step = steps[i];
+    try {
+      const op = migrationSteps[step];
+      const res = await ('a' in op ? op.f(op.a) : op.f());
+      if (res.before && !res.after) {
+        // send email
+      }
+      results.push([step, res]);
+      job.updateProgress(((i + 1) * 100) / steps.length);
+    } catch (e) {
+      results.push([step, e as Error]);
+    }
   }
 
-  job.updateProgress(100);
+  if (results.every(([_, data]) => 'after' in data && !data['after'])) {
+    await getQueues().SystemRecurring.removeJobScheduler(JobSchedulerId.MigrateChunks);
+    job.log('All migrations have finished... Removing task');
+  }
 
-  return {
-    transitions,
-    builds,
-    releases
-  };
+  return Object.fromEntries(results);
 }
 
 async function renameTransitions() {
@@ -448,7 +451,7 @@ async function renameTransitions() {
     },
     DateTransition: { not: null }
   };
-  const count = await DatabaseReads.products.count({
+  const before = await DatabaseReads.products.count({
     where: { ProductTransitions: { some: filter } }
   });
   const products = await DatabaseReads.products.findMany({
@@ -471,7 +474,7 @@ async function renameTransitions() {
       }
     },
     take: chunkSize,
-    skip: Math.max(0, randomInt(count || 1) - chunkSize)
+    skip: Math.max(0, randomInt(before || 1) - chunkSize)
   });
 
   const updated = await Promise.all(
@@ -569,11 +572,11 @@ async function renameTransitions() {
     projectIds: Array.from(new Set(products.map((p) => p.ProjectId)))
   });
 
-  const remaining = await DatabaseReads.products.count({
+  const after = await DatabaseReads.products.count({
     where: { ProductTransitions: { some: filter } }
   });
 
-  return { count, products, updated, remaining };
+  return { before, products, updated, after };
 }
 
 async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scope: Scope) {
@@ -593,7 +596,7 @@ async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scop
   }>;
 
   // only try to associate completed builds/releases
-  const count = await DatabaseReads.products.count({
+  const before = await DatabaseReads.products.count({
     where: { [member]: { some: filter } }
   });
   const orphaned = (await DatabaseReads.products.findMany({
@@ -624,7 +627,7 @@ async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scop
       }
     },
     take: chunkSize,
-    skip: Math.max(0, randomInt(count || 1) - chunkSize)
+    skip: Math.max(0, randomInt(before || 1) - chunkSize)
   })) as unknown as (Prisma.ProductsGetPayload<{
     select: {
       Id: true;
@@ -660,9 +663,17 @@ async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scop
     }))
   );
 
-  const remaining = await DatabaseReads.products.count({
+  const after = await DatabaseReads.products.count({
     where: { [member]: { some: filter } }
   });
 
-  return { count, orphaned, associated, remaining };
+  return { before, orphaned, associated, after };
 }
+
+const migrationSteps = {
+  'Rename Transitions': { f: renameTransitions },
+  'Associate Builds': { f: associateBuildsOrReleases, a: 'build' },
+  'Associate Releases': { f: associateBuildsOrReleases, a: 'release' }
+} as const;
+
+export type MigrationStep = keyof typeof migrationSteps;
