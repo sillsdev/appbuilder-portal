@@ -1,7 +1,17 @@
 <script lang="ts">
-  import type { LayoutProps } from './$types';
+  import type { Snippet } from 'svelte';
+  import type { LayoutData } from './$types';
+  import { createl10nMapFromEntries, l10nMap } from '$lib/locales.svelte';
 
-  let { children }: LayoutProps = $props();
+  interface Props {
+    data: LayoutData;
+    children: Snippet;
+  }
+  let { data, children }: Props = $props();
+
+  $effect(() => {
+    l10nMap.value = createl10nMapFromEntries(data.localizedNames);
+  });
 </script>
 
 <div
