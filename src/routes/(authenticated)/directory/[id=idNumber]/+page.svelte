@@ -103,7 +103,6 @@
             {:else}
               {product.ProductDefinition.Name}
             {/if}
-            {product.ProductDefinition.Name}
           </div>
           {#if build}
             <BuildArtifacts
