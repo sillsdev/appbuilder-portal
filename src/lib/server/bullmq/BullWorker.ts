@@ -126,6 +126,19 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         }
       }
     );
+    getQueues().SystemRecurring.upsertJobScheduler(
+      BullMQ.JobSchedulerId.CleanupUserData,
+      {
+        pattern: '0 0 * * *', // every night at midnight
+        immediately: false
+      },
+      {
+        name: 'Cleanup User Data',
+        data: {
+          type: BullMQ.JobType.UDM_Cleanup
+        }
+      }
+    );
   }
   async run(job: Job<J>) {
     switch (job.data.type) {
@@ -137,6 +150,10 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         return Executor.System.lazyMigrate(job as Job<BullMQ.System.Migrate>);
       case BullMQ.JobType.System_CheckPendingUpdates:
         return Executor.System.checkPendingUpdates(job as Job<BullMQ.System.CheckPendingUpdates>);
+      case BullMQ.JobType.UDM_Cleanup:
+        return Executor.UDMCleanup.databaseCleanupWorker(
+          job as Job<BullMQ.UserDataManagement.Cleanup>
+        );
     }
   }
 }
