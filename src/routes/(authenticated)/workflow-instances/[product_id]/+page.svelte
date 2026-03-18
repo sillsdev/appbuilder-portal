@@ -123,7 +123,10 @@
           </a>
         </li>
         <li>
-          <a class="link" href={localizeHref(`/projects/${data.product.Project.Id}`)}>
+          <a
+            class="link"
+            href={localizeHref(`/projects/${data.product.Project.Id}#${data.product.Id}`)}
+          >
             {data.product.Project.Name}
           </a>
         </li>
