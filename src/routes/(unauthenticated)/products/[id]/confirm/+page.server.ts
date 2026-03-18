@@ -1,40 +1,40 @@
-import { error, fail, redirect } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
+import { randomInt } from 'crypto';
+import { message, superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import type { AppInfo, ArtifactRef, PlayListingManifest } from '$lib/products/UDMtypes';
 import { getPublishedFile } from '$lib/products/server';
 
-// Mock types for your DB and Email providers
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
-import { EmailLayoutTemplate, addProperties } from '$lib/server/email-service/EmailTemplates';
-// import { sendEmail } from '$lib/server/email';
 
-type PlayListingManifest = {
-  url: string;
-  icon: string;
-  color: string;
-};
+const sendCodeSchema = v.object({
+  email: v.pipe(v.string(), v.email('Please enter a valid email address.'))
+});
 
-type AppInfo = {
-  id: string;
-  icon: string | null;
-  name: string;
-  developer: string;
-  themeColor: string | null;
-};
+const verifyCodeSchema = v.object({
+  email: v.pipe(v.string(), v.email()),
+  code: v.pipe(v.string(), v.length(6, 'Code must be 6 digits.'))
+});
 
-type ArtifactRef = {
-  Url: string | null;
-};
-
-function resolveIconUrl(icon: string | null | undefined, baseUrl: URL, artifactUrl: URL) {
+function resolveIconUrl(
+  icon: string | null | undefined,
+  manifestUrl: string | undefined,
+  artifactUrlString: string
+) {
   if (!icon) return null;
+  const artifactUrl = new URL(artifactUrlString);
+  const baseUrl = manifestUrl ? new URL(manifestUrl, artifactUrl) : artifactUrl;
+
   try {
-    const iconUrl = new URL(icon);
+    const iconUrl = new URL(icon, baseUrl);
     iconUrl.host = artifactUrl.host;
     iconUrl.protocol = artifactUrl.protocol;
     return iconUrl.toString();
   } catch {
-    return new URL(icon, baseUrl).toString();
+    return null;
   }
 }
 
@@ -77,7 +77,8 @@ export const load: PageServerLoad = async ({ url, locals, params }) => {
           Name: true,
           Organization: { select: { Name: true } }
         }
-      }
+      },
+      PackageName: true
     }
   });
 
@@ -91,14 +92,19 @@ export const load: PageServerLoad = async ({ url, locals, params }) => {
     icon: null,
     name: product.Project.Name ?? 'App',
     developer,
-    themeColor: null
+    themeColor: null,
+    shortDesc: '',
+    longDesc: ''
   };
 
   const manifestArtifact =
     (await getPublishedFile(product.Id, 'play-listing-manifest')) ??
     (await getLatestBuiltFile(product.Id, 'play-listing-manifest'));
 
-  if (!manifestArtifact?.Url) return { email, app };
+  const sendCodeForm = await superValidate({ email }, valibot(sendCodeSchema));
+  const verifyCodeForm = await superValidate({ email }, valibot(verifyCodeSchema));
+
+  if (!manifestArtifact?.Url) return { email, app, sendCodeForm, verifyCodeForm };
 
   let manifest: PlayListingManifest | null = null;
   try {
@@ -107,132 +113,142 @@ export const load: PageServerLoad = async ({ url, locals, params }) => {
     manifest = null;
   }
 
-  if (!manifest) return { email, app };
-
-  const artifactUrl = new URL(manifestArtifact.Url);
-  let baseUrl: URL | null = null;
-  try {
-    baseUrl = new URL(manifest.url);
-    baseUrl.host = artifactUrl.host;
-    baseUrl.protocol = artifactUrl.protocol;
-  } catch {
-    baseUrl = null;
+  if (manifest) {
+    app.icon = resolveIconUrl(manifest.icon, manifest?.url, manifestArtifact.Url);
+    app.themeColor = manifest.color || null;
   }
 
-  if (!baseUrl) return { email, app };
-
-  app.icon = resolveIconUrl(manifest.icon, baseUrl, artifactUrl);
-  app.themeColor = manifest.color || null;
-
-  return { email, app };
+  return { email, app, sendCodeForm, verifyCodeForm };
 };
 
 export const actions: Actions = {
   sendCode: async ({ request, locals, params }) => {
     locals.security.requireNothing();
-    const data = await request.formData();
-    const email = data.get('email');
+    const form = await superValidate(request, valibot(sendCodeSchema));
 
-    if (typeof email !== 'string' || !email) {
-      return fail(400, { email, missing: true });
+    if (!form.valid) {
+      return fail(400, { form });
     }
-    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEmail = form.data.email.trim().toLowerCase();
 
     // 1. Generate a random 6-digit code
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const code = randomInt(100000, 999999).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 
-    // 2. Save to DB (Upsert pattern)
+    try {
+      // 2. Save to DB (Upsert pattern)
+      await DatabaseWrites.productUserChanges.updateMany({
+        where: {
+          Email: normalizedEmail,
+          ProductId: params.id,
+          DateConfirmed: null,
+          DateExpires: {
+            gt: new Date()
+          }
+        },
+        data: {
+          DateUpdated: new Date(),
+          DateExpires: new Date() // expire existing codes immediately
+        }
+      });
 
-    await DatabaseWrites.productUserChanges.create({
-      data: {
-        ProductId: params.id,
-        Email: normalizedEmail,
-        Change: 'User data deletion request verification',
-        DateCreated: new Date(),
-        DateUpdated: new Date(),
-        ConfirmationCode: code,
-        DateExpires: expiresAt,
-        DateConfirmed: null
+      await DatabaseWrites.productUserChanges.create({
+        data: {
+          ProductId: params.id,
+          Email: normalizedEmail,
+          Change: 'User data deletion request verification',
+          DateCreated: new Date(),
+          DateUpdated: new Date(),
+          ConfirmationCode: code,
+          DateExpires: expiresAt,
+          DateConfirmed: null
+        }
+      });
+
+      // 3. Send the email
+      await sendEmail(
+        [{ email: normalizedEmail, name: normalizedEmail }],
+        'Your verification code',
+        '<p>Your verification code is: <strong>' + code + '</strong></p>'
+      );
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          `[UDM TEST] Verification code for ${normalizedEmail} (product ${params.id}): ${code}`
+        );
       }
-    });
 
-    // 3. Send the email
-    await sendEmail(
-      [{ email: normalizedEmail, name: normalizedEmail }],
-      'Your verification code',
-      addProperties(EmailLayoutTemplate, {
-        INSERT_SUBJECT: `Your code is: ${code}`,
-        INSERT_CONTENT: `Your code is: ${code}`
-      })
-    );
-
-    console.log(
-      `[UDM TEST] Verification code for ${normalizedEmail} (product ${params.id}): ${code}`
-    );
-
-    return { success: true, email: normalizedEmail, step: 'verify' as const };
+      return message(form, { step: 'verify', email: normalizedEmail });
+    } catch (e) {
+      return message(form, { error: 'Failed to send code. Please try again.' }, { status: 500 });
+    }
   },
 
   verifyCode: async ({ request, locals, params }) => {
     locals.security.requireNothing();
-    const data = await request.formData();
-    const email = data.get('email');
-    const userCode = data.get('code');
+    const form = await superValidate(request, valibot(verifyCodeSchema));
 
-    if (typeof email !== 'string' || typeof userCode !== 'string') {
-      return fail(400, { error: 'Invalid submission.' });
+    if (!form.valid) {
+      return fail(400, { form });
     }
-    const normalizedEmail = email.trim().toLowerCase();
-    const normalizedCode = userCode.trim();
 
-    // 1. Fetch record from DB
-    // const record = await db.emailVerifications.findUnique({ where: { email } });
-    const userChange = await DatabaseReads.productUserChanges.findFirst({
-      where: {
-        Email: normalizedEmail,
-        ProductId: params.id,
-        DateConfirmed: null
-      },
-      orderBy: {
-        DateCreated: 'desc'
+    const normalizedEmail = form.data.email.trim().toLowerCase();
+    const normalizedCode = form.data.code.trim();
+
+    try {
+      // 1. Fetch record from DB
+      const userChange = await DatabaseReads.productUserChanges.findFirst({
+        where: {
+          Email: normalizedEmail,
+          ProductId: params.id,
+          DateConfirmed: null
+        },
+        orderBy: {
+          DateCreated: 'desc'
+        }
+      });
+
+      // 2. Validation Checks
+      if (!userChange)
+        return message(form, { error: 'No code sent to this email.' }, { status: 400 });
+      if (new Date() > userChange.DateExpires)
+        return message(form, { error: 'Code expired.' }, { status: 400 });
+
+      // 3. Compare
+      if (userChange.ConfirmationCode !== normalizedCode) {
+        // If wrong code, move expiration up by minute to act as attempt counter
+        await DatabaseWrites.productUserChanges.update({
+          where: {
+            Id: userChange.Id
+          },
+          data: {
+            DateExpires: new Date(userChange.DateExpires.getTime() - 1 * 60 * 1000) // 1 minute
+          }
+        });
+        return message(form, { error: 'Invalid code.', step: 'verify' }, { status: 400 });
       }
-    });
 
-    // 2. Validation Checks
-    // Do we have a record?
-    if (!userChange) return fail(400, { error: 'No code sent to this email.' });
-    // Is the record expired?
-    if (new Date() > userChange.DateExpires) return fail(400, { error: 'Code expired.' });
-
-    // 3. Compare
-    if (userChange.ConfirmationCode !== normalizedCode) {
-      // If wrong code, move expiration up by minute to act as attempt counter
+      // 4. Success logic
       await DatabaseWrites.productUserChanges.update({
         where: {
           Id: userChange.Id
         },
         data: {
-          DateExpires: new Date(userChange.DateExpires.getTime() - 1 * 60 * 1000) // 1 minute
+          DateUpdated: new Date(),
+          DateConfirmed: new Date()
         }
       });
-      return fail(400, { error: 'Invalid code.', email: normalizedEmail, step: 'verify' as const });
+      // Store user task since verification successful.
+
+      // possibly delete entry?
+
+      return message(form, { verified: true });
+    } catch {
+      return message(
+        form,
+        { error: 'Invalid code. Please check your email and try again.' },
+        { status: 500 }
+      );
     }
-
-    // 4. Success logic
-    await DatabaseWrites.productUserChanges.update({
-      where: {
-        Id: userChange.Id
-      },
-      data: {
-        DateUpdated: new Date(),
-        DateConfirmed: new Date()
-      }
-    });
-    // Store user task since verification successful.
-
-    // possibly delete entry?
-
-    throw redirect(303, '/dashboard');
   }
 };
