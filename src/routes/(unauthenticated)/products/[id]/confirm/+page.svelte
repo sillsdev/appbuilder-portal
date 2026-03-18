@@ -155,6 +155,7 @@
   let primaryContentHex = $derived(getReadableTextHex(themeColor));
   let lightBgHex = $derived(lightenColor(themeColor, 0.92));
 
+  // This is Svelte 5, do we support this yet?
   $effect(() => {
     if (typeof document !== 'undefined') {
       const root = document.documentElement;

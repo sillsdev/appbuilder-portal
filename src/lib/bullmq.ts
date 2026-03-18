@@ -52,12 +52,15 @@ export enum JobType {
   Email_ProjectImportReport = 'Project Import Report',
   // Svelte Project SSE
   SvelteSSE_UpdateProject = 'Update Project',
-  SvelteSSE_UpdateUserTasks = 'Update UserTasks'
+  SvelteSSE_UpdateUserTasks = 'Update UserTasks',
+  // User Data Management
+  UDM_Cleanup = 'User Data Management Cleanup'
 }
 
 export enum JobSchedulerId {
   SystemStatusEmail = 'SystemStatusEmail',
   RefreshLangTags = 'RefreshLangTags',
   CheckSystemStatuses = 'CheckSystemStatuses',
-  MigrateChunks = 'MigrateChunks'
+  MigrateChunks = 'MigrateChunks',
+  CleanupUserData = 'CleanupEmailVerificationRequests'
 }
