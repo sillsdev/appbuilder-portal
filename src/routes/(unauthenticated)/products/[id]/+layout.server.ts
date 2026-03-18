@@ -17,8 +17,13 @@ export const load: LayoutServerLoad = async (event) => {
 
         let ret = null;
         if (existsSync(filePath)) {
-          const file = (await readFile(filePath)).toString();
-          ret = JSON.parse(file) as Entries<L10NKeys, Entries<string, string>>;
+          try {
+            const file = (await readFile(filePath)).toString();
+            ret = JSON.parse(file) as Entries<L10NKeys, Entries<string, string>>;
+          } catch {
+            // Ignore JSON parse errors
+            ret = null;
+          }
         }
         return [locale, ret] as [Locale, typeof ret];
       })

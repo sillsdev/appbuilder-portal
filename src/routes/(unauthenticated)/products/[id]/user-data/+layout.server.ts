@@ -2,45 +2,9 @@ import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
 import { baseLocale, getLocale } from '$lib/paraglide/runtime';
+import type { AppInfo, ArtifactRef, PlayListingManifest } from '$lib/products/UDMtypes';
 import { getPublishedFile } from '$lib/products/server';
 import { DatabaseReads } from '$lib/server/database';
-
-/**
- * Public (unauthenticated) product pages need "store listing" metadata such as:
- * icon, app name, theme color, and localized short/long descriptions.
- *
- * That information is published by the build/publish pipeline as a
- * `play-listing-manifest` artifact (JSON) plus a set of per-language text files
- * like `title.txt` and `short_description.txt`.
- *
- * We fetch those published artifacts at request time so:
- * - the page renders with real product data, and
- * - the selected locale (URL locale via Paraglide) can determine which
- *   language files to read.
- */
-
-type PlayListingManifest = {
-  url: string; // Base URL prefix where the listing files can be fetched from.
-  icon: string; // Icon path (or URL) inside the listing bundle.
-  color: string; // Brand color hex (e.g. "#1563ff")
-  ['default-language']: string; // Default language tag for the listing bundle (e.g. "en-US").
-  languages: string[]; // Languages included in the bundle (language tags).
-  files: string[]; // Paths to files within the bundle (usually "<lang>/<file>.txt").
-};
-
-type AppInfo = {
-  id: string;
-  icon: string | null;
-  name: string;
-  developer: string;
-  themeColor: string | null;
-  shortDesc: string;
-  longDesc: string;
-};
-
-type ArtifactRef = {
-  Url: string | null;
-};
 
 /**
  * Paraglide's `getLocale()` depends on server-side async local storage.
@@ -62,23 +26,24 @@ function escapeRegExp(str: string) {
 
 /**
  * Pick the "best" manifest language for a requested locale.
- * - exact match first (e.g. "fr-FR")
- * - then match the base language (e.g. "fr" matches "fr-FR")
- * - then use manifest default language when present
- * - finally, fall back to the first available language
  */
 function resolveManifestLanguage(
   requestedLocale: string,
   available: string[],
   fallbackLocale?: string
 ) {
+  // exact match first (e.g. "fr-FR")
   if (available.includes(requestedLocale)) return requestedLocale;
 
+  // then match the base language (e.g. "fr" matches "fr-FR")
   const requestedBase = requestedLocale.split('-')[0];
   const baseMatch = available.find((lang) => lang.split('-')[0] === requestedBase);
   if (baseMatch) return baseMatch;
 
+  // then use manifest default language when present
   if (fallbackLocale && available.includes(fallbackLocale)) return fallbackLocale;
+
+  // finally, fall back to the first available language
   return available.at(0) ?? null;
 }
 
@@ -122,12 +87,12 @@ async function fetchTextFile(baseUrl: URL, files: string[], language: string, fi
 function resolveIconUrl(icon: string | null | undefined, baseUrl: URL, artifactUrl: URL) {
   if (!icon) return null;
   try {
-    const iconUrl = new URL(icon);
+    const iconUrl = new URL(icon, baseUrl);
     iconUrl.host = artifactUrl.host;
     iconUrl.protocol = artifactUrl.protocol;
     return iconUrl.toString();
   } catch {
-    return new URL(icon, baseUrl).toString();
+    return null;
   }
 }
 
@@ -213,16 +178,15 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
   // Used to re-home URLs if the underlying storage hostname/bucket changes.
   const artifactUrl = new URL(manifestArtifact.Url);
 
-  let baseUrl: URL | null = null;
+  let baseUrl: URL;
   try {
-    baseUrl = new URL(manifest.url);
+    baseUrl = manifest.url ? new URL(manifest.url, artifactUrl) : artifactUrl;
     // The bucket/hostname stored in the manifest can change; the artifact URL is updated.
     baseUrl.host = artifactUrl.host;
     baseUrl.protocol = artifactUrl.protocol;
   } catch {
-    baseUrl = null;
+    return { app };
   }
-  if (!baseUrl) return { app };
 
   // Use the URL locale to decide which language variant to render.
   const requestedLocale = safeGetLocale();

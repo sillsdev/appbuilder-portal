@@ -17,7 +17,7 @@
 
 <div
   data-theme="light"
-  class="grid grid-cols-1 w-full min-h-screen place-items-stretch place-content-start text-base-content sm:place-items-center sm:place-content-center"
+  class="grid w-full h-full place-items-center place-content-center text-base-content"
 >
   {@render children?.()}
 </div>
