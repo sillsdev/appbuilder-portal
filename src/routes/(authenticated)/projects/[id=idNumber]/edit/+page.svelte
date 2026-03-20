@@ -45,22 +45,22 @@
           key="project_name"
           class="md:max-w-xs grow"
           input={{
-            name: 'name',
+            name: 'Name',
             err: m.formErrors_nameEmpty(),
             icon: Icons.Name,
             required: true
           }}
-          bind:value={$form.name}
+          bind:value={$form.Name}
         />
         <LabeledFormInput key="project_owner" class="md:max-w-xs">
           <BlockIfJobsUnavailable class="select">
             {#snippet altContent()}
               <IconContainer icon={Icons.User} width={20} />
-              {data.owners.find((o) => o.Id === $form.owner)?.Name}
+              {data.owners.find((o) => o.Id === $form.OwnerId)?.Name}
             {/snippet}
             <SelectWithIcon
-              attr={{ name: 'owner' }}
-              bind:value={$form.owner}
+              attr={{ name: 'OwnerId' }}
+              bind:value={$form.OwnerId}
               items={data.owners}
               icon={Icons.User}
               class="w-full"
@@ -71,8 +71,8 @@
       <div class="row">
         <LabeledFormInput key="project_group" class="md:max-w-xs grow">
           <SelectWithIcon
-            attr={{ name: 'group' }}
-            bind:value={$form.group}
+            attr={{ name: 'GroupId' }}
+            bind:value={$form.GroupId}
             items={data.groups}
             icon={Icons.Group}
             class="w-full"
@@ -80,12 +80,16 @@
         </LabeledFormInput>
         <LabeledFormInput key="project_languageCode" class="md:max-w-xs">
           <LanguageCodeTypeahead
-            bind:langCode={$form.language}
+            bind:langCode={$form.Language}
             class={{
               dropdown: 'left-0',
               input: 'w-full md:max-w-xs validator'
             }}
-            inputElProps={{ required: true, pattern: regExpToInputPattern(langtagRegex) }}
+            inputElProps={{
+              name: 'Language',
+              required: true,
+              pattern: regExpToInputPattern(langtagRegex)
+            }}
           >
             {#snippet validatorHint()}
               <span class="validator-hint">Invalid BCP 47 Language Tag</span>
@@ -96,9 +100,9 @@
       <div class="row">
         <LabeledFormInput key="common_description" class="w-full max-w-2xl">
           <textarea
-            name="description"
+            name="Description"
             class="textarea h-48 w-full"
-            bind:value={$form.description}
+            bind:value={$form.Description}
           ></textarea>
         </LabeledFormInput>
       </div>
@@ -109,7 +113,7 @@
         />
         <SubmitButton
           class="w-full max-w-xs"
-          disabled={!($form.name.length && $form.language.length)}
+          disabled={!($form.Name.length && $form.Language.length)}
         />
       </div>
     </div>

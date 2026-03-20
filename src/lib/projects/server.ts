@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client';
-import { ProjectActionType, RoleId } from '$lib/prisma';
+import { ProjectActionString, ProjectActionType, RoleId } from '$lib/prisma';
 import { type ProjectForAction, type ProjectSearch, canClaimProject } from '$lib/projects';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
@@ -131,7 +131,7 @@ export async function doProjectAction(
         UserId: security.userId,
         DateAction: timestamp,
         ActionType: ProjectActionType.Archival,
-        Action: 'Archive'
+        Action: ProjectActionString.Archive
       }
     });
     await getQueues().UserTasks.add(`Delete UserTasks for Archived Project #${project.Id}`, {
@@ -153,7 +153,7 @@ export async function doProjectAction(
         UserId: security.userId,
         DateAction: timestamp,
         ActionType: ProjectActionType.Archival,
-        Action: 'Reactivate'
+        Action: ProjectActionString.Reactivate
       }
     });
     await getQueues().UserTasks.add(`Create UserTasks for Reactivated Project #${project.Id}`, {
@@ -174,9 +174,20 @@ export async function doProjectAction(
       groups
     )
   ) {
-    await DatabaseWrites.projects.update(project.Id, {
+    const success = await DatabaseWrites.projects.update(project.Id, {
       OwnerId: security.userId
     });
+    if (success) {
+      await DatabaseWrites.projectActions.create({
+        data: {
+          ProjectId: project.Id,
+          UserId: security.userId,
+          ActionType: ProjectActionType.OwnerGroup,
+          Action: ProjectActionString.Claim,
+          ExternalId: security.userId
+        }
+      });
+    }
   }
 }
 

@@ -6,7 +6,7 @@ import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
 import { env } from '$env/dynamic/private';
 import { baseLocale } from '$lib/paraglide/runtime';
-import { RoleId } from '$lib/prisma';
+import { ProjectActionString, ProjectActionType, ProjectActionValue, RoleId } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { projectActionSchema } from '$lib/projects';
@@ -69,9 +69,10 @@ async function verifyProduct(event: RequestEvent, Id: string) {
 
 export const actions = {
   async deleteProduct(event) {
+    const projectId = parseInt(event.params.id);
     event.locals.security.requireProjectWriteAccess(
       await DatabaseReads.projects.findUnique({
-        where: { Id: parseInt(event.params.id) },
+        where: { Id: projectId },
         select: { OwnerId: true, OrganizationId: true }
       })
     );
@@ -82,7 +83,28 @@ export const actions = {
     if (!(await verifyProduct(event, form.data.productId))) {
       return fail(403, { form, ok: false });
     }
+    const product = await DatabaseReads.products.findUniqueOrThrow({
+      where: {
+        Id: form.data.productId
+      },
+      select: {
+        ProductDefinitionId: true,
+        WorkflowInstance: {
+          select: { State: true }
+        }
+      }
+    });
     await DatabaseWrites.products.delete(form.data.productId);
+    await DatabaseWrites.projectActions.create({
+      data: {
+        ProjectId: projectId,
+        UserId: event.locals.security.userId,
+        ActionType: ProjectActionType.Product,
+        Action: ProjectActionString.RemoveProduct,
+        Value: product.WorkflowInstance?.State,
+        ExternalId: product.ProductDefinitionId
+      }
+    });
     return { form, ok: true };
   },
   async deleteAuthor(event) {
@@ -119,33 +141,52 @@ export const actions = {
         }
       }
     );
+    await DatabaseWrites.projectActions.create({
+      data: {
+        ProjectId,
+        UserId: event.locals.security.userId,
+        ActionType: ProjectActionType.Author,
+        Action: ProjectActionString.RemoveAuthor,
+        ExternalId: form.data.id
+      }
+    });
     return { form, ok: true };
   },
   async deleteReviewer(event) {
+    const projectId = parseInt(event.params.id);
     event.locals.security.requireProjectWriteAccess(
       await DatabaseReads.projects.findUnique({
-        where: { Id: parseInt(event.params.id) },
+        where: { Id: projectId },
         select: { OwnerId: true, OrganizationId: true }
       })
     );
     if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(deleteSchema));
     if (!form.valid) return fail(400, { form, ok: false });
-    if (
-      // if user modified hidden values
-      !(await DatabaseReads.reviewers.findFirst({
-        where: { Id: form.data.id, ProjectId: parseInt(event.params.id) }
-      }))
-    ) {
+    const reviewer = await DatabaseReads.reviewers.findFirst({
+      where: { Id: form.data.id, ProjectId: projectId },
+      select: { Email: true }
+    });
+    if (!reviewer) {
       return fail(403, { form, ok: false });
     }
     await DatabaseWrites.reviewers.delete(form.data.id);
+    await DatabaseWrites.projectActions.create({
+      data: {
+        ProjectId: projectId,
+        UserId: event.locals.security.userId,
+        ActionType: ProjectActionType.Reviewer,
+        Action: ProjectActionString.RemoveReviewer,
+        Value: reviewer.Email
+      }
+    });
     return { form, ok: true };
   },
   async addProduct(event) {
+    const projectId = parseInt(event.params.id);
     event.locals.security.requireProjectWriteAccess(
       await DatabaseReads.projects.findUnique({
-        where: { Id: parseInt(event.params.id) },
+        where: { Id: projectId },
         select: { OwnerId: true, OrganizationId: true }
       })
     );
@@ -163,13 +204,27 @@ export const actions = {
     if (!checkRepository?.RepositoryUrl) {
       return error(400, 'Project Repository not Yet Initialized');
     }
-    getQueues().Products.add(`Create Product for Project #${event.params.id}`, {
+    await getQueues().Products.add(`Create Product for Project #${event.params.id}`, {
       type: BullMQ.JobType.Product_CreateLocal,
-      projectId: parseInt(event.params.id),
+      projectId,
       productDefinitionId: form.data.productDefinitionId,
       storeId: form.data.storeId
     });
-
+    await DatabaseWrites.projectActions.create({
+      data: {
+        ProjectId: projectId,
+        UserId: event.locals.security.userId,
+        ActionType: ProjectActionType.Product,
+        Action: ProjectActionString.AddProduct,
+        Value: (
+          await DatabaseReads.stores.findFirst({
+            where: { Id: form.data.storeId },
+            select: { BuildEnginePublisherId: true }
+          })
+        )?.BuildEnginePublisherId,
+        ExternalId: form.data.productDefinitionId
+      }
+    });
     return { form, ok: true };
   },
   async productAction(event) {
@@ -266,12 +321,22 @@ export const actions = {
         }
       }
     );
+    await DatabaseWrites.projectActions.create({
+      data: {
+        ProjectId: projectId,
+        UserId: event.locals.security.userId,
+        ActionType: ProjectActionType.Author,
+        Action: ProjectActionString.AddAuthor,
+        ExternalId: form.data.author
+      }
+    });
     return { form, ok: true };
   },
   async addReviewer(event) {
+    const projectId = parseInt(event.params.id);
     event.locals.security.requireProjectWriteAccess(
       await DatabaseReads.projects.findUnique({
-        where: { Id: parseInt(event.params.id) },
+        where: { Id: projectId },
         select: { OwnerId: true, OrganizationId: true }
       })
     );
@@ -281,14 +346,24 @@ export const actions = {
       Email: form.data.email,
       Name: form.data.name,
       Locale: form.data.language,
-      ProjectId: parseInt(event.params.id)
+      ProjectId: projectId
+    });
+    await DatabaseWrites.projectActions.create({
+      data: {
+        ProjectId: projectId,
+        UserId: event.locals.security.userId,
+        ActionType: ProjectActionType.Reviewer,
+        Action: ProjectActionString.AddReviewer,
+        Value: form.data.email
+      }
     });
     return { form, ok: true };
   },
   async toggleVisibility(event) {
+    const projectId = parseInt(event.params.id);
     event.locals.security.requireProjectWriteAccess(
       await DatabaseReads.projects.findUnique({
-        where: { Id: parseInt(event.params.id) },
+        where: { Id: projectId },
         select: { OwnerId: true, OrganizationId: true }
       })
     );
@@ -301,16 +376,27 @@ export const actions = {
       )
     );
     if (!form.valid) return fail(400, { form, ok: false });
-    await DatabaseWrites.projects.update(parseInt(event.params.id), {
+    await DatabaseWrites.projects.update(projectId, {
       IsPublic: form.data.isPublic
+    });
+    await DatabaseWrites.projectActions.create({
+      data: {
+        ProjectId: projectId,
+        UserId: event.locals.security.userId,
+        ActionType: ProjectActionType.EditField,
+        Action: ProjectActionString.EditSettings,
+        Value: form.data.isPublic
+          ? ProjectActionValue.VisibilityOn
+          : ProjectActionValue.VisibilityOff
+      }
     });
     return { form, ok: true };
   },
-
   async toggleDownload(event) {
+    const projectId = parseInt(event.params.id);
     event.locals.security.requireProjectWriteAccess(
       await DatabaseReads.projects.findUnique({
-        where: { Id: parseInt(event.params.id) },
+        where: { Id: projectId },
         select: { OwnerId: true, OrganizationId: true }
       })
     );
@@ -323,16 +409,27 @@ export const actions = {
       )
     );
     if (!form.valid) return fail(400, { form, ok: false });
-    await DatabaseWrites.projects.update(parseInt(event.params.id), {
+    await DatabaseWrites.projects.update(projectId, {
       AllowDownloads: form.data.allowDownloads
+    });
+    await DatabaseWrites.projectActions.create({
+      data: {
+        ProjectId: projectId,
+        UserId: event.locals.security.userId,
+        ActionType: ProjectActionType.EditField,
+        Action: ProjectActionString.EditSettings,
+        Value: form.data.allowDownloads
+          ? ProjectActionValue.DownloadsOn
+          : ProjectActionValue.DownloadsOff
+      }
     });
     return { form, ok: true };
   },
-
   async toggleAutoPublishOnRebuild(event) {
+    const projectId = parseInt(event.params.id);
     event.locals.security.requireProjectWriteAccess(
       await DatabaseReads.projects.findUnique({
-        where: { Id: parseInt(event.params.id) },
+        where: { Id: projectId },
         select: { OwnerId: true, OrganizationId: true }
       })
     );
@@ -346,15 +443,27 @@ export const actions = {
       )
     );
     if (!form.valid) return fail(400, { form, ok: false });
-    await DatabaseWrites.projects.update(parseInt(event.params.id), {
+    await DatabaseWrites.projects.update(projectId, {
       AutoPublishOnRebuild: form.data.autoPublishOnRebuild
+    });
+    await DatabaseWrites.projectActions.create({
+      data: {
+        ProjectId: projectId,
+        UserId: event.locals.security.userId,
+        ActionType: ProjectActionType.EditField,
+        Action: ProjectActionString.EditSettings,
+        Value: form.data.autoPublishOnRebuild
+          ? ProjectActionValue.AutoPublishOn
+          : ProjectActionValue.AutoPublishOff
+      }
     });
     return { form, ok: true };
   },
   async toggleRebuildOnSoftwareUpdate(event) {
+    const projectId = parseInt(event.params.id);
     event.locals.security.requireProjectWriteAccess(
       await DatabaseReads.projects.findUnique({
-        where: { Id: parseInt(event.params.id) },
+        where: { Id: projectId },
         select: { OwnerId: true, OrganizationId: true }
       })
     );
@@ -368,12 +477,22 @@ export const actions = {
       )
     );
     if (!form.valid) return fail(400, { form, ok: false });
-    await DatabaseWrites.projects.update(parseInt(event.params.id), {
+    await DatabaseWrites.projects.update(projectId, {
       RebuildOnSoftwareUpdate: form.data.autoRebuildOnSoftwareUpdate
+    });
+    await DatabaseWrites.projectActions.create({
+      data: {
+        ProjectId: projectId,
+        UserId: event.locals.security.userId,
+        ActionType: ProjectActionType.EditField,
+        Action: ProjectActionString.EditSettings,
+        Value: form.data.autoRebuildOnSoftwareUpdate
+          ? ProjectActionValue.RebuildsOn
+          : ProjectActionValue.RebuildsOff
+      }
     });
     return { form, ok: true };
   },
-
   async editOwnerGroup(event) {
     event.locals.security.requireAuthenticated(); // check this first, so unauthenticated can't dos db
     const form = await superValidate(event.request, valibot(updateOwnerGroupSchema));
@@ -401,6 +520,33 @@ export const actions = {
       GroupId: form.data.group,
       OwnerId: form.data.owner
     });
+    if (success) {
+      if (project.GroupId !== form.data.group) {
+        await DatabaseWrites.projectActions.create({
+          data: {
+            ProjectId: projectId,
+            UserId: event.locals.security.userId,
+            ActionType: ProjectActionType.OwnerGroup,
+            Action: ProjectActionString.AssignGroup,
+            ExternalId: form.data.group
+          }
+        });
+      }
+      if (project.OwnerId !== form.data.owner) {
+        await DatabaseWrites.projectActions.create({
+          data: {
+            ProjectId: projectId,
+            UserId: event.locals.security.userId,
+            ActionType: ProjectActionType.OwnerGroup,
+            Action:
+              form.data.owner === event.locals.security.userId
+                ? ProjectActionString.Claim
+                : ProjectActionString.AssignOwner,
+            ExternalId: form.data.owner
+          }
+        });
+      }
+    }
     return { form, ok: success };
   },
   async projectAction(event) {

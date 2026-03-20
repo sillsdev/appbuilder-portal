@@ -53,6 +53,7 @@ export const ProjectActionString = {
   AddReviewer: 'models_add',
   RemoveReviewer: 'models_delete',
   // with models_edit
+  EditName: 'project_name',
   EditLanguage: 'project_languageCode',
   EditDescription: 'common_description',
   EditSettings: 'project_settings_title'
