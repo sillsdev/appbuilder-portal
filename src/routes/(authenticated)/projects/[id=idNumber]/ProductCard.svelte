@@ -32,6 +32,7 @@
   interface Props {
     project: Prisma.ProjectsGetPayload<{
       select: {
+        Id: true;
         Name: true;
         DateArchived: true;
         OrganizationId: true;
@@ -84,6 +85,8 @@
   let updateProductModal: HTMLDialogElement | undefined = $state(undefined);
   const showTaskWaiting = $derived(!!product.WorkflowInstance);
 
+  const highlighted = $derived(page.url.hash.substring(1));
+
   async function handleProductAction(productId: string, action: string) {
     try {
       const formData = new FormData();
@@ -117,16 +120,25 @@
   const publishedTime = $derived(getRelativeTime(product.DatePublished));
 </script>
 
-<div class="rounded-md border border-slate-400 w-full my-2">
+<div
+  class={[
+    'rounded-md border border-slate-400 w-full my-2',
+    product.Id === highlighted && 'border-2 border-accent!'
+  ]}
+  id={product.Id}
+>
   <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
     <div class="flex flex-row items-start">
       <IconContainer
         icon={getProductIcon(product.ProductDefinition.Workflow.ProductType)}
         width={30}
       />
-      <span class="min-w-0 grow">
+      <a
+        class="min-w-0 grow hover:underline"
+        href={localizeHref(`/projects/${project.Id}#${product.Id}`)}
+      >
         {product.ProductDefinition.Name}
-      </span>
+      </a>
       <Dropdown
         class={{
           label: 'px-1 btn-square btn-xs',

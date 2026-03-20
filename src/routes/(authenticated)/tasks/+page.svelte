@@ -54,7 +54,10 @@
             <tr class="no-border">
               <th class="text-left pl-2">{m.tasks_project()}</th>
               <td colspan="2">
-                <a class="link" href={localizeHref(`/projects/${task.Product.ProjectId}`)}>
+                <a
+                  class="link"
+                  href={localizeHref(`/projects/${task.Product.ProjectId}#${task.ProductId}`)}
+                >
                   {task.Product.Project.Name}
                 </a>
               </td>
@@ -119,7 +122,10 @@
                 </span>
               </td>
               <td>
-                <a class="link" href={localizeHref(`/projects/${task.Product.ProjectId}`)}>
+                <a
+                  class="link"
+                  href={localizeHref(`/projects/${task.Product.ProjectId}#${task.ProductId}`)}
+                >
                   {task.Product.Project.Name}
                 </a>
               </td>

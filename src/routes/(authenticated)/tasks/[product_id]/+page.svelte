@@ -119,7 +119,10 @@
       <ul>
         <li><a class="link" href={localizeHref('/tasks')}>{m.sidebar_myTasks({ count: 0 })}</a></li>
         <li>
-          <a class="link" href={localizeHref(`/projects/${data.projectId}`)}>
+          <a
+            class="link"
+            href={localizeHref(`/projects/${data.projectId}#${page.params.product_id}`)}
+          >
             {data.fields.projectName}
           </a>
         </li>

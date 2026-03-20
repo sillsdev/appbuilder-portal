@@ -124,7 +124,9 @@
               </Tooltip>
             </td>
             <td class="border">
-              <a class="link" href={localizeHref(`/projects/${project.Id}`)}>{project.Name}</a>
+              <a class="link" href={localizeHref(`/projects/${project.Id}#${instance.Product.Id}`)}>
+                {project.Name}
+              </a>
             </td>
           </tr>
           <tr>
@@ -192,7 +194,9 @@
               </Tooltip>
             </td>
             <td class="border">
-              <a class="link" href={localizeHref(`/projects/${project.Id}`)}>{project.Name}</a>
+              <a class="link" href={localizeHref(`/projects/${project.Id}#${instance.Product.Id}`)}>
+                {project.Name}
+              </a>
             </td>
             <td class="border">
               <a class="link" href={localizeHref(`/workflow-instances/${instance.Product.Id}`)}>
