@@ -59,7 +59,7 @@
           {current.Description}
         </span>
       {:else}
-        <span class="grow font-normal text-left">{m.filters_allAppTypes()}</span>
+        <span class="grow font-normal text-left min-w-48">{m.filters_allAppTypes()}</span>
       {/if}
       <IconContainer icon="gridicons:dropdown" width={20} />
     </div>
