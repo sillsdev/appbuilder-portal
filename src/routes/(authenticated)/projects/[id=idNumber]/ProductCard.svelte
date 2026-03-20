@@ -263,18 +263,8 @@
           </span>
         {:else}
           <span>
-            <span class="text-red-500">
-              {m.tasks_waiting({
-                // waiting since EITHER (the last task exists) -> that task's creation time
-                // OR (there are no tasks for this product) -> the last completed transition's completion time
-                waitTime: $waitTime
-              })}
-            </span>
-            {@html m.tasks_forNames({
-              allowedNames: sanitizeInput(
-                product.ActiveTransition?.AllowedUserNames || m.appName()
-              ),
-              activityName: formatBuildEngineLink(
+            <b>
+              {@html formatBuildEngineLink(
                 linkToBuildEngine(
                   isSuperAdmin(page.data.session!.user.roles) &&
                     product.WorkflowInstance &&
@@ -285,8 +275,14 @@
                   product.WorkflowInstance?.State as WorkflowState
                 ),
                 product.ActiveTransition?.InitialState ?? ''
-              )
+              )}
+            </b>
+            &mdash;
+            {m.tasks_waiting({
+              allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName()
             })}
+            &bull;
+            {$waitTime}
           </span>
         {/if}
       </div>
