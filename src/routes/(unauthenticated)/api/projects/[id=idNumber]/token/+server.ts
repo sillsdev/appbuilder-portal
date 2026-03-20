@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { createAppBuildersError } from '../common';
-import { ProductTransitionType, RoleId } from '$lib/prisma';
+import { ProjectActionType, RoleId } from '$lib/prisma';
 import { BuildEngine } from '$lib/server/build-engine-api';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 
@@ -130,26 +130,16 @@ export async function POST({ params, locals, request }) {
   if (tokenUse) {
     use = tokenUse;
   }
-  const products = await DatabaseReads.products.findMany({
-    where: { ProjectId: projectId },
-    select: { Id: true }
-  });
 
   if (use !== TOKEN_USE_STATUS) {
-    await DatabaseWrites.productTransitions.createMany(
-      {
-        data: products.map((p) => ({
-          ProductId: p.Id,
-          AllowedUserNames: user.Name,
-          TransitionType: ProductTransitionType.ProjectAccess,
-          InitialState: 'Project ' + use,
-          UserId: user.Id,
-          DateTransition: new Date(),
-          Command: use
-        }))
-      },
-      projectId
-    );
+    await DatabaseWrites.projectActions.create({
+      data: {
+        ProjectId: projectId,
+        UserId: user.Id,
+        ActionType: ProjectActionType.Access,
+        Action: use
+      }
+    });
   }
 
   return json({ data: projectToken });
