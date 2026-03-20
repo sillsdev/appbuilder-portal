@@ -61,7 +61,7 @@
           {buildEngine ? $dates[i] : '-'}
         </Tooltip>
       </div>
-      <div>
+      <div class="flex flex-row items-center gap-x-1">
         <IconContainer icon={Icons.Key} width={16} tooltip={m.buildEngines_accessToken()} />
         <SecureDisplay value={buildEngine.BuildEngineApiAccessToken} />
       </div>

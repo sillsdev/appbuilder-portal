@@ -14,9 +14,15 @@
 </script>
 
 <span class="inline-flex flex-row gap-x-1">
-  <input type={visible ? 'text' : 'password'} {value} readonly size={value?.length || 20} />
+  <input
+    type={visible ? 'text' : 'password'}
+    {value}
+    readonly
+    size={value?.length || 20}
+    class="w-full"
+  />
   {#if value?.length}
-    <button type="button" onclick={() => (visible = !visible)}>
+    <button type="button" class="flex flex-row items-center" onclick={() => (visible = !visible)}>
       <IconContainer icon={visible ? Icons.Visible : Icons.Invisible} width={16} />
     </button>
   {/if}

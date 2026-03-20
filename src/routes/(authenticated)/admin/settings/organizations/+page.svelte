@@ -46,7 +46,7 @@
         }
       ]}
     >
-      <div style="padding-left: 1rem; text-indent: -1rem" class="wrap-anywhere opacity-40">
+      <div style="padding-left: 1rem; text-indent: -1rem" class="opacity-40">
         <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
         <b>{m.org_accessToken()}:</b>
         <SecureDisplay value={organization.BuildEngineApiAccessToken} />
