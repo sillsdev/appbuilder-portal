@@ -10,6 +10,7 @@
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { m } from '$lib/paraglide/messages';
   import type { PrunedProject } from '$lib/projects';
+  import AppTypeSelector from '$lib/projects/components/AppTypeSelector.svelte';
   import ProductDefinitionFilter from '$lib/projects/components/ProductDefinitionFilter.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
 
@@ -74,6 +75,12 @@
           bind:value={$form.organizationId}
           allowNull={true}
         />
+        <AppTypeSelector
+          types={data.appTypes}
+          bind:value={$form.appType}
+          allowNull
+          class={{ dropdown: 'md:w-auto!' }}
+        />
         <Tooltip class="tooltip-bottom {mobileSizing}">
           <div class="tooltip-content text-left">
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -107,7 +114,7 @@
   {#if projects.length > 0}
     <div class="w-full relative p-4">
       {#each projects as project}
-        <ProjectCard {project} route="directory" />
+        <ProjectCard {project} route="directory" search={$form.search} />
       {/each}
     </div>
   {:else}

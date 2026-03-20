@@ -137,6 +137,7 @@ export const load = (async ({ params, locals }) => {
     count: await DatabaseReads.projects.count({
       where: whereStatements(params.filter, locals.security, orgIds)
     }),
+    appTypes: await DatabaseReads.applicationTypes.findMany(),
     actionForm: await superValidate(valibot(bulkProjectActionSchema)),
     productForm: await superValidate(valibot(bulkProductActionSchema)),
     productDefinitions: await DatabaseReads.productDefinitions.findMany(),
