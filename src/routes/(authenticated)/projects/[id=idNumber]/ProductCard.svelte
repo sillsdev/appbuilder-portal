@@ -264,7 +264,7 @@
         {:else}
           <span>
             <b>
-              {formatBuildEngineLink(
+              {@html formatBuildEngineLink(
                 linkToBuildEngine(
                   isSuperAdmin(page.data.session!.user.roles) &&
                     product.WorkflowInstance &&
