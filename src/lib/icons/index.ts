@@ -1,24 +1,18 @@
+import type { Prisma } from '@prisma/client';
+import type { ValidI13nKey } from '$lib/locales.svelte';
 import type { Locale } from '$lib/paraglide/runtime';
 import {
   ApplicationType,
   ProductTransitionType,
+  ProjectActionString,
+  ProjectActionType,
+  ProjectActionValue,
   RoleId,
   StoreType,
   WorkflowType
 } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { ProductType, WorkflowAction } from '$lib/workflowTypes';
-
-export function getAccessIcon(use: string | null) {
-  switch (use) {
-    case 'Upload':
-      return 'material-symbols:upload';
-    case 'Download':
-      return Icons.Download;
-    default:
-      return Icons.Star;
-  }
-}
 
 export function getActionIcon(type: ProductActionType) {
   switch (type) {
@@ -104,6 +98,80 @@ export function getProductIcon(type: ProductType) {
   }
 }
 
+export function getProjectActionIcon(
+  args: Prisma.ProjectActionsGetPayload<{ select: { ActionType: true; Action: true; Value: true } }>
+) {
+  switch (args.ActionType) {
+    case ProjectActionType.Archival:
+      switch (args.Action as ValidI13nKey) {
+        case ProjectActionString.Archive:
+          return Icons.Archive;
+        default:
+          return Icons.ReactivateProject;
+      }
+    case ProjectActionType.Access:
+      switch (args.Action.replace(/Project /, '')) {
+        case 'Upload':
+          return 'material-symbols:upload';
+        case 'Download':
+          return Icons.Download;
+        default:
+          return Icons.Star;
+      }
+    case ProjectActionType.OwnerGroup:
+      switch (args.Action as ValidI13nKey) {
+        case ProjectActionString.AssignGroup:
+          return Icons.AddGroup;
+        default:
+          return Icons.AddUser;
+      }
+    case ProjectActionType.Product:
+      switch (args.Action as ValidI13nKey) {
+        case ProjectActionString.AddProduct:
+          return Icons.AddProduct;
+        default:
+          return Icons.Trash;
+      }
+    case ProjectActionType.Author:
+      switch (args.Action as ValidI13nKey) {
+        case ProjectActionString.AddAuthor:
+          return Icons.AddAuthor;
+        default:
+          return Icons.Trash;
+      }
+    case ProjectActionType.Reviewer:
+      switch (args.Action as ValidI13nKey) {
+        case ProjectActionString.AddReviewer:
+          return Icons.AddReviewer;
+        default:
+          return Icons.Trash;
+      }
+    case ProjectActionType.EditField:
+      switch (args.Value as ValidI13nKey) {
+        case ProjectActionValue.AutoPublishOn:
+          return Icons.RefreshOn;
+        case ProjectActionValue.AutoPublishOff:
+          return Icons.RefreshOff;
+        case ProjectActionValue.DownloadsOn:
+          return Icons.Download;
+        case ProjectActionValue.DownloadsOff:
+          return Icons.DownloadOff;
+        case ProjectActionValue.RebuildsOn:
+          return Icons.UpdateOn;
+        case ProjectActionValue.RebuildsOff:
+          return Icons.UpdateOff;
+        case ProjectActionValue.VisibilityOn:
+          return Icons.Visible;
+        case ProjectActionValue.VisibilityOff:
+          return Icons.Invisible;
+        default:
+          return Icons.Edit;
+      }
+    default:
+      return '';
+  }
+}
+
 export function getRoleIcon(role: RoleId) {
   switch (role) {
     case RoleId.SuperAdmin:
@@ -144,7 +212,11 @@ export function getTransitionIcon(
     case ProductTransitionType.CancelWorkflow:
       return getActionIcon(ProductActionType.Cancel);
     case ProductTransitionType.ProjectAccess:
-      return getAccessIcon(command);
+      return getProjectActionIcon({
+        ActionType: ProjectActionType.Access,
+        Action: command ?? '',
+        Value: null
+      });
     case ProductTransitionType.Migration:
       return Icons.Transfer;
     case ProductTransitionType.Archival:
@@ -285,6 +357,7 @@ export type IconType =
       | typeof getFileIcon
       | typeof getFlagIcon
       | typeof getProductIcon
+      | typeof getProjectActionIcon
       | typeof getRoleIcon
       | typeof getStoreIcon
       | typeof getTransitionIcon
