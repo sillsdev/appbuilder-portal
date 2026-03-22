@@ -23,6 +23,13 @@ export default defineConfig({
       strategy: ['url']
     })
   ],
+  optimizeDeps: {
+    // Force a single shared pre-bundled chunk for state-management-core so that
+    // both @ethnolib/language-chooser-controller and @ethnolib/state-management-svelte
+    // share the same module instance. Without this, each gets its own bundled
+    // copy, causing duck-type checks and shared state to operate on separate instances.
+    include: ['@ethnolib/state-management-core']
+  },
   test: {
     include: ['src/**/*.{test,spec}.{js,ts}']
   }

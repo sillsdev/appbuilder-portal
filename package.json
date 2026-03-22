@@ -96,6 +96,8 @@
     "zod": "^3.25.76"
   },
   "dependencies": {
+    "@ethnolib/language-chooser-svelte-daisyui": "file:../ethnolib/components/language-chooser/svelte/language-chooser-svelte-daisyui/ethnolib-language-chooser-svelte-daisyui-0.2.0.tgz",
+    "@ethnolib/state-management-svelte": "file:../ethnolib/components/state-management/state-management-svelte/ethnolib-state-management-svelte-0.2.0.tgz",
     "@grpc/grpc-js": "^1.13.4",
     "@prisma/client": "^6.15.0",
     "bullmq-otel": "^1.0.1"

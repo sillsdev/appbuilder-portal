@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@source "../node_modules/@ethnolib/**/*.svelte";
+
 @plugin 'daisyui' {
   exclude: rootscrollgutter;
   themes:

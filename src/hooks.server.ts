@@ -49,7 +49,13 @@ const paraglideHandle: Handle = ({ event, resolve }) =>
 const heartbeat: Handle = async ({ event, resolve }) => {
   // this check is important to prevent infinite redirects...
   // Also, the homepage should always be accessible
-  if (!(event.route.id === '/(unauthenticated)/(auth)/login' || event.route.id === '/')) {
+  if (
+    !(
+      event.route.id === '/(unauthenticated)/(auth)/login' ||
+      event.route.id === '/' ||
+      event.route.id === '/(unauthenticated)/language-chooser-demo'
+    )
+  ) {
     if (!DatabaseConnected()) {
       console.log(
         'Database connection error! Connected to Database:',
@@ -127,6 +133,9 @@ export const handle: Handle = async ({ event, resolve }) => {
       if (
         // Don't enforce security checks on auth routes (handled by authRouteHandle before populateSecurityInfo)
         !event.url.pathname.startsWith('/auth/') &&
+        // The demo route uses ssr=false, so +page.server.ts never runs on the server
+        // and securityHandled is never set. Exempt it explicitly.
+        event.route.id !== '/(unauthenticated)/language-chooser-demo' &&
         // @ts-expect-error securityHandled is not in the type definition
         !event.locals.security.securityHandled
       ) {
