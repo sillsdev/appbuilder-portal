@@ -13,8 +13,13 @@
   import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { ProjectActionType } from '$lib/prisma';
   import { canClaimProject, canModifyProject } from '$lib/projects';
+  import ProjectActionEntry from '$lib/projects/components/ProjectActionEntry.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
+  import ProjectDetails, {
+    showProjectDetails
+  } from '$lib/projects/components/ProjectDetails.svelte';
   import type { ProjectDataSSE } from '$lib/projects/sse';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
@@ -189,6 +194,50 @@
               {/if}
             </div>
           </div>
+          {#if data.projectActions.length}
+            {#snippet entry(compact: boolean)}
+              <ProjectActionEntry
+                act={data.projectActions.at(-1)!}
+                {compact}
+                users={data.users}
+                groups={data.groups}
+                prodDefs={data.prodDefs}
+              />
+            {/snippet}
+            {#snippet projectDetailsButton(classes: string)}
+              <button
+                class="btn btn-secondary! btn-xs {classes}"
+                onclick={() => showProjectDetails(page.params.id!)}
+              >
+                <IconContainer icon={Icons.Info} width={20} />
+                {m.products_details()}
+              </button>
+            {/snippet}
+            <div class="mt-2">
+              <div class="flex flex-row gap-x-2">
+                <span class="grow">{m.project_details_action()}:</span>
+                {@render projectDetailsButton('sm:hidden')}
+              </div>
+              <div class="rounded-md bg-base-200 mt-2 py-2 flex flex-row">
+                <table class="hidden xl:table table-sm">
+                  <tbody>
+                    {@render entry(false)}
+                  </tbody>
+                </table>
+                <table class="table table-sm xl:hidden">
+                  <tbody>{@render entry(true)}</tbody>
+                </table>
+                {@render projectDetailsButton('hidden sm:btn sm:mr-2')}
+              </div>
+            </div>
+            <ProjectDetails
+              project={{ Id: Number(page.params.id) }}
+              actions={data.projectActions}
+              users={data.users}
+              groups={data.groups}
+              prodDefs={data.prodDefs}
+            />
+          {/if}
         </div>
         <!-- Product List Header -->
         <div class="flex flex-row place-content-between items-end">

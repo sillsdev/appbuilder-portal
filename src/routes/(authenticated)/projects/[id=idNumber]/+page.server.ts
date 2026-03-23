@@ -78,6 +78,61 @@ export const load = (async ({ locals, params }) => {
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
     projectActions,
+    users: await DatabaseReads.users.findMany({
+      where: {
+        Id: {
+          in: projectActions
+            .filter(
+              (pa) =>
+                pa.ExternalId &&
+                (pa.ActionType === ProjectActionType.Author ||
+                  (pa.ActionType === ProjectActionType.OwnerGroup &&
+                    pa.Action !== ProjectActionString.AssignGroup))
+            )
+            .map((pa) => pa.ExternalId!)
+        }
+      },
+      select: {
+        Id: true,
+        Name: true
+      }
+    }),
+    groups: await DatabaseReads.groups.findMany({
+      where: {
+        Id: {
+          in: projectActions
+            .filter(
+              (pa) =>
+                pa.ExternalId &&
+                pa.ActionType === ProjectActionType.OwnerGroup &&
+                pa.Action === ProjectActionString.AssignGroup
+            )
+            .map((pa) => pa.ExternalId!)
+        }
+      },
+      select: {
+        Id: true,
+        Name: true
+      }
+    }),
+    prodDefs: await DatabaseReads.productDefinitions.findMany({
+      where: {
+        Id: {
+          in: projectActions
+            .filter((pa) => pa.ExternalId && pa.ActionType === ProjectActionType.Product)
+            .map((pa) => pa.ExternalId!)
+        }
+      },
+      select: {
+        Id: true,
+        Name: true,
+        Workflow: {
+          select: {
+            ProductType: true
+          }
+        }
+      }
+    }),
     jobsAvailable: QueueConnected(),
     showRebuildToggles: env.APP_ENV !== 'prd'
   };
