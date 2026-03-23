@@ -16,6 +16,7 @@
 
   let { data }: Props = $props();
   let turnstileToken: string | null = null;
+  let deletionType = $state<'data' | 'account'>('data');
 
   const app = data.app;
   const iconSrc = app.icon ?? DEFAULT_ICON;
@@ -47,7 +48,7 @@
       res = await fetch('/api/delete-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, token: turnstileToken, productId: app.id })
+        body: JSON.stringify({ email, token: turnstileToken, productId: app.id, deletionType })
       });
     } catch {
       alert(m.udm_alert_verification_failed());
@@ -194,7 +195,8 @@
                   type="radio"
                   name="deletionType"
                   class="radio radio-primary radio-sm mt-1"
-                  checked
+                  value="data"
+                  bind:group={deletionType}
                 />
                 <div class="min-w-0">
                   <span
@@ -208,7 +210,13 @@
                 </div>
               </label>
               <label class="label cursor-pointer items-start justify-start gap-3 p-0 group min-w-0">
-                <input type="radio" name="deletionType" class="radio radio-primary radio-sm mt-1" />
+                <input
+                  type="radio"
+                  name="deletionType"
+                  value="account"
+                  bind:group={deletionType}
+                  class="radio radio-primary radio-sm mt-1"
+                />
                 <div class="min-w-0">
                   <span
                     class="label-text font-bold text-sm group-hover:text-primary transition-colors whitespace-normal break-words"

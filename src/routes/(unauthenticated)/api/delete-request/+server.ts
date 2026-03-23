@@ -9,10 +9,15 @@ export const POST: RequestHandler = async ({ locals, request }) => {
   // Security check
   locals.security.requireNothing();
 
-  const { email, token, productId } = await request.json();
+  const { email, token, productId, deletionType } = await request.json();
 
   if (!email || !token || !productId) return json({ success: false }, { status: 400 });
+  if (deletionType !== 'data' && deletionType !== 'account') {
+    return json({ success: false }, { status: 400 });
+  }
   const normalizedEmail = String(email).trim().toLowerCase();
+  const change =
+    deletionType === 'account' ? 'Delete my account and all associated data' : 'Delete my data';
 
   const secret = process.env.TURNSTILE_SECRET_KEY;
   if (!secret) {
@@ -54,7 +59,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     data: {
       ProductId: productId,
       Email: normalizedEmail,
-      Change: 'User data deletion request verification',
+      Change: change,
       ConfirmationCode: code,
       DateExpires: expiresAt,
       DateConfirmed: null
