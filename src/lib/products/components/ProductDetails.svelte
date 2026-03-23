@@ -155,12 +155,10 @@
     {:else if isLandmark(transition.TransitionType)}
       {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
     {:else}
-      <b>
-        {m.transitions_types({
-          type: transition.TransitionType,
-          workflowType: ''
-        })}
-      </b>
+      {m.transitions_types({
+        type: transition.TransitionType,
+        workflowType: ''
+      })}
     {/if}
   {/if}
 {/snippet}

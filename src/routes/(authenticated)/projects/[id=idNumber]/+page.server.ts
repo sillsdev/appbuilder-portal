@@ -6,7 +6,13 @@ import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
 import { env } from '$env/dynamic/private';
 import { baseLocale } from '$lib/paraglide/runtime';
-import { ProjectActionString, ProjectActionType, ProjectActionValue, RoleId } from '$lib/prisma';
+import {
+  ProductTransitionType,
+  ProjectActionString,
+  ProjectActionType,
+  ProjectActionValue,
+  RoleId
+} from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { projectActionSchema } from '$lib/projects';
@@ -254,6 +260,18 @@ export const actions = {
     const productId = await DatabaseWrites.products.update(form.data.productId, {
       Properties: form.data.properties
     });
+
+    if (productId) {
+      await DatabaseWrites.productTransitions.create({
+        data: {
+          UserId: event.locals.security.userId,
+          ProductId: form.data.productId,
+          Comment: form.data.properties,
+          DateTransition: new Date(),
+          TransitionType: ProductTransitionType.Update
+        }
+      });
+    }
 
     return { form, ok: !!productId };
   },

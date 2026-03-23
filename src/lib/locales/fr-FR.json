@@ -262,7 +262,9 @@
         "type=5": "{workflowType} Project Access",
         "type=6": "Workflow Migration",
         "type=7": "Archived",
-        "type=8": "Reactivated"
+        "type=8": "Reactivated",
+        "type=9": "Transfer Store",
+        "type=10": "Update Properties"
       }
     }
   ],

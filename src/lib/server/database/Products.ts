@@ -41,7 +41,7 @@ export async function create(
 export async function update(
   id: string,
   productData: RequirePrimitive<Prisma.ProductsUncheckedUpdateInput>
-): Promise<boolean> {
+): Promise<string | false> {
   // There are cases where a db lookup is not necessary to verify that it will
   // be a legal relation after the update, such as if none of the relevant
   // columns are changed, but for simplicity we just lookup once anyway
@@ -93,7 +93,7 @@ export async function update(
   } catch {
     return false;
   }
-  return true;
+  return id;
 }
 
 async function deleteProduct(productId: string) {

@@ -223,6 +223,10 @@ export function getTransitionIcon(
       return Icons.Archive;
     case ProductTransitionType.Reactivation:
       return Icons.ReactivateProject;
+    case ProductTransitionType.Transfer:
+      return Icons.Transfer;
+    case ProductTransitionType.Update:
+      return Icons.Edit;
   }
 }
 
