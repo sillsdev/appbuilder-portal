@@ -56,10 +56,11 @@
     return contrastRatio(hex, dark) >= contrastRatio(hex, light) ? dark : light;
   }
 
-  function lightenColor(hex: string, amount = 0.9) {
-    const { r, g, b } = hexToRgb(hex);
-    const mix = (channel: number) => Math.round(channel + (255 - channel) * amount);
-    return rgbToHex(mix(r), mix(g), mix(b));
+  function mixColors(hexA: string, hexB: string, amount = 0.5) {
+    const a = hexToRgb(hexA);
+    const b = hexToRgb(hexB);
+    const mix = (from: number, to: number) => Math.round(from + (to - from) * amount);
+    return rgbToHex(mix(a.r, b.r), mix(a.g, b.g), mix(a.b, b.b));
   }
 
   function hexToDaisyHSL(hex: string) {
@@ -212,23 +213,13 @@
   const primaryContentHex = $derived(getReadableTextHex(primaryHex));
   const primaryHSL = $derived(hexToDaisyHSL(primaryHex));
   const primaryContentHSL = $derived(hexToDaisyHSL(primaryContentHex));
-  const lightBgHex = $derived(lightenColor(primaryHex, 0.92));
-
-  $effect(() => {
-    if (typeof document !== 'undefined') {
-      document.documentElement.style.setProperty('--color-primary', primaryHex);
-      document.documentElement.style.setProperty('--color-primary-content', primaryContentHex);
-      document.documentElement.style.setProperty('--p', primaryHSL);
-      document.documentElement.style.setProperty('--pf', primaryHSL);
-      document.documentElement.style.setProperty('--pc', primaryContentHSL);
-      document.documentElement.style.setProperty('--color-base-100', '#ffffff');
-      document.documentElement.style.setProperty('--color-base-200', '#f5f7fa');
-      document.documentElement.style.setProperty('--color-base-300', '#e5e7eb');
-      document.documentElement.style.setProperty('--color-base-content', '#1f2937');
-      document.documentElement.style.setProperty('--outer-bg', lightBgHex);
-      document.documentElement.style.setProperty('--root-bg', lightBgHex);
-    }
-  });
+  const shellLightHex = $derived(mixColors(primaryHex, '#ffffff', 0.93));
+  const shellDarkHex = $derived(mixColors(primaryHex, '#111827', 0.84));
+  const headerLightHex = $derived(mixColors(primaryHex, '#ffffff', 0.85));
+  const headerDarkHex = $derived(mixColors(primaryHex, '#0f172a', 0.72));
+  const themeStyle = $derived(
+    `--color-primary: ${primaryHex}; --color-primary-content: ${primaryContentHex}; --p: ${primaryHSL}; --pf: ${primaryHSL}; --pc: ${primaryContentHSL}; --udm-shell-light: ${shellLightHex}; --udm-shell-dark: ${shellDarkHex}; --udm-header-light: ${headerLightHex}; --udm-header-dark: ${headerDarkHex};`
+  );
 
   onMount(() => {
     if (!app.themeColor) {
@@ -239,27 +230,30 @@
 
 <svelte:head>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-  <style>
-    :global(html),
-    :global(body) {
-      background-color: var(--outer-bg, #f5f7fa) !important;
-      min-height: 100%;
-    }
-  </style>
 </svelte:head>
 
 <div
-  class="min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
+  class="udm-shell min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
+  style={themeStyle}
 >
-  <div class="w-full bg-white min-h-screen sm:max-w-xl sm:mx-auto">
-    <div class="px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-4 bg-[#eef3f3]">
+  <div class="w-full bg-base-100 min-h-screen sm:max-w-xl sm:mx-auto">
+    <div class="udm-header px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-4">
       <div class="relative">
-        <div class="min-w-0 border-l-4 border-black pl-3 pr-16">
+        <div class="min-w-0 border-l-4 border-base-content pl-3 pr-16">
           <h1 class="text-2xl font-bold tracking-tight leading-none">{m.udm_manage_title()}</h1>
-          <p class="text-xs opacity-60 leading-tight pl-8 mt-0">{m.udm_manage_subtitle()}</p>
+          <p class="mt-0 pl-8 text-xs leading-tight text-base-content/75">
+            {m.udm_manage_subtitle()}
+          </p>
         </div>
-        <div class="absolute top-0 right-0 rounded-xl bg-slate-900/70 p-1">
-          <LocaleSelector />
+        <div class="absolute top-0 right-0 rounded-xl bg-neutral p-1 shadow-sm">
+          <LocaleSelector
+            class={{
+              dropdown: 'dropdown-end',
+              label:
+                'm-0 p-2 rounded-xl items-middle justify-center flex-nowrap text-neutral-content hover:text-neutral-content focus-visible:text-neutral-content',
+              content: 'mt-2 border border-base-300 bg-base-100'
+            }}
+          />
         </div>
       </div>
     </div>
@@ -290,17 +284,19 @@
         <div class="card-body p-5 space-y-4 break-words">
           <div>
             <h2 class="card-title text-lg font-bold">{m.udm_deletion_request_title()}</h2>
-            <p class="text-xs opacity-60 mt-1 leading-relaxed" style="text-indent: 10px;">
+            <p class="mt-1 text-xs leading-relaxed text-base-content/80" style="text-indent: 10px;">
               {m.udm_deletion_intro_1()}
             </p>
-            <p class="text-xs opacity-60 mt-1 leading-relaxed" style="text-indent: 10px;">
+            <p class="mt-1 text-xs leading-relaxed text-base-content/80" style="text-indent: 10px;">
               {m.udm_deletion_intro_2()}
             </p>
           </div>
 
           <div class="form-control w-full">
             <label class="label pb-1 pt-0" for="email">
-              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
+              <span
+                class="label-text text-xs font-bold uppercase tracking-wide text-base-content/70"
+              >
                 {m.udm_email_label()}
               </span>
             </label>
@@ -313,7 +309,7 @@
               name="email"
             />
             <label class="label pt-1 pb-0" for="email">
-              <span class="label-text-alt text-[10px] opacity-60">
+              <span class="label-text-alt text-[10px] text-base-content/70">
                 {m.udm_email_help()}
               </span>
             </label>
@@ -321,7 +317,9 @@
 
           <div class="form-control">
             <p class="label pb-1 pt-0">
-              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
+              <span
+                class="label-text text-xs font-bold uppercase tracking-wide text-base-content/70"
+              >
                 {m.udm_scope_label()}
               </span>
             </p>
@@ -330,7 +328,7 @@
                 <input
                   type="radio"
                   name="deletionType"
-                  class="radio radio-primary radio-sm mt-1"
+                  class="radio radio-primary radio-sm mt-1 shrink-0 border-2 border-black bg-white text-black dark:border-white dark:bg-transparent dark:text-white"
                   checked={deletionType === 'data'}
                   onclick={() => (deletionType = 'data')}
                 />
@@ -340,7 +338,9 @@
                   >
                     {m.udm_scope_data_title()}
                   </span>
-                  <p class="text-xs opacity-60 leading-tight mt-0.5 whitespace-normal break-words">
+                  <p
+                    class="mt-0.5 text-xs leading-tight whitespace-normal break-words text-base-content/75"
+                  >
                     {m.udm_scope_data_desc()}
                   </p>
                 </div>
@@ -349,7 +349,7 @@
                 <input
                   type="radio"
                   name="deletionType"
-                  class="radio radio-primary radio-sm mt-1"
+                  class="radio radio-primary radio-sm mt-1 shrink-0 border-2 border-black bg-white text-black dark:border-white dark:bg-transparent dark:text-white"
                   checked={deletionType === 'account'}
                   onclick={() => (deletionType = 'account')}
                 />
@@ -359,22 +359,24 @@
                   >
                     {m.udm_scope_account_title()}
                   </span>
-                  <p class="text-xs opacity-60 leading-tight mt-0.5 whitespace-normal break-words">
+                  <p
+                    class="mt-0.5 text-xs leading-tight whitespace-normal break-words text-base-content/75"
+                  >
                     {m.udm_scope_account_desc()}
                   </p>
                 </div>
               </label>
-              <p class="text-xs opacity-60 leading-tight mt-0.5">
+              <p class="mt-0.5 text-xs leading-tight text-base-content/75">
                 {m.udm_scope_warning()}
               </p>
             </div>
           </div>
 
-          <div class="bg-base-200/60 rounded-lg p-4 border border-base-200">
-            <div class="text-[10px] font-bold mb-2 uppercase tracking-wide opacity-50">
+          <div class="rounded-lg border border-base-300 bg-base-200 p-4">
+            <div class="mb-2 text-[10px] font-bold uppercase tracking-wide text-base-content/70">
               {m.udm_items_removed_title()}
             </div>
-            <ul class="list-disc list-inside space-y-1 text-xs opacity-60">
+            <ul class="list-disc list-inside space-y-1 text-xs text-base-content/80">
               <li>{m.udm_item_bookmarks()}</li>
               <li>{m.udm_item_notes()}</li>
               <li>{m.udm_item_highlights()}</li>
@@ -384,7 +386,9 @@
 
           <div class="form-control">
             <p class="label pb-1 pt-0">
-              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
+              <span
+                class="label-text text-xs font-bold uppercase tracking-wide text-base-content/70"
+              >
                 {m.udm_verification_label()}
               </span>
             </p>
@@ -406,8 +410,7 @@
           {/if}
 
           <button
-            class="btn w-full no-animation border border-black/10 shadow-sm"
-            style="background-color: #0f172a; color: #ffffff;"
+            class="btn btn-primary w-full border border-primary/20 shadow-sm"
             type="button"
             onclick={submitDeleteRequest}
             disabled={submitting || !turnstileToken}
@@ -417,7 +420,7 @@
         </div>
       </div>
 
-      <p class="text-xs opacity-50 text-center mt-4">
+      <p class="mt-4 text-center text-xs text-base-content/70">
         {m.udm_footer_text({ appName: app.name })}
         <a class="link link-primary no-underline hover:underline" href="/support">
           {m.udm_contact_support()}
@@ -427,3 +430,21 @@
     </div>
   </div>
 </div>
+
+<style>
+  .udm-shell {
+    background-color: var(--udm-shell-light);
+  }
+
+  .udm-header {
+    background-color: var(--udm-header-light);
+  }
+
+  :global([data-theme='dark']) .udm-shell {
+    background-color: var(--udm-shell-dark);
+  }
+
+  :global([data-theme='dark']) .udm-header {
+    background-color: var(--udm-header-dark);
+  }
+</style>
