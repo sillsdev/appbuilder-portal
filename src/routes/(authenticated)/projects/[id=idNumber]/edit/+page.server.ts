@@ -91,8 +91,8 @@ export const actions: Actions = {
     if (project!.OwnerId !== form.data.OwnerId && !QueueConnected()) return error(503);
     const success = await DatabaseWrites.projects.update(projectId, form.data);
     if (success) {
-      await DatabaseWrites.projectActions.createMany({
-        data: Object.entries(form.data)
+      await DatabaseWrites.projectActions.createMany(
+        Object.entries(form.data)
           .map(([k, v]) =>
             project![k as keyof typeof form.data] !== v
               ? {
@@ -120,8 +120,9 @@ export const actions: Actions = {
                 }
               : null
           )
-          .filter((o) => !!o)
-      });
+          .filter((o) => !!o),
+        projectId
+      );
     }
     return { form, ok: success };
   }

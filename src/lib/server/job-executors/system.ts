@@ -729,8 +729,8 @@ async function migrateProjectActions() {
 
   const updated = await Promise.all(
     projects.map(async (p) => ({
-      created: await DatabaseWrites.projectActions.createMany({
-        data: p.Products[0].ProductTransitions.map((pt) => ({
+      created: await DatabaseWrites.projectActions.createMany(
+        p.Products[0].ProductTransitions.map((pt) => ({
           ProjectId: p.Id,
           UserId: pt.UserId!,
           ActionType:
@@ -744,8 +744,9 @@ async function migrateProjectActions() {
                 ? ProjectActionString.Reactivate
                 : (pt.InitialState ?? ''),
           DateAction: pt.DateTransition!
-        }))
-      }),
+        })),
+        p.Id
+      ),
       deleted: await DatabaseWrites.productTransitions.deleteMany(
         {
           where: { ...transitionFilter, Product: { ProjectId: p.Id } }

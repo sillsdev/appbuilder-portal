@@ -52,87 +52,11 @@ export const load = (async ({ locals, params }) => {
     })
   );
 
-  const projectActions = await DatabaseReads.projectActions.findMany({
-    where: {
-      ProjectId: projectId
-    },
-    select: {
-      User: {
-        select: {
-          Id: true,
-          Name: true
-        }
-      },
-      DateAction: true,
-      ActionType: true,
-      Action: true,
-      Value: true,
-      ExternalId: true
-    },
-    orderBy: { DateAction: 'asc' }
-  });
-
   return {
     projectData: await getProjectDetails(projectId, locals.security.sessionForm),
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
-    projectActions,
-    users: await DatabaseReads.users.findMany({
-      where: {
-        Id: {
-          in: projectActions
-            .filter(
-              (pa) =>
-                pa.ExternalId &&
-                (pa.ActionType === ProjectActionType.Author ||
-                  (pa.ActionType === ProjectActionType.OwnerGroup &&
-                    pa.Action !== ProjectActionString.AssignGroup))
-            )
-            .map((pa) => pa.ExternalId!)
-        }
-      },
-      select: {
-        Id: true,
-        Name: true
-      }
-    }),
-    groups: await DatabaseReads.groups.findMany({
-      where: {
-        Id: {
-          in: projectActions
-            .filter(
-              (pa) =>
-                pa.ExternalId &&
-                pa.ActionType === ProjectActionType.OwnerGroup &&
-                pa.Action === ProjectActionString.AssignGroup
-            )
-            .map((pa) => pa.ExternalId!)
-        }
-      },
-      select: {
-        Id: true,
-        Name: true
-      }
-    }),
-    prodDefs: await DatabaseReads.productDefinitions.findMany({
-      where: {
-        Id: {
-          in: projectActions
-            .filter((pa) => pa.ExternalId && pa.ActionType === ProjectActionType.Product)
-            .map((pa) => pa.ExternalId!)
-        }
-      },
-      select: {
-        Id: true,
-        Name: true,
-        Workflow: {
-          select: {
-            ProductType: true
-          }
-        }
-      }
-    }),
     jobsAvailable: QueueConnected(),
     showRebuildToggles: env.APP_ENV !== 'prd'
   };
@@ -173,14 +97,12 @@ export const actions = {
     });
     await DatabaseWrites.products.delete(form.data.productId);
     await DatabaseWrites.projectActions.create({
-      data: {
-        ProjectId: projectId,
-        UserId: event.locals.security.userId,
-        ActionType: ProjectActionType.Product,
-        Action: ProjectActionString.RemoveProduct,
-        Value: product.WorkflowInstance?.State,
-        ExternalId: product.ProductDefinitionId
-      }
+      ProjectId: projectId,
+      UserId: event.locals.security.userId,
+      ActionType: ProjectActionType.Product,
+      Action: ProjectActionString.RemoveProduct,
+      Value: product.WorkflowInstance?.State,
+      ExternalId: product.ProductDefinitionId
     });
     return { form, ok: true };
   },
@@ -219,13 +141,11 @@ export const actions = {
       }
     );
     await DatabaseWrites.projectActions.create({
-      data: {
-        ProjectId,
-        UserId: event.locals.security.userId,
-        ActionType: ProjectActionType.Author,
-        Action: ProjectActionString.RemoveAuthor,
-        ExternalId: form.data.id
-      }
+      ProjectId,
+      UserId: event.locals.security.userId,
+      ActionType: ProjectActionType.Author,
+      Action: ProjectActionString.RemoveAuthor,
+      ExternalId: form.data.id
     });
     return { form, ok: true };
   },
@@ -249,13 +169,11 @@ export const actions = {
     }
     await DatabaseWrites.reviewers.delete(form.data.id);
     await DatabaseWrites.projectActions.create({
-      data: {
-        ProjectId: projectId,
-        UserId: event.locals.security.userId,
-        ActionType: ProjectActionType.Reviewer,
-        Action: ProjectActionString.RemoveReviewer,
-        Value: reviewer.Email
-      }
+      ProjectId: projectId,
+      UserId: event.locals.security.userId,
+      ActionType: ProjectActionType.Reviewer,
+      Action: ProjectActionString.RemoveReviewer,
+      Value: reviewer.Email
     });
     return { form, ok: true };
   },
@@ -288,19 +206,17 @@ export const actions = {
       storeId: form.data.storeId
     });
     await DatabaseWrites.projectActions.create({
-      data: {
-        ProjectId: projectId,
-        UserId: event.locals.security.userId,
-        ActionType: ProjectActionType.Product,
-        Action: ProjectActionString.AddProduct,
-        Value: (
-          await DatabaseReads.stores.findFirst({
-            where: { Id: form.data.storeId },
-            select: { BuildEnginePublisherId: true }
-          })
-        )?.BuildEnginePublisherId,
-        ExternalId: form.data.productDefinitionId
-      }
+      ProjectId: projectId,
+      UserId: event.locals.security.userId,
+      ActionType: ProjectActionType.Product,
+      Action: ProjectActionString.AddProduct,
+      Value: (
+        await DatabaseReads.stores.findFirst({
+          where: { Id: form.data.storeId },
+          select: { BuildEnginePublisherId: true }
+        })
+      )?.BuildEnginePublisherId,
+      ExternalId: form.data.productDefinitionId
     });
     return { form, ok: true };
   },
@@ -399,13 +315,11 @@ export const actions = {
       }
     );
     await DatabaseWrites.projectActions.create({
-      data: {
-        ProjectId: projectId,
-        UserId: event.locals.security.userId,
-        ActionType: ProjectActionType.Author,
-        Action: ProjectActionString.AddAuthor,
-        ExternalId: form.data.author
-      }
+      ProjectId: projectId,
+      UserId: event.locals.security.userId,
+      ActionType: ProjectActionType.Author,
+      Action: ProjectActionString.AddAuthor,
+      ExternalId: form.data.author
     });
     return { form, ok: true };
   },
@@ -426,13 +340,11 @@ export const actions = {
       ProjectId: projectId
     });
     await DatabaseWrites.projectActions.create({
-      data: {
-        ProjectId: projectId,
-        UserId: event.locals.security.userId,
-        ActionType: ProjectActionType.Reviewer,
-        Action: ProjectActionString.AddReviewer,
-        Value: form.data.email
-      }
+      ProjectId: projectId,
+      UserId: event.locals.security.userId,
+      ActionType: ProjectActionType.Reviewer,
+      Action: ProjectActionString.AddReviewer,
+      Value: form.data.email
     });
     return { form, ok: true };
   },
@@ -457,15 +369,11 @@ export const actions = {
       IsPublic: form.data.isPublic
     });
     await DatabaseWrites.projectActions.create({
-      data: {
-        ProjectId: projectId,
-        UserId: event.locals.security.userId,
-        ActionType: ProjectActionType.EditField,
-        Action: ProjectActionString.EditSettings,
-        Value: form.data.isPublic
-          ? ProjectActionValue.VisibilityOn
-          : ProjectActionValue.VisibilityOff
-      }
+      ProjectId: projectId,
+      UserId: event.locals.security.userId,
+      ActionType: ProjectActionType.EditField,
+      Action: ProjectActionString.EditSettings,
+      Value: form.data.isPublic ? ProjectActionValue.VisibilityOn : ProjectActionValue.VisibilityOff
     });
     return { form, ok: true };
   },
@@ -490,15 +398,13 @@ export const actions = {
       AllowDownloads: form.data.allowDownloads
     });
     await DatabaseWrites.projectActions.create({
-      data: {
-        ProjectId: projectId,
-        UserId: event.locals.security.userId,
-        ActionType: ProjectActionType.EditField,
-        Action: ProjectActionString.EditSettings,
-        Value: form.data.allowDownloads
-          ? ProjectActionValue.DownloadsOn
-          : ProjectActionValue.DownloadsOff
-      }
+      ProjectId: projectId,
+      UserId: event.locals.security.userId,
+      ActionType: ProjectActionType.EditField,
+      Action: ProjectActionString.EditSettings,
+      Value: form.data.allowDownloads
+        ? ProjectActionValue.DownloadsOn
+        : ProjectActionValue.DownloadsOff
     });
     return { form, ok: true };
   },
@@ -524,15 +430,13 @@ export const actions = {
       AutoPublishOnRebuild: form.data.autoPublishOnRebuild
     });
     await DatabaseWrites.projectActions.create({
-      data: {
-        ProjectId: projectId,
-        UserId: event.locals.security.userId,
-        ActionType: ProjectActionType.EditField,
-        Action: ProjectActionString.EditSettings,
-        Value: form.data.autoPublishOnRebuild
-          ? ProjectActionValue.AutoPublishOn
-          : ProjectActionValue.AutoPublishOff
-      }
+      ProjectId: projectId,
+      UserId: event.locals.security.userId,
+      ActionType: ProjectActionType.EditField,
+      Action: ProjectActionString.EditSettings,
+      Value: form.data.autoPublishOnRebuild
+        ? ProjectActionValue.AutoPublishOn
+        : ProjectActionValue.AutoPublishOff
     });
     return { form, ok: true };
   },
@@ -558,15 +462,13 @@ export const actions = {
       RebuildOnSoftwareUpdate: form.data.autoRebuildOnSoftwareUpdate
     });
     await DatabaseWrites.projectActions.create({
-      data: {
-        ProjectId: projectId,
-        UserId: event.locals.security.userId,
-        ActionType: ProjectActionType.EditField,
-        Action: ProjectActionString.EditSettings,
-        Value: form.data.autoRebuildOnSoftwareUpdate
-          ? ProjectActionValue.RebuildsOn
-          : ProjectActionValue.RebuildsOff
-      }
+      ProjectId: projectId,
+      UserId: event.locals.security.userId,
+      ActionType: ProjectActionType.EditField,
+      Action: ProjectActionString.EditSettings,
+      Value: form.data.autoRebuildOnSoftwareUpdate
+        ? ProjectActionValue.RebuildsOn
+        : ProjectActionValue.RebuildsOff
     });
     return { form, ok: true };
   },
@@ -600,27 +502,23 @@ export const actions = {
     if (success) {
       if (project.GroupId !== form.data.group) {
         await DatabaseWrites.projectActions.create({
-          data: {
-            ProjectId: projectId,
-            UserId: event.locals.security.userId,
-            ActionType: ProjectActionType.OwnerGroup,
-            Action: ProjectActionString.AssignGroup,
-            ExternalId: form.data.group
-          }
+          ProjectId: projectId,
+          UserId: event.locals.security.userId,
+          ActionType: ProjectActionType.OwnerGroup,
+          Action: ProjectActionString.AssignGroup,
+          ExternalId: form.data.group
         });
       }
       if (project.OwnerId !== form.data.owner) {
         await DatabaseWrites.projectActions.create({
-          data: {
-            ProjectId: projectId,
-            UserId: event.locals.security.userId,
-            ActionType: ProjectActionType.OwnerGroup,
-            Action:
-              form.data.owner === event.locals.security.userId
-                ? ProjectActionString.Claim
-                : ProjectActionString.AssignOwner,
-            ExternalId: form.data.owner
-          }
+          ProjectId: projectId,
+          UserId: event.locals.security.userId,
+          ActionType: ProjectActionType.OwnerGroup,
+          Action:
+            form.data.owner === event.locals.security.userId
+              ? ProjectActionString.Claim
+              : ProjectActionString.AssignOwner,
+          ExternalId: form.data.owner
         });
       }
     }

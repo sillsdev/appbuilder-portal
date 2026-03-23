@@ -133,12 +133,10 @@ export async function POST({ params, locals, request }) {
 
   if (use !== TOKEN_USE_STATUS) {
     await DatabaseWrites.projectActions.create({
-      data: {
-        ProjectId: projectId,
-        UserId: user.Id,
-        ActionType: ProjectActionType.Access,
-        Action: use
-      }
+      ProjectId: projectId,
+      UserId: user.Id,
+      ActionType: ProjectActionType.Access,
+      Action: use
     });
   }
 

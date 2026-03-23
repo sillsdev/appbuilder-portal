@@ -126,13 +126,11 @@ export async function doProjectAction(
       DateArchived: timestamp
     });
     await DatabaseWrites.projectActions.create({
-      data: {
-        ProjectId: project.Id,
-        UserId: security.userId,
-        DateAction: timestamp,
-        ActionType: ProjectActionType.Archival,
-        Action: ProjectActionString.Archive
-      }
+      ProjectId: project.Id,
+      UserId: security.userId,
+      DateAction: timestamp,
+      ActionType: ProjectActionType.Archival,
+      Action: ProjectActionString.Archive
     });
     await getQueues().UserTasks.add(`Delete UserTasks for Archived Project #${project.Id}`, {
       type: BullMQ.JobType.UserTasks_Workflow,
@@ -148,13 +146,11 @@ export async function doProjectAction(
       DateArchived: null
     });
     await DatabaseWrites.projectActions.create({
-      data: {
-        ProjectId: project.Id,
-        UserId: security.userId,
-        DateAction: timestamp,
-        ActionType: ProjectActionType.Archival,
-        Action: ProjectActionString.Reactivate
-      }
+      ProjectId: project.Id,
+      UserId: security.userId,
+      DateAction: timestamp,
+      ActionType: ProjectActionType.Archival,
+      Action: ProjectActionString.Reactivate
     });
     await getQueues().UserTasks.add(`Create UserTasks for Reactivated Project #${project.Id}`, {
       type: BullMQ.JobType.UserTasks_Workflow,
@@ -179,13 +175,11 @@ export async function doProjectAction(
     });
     if (success) {
       await DatabaseWrites.projectActions.create({
-        data: {
-          ProjectId: project.Id,
-          UserId: security.userId,
-          ActionType: ProjectActionType.OwnerGroup,
-          Action: ProjectActionString.Claim,
-          ExternalId: security.userId
-        }
+        ProjectId: project.Id,
+        UserId: security.userId,
+        ActionType: ProjectActionType.OwnerGroup,
+        Action: ProjectActionString.Claim,
+        ExternalId: security.userId
       });
     }
   }

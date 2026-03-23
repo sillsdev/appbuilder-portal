@@ -122,17 +122,15 @@
               <IconContainer width={20} icon={Icons.Edit} />{m.project_editProject()}
             </a>
           {/if}
-          {#if data.projectActions.length}
+          {#if projectData.project.ProjectActions.length}
             <button class="btn btn-secondary" onclick={() => showProjectDetails(page.params.id!)}>
               <IconContainer icon={Icons.Info} width={20} />
               {m.products_details()}
             </button>
             <ProjectDetails
               project={{ Id: Number(page.params.id) }}
-              actions={data.projectActions}
-              users={data.users}
-              groups={data.groups}
-              prodDefs={data.prodDefs}
+              actions={projectData.project.ProjectActions}
+              {...projectData.actionParams}
             />
           {/if}
         </div>
@@ -251,7 +249,7 @@
                 deleteEndpoint="deleteProduct"
                 updateEndpoint="updateProduct"
                 {canEdit}
-                projectActions={data.projectActions.filter(
+                projectActions={projectData.project.ProjectActions.filter(
                   (pa) =>
                     pa.ActionType === ProjectActionType.Access ||
                     pa.ActionType === ProjectActionType.Archival
