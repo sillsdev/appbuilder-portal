@@ -15,7 +15,6 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { ProjectActionType } from '$lib/prisma';
   import { canClaimProject, canModifyProject } from '$lib/projects';
-  import ProjectActionEntry from '$lib/projects/components/ProjectActionEntry.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectDetails, {
     showProjectDetails
@@ -76,8 +75,8 @@
     </div>
   {:else}
     <!-- Header -->
-    <div class="flex p-6">
-      <div class="shrink">
+    <div class="flex p-4">
+      <div class="grow">
         <h1 class="p-0">
           {projectData.project?.Name}
         </h1>
@@ -102,32 +101,41 @@
           </span>
         {/if}
       </div>
-
-      <div class="grow">
-        {#if canEdit}
-          <Tooltip class="tooltip-bottom" tip={m.project_editProject()}>
-            <a
-              href={localizeHref(`/projects/${projectData.project.Id}/edit`)}
-              title={m.project_editProject()}
-            >
-              <IconContainer width="24" icon={Icons.Edit} />
-            </a>
-          </Tooltip>
-        {/if}
-      </div>
       {#if canEdit || canClaim}
-        <div class="shrink">
-          <ProjectActionMenu
-            data={data.actionForm}
-            project={projectData.project}
-            userGroups={projectData.userGroups}
-          />
-        </div>
+        <ProjectActionMenu
+          data={data.actionForm}
+          project={projectData.project}
+          userGroups={projectData.userGroups}
+        />
       {/if}
     </div>
     <div class="grid maingrid w-full p-4 pb-0">
       <div class="mainarea min-w-0">
         <!-- Details -->
+        <div class="flex flex-row gap-x-2">
+          {#if canEdit}
+            <a
+              class="btn btn-secondary"
+              href={localizeHref(`/projects/${projectData.project.Id}/edit`)}
+              title={m.project_editProject()}
+            >
+              <IconContainer width={20} icon={Icons.Edit} />{m.project_editProject()}
+            </a>
+          {/if}
+          {#if data.projectActions.length}
+            <button class="btn btn-secondary" onclick={() => showProjectDetails(page.params.id!)}>
+              <IconContainer icon={Icons.Info} width={20} />
+              {m.products_details()}
+            </button>
+            <ProjectDetails
+              project={{ Id: Number(page.params.id) }}
+              actions={data.projectActions}
+              users={data.users}
+              groups={data.groups}
+              prodDefs={data.prodDefs}
+            />
+          {/if}
+        </div>
         <h2 class="pl-0">{m.project_details_title()}</h2>
         <div>
           <div class="gridcont grid gap-x-6 gap-y-2">
@@ -194,50 +202,6 @@
               {/if}
             </div>
           </div>
-          {#if data.projectActions.length}
-            {#snippet entry(compact: boolean)}
-              <ProjectActionEntry
-                act={data.projectActions.at(-1)!}
-                {compact}
-                users={data.users}
-                groups={data.groups}
-                prodDefs={data.prodDefs}
-              />
-            {/snippet}
-            {#snippet projectDetailsButton(classes: string)}
-              <button
-                class="btn btn-secondary! btn-xs {classes}"
-                onclick={() => showProjectDetails(page.params.id!)}
-              >
-                <IconContainer icon={Icons.Info} width={20} />
-                {m.products_details()}
-              </button>
-            {/snippet}
-            <div class="mt-2">
-              <div class="flex flex-row gap-x-2">
-                <span class="grow">{m.project_details_action()}:</span>
-                {@render projectDetailsButton('sm:hidden')}
-              </div>
-              <div class="rounded-md bg-base-200 mt-2 py-2 flex flex-row">
-                <table class="hidden xl:table table-sm">
-                  <tbody>
-                    {@render entry(false)}
-                  </tbody>
-                </table>
-                <table class="table table-sm xl:hidden">
-                  <tbody>{@render entry(true)}</tbody>
-                </table>
-                {@render projectDetailsButton('hidden sm:btn sm:mr-2')}
-              </div>
-            </div>
-            <ProjectDetails
-              project={{ Id: Number(page.params.id) }}
-              actions={data.projectActions}
-              users={data.users}
-              groups={data.groups}
-              prodDefs={data.prodDefs}
-            />
-          {/if}
         </div>
         <!-- Product List Header -->
         <div class="flex flex-row place-content-between items-end">

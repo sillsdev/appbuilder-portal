@@ -32,7 +32,7 @@
 <dialog bind:this={detailsModal} id="modal{project.Id}" class="modal">
   <div class="modal-box w-11/12 max-w-6xl">
     <div class="flex flex-row">
-      <h1 class="pl-0 grow">{m.project_details_title()}</h1>
+      <h1 class="pl-0 grow">{m.products_details()}</h1>
       <button
         class="btn btn-ghost"
         type="button"
