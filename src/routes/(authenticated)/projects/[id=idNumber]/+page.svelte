@@ -238,6 +238,11 @@
                 deleteEndpoint="deleteProduct"
                 updateEndpoint="updateProduct"
                 {canEdit}
+                projectActions={data.projectActions.filter(
+                  (pa) =>
+                    pa.ActionType === ProjectActionType.Access ||
+                    pa.ActionType === ProjectActionType.Archival
+                )}
               />
             {/each}
           {/if}

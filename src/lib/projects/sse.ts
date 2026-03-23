@@ -186,6 +186,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         include: {
           User: {
             select: {
+              Id: true,
               Name: true
             }
           },

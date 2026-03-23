@@ -18,6 +18,7 @@
     type Transition,
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
+  import type { Action } from '$lib/projects/components/ProjectActionEntry.svelte';
   import { sanitizeInput, toast } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
@@ -76,10 +77,18 @@
     deleteEndpoint: string;
     updateEndpoint: string;
     canEdit: boolean;
+    projectActions: Action[];
   }
 
-  let { product, project, actionEndpoint, deleteEndpoint, updateEndpoint, canEdit }: Props =
-    $props();
+  let {
+    product,
+    project,
+    actionEndpoint,
+    deleteEndpoint,
+    updateEndpoint,
+    canEdit,
+    projectActions
+  }: Props = $props();
 
   let deleteProductModal: HTMLDialogElement | undefined = $state(undefined);
   let updateProductModal: HTMLDialogElement | undefined = $state(undefined);
@@ -312,5 +321,5 @@
       </div>
     </div>
   {/if}
-  <ProductDetails {product} transitions={product.Transitions} />
+  <ProductDetails {product} transitions={product.Transitions} {projectActions} />
 </div>

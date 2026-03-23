@@ -124,6 +124,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         Comment: true,
         User: {
           select: {
+            Id: true,
             Name: true
           }
         },

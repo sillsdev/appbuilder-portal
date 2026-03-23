@@ -51,11 +51,33 @@ export const load = (async ({ locals, params }) => {
       select: { OwnerId: true, OrganizationId: true, GroupId: true }
     })
   );
+
+  const projectActions = await DatabaseReads.projectActions.findMany({
+    where: {
+      ProjectId: projectId
+    },
+    select: {
+      User: {
+        select: {
+          Id: true,
+          Name: true
+        }
+      },
+      DateAction: true,
+      ActionType: true,
+      Action: true,
+      Value: true,
+      ExternalId: true
+    },
+    orderBy: { DateAction: 'asc' }
+  });
+
   return {
     projectData: await getProjectDetails(projectId, locals.security.sessionForm),
     authorForm: await superValidate(valibot(addAuthorSchema)),
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
+    projectActions,
     jobsAvailable: QueueConnected(),
     showRebuildToggles: env.APP_ENV !== 'prd'
   };
