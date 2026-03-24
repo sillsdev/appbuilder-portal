@@ -607,10 +607,14 @@ export function createProducer<T>(
       // This is a little wasteful because it will calculate much of the same data
       // multiple times if multiple users are connected to the same project page.
       if (updateId.includes(id)) {
-        // console.log(`Project page SSE update for project ${id}`);
-        const data = await query(id, userSession);
-        const { error } = emit(event, stringify(data));
-        if (error) {
+        try {
+          const data = await query(id, userSession);
+          const { error } = emit(event, stringify(data));
+          if (error) {
+            SSEPageUpdates.off(stream, updateCb);
+            clearInterval(pingInterval);
+          }
+        } catch {
           SSEPageUpdates.off(stream, updateCb);
           clearInterval(pingInterval);
         }
