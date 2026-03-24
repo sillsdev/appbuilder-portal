@@ -53,14 +53,14 @@
     {act.Action}
   {:else if act.ActionType === ProjectActionType.Author}
     <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
-    {m[act.Action as ValidI13nKey]({ name: m.authors_title() } as any)}
+    {m[act.Action as ValidI13nKey]?.({ name: m.authors_title() } as any) ?? act.Action}
   {:else if act.ActionType === ProjectActionType.Reviewer}
     <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
-    {m[act.Action as ValidI13nKey]({ name: m.reviewers_title() } as any)}
+    {m[act.Action as ValidI13nKey]?.({ name: m.reviewers_title() } as any) ?? act.Action}
   {:else if act.ActionType === ProjectActionType.EditField}
-    {m.models_edit({ name: m[act.Action as ValidI13nKey]({} as never) })}
+    {m.models_edit({ name: m[act.Action as ValidI13nKey]?.({} as never) ?? act.Action })}
   {:else}
-    {m[act.Action as ValidI13nKey]({} as never)}
+    {m[act.Action as ValidI13nKey]?.({} as never) ?? act.Action}
   {/if}
 {/snippet}
 
@@ -118,7 +118,9 @@
       act.Action !== ProjectActionString.EditLanguage}
     <tr>
       <td colspan="4">
-        <TaskComment comment={useI18n ? m[act.Value as ValidI13nKey]({} as never) : act.Value} />
+        <TaskComment
+          comment={(useI18n && m[act.Value as ValidI13nKey]?.({} as never)) || act.Value}
+        />
       </td>
     </tr>
   {/if}
@@ -146,7 +148,9 @@
       act.Action !== ProjectActionString.EditLanguage}
     <tr>
       <td colspan="2">
-        <TaskComment comment={useI18n ? m[act.Value as ValidI13nKey]({} as never) : act.Value} />
+        <TaskComment
+          comment={(useI18n && m[act.Value as ValidI13nKey]?.({} as never)) || act.Value}
+        />
       </td>
     </tr>
   {/if}
