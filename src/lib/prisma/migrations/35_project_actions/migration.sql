@@ -17,3 +17,9 @@ ALTER TABLE "ProjectActions" ADD CONSTRAINT "FK_ProjectActions_Projects_ProjectI
 
 -- AddForeignKey
 ALTER TABLE "ProjectActions" ADD CONSTRAINT "FK_ProjectActions_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users"("Id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- CreateIndex
+CREATE INDEX "IX_ProjectActions_ProjectId" ON "ProjectActions"("ProjectId");
+
+-- CreateIndex
+CREATE INDEX "IX_ProjectActions_UserId" ON "ProjectActions"("UserId");

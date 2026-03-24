@@ -310,6 +310,9 @@ model ProjectActions {
 
   Project Projects @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProjectActions_Projects_ProjectId")
   User    Users    @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProjectActions_Users_UserId")
+
+  @@index([ProjectId], map: "IX_ProjectActions_ProjectId")
+  @@index([UserId], map: "IX_ProjectActions_UserId")
 }
 
 model Reviewers {
