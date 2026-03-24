@@ -728,32 +728,37 @@ async function migrateProjectActions() {
   });
 
   const updated = await Promise.all(
-    projects.map(async (p) => ({
-      created: await DatabaseWrites.projectActions.createMany(
-        p.Products[0].ProductTransitions.map((pt) => ({
-          ProjectId: p.Id,
-          UserId: pt.UserId!,
-          ActionType:
-            pt.TransitionType === ProductTransitionType.ProjectAccess
-              ? ProjectActionType.Access
-              : ProjectActionType.Archival,
-          Action:
-            pt.TransitionType === ProductTransitionType.Archival
-              ? ProjectActionString.Archive
-              : pt.TransitionType === ProductTransitionType.Reactivation
-                ? ProjectActionString.Reactivate
-                : (pt.InitialState ?? ''),
-          DateAction: pt.DateTransition!
-        })),
-        p.Id
-      ),
-      deleted: await DatabaseWrites.productTransitions.deleteMany(
-        {
+    projects.map((p) =>
+      prismaInternal.$transaction(async (tx) => {
+        const created = await tx.projectActions.createMany({
+          data: p.Products[0].ProductTransitions.map((pt) => ({
+            ProjectId: p.Id,
+            UserId: pt.UserId!,
+            ActionType:
+              pt.TransitionType === ProductTransitionType.ProjectAccess
+                ? ProjectActionType.Access
+                : ProjectActionType.Archival,
+            Action:
+              pt.TransitionType === ProductTransitionType.Archival
+                ? ProjectActionString.Archive
+                : pt.TransitionType === ProductTransitionType.Reactivation
+                  ? ProjectActionString.Reactivate
+                  : (pt.InitialState ?? ''),
+            DateAction: pt.DateTransition!
+          }))
+        });
+        const deleted = await tx.productTransitions.deleteMany({
           where: { ...transitionFilter, Product: { ProjectId: p.Id } }
-        },
-        p.Id
-      )
-    }))
+        });
+
+        getQueues().SvelteSSE.add(`Update Project #${p.Id} (actions migrated)`, {
+          type: BullMQ.JobType.SvelteSSE_UpdateProject,
+          projectIds: [p.Id]
+        });
+
+        return { project: p.Id, created: created.count, deleted: deleted.count };
+      })
+    )
   );
 
   const after = await DatabaseReads.projects.count({
