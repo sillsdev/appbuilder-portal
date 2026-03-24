@@ -86,7 +86,10 @@ export const actions = {
       },
       select: {
         Products: {
-          where: { Id: { in: form.data.products }, Project: { OrganizationId: orgId } },
+          where: {
+            Id: { in: form.data.products },
+            Project: { OrganizationId: orgId, DateArchived: null }
+          },
           select: { Id: true, ProjectId: true }
         }
       }
