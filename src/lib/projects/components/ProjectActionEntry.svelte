@@ -41,9 +41,7 @@
 
   let { act, compact, prodDefs, users, groups }: Props = $props();
 
-  const extraBox = $derived(
-    act.ActionType === ProjectActionType.EditField || act.ActionType === ProjectActionType.Product
-  );
+  const extraBox = $derived(act.ActionType === ProjectActionType.EditField);
 </script>
 
 {#snippet actionType(act: Action)}
@@ -60,22 +58,33 @@
     <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
     {m[act.Action as ValidI13nKey]({ name: m.reviewers_title() } as any)}
   {:else if act.ActionType === ProjectActionType.EditField}
-    <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
-    {m.models_edit({ name: m[act.Action as ValidI13nKey]({} as any) })}
+    {m.models_edit({ name: m[act.Action as ValidI13nKey]({} as never) })}
   {:else}
-    <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
-    {m[act.Action as ValidI13nKey]({} as any)}
+    {m[act.Action as ValidI13nKey]({} as never)}
   {/if}
 {/snippet}
 
 {#snippet details(act: Action)}
   {#if act.ActionType === ProjectActionType.Product}
-    {#if act.Action !== ProjectActionString.RemoveProduct}
-      {m.stores_name()}:
-    {:else}
-      {m.transitions_state()}:
-    {/if}
-    {act.Value}
+    {@const pd = prodDefs?.find((p) => p.Id === act.ExternalId)}
+    <div class="flex flex-col">
+      {#if pd}
+        <div>
+          <IconContainer icon={getProductIcon(pd.Workflow.ProductType)} width={24} />
+          {pd.Name}
+        </div>
+      {/if}
+      <i class="opacity-70">
+        {#if act.Action !== ProjectActionString.RemoveProduct}
+          {m.stores_name()}:
+        {:else}
+          {m.transitions_state()}:
+        {/if}
+        <b>
+          {act.Value}
+        </b>
+      </i>
+    </div>
   {:else if act.ActionType === ProjectActionType.OwnerGroup || act.ActionType === ProjectActionType.Author}
     {#if act.Action === ProjectActionString.AssignGroup}
       {groups?.find((g) => g.Id === act.ExternalId)?.Name}
@@ -103,21 +112,13 @@
     </td>
   </tr>
   {#if extraBox}
+    {@const useI18n =
+      act.Action !== ProjectActionString.EditName &&
+      act.Action !== ProjectActionString.EditDescription &&
+      act.Action !== ProjectActionString.EditLanguage}
     <tr>
       <td colspan="4">
-        {#if act.ActionType !== ProjectActionType.Product}
-          {@const useI18n =
-            act.Action !== ProjectActionString.EditName &&
-            act.Action !== ProjectActionString.EditDescription &&
-            act.Action !== ProjectActionString.EditLanguage}
-          <TaskComment comment={useI18n ? m[act.Value as ValidI13nKey]({} as never) : act.Value} />
-        {:else}
-          {@const pd = prodDefs?.find((p) => p.Id === act.ExternalId)}
-          {#if pd}
-            <IconContainer icon={getProductIcon(pd.Workflow.ProductType)} width={24} />
-            {pd.Name}
-          {/if}
-        {/if}
+        <TaskComment comment={useI18n ? m[act.Value as ValidI13nKey]({} as never) : act.Value} />
       </td>
     </tr>
   {/if}
@@ -139,21 +140,13 @@
     </td>
   </tr>
   {#if extraBox}
+    {@const useI18n =
+      act.Action !== ProjectActionString.EditName &&
+      act.Action !== ProjectActionString.EditDescription &&
+      act.Action !== ProjectActionString.EditLanguage}
     <tr>
       <td colspan="2">
-        {#if act.ActionType !== ProjectActionType.Product}
-          {@const useI18n =
-            act.Action !== ProjectActionString.EditName &&
-            act.Action !== ProjectActionString.EditDescription &&
-            act.Action !== ProjectActionString.EditLanguage}
-          <TaskComment comment={useI18n ? m[act.Value as ValidI13nKey]({} as never) : act.Value} />
-        {:else}
-          {@const pd = prodDefs?.find((p) => p.Id === act.ExternalId)}
-          {#if pd}
-            <IconContainer icon={getProductIcon(pd.Workflow.ProductType)} width={24} />
-            {pd.Name}
-          {/if}
-        {/if}
+        <TaskComment comment={useI18n ? m[act.Value as ValidI13nKey]({} as never) : act.Value} />
       </td>
     </tr>
   {/if}
