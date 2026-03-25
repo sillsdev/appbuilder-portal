@@ -5,7 +5,7 @@ import { error } from '@sveltejs/kit';
 import { stringify } from 'devalue';
 import { produce } from 'sveltekit-sse';
 import { type SSEPageEvents, SSEPageUpdates } from './listener';
-import { ProjectActionString, ProjectActionType, RoleId } from '$lib/prisma';
+import { ProductTransitionType, ProjectActionString, ProjectActionType, RoleId } from '$lib/prisma';
 import { minifyProductCard, minifyProductDetails } from '$lib/products';
 import { userGroupsForOrg } from '$lib/projects/server';
 import { getURLandToken } from '$lib/server/build-engine-api/requests';
@@ -492,10 +492,14 @@ export async function getProjectProducts(id: number, userSession: Session['user'
         products: products.map((p) => ({
           ...minifyProductCard(
             p,
+            p.ProductTransitions.find((tr) => tr.ProductId === p.Id && tr.DateTransition === null),
             p.ProductTransitions.findLast(
-              (tr) => tr.ProductId === p.Id && tr.DateTransition !== null
-            ),
-            p.ProductTransitions.find((tr) => tr.ProductId === p.Id && tr.DateTransition === null)
+              (tr) =>
+                tr.ProductId === p.Id &&
+                tr.DateTransition !== null &&
+                (tr.TransitionType === ProductTransitionType.Activity ||
+                  tr.TransitionType === ProductTransitionType.StartWorkflow)
+            )
           ),
           ...minifyProductDetails(p, BuildEngineUrl)
         }))
