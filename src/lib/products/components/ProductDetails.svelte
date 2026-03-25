@@ -35,11 +35,7 @@
 
   let { product, projectActions = [] }: Props = $props();
 
-  const entries = $derived(
-    [...product.PT, ...projectActions].sort((a, b) =>
-      byDate('D' in a ? a.D : a.DateAction, 'D' in b ? b.D : b.DateAction)
-    )
-  );
+  const entries = $derived([...product.PT, ...projectActions].sort((a, b) => byDate(a.D, b.D)));
 
   const landmarks = [2, 3, 4, 6] as const;
   type Landmark = (typeof landmarks)[number];
@@ -162,7 +158,7 @@
       </thead>
       <tbody>
         {#each entries as transition}
-          {#if 'D' in transition}
+          {#if 'AU' in transition}
             {@const showRecs = isSuper && !!transition.QR.length}
             <tr
               class:font-bold={isLandmark(transition.T)}
@@ -217,7 +213,7 @@
       </thead>
       <tbody>
         {#each entries as transition}
-          {#if 'D' in transition}
+          {#if 'AU' in transition}
             {@const showRecs = isSuper && !!transition.QR.length}
             <tr
               class:font-bold={isLandmark(transition.T)}

@@ -1,4 +1,3 @@
-import type { Prisma } from '@prisma/client';
 import type { Locale as DefaultLocale } from '$lib/paraglide/runtime';
 import {
   ApplicationType,
@@ -11,7 +10,7 @@ import {
   WorkflowType
 } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
-import type { ValidI13nKey } from '$lib/utils';
+import type { Action } from '$lib/projects/components/ProjectActionEntry.svelte';
 import { ProductType, WorkflowAction } from '$lib/workflowTypes';
 
 export function getActionIcon(type: ProductActionType) {
@@ -105,19 +104,17 @@ export function getProductIcon(type?: ProductType) {
   }
 }
 
-export function getProjectActionIcon(
-  args: Prisma.ProjectActionsGetPayload<{ select: { ActionType: true; Action: true; Value: true } }>
-) {
-  switch (args.ActionType) {
+export function getProjectActionIcon(args: Pick<Action, 'T' | 'A' | 'V'>) {
+  switch (args.T) {
     case ProjectActionType.Archival:
-      switch (args.Action as ValidI13nKey) {
+      switch (args.A) {
         case ProjectActionString.Archive:
           return Icons.Archive;
         default:
           return Icons.ReactivateProject;
       }
     case ProjectActionType.Access:
-      switch (args.Action.replace(/Project /, '')) {
+      switch (args.A.replace(/Project /, '')) {
         case 'Upload':
           return 'material-symbols:upload';
         case 'Download':
@@ -126,35 +123,35 @@ export function getProjectActionIcon(
           return Icons.Star;
       }
     case ProjectActionType.OwnerGroup:
-      switch (args.Action as ValidI13nKey) {
+      switch (args.A) {
         case ProjectActionString.AssignGroup:
           return Icons.AddGroup;
         default:
           return Icons.AddUser;
       }
     case ProjectActionType.Product:
-      switch (args.Action as ValidI13nKey) {
+      switch (args.A) {
         case ProjectActionString.AddProduct:
           return Icons.AddProduct;
         default:
           return Icons.Trash;
       }
     case ProjectActionType.Author:
-      switch (args.Action as ValidI13nKey) {
+      switch (args.A) {
         case ProjectActionString.AddAuthor:
           return Icons.AddAuthor;
         default:
           return Icons.Trash;
       }
     case ProjectActionType.Reviewer:
-      switch (args.Action as ValidI13nKey) {
+      switch (args.A) {
         case ProjectActionString.AddReviewer:
           return Icons.AddReviewer;
         default:
           return Icons.Trash;
       }
     case ProjectActionType.EditField:
-      switch (args.Value as ValidI13nKey) {
+      switch (args.V) {
         case ProjectActionValue.AutoPublishOn:
           return Icons.RefreshOn;
         case ProjectActionValue.AutoPublishOff:
@@ -175,7 +172,7 @@ export function getProjectActionIcon(
           return Icons.Edit;
       }
     case ProjectActionType.Creation:
-      switch (args.Action) {
+      switch (args.A) {
         case ProjectActionString.CreateProject:
           return Icons.AddProject;
         default:
@@ -227,9 +224,9 @@ export function getTransitionIcon(
       return getActionIcon(ProductActionType.CancelWorkflow);
     case ProductTransitionType.ProjectAccess:
       return getProjectActionIcon({
-        ActionType: ProjectActionType.Access,
-        Action: command ?? '',
-        Value: null
+        T: ProjectActionType.Access,
+        A: command ?? '',
+        V: null
       });
     case ProductTransitionType.Migration:
       return Icons.Transfer;

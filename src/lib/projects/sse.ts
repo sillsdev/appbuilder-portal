@@ -7,6 +7,7 @@ import { produce } from 'sveltekit-sse';
 import { type SSEPageEvents, SSEPageUpdates } from './listener';
 import { ProductTransitionType, ProjectActionString, ProjectActionType, RoleId } from '$lib/prisma';
 import { minifyProductCard, minifyProductDetails } from '$lib/products';
+import { minifyProjectActions } from '$lib/projects';
 import { userGroupsForOrg } from '$lib/projects/server';
 import { getURLandToken } from '$lib/server/build-engine-api/requests';
 import { DatabaseReads } from '$lib/server/database';
@@ -83,48 +84,29 @@ export async function getProjectDetails(id: number, userSession: Session['user']
       });
       span.addEvent('Project fetched');
 
+      const actions = await DatabaseReads.projectActions.findMany({
+        where: { ProjectId: id },
+        select: {
+          UserId: true,
+          DateAction: true,
+          ActionType: true,
+          Action: true,
+          Value: true,
+          ExternalId: true
+        }
+      });
+      span.addEvent('Project Actions fetched');
+
       return {
         project,
-        actionParams: {
-          users: await DatabaseReads.users.findMany({
+        ...minifyProjectActions(
+          actions,
+          await DatabaseReads.productDefinitions.findMany({
             where: {
               Id: {
-                in: project.ProjectActions.filter(
-                  (pa) =>
-                    pa.ExternalId &&
-                    (pa.ActionType === ProjectActionType.Author ||
-                      (pa.ActionType === ProjectActionType.OwnerGroup &&
-                        pa.Action !== ProjectActionString.AssignGroup))
-                ).map((pa) => pa.ExternalId!)
-              }
-            },
-            select: {
-              Id: true,
-              Name: true
-            }
-          }),
-          groups: await DatabaseReads.groups.findMany({
-            where: {
-              Id: {
-                in: project.ProjectActions.filter(
-                  (pa) =>
-                    pa.ExternalId &&
-                    pa.ActionType === ProjectActionType.OwnerGroup &&
-                    pa.Action === ProjectActionString.AssignGroup
-                ).map((pa) => pa.ExternalId!)
-              }
-            },
-            select: {
-              Id: true,
-              Name: true
-            }
-          }),
-          prodDefs: await DatabaseReads.productDefinitions.findMany({
-            where: {
-              Id: {
-                in: project.ProjectActions.filter(
-                  (pa) => pa.ExternalId && pa.ActionType === ProjectActionType.Product
-                ).map((pa) => pa.ExternalId!)
+                in: actions
+                  .filter((pa) => pa.ExternalId && pa.ActionType === ProjectActionType.Product)
+                  .map((pa) => pa.ExternalId!)
               }
             },
             select: {
@@ -136,8 +118,50 @@ export async function getProjectDetails(id: number, userSession: Session['user']
                 }
               }
             }
+          }),
+          await DatabaseReads.users.findMany({
+            where: {
+              OR: [
+                {
+                  Id: {
+                    in: actions
+                      .filter(
+                        (pa) =>
+                          pa.ExternalId &&
+                          (pa.ActionType === ProjectActionType.Author ||
+                            (pa.ActionType === ProjectActionType.OwnerGroup &&
+                              pa.Action !== ProjectActionString.AssignGroup))
+                      )
+                      .map((pa) => pa.ExternalId!)
+                  }
+                },
+                { ProjectActions: { some: { ProjectId: id } } }
+              ]
+            },
+            select: {
+              Id: true,
+              Name: true
+            }
+          }),
+          await DatabaseReads.groups.findMany({
+            where: {
+              Id: {
+                in: actions
+                  .filter(
+                    (pa) =>
+                      pa.ExternalId &&
+                      pa.ActionType === ProjectActionType.OwnerGroup &&
+                      pa.Action === ProjectActionString.AssignGroup
+                  )
+                  .map((pa) => pa.ExternalId!)
+              }
+            },
+            select: {
+              Id: true,
+              Name: true
+            }
           })
-        }
+        )
       };
     } catch (e) {
       span.recordException(e as Error);
