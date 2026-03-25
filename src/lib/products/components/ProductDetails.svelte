@@ -179,7 +179,10 @@
                 {/if}
               </td>
               <td>
-                {transition.T === ProductTransitionType.Activity ? transition.Cd : ''}
+                {transition.T === ProductTransitionType.Activity ||
+                transition.T === ProductTransitionType.Transfer
+                  ? transition.Cd
+                  : ''}
               </td>
               <td>
                 {getTimeDateString(transition.D)}
@@ -235,7 +238,10 @@
                     m.appName()}
                 </td>
                 <td>
-                  {transition.T === ProductTransitionType.Activity ? transition.Cd : ''}
+                  {transition.T === ProductTransitionType.Activity ||
+                  transition.T === ProductTransitionType.Transfer
+                    ? transition.Cd
+                    : ''}
                 </td>
               </tr>
             {/if}
