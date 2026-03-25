@@ -153,11 +153,7 @@
               <IconContainer icon={Icons.Info} width={20} />
               {m.products_details()}
             </button>
-            <ProjectDetails
-              project={{ Id: Number(page.params.id) }}
-              actions={projectData.project.ProjectActions}
-              {...projectData.actionParams}
-            />
+            <ProjectDetails {...projectData} project={{ Id: Number(page.params.id) }} />
           {/if}
         </div>
         <h2 class="pl-0">{m.project_details_title()}</h2>
@@ -280,10 +276,8 @@
                 deleteEndpoint="deleteProduct"
                 updateEndpoint="updateProduct"
                 {canEdit}
-                projectActions={projectData.project.ProjectActions.filter(
-                  (pa) =>
-                    pa.ActionType === ProjectActionType.Access ||
-                    pa.ActionType === ProjectActionType.Archival
+                projectActions={projectData.actions.filter(
+                  (pa) => pa.T === ProjectActionType.Access || pa.T === ProjectActionType.Archival
                 )}
               />
             {/each}
