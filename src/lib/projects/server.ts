@@ -120,53 +120,14 @@ export async function doProjectAction(
   security: Security,
   groups: number[]
 ) {
-  if (operation === 'archive' && !project?.DateArchived) {
-    const timestamp = new Date();
-    await DatabaseWrites.projects.update(project.Id, {
-      DateArchived: timestamp
-    });
-    await DatabaseWrites.projectActions.create({
-      ProjectId: project.Id,
-      UserId: security.userId,
-      DateAction: timestamp,
-      ActionType: ProjectActionType.Archival,
-      Action: ProjectActionString.Archive
-    });
-    await getQueues().UserTasks.add(`Delete UserTasks for Archived Project #${project.Id}`, {
-      type: BullMQ.JobType.UserTasks_Workflow,
-      scope: 'Project',
-      projectId: project.Id,
-      operation: {
-        type: BullMQ.UserTasks.OpType.Delete
-      }
-    });
-  } else if (operation === 'reactivate' && !!project?.DateArchived) {
-    const timestamp = new Date();
-    await DatabaseWrites.projects.update(project.Id, {
-      DateArchived: null
-    });
-    await DatabaseWrites.projectActions.create({
-      ProjectId: project.Id,
-      UserId: security.userId,
-      DateAction: timestamp,
-      ActionType: ProjectActionType.Archival,
-      Action: ProjectActionString.Reactivate
-    });
-    await getQueues().UserTasks.add(`Create UserTasks for Reactivated Project #${project.Id}`, {
-      type: BullMQ.JobType.UserTasks_Workflow,
-      scope: 'Project',
-      projectId: project.Id,
-      operation: {
-        type: BullMQ.UserTasks.OpType.Create
-      }
-    });
-  } else if (
+  console.log(`doProjectAction: ${operation}`);
+  if (
     operation === 'claim' &&
     canClaimProject(
       security.sessionForm,
-      project?.OwnerId,
+      project.OwnerId,
       project.OrganizationId,
-      project?.GroupId,
+      project.GroupId,
       groups
     )
   ) {
@@ -182,6 +143,30 @@ export async function doProjectAction(
         ExternalId: security.userId
       });
     }
+  } else if (project.DateArchived ? operation === 'reactivate' : operation === 'archive') {
+    const archiving = operation === 'archive';
+    const timestamp = new Date();
+    await DatabaseWrites.projects.update(project.Id, {
+      DateArchived: archiving ? timestamp : null
+    });
+    await DatabaseWrites.projectActions.create({
+      ProjectId: project.Id,
+      UserId: security.userId,
+      DateAction: timestamp,
+      ActionType: ProjectActionType.Archival,
+      Action: archiving ? ProjectActionString.Archive : ProjectActionString.Reactivate
+    });
+    await getQueues().UserTasks.add(
+      `${archiving ? 'Delete' : 'Create'} UserTasks for ${archiving ? 'Archived' : 'Reactivated'} Project #${project.Id}`,
+      {
+        type: BullMQ.JobType.UserTasks_Workflow,
+        scope: 'Project',
+        projectId: project.Id,
+        operation: {
+          type: archiving ? BullMQ.UserTasks.OpType.Delete : BullMQ.UserTasks.OpType.Create
+        }
+      }
+    );
   }
 }
 
