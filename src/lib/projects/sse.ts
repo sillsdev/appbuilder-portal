@@ -158,6 +158,9 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               Action: true,
               Value: true,
               ExternalId: true
+            },
+            orderBy: {
+              DateAction: 'asc'
             }
           }
         }
