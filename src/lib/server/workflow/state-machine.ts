@@ -339,6 +339,17 @@ export const WorkflowStateMachine = setup({
               productType: { is: ProductType.Android_GooglePlay }
             }
           },
+          actions: assign({
+            existingApp: false,
+            // unset variables set in existing app
+            environment: ({ context }) =>
+              Object.fromEntries(
+                Object.entries(context.environment).filter(
+                  ([k, _]) =>
+                    k !== ENVKeys.GOOGLE_PLAY_EXISTING && k !== ENVKeys.BUILD_DOWNLOAD_PLAY_LISTING
+                )
+              )
+          }),
           target: WorkflowState.Product_Build
         },
         [WorkflowAction.Continue]: {
@@ -438,6 +449,17 @@ export const WorkflowStateMachine = setup({
           },
           guard: hasAuthors,
           target: WorkflowState.Author_Download
+        },
+        [WorkflowAction.Reset]: {
+          meta: {
+            type: ActionType.User,
+            user: RoleId.AppBuilder,
+            includeWhen: {
+              productType: { is: ProductType.Android_GooglePlay },
+              workflowType: { is: WorkflowType.Startup }
+            }
+          },
+          target: WorkflowState.App_Builder_Configuration
         }
       }
     },

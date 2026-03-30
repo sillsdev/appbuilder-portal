@@ -265,6 +265,8 @@ export function getWorkflowActionIcon(type: WorkflowAction) {
       return 'icon-park-outline:return';
     case WorkflowAction.Email_Reviewers:
       return Icons.Email;
+    case WorkflowAction.Reset:
+      return Icons.RefreshOn;
     default:
       return '';
   }

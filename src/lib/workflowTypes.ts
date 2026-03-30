@@ -124,7 +124,8 @@ export enum WorkflowAction {
   Email_Reviewers = 'Email Reviewers',
   Publish_Completed = 'Publish Completed',
   Publish_Failed = 'Publish Failed',
-  Google_API_Error = 'Google API Error'
+  Google_API_Error = 'Google API Error',
+  Reset = 'Reset'
 }
 
 export type WorkflowInstanceContext = {
