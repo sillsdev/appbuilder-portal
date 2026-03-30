@@ -235,6 +235,8 @@ export type WorkflowTransitionMeta = {
   type: ActionType;
   user?: RoleId;
   includeWhen?: MetaFilter;
+  // only a value of false will block tasks
+  createTasks?: boolean;
 };
 
 /**

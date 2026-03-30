@@ -123,7 +123,9 @@ export async function workflow(job: Job<BullMQ.UserTasks.Workflow>): Promise<unk
             new Set(
               (
                 availableTransitions
-                  .filter((t) => t[0].meta.type === ActionType.User)
+                  .filter(
+                    (t) => t[0].meta.type === ActionType.User && t[0].meta.createTasks !== false
+                  )
                   .map((t) => t[0].meta.user) as RoleId[]
               ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
             ),

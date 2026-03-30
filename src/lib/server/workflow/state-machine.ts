@@ -613,7 +613,8 @@ export const WorkflowStateMachine = setup({
           {
             meta: {
               type: ActionType.User,
-              user: RoleId.OrgAdmin
+              user: RoleId.OrgAdmin,
+              createTasks: false
             },
             actions: ({ context }) =>
               DatabaseWrites.products.update(context.productId, { CurrentBuildId: null }),
@@ -622,7 +623,8 @@ export const WorkflowStateMachine = setup({
           {
             meta: {
               type: ActionType.User,
-              user: RoleId.AppBuilder
+              user: RoleId.AppBuilder,
+              createTasks: false
             },
             actions: ({ context }) =>
               DatabaseWrites.products.update(context.productId, { CurrentBuildId: null }),
@@ -899,7 +901,8 @@ export const WorkflowStateMachine = setup({
           {
             meta: {
               type: ActionType.User,
-              user: RoleId.OrgAdmin
+              user: RoleId.OrgAdmin,
+              createTasks: false
             },
             actions: ({ context }) =>
               DatabaseWrites.products.update(context.productId, { CurrentReleaseId: null }),
@@ -908,7 +911,8 @@ export const WorkflowStateMachine = setup({
           {
             meta: {
               type: ActionType.User,
-              user: RoleId.AppBuilder
+              user: RoleId.AppBuilder,
+              createTasks: false
             },
             actions: ({ context }) =>
               DatabaseWrites.products.update(context.productId, { CurrentReleaseId: null }),
