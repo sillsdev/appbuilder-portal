@@ -125,6 +125,7 @@ export enum WorkflowAction {
   Publish_Completed = 'Publish Completed',
   Publish_Failed = 'Publish Failed',
   Google_API_Error = 'Google API Error',
+  Cancel = 'Cancel',
   Reset = 'Reset'
 }
 

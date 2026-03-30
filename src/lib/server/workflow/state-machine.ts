@@ -20,6 +20,7 @@ import {
   newGPApp
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
+import { DatabaseWrites } from '../database';
 import { deleteWorkflow, markResolved } from './dbProcedures';
 import { Workflow } from './index';
 
@@ -607,7 +608,27 @@ export const WorkflowStateMachine = setup({
           // It looks like a target is necessary for reentry to work??
           target: WorkflowState.Product_Build,
           reenter: true
-        }
+        },
+        [WorkflowAction.Cancel]: [
+          {
+            meta: {
+              type: ActionType.User,
+              user: RoleId.OrgAdmin
+            },
+            actions: ({ context }) =>
+              DatabaseWrites.products.update(context.productId, { CurrentBuildId: null }),
+            target: WorkflowState.Synchronize_Data
+          },
+          {
+            meta: {
+              type: ActionType.User,
+              user: RoleId.AppBuilder
+            },
+            actions: ({ context }) =>
+              DatabaseWrites.products.update(context.productId, { CurrentBuildId: null }),
+            target: WorkflowState.Synchronize_Data
+          }
+        ]
       }
     },
     [WorkflowState.App_Store_Preview]: {
@@ -873,7 +894,27 @@ export const WorkflowStateMachine = setup({
             }
           },
           target: WorkflowState.Evaluate_Error
-        }
+        },
+        [WorkflowAction.Cancel]: [
+          {
+            meta: {
+              type: ActionType.User,
+              user: RoleId.OrgAdmin
+            },
+            actions: ({ context }) =>
+              DatabaseWrites.products.update(context.productId, { CurrentReleaseId: null }),
+            target: WorkflowState.Synchronize_Data
+          },
+          {
+            meta: {
+              type: ActionType.User,
+              user: RoleId.AppBuilder
+            },
+            actions: ({ context }) =>
+              DatabaseWrites.products.update(context.productId, { CurrentReleaseId: null }),
+            target: WorkflowState.Synchronize_Data
+          }
+        ]
       }
     },
     [WorkflowState.Evaluate_Error]: {

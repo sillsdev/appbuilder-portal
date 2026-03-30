@@ -251,6 +251,7 @@ export function getWorkflowActionIcon(type: WorkflowAction) {
       return 'mdi:approve';
     case WorkflowAction.Hold:
       return 'gridicons:pause';
+    case WorkflowAction.Cancel:
     case WorkflowAction.Reject:
       return 'mdi:cancel';
     case WorkflowAction.Jump:
