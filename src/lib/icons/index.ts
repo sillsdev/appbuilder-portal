@@ -20,8 +20,10 @@ export function getActionIcon(type: ProductActionType) {
       return 'carbon:build-run';
     case ProductActionType.Republish:
       return 'carbon:ibm-elo-publishing';
-    case ProductActionType.Cancel:
+    case ProductActionType.CancelWorkflow:
       return 'mdi:cancel-octagon';
+    default:
+      return 'carbon:stop-filled';
   }
 }
 
@@ -210,7 +212,7 @@ export function getTransitionIcon(
     case ProductTransitionType.EndWorkflow:
       return Icons.Checkmark;
     case ProductTransitionType.CancelWorkflow:
-      return getActionIcon(ProductActionType.Cancel);
+      return getActionIcon(ProductActionType.CancelWorkflow);
     case ProductTransitionType.ProjectAccess:
       return getProjectActionIcon({
         ActionType: ProjectActionType.Access,

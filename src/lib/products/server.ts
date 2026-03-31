@@ -2,9 +2,14 @@ import { ProductTransitionType, WorkflowType } from '$lib/prisma';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
+import { WorkflowAction, WorkflowState } from '$lib/workflowTypes';
 import { ProductActionType } from '.';
 
-export async function doProductAction(productId: string, action: ProductActionType) {
+export async function doProductAction(
+  productId: string,
+  action: ProductActionType,
+  userId: number
+) {
   const product = await DatabaseReads.products.findUnique({
     where: {
       Id: productId
@@ -34,7 +39,8 @@ export async function doProductAction(productId: string, action: ProductActionTy
         select: {
           WorkflowDefinition: {
             select: { Type: true }
-          }
+          },
+          State: true
         }
       }
     }
@@ -54,7 +60,7 @@ export async function doProductAction(productId: string, action: ProductActionTy
         }
         break;
       }
-      case ProductActionType.Cancel:
+      case ProductActionType.CancelWorkflow:
         if (
           product.WorkflowInstance?.WorkflowDefinition &&
           product.WorkflowInstance.WorkflowDefinition.Type !== WorkflowType.Startup
@@ -83,6 +89,15 @@ export async function doProductAction(productId: string, action: ProductActionTy
           await DatabaseWrites.workflowInstances.delete(productId, product.ProjectId);
         }
         break;
+      case ProductActionType.StopBuild:
+      case ProductActionType.StopPublish:
+        if (
+          product.WorkflowInstance?.State === WorkflowState.Product_Build ||
+          product.WorkflowInstance?.State === WorkflowState.Product_Publish
+        ) {
+          const flow = await Workflow.restore(product.Id);
+          flow?.send({ type: WorkflowAction.Cancel, userId });
+        }
     }
   }
 }

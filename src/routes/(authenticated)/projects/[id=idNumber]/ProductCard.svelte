@@ -64,6 +64,11 @@
         WorkflowInstance: {
           select: {
             State: true;
+            WorkflowDefinition: {
+              select: {
+                Type: true;
+              };
+            };
           };
         };
         Store: { select: { StoreTypeId: true; Description: true } };
@@ -264,7 +269,12 @@
       {#each product.actions as action}
         {@const message =
           //@ts-expect-error this is in fact correct
-          m['products_acts_' + action]()}
+          m['products_acts_' + action]({
+            workflow: m.flowDefs_types({
+              type: product.WorkflowInstance?.WorkflowDefinition.Type ?? 0
+            })
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any)}
         <BlockIfJobsUnavailable class="text-nowrap">
           {#snippet altContent()}
             <IconContainer icon={getActionIcon(action)} width={20} />

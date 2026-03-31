@@ -240,7 +240,11 @@ export const actions = {
     if (!(await verifyProduct(event, form.data.productId))) {
       return fail(403, { form, ok: false });
     }
-    await doProductAction(form.data.productId, form.data.productAction);
+    await doProductAction(
+      form.data.productId,
+      form.data.productAction,
+      event.locals.security.userId
+    );
 
     return { form, ok: true };
   },

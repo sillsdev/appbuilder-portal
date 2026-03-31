@@ -265,9 +265,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             ActiveTransition: strippedTransitions.find(
               (t) => (t[0] ?? t[1])?.ProductId === product.Id
             )?.[1],
-            actions: canEdit
-              ? getProductActions(product, project.Owner.Id, userSession.userId)
-              : [],
+            actions: canEdit ? getProductActions(product) : [],
             BuildEngineUrl: isSuper ? `${getURLandToken(organization).url}` : undefined
           }))
         },
