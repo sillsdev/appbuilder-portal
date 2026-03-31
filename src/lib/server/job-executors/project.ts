@@ -126,7 +126,8 @@ export async function importProducts(job: Job<BullMQ.Project.ImportProducts>): P
         type: BullMQ.JobType.Product_CreateLocal,
         projectId: job.data.projectId,
         productDefinitionId,
-        storeId
+        storeId,
+        userId: projectImport.OwnerId!
       });
       return p;
     })

@@ -209,7 +209,8 @@ export const actions = {
       type: BullMQ.JobType.Product_CreateLocal,
       projectId,
       productDefinitionId: form.data.productDefinitionId,
-      storeId: form.data.storeId
+      storeId: form.data.storeId,
+      userId: event.locals.security.userId
     });
     await DatabaseWrites.projectActions.create({
       ProjectId: projectId,

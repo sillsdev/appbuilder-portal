@@ -94,6 +94,7 @@ export namespace Product {
     projectId: number;
     productDefinitionId: number;
     storeId: number;
+    userId: number;
   }
 
   export interface UpdateStore extends BaseJob {

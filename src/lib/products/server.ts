@@ -52,11 +52,15 @@ export async function doProductAction(
       case ProductActionType.Republish: {
         const flowType = action === 'rebuild' ? 'RebuildWorkflow' : 'RepublishWorkflow';
         if (product.ProductDefinition[flowType] && !product.WorkflowInstance) {
-          await Workflow.create(productId, {
-            productType: product.ProductDefinition[flowType].ProductType,
-            options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
-            workflowType: product.ProductDefinition[flowType].Type
-          });
+          await Workflow.create(
+            productId,
+            {
+              productType: product.ProductDefinition[flowType].ProductType,
+              options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
+              workflowType: product.ProductDefinition[flowType].Type
+            },
+            userId
+          );
         }
         break;
       }
@@ -83,7 +87,8 @@ export async function doProductAction(
               AllowedUserNames: '',
               DateTransition: new Date(),
               TransitionType: ProductTransitionType.CancelWorkflow,
-              WorkflowType: product.WorkflowInstance.WorkflowDefinition.Type
+              WorkflowType: product.WorkflowInstance.WorkflowDefinition.Type,
+              UserId: userId
             }
           });
           await DatabaseWrites.workflowInstances.delete(productId, product.ProjectId);
