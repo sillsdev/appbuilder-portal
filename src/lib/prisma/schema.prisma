@@ -108,6 +108,7 @@ model ProductBuilds {
   Success             Boolean?
   AppBuilderVersion   String?
   TransitionId        Int?
+  Status              String?
   ProductArtifacts    ProductArtifacts[]
   Product             Products              @relation(name: "Products_ProductBuilds_all", fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductBuilds_Products_ProductId")
   Current             Products?             @relation("Products_ProductBuilds_CurrentBuild")
@@ -153,6 +154,7 @@ model ProductPublications {
   Package              String?
   DateResolved         DateTime?           @db.Timestamp(6)
   TransitionId         Int?
+  Status               String?
   ProductBuild         ProductBuilds       @relation(fields: [ProductId, BuildEngineBuildId], references: [ProductId, BuildEngineBuildId], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_ProductBuilds_ProductId_BEBuildId")
   Product              Products            @relation(name: "Products_ProductPublications_all", fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_Products_ProductId")
   Current              Products?           @relation("Products_ProductPublications_CurrentRelease")
