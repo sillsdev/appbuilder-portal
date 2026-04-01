@@ -146,8 +146,8 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
       Status:
         response.status === BuildStatus.Completed ? BuildStatus.PostProcessing : response.status
     });
-    if (response.status === 'completed') {
       await getQueues().Polling.removeJobScheduler(job.name);
+    if (response.status === BuildStatus.Completed) {
       await getQueues().Publishing.add(
         `PostProcess Release #${job.data.releaseId} for Product #${job.data.productId}`,
         {
