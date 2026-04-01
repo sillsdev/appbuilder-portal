@@ -67,7 +67,6 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
         response.status === BuildStatus.Completed ? BuildStatus.PostProcessing : response.status
     });
     if (response.status === BuildStatus.Completed) {
-      await getQueues().Polling.removeJobScheduler(job.name);
       await getQueues().Builds.add(
         `PostProcess Build #${job.data.buildId} for Product #${job.data.productId}`,
         {
@@ -77,6 +76,7 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
           transition: job.data.transition
         }
       );
+      await getQueues().Polling.removeJobScheduler(job.name);
     }
     job.updateProgress(100);
     return {
@@ -146,7 +146,6 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
       Status:
         response.status === BuildStatus.Completed ? BuildStatus.PostProcessing : response.status
     });
-      await getQueues().Polling.removeJobScheduler(job.name);
     if (response.status === BuildStatus.Completed) {
       await getQueues().Publishing.add(
         `PostProcess Release #${job.data.releaseId} for Product #${job.data.productId}`,
@@ -158,6 +157,7 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
           transition: job.data.transition
         }
       );
+      await getQueues().Polling.removeJobScheduler(job.name);
     }
     job.updateProgress(100);
     return {
