@@ -42,12 +42,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
           DateCreated: 'desc'
         }
       },
-      Store: {
-        select: {
-          StoreTypeId: true,
-          Description: true
-        }
-      },
       Project: {
         select: {
           Id: true,

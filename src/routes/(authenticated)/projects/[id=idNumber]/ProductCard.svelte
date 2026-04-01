@@ -66,6 +66,7 @@
             State: true;
           };
         };
+        Store: { select: { StoreTypeId: true; Description: true } };
       };
     }> & {
       Transitions: Transition[];
@@ -143,7 +144,7 @@
         width={30}
       />
       <a
-        class="min-w-0 grow hover:underline"
+        class="min-w-0 grow hover:underline ml-0.5"
         href={localizeHref(`/projects/${project.Id}#${product.Id}`)}
       >
         {product.ProductDefinition.Name}
@@ -199,25 +200,27 @@
         {/snippet}
       </Dropdown>
     </div>
-    <div class="flex flex-row gap-2">
+    <div class="flex flex-row gap-2 py-1">
       <div class="flex flex-row gap-1 grow">
-        {m.common_updated()}:
-        <Tooltip tip={getTimeDateString(product.DateUpdated)}>
-          {$updatedTime}
-        </Tooltip>
-      </div>
-      {#if product.PublishLink}
-        <a class="link" href={product.PublishLink} target="_blank">
-          <IconContainer icon={getStoreIcon(product.Store?.StoreTypeId ?? 0)} width={24} />
-        </a>
-      {/if}
-    </div>
-    <div class="flex flex-row gap-2">
-      <div class="flex flex-row gap-1 grow">
-        {m.products_published()}:
-        <Tooltip tip={getTimeDateString(product.DatePublished)}>
-          {$publishedTime}
-        </Tooltip>
+        <IconContainer
+          icon={getStoreIcon(product.Store?.StoreTypeId ?? 0)}
+          width={24}
+          class="mx-0.5"
+        />
+        {#if product.PublishLink}
+          <a class="link" href={product.PublishLink} target="_blank">
+            {product.Store?.Description}
+          </a>
+        {:else}
+          {product.Store?.Description}
+        {/if}
+        <span class="hidden sm:inline-block">
+          {#if product.DatePublished}
+            [<Tooltip tip={getTimeDateString(product.DatePublished)}>
+              {$publishedTime}
+            </Tooltip>]
+          {/if}
+        </span>
       </div>
       {#if product.PublishLink}
         {@const pType = product.ProductDefinition.Workflow.ProductType}
@@ -233,6 +236,22 @@
           </a>
         {/if}
       {/if}
+    </div>
+    <div class="flex flex-row gap-2">
+      <div class="flex flex-row gap-1 grow">
+        {m.common_updated()}:
+        <Tooltip tip={getTimeDateString(product.DateUpdated)}>
+          {$updatedTime}
+        </Tooltip>
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 sm:hidden">
+      <div class="flex flex-row gap-1 grow">
+        {m.products_published()}:
+        <Tooltip tip={getTimeDateString(product.DatePublished)}>
+          {$publishedTime}
+        </Tooltip>
+      </div>
     </div>
     <div class="flex flex-row gap-2 p-1 mt-1 rounded-md">
       <button
