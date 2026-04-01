@@ -95,3 +95,13 @@ export enum TaskType {
   Workflow = 1,
   DeletionRequest
 }
+
+/**
+ * this is not an exhaustive list of states from BuildEngine,
+ * just the ones we currently care about in Scriptoria
+ */
+export enum BuildStatus {
+  Pending = 'pending',
+  PostProcessing = 'postprocessing',
+  Completed = 'completed'
+}

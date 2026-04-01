@@ -4,7 +4,9 @@ import { Prisma } from '@prisma/client';
 import * as authors from './Authors';
 import * as groups from './Groups';
 import * as organizations from './Organizations';
+import * as productBuilds from './ProductBuilds';
 import * as productDefinitions from './ProductDefinitions';
+import * as productPublications from './ProductPublications';
 import * as productTransitions from './ProductTransitions';
 import * as products from './Products';
 import * as projectActions from './ProjectActions';
@@ -48,7 +50,9 @@ const handlers = {
   groups,
   userTasks,
   stores,
+  productBuilds,
   productDefinitions,
+  productPublications,
   organizations,
   productTransitions,
   users,

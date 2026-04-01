@@ -5,6 +5,7 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
+import { BuildStatus } from '$lib/prisma';
 import { projectUrl } from '$lib/projects/server';
 import { NotificationType } from '$lib/users';
 import { WorkflowAction } from '$lib/workflowTypes';
@@ -112,12 +113,11 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
       throw new Error(message);
     } else {
       await DatabaseWrites.productPublications.create({
-        data: {
-          ProductId: job.data.productId,
-          BuildEngineReleaseId: response.id,
-          BuildEngineBuildId: productData.CurrentBuild.BuildEngineBuildId,
-          Channel: channel
-        }
+        ProductId: job.data.productId,
+        BuildEngineReleaseId: response.id,
+        BuildEngineBuildId: productData.CurrentBuild.BuildEngineBuildId,
+        Channel: channel,
+        Status: BuildStatus.Pending
       });
       await DatabaseWrites.productTransitions.tryConnect(
         job.data.productId,
@@ -263,20 +263,17 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
     }
   }
   job.updateProgress(75);
-  const publication = await DatabaseWrites.productPublications.update({
-    where: {
-      ProductId_BuildEngineReleaseId: {
-        ProductId: job.data.productId,
-        BuildEngineReleaseId: job.data.release.id
-      }
-    },
-    data: {
+  const publication = await DatabaseWrites.productPublications.update(
+    job.data.productId,
+    job.data.release.id,
+    {
       Success: job.data.release.result === 'SUCCESS',
       LogUrl: job.data.release.consoleText,
       Package: packageName,
-      PublishLink: publishLink
+      PublishLink: publishLink,
+      Status: BuildStatus.Completed
     }
-  });
+  );
   job.updateProgress(100);
   return { publication };
 }
