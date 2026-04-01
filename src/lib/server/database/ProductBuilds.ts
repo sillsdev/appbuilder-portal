@@ -32,7 +32,7 @@ export async function create(data: Prisma.ProductBuildsUncheckedCreateInput) {
     }
   });
   getQueues().SvelteSSE.add(
-    `Update Project #${ret.Product.ProjectId} (build #${data.BuildEngineBuildId}} added)`,
+    `Update Project #${ret.Product.ProjectId} (build #${data.BuildEngineBuildId} added)`,
     {
       type: BullMQ.JobType.SvelteSSE_UpdateProject,
       projectIds: [ret.Product.ProjectId]
@@ -60,7 +60,7 @@ export async function update(
     }
   });
   getQueues().SvelteSSE.add(
-    `Update Project #${ret.Product.ProjectId} (build #${data.BuildEngineBuildId}} updated)`,
+    `Update Project #${ret.Product.ProjectId} (build #${BuildEngineBuildId} updated)`,
     {
       type: BullMQ.JobType.SvelteSSE_UpdateProject,
       projectIds: [ret.Product.ProjectId]
