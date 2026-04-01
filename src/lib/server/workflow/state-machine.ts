@@ -381,7 +381,9 @@ export const WorkflowStateMachine = setup({
 
               return event.options?.includes(ENVKeys.BUILD_DOWNLOAD_PLAY_LISTING)
                 ? { ...o, [ENVKeys.BUILD_DOWNLOAD_PLAY_LISTING]: '1' }
-                : o;
+                : Object.fromEntries(
+                    Object.entries(o).filter(([k, _]) => k !== ENVKeys.BUILD_DOWNLOAD_PLAY_LISTING)
+                  );
             }
           }),
           target: WorkflowState.Product_Build
