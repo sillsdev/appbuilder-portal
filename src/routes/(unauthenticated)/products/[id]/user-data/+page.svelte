@@ -20,6 +20,7 @@
 
   const app = data.app;
   const iconSrc = app.icon ?? DEFAULT_ICON;
+  const confirmEmailStorageKey = `udm-confirm-email:${app.id}`;
   let themeColor = $state(app.themeColor ?? '#0e795b');
 
   async function submitForm() {
@@ -55,18 +56,19 @@
       return;
     }
 
-    const data = await res.json();
+    const data = await res.json().catch(() => null);
 
-    if (!res.ok || !data.success) {
+    if (!res.ok || !data?.success) {
       alert(m.udm_alert_verification_failed());
       window.turnstile?.reset?.();
       turnstileToken = null;
       return;
     }
 
-    const confirmUrl = new URL(`/products/${app.id}/confirm`, window.location.origin);
-    confirmUrl.searchParams.set('email', email);
-    window.location.assign(confirmUrl.toString());
+    sessionStorage.setItem(confirmEmailStorageKey, email);
+    window.location.assign(
+      new URL(`/products/${app.id}/confirm`, window.location.origin).toString()
+    );
   }
 
   let themeVars = $derived(getThemeVariables(themeColor));
