@@ -16,7 +16,3 @@ export type AppInfo = {
   shortDesc: string;
   longDesc: string;
 };
-
-export type ArtifactRef = {
-  Url: string | null;
-};

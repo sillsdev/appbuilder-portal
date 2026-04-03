@@ -1,23 +1,10 @@
 import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
-import { baseLocale, getLocale } from '$lib/paraglide/runtime';
-import type { AppInfo, ArtifactRef, PlayListingManifest } from '$lib/products/UDMtypes';
+import { getLocale } from '$lib/paraglide/runtime';
+import type { AppInfo, PlayListingManifest } from '$lib/products/UDMtypes';
 import { getPublishedFile } from '$lib/products/server';
 import { DatabaseReads } from '$lib/server/database';
-
-/**
- * Paraglide's `getLocale()` depends on server-side async local storage.
- * During some edge cases (misconfigured middleware/tests), it can throw.
- * For this view we prefer a safe fallback over failing the whole request.
- */
-function safeGetLocale() {
-  try {
-    return getLocale();
-  } catch {
-    return baseLocale;
-  }
-}
 
 /** Escape user-provided strings when building RegExp patterns. */
 function escapeRegExp(str: string) {
@@ -66,6 +53,7 @@ function findFilePath(files: string[], language: string, filename: string) {
 async function fetchTextFile(baseUrl: URL, files: string[], language: string, filename: string) {
   const path = findFilePath(files, language, filename) ?? `${language}/${filename}`;
   const fileUrl = new URL(path, baseUrl);
+  if (fileUrl.origin !== baseUrl.origin) return '';
   try {
     const res = await fetch(fileUrl);
     if (!res.ok) return '';
@@ -76,53 +64,15 @@ async function fetchTextFile(baseUrl: URL, files: string[], language: string, fi
 }
 
 /**
- * The manifest's `icon` field can be:
- * - an absolute URL (older manifests), or
- * - a relative path within the listing bundle (most common).
- *
- * The bucket/hostname in stored listing URLs can change over time. The artifact
- * URL in our DB is updated, but the manifest content may still have the old host.
- * For absolute icon URLs, rewrite host/protocol to match the artifact host.
+ * The manifest's `icon` field can be absolute or relative to the listing bundle.
  */
-function resolveIconUrl(icon: string | null | undefined, baseUrl: URL, artifactUrl: URL) {
+function resolveIconUrl(icon: string | null | undefined, baseUrl: URL) {
   if (!icon) return null;
   try {
-    const iconUrl = new URL(icon, baseUrl);
-    iconUrl.host = artifactUrl.host;
-    iconUrl.protocol = artifactUrl.protocol;
-    return iconUrl.toString();
+    return new URL(icon, baseUrl).toString();
   } catch {
     return null;
   }
-}
-
-/**
- * Fallback for UDM pages: if a product has not been successfully published yet,
- * use the latest build artifact so app metadata can still be displayed.
- */
-async function getLatestBuiltFile(
-  productId: string,
-  artifactType: string
-): Promise<ArtifactRef | null> {
-  const builds = await DatabaseReads.productBuilds.findMany({
-    where: { ProductId: productId },
-    include: {
-      ProductArtifacts: {
-        select: {
-          ArtifactType: true,
-          Url: true
-        }
-      }
-    },
-    orderBy: { BuildEngineBuildId: 'desc' }
-  });
-
-  for (const build of builds) {
-    const artifact = build.ProductArtifacts.find((a) => a.ArtifactType === artifactType);
-    if (artifact?.Url) return artifact;
-  }
-
-  return null;
 }
 
 export const load: LayoutServerLoad = async ({ params, locals }) => {
@@ -160,10 +110,7 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
     longDesc: ''
   };
 
-  // Prefer published manifest; fall back to latest built manifest if not published yet.
-  const manifestArtifact =
-    (await getPublishedFile(product.Id, 'play-listing-manifest')) ??
-    (await getLatestBuiltFile(product.Id, 'play-listing-manifest'));
+  const manifestArtifact = await getPublishedFile(product.Id, 'play-listing-manifest');
   if (!manifestArtifact?.Url) return { app };
 
   // Parse the JSON manifest (best-effort; don't fail page rendering).
@@ -175,21 +122,18 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
   }
   if (!manifest) return { app };
 
-  // Used to re-home URLs if the underlying storage hostname/bucket changes.
   const artifactUrl = new URL(manifestArtifact.Url);
 
   let baseUrl: URL;
   try {
     baseUrl = manifest.url ? new URL(manifest.url, artifactUrl) : artifactUrl;
-    // The bucket/hostname stored in the manifest can change; the artifact URL is updated.
-    baseUrl.host = artifactUrl.host;
-    baseUrl.protocol = artifactUrl.protocol;
+    if (baseUrl.origin !== artifactUrl.origin) return { app };
   } catch {
     return { app };
   }
 
   // Use the URL locale to decide which language variant to render.
-  const requestedLocale = safeGetLocale();
+  const requestedLocale = getLocale();
   const language =
     resolveManifestLanguage(
       requestedLocale,
@@ -209,7 +153,7 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
     (await fetchTextFile(baseUrl, files, language, 'full_description.txt')) ||
     (await fetchTextFile(baseUrl, files, language, 'description.txt'));
 
-  app.icon = resolveIconUrl(manifest.icon, baseUrl, artifactUrl);
+  app.icon = resolveIconUrl(manifest.icon, baseUrl);
   app.themeColor = manifest.color || null;
   app.name = title || app.name;
   app.shortDesc = shortDesc;

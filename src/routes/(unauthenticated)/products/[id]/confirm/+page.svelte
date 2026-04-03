@@ -14,6 +14,7 @@
 
   const app = data.app;
   const iconSrc = app.icon ?? DEFAULT_ICON;
+  const confirmEmailStorageKey = `udm-confirm-email:${app.id}`;
   let themeColor = $state(app.themeColor ?? '#0e795b');
 
   $effect(() => {
@@ -30,7 +31,9 @@
     onUpdated: ({ form }) => {
       if (form.valid && form.message?.step === 'verify') {
         step = 'code';
+        $sendForm.email = form.message.email;
         $verifyForm.email = form.message.email;
+        sessionStorage.setItem(confirmEmailStorageKey, form.message.email);
       } else if (!form.valid && !form.message?.error) {
         $sendMessage = { error: m.udm_confirm_send_code_failed() };
       }
@@ -47,6 +50,7 @@
     onUpdated: ({ form }) => {
       if (form.valid && form.message?.verified) {
         step = 'verified';
+        sessionStorage.removeItem(confirmEmailStorageKey);
       } else if (!form.valid && !form.message?.error) {
         $verifyMessage = { error: m.udm_confirm_verify_failed() };
       }
@@ -66,6 +70,13 @@
       deriveColorFromIcon(iconSrc, themeColor).then((hex) => {
         themeColor = hex;
       });
+    }
+
+    const storedEmail = sessionStorage.getItem(confirmEmailStorageKey)?.trim().toLowerCase();
+    if (storedEmail && step === 'email') {
+      $sendForm.email = storedEmail;
+      $verifyForm.email = storedEmail;
+      step = 'code';
     }
   });
 </script>
@@ -189,7 +200,10 @@
             {m.udm_confirm_didnt_receive()}
             <button
               type="button"
-              onclick={() => (step = 'email')}
+              onclick={() => {
+                sessionStorage.removeItem(confirmEmailStorageKey);
+                step = 'email';
+              }}
               class="link link-primary font-bold no-underline hover:underline bg-transparent border-none p-0 cursor-pointer"
             >
               {m.udm_confirm_change_email()}

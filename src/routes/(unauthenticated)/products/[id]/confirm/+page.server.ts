@@ -1,13 +1,15 @@
+import { Prisma } from '@prisma/client';
 import { error, fail } from '@sveltejs/kit';
 import { randomInt } from 'crypto';
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import type { AppInfo, ArtifactRef, PlayListingManifest } from '$lib/products/UDMtypes';
+import type { AppInfo, PlayListingManifest } from '$lib/products/UDMtypes';
 import { getPublishedFile } from '$lib/products/server';
 
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import prisma from '$lib/server/database/prisma';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
 
 const sendCodeSchema = v.object({
@@ -38,35 +40,10 @@ function resolveIconUrl(
   }
 }
 
-async function getLatestBuiltFile(
-  productId: string,
-  artifactType: string
-): Promise<ArtifactRef | null> {
-  const builds = await DatabaseReads.productBuilds.findMany({
-    where: { ProductId: productId },
-    include: {
-      ProductArtifacts: {
-        select: {
-          ArtifactType: true,
-          Url: true
-        }
-      }
-    },
-    orderBy: { BuildEngineBuildId: 'desc' }
-  });
-
-  for (const build of builds) {
-    const artifact = build.ProductArtifacts.find((a) => a.ArtifactType === artifactType);
-    if (artifact?.Url) return artifact;
-  }
-
-  return null;
-}
-
-export const load: PageServerLoad = async ({ url, locals, params }) => {
+export const load: PageServerLoad = async ({ locals, params }) => {
   locals.security.requireNothing();
 
-  const email = url.searchParams.get('email')?.trim().toLowerCase() ?? '';
+  const email = '';
 
   const product = await DatabaseReads.products.findUnique({
     where: { Id: params.id },
@@ -97,9 +74,7 @@ export const load: PageServerLoad = async ({ url, locals, params }) => {
     longDesc: ''
   };
 
-  const manifestArtifact =
-    (await getPublishedFile(product.Id, 'play-listing-manifest')) ??
-    (await getLatestBuiltFile(product.Id, 'play-listing-manifest'));
+  const manifestArtifact = await getPublishedFile(product.Id, 'play-listing-manifest');
 
   const sendCodeForm = await superValidate({ email }, valibot(sendCodeSchema));
   const verifyCodeForm = await superValidate({ email }, valibot(verifyCodeSchema));
@@ -132,38 +107,70 @@ export const actions: Actions = {
     const normalizedEmail = form.data.email.trim().toLowerCase();
 
     // 1. Generate a random 6-digit code
-    const code = randomInt(100000, 999999).toString();
+    const code = randomInt(100000, 1000000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+    const now = new Date();
 
     try {
-      // 2. Save to DB (Upsert pattern)
-      await DatabaseWrites.productUserChanges.updateMany({
-        where: {
-          Email: normalizedEmail,
-          ProductId: params.id,
-          DateConfirmed: null,
-          DateExpires: {
-            gt: new Date()
-          }
-        },
-        data: {
-          DateUpdated: new Date(),
-          DateExpires: new Date() // expire existing codes immediately
-        }
-      });
+      // 2. Save to DB atomically so only one pending code remains active.
+      await prisma.$transaction(
+        async (tx) => {
+          const existingRequests = await tx.productUserChanges.findMany({
+            where: {
+              Email: normalizedEmail,
+              ProductId: params.id,
+              DateConfirmed: null
+            },
+            orderBy: {
+              DateCreated: 'desc'
+            }
+          });
 
-      await DatabaseWrites.productUserChanges.create({
-        data: {
-          ProductId: params.id,
-          Email: normalizedEmail,
-          Change: 'User data deletion request verification',
-          DateCreated: new Date(),
-          DateUpdated: new Date(),
-          ConfirmationCode: code,
-          DateExpires: expiresAt,
-          DateConfirmed: null
+          const [latestRequest, ...staleRequests] = existingRequests;
+          if (staleRequests.length > 0) {
+            await tx.productUserChanges.updateMany({
+              where: {
+                Id: {
+                  in: staleRequests.map((request) => request.Id)
+                }
+              },
+              data: {
+                DateUpdated: now,
+                DateExpires: now
+              }
+            });
+          }
+
+          if (latestRequest) {
+            await tx.productUserChanges.update({
+              where: { Id: latestRequest.Id },
+              data: {
+                Change: 'User data deletion request verification',
+                ConfirmationCode: code,
+                DateUpdated: now,
+                DateExpires: expiresAt
+              }
+            });
+            return;
+          }
+
+          await tx.productUserChanges.create({
+            data: {
+              ProductId: params.id,
+              Email: normalizedEmail,
+              Change: 'User data deletion request verification',
+              DateCreated: now,
+              DateUpdated: now,
+              ConfirmationCode: code,
+              DateExpires: expiresAt,
+              DateConfirmed: null
+            }
+          });
+        },
+        {
+          isolationLevel: Prisma.TransactionIsolationLevel.Serializable
         }
-      });
+      );
 
       // 3. Send the email
       await sendEmail(
@@ -179,7 +186,7 @@ export const actions: Actions = {
       }
 
       return message(form, { step: 'verify', email: normalizedEmail });
-    } catch (e) {
+    } catch {
       return message(form, { error: 'Failed to send code. Please try again.' }, { status: 500 });
     }
   },
