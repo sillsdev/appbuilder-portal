@@ -70,6 +70,9 @@
   }
 
   let themeVars = $derived(getThemeVariables(themeColor));
+  let themeStyle = $derived(
+    `--color-primary: ${themeVars.primaryHex}; --color-primary-content: ${themeVars.primaryContentHex}; --p: ${themeVars.primaryHSL}; --pf: ${themeVars.primaryHSL}; --pc: ${themeVars.primaryContentHSL}; --udm-shell-light: ${themeVars.shellLightHex}; --udm-shell-dark: ${themeVars.shellDarkHex}; --udm-header-light: ${themeVars.headerLightHex}; --udm-header-dark: ${themeVars.headerDarkHex}; word-break: break-word; overflow-wrap: anywhere;`
+  );
 
   $effect(() => {
     applyThemeToDocument(themeColor);
@@ -92,39 +95,33 @@
   <style>
     :global(html),
     :global(body) {
-      background-color: var(--outer-bg, #f5f7fa) !important;
       min-height: 100%;
     }
   </style>
 </svelte:head>
 
 <div
-  class="min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
-  style="
-      --color-primary: {themeVars.primaryHex};
-      --color-primary-content: {themeVars.primaryContentHex};
-      --color-base-100: #ffffff;
-      --color-base-200: #f5f7fa;
-      --color-base-300: #e5e7eb;
-      --color-base-content: #1f2937;
-      --p: {themeVars.primaryHSL};
-      --pf: {themeVars.primaryHSL};
-      --pc: {themeVars.primaryContentHSL};
-      --b1: 0 0% 100%;
-      --b2: 210 20% 98%;
-      --bc: 220 13% 18%;
-      word-break: break-word;
-      overflow-wrap: anywhere;"
+  class="udm-shell min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
+  style={themeStyle}
 >
   <div class="w-full bg-base-100 min-h-screen sm:max-w-xl sm:mx-auto">
-    <div class="px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-4 bg-base-200">
+    <div class="udm-header px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-4">
       <div class="relative">
         <div class="min-w-0 border-l-4 border-base-content pl-3 pr-16">
           <h1 class="text-2xl font-bold tracking-tight leading-none">{m.udm_manage_title()}</h1>
-          <p class="text-xs opacity-60 leading-tight pl-8 mt-0">{m.udm_manage_subtitle()}</p>
+          <p class="mt-0 pl-8 text-xs leading-tight text-base-content/75">
+            {m.udm_manage_subtitle()}
+          </p>
         </div>
-        <div class="absolute top-0 right-0 rounded-xl bg-neutral/70 text-neutral-content p-1">
-          <LocaleSelector />
+        <div class="absolute top-0 right-0 rounded-xl bg-neutral p-1 shadow-sm">
+          <LocaleSelector
+            class={{
+              dropdown: 'dropdown-end',
+              label:
+                'm-0 p-2 rounded-xl items-middle justify-center flex-nowrap text-neutral-content hover:text-neutral-content focus-visible:text-neutral-content',
+              content: 'mt-2 border border-base-300 bg-base-100'
+            }}
+          />
         </div>
       </div>
     </div>
@@ -155,17 +152,19 @@
         <div class="card-body p-5 space-y-4 break-words">
           <div>
             <h2 class="card-title text-lg font-bold">{m.udm_deletion_request_title()}</h2>
-            <p class="text-xs opacity-60 mt-1 leading-relaxed" style="text-indent: 10px;">
+            <p class="mt-1 text-xs leading-relaxed text-base-content/80" style="text-indent: 10px;">
               {m.udm_deletion_intro_1()}
             </p>
-            <p class="text-xs opacity-60 mt-1 leading-relaxed" style="text-indent: 10px;">
+            <p class="mt-1 text-xs leading-relaxed text-base-content/80" style="text-indent: 10px;">
               {m.udm_deletion_intro_2()}
             </p>
           </div>
 
           <div class="form-control w-full">
             <label class="label pb-1 pt-0" for="email">
-              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
+              <span
+                class="label-text text-xs font-bold uppercase tracking-wide text-base-content/70"
+              >
                 {m.udm_email_label()}
               </span>
             </label>
@@ -177,7 +176,7 @@
               name="email"
             />
             <label class="label pt-1 pb-0" for="email">
-              <span class="label-text-alt text-[10px] opacity-60">
+              <span class="label-text-alt text-[10px] text-base-content/70">
                 {m.udm_email_help()}
               </span>
             </label>
@@ -185,7 +184,9 @@
 
           <div class="form-control">
             <p class="label pb-1 pt-0">
-              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
+              <span
+                class="label-text text-xs font-bold uppercase tracking-wide text-base-content/70"
+              >
                 {m.udm_scope_label()}
               </span>
             </p>
@@ -194,7 +195,7 @@
                 <input
                   type="radio"
                   name="deletionType"
-                  class="radio radio-primary radio-sm mt-1"
+                  class="radio radio-primary radio-sm mt-1 shrink-0 border-2 border-black bg-white text-black dark:border-white dark:bg-transparent dark:text-white"
                   value="data"
                   bind:group={deletionType}
                 />
@@ -204,7 +205,9 @@
                   >
                     {m.udm_scope_data_title()}
                   </span>
-                  <p class="text-xs opacity-60 leading-tight mt-0.5 whitespace-normal break-words">
+                  <p
+                    class="mt-0.5 text-xs leading-tight whitespace-normal break-words text-base-content/75"
+                  >
                     {m.udm_scope_data_desc()}
                   </p>
                 </div>
@@ -215,7 +218,7 @@
                   name="deletionType"
                   value="account"
                   bind:group={deletionType}
-                  class="radio radio-primary radio-sm mt-1"
+                  class="radio radio-primary radio-sm mt-1 shrink-0 border-2 border-black bg-white text-black dark:border-white dark:bg-transparent dark:text-white"
                 />
                 <div class="min-w-0">
                   <span
@@ -223,22 +226,24 @@
                   >
                     {m.udm_scope_account_title()}
                   </span>
-                  <p class="text-xs opacity-60 leading-tight mt-0.5 whitespace-normal break-words">
+                  <p
+                    class="mt-0.5 text-xs leading-tight whitespace-normal break-words text-base-content/75"
+                  >
                     {m.udm_scope_account_desc()}
                   </p>
                 </div>
               </label>
-              <p class="text-xs opacity-60 leading-tight mt-0.5">
+              <p class="mt-0.5 text-xs leading-tight text-base-content/75">
                 {m.udm_scope_warning()}
               </p>
             </div>
           </div>
 
-          <div class="bg-base-200/60 rounded-lg p-4 border border-base-200">
-            <div class="text-[10px] font-bold mb-2 uppercase tracking-wide opacity-50">
+          <div class="rounded-lg border border-base-300 bg-base-200 p-4">
+            <div class="mb-2 text-[10px] font-bold uppercase tracking-wide text-base-content/70">
               {m.udm_items_removed_title()}
             </div>
-            <ul class="list-disc list-inside space-y-1 text-xs opacity-60">
+            <ul class="list-disc list-inside space-y-1 text-xs text-base-content/80">
               <li>{m.udm_item_bookmarks()}</li>
               <li>{m.udm_item_notes()}</li>
               <li>{m.udm_item_highlights()}</li>
@@ -248,7 +253,9 @@
 
           <div class="form-control">
             <p class="label pb-1 pt-0">
-              <span class="label-text text-xs font-bold opacity-50 uppercase tracking-wide">
+              <span
+                class="label-text text-xs font-bold uppercase tracking-wide text-base-content/70"
+              >
                 {m.udm_verification_label()}
               </span>
             </p>
@@ -262,7 +269,7 @@
           </div>
 
           <button
-            class="btn btn-neutral btn-block no-animation shadow-sm"
+            class="btn btn-primary btn-block border border-primary/20 shadow-sm"
             type="button"
             onclick={submitForm}
           >
@@ -271,9 +278,9 @@
         </div>
       </div>
 
-      <p class="text-xs opacity-50 text-center mt-4">
+      <p class="mt-4 text-center text-xs text-base-content/70">
         {m.udm_footer_text({ appName: app.name })}
-        <a class="link link-primary link-hover" href="/support">
+        <a class="link link-primary no-underline hover:underline" href="/support">
           {m.udm_contact_support()}
         </a>
         .
@@ -281,3 +288,21 @@
     </div>
   </div>
 </div>
+
+<style>
+  .udm-shell {
+    background-color: var(--udm-shell-light);
+  }
+
+  .udm-header {
+    background-color: var(--udm-header-light);
+  }
+
+  :global([data-theme='dark']) .udm-shell {
+    background-color: var(--udm-shell-dark);
+  }
+
+  :global([data-theme='dark']) .udm-header {
+    background-color: var(--udm-header-dark);
+  }
+</style>
