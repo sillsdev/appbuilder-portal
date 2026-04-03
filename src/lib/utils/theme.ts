@@ -47,6 +47,13 @@ export function lightenColor(hex: string, amount = 0.9) {
   return rgbToHex(mix(r), mix(g), mix(b));
 }
 
+export function mixColors(hexA: string, hexB: string, amount = 0.5) {
+  const a = hexToRgb(hexA);
+  const b = hexToRgb(hexB);
+  const mix = (from: number, to: number) => Math.round(from + (to - from) * amount);
+  return rgbToHex(mix(a.r, b.r), mix(a.g, b.g), mix(a.b, b.b));
+}
+
 export function hexToDaisyHSL(hex: string) {
   const clean = hex.replace('#', '').trim();
   const normalized =
@@ -138,7 +145,12 @@ export function getThemeVariables(themeColor: string) {
     primaryContentHex,
     primaryHSL: hexToDaisyHSL(themeColor),
     primaryContentHSL: hexToDaisyHSL(primaryContentHex),
-    lightBgHex: lightenColor(themeColor, 0.92)
+    lightBgHex: lightenColor(themeColor, 0.92),
+    darkBgHex: mixColors(themeColor, '#0b1220', 0.88),
+    shellLightHex: mixColors(themeColor, '#ffffff', 0.93),
+    shellDarkHex: mixColors(themeColor, '#111827', 0.84),
+    headerLightHex: mixColors(themeColor, '#ffffff', 0.85),
+    headerDarkHex: mixColors(themeColor, '#0f172a', 0.72)
   };
 }
 
@@ -151,10 +163,12 @@ export function applyThemeToDocument(themeColor: string) {
   root.style.setProperty('--p', vars.primaryHSL);
   root.style.setProperty('--pf', vars.primaryHSL);
   root.style.setProperty('--pc', vars.primaryContentHSL);
-  root.style.setProperty('--color-base-100', '#ffffff');
-  root.style.setProperty('--color-base-200', '#f5f7fa');
-  root.style.setProperty('--color-base-300', '#e5e7eb');
-  root.style.setProperty('--color-base-content', '#1f2937');
   root.style.setProperty('--outer-bg', vars.lightBgHex);
   root.style.setProperty('--root-bg', vars.lightBgHex);
+  root.style.setProperty('--udm-outer-light', vars.lightBgHex);
+  root.style.setProperty('--udm-outer-dark', vars.darkBgHex);
+  root.style.setProperty('--udm-shell-light', vars.shellLightHex);
+  root.style.setProperty('--udm-shell-dark', vars.shellDarkHex);
+  root.style.setProperty('--udm-header-light', vars.headerLightHex);
+  root.style.setProperty('--udm-header-dark', vars.headerDarkHex);
 }
