@@ -12,7 +12,8 @@
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
-  import { type ProductActionType } from '$lib/products';
+  import { BuildStatus } from '$lib/prisma';
+  import { ProductActionType } from '$lib/products';
   import ProductDetails, {
     type Props as ProductDetailProps,
     type Transition,
@@ -22,9 +23,9 @@
   import { sanitizeInput, toast } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
-  import type { WorkflowState } from '$lib/workflowTypes';
   import {
     ProductType,
+    WorkflowState,
     formatBuildEngineLink,
     isBackground,
     linkToBuildEngine
@@ -64,9 +65,24 @@
         WorkflowInstance: {
           select: {
             State: true;
+            WorkflowDefinition: {
+              select: {
+                Type: true;
+              };
+            };
           };
         };
         Store: { select: { StoreTypeId: true; Description: true } };
+        ProductBuilds: {
+          select: {
+            Status: true;
+          };
+        };
+        ProductPublications: {
+          select: {
+            Status: true;
+          };
+        };
       };
     }> & {
       Transitions: Transition[];
@@ -264,22 +280,29 @@
       {#each product.actions as action}
         {@const message =
           //@ts-expect-error this is in fact correct
-          m['products_acts_' + action]()}
-        <BlockIfJobsUnavailable class="text-nowrap">
-          {#snippet altContent()}
-            <IconContainer icon={getActionIcon(action)} width={20} />
-            {message}
-          {/snippet}
-          <button
-            class="text-nowrap btn btn-secondary btn-sm"
-            onclick={(event) => {
-              handleProductAction(product.Id, action);
-              event.currentTarget.blur();
-            }}
-          >
-            {@render altContent()}
-          </button>
-        </BlockIfJobsUnavailable>
+          m['products_acts_' + action]({
+            workflow: m.flowDefs_types({
+              type: product.WorkflowInstance?.WorkflowDefinition.Type ?? 0
+            })
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any)}
+        {#if !((action === ProductActionType.StopBuild && product.ProductBuilds.at(0)?.Status === BuildStatus.PostProcessing) || (action === ProductActionType.StopPublish && product.ProductPublications.at(0)?.Status === BuildStatus.PostProcessing))}
+          <BlockIfJobsUnavailable class="text-nowrap">
+            {#snippet altContent()}
+              <IconContainer icon={getActionIcon(action)} width={20} />
+              {message}
+            {/snippet}
+            <button
+              class="text-nowrap btn btn-secondary btn-sm"
+              onclick={(event) => {
+                handleProductAction(product.Id, action);
+                event.currentTarget.blur();
+              }}
+            >
+              {@render altContent()}
+            </button>
+          </BlockIfJobsUnavailable>
+        {/if}
       {/each}
     </div>
     {#if canEdit}
@@ -317,6 +340,24 @@
                 product.ActiveTransition?.InitialState ?? ''
               )}
             </b>
+            {#snippet statusBadge(status: string)}
+              <span
+                class="badge font-bold
+                  {status === BuildStatus.Pending
+                  ? 'badge-secondary text-secondary-content'
+                  : status === BuildStatus.PostProcessing
+                    ? 'badge-warning text-warning-content'
+                    : 'badge-info text-info-content'}
+                "
+              >
+                {status}
+              </span>
+            {/snippet}
+            {#if product.WorkflowInstance?.State === WorkflowState.Product_Build && product.ProductBuilds[0]?.Status}
+              {@render statusBadge(product.ProductBuilds[0].Status)}
+            {:else if product.WorkflowInstance?.State === WorkflowState.Product_Publish && product.ProductPublications[0]?.Status}
+              {@render statusBadge(product.ProductPublications[0].Status)}
+            {/if}
             &mdash;
             {m.tasks_waiting({
               allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName()

@@ -20,8 +20,10 @@ export function getActionIcon(type: ProductActionType) {
       return 'carbon:build-run';
     case ProductActionType.Republish:
       return 'carbon:ibm-elo-publishing';
-    case ProductActionType.Cancel:
+    case ProductActionType.CancelWorkflow:
       return 'mdi:cancel-octagon';
+    default:
+      return 'carbon:stop-filled';
   }
 }
 
@@ -210,7 +212,7 @@ export function getTransitionIcon(
     case ProductTransitionType.EndWorkflow:
       return Icons.Checkmark;
     case ProductTransitionType.CancelWorkflow:
-      return getActionIcon(ProductActionType.Cancel);
+      return getActionIcon(ProductActionType.CancelWorkflow);
     case ProductTransitionType.ProjectAccess:
       return getProjectActionIcon({
         ActionType: ProjectActionType.Access,
@@ -251,6 +253,7 @@ export function getWorkflowActionIcon(type: WorkflowAction) {
       return 'mdi:approve';
     case WorkflowAction.Hold:
       return 'gridicons:pause';
+    case WorkflowAction.Cancel:
     case WorkflowAction.Reject:
       return 'mdi:cancel';
     case WorkflowAction.Jump:
@@ -265,6 +268,8 @@ export function getWorkflowActionIcon(type: WorkflowAction) {
       return 'icon-park-outline:return';
     case WorkflowAction.Email_Reviewers:
       return Icons.Email;
+    case WorkflowAction.Reset:
+      return Icons.RefreshOn;
     default:
       return '';
   }

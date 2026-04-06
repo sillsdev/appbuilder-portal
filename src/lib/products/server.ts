@@ -2,9 +2,14 @@ import { ProductTransitionType, WorkflowType } from '$lib/prisma';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
+import { WorkflowAction, WorkflowState } from '$lib/workflowTypes';
 import { ProductActionType } from '.';
 
-export async function doProductAction(productId: string, action: ProductActionType) {
+export async function doProductAction(
+  productId: string,
+  action: ProductActionType,
+  userId: number
+) {
   const product = await DatabaseReads.products.findUnique({
     where: {
       Id: productId
@@ -34,7 +39,8 @@ export async function doProductAction(productId: string, action: ProductActionTy
         select: {
           WorkflowDefinition: {
             select: { Type: true }
-          }
+          },
+          State: true
         }
       }
     }
@@ -46,15 +52,19 @@ export async function doProductAction(productId: string, action: ProductActionTy
       case ProductActionType.Republish: {
         const flowType = action === 'rebuild' ? 'RebuildWorkflow' : 'RepublishWorkflow';
         if (product.ProductDefinition[flowType] && !product.WorkflowInstance) {
-          await Workflow.create(productId, {
-            productType: product.ProductDefinition[flowType].ProductType,
-            options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
-            workflowType: product.ProductDefinition[flowType].Type
-          });
+          await Workflow.create(
+            productId,
+            {
+              productType: product.ProductDefinition[flowType].ProductType,
+              options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
+              workflowType: product.ProductDefinition[flowType].Type
+            },
+            userId
+          );
         }
         break;
       }
-      case ProductActionType.Cancel:
+      case ProductActionType.CancelWorkflow:
         if (
           product.WorkflowInstance?.WorkflowDefinition &&
           product.WorkflowInstance.WorkflowDefinition.Type !== WorkflowType.Startup
@@ -77,12 +87,22 @@ export async function doProductAction(productId: string, action: ProductActionTy
               AllowedUserNames: '',
               DateTransition: new Date(),
               TransitionType: ProductTransitionType.CancelWorkflow,
-              WorkflowType: product.WorkflowInstance.WorkflowDefinition.Type
+              WorkflowType: product.WorkflowInstance.WorkflowDefinition.Type,
+              UserId: userId
             }
           });
           await DatabaseWrites.workflowInstances.delete(productId, product.ProjectId);
         }
         break;
+      case ProductActionType.StopBuild:
+      case ProductActionType.StopPublish:
+        if (
+          product.WorkflowInstance?.State === WorkflowState.Product_Build ||
+          product.WorkflowInstance?.State === WorkflowState.Product_Publish
+        ) {
+          const flow = await Workflow.restore(product.Id);
+          flow?.send({ type: WorkflowAction.Cancel, userId });
+        }
     }
   }
 }

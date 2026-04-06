@@ -209,7 +209,8 @@ export const actions = {
       type: BullMQ.JobType.Product_CreateLocal,
       projectId,
       productDefinitionId: form.data.productDefinitionId,
-      storeId: form.data.storeId
+      storeId: form.data.storeId,
+      userId: event.locals.security.userId
     });
     await DatabaseWrites.projectActions.create({
       ProjectId: projectId,
@@ -240,7 +241,11 @@ export const actions = {
     if (!(await verifyProduct(event, form.data.productId))) {
       return fail(403, { form, ok: false });
     }
-    await doProductAction(form.data.productId, form.data.productAction);
+    await doProductAction(
+      form.data.productId,
+      form.data.productAction,
+      event.locals.security.userId
+    );
 
     return { form, ok: true };
   },

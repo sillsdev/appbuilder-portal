@@ -1,17 +1,22 @@
 import type { Prisma } from '@prisma/client';
 import { WorkflowType } from '$lib/prisma';
+import { WorkflowState } from '$lib/workflowTypes';
 
 export enum ProductActionType {
   Rebuild = 'rebuild',
   Republish = 'republish',
-  Cancel = 'cancel'
+  CancelWorkflow = 'cancel_workflow',
+  StopBuild = 'stop_build',
+  StopPublish = 'stop_publish'
 }
 
+/* permissions handled by caller */
 export function getProductActions(
   product: Prisma.ProductsGetPayload<{
     select: {
       WorkflowInstance: {
         select: {
+          State: true;
           WorkflowDefinition: {
             select: {
               Type: true;
@@ -22,9 +27,7 @@ export function getProductActions(
       DatePublished: true;
       ProductDefinition: { select: { RebuildWorkflowId: true; RepublishWorkflowId: true } };
     };
-  }>,
-  projectOwnerId: number,
-  userId: number
+  }>
 ) {
   const ret: ProductActionType[] = [];
   if (!product.WorkflowInstance) {
@@ -36,11 +39,16 @@ export function getProductActions(
         ret.push(ProductActionType.Republish);
       }
     }
-  } else if (
-    projectOwnerId === userId &&
-    product.WorkflowInstance.WorkflowDefinition.Type !== WorkflowType.Startup
-  ) {
-    ret.push(ProductActionType.Cancel);
+  } else {
+    if (product.WorkflowInstance.WorkflowDefinition.Type !== WorkflowType.Startup) {
+      ret.push(ProductActionType.CancelWorkflow);
+    }
+    if (product.WorkflowInstance.State === WorkflowState.Product_Build) {
+      ret.push(ProductActionType.StopBuild);
+    }
+    if (product.WorkflowInstance.State === WorkflowState.Product_Publish) {
+      ret.push(ProductActionType.StopPublish);
+    }
   }
 
   return ret;

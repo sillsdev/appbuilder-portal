@@ -82,28 +82,28 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               BuildEngineJobId: isSuper,
               CurrentBuildId: isSuper,
               CurrentReleaseId: isSuper,
-              ProductBuilds: isSuper
-                ? {
-                    select: {
-                      BuildEngineBuildId: true,
-                      TransitionId: true
-                    },
-                    orderBy: {
-                      DateCreated: 'desc'
-                    }
-                  }
-                : false,
-              ProductPublications: isSuper
-                ? {
-                    select: {
-                      BuildEngineReleaseId: true,
-                      TransitionId: true
-                    },
-                    orderBy: {
-                      DateCreated: 'desc'
-                    }
-                  }
-                : false,
+              ProductBuilds: {
+                select: {
+                  BuildEngineBuildId: true,
+                  TransitionId: true,
+                  Status: true
+                },
+                orderBy: {
+                  DateCreated: 'desc'
+                },
+                take: isSuper ? undefined : 1
+              },
+              ProductPublications: {
+                select: {
+                  BuildEngineReleaseId: true,
+                  TransitionId: true,
+                  Status: true
+                },
+                orderBy: {
+                  DateCreated: 'desc'
+                },
+                take: isSuper ? undefined : 1
+              },
               WorkflowInstance: {
                 select: {
                   State: true,
@@ -265,9 +265,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
             ActiveTransition: strippedTransitions.find(
               (t) => (t[0] ?? t[1])?.ProductId === product.Id
             )?.[1],
-            actions: canEdit
-              ? getProductActions(product, project.Owner.Id, userSession.userId)
-              : [],
+            actions: canEdit ? getProductActions(product) : [],
             BuildEngineUrl: isSuper ? `${getURLandToken(organization).url}` : undefined
           }))
         },

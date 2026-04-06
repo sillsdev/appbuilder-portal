@@ -41,7 +41,7 @@ export async function POST({ params, locals }) {
 
   // Trigger rebuild on each eligible product
   for (const product of rebuildableProducts) {
-    await doProductAction(product.Id, ProductActionType.Rebuild);
+    await doProductAction(product.Id, ProductActionType.Rebuild, locals.security.userId);
   }
 
   return json({
