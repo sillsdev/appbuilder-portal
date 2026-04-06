@@ -315,22 +315,19 @@ export const actions = {
   }
 } satisfies Actions;
 
-// allowed if SuperAdmin, or the user has a UserTask for the Product
+// allowed if the user has a UserTask for the Product
 async function verifyCanViewTask(security: Security, productId: string): Promise<boolean> {
-  if (!security) return false;
+  if (!security.userId) return false;
 
-  return (
-    security.isSuperAdmin ||
-    !!(await DatabaseReads.userTasks.findFirst({
-      where: {
-        ProductId: productId,
-        UserId: security.userId
-      },
-      select: {
-        Id: true
-      }
-    }))
-  );
+  return !!(await DatabaseReads.userTasks.findFirst({
+    where: {
+      ProductId: productId,
+      UserId: security.userId
+    },
+    select: {
+      Id: true
+    }
+  }));
 }
 
 function filterAvailableActions(
@@ -350,6 +347,7 @@ function filterAvailableActions(
 ): boolean {
   if (userId === undefined) return false;
   return action.some((a) => {
+    if (a.meta?.createTasks === false) return false;
     switch (a.meta?.user) {
       case RoleId.AppBuilder:
         return userId === project.Owner.Id;
