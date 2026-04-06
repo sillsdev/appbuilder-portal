@@ -263,7 +263,10 @@ export async function deleteRequest(job: Job<BullMQ.UserTasks.DeleteRequest>): P
       const product = products[i];
 
       // Create tasks for all users that could perform this activity
-      if (job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
+      if (
+        job.data.operation.type !== BullMQ.UserTasks.OpType.Delete &&
+        (await DatabaseReads.productUserChanges.findFirst({ where: { ProductId: product.Id } }))
+      ) {
         const toCreate = await createTasks(
           new Set(
             job.data.operation.roles ??
