@@ -5,6 +5,7 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
+import { ProductTransitionType } from '$lib/prisma';
 import { fetchPackageName, getComputeType, updateComputeType } from '$lib/products';
 import { projectUrl } from '$lib/projects/server';
 import { NotificationType } from '$lib/users';
@@ -311,6 +312,15 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
               }))
             ) {
               action = WorkflowAction.Retry;
+              await DatabaseWrites.productTransitions.create({
+                data: {
+                  UserId: null,
+                  ProductId: job.data.productId,
+                  Comment: newProps,
+                  DateTransition: new Date(),
+                  TransitionType: ProductTransitionType.Update
+                }
+              });
             }
           }
         } catch {

@@ -50,7 +50,7 @@ export async function workflow(job: Job<BullMQ.UserTasks.Workflow>): Promise<unk
   let deletedCount = 0;
 
   // Clear PreExecuteEntries
-  if (!project.DateArchived) {
+  if (!project.DateArchived || job.data.operation.type === BullMQ.UserTasks.OpType.Reassign) {
     await DatabaseWrites.productTransitions.deleteMany(
       {
         where: {

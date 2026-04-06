@@ -1,6 +1,6 @@
 import type { Session } from '@auth/sveltekit';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
-import { RoleId } from '$lib/prisma';
+import { ProjectActionString, ProjectActionType, RoleId } from '$lib/prisma';
 import { getProductActions } from '$lib/products';
 import { canModifyProject } from '$lib/projects';
 import { userGroupsForOrg } from '$lib/projects/server';
@@ -144,6 +144,24 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               Name: true,
               Email: true
             }
+          },
+          ProjectActions: {
+            select: {
+              User: {
+                select: {
+                  Id: true,
+                  Name: true
+                }
+              },
+              DateAction: true,
+              ActionType: true,
+              Action: true,
+              Value: true,
+              ExternalId: true
+            },
+            orderBy: {
+              DateAction: 'asc'
+            }
           }
         }
       });
@@ -186,6 +204,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         include: {
           User: {
             select: {
+              Id: true,
               Name: true
             }
           },
@@ -305,7 +324,60 @@ export async function getProjectDetails(id: number, userSession: Session['user']
         }),
         userGroups: (await userGroupsForOrg(userSession.userId, project.OrganizationId)).map(
           (g) => g.Id
-        )
+        ),
+        actionParams: {
+          users: await DatabaseReads.users.findMany({
+            where: {
+              Id: {
+                in: project.ProjectActions.filter(
+                  (pa) =>
+                    pa.ExternalId &&
+                    (pa.ActionType === ProjectActionType.Author ||
+                      (pa.ActionType === ProjectActionType.OwnerGroup &&
+                        pa.Action !== ProjectActionString.AssignGroup))
+                ).map((pa) => pa.ExternalId!)
+              }
+            },
+            select: {
+              Id: true,
+              Name: true
+            }
+          }),
+          groups: await DatabaseReads.groups.findMany({
+            where: {
+              Id: {
+                in: project.ProjectActions.filter(
+                  (pa) =>
+                    pa.ExternalId &&
+                    pa.ActionType === ProjectActionType.OwnerGroup &&
+                    pa.Action === ProjectActionString.AssignGroup
+                ).map((pa) => pa.ExternalId!)
+              }
+            },
+            select: {
+              Id: true,
+              Name: true
+            }
+          }),
+          prodDefs: await DatabaseReads.productDefinitions.findMany({
+            where: {
+              Id: {
+                in: project.ProjectActions.filter(
+                  (pa) => pa.ExternalId && pa.ActionType === ProjectActionType.Product
+                ).map((pa) => pa.ExternalId!)
+              }
+            },
+            select: {
+              Id: true,
+              Name: true,
+              Workflow: {
+                select: {
+                  ProductType: true
+                }
+              }
+            }
+          })
+        }
       };
     } catch (e) {
       span.recordException(e as Error);

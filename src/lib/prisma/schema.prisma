@@ -289,12 +289,30 @@ model Projects {
   ProjectImport           ProjectImports?  @relation(fields: [ImportId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Projects_ProjectImports_ImportId")
   Owner                   Users            @relation(fields: [OwnerId], references: [Id], onUpdate: NoAction, map: "FK_Projects_Users_OwnerId")
   Reviewers               Reviewers[]
+  ProjectActions          ProjectActions[]
 
   @@index([GroupId], map: "IX_Projects_GroupId")
   @@index([ImportId], map: "IX_Projects_ImportId")
   @@index([OrganizationId], map: "IX_Projects_OrganizationId")
   @@index([OwnerId], map: "IX_Projects_OwnerId")
   @@index([TypeId], map: "IX_Projects_TypeId")
+}
+
+model ProjectActions {
+  Id         Int      @id(map: "PK_ProjectActions") @default(autoincrement())
+  ProjectId  Int
+  UserId     Int
+  DateAction DateTime @default(now()) @db.Timestamp(6)
+  ActionType Int
+  Action     String // Archive/Reactivate, Upload/Download, Add/Remove, Owner/Group, Field Name
+  Value      String? // Store.BuildEnginePublisherId, Reviewer.Email, Field Value
+  ExternalId Int? // Variable link to ProductDefinitions, Users, and Groups
+
+  Project Projects @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProjectActions_Projects_ProjectId")
+  User    Users    @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProjectActions_Users_UserId")
+
+  @@index([ProjectId], map: "IX_ProjectActions_ProjectId")
+  @@index([UserId], map: "IX_ProjectActions_UserId")
 }
 
 model Reviewers {
@@ -442,6 +460,7 @@ model Users {
   UserTasks                     UserTasks[]
   ProductTransitions            ProductTransitions[]
   SoftwareUpdates               SoftwareUpdates[]
+  ProjectActions                ProjectActions[]
 }
 
 model WorkflowDefinitions {

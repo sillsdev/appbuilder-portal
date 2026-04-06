@@ -13,8 +13,12 @@
   import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { ProjectActionType } from '$lib/prisma';
   import { canClaimProject, canModifyProject } from '$lib/projects';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
+  import ProjectDetails, {
+    showProjectDetails
+  } from '$lib/projects/components/ProjectDetails.svelte';
   import type { ProjectDataSSE } from '$lib/projects/sse';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
@@ -71,8 +75,8 @@
     </div>
   {:else}
     <!-- Header -->
-    <div class="flex p-6">
-      <div class="shrink">
+    <div class="flex p-4">
+      <div class="grow">
         <h1 class="p-0">
           {projectData.project?.Name}
         </h1>
@@ -97,32 +101,39 @@
           </span>
         {/if}
       </div>
-
-      <div class="grow">
-        {#if canEdit}
-          <Tooltip class="tooltip-bottom" tip={m.project_editProject()}>
-            <a
-              href={localizeHref(`/projects/${projectData.project.Id}/edit`)}
-              title={m.project_editProject()}
-            >
-              <IconContainer width="24" icon={Icons.Edit} />
-            </a>
-          </Tooltip>
-        {/if}
-      </div>
       {#if canEdit || canClaim}
-        <div class="shrink">
-          <ProjectActionMenu
-            data={data.actionForm}
-            project={projectData.project}
-            userGroups={projectData.userGroups}
-          />
-        </div>
+        <ProjectActionMenu
+          data={data.actionForm}
+          project={projectData.project}
+          userGroups={projectData.userGroups}
+        />
       {/if}
     </div>
     <div class="grid maingrid w-full p-4 pb-0">
       <div class="mainarea min-w-0">
         <!-- Details -->
+        <div class="flex flex-row gap-x-2">
+          {#if canEdit}
+            <a
+              class="btn btn-secondary"
+              href={localizeHref(`/projects/${projectData.project.Id}/edit`)}
+              title={m.project_editProject()}
+            >
+              <IconContainer width={20} icon={Icons.Edit} />{m.project_editProject()}
+            </a>
+          {/if}
+          {#if projectData.project.ProjectActions.length}
+            <button class="btn btn-secondary" onclick={() => showProjectDetails(page.params.id!)}>
+              <IconContainer icon={Icons.Info} width={20} />
+              {m.products_details()}
+            </button>
+            <ProjectDetails
+              project={{ Id: Number(page.params.id) }}
+              actions={projectData.project.ProjectActions}
+              {...projectData.actionParams}
+            />
+          {/if}
+        </div>
         <h2 class="pl-0">{m.project_details_title()}</h2>
         <div>
           <div class="gridcont grid gap-x-6 gap-y-2">
@@ -238,6 +249,11 @@
                 deleteEndpoint="deleteProduct"
                 updateEndpoint="updateProduct"
                 {canEdit}
+                projectActions={projectData.project.ProjectActions.filter(
+                  (pa) =>
+                    pa.ActionType === ProjectActionType.Access ||
+                    pa.ActionType === ProjectActionType.Archival
+                )}
               />
             {/each}
           {/if}

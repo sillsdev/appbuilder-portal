@@ -11,6 +11,7 @@ import { DatabaseReads, DatabaseWrites } from '../database';
 import prismaInternal from '../database/prisma';
 import { JobSchedulerId } from '$lib/bullmq';
 import { activeSystems } from '$lib/organizations/server';
+import { ProductTransitionType, ProjectActionString, ProjectActionType } from '$lib/prisma';
 import { WorkflowState } from '$lib/workflowTypes';
 
 export async function checkSystemStatuses(
@@ -676,10 +677,102 @@ async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scop
   return { before, orphaned, associated, after };
 }
 
+async function migrateProjectActions() {
+  const chunkSize = 100;
+  const transitionFilter = {
+    TransitionType: {
+      in: [
+        ProductTransitionType.ProjectAccess,
+        ProductTransitionType.Archival,
+        ProductTransitionType.Reactivation
+      ]
+    }
+  };
+  const filter = {
+    Products: {
+      some: {
+        ProductTransitions: {
+          some: transitionFilter
+        }
+      }
+    }
+  };
+  const before = await DatabaseReads.projects.count({
+    where: filter
+  });
+  const projects = await DatabaseReads.projects.findMany({
+    where: filter,
+    select: {
+      Id: true,
+      Products: {
+        select: {
+          Id: true,
+          DateCreated: true,
+          ProductTransitions: {
+            where: transitionFilter,
+            select: {
+              UserId: true,
+              InitialState: true,
+              TransitionType: true,
+              DateTransition: true
+            }
+          }
+        },
+        // oldest product should have the greatest number of relevant transitions
+        orderBy: { DateCreated: 'asc' },
+        take: 1
+      }
+    },
+    take: chunkSize,
+    skip: Math.max(0, randomInt(before || 1) - chunkSize)
+  });
+
+  const updated = await Promise.all(
+    projects.map((p) =>
+      prismaInternal.$transaction(async (tx) => {
+        const created = await tx.projectActions.createMany({
+          data: p.Products[0].ProductTransitions.map((pt) => ({
+            ProjectId: p.Id,
+            UserId: pt.UserId!,
+            ActionType:
+              pt.TransitionType === ProductTransitionType.ProjectAccess
+                ? ProjectActionType.Access
+                : ProjectActionType.Archival,
+            Action:
+              pt.TransitionType === ProductTransitionType.Archival
+                ? ProjectActionString.Archive
+                : pt.TransitionType === ProductTransitionType.Reactivation
+                  ? ProjectActionString.Reactivate
+                  : (pt.InitialState ?? ''),
+            DateAction: pt.DateTransition!
+          }))
+        });
+        const deleted = await tx.productTransitions.deleteMany({
+          where: { ...transitionFilter, Product: { ProjectId: p.Id } }
+        });
+
+        getQueues().SvelteSSE.add(`Update Project #${p.Id} (actions migrated)`, {
+          type: BullMQ.JobType.SvelteSSE_UpdateProject,
+          projectIds: [p.Id]
+        });
+
+        return { project: p.Id, created: created.count, deleted: deleted.count };
+      })
+    )
+  );
+
+  const after = await DatabaseReads.projects.count({
+    where: filter
+  });
+
+  return { before, projects, updated, after };
+}
+
 const migrationSteps = {
   'Rename Transitions': { f: renameTransitions },
   'Associate Builds': { f: associateBuildsOrReleases, a: 'build' },
-  'Associate Releases': { f: associateBuildsOrReleases, a: 'release' }
+  'Associate Releases': { f: associateBuildsOrReleases, a: 'release' },
+  'Migrate Project Actions': { f: migrateProjectActions }
 } as const;
 
 export type MigrationStep = keyof typeof migrationSteps;

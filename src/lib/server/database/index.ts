@@ -7,6 +7,7 @@ import * as organizations from './Organizations';
 import * as productDefinitions from './ProductDefinitions';
 import * as productTransitions from './ProductTransitions';
 import * as products from './Products';
+import * as projectActions from './ProjectActions';
 import * as projects from './Projects';
 import type { WRITE_METHODS } from './ReadonlyPrisma';
 import * as reviewers from './Reviewers';
@@ -43,6 +44,7 @@ const handlers = {
   reviewers,
   products,
   projects,
+  projectActions,
   groups,
   userTasks,
   stores,

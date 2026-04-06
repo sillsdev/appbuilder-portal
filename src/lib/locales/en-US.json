@@ -232,7 +232,7 @@
   "products_remove": "Remove Products",
   "products_addTitle": "Select Product to Add",
   "products_removeTitle": "Select Product to Remove",
-  "products_details": "Details",
+  "products_details": "History",
   "products_jobRecords": "Job Records",
   "publications_channel": "Channel",
   "publications_status": "Status",
@@ -262,7 +262,9 @@
         "type=5": "{workflowType} Project Access",
         "type=6": "Workflow Migration",
         "type=7": "Archived",
-        "type=8": "Reactivated"
+        "type=8": "Reactivated",
+        "type=9": "Transfer Store",
+        "type=10": "Update Properties"
       }
     }
   ],
@@ -413,6 +415,7 @@
   "project_details_title": "Details",
   "project_details_language": "Language",
   "project_details_type": "Project Type",
+  "project_details_action": "Action",
   "project_settings_title": "Settings",
   "project_autoPublish_title": "Auto Publish on Rebuild",
   "project_autoPublish_description": "When the rebuild workflow is run, skip verification and publish the app. Send a notification to owner and reviewers that the app was published without review.",
@@ -427,6 +430,7 @@
   "project_location": "Repository Location",
   "project_location_placeholder": "Creating the repository...",
   "project_org": "Organization",
+  "project_action_group": "Transfer Group",
   "authors_title": "Authors",
   "authors_submit": "Add Author",
   "authors_empty": "No authors",

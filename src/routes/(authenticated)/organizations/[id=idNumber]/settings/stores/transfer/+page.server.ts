@@ -2,6 +2,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { ProductTransitionType } from '$lib/prisma';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { idSchema, stringIdSchema } from '$lib/valibot';
 
@@ -85,8 +86,11 @@ export const actions = {
       },
       select: {
         Products: {
-          where: { Id: { in: form.data.products }, Project: { OrganizationId: orgId } },
-          select: { Id: true }
+          where: {
+            Id: { in: form.data.products },
+            Project: { OrganizationId: orgId, DateArchived: null }
+          },
+          select: { Id: true, ProjectId: true }
         }
       }
     });
@@ -113,6 +117,42 @@ export const actions = {
     const res = await Promise.all(
       source.Products.map((p) =>
         DatabaseWrites.products.update(p.Id, { StoreId: form.data.destination })
+      )
+    );
+
+    const successes = res.filter((r) => !!r) as string[];
+
+    const grouped = await DatabaseReads.projects.findMany({
+      where: {
+        Products: { some: { Id: { in: successes } } }
+      },
+      select: {
+        Id: true,
+        Products: {
+          where: {
+            Id: { in: successes }
+          },
+          select: { Id: true }
+        }
+      }
+    });
+
+    const transferDate = new Date();
+
+    await Promise.all(
+      grouped.map((p) =>
+        DatabaseWrites.productTransitions.createMany(
+          {
+            data: p.Products.map((p) => ({
+              UserId: event.locals.security.userId,
+              ProductId: p.Id,
+              Command: `Transfer to ${destination.BuildEnginePublisherId}`,
+              DateTransition: transferDate,
+              TransitionType: ProductTransitionType.Transfer
+            }))
+          },
+          p.Id
+        )
       )
     );
 
