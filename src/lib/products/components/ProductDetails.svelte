@@ -5,65 +5,25 @@
     (document.getElementById('modal' + productId) as HTMLDialogElement)?.showModal?.();
   }
 
-  export type Transition = Prisma.ProductTransitionsGetPayload<{
-    select: {
-      Id: true;
-      TransitionType: true;
-      InitialState: true;
-      WorkflowType: true;
-      AllowedUserNames: true;
-      Command: true;
-      Comment: true;
-      DateTransition: true;
-      User: { select: { Id: true; Name: true } };
-      QueueRecords: {
-        select: {
-          Queue: true;
-          JobId: true;
-          JobType: true;
-        };
-      };
-    };
-  }>;
-
   export interface Props {
-    product: Prisma.ProductsGetPayload<{
-      select: {
-        Id: true;
-        BuildEngineJobId: true;
-        CurrentBuildId: true;
-        CurrentReleaseId: true;
-        ProductBuilds: {
-          select: {
-            BuildEngineBuildId: true;
-            TransitionId: true;
-          };
-        };
-        ProductPublications: {
-          select: {
-            BuildEngineReleaseId: true;
-            TransitionId: true;
-          };
-        };
-      };
-    }> & { BuildEngineUrl?: string };
-    transitions: Transition[];
+    product: MinifiedProductDetails;
     projectActions?: Action[];
   }
 </script>
 
 <script lang="ts">
   /* eslint-disable svelte/no-at-html-tags */
-  import type { Prisma } from '@prisma/client';
   import TaskComment from './TaskComment.svelte';
   import { page } from '$app/state';
   import { Icons, getTransitionIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { ProductTransitionType } from '$lib/prisma';
+  import type { MinifiedProductDetails } from '$lib/products';
   import type { Action } from '$lib/projects/components/ProjectActionEntry.svelte';
   import ProjectActionEntry from '$lib/projects/components/ProjectActionEntry.svelte';
   import { isSuperAdmin } from '$lib/utils/roles';
+  import { byDate } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
   import {
     WorkflowState,
@@ -72,15 +32,9 @@
     linkToBuildEngine
   } from '$lib/workflowTypes';
 
-  let { product, transitions, projectActions = [] }: Props = $props();
+  let { product, projectActions = [] }: Props = $props();
 
-  const entries = $derived(
-    [...transitions, ...projectActions].sort((a, b) => {
-      const da = 'DateTransition' in a ? a.DateTransition?.valueOf() : a.DateAction.valueOf();
-      const db = 'DateTransition' in b ? b.DateTransition?.valueOf() : b.DateAction.valueOf();
-      return da === db ? 0 : da === undefined ? 1 : db === undefined ? -1 : da < db ? -1 : 1;
-    })
-  );
+  const entries = $derived([...product.PT, ...projectActions].sort((a, b) => byDate(a.D, b.D)));
 
   const landmarks = [2, 3, 4, 6] as const;
   type Landmark = (typeof landmarks)[number];
@@ -102,68 +56,63 @@
 
   const isSuper = $derived(isSuperAdmin(page.data.session!.user.roles));
 
-  function getBuildOrPub(trans: Transition) {
+  function getBuildOrPub(trans: MinifiedProductDetails['PT'][number]) {
     const ret = {
-      BuildEngineJobId: product.BuildEngineJobId,
-      CurrentBuildId: 0,
-      CurrentReleaseId: 0
+      J: product.J,
+      CB: 0,
+      CR: 0
     };
-    if (trans.InitialState === WorkflowState.Product_Build) {
-      const currentBuild = product.ProductBuilds?.find((pb) => pb.TransitionId === trans.Id);
+    if (trans.S === WorkflowState.Product_Build) {
+      const currentBuild = product.PB?.find((pb) => pb.T === trans.I);
       if (currentBuild) {
-        ret.CurrentBuildId = currentBuild.BuildEngineBuildId;
+        ret.CB = currentBuild.I;
       }
-    } else if (trans.InitialState === WorkflowState.Product_Publish) {
-      const currentRelease = product.ProductPublications?.find(
-        (pp) => pp.TransitionId === trans.Id
-      );
+    } else if (trans.S === WorkflowState.Product_Publish) {
+      const currentRelease = product.PR?.find((pp) => pp.T === trans.I);
       if (currentRelease) {
-        ret.CurrentReleaseId = currentRelease.BuildEngineReleaseId;
+        ret.CR = currentRelease.I;
       }
     }
     return ret;
   }
 </script>
 
-{#snippet transitionType(transition: (typeof transitions)[0], showRecs: boolean)}
-  {#if transition.TransitionType === ProductTransitionType.Activity}
+{#snippet transitionType(transition: MinifiedProductDetails['PT'][number], showRecs: boolean)}
+  {#if transition.T === ProductTransitionType.Activity}
     {@html formatBuildEngineLink(
       linkToBuildEngine(
-        (transition.DateTransition &&
-          transition.InitialState &&
-          isBackground(transition.InitialState as WorkflowState)) ||
-          showRecs
-          ? product.BuildEngineUrl
+        (transition.D && transition.S && isBackground(transition.S as WorkflowState)) || showRecs
+          ? product.BE
           : undefined,
         getBuildOrPub(transition),
-        transition.InitialState as WorkflowState
+        transition.S as WorkflowState
       ),
-      transition.InitialState ?? ''
+      transition.S ?? ''
     )}
   {:else}
     {@const icon = getTransitionIcon(
-      transition.TransitionType,
-      transition.WorkflowType ?? 1,
-      transition.Command ?? transition.InitialState?.match(/(Download|Upload)/)?.at(1) ?? null
+      transition.T,
+      transition.W ?? 1,
+      transition.Cd ?? transition.S?.match(/(Download|Upload)/)?.at(1) ?? null
     )}
     {#if icon}
       <IconContainer {icon} width={16} />&nbsp;
     {/if}
-    {#if transition.TransitionType === ProductTransitionType.ProjectAccess}
-      {transition.InitialState}
-    {:else if isLandmark(transition.TransitionType)}
-      {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
+    {#if transition.T === ProductTransitionType.ProjectAccess}
+      {transition.S}
+    {:else if isLandmark(transition.T)}
+      {stateString(transition.W ?? 1, transition.T)}
     {:else}
       {m.transitions_types({
-        type: transition.TransitionType,
+        type: transition.T,
         workflowType: ''
       })}
     {/if}
   {/if}
 {/snippet}
 
-{#snippet queueRecords(trans: Transition)}
-  {@const records = trans.QueueRecords}
+{#snippet queueRecords(trans: MinifiedProductDetails['PT'][number])}
+  {@const records = trans.QR}
   <details class="cursor-pointer">
     <summary>{m.products_jobRecords()} ({records.length})</summary>
     <ul>
@@ -171,10 +120,10 @@
         <li>
           <a
             class="link"
-            href="/admin/jobs/queue/{rec.Queue}/{encodeURIComponent(rec.JobId)}"
+            href="/admin/jobs/queue/{rec.Q}/{encodeURIComponent(rec.I)}"
             target="_blank"
           >
-            {rec.Queue}: {rec.JobType}
+            {rec.Q}: {rec.T}
           </a>
         </li>
       {/each}
@@ -182,7 +131,7 @@
   </details>
 {/snippet}
 
-<dialog bind:this={detailsModal} id="modal{product.Id}" class="modal">
+<dialog bind:this={detailsModal} id="modal{product.I}" class="modal">
   <div class="modal-box w-11/12 max-w-6xl">
     <div class="flex flex-row">
       <h1 class="pl-0 grow">{m.transitions_productDetails()}</h1>
@@ -208,42 +157,43 @@
       </thead>
       <tbody>
         {#each entries as transition}
-          {#if 'DateTransition' in transition}
-            {@const showRecs = isSuper && !!transition.QueueRecords.length}
+          {#if 'AU' in transition}
+            {@const showRecs = isSuper && !!transition.QR.length}
             <tr
-              class:font-bold={isLandmark(transition.TransitionType)}
-              class:no-border={transition.Comment || showRecs}
+              class:font-bold={isLandmark(transition.T)}
+              class:no-border={transition.Ct || showRecs}
             >
               <td>
                 {@render transitionType(transition, showRecs)}
               </td>
               <td>
-                {#if !isLandmark(transition.TransitionType)}
-                  {(transition.User && (transition.User.Name ?? `User #${transition.User.Id}`)) ||
-                    transition.AllowedUserNames ||
+                {#if !isLandmark(transition.T)}
+                  {(transition.UI && (transition.UN ?? `User #${transition.UI}`)) ||
+                    transition.AU ||
                     m.appName()}
                 {/if}
               </td>
               <td>
-                {transition.TransitionType === ProductTransitionType.Activity
-                  ? transition.Command
+                {transition.T === ProductTransitionType.Activity ||
+                transition.T === ProductTransitionType.Transfer
+                  ? transition.Cd
                   : ''}
               </td>
               <td>
-                {getTimeDateString(transition.DateTransition)}
+                {getTimeDateString(transition.D)}
               </td>
             </tr>
             {#if showRecs}
-              <tr class:no-border={transition.Comment}>
+              <tr class:no-border={transition.Ct}>
                 <td colspan="4">
                   {@render queueRecords(transition)}
                 </td>
               </tr>
             {/if}
-            {#if transition.Comment}
+            {#if transition.Ct}
               <tr>
                 <td colspan="4">
-                  <TaskComment comment={transition.Comment} />
+                  <TaskComment comment={transition.Ct} />
                 </td>
               </tr>
             {/if}
@@ -262,45 +212,44 @@
       </thead>
       <tbody>
         {#each entries as transition}
-          {#if 'DateTransition' in transition}
-            {@const showRecs = isSuper && !!transition.QueueRecords.length}
+          {#if 'AU' in transition}
+            {@const showRecs = isSuper && !!transition.QR.length}
             <tr
-              class:font-bold={isLandmark(transition.TransitionType)}
-              class:no-border={!isLandmark(transition.TransitionType) ||
-                transition.Comment ||
-                showRecs}
+              class:font-bold={isLandmark(transition.T)}
+              class:no-border={!isLandmark(transition.T) || transition.Ct || showRecs}
             >
               <td>
                 {@render transitionType(transition, showRecs)}
               </td>
               <td>
-                {getTimeDateString(transition.DateTransition)}
+                {getTimeDateString(transition.D)}
               </td>
             </tr>
-            {#if !isLandmark(transition.TransitionType)}
-              <tr class:no-border={transition.Comment || showRecs}>
+            {#if !isLandmark(transition.T)}
+              <tr class:no-border={transition.Ct || showRecs}>
                 <td>
-                  {(transition.User && (transition.User.Name ?? `User #${transition.User.Id}`)) ||
-                    transition.AllowedUserNames ||
+                  {(transition.UI && (transition.UN ?? `User #${transition.UI}`)) ||
+                    transition.AU ||
                     m.appName()}
                 </td>
                 <td>
-                  {transition.TransitionType === ProductTransitionType.Activity
-                    ? transition.Command
+                  {transition.T === ProductTransitionType.Activity ||
+                  transition.T === ProductTransitionType.Transfer
+                    ? transition.Cd
                     : ''}
                 </td>
               </tr>
             {/if}
             {#if showRecs}
-              <tr class:no-border={transition.Comment}>
+              <tr class:no-border={transition.Ct}>
                 <td colspan="2">
                   {@render queueRecords(transition)}
                 </td>
               </tr>
             {/if}
-            {#if transition.Comment}
+            {#if transition.Ct}
               <tr>
-                <td colspan="2"><TaskComment comment={transition.Comment} /></td>
+                <td colspan="2"><TaskComment comment={transition.Ct} /></td>
               </tr>
             {/if}
           {:else}

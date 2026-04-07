@@ -13,10 +13,10 @@
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { BuildStatus } from '$lib/prisma';
-  import { ProductActionType } from '$lib/products';
+  import { ProductActionType, getProductActions } from '$lib/products';
+  import { type MinifiedProductCard } from '$lib/products';
   import ProductDetails, {
     type Props as ProductDetailProps,
-    type Transition,
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
   import type { Action } from '$lib/projects/components/ProjectActionEntry.svelte';
@@ -38,14 +38,11 @@
         Name: true;
         DateArchived: true;
         OrganizationId: true;
+        OwnerId: true;
       };
     }>;
     product: Prisma.ProductsGetPayload<{
       select: {
-        DatePublished: true;
-        DateUpdated: true;
-        Properties: true;
-        PublishLink: true;
         ProductDefinition: {
           select: {
             Name: true;
@@ -54,42 +51,15 @@
                 ProductType: true;
               };
             };
-          };
-        };
-        UserTasks: {
-          select: {
-            UserId: true;
-            DateCreated: true;
-          };
-        };
-        WorkflowInstance: {
-          select: {
-            State: true;
-            WorkflowDefinition: {
-              select: {
-                Type: true;
-              };
-            };
+            RebuildWorkflowId: true;
+            RepublishWorkflowId: true;
           };
         };
         Store: { select: { StoreTypeId: true; Description: true } };
-        ProductBuilds: {
-          select: {
-            Status: true;
-          };
-        };
-        ProductPublications: {
-          select: {
-            Status: true;
-          };
-        };
       };
-    }> & {
-      Transitions: Transition[];
-      actions: ProductActionType[];
-      ActiveTransition?: Transition;
-      PreviousTransition?: Transition;
-    } & ProductDetailProps['product'];
+    }> &
+      MinifiedProductCard &
+      ProductDetailProps['product'];
     actionEndpoint: string;
     deleteEndpoint: string;
     updateEndpoint: string;
@@ -109,9 +79,10 @@
 
   let deleteProductModal: HTMLDialogElement | undefined = $state(undefined);
   let updateProductModal: HTMLDialogElement | undefined = $state(undefined);
-  const showTaskWaiting = $derived(!!product.WorkflowInstance);
+  const showTaskWaiting = $derived(!!product.WS);
 
   const highlighted = $derived(page.url.hash.substring(1));
+  const actions = $derived(canEdit ? getProductActions(product) : []);
 
   async function handleProductAction(productId: string, action: string) {
     try {
@@ -135,23 +106,17 @@
       console.error('Error performing product action:', error);
     }
   }
-  const waitTime = $derived(
-    getRelativeTime(
-      product.UserTasks.slice(-1)[0]?.DateCreated ??
-        product.PreviousTransition?.DateTransition ??
-        null
-    )
-  );
-  const updatedTime = $derived(getRelativeTime(product.DateUpdated));
-  const publishedTime = $derived(getRelativeTime(product.DatePublished));
+  const waitTime = $derived(getRelativeTime(product.UT.slice(-1)[0]?.D ?? product.PrT ?? null));
+  const updatedTime = $derived(getRelativeTime(product.DU));
+  const publishedTime = $derived(getRelativeTime(product.DP));
 </script>
 
 <div
   class={[
     'rounded-md border border-slate-400 w-full my-2',
-    product.Id === highlighted && 'border-2 border-accent!'
+    product.I === highlighted && 'border-2 border-accent!'
   ]}
-  id={product.Id}
+  id={product.I}
 >
   <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
     <div class="flex flex-row items-start">
@@ -161,7 +126,7 @@
       />
       <a
         class="min-w-0 grow hover:underline ml-0.5"
-        href={localizeHref(`/projects/${project.Id}#${product.Id}`)}
+        href={localizeHref(`/projects/${project.Id}#${product.I}`)}
       >
         {product.ProductDefinition.Name}
       </a>
@@ -177,13 +142,13 @@
         {#snippet content()}
           <ul class="menu overflow-hidden rounded-md">
             <li class="w-full rounded-none">
-              <button class="text-nowrap" onclick={() => showProductDetails(product.Id)}>
+              <button class="text-nowrap" onclick={() => showProductDetails(product.I)}>
                 <IconContainer icon={Icons.Info} width={16} />
                 {m.products_details()}
               </button>
             </li>
             <li class="w-full rounded-none">
-              <a href={localizeHref(`/products/${product.Id}/files`)} class="text-nowrap">
+              <a href={localizeHref(`/products/${product.I}/files`)} class="text-nowrap">
                 <IconContainer icon={Icons.Directory} width={16} />
                 {m.project_productFiles()}
               </a>
@@ -223,27 +188,27 @@
           width={24}
           class="mx-0.5"
         />
-        {#if product.PublishLink}
-          <a class="link" href={product.PublishLink} target="_blank">
+        {#if product.L}
+          <a class="link" href={product.L} target="_blank">
             {product.Store?.Description}
           </a>
         {:else}
           {product.Store?.Description}
         {/if}
         <span class="hidden sm:inline-block">
-          {#if product.DatePublished}
-            [<Tooltip tip={getTimeDateString(product.DatePublished)}>
+          {#if product.DP}
+            [<Tooltip tip={getTimeDateString(product.DP)}>
               {$publishedTime}
             </Tooltip>]
           {/if}
         </span>
       </div>
-      {#if product.PublishLink}
+      {#if product.L}
         {@const pType = product.ProductDefinition.Workflow.ProductType}
         {#if pType !== ProductType.Web}
           <a
             class="link"
-            href="/api/products/{product.Id}/files/published/{pType === ProductType.AssetPackage
+            href="/api/products/{product.I}/files/published/{pType === ProductType.AssetPackage
               ? 'asset-package'
               : 'apk'}"
             target="_blank"
@@ -256,7 +221,7 @@
     <div class="flex flex-row gap-2">
       <div class="flex flex-row gap-1 grow">
         {m.common_updated()}:
-        <Tooltip tip={getTimeDateString(product.DateUpdated)}>
+        <Tooltip tip={getTimeDateString(product.DP)}>
           {$updatedTime}
         </Tooltip>
       </div>
@@ -264,7 +229,7 @@
     <div class="flex flex-row gap-2 sm:hidden">
       <div class="flex flex-row gap-1 grow">
         {m.products_published()}:
-        <Tooltip tip={getTimeDateString(product.DatePublished)}>
+        <Tooltip tip={getTimeDateString(product.DP)}>
           {$publishedTime}
         </Tooltip>
       </div>
@@ -272,21 +237,21 @@
     <div class="flex flex-row gap-2 p-1 mt-1 rounded-md">
       <button
         class="text-nowrap btn btn-secondary btn-sm"
-        onclick={() => showProductDetails(product.Id)}
+        onclick={() => showProductDetails(product.I)}
       >
         <IconContainer icon={Icons.Info} width={20} />
         {m.products_details()}
       </button>
-      {#each product.actions as action}
+      {#each actions as action}
         {@const message =
           //@ts-expect-error this is in fact correct
           m['products_acts_' + action]({
             workflow: m.flowDefs_types({
-              type: product.WorkflowInstance?.WorkflowDefinition.Type ?? 0
+              type: product.WT ?? 0
             })
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } as any)}
-        {#if !((action === ProductActionType.StopBuild && product.ProductBuilds.at(0)?.Status === BuildStatus.PostProcessing) || (action === ProductActionType.StopPublish && product.ProductPublications.at(0)?.Status === BuildStatus.PostProcessing))}
+        {#if !((action === ProductActionType.StopBuild && product.ABS === BuildStatus.PostProcessing) || (action === ProductActionType.StopPublish && product.APS === BuildStatus.PostProcessing))}
           <BlockIfJobsUnavailable class="text-nowrap">
             {#snippet altContent()}
               <IconContainer icon={getActionIcon(action)} width={20} />
@@ -295,7 +260,7 @@
             <button
               class="text-nowrap btn btn-secondary btn-sm"
               onclick={(event) => {
-                handleProductAction(product.Id, action);
+                handleProductAction(product.I, action);
                 event.currentTarget.blur();
               }}
             >
@@ -321,7 +286,7 @@
         {#if project.DateArchived}
           <span>
             {@html m.tasks_archivedAt({
-              activityName: sanitizeInput(product.ActiveTransition?.InitialState ?? '')
+              activityName: sanitizeInput(product.AcT?.S ?? '')
             })}
           </span>
         {:else}
@@ -330,14 +295,14 @@
               {@html formatBuildEngineLink(
                 linkToBuildEngine(
                   isSuperAdmin(page.data.session!.user.roles) &&
-                    product.WorkflowInstance &&
-                    isBackground(product.WorkflowInstance.State as WorkflowState)
-                    ? product.BuildEngineUrl
+                    product.WS &&
+                    isBackground(product.WS as WorkflowState)
+                    ? product.BE
                     : undefined,
                   product,
-                  product.WorkflowInstance?.State as WorkflowState
+                  product.WS as WorkflowState
                 ),
-                product.ActiveTransition?.InitialState ?? ''
+                product.AcT?.S ?? ''
               )}
             </b>
             {#snippet statusBadge(status: string)}
@@ -353,14 +318,14 @@
                 {status}
               </span>
             {/snippet}
-            {#if product.WorkflowInstance?.State === WorkflowState.Product_Build && product.ProductBuilds[0]?.Status}
-              {@render statusBadge(product.ProductBuilds[0].Status)}
-            {:else if product.WorkflowInstance?.State === WorkflowState.Product_Publish && product.ProductPublications[0]?.Status}
-              {@render statusBadge(product.ProductPublications[0].Status)}
+            {#if product.WS === WorkflowState.Product_Build && product.ABS}
+              {@render statusBadge(product.ABS)}
+            {:else if product.WS === WorkflowState.Product_Publish && product.APS}
+              {@render statusBadge(product.APS)}
             {/if}
             &mdash;
             {m.tasks_waiting({
-              allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName()
+              allowedNames: product.AcT?.AU || m.appName()
             })}
             &bull;
             {$waitTime}
@@ -368,18 +333,18 @@
         {/if}
       </div>
       <div class="flex flex-row gap-2">
-        {#if product.UserTasks.find((ut) => ut.UserId === page.data.session?.user.userId)}
-          <a class="link" href={localizeHref(`/tasks/${product.Id}`)}>
+        {#if product.UT.find((ut) => ut.U === page.data.session?.user.userId)}
+          <a class="link" href={localizeHref(`/tasks/${product.I}`)}>
             {m.common_continue()}
           </a>
         {/if}
-        {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WorkflowInstance}
-          <a class="link" href={localizeHref(`/workflow-instances/${product.Id}`)}>
+        {#if isSuperAdmin(page.data.session!.user.roles) && !!product.WS}
+          <a class="link" href={localizeHref(`/workflow-instances/${product.I}`)}>
             {m.common_workflow()}
           </a>
         {/if}
       </div>
     </div>
   {/if}
-  <ProductDetails {product} transitions={product.Transitions} {projectActions} />
+  <ProductDetails {product} {projectActions} />
 </div>

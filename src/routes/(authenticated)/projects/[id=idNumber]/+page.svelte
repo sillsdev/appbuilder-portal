@@ -19,7 +19,12 @@
   import ProjectDetails, {
     showProjectDetails
   } from '$lib/projects/components/ProjectDetails.svelte';
-  import type { ProjectDataSSE } from '$lib/projects/sse';
+  import type {
+    ProjectDataSSE,
+    ProjectGroupsSSE,
+    ProjectOrgsSSE,
+    ProjectProductsSSE
+  } from '$lib/projects/sse';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
@@ -28,48 +33,69 @@
   let addProductModal: HTMLDialogElement | undefined = $state(undefined);
   let projectLocationCopied = $state(false);
 
-  const currentPageUrl = page.url.pathname;
-  let reconnectDelay = 1000;
-  const projectDataSSE: Readable<ProjectDataSSE> = source(`${page.params.id}/sse`, {
-    close({ connect }) {
-      setTimeout(() => {
-        if (currentPageUrl !== page.url.pathname) {
-          // If the current page has changed, we don't want to reconnect.
-          return;
-        }
-        console.log('Disconnected. Reconnecting...');
-        connect();
-        reconnectDelay = Math.min(reconnectDelay * 2, 30000); // Exponential backoff, max 30 seconds
-      }, reconnectDelay);
-    }
-  })
-    .select('projectData')
-    .transform((t) => (t ? parse(t) : undefined));
+  function createSource(endpoint: string, select: string) {
+    const currentPageUrl = page.url.pathname;
+    let reconnectDelay = 1000;
+    return source(`${page.params.id}/sse${endpoint}`, {
+      close({ connect }) {
+        setTimeout(() => {
+          if (currentPageUrl !== page.url.pathname) {
+            // If the current page has changed, we don't want to reconnect.
+            return;
+          }
+          console.log('Disconnected. Reconnecting...');
+          connect();
+          reconnectDelay = Math.min(reconnectDelay * 2, 30000); // Exponential backoff, max 30 seconds
+        }, reconnectDelay);
+      }
+    })
+      .select(select)
+      .transform((t) => (t ? parse(t) : undefined));
+  }
+
+  const projectDataSSE: Readable<ProjectDataSSE> = createSource('', 'projectData');
+  const groupDataSSE: Readable<ProjectGroupsSSE> = createSource('/groups', 'groupData');
+  const orgDataSSE: Readable<ProjectOrgsSSE> = createSource('/org', 'orgData');
+  const productDataSSE: Readable<ProjectProductsSSE> = createSource('/products', 'productData');
 
   const projectData = $derived($projectDataSSE ?? data.projectData);
-  const dateCreated = $derived(getRelativeTime(projectData?.project?.DateCreated ?? null));
-  const dateArchived = $derived(getRelativeTime(projectData?.project?.DateArchived ?? null));
+  const groupData = $derived($groupDataSSE ?? data.groupData);
+  const orgData = $derived($orgDataSSE ?? data.orgData);
+  const productData = $derived($productDataSSE ?? data.productData);
+
+  const dateCreated = $derived(getRelativeTime(projectData.project.DateCreated ?? null));
+  const dateArchived = $derived(getRelativeTime(projectData.project.DateArchived ?? null));
 
   const canEdit = $derived(
     canModifyProject(
       data.session.user,
-      projectData?.project.OwnerId ?? -1,
-      projectData?.project.OrganizationId ?? -1
+      projectData.project.OwnerId,
+      projectData.project.OrganizationId
     )
   );
   const canClaim = $derived(
     canClaimProject(
       data.session.user,
-      projectData?.project.OwnerId ?? -1,
-      projectData?.project.OrganizationId ?? -1,
-      projectData?.project.GroupId ?? -1,
-      projectData?.userGroups ?? []
+      projectData.project.OwnerId,
+      projectData.project.OrganizationId,
+      projectData.project.GroupId,
+      groupData.userGroups
     )
   );
+
+  const { productMap, availableProducts } = $derived.by(() => {
+    const activeProducts = new Set(productData.products.map((p) => p.PD));
+    return {
+      productMap: new Map(orgData.ProductDefinitions.map((pd) => [pd.Id, pd])),
+      availableProducts: orgData.ProductDefinitions.filter(
+        (pd) => !activeProducts.has(pd.Id) && pd._count.Organizations
+      )
+    };
+  });
 </script>
 
 <div class="w-full max-w-6xl mx-auto relative">
-  {#if !projectData}
+  {#if !(projectData && groupData)}
     <div class="flex justify-center items-center h-64">
       <span class="loading loading-spinner loading-lg"></span>
     </div>
@@ -78,7 +104,7 @@
     <div class="flex p-4">
       <div class="grow">
         <h1 class="p-0">
-          {projectData.project?.Name}
+          {projectData.project.Name}
         </h1>
         <div>
           <span class="font-bold">
@@ -92,7 +118,7 @@
             </Tooltip>
           </span>
         </div>
-        {#if projectData?.project?.DateArchived}
+        {#if projectData.project.DateArchived}
           <span>
             {m.project_archivedOn()}
             <Tooltip tip={getTimeDateString(projectData.project.DateArchived)}>
@@ -105,7 +131,7 @@
         <ProjectActionMenu
           data={data.actionForm}
           project={projectData.project}
-          userGroups={projectData.userGroups}
+          userGroups={groupData.userGroups}
         />
       {/if}
     </div>
@@ -127,11 +153,7 @@
               <IconContainer icon={Icons.Info} width={20} />
               {m.products_details()}
             </button>
-            <ProjectDetails
-              project={{ Id: Number(page.params.id) }}
-              actions={projectData.project.ProjectActions}
-              {...projectData.actionParams}
-            />
+            <ProjectDetails {...projectData} project={{ Id: Number(page.params.id) }} />
           {/if}
         </div>
         <h2 class="pl-0">{m.project_details_title()}</h2>
@@ -219,7 +241,7 @@
               onclick={() => addProductModal?.showModal()}
               disabled={!(
                 canEdit &&
-                projectData.productsToAdd.length &&
+                availableProducts.length &&
                 projectData.project.RepositoryUrl &&
                 !projectData.project.DateArchived
               )}
@@ -230,18 +252,23 @@
           {#if canEdit}
             <AddProduct
               bind:modal={addProductModal}
-              prodDefs={projectData.productsToAdd}
-              stores={projectData.stores}
+              prodDefs={availableProducts}
+              stores={orgData.Stores.filter((s) => !!s._count.Organizations)}
               endpoint="addProduct"
             />
           {/if}
         </div>
         <!-- Products List -->
         <div>
-          {#if !projectData?.project?.Products.length}
+          {#if !productData.products.length}
             {m.projectTable_noProducts()}
           {:else}
-            {#each projectData.project.Products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, getLocale()) ) as product}
+            {@const products = productData.products.map((p) => ({
+              ...p,
+              ProductDefinition: productMap.get(p.PD)!,
+              Store: orgData.Stores.find((s) => s.Id === p.S)!
+            }))}
+            {#each products.toSorted( (a, b) => byName(a.ProductDefinition, b.ProductDefinition, getLocale()) ) as product}
               <ProductCard
                 {product}
                 project={projectData.project}
@@ -249,10 +276,8 @@
                 deleteEndpoint="deleteProduct"
                 updateEndpoint="updateProduct"
                 {canEdit}
-                projectActions={projectData.project.ProjectActions.filter(
-                  (pa) =>
-                    pa.ActionType === ProjectActionType.Access ||
-                    pa.ActionType === ProjectActionType.Archival
+                projectActions={projectData.actions.filter(
+                  (pa) => pa.T === ProjectActionType.Access || pa.T === ProjectActionType.Archival
                 )}
               />
             {/each}
@@ -272,8 +297,8 @@
       <div class="space-y-2 min-w-0 flex-auto sidebararea">
         <OwnerGroup
           project={projectData.project}
-          users={projectData.possibleProjectOwners}
-          groups={projectData.possibleGroups}
+          users={groupData.possibleOwners}
+          groups={groupData.possibleGroups}
           orgName={data.organizations.find((o) => o.Id === projectData.project.OrganizationId)
             ?.Name}
           endpoint="editOwnerGroup"
@@ -282,15 +307,15 @@
         />
         <Authors
           group={projectData.project.Group}
-          projectAuthors={projectData.project.Authors}
-          availableAuthors={projectData.authorsToAdd}
+          projectAuthors={groupData.authors}
+          availableAuthors={groupData.possibleAuthors}
           formData={data.authorForm}
           createEndpoint="addAuthor"
           deleteEndpoint="deleteAuthor"
           {canEdit}
         />
         <Reviewers
-          reviewers={projectData.project.Reviewers}
+          reviewers={groupData.reviewers}
           formData={data.reviewerForm}
           createEndpoint="addReviewer"
           deleteEndpoint="deleteReviewer"

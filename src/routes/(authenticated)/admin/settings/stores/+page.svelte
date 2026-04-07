@@ -31,6 +31,7 @@
       {store}
       getTitle={(store) => store.BuildEnginePublisherId}
       showDescription
+      users={data.users.get(store.Id)}
     />
   {/each}
 </div>

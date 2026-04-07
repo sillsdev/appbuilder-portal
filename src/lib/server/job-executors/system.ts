@@ -751,10 +751,16 @@ async function migrateProjectActions() {
           where: { ...transitionFilter, Product: { ProjectId: p.Id } }
         });
 
-        getQueues().SvelteSSE.add(`Update Project #${p.Id} (actions migrated)`, {
-          type: BullMQ.JobType.SvelteSSE_UpdateProject,
-          projectIds: [p.Id]
-        });
+        getQueues().SvelteSSE.addBulk([
+          {
+            name: `Update Project #${p.Id} (transitions migrated)`,
+            data: { type: BullMQ.JobType.SvelteSSE_UpdateProjectProducts, projectIds: [p.Id] }
+          },
+          {
+            name: `Update Project #${p.Id} (actions migrated)`,
+            data: { type: BullMQ.JobType.SvelteSSE_UpdateProject, projectIds: [p.Id] }
+          }
+        ]);
 
         return { project: p.Id, created: created.count, deleted: deleted.count };
       })

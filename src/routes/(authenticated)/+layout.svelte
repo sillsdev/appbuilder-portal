@@ -58,7 +58,7 @@
     }
   });
 
-  const userTasksLength = $derived($userTasksSSE?.length ?? data.userTasks.length);
+  const userTasksLength = $derived($userTasksSSE?.tasks.length ?? data.userTasksCount);
 
   let selectingOrg = $state(false);
   const selectedOrg = $derived(data.organizations.find((o) => o.Id === $orgActive));

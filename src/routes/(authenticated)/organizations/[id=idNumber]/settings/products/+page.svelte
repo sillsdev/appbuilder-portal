@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { ActionData, PageData } from './$types';
   import { enhance } from '$app/forms';
-  import MultiselectBox from '$lib/components/settings/MultiselectBox.svelte';
-  import MultiselectBoxElement from '$lib/components/settings/MultiselectBoxElement.svelte';
+  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
   import { Icons, getProductIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
@@ -48,8 +48,20 @@
       offIcon={Icons.Invisible}
     />
   </form>
-  <MultiselectBox header={m.org_productSelectTitle()}>
-    {#each data.allProductDefs.toSorted((a, b) => byName(a, b, getLocale())) as productDef}
+</div>
+<p class="p-4 pt-0">{m.org_productSelectTitle()}</p>
+<div class="flex flex-col w-full">
+  {#each data.allProductDefs.toSorted((a, b) => byName(a, b, getLocale())) as pd}
+    <DataDisplayBox fields={[{ key: 'common_description', value: pd.Description }]}>
+      {#snippet title()}
+        <h3>
+          <IconContainer
+            icon={getProductIcon(pd.Workflow.ProductType)}
+            width={20}
+            class="mr-1"
+          />{pd.Name}
+        </h3>
+      {/snippet}
       <form
         method="POST"
         action="?/toggleProduct"
@@ -65,21 +77,21 @@
           };
         }}
       >
-        <input type="hidden" name="prodDefId" value={productDef.Id} />
-        <MultiselectBoxElement
-          description={productDef?.Description ?? ''}
-          checked={productDef.enabled}
-          checkProps={{
-            name: 'enabled',
-            onchange: (e) => e.currentTarget.form?.requestSubmit()
-          }}
-        >
-          {#snippet title()}
-            <IconContainer icon={getProductIcon(productDef.Workflow.ProductType)} width={24} />
-            {productDef.Name ?? ''}
-          {/snippet}
-        </MultiselectBoxElement>
+        <input type="hidden" name="prodDefId" value={pd.Id} />
+        <InputWithMessage title={{ key: 'flowDefs_enabled' }}>
+          <input
+            name="enabled"
+            class="toggle toggle-accent"
+            type="checkbox"
+            checked={pd.enabled}
+            onchange={(e) => e.currentTarget.form?.requestSubmit()}
+          />
+        </InputWithMessage>
       </form>
-    {/each}
-  </MultiselectBox>
+      <div class="flex flex-row gap-1">
+        <IconContainer icon={Icons.Product} width={20} tooltip={m.products_title()} />
+        {pd._count.Products}
+      </div>
+    </DataDisplayBox>
+  {/each}
 </div>

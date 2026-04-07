@@ -46,9 +46,9 @@
             linkToBuildEngine(
               buildEngineUrl,
               {
-                BuildEngineJobId: 0,
-                CurrentBuildId: null,
-                CurrentReleaseId: release.BuildEngineReleaseId
+                J: 0,
+                CB: null,
+                CR: release.BuildEngineReleaseId
               },
               WorkflowState.Product_Publish
             ),
@@ -106,9 +106,9 @@
             linkToBuildEngine(
               buildEngineUrl,
               {
-                BuildEngineJobId: 0,
-                CurrentBuildId: null,
-                CurrentReleaseId: release.BuildEngineReleaseId
+                J: 0,
+                CB: null,
+                CR: release.BuildEngineReleaseId
               },
               WorkflowState.Product_Publish
             ),

@@ -58,12 +58,10 @@
   let waiting = $state(false);
 
   $effect(() => {
-    if ($userTasksSSE?.length) {
-      const productTasks = $userTasksSSE.filter((t) => t.ProductId === page.params.product_id);
+    if ($userTasksSSE?.tasks.length) {
+      const productTasks = $userTasksSSE.tasks.filter((t) => t.P === page.params.product_id);
       const fallback = new Date().valueOf();
-      const oldTask = productTasks.find(
-        (t) => (t.DateUpdated?.valueOf() ?? fallback) <= data.loadTime
-      );
+      const oldTask = productTasks.find((t) => (t.U?.valueOf() ?? fallback) <= data.loadTime);
       const waitRead = untrack(() => waiting);
       // waiting and task updated
       if (waitRead && productTasks.length && !oldTask) {
