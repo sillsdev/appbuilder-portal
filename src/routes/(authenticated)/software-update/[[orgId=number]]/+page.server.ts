@@ -1,4 +1,5 @@
 import { fail } from '@sveltejs/kit';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -128,9 +129,121 @@ export const load = (async ({ locals, params }) => {
     }
   })).map((o) => o.Id);
 
-  // Get products that would be rebuilt
-  const productsToRebuild = await getProductsForRebuild(organizationIds);
-  console.log(productsToRebuild);
+  let systemVersions = (await DatabaseReads.systemVersions.findMany(
+    {
+      select: {
+        BuildEngineUrl: true,
+        ApplicationTypeId: true,
+        Version: true
+      }
+    })).reduce((acc, v) => {
+
+      if (!acc[v.BuildEngineUrl]) {
+        acc[v.BuildEngineUrl] = {};
+      }
+
+      acc[v.BuildEngineUrl][v.ApplicationTypeId] = v.Version;
+      return acc;
+    }, {});
+
+  const prisma = DatabaseReads.$extends({
+    result: {
+      products: {
+        LatestVersion: {
+          compute(product) {
+            return product.ProductBuilds[0].AppBuilderVersion;
+          },
+        },
+        RequiredVersion: {
+          compute(product) {
+            const p = product.Project;
+            return systemVersions[p.Organization.BuildEngineUrl][p.ApplicationType.Id];
+          }
+        }
+      }
+    },
+  });
+
+  const projects = (await prisma.organizations.findMany({
+    where: {
+      ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined),
+    },
+    select: {
+      Id: true,
+      Name: true,
+      Projects: {
+        orderBy: { Name: 'asc' },
+        where: {
+          DateArchived: null, // Project has not been archived
+          RebuildOnSoftwareUpdate: true, // Project setting is true
+          Products: {
+            some: {
+              WorkflowInstance: null,
+              DatePublished: { not: null },
+            }
+          }
+        },
+        select: {
+          Name: true,
+          ApplicationType: {
+            select: {
+              Id: true,
+            }
+          },
+          Products: {
+            where: {
+              WorkflowInstance: null,
+              DatePublished: { not: null },
+            },
+            select: {
+              Id: true,
+              LatestVersion: true,
+              RequiredVersion: true,
+
+              Project: {
+                select: {
+                  ApplicationType: {
+                    select: {
+                      Id: true,
+                    }
+                  },
+                  Organization: {
+                    select: {
+                      BuildEngineUrl: true,
+                    }
+                  },
+                }
+              },
+
+              ProductBuilds: {
+                orderBy: { DateCreated: 'desc' },
+                take: 1,
+
+                select: {
+                  AppBuilderVersion: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  })).map((org) => {
+    org.Projects.forEach((project) => {
+      // Strip out each product that has already been built with the latest version.
+      // This must be done here because prisma does not allow comparing two fields on the same object AFAIK
+      project.Products = project.Products.filter(
+        ({ LatestVersion, RequiredVersion }) =>
+          LatestVersion !== RequiredVersion).map(
+            ({ Id, LatestVersion, RequiredVersion }) => ({
+              Id, LatestVersion, RequiredVersion
+            }));
+    });
+    return org;
+  }).reduce((acc, org) => {
+    acc[org.Id.toString()] = org;
+    return acc
+  }, {});
 
   // Get current rebuilds for the affected organizations to show in the UI
   const rebuildsData = await getRebuildsForOrgIds(organizationIds);
@@ -145,17 +258,12 @@ export const load = (async ({ locals, params }) => {
   });
 
   const form = await superValidate(valibot(formSchema));
+
   return {
     form,
-    organizationIds,
-    productsToRebuild: productsToRebuild.map((p) => ({
-      projectId: p.projectId,
-      projectName: p.projectName,
-      applicationTypeId: p.applicationTypeId,
-      requiredVersion: p.requiredVersion
-    })),
     rebuilds: rebuildsData.rebuilds,
-    applicationTypes
+    applicationTypes,
+    projects,
   };
 }) satisfies PageServerLoad;
 
