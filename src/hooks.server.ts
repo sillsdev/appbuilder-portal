@@ -9,12 +9,15 @@ import { authRouteHandle, organizationInviteHandle, populateSecurityInfo } from 
 import { building } from '$app/environment';
 import OTEL from '$lib/otel';
 
-import { paraglideMiddleware } from '$lib/paraglide/server';
+import { getTextDirection as defaultGetTextDirection } from '$lib/paraglide/runtime';
+import { paraglideMiddleware as defaultParaglideMiddleware } from '$lib/paraglide/server';
 import { RoleId } from '$lib/prisma';
 import { QueueConnected, getQueues } from '$lib/server/bullmq';
 import { bullboardHandle } from '$lib/server/bullmq/BullBoard';
 import { allWorkers } from '$lib/server/bullmq/BullMQ';
 import { DatabaseConnected, DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { getTextDirection as UDMGetTextDirection } from '$lib/udm/paraglide/runtime';
+import { paraglideMiddleware as UDMParaglideMiddleware } from '$lib/udm/paraglide/server';
 
 if (!building) {
   // Start OTEL collector
@@ -36,15 +39,23 @@ if (!building) {
 }
 
 // creating a handle to use the paraglide middleware
-const paraglideHandle: Handle = ({ event, resolve }) =>
-  paraglideMiddleware(event.request, ({ request: localizedRequest, locale }) => {
-    event.request = localizedRequest;
-    return resolve(event, {
-      transformPageChunk: ({ html }) => {
-        return html.replace('%lang%', locale);
-      }
-    });
-  });
+const paraglideHandle: Handle = ({ event, resolve }) => {
+  const isUDMRoute = event.route.id?.match('^/user-data');
+
+  return (isUDMRoute ? UDMParaglideMiddleware : defaultParaglideMiddleware)(
+    event.request,
+    ({ request: localizedRequest, locale }) => {
+      event.request = localizedRequest;
+      return resolve(event, {
+        transformPageChunk: ({ html }) => {
+          return html
+            .replace('%lang%', locale)
+            .replace('%dir%', (isUDMRoute ? UDMGetTextDirection : defaultGetTextDirection)(locale));
+        }
+      });
+    }
+  );
+};
 
 const heartbeat: Handle = async ({ event, resolve }) => {
   // this check is important to prevent infinite redirects...
