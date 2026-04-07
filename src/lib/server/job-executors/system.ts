@@ -449,7 +449,7 @@ export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unkn
 
 async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scope: Scope) {
   const filter = { TransitionId: null, Success: { not: null } };
-  const chunkSize = 20;
+  const chunkSize = 100;
 
   const members = { build: 'ProductBuilds', release: 'ProductPublications' } as const;
   const member = members[scope];
