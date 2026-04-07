@@ -4,7 +4,7 @@
   import type { PageData } from './$types';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
-  import LanguageCodeTypeahead from '$lib/components/LanguageCodeTypeahead.svelte';
+  import LanguageSelector from '$lib/components/LanguageSelector.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
@@ -18,13 +18,12 @@
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
-  import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
-
   interface Props {
     data: PageData;
   }
 
   let { data }: Props = $props();
+
   const { form, enhance } = superForm(data.form, {
     dataType: 'json',
     onSubmit(event) {
@@ -79,18 +78,12 @@
       </div>
       <div class="row">
         <LabeledFormInput key="project_languageCode" class="md:max-w-xs">
-          <LanguageCodeTypeahead
-            bind:langCode={$form.Language}
-            class={{
-              dropdown: 'left-0',
-              input: 'w-full md:max-w-xs validator'
-            }}
-            inputElProps={{ required: true, pattern: regExpToInputPattern(langtagRegex) }}
-          >
-            {#snippet validatorHint()}
-              <span class="validator-hint">Invalid BCP 47 Language Tag</span>
-            {/snippet}
-          </LanguageCodeTypeahead>
+          <LanguageSelector
+            name="Language"
+            bind:value={$form.Language}
+            class="validator"
+            required
+          />
         </LabeledFormInput>
         <LabeledFormInput key="common_type" class="md:max-w-xs">
           <AppTypeSelector
