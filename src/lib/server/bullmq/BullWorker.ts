@@ -106,12 +106,7 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         name: 'Migrate Features (chunked)',
         data: {
           type: BullMQ.JobType.System_Migrate,
-          steps: [
-            'Rename Transitions',
-            'Associate Builds',
-            'Associate Releases',
-            'Migrate Project Actions'
-          ]
+          steps: ['Associate Builds', 'Associate Releases']
         }
       }
     );

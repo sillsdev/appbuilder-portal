@@ -8,10 +8,8 @@ import { join } from 'path';
 import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
-import prismaInternal from '../database/prisma';
 import { JobSchedulerId } from '$lib/bullmq';
 import { activeSystems } from '$lib/organizations/server';
-import { ProductTransitionType, ProjectActionString, ProjectActionType } from '$lib/prisma';
 import { WorkflowState } from '$lib/workflowTypes';
 
 export async function checkSystemStatuses(
@@ -424,7 +422,7 @@ export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unkn
     const step = steps[i];
     try {
       const op = migrationSteps[step];
-      const res = await ('a' in op ? op.f(op.a) : op.f());
+      const res = await op.f(op.a);
       if (res.before && !res.after) {
         await getQueues().Emails.add(`Notify SuperAdmins of Finished Migration Step: ${step}`, {
           type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
@@ -447,143 +445,6 @@ export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unkn
   }
 
   return Object.fromEntries(results);
-}
-
-async function renameTransitions() {
-  const chunkSize = 100;
-  const filter = {
-    InitialState: {
-      // these states are deprecated and confuse the build/release association process
-      in: ['Product Rebuild', 'Product Republish', 'Check Product Build', 'Check Product Publish']
-    },
-    DateTransition: { not: null }
-  };
-  const before = await DatabaseReads.products.count({
-    where: { ProductTransitions: { some: filter } }
-  });
-  const products = await DatabaseReads.products.findMany({
-    where: {
-      ProductTransitions: {
-        some: filter
-      }
-    },
-    select: {
-      Id: true,
-      ProjectId: true,
-      ProductTransitions: {
-        select: {
-          Id: true,
-          InitialState: true,
-          DestinationState: true,
-          Comment: true
-        },
-        orderBy: { DateTransition: 'desc' }
-      }
-    },
-    take: chunkSize,
-    skip: Math.max(0, randomInt(before || 1) - chunkSize)
-  });
-
-  const updated = await Promise.all(
-    products.map(async (p) => {
-      const renamedInits = await DatabaseWrites.productTransitions.updateMany(
-        {
-          where: {
-            ProductId: p.Id,
-            InitialState: { in: ['Product Rebuild', 'Product Republish'] }
-          },
-          data: {
-            InitialState: 'Product Build'
-          }
-        },
-        p.ProjectId
-      );
-      const renamedDests = await DatabaseWrites.productTransitions.updateMany(
-        {
-          where: {
-            ProductId: p.Id,
-            DestinationState: { in: ['Product Rebuild', 'Product Republish'] }
-          },
-          data: {
-            DestinationState: 'Product Build'
-          }
-        },
-        p.ProjectId
-      );
-      type Operation = {
-        id: number;
-        data?: Prisma.ProductTransitionsUpdateInput;
-      };
-      const operations: Operation[] = p.ProductTransitions.flatMap((t, i, arr) => {
-        // rename/reassociate Check transitions
-        if (t.InitialState?.match(/Check Product (Build|Publish)/)) {
-          const prev = arr.at(i + 1);
-          if (prev?.InitialState?.match(/Product (Build|Rebuild|Republish|Publish)/)) {
-            // if previous transition is the appropriate type,
-            // persist comment to previous transition, then delete old one
-            return [
-              {
-                id: prev.Id,
-                data: { DestinationState: t.DestinationState, Comment: t.Comment }
-              },
-              {
-                id: t.Id
-              }
-            ] as Operation[];
-          } else {
-            // otherwise rename transition
-            return [
-              {
-                id: t.Id,
-                data: {
-                  InitialState: t.InitialState.endsWith('Build')
-                    ? WorkflowState.Product_Build
-                    : WorkflowState.Product_Publish
-                }
-              }
-            ] as Operation[];
-          }
-        }
-        return [];
-      });
-      return {
-        projectId: p.ProjectId,
-        renamedInits,
-        renamedDests,
-        updated: await prismaInternal.$transaction((tx) =>
-          Promise.all(
-            operations.map((o) =>
-              o.data
-                ? tx.productTransitions.update({
-                    where: { Id: o.id },
-                    data: o.data,
-                    select: {
-                      InitialState: true,
-                      DestinationState: true,
-                      Comment: true
-                    }
-                  })
-                : tx.productTransitions.delete({
-                    where: { Id: o.id },
-                    select: { Id: true, InitialState: true }
-                  })
-            )
-          )
-        )
-      };
-    })
-  );
-
-  getQueues().SvelteSSE.add(`Update Projects (transitions updated)`, {
-    type: BullMQ.JobType.SvelteSSE_UpdateProject,
-    projectIds: Array.from(new Set(products.map((p) => p.ProjectId)))
-  });
-
-  const after = await DatabaseReads.products.count({
-    where: { ProductTransitions: { some: filter } }
-  });
-
-  return { before, products, updated, after };
 }
 
 async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scope: Scope) {
@@ -677,102 +538,9 @@ async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scop
   return { before, orphaned, associated, after };
 }
 
-async function migrateProjectActions() {
-  const chunkSize = 100;
-  const transitionFilter = {
-    TransitionType: {
-      in: [
-        ProductTransitionType.ProjectAccess,
-        ProductTransitionType.Archival,
-        ProductTransitionType.Reactivation
-      ]
-    }
-  };
-  const filter = {
-    Products: {
-      some: {
-        ProductTransitions: {
-          some: transitionFilter
-        }
-      }
-    }
-  };
-  const before = await DatabaseReads.projects.count({
-    where: filter
-  });
-  const projects = await DatabaseReads.projects.findMany({
-    where: filter,
-    select: {
-      Id: true,
-      Products: {
-        select: {
-          Id: true,
-          DateCreated: true,
-          ProductTransitions: {
-            where: transitionFilter,
-            select: {
-              UserId: true,
-              InitialState: true,
-              TransitionType: true,
-              DateTransition: true
-            }
-          }
-        },
-        // oldest product should have the greatest number of relevant transitions
-        orderBy: { DateCreated: 'asc' },
-        take: 1
-      }
-    },
-    take: chunkSize,
-    skip: Math.max(0, randomInt(before || 1) - chunkSize)
-  });
-
-  const updated = await Promise.all(
-    projects.map((p) =>
-      prismaInternal.$transaction(async (tx) => {
-        const created = await tx.projectActions.createMany({
-          data: p.Products[0].ProductTransitions.map((pt) => ({
-            ProjectId: p.Id,
-            UserId: pt.UserId!,
-            ActionType:
-              pt.TransitionType === ProductTransitionType.ProjectAccess
-                ? ProjectActionType.Access
-                : ProjectActionType.Archival,
-            Action:
-              pt.TransitionType === ProductTransitionType.Archival
-                ? ProjectActionString.Archive
-                : pt.TransitionType === ProductTransitionType.Reactivation
-                  ? ProjectActionString.Reactivate
-                  : (pt.InitialState ?? ''),
-            DateAction: pt.DateTransition!
-          }))
-        });
-        const deleted = await tx.productTransitions.deleteMany({
-          where: { ...transitionFilter, Product: { ProjectId: p.Id } }
-        });
-
-        getQueues().SvelteSSE.add(`Update Project #${p.Id} (actions migrated)`, {
-          type: BullMQ.JobType.SvelteSSE_UpdateProject,
-          projectIds: [p.Id]
-        });
-
-        return { project: p.Id, created: created.count, deleted: deleted.count };
-      })
-    )
-  );
-
-  const after = await DatabaseReads.projects.count({
-    where: filter
-  });
-
-  return { before, projects, updated, after };
-}
-
 const migrationSteps = {
-  'Rename Transitions': { f: renameTransitions },
   'Associate Builds': { f: associateBuildsOrReleases, a: 'build' },
-  'Associate Releases': { f: associateBuildsOrReleases, a: 'release' },
-  'Migrate Project Actions': { f: migrateProjectActions }
+  'Associate Releases': { f: associateBuildsOrReleases, a: 'release' }
 } as const;
 
 export type MigrationStep = keyof typeof migrationSteps;
