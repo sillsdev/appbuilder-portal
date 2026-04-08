@@ -1,4 +1,6 @@
 import { toast } from '@zerodevx/svelte-toast';
+import type { ClassValue } from 'svelte/elements';
+import type { m } from '$lib/paraglide/messages';
 
 export function sanitizeInput(unsafe: string): string {
   return unsafe
@@ -23,8 +25,6 @@ export function bytesToHumanSize(bytes: bigint | null) {
     return bytes + ' bytes';
   }
 }
-
-export type Entries<K, V> = [K, V][];
 
 export type ValidKey<T extends object> = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,3 +83,10 @@ export function filterSet<T>(values: Set<T>, filter: SetFilter<T>) {
     return values.isDisjointFrom(filter.none);
   }
 }
+
+export type ValidI13nKey = ValidKey<typeof m>;
+export type ValueKey<T extends ValidI13nKey = ValidI13nKey> = {
+  key: T;
+  params?: Parameters<(typeof m)[T]>[0];
+  class?: ClassValue;
+};

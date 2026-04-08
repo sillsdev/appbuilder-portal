@@ -1,16 +1,24 @@
 import type { Job } from 'bullmq';
+import { stringify } from 'devalue';
 import { XMLParser } from 'fast-xml-parser';
 import { existsSync } from 'fs';
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
 import { join } from 'path';
 import type { BullMQ } from '../../bullmq';
+import { addBasicVariants } from '$lib/ldml';
+import { locales as defaultLocales } from '$lib/paraglide/runtime';
+import { locales as UDMLocales } from '$lib/udm/paraglide/runtime';
 
 const sectionDelim = '********************';
 
 export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): Promise<unknown> {
   const localDir = join(process.cwd(), 'languages');
+  const udmDir = join(localDir, 'udm');
   if (!existsSync(localDir)) {
     await mkdir(localDir, { recursive: true });
+  }
+  if (!existsSync(udmDir)) {
+    await mkdir(udmDir, { recursive: true });
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ret: any = {};
@@ -71,13 +79,18 @@ export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): 
     }
     job.updateProgress(55);
 
-    ret['es-419'] = await processLocalizedNames(localDir, 'es-419', log);
-    job.updateProgress(70);
-    // TODO: should we rename our en-us translations to en?
-    //       this would _only_ be because the ldml endpoint does not have an en-us entry
-    ret['en-US'] = await processLocalizedNames(localDir, 'en', log, 'en-US');
-    job.updateProgress(85);
-    ret['fr-FR'] = await processLocalizedNames(localDir, 'fr-FR', log);
+    ret['default'] = await Promise.all(
+      defaultLocales.map((locale) => getLDML(localDir, locale, log, true))
+    );
+
+    job.updateProgress(65);
+
+    // also fetch LDML tags for no script/nation variants as a fallback
+    const includeBasic = addBasicVariants(UDMLocales);
+
+    ret['udm'] = await Promise.all(
+      includeBasic.map((locale) => getLDML(udmDir, locale, log, false, includeBasic))
+    );
 
     job.updateProgress(100);
   } catch (err) {
@@ -95,7 +108,15 @@ async function fetchWithLog(url: string, logger: Logger, fetchInit?: RequestInit
   return res;
 }
 
-async function shouldUpdate(localPath: string, remotePath: string, logger: Logger) {
+async function shouldUpdate(
+  localPath: string,
+  remotePath: string,
+  logger: Logger
+): Promise<
+  | { shouldUpdate: false; status: string }
+  | { shouldUpdate: true }
+  | { shouldUpdate: boolean; localLastModified: Date; remoteLastModified: Date }
+> {
   if (existsSync(localPath)) {
     logger(`Found ${localPath}`);
     try {
@@ -133,15 +154,14 @@ function mapXMLAttributes(item: Record<string, unknown>) {
   return [item['@_type'], item['#text']];
 }
 
-async function processLocalizedNames(
+async function getLDML<Locale extends string>(
   localDir: string,
   lang: string,
   logger: Logger,
-  fileName?: string
+  includeTerritories: boolean,
+  locales?: Readonly<Locale[]>
 ) {
-  fileName ??= lang;
-
-  const finalDir = join(localDir, fileName);
+  const finalDir = join(localDir, lang);
   if (!existsSync(finalDir)) {
     await mkdir(finalDir, { recursive: true });
   }
@@ -153,6 +173,7 @@ async function processLocalizedNames(
 
   let revid = '';
   let update: Awaited<ReturnType<typeof shouldUpdate>> & {
+    code?: string;
     foundRevid?: string;
     languages?: number;
     territories?: number;
@@ -165,6 +186,8 @@ async function processLocalizedNames(
     logger(`${revIdFileName} does not exist`);
     update = { shouldUpdate: true };
   }
+
+  update['code'] = lang;
 
   update['foundRevid'] = revid;
 
@@ -181,21 +204,28 @@ async function processLocalizedNames(
 
     revid = parsed.ldml.identity.special['sil:identity']['@_revid'];
 
-    const output = [
-      [
-        'languages',
+    const output = {
+      languages: new Map<Locale, string>(
         parsed.ldml.localeDisplayNames.languages.language
           .map(mapXMLAttributes)
           .map(([code, name]: [string, string]) => [code.replace(/_/g, '-'), name])
-      ],
-      ['territories', parsed.ldml.localeDisplayNames.territories.territory.map(mapXMLAttributes)]
-    ];
+          .filter(([code, _]: [Locale, string]) => !locales?.length || locales.includes(code))
+      )
+    } as Record<string, Map<string, string>>;
 
-    update['languages'] = output[0][1].length;
-    update['territories'] = output[1][1].length;
+    if (includeTerritories) {
+      output['territories'] = new Map<string, string>(
+        parsed.ldml.localeDisplayNames.territories.territory.map(mapXMLAttributes)
+      );
+    }
+
+    update['languages'] = output['languages'].size;
+    if (includeTerritories) {
+      update['territories'] = output['territories'].size;
+    }
     update['revid'] = revid;
 
-    await writeFile(finalName, JSON.stringify(output));
+    await writeFile(finalName, stringify(output));
     await writeFile(revIdFileName, revid);
 
     logger(`Localized language names for ${lang} written to ${finalName}`);

@@ -7,8 +7,9 @@
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { Icons, getFlagIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
+  import type { L10NMap } from '$lib/ldml';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { type Locale, getLocale, locales } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
 
   interface Props {
@@ -23,9 +24,10 @@
     createEndpoint: string;
     deleteEndpoint: string;
     canEdit: boolean;
+    l10nMap: L10NMap<Locale>;
   }
 
-  let { reviewers, formData, createEndpoint, deleteEndpoint, canEdit }: Props = $props();
+  let { reviewers, formData, createEndpoint, deleteEndpoint, canEdit, l10nMap }: Props = $props();
 
   const { form, enhance } = superForm(formData, {
     resetForm: true,
@@ -99,8 +101,11 @@
                 dropdown: 'dropdown-start w-full',
                 label: 'select bg-none flex-nowrap grow w-full pl-1 pr-1'
               }}
-              currentLocale={() => $form.language}
-              onselect={(lang) => ($form.language = lang)}
+              {l10nMap}
+              getLocale={() => $form.language}
+              setLocale={(lang) => ($form.language = lang)}
+              {locales}
+              {getFlagIcon}
             >
               {#snippet label()}
                 <span class="flex items-center pl-1 w-full">

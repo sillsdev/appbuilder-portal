@@ -1,5 +1,4 @@
 import type { Prisma } from '@prisma/client';
-import type { ValidI13nKey } from '$lib/locales.svelte';
 import type { Locale } from '$lib/paraglide/runtime';
 import {
   ApplicationType,
@@ -12,6 +11,7 @@ import {
   WorkflowType
 } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
+import type { ValidI13nKey } from '$lib/utils';
 import { ProductType, WorkflowAction } from '$lib/workflowTypes';
 
 export function getActionIcon(type: ProductActionType) {

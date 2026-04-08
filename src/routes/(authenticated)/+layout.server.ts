@@ -1,14 +1,13 @@
-import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { safeParse } from 'valibot';
 import type { LayoutServerLoad } from './$types';
-import { type L10NEntries, type L10NKeys, langtagsSchema } from '$lib/locales.svelte';
-import { type Locale, locales } from '$lib/paraglide/runtime';
+import { langtagsSchema } from '$lib/ldml';
+import { readLDML } from '$lib/ldml/server';
+import { locales } from '$lib/paraglide/runtime';
 import { getUserTasks } from '$lib/projects/sse';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
-import type { Entries } from '$lib/utils';
 
 export const load: LayoutServerLoad = async (event) => {
   event.locals.security.requireAuthenticated();
@@ -42,18 +41,7 @@ export const load: LayoutServerLoad = async (event) => {
         console.log(r);
         return [];
       }),
-    localizedNames: (await Promise.all(
-      locales.map(async (locale) => {
-        const filePath = join(localDir, locale, 'ldml.json');
-
-        let ret = null;
-        if (existsSync(filePath)) {
-          const file = (await readFile(filePath)).toString();
-          ret = JSON.parse(file) as Entries<L10NKeys, Entries<string, string>>;
-        }
-        return [locale, ret] as [Locale, typeof ret];
-      })
-    )) as L10NEntries,
+    l10nMap: await readLDML(localDir, locales),
     jobsAvailable: QueueConnected()
   };
 };

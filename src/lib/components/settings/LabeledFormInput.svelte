@@ -6,7 +6,7 @@
   import type { Snippet } from 'svelte';
   import type { ClassValue, HTMLInputAttributes } from 'svelte/elements';
   import type { IconType } from '$lib/icons';
-  import type { ValueKey } from '$lib/locales.svelte';
+  import type { ValueKey } from '$lib/utils';
   export interface Props extends ValueKey {
     children?: Snippet;
     input?: HTMLInputAttributes & {
