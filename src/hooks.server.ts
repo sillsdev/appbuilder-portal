@@ -9,14 +9,20 @@ import { authRouteHandle, organizationInviteHandle, populateSecurityInfo } from 
 import { building } from '$app/environment';
 import OTEL from '$lib/otel';
 
-import { getTextDirection as defaultGetTextDirection } from '$lib/paraglide/runtime';
+import {
+  extractLocaleFromUrl as defaultGetLocaleForUrl,
+  getTextDirection as defaultGetTextDirection
+} from '$lib/paraglide/runtime';
 import { paraglideMiddleware as defaultParaglideMiddleware } from '$lib/paraglide/server';
 import { RoleId } from '$lib/prisma';
 import { QueueConnected, getQueues } from '$lib/server/bullmq';
 import { bullboardHandle } from '$lib/server/bullmq/BullBoard';
 import { allWorkers } from '$lib/server/bullmq/BullMQ';
 import { DatabaseConnected, DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { getTextDirection as UDMGetTextDirection } from '$lib/udm/paraglide/runtime';
+import {
+  extractLocaleFromUrl as UDMGetLocaleForUrl,
+  getTextDirection as UDMGetTextDirection
+} from '$lib/udm/paraglide/runtime';
 import { paraglideMiddleware as UDMParaglideMiddleware } from '$lib/udm/paraglide/server';
 
 if (!building) {
@@ -40,7 +46,9 @@ if (!building) {
 
 // creating a handle to use the paraglide middleware
 const paraglideHandle: Handle = ({ event, resolve }) => {
-  const isUDMRoute = event.route.id?.match('^/user-data');
+  const isUDMRoute = !!event.url.href.match('/user-data');
+
+  event.locals.locale = (isUDMRoute ? UDMGetLocaleForUrl : defaultGetLocaleForUrl)(event.url.href);
 
   return (isUDMRoute ? UDMParaglideMiddleware : defaultParaglideMiddleware)(
     event.request,
