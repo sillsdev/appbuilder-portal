@@ -229,17 +229,31 @@ export const load = (async ({ locals, params }) => {
       }
     }
   })).map((org) => {
-    org.Projects.forEach((project) => {
-      // Strip out each product that has already been built with the latest version.
-      // This must be done here because prisma does not allow comparing two fields on the same object AFAIK
-      project.Products = project.Products.filter(
-        ({ LatestVersion, RequiredVersion }) =>
-          LatestVersion !== RequiredVersion).map(
-            ({ Id, LatestVersion, RequiredVersion }) => ({
-              Id, LatestVersion, RequiredVersion
-            }));
-    });
-    return org;
+    // Filter projects that still have at least one product after version check
+    const filteredProjects = org.Projects
+      .map((project) => {
+        // Filter products where LatestVersion !== RequiredVersion
+        const filteredProducts = project.Products
+          .filter(({ LatestVersion, RequiredVersion }) =>
+            LatestVersion !== RequiredVersion)
+          .map(({ Id, LatestVersion, RequiredVersion }) => ({
+            Id,
+            LatestVersion,
+            RequiredVersion,
+          }));
+
+        return {
+          ...project,
+          Products: filteredProducts,
+        };
+      })
+      // Remove projects with no remaining products
+      .filter((project) => project.Products.length > 0);
+
+    return {
+      ...org,
+      Projects: filteredProjects,
+    };
   }).reduce((acc, org) => {
     acc[org.Id.toString()] = org;
     return acc

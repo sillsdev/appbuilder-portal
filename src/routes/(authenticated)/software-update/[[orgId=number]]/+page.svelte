@@ -53,10 +53,11 @@
       return o.Projects.filter((p) => $form.applicationTypeIds.includes(p.ApplicationType.Id));
     })
   );
-  const products_count = $derived(projects.reduce((acc, p) => acc + p.Products.length, 0));
+
+  const products = $derived(projects.flatMap((project) => project.Products));
 
   const project_names = $derived(projects.map((o) => o.Name ?? '').join(', '));
-  const products = $derived(projects.flatMap((project) => project.Products));
+  const products_count = products.length;
   const versions = $derived(products.map((p) => p.RequiredVersion).join(', '));
   // Set up SSE connection for real-time updates on rebuilds related to the affected organizations.
   // The SSE endpoint will filter updates based on the org IDs provided in the query string.
