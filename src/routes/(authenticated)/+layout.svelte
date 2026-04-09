@@ -9,7 +9,7 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import LocaleSelector from '$lib/components/LocaleSelector.svelte';
-  import { Icons, getFlagIcon, getRoleIcon } from '$lib/icons';
+  import { DefaultFlags, Icons, getRoleIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import {
@@ -318,7 +318,7 @@
             {getLocale}
             {setLocale}
             {locales}
-            {getFlagIcon}
+            flagMap={DefaultFlags}
           />
           <Dropdown
             class={{

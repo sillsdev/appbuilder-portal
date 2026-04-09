@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client';
-import type { Locale } from '$lib/paraglide/runtime';
+import type { Locale as DefaultLocale } from '$lib/paraglide/runtime';
 import {
   ApplicationType,
   ProductTransitionType,
@@ -75,17 +75,22 @@ export function getFileIcon(fileType: string) {
   }
 }
 
-export function getFlagIcon(locale: Locale) {
-  switch (locale) {
-    case 'en-US':
-      return 'circle-flags:us';
-    case 'es-419':
-      return 'circle-flags:mx';
-    case 'fr-FR':
-      return 'circle-flags:fr';
-    default:
-      console.warn(`Unrecognized language tag ${locale} in getFlag, using default flag.`);
-      return 'circle-flags:un'; // UN flag as fallback
+export const DefaultFlags = new Map<DefaultLocale, string>([
+  ['en-US', 'circle-flags:us'],
+  ['es-419', 'circle-flags:mx'],
+  ['fr-FR', 'circle-flags:fr']
+]) as ReadonlyMap<DefaultLocale, string>;
+
+export function getFlagIcon<Locale extends string>(
+  locale: Locale,
+  map: ReadonlyMap<Locale, string>
+) {
+  const f = map.get(locale);
+  if (!f) {
+    console.warn(`Unrecognized language tag ${locale} in getFlag, using default flag.`);
+    return 'circle-flags:un'; // UN flag as fallback
+  } else {
+    return f;
   }
 }
 

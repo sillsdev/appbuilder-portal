@@ -5,7 +5,7 @@
   import { enhance as svk_enhance } from '$app/forms';
   import LocaleSelector from '$lib/components/LocaleSelector.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
-  import { Icons, getFlagIcon } from '$lib/icons';
+  import { DefaultFlags, Icons, getFlagIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import type { L10NMap } from '$lib/ldml';
   import { m } from '$lib/paraglide/messages';
@@ -105,12 +105,12 @@
               getLocale={() => $form.language}
               setLocale={(lang) => ($form.language = lang)}
               {locales}
-              {getFlagIcon}
+              flagMap={DefaultFlags}
             >
               {#snippet label()}
                 <span class="flex items-center pl-1 w-full">
                   <span class="grow">
-                    <IconContainer icon={getFlagIcon($form.language)} width="24" />
+                    <IconContainer icon={getFlagIcon($form.language, DefaultFlags)} width="24" />
                     {$form.language?.split('-')[0]}
                   </span>
                   <IconContainer icon={Icons.Dropdown} width="20" />

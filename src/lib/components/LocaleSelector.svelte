@@ -2,7 +2,7 @@
   import type { Snippet } from 'svelte';
   import IconContainer from '../icons/IconContainer.svelte';
   import Dropdown, { type DropdownClasses } from './Dropdown.svelte';
-  import { type IconType, Icons } from '$lib/icons';
+  import { Icons, getFlagIcon } from '$lib/icons';
   import { type L10NMap, tryLocalize } from '$lib/ldml';
 
   interface Props {
@@ -12,7 +12,7 @@
     setLocale: (lang: Locale) => void;
     l10nMap: L10NMap<Locale>;
     locales: Readonly<Locale[]>;
-    getFlagIcon: (lang: Locale) => IconType;
+    flagMap: ReadonlyMap<Locale, string>;
   }
 
   let {
@@ -22,7 +22,7 @@
     setLocale,
     l10nMap,
     locales,
-    getFlagIcon
+    flagMap
   }: Props = $props();
 
   let open = $state(false);
@@ -66,7 +66,7 @@
               role="button"
               tabindex="0"
             >
-              <IconContainer icon={getFlagIcon(locale)} width="24" />
+              <IconContainer icon={getFlagIcon(locale, flagMap)} width="24" />
               <span class="grow text-left">
                 {tryLocalize(l10nMap, current, 'languages', locale, locale)}
               </span>
