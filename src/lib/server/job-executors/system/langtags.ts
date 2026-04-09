@@ -7,7 +7,7 @@ import { join } from 'path';
 import type { BullMQ } from '../../bullmq';
 import { addBasicVariants } from '$lib/ldml';
 import { locales as defaultLocales } from '$lib/paraglide/runtime';
-import { locales as UDMLocales } from '$lib/udm/paraglide/runtime';
+import { withAlternates } from '$lib/udm';
 
 const sectionDelim = '********************';
 
@@ -86,7 +86,7 @@ export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): 
     job.updateProgress(65);
 
     // also fetch LDML tags for no script/nation variants as a fallback
-    const includeBasic = addBasicVariants(UDMLocales);
+    const includeBasic = addBasicVariants(withAlternates());
 
     ret['udm'] = await Promise.all(
       includeBasic.map((locale) => getLDML(udmDir, locale, log, false, includeBasic))
