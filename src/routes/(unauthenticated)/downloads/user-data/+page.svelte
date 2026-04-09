@@ -56,7 +56,7 @@
       role="button"
       tabindex="0"
     >
-      <div class="flex flex-col py-1 w-full items-start">
+      <div class="flex flex-col py-1 w-full items-start h-full">
         <span>
           <IconContainer icon={getFlagIcon(locale, GooglePlayFlags)} width={24} />
           <span class="grow text-left">
@@ -66,7 +66,7 @@
             {/if}
           </span>
         </span>
-        {#if current !== locale && native !== fallback}
+        {#if native !== display && native !== fallback}
           <i class="ps-8 opacity-80 text-left">{native}</i>
         {/if}
       </div>
