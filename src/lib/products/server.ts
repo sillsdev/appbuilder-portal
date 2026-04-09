@@ -1,9 +1,10 @@
+import { getBasicVariant } from '$lib/ldml';
 import { ProductTransitionType, WorkflowType } from '$lib/prisma';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
 import { WorkflowAction, WorkflowState } from '$lib/workflowTypes';
-import { ProductActionType } from '.';
+import { ProductActionType, getFileInfo } from '.';
 
 export async function doProductAction(
   productId: string,
@@ -107,22 +108,29 @@ export async function doProductAction(
   }
 }
 
+type ArtifactFrom = { package: string } | { productId: string };
+
 /**
  * Get the most recent published file of specified type associated with this product
- * @param id Product ID
+ * @param from package/productId
  * @param type ProductArtifact type to be returned
  */
-export async function getPublishedFile(productId: string, type: string) {
+export async function getPublishedFile(from: ArtifactFrom, type: string) {
   const publications = await DatabaseReads.productPublications.findMany({
     where: {
-      ProductId: productId,
+      ProductId: 'productId' in from ? from.productId : undefined,
+      Package: 'package' in from ? from.package : undefined,
       Success: true
     },
-    include: {
+    select: {
       ProductBuild: {
-        include: {
+        select: {
           ProductArtifacts: {
+            where: {
+              ArtifactType: type
+            },
             select: {
+              ProductId: true,
               ArtifactType: true,
               Url: true
             }
@@ -138,15 +146,94 @@ export async function getPublishedFile(productId: string, type: string) {
     if (!publication.ProductBuild.ProductArtifacts.length) {
       continue;
     }
-    const artifact = publication.ProductBuild.ProductArtifacts.find(
-      (pa) => pa.ArtifactType === type
-    );
-
-    if (artifact) {
-      return artifact;
-    }
+    return publication.ProductBuild.ProductArtifacts[0];
   }
 
   // Return null if product has not been successfully published
   return null;
+}
+
+type ManifestResponse = {
+  url: string;
+  icon: string;
+  color: string;
+  ['default-language']: string;
+  ['download-apk-strings']: Record<string, string>;
+  languages: string[];
+  files: string[];
+};
+
+export async function getTranslatedManifest<File extends string>(
+  from: ArtifactFrom,
+  language: string,
+  includeFiles: File[]
+) {
+  const manifestArtifact = await getPublishedFile(from, 'play-listing-manifest');
+
+  if (!manifestArtifact?.Url) return null;
+
+  // Get the size of the apk
+  const apkArtifact = await getPublishedFile(from, 'apk');
+  if (!apkArtifact?.Url) return null;
+  const { fileSize } = await getFileInfo(apkArtifact.Url);
+
+  // Get the contents of the manifest.json
+  const manifestJson = await fetch(manifestArtifact.Url).then((r) => r.text());
+
+  const manifest = JSON.parse(manifestJson) as ManifestResponse;
+
+  language = manifest.languages.includes(language) ? getBasicVariant(language) : language;
+
+  if (!manifest.languages.includes(language)) return null;
+
+  // The bucket in the URL stored in the manifest can change over time. The URL from
+  // the artifact query is updated when buckets change.  Update the hostname stored
+  // in the manifest file based on the hostname from the artifact query.
+  const manifestUri = new URL(manifestArtifact.Url);
+  const url = new URL(manifest.url);
+  url.host = manifestUri.host;
+  const files = Object.fromEntries(
+    await Promise.all(
+      includeFiles.map(async (f) => {
+        const re = new RegExp(`${language}/${f}`);
+        const path = manifest.files.find((s) => re.test(s));
+        return [
+          f,
+          path
+            ? await fetch(url + path)
+                .then((r) => r.text())
+                .then((t) => t.trim())
+            : ''
+        ];
+      })
+    )
+  ) as Record<File, string>;
+
+  return {
+    id: manifestArtifact.ProductId,
+    link: `/api/products/${manifestArtifact.ProductId}/files/published/apk`,
+    size: fileSize,
+    icon: url + manifest.icon,
+    color: manifest.color,
+    downloadTitle: manifest['download-apk-strings'][language],
+    languages: manifest.languages,
+    ...files
+  };
+}
+
+export async function getArtifactHeaders(product_id: string, type: string) {
+  const productArtifact = await getPublishedFile({ productId: product_id }, type);
+  if (!productArtifact?.Url) return null;
+
+  const { lastModified, fileSize } = await getFileInfo(productArtifact.Url);
+
+  const headers: { 'Last-Modified': string; 'Content-Length'?: string } = {
+    'Last-Modified': lastModified
+  };
+
+  if (fileSize) {
+    headers['Content-Length'] = fileSize;
+  }
+
+  return { product: productArtifact, headers };
 }

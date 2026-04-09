@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import type { PageData } from './$types';
   import { bytesToHumanSize } from '$lib/utils';
 
@@ -8,22 +7,6 @@
   }
 
   let { data }: Props = $props();
-
-  let lang = $state('');
-
-  onMount(() => {
-    lang = window.navigator.language;
-    const languages = data.manifest.languages;
-    if (!languages.includes(lang)) {
-      lang = data.manifest['default-language'];
-    }
-  });
-
-  function downloadLinkText(manifest: (typeof data)['manifest'], lang: string) {
-    const langOnlyNoVariant = lang.substring(0, 2);
-    const strings = manifest['download-apk-strings'];
-    return strings[langOnlyNoVariant] || strings['en'];
-  }
 
   /**
    * This will return NaN if there are any issues.
@@ -42,8 +25,8 @@
     <!-- svelte-ignore a11y_missing_attribute -->
     <img src={data.manifest.icon} />
 
-    <h3>{data.manifest.titles[lang]}</h3>
-    <p class="text-center w-70">{data.manifest.descriptions[lang]}</p>
+    <h3>{data.manifest['title.txt']}</h3>
+    <p class="text-center w-70">{data.manifest['short_description.txt']}</p>
 
     <span class="my-8">
       {bytesToHumanSize(data.manifest.size ? BigInt(data.manifest.size) : null)}
@@ -59,7 +42,7 @@
       ]}
       style="background-color: {data.manifest.color}"
     >
-      {downloadLinkText(data.manifest, lang)}
+      {data.manifest.downloadTitle}
     </a>
   </div>
 </div>
