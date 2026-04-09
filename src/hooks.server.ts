@@ -15,6 +15,7 @@ import { paraglideMiddleware as GooglePlayParaglideMiddleware } from '$lib/googl
 import OTEL from '$lib/otel';
 
 import {
+  baseLocale,
   extractLocaleFromUrl as defaultGetLocaleForUrl,
   getTextDirection as defaultGetTextDirection
 } from '$lib/paraglide/runtime';
@@ -48,9 +49,10 @@ if (!building) {
 const paraglideHandle: Handle = ({ event, resolve }) => {
   const isGooglePlayRoute = !!event.url.href.match('/downloads');
 
-  event.locals.locale = (isGooglePlayRoute ? GooglePlayGetLocaleForUrl : defaultGetLocaleForUrl)(
-    event.url.href
-  );
+  event.locals.locale =
+    (isGooglePlayRoute ? GooglePlayGetLocaleForUrl : defaultGetLocaleForUrl)(event.url.href) ??
+    /* baseLocale is same for both environments */
+    baseLocale;
 
   return (isGooglePlayRoute ? GooglePlayParaglideMiddleware : defaultParaglideMiddleware)(
     event.request,
