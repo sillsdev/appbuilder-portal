@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import { m } from '$lib/paraglide/messages';
+  import { m } from '$lib/google-play/paraglide/messages';
   import { bytesToHumanSize } from '$lib/utils';
 
   interface Props {

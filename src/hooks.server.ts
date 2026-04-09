@@ -7,6 +7,11 @@ import { type Handle, type HandleServerError, error } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { authRouteHandle, organizationInviteHandle, populateSecurityInfo } from './auth';
 import { building } from '$app/environment';
+import {
+  extractLocaleFromUrl as GooglePlayGetLocaleForUrl,
+  getTextDirection as GooglePlayGetTextDirection
+} from '$lib/google-play/paraglide/runtime';
+import { paraglideMiddleware as GooglePlayParaglideMiddleware } from '$lib/google-play/paraglide/server';
 import OTEL from '$lib/otel';
 
 import {
@@ -19,11 +24,6 @@ import { QueueConnected, getQueues } from '$lib/server/bullmq';
 import { bullboardHandle } from '$lib/server/bullmq/BullBoard';
 import { allWorkers } from '$lib/server/bullmq/BullMQ';
 import { DatabaseConnected, DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import {
-  extractLocaleFromUrl as UDMGetLocaleForUrl,
-  getTextDirection as UDMGetTextDirection
-} from '$lib/udm/paraglide/runtime';
-import { paraglideMiddleware as UDMParaglideMiddleware } from '$lib/udm/paraglide/server';
 
 if (!building) {
   // Start OTEL collector
@@ -46,11 +46,13 @@ if (!building) {
 
 // creating a handle to use the paraglide middleware
 const paraglideHandle: Handle = ({ event, resolve }) => {
-  const isUDMRoute = !!event.url.href.match('/user-data');
+  const isGooglePlayRoute = !!event.url.href.match('/downloads');
 
-  event.locals.locale = (isUDMRoute ? UDMGetLocaleForUrl : defaultGetLocaleForUrl)(event.url.href);
+  event.locals.locale = (isGooglePlayRoute ? GooglePlayGetLocaleForUrl : defaultGetLocaleForUrl)(
+    event.url.href
+  );
 
-  return (isUDMRoute ? UDMParaglideMiddleware : defaultParaglideMiddleware)(
+  return (isGooglePlayRoute ? GooglePlayParaglideMiddleware : defaultParaglideMiddleware)(
     event.request,
     ({ request: localizedRequest, locale }) => {
       event.request = localizedRequest;
@@ -58,7 +60,10 @@ const paraglideHandle: Handle = ({ event, resolve }) => {
         transformPageChunk: ({ html }) => {
           return html
             .replace('%lang%', locale)
-            .replace('%dir%', (isUDMRoute ? UDMGetTextDirection : defaultGetTextDirection)(locale));
+            .replace(
+              '%dir%',
+              (isGooglePlayRoute ? GooglePlayGetTextDirection : defaultGetTextDirection)(locale)
+            );
         }
       });
     }

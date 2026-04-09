@@ -5,20 +5,20 @@ import { existsSync } from 'fs';
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
 import { join } from 'path';
 import type { BullMQ } from '../../bullmq';
+import { withAlternates } from '$lib/google-play';
 import { addBasicVariants } from '$lib/ldml';
 import { locales as defaultLocales } from '$lib/paraglide/runtime';
-import { withAlternates } from '$lib/udm';
 
 const sectionDelim = '********************';
 
 export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): Promise<unknown> {
   const localDir = join(process.cwd(), 'languages');
-  const udmDir = join(localDir, 'udm');
+  const googlePlayDir = join(localDir, 'google-play');
   if (!existsSync(localDir)) {
     await mkdir(localDir, { recursive: true });
   }
-  if (!existsSync(udmDir)) {
-    await mkdir(udmDir, { recursive: true });
+  if (!existsSync(googlePlayDir)) {
+    await mkdir(googlePlayDir, { recursive: true });
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ret: any = {};
@@ -88,8 +88,8 @@ export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): 
     // also fetch LDML tags for no script/nation variants as a fallback
     const includeBasic = addBasicVariants(withAlternates());
 
-    ret['udm'] = await Promise.all(
-      includeBasic.map((locale) => getLDML(udmDir, locale, log, false, includeBasic))
+    ret['google-play'] = await Promise.all(
+      includeBasic.map((locale) => getLDML(googlePlayDir, locale, log, false, includeBasic))
     );
 
     job.updateProgress(100);
