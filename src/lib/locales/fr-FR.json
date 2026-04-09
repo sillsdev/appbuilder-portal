@@ -291,7 +291,8 @@
       "match": {
         "amount=0": "No Product Files",
         "countPlural=one": "{amount} Product File",
-        "countPlural=other": "{amount} Product Files"
+        "countPlural=other": "{amount} Product Files",
+        "amount=*": "{amount} Product Files"
       }
     }
   ],

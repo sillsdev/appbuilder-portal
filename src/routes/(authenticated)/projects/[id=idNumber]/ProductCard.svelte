@@ -12,6 +12,7 @@
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
+  import type { WorkflowType } from '$lib/prisma';
   import { BuildStatus } from '$lib/prisma';
   import { ProductActionType } from '$lib/products';
   import ProductDetails, {
@@ -282,7 +283,7 @@
           //@ts-expect-error this is in fact correct
           m['products_acts_' + action]({
             workflow: m.flowDefs_types({
-              type: product.WorkflowInstance?.WorkflowDefinition.Type ?? 0
+              type: (product.WorkflowInstance?.WorkflowDefinition.Type ?? 0) as WorkflowType
             })
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } as any)}
