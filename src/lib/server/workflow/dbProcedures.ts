@@ -49,7 +49,8 @@ export async function markResolved(productId: string) {
       release.ProductId,
       release.BuildEngineReleaseId,
       {
-        DateResolved: resolved
+        DateResolved: resolved,
+        Success: true
       }
     );
 
