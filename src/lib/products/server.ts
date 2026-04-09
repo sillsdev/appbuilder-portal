@@ -182,9 +182,9 @@ export async function getTranslatedManifest<File extends string>(
 
   const manifest = JSON.parse(manifestJson) as ManifestResponse;
 
-  language = manifest.languages.includes(language) ? getBasicVariant(language) : language;
-
-  if (!manifest.languages.includes(language)) return null;
+  language =
+    manifest.languages.find((l) => l === language || l === getBasicVariant(language)) ||
+    manifest['default-language'];
 
   // The bucket in the URL stored in the manifest can change over time. The URL from
   // the artifact query is updated when buckets change.  Update the hostname stored
