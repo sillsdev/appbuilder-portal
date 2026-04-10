@@ -79,18 +79,19 @@ export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): 
     }
     job.updateProgress(55);
 
-    ret['default'] = await Promise.all(
-      defaultLocales.map((locale) => getLDML(localDir, locale, log, true))
-    );
+    ret['default'] = {};
+    for (const locale of defaultLocales) {
+      ret['default'][locale] = await getLDML(localDir, locale, log, true);
+    }
 
     job.updateProgress(65);
 
     // also fetch LDML tags for no script/nation variants as a fallback
     const includeBasic = addBasicVariants(withAlternates());
 
-    ret['google-play'] = await Promise.all(
-      includeBasic.map((locale) => getLDML(googlePlayDir, locale, log, false, includeBasic))
-    );
+    for (const locale of includeBasic) {
+      ret['google-play'][locale] = await getLDML(googlePlayDir, locale, log, false, includeBasic);
+    }
 
     job.updateProgress(100);
   } catch (err) {
@@ -121,7 +122,10 @@ async function shouldUpdate(
     logger(`Found ${localPath}`);
     try {
       const localLastModified = new Date((await stat(localPath)).mtimeMs);
-      const res = await fetchWithLog(remotePath, logger, { method: 'HEAD' });
+      const res = await fetchWithLog(remotePath, logger, {
+        method: 'HEAD',
+        headers: { 'If-Modified-Since': localLastModified.toUTCString() }
+      });
       if (res.status === 304) {
         // HTTP 304 Not Modified
         return {
@@ -196,39 +200,43 @@ async function getLDML<Locale extends string>(
 
       const res = await fetchWithLog(endpoint + '?inc[0]=localeDisplayNames', logger);
 
-      const parser = new XMLParser({
-        ignoreAttributes: false,
-        attributeNamePrefix: '@_'
-      });
-      const parsed = parser.parse(await res.text());
+      if (res.ok) {
+        const parser = new XMLParser({
+          ignoreAttributes: false,
+          attributeNamePrefix: '@_'
+        });
+        const parsed = parser.parse(await res.text());
 
-      revid = parsed.ldml.identity.special['sil:identity']['@_revid'];
+        revid = parsed.ldml.identity.special['sil:identity']['@_revid'];
 
-      const output = {
-        languages: new Map<Locale, string>(
-          parsed.ldml.localeDisplayNames.languages.language
-            .map(mapXMLAttributes)
-            .map(([code, name]: [string, string]) => [code.replace(/_/g, '-'), name])
-            .filter(([code, _]: [Locale, string]) => !locales?.length || locales.includes(code))
-        )
-      } as Record<string, Map<string, string>>;
+        const output = {
+          languages: new Map<Locale, string>(
+            parsed.ldml.localeDisplayNames.languages.language
+              .map(mapXMLAttributes)
+              .map(([code, name]: [string, string]) => [code.replace(/_/g, '-'), name])
+              .filter(([code, _]: [Locale, string]) => !locales?.length || locales.includes(code))
+          )
+        } as Record<string, Map<string, string>>;
 
-      if (includeTerritories) {
-        output['territories'] = new Map<string, string>(
-          parsed.ldml.localeDisplayNames.territories.territory.map(mapXMLAttributes)
-        );
+        if (includeTerritories) {
+          output['territories'] = new Map<string, string>(
+            parsed.ldml.localeDisplayNames.territories.territory.map(mapXMLAttributes)
+          );
+        }
+
+        update['languages'] = output['languages'].size;
+        if (includeTerritories) {
+          update['territories'] = output['territories'].size;
+        }
+        update['revid'] = revid;
+
+        await writeFile(finalName, stringify(output));
+        await writeFile(revIdFileName, revid);
+
+        logger(`Localized language names for ${lang} written to ${finalName}`);
+      } else {
+        logger(`Fetch failed for ${lang} with status ${res.status}`);
       }
-
-      update['languages'] = output['languages'].size;
-      if (includeTerritories) {
-        update['territories'] = output['territories'].size;
-      }
-      update['revid'] = revid;
-
-      await writeFile(finalName, stringify(output));
-      await writeFile(revIdFileName, revid);
-
-      logger(`Localized language names for ${lang} written to ${finalName}`);
     } else {
       logger(`Skipping ${lang}\n${sectionDelim}`);
     }

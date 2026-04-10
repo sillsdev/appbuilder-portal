@@ -214,8 +214,6 @@ export async function getTranslatedManifest<File extends string>(
     manifest.languages.find((l) => l === language || l === getBasicVariant(language)) ||
     manifest['default-language'];
 
-  language = language.match(/([a-z0-9-]+)/i)?.at(1) ?? '';
-
   if (!language) return null;
 
   const basicVariant = getBasicVariant(language);
@@ -229,9 +227,9 @@ export async function getTranslatedManifest<File extends string>(
   const files = Object.fromEntries(
     await Promise.all(
       includeFiles.map(async (f) => {
-        const re = new RegExp(`${language}/${f}`);
-        const basic = new RegExp(`${basicVariant}/${f}`);
-        const path = manifest.files.find((s) => re.test(s) || basic.test(s));
+        const path = manifest.files.find(
+          (s) => s === `${language}/${f}` || s === `${basicVariant}/${f}`
+        );
         return [
           f,
           path

@@ -66,8 +66,7 @@
   <IconContainer icon={Icons.Language} width={24} />
 {/snippet}
 
-{#key getLocale()}
-  {@const current = getLocale()}
+{#key current}
   <Dropdown
     class={{
       ...classes,
