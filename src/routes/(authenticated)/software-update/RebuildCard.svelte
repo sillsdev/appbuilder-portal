@@ -1,5 +1,5 @@
 <script lang="ts">
-  import IconContainer from '$lib/components/IconContainer.svelte';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import TaskComment from '$lib/products/components/TaskComment.svelte';

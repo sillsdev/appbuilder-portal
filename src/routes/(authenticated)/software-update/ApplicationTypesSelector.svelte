@@ -1,7 +1,4 @@
-<script
-  lang="ts"
-  generics="AppType extends { Id: number; Name: string; Description?: string | null }"
->
+<script lang="ts" generics="AppType extends { Id: number; Description?: string | null }">
   import type { Snippet } from 'svelte';
   import { getLocale } from '$lib/paraglide/runtime';
   import { byString } from '$lib/utils/sorting';
