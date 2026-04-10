@@ -89,6 +89,7 @@ export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): 
     // also fetch LDML tags for no script/nation variants as a fallback
     const includeBasic = addBasicVariants(withAlternates());
 
+    ret['google-play'] = {};
     for (const locale of includeBasic) {
       ret['google-play'][locale] = await getLDML(googlePlayDir, locale, log, false, includeBasic);
     }

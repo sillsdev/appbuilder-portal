@@ -211,8 +211,12 @@ export async function getTranslatedManifest<File extends string>(
   if (!manifest) return null;
 
   language =
-    manifest.languages.find((l) => l === language || l === getBasicVariant(language)) ||
-    manifest['default-language'];
+    manifest.languages.find(
+      (l) =>
+        l === language ||
+        l === getBasicVariant(language) ||
+        getBasicVariant(l) === getBasicVariant(language)
+    ) || manifest['default-language'];
 
   if (!language) return null;
 
@@ -222,22 +226,16 @@ export async function getTranslatedManifest<File extends string>(
   // the artifact query is updated when buckets change.  Update the hostname stored
   // in the manifest file based on the hostname from the artifact query.
   const manifestUri = new URL(manifestArtifact.Url);
-  const url = new URL(manifest.url);
-  url.host = manifestUri.host;
+  const baseUrl = new URL(manifest.url);
+  baseUrl.host = manifestUri.host;
   const files = Object.fromEntries(
     await Promise.all(
       includeFiles.map(async (f) => {
         const path = manifest.files.find(
           (s) => s === `${language}/${f}` || s === `${basicVariant}/${f}`
         );
-        return [
-          f,
-          path
-            ? await fetch(url + path)
-                .then((r) => r.text())
-                .then((t) => t.trim())
-            : ''
-        ];
+        const res = path ? await fetch(new URL(path, baseUrl)) : null;
+        return [f, res?.ok ? (await res.text()).trim() : ''];
       })
     )
   ) as Record<File, string>;
@@ -246,7 +244,7 @@ export async function getTranslatedManifest<File extends string>(
     id: manifestArtifact.ProductId,
     link: `/api/products/${manifestArtifact.ProductId}/files/published/apk`,
     size: fileSize,
-    icon: url + manifest.icon,
+    icon: new URL(manifest.icon, baseUrl).href,
     // use primary color if match not found
     color: manifest.color.match(/^(#[0-9a-f]{6})/i)?.at(1) ?? '#1c3258',
     downloadTitle:
