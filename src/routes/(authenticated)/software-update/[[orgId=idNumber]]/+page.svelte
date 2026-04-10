@@ -25,43 +25,12 @@
   const currentPageUrl = page.url.pathname;
   let reconnectDelay = 1000;
 
-  const { form, enhance } = superForm(data.form, {
-    resetForm: true,
-    onUpdate({ form, result, formElement }) {
-      if (form.valid && result.type === 'success') {
-        toast('success', m.admin_software_update_toast_success());
-        formElement.reset();
-      }
-    },
-    onError({ result }) {
-      if (result.status === 503) {
-        toast('error', m.system_unavailable());
-      }
-    }
-  });
-
-  const organizations = $derived(
-    page.params.orgId ? [data.projects[page.params.orgId]] : Object.values(data.projects)
-  );
-
-  const orgIds = $derived(organizations.map((o) => o.Id));
-
-  const organization_names = $derived(organizations.map((o) => o.Name ?? '').join(', '));
-
-  const projects = $derived(
-    organizations.flatMap((o) => {
-      return o.Projects.filter((p) => $form.applicationTypeIds.includes(p.ApplicationType.Id));
-    })
-  );
-
-  const products = $derived(projects.flatMap((project) => project.Products));
-
-  const project_names = $derived(projects.map((o) => o.Name ?? '').join(', '));
-  const products_count = products.length;
-  const versions = $derived(products.map((p) => p.RequiredVersion).join(', '));
+  // TODO Fix SSE to only pull from the selected organization. The sse page should accept no ids as a sign to mean "updates for all orgs I am admin in,"
+  // this would be consistent with the way other actions behave.
   // Set up SSE connection for real-time updates on rebuilds related to the affected organizations.
   // The SSE endpoint will filter updates based on the org IDs provided in the query string.
   const softwareUpdatesSSE: Readable<SoftwareUpdatesSSE['rebuilds']> = $derived.by(() => {
+    const orgIds = [1];
     return source(`${page.url.pathname}/sse`, {
       options: {
         body: JSON.stringify({ orgIds })
@@ -87,6 +56,29 @@
   const activeRebuilds = $derived.by(() => rebuilds.filter((r: RebuildItem) => !r.DateCompleted));
   const completedRebuilds = $derived.by(() => rebuilds.filter((r: RebuildItem) => r.DateCompleted));
 
+  const { form, enhance } = superForm(data.form, {
+    resetForm: true,
+    onUpdate({ form, result, formElement }) {
+      if (form.valid && result.type === 'success') {
+        toast('success', m.admin_software_update_toast_success());
+        formElement.reset();
+      }
+    },
+    onError({ result }) {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
+      }
+    }
+  });
+
+  const products = $derived(
+    data.products.filter(({ TypeId }) => $form.applicationTypeIds.includes(TypeId))
+  );
+
+  const product_versions = $derived(Array.from(new Set(products.map((p) => p.NewVersion))));
+  const project_names = $derived(Array.from(new Set(products.map((p) => p.ProjectName))));
+
+  // Switch orgs properly
   $effect(() => {
     if (
       !selectGotoFromOrg(
@@ -112,9 +104,7 @@
           <p class="text-sm text-gray-500 mb-4">
             {m.admin_software_update_application_types_description()}
           </p>
-          <ApplicationTypesSelector
-            applicationTypes={data.applicationTypes.map((at) => ({ ...at, Name: at.Name ?? '' }))}
-          >
+          <ApplicationTypesSelector applicationTypes={data.applicationTypes}>
             {#snippet selector(appType)}
               <input
                 type="checkbox"
@@ -133,25 +123,26 @@
             fields={[
               {
                 key: 'admin_software_update_affected_organizations',
-                value: organization_names
+                value: data.organizations.join(', '),
+                faint: data.organizations.length === 0
               },
               {
                 key: 'admin_software_update_projects_label',
-                value: projects.length
+                value: project_names.length
               },
               {
                 key: 'admin_software_update_products_label',
-                value: products_count
+                value: products.length
               },
               {
                 key: 'admin_software_update_project_names_label',
-                value: project_names,
+                value: project_names.join(', '),
                 faint: project_names.length === 0
               },
               {
                 key: 'admin_software_update_target_versions_label',
-                value: versions,
-                faint: versions.length === 0
+                value: product_versions.join(', '),
+                faint: product_versions.length === 0
               }
             ]}
           />
@@ -173,7 +164,7 @@
         type="submit"
         class="btn btn-primary mt-6"
         value={m.admin_software_update_rebuild_start()}
-        disabled={!$form.applicationTypeIds.length === 0 || products_count === 0}
+        disabled={!$form.applicationTypeIds.length === 0 || products.length === 0}
       />
     </form>
 
