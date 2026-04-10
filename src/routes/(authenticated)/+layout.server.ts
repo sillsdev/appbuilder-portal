@@ -38,7 +38,7 @@ export const load: LayoutServerLoad = async (event) => {
         return res.success ? res.output : [];
       })
       .catch((r) => {
-        console.log(r);
+        console.error(r);
         return [];
       }),
     l10nMap: await readLDML(localDir, locales),

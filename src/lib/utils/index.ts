@@ -40,7 +40,7 @@ export type ValidKey<T extends object> = {
  * @returns the numeric values of the enum
  */
 export function enumNumVals<E extends Record<string, string | number>>(e: E) {
-  return Object.values(e).filter((v) => !(typeof v === 'string')) as E[keyof E][];
+  return Object.values(e).filter((v) => !(typeof v === 'string')) as Extract<E[keyof E], number>[];
 }
 
 function pushToast(type: 'info' | 'success' | 'warning' | 'error', message: string) {

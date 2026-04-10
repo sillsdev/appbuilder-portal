@@ -41,20 +41,12 @@
 <div class="flex flex-row flex-wrap gap-2 justify-center p-2">
   {#each locales.toSorted( (a, b) => byString(displayNames.get(a)?.display, displayNames.get(b)?.display, current) ) as locale}
     {@const { display, native, fallback } = displayNames.get(locale)!}
-    <div
+    <button
       class={[
         'btn flex-nowrap justify-start pl-2 pr-1 h-auto min-w-2xs',
         locale === current ? 'btn-accent' : 'btn-ghost border-secondary'
       ]}
       onclick={() => setLocale(locale)}
-      onkeydown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          setLocale(locale);
-        }
-      }}
-      role="button"
-      tabindex="0"
     >
       <div class="flex flex-col py-1 w-full items-start h-full">
         <span>
@@ -70,6 +62,6 @@
           <i class="ps-8 opacity-80 text-left">{native}</i>
         {/if}
       </div>
-    </div>
+    </button>
   {/each}
 </div>

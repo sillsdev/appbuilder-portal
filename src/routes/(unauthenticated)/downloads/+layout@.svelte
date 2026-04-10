@@ -22,12 +22,12 @@
   afterNavigate(() => {
     if (browser) {
       // if page isn't explicitly localized redirect to locale based on preference
-      if (!page.url.href.match(`/${data.locale}/`)) {
+      if (!page.url.pathname.match(`^/${data.locale}/`)) {
         const target = (window.navigator.languages as Locale[]).find(
           (l) => locales.includes(l) || locales.includes(getBasicVariant(l) as Locale)
         );
 
-        if (target && (target !== data.locale || target !== baseLocale)) {
+        if (target && target !== data.locale && target !== baseLocale) {
           goto(localizeHref(page.url.href, { locale: target }));
         }
       }

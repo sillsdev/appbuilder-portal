@@ -178,59 +178,62 @@ async function getLDML<Locale extends string>(
     languages?: number;
     territories?: number;
     revid?: string;
-  };
-  if (existsSync(revIdFileName)) {
-    revid = (await readFile(revIdFileName)).toString();
-    update = await shouldUpdate(finalName, endpoint + '?revid=' + revid, logger);
-  } else {
-    logger(`${revIdFileName} does not exist`);
-    update = { shouldUpdate: true };
-  }
-
-  update['code'] = lang;
-
-  update['foundRevid'] = revid;
-
-  if (update.shouldUpdate || !revid) {
-    logger(`Downloading ldml data for ${lang}...`);
-
-    const res = await fetchWithLog(endpoint + '?inc[0]=localeDisplayNames', logger);
-
-    const parser = new XMLParser({
-      ignoreAttributes: false,
-      attributeNamePrefix: '@_'
-    });
-    const parsed = parser.parse(await res.text());
-
-    revid = parsed.ldml.identity.special['sil:identity']['@_revid'];
-
-    const output = {
-      languages: new Map<Locale, string>(
-        parsed.ldml.localeDisplayNames.languages.language
-          .map(mapXMLAttributes)
-          .map(([code, name]: [string, string]) => [code.replace(/_/g, '-'), name])
-          .filter(([code, _]: [Locale, string]) => !locales?.length || locales.includes(code))
-      )
-    } as Record<string, Map<string, string>>;
-
-    if (includeTerritories) {
-      output['territories'] = new Map<string, string>(
-        parsed.ldml.localeDisplayNames.territories.territory.map(mapXMLAttributes)
-      );
+  } = { shouldUpdate: true };
+  try {
+    if (existsSync(revIdFileName)) {
+      revid = (await readFile(revIdFileName)).toString();
+      update = await shouldUpdate(finalName, endpoint + '?revid=' + revid, logger);
+    } else {
+      logger(`${revIdFileName} does not exist`);
     }
 
-    update['languages'] = output['languages'].size;
-    if (includeTerritories) {
-      update['territories'] = output['territories'].size;
+    update['code'] = lang;
+
+    update['foundRevid'] = revid;
+
+    if (update.shouldUpdate || !revid) {
+      logger(`Downloading ldml data for ${lang}...`);
+
+      const res = await fetchWithLog(endpoint + '?inc[0]=localeDisplayNames', logger);
+
+      const parser = new XMLParser({
+        ignoreAttributes: false,
+        attributeNamePrefix: '@_'
+      });
+      const parsed = parser.parse(await res.text());
+
+      revid = parsed.ldml.identity.special['sil:identity']['@_revid'];
+
+      const output = {
+        languages: new Map<Locale, string>(
+          parsed.ldml.localeDisplayNames.languages.language
+            .map(mapXMLAttributes)
+            .map(([code, name]: [string, string]) => [code.replace(/_/g, '-'), name])
+            .filter(([code, _]: [Locale, string]) => !locales?.length || locales.includes(code))
+        )
+      } as Record<string, Map<string, string>>;
+
+      if (includeTerritories) {
+        output['territories'] = new Map<string, string>(
+          parsed.ldml.localeDisplayNames.territories.territory.map(mapXMLAttributes)
+        );
+      }
+
+      update['languages'] = output['languages'].size;
+      if (includeTerritories) {
+        update['territories'] = output['territories'].size;
+      }
+      update['revid'] = revid;
+
+      await writeFile(finalName, stringify(output));
+      await writeFile(revIdFileName, revid);
+
+      logger(`Localized language names for ${lang} written to ${finalName}`);
+    } else {
+      logger(`Skipping ${lang}\n${sectionDelim}`);
     }
-    update['revid'] = revid;
-
-    await writeFile(finalName, stringify(output));
-    await writeFile(revIdFileName, revid);
-
-    logger(`Localized language names for ${lang} written to ${finalName}`);
-  } else {
-    logger(`Skipping ${lang}\n${sectionDelim}`);
+  } catch (e) {
+    logger((e as Error).message);
   }
 
   return update;

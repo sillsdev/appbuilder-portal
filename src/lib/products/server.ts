@@ -1,3 +1,4 @@
+import * as v from 'valibot';
 import { getBasicVariant } from '$lib/ldml';
 import { ProductTransitionType, WorkflowType } from '$lib/prisma';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
@@ -153,15 +154,38 @@ export async function getPublishedFile(from: ArtifactFrom, type: string) {
   return null;
 }
 
-type ManifestResponse = {
-  url: string;
-  icon: string;
-  color: string;
-  ['default-language']: string;
-  ['download-apk-strings']: Record<string, string>;
-  languages: string[];
-  files: string[];
-};
+const manifestSchema = v.pipe(
+  v.string(),
+  // make sure it is valid JSON
+  v.rawTransform(({ dataset, addIssue, NEVER }) => {
+    try {
+      return JSON.parse(dataset.value || '{}');
+    } catch (e) {
+      addIssue({
+        message: e instanceof Error ? e.message : String(e),
+        path: [
+          {
+            type: 'unknown',
+            origin: 'value',
+            input: dataset.value,
+            key: 'root',
+            value: dataset.value
+          }
+        ]
+      });
+      return NEVER;
+    }
+  }),
+  v.object({
+    url: v.string(),
+    icon: v.string(),
+    color: v.string(),
+    'default-language': v.string(),
+    'download-apk-strings': v.record(v.string(), v.string()),
+    languages: v.array(v.string()),
+    files: v.array(v.string())
+  })
+);
 
 export async function getTranslatedManifest<File extends string>(
   from: ArtifactFrom,
@@ -180,11 +204,19 @@ export async function getTranslatedManifest<File extends string>(
   // Get the contents of the manifest.json
   const manifestJson = await fetch(manifestArtifact.Url).then((r) => r.text());
 
-  const manifest = JSON.parse(manifestJson) as ManifestResponse;
+  const manifest = await v
+    .safeParseAsync(manifestSchema, manifestJson)
+    .then((m) => (m.success ? m.output : null));
+
+  if (!manifest) return null;
 
   language =
     manifest.languages.find((l) => l === language || l === getBasicVariant(language)) ||
     manifest['default-language'];
+
+  language = language.match(/([a-z0-9-]+)/i)?.at(1) ?? '';
+
+  if (!language) return null;
 
   // The bucket in the URL stored in the manifest can change over time. The URL from
   // the artifact query is updated when buckets change.  Update the hostname stored

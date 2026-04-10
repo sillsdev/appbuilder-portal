@@ -7,6 +7,9 @@ export async function GET({ params, locals }) {
     'short_description.txt'
   ]);
   return res
-    ? new Response(JSON.stringify(res), { status: 200 })
+    ? new Response(JSON.stringify(res), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      })
     : new Response(null, { status: 404 });
 }

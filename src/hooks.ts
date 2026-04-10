@@ -3,7 +3,7 @@ import { deLocalizeUrl as GooglePlayDeLocalizeUrl } from '$lib/google-play/parag
 import { deLocalizeUrl as defaultDeLocalizeUrl } from '$lib/paraglide/runtime';
 
 export const reroute: Reroute = (request) => {
-  const isGooglePlay = !!request.url.href.match('/downloads');
+  const isGooglePlay = !!request.url.pathname.match('/downloads');
   return (isGooglePlay ? GooglePlayDeLocalizeUrl : defaultDeLocalizeUrl)(request.url).pathname;
 };
 
