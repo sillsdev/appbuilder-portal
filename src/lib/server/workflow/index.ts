@@ -131,12 +131,12 @@ export class Workflow {
     flow.flow = createActor(WorkflowStateMachine, {
       snapshot: snap
         ? WorkflowStateMachine.resolveState({
-          value: snap.state,
-          context: {
-            ...snap.context,
-            ...flow.input
-          }
-        })
+            value: snap.state,
+            context: {
+              ...snap.context,
+              ...flow.input
+            }
+          })
         : undefined,
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
@@ -417,9 +417,9 @@ export class Workflow {
       AllowedUserNames:
         t.meta.type === ActionType.User
           ? userNames
-            .filter(([name, roles]) => name && roles.has(t.meta.user))
-            .map((user) => user[0])
-            .join(', ')
+              .filter(([name, roles]) => name && roles.has(t.meta.user))
+              .map((user) => user[0])
+              .join(', ')
           : null,
       TransitionType: ProductTransitionType.Activity,
       InitialState: Workflow.stateName(state),
@@ -546,13 +546,13 @@ export class Workflow {
 
     const user = userId
       ? await DatabaseReads.users.findUnique({
-        where: {
-          Id: userId
-        },
-        select: {
-          Name: true
-        }
-      })
+          where: {
+            Id: userId
+          },
+          select: {
+            Name: true
+          }
+        })
       : null;
 
     if (transition) {
