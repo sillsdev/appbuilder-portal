@@ -1,10 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import LocaleSelector from '$lib/components/LocaleSelector.svelte';
-  import { GooglePlayFlags } from '$lib/google-play';
-  import { type Locale, setLocale } from '$lib/google-play/paraglide/runtime';
-  import { Icons, getFlagIcon } from '$lib/icons';
-  import IconContainer from '$lib/icons/IconContainer.svelte';
+  import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
+  import { type Locale } from '$lib/google-play/paraglide/runtime';
   import { bytesToHumanSize } from '$lib/utils';
 
   interface Props {
@@ -30,31 +27,10 @@
 <div class="flex flex-col h-full items-center justify-center">
   <div class="p-2 flex flex-row w-full justify-end">
     <LocaleSelector
-      getLocale={() => current}
-      {setLocale}
+      {current}
       l10nMap={data.l10nMap}
       locales={data.manifest.languages as Locale[]}
-      flagMap={GooglePlayFlags}
-      class={{ dropdown: 'dropdown-end', label: 'border-secondary pe-1' }}
-    >
-      {#snippet label(displayNames)}
-        {@const { display, fallback } = displayNames.get(current) ?? {}}
-        <div class="flex flex-row py-1 w-full items-start h-full gap-1">
-          <IconContainer icon={getFlagIcon(current, GooglePlayFlags)} width={24} />
-          <span class="flex flex-col text-start grow">
-            <span>
-              {display}
-              {#if display !== fallback}
-                &ndash; {current}
-              {/if}
-            </span>
-          </span>
-          <span class="h-full flex flex-row items-center">
-            <IconContainer icon={Icons.Dropdown} width={20} />
-          </span>
-        </div>
-      {/snippet}
-    </LocaleSelector>
+    />
   </div>
   <div class="flex flex-col h-full items-center justify-center">
     <!-- svelte-ignore a11y_missing_attribute -->
