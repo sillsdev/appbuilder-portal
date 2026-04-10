@@ -12,21 +12,19 @@ export type L10NMap<Locale extends string> = Map<Locale, L10NMapValue | null>;
 
 export type L10NMapValue = { languages: Map<string, string>; territories?: Map<string, string> };
 
-export const langtagsSchema = v.array(
-  v.object({
-    tag: v.string(),
-    localname: v.optional(v.string()),
-    name: v.string(),
-    // nameInLocale: not in the JSON
-    // additional matches
-    names: v.optional(v.array(v.string())),
-    region: v.string(),
-    regions: v.optional(v.array(v.string())),
-    variants: v.optional(v.array(v.string()))
-  })
-);
+export const langtagSchema = v.object({
+  tag: v.string(),
+  localname: v.optional(v.string()),
+  name: v.string(),
+  // nameInLocale: not in the JSON
+  // additional matches
+  names: v.optional(v.array(v.string())),
+  region: v.string(),
+  regions: v.optional(v.array(v.string())),
+  variants: v.optional(v.array(v.string()))
+});
 
-export type LangInfo = v.InferOutput<typeof langtagsSchema>[number];
+export type LangInfo = v.InferOutput<typeof langtagSchema>;
 
 export function tryLocalize<Locale extends string>(
   lookup: L10NMap<Locale>,

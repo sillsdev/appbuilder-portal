@@ -4,9 +4,10 @@ import { XMLParser } from 'fast-xml-parser';
 import { existsSync } from 'fs';
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
 import { join } from 'path';
+import * as v from 'valibot';
 import type { BullMQ } from '../../bullmq';
 import { withAlternates } from '$lib/google-play';
-import { addBasicVariants } from '$lib/ldml';
+import { addBasicVariants, langtagSchema } from '$lib/ldml';
 import { locales as defaultLocales } from '$lib/paraglide/runtime';
 
 const sectionDelim = '********************';
@@ -28,7 +29,7 @@ export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): 
   try {
     job.log(sectionDelim);
 
-    const langtagsPath = join(localDir, 'langtags.json');
+    const langtagsPath = join(localDir, 'langtags.dev');
 
     const shouldUpdateLangtags = await shouldUpdate(
       langtagsPath,
@@ -47,35 +48,25 @@ export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): 
 
       const res = await fetchWithLog('https://ldml.api.sil.org/langtags.json', log);
 
-      const langtags = (
-        (await res.json()) as {
-          tag: string;
-          localname?: string | undefined;
-          name: string;
-          names?: string[] | undefined;
-          region: string;
-          regions?: string[] | undefined;
-          variants?: string[] | undefined;
-        }[]
-      )
-        .filter((lang) => !lang.tag.startsWith('_'))
-        .map(({ tag, localname, name, names, region, regions, variants }) => ({
-          tag,
-          localname,
-          name,
-          names,
-          region,
-          regions,
-          variants
-        }));
+      if (res.ok) {
+        const langtags = ((await res.json()) as unknown[])
+          .map((tag) => {
+            const parsed = v.safeParse(langtagSchema, tag);
 
-      await writeFile(langtagsPath, JSON.stringify(langtags));
+            return parsed.success ? parsed.output : null;
+          })
+          .filter((lang) => lang && !lang.tag.startsWith('_'));
 
-      job.log(`langtags written to ${langtagsPath}`);
+        await writeFile(langtagsPath, stringify(langtags));
 
-      ret['langtags']['length'] = langtags.length;
+        job.log(`langtags written to ${langtagsPath}`);
 
-      job.log(`Downloaded all supported languages\n${sectionDelim}`);
+        ret['langtags']['length'] = langtags.length;
+
+        job.log(`Downloaded all supported languages\n${sectionDelim}`);
+      } else {
+        job.log(`Fetch failed for langtags.json with status ${res.status}`);
+      }
     }
     job.updateProgress(55);
 
@@ -170,7 +161,7 @@ async function getLDML<Locale extends string>(
   if (!existsSync(finalDir)) {
     await mkdir(finalDir, { recursive: true });
   }
-  const finalName = join(finalDir, 'ldml.json');
+  const finalName = join(finalDir, 'ldml.dev');
   const revIdFileName = join(finalDir, 'revid');
   const endpoint = `https://ldml.api.sil.org/${lang}`;
 

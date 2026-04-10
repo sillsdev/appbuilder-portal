@@ -11,7 +11,7 @@ export async function readLDML<Locale extends string>(
   return new Map(
     await Promise.all(
       locales.map(async (locale) => {
-        const filePath = join(localDir, locale, 'ldml.json');
+        const filePath = join(localDir, locale, 'ldml.dev');
 
         let ret = null;
         if (existsSync(filePath)) {

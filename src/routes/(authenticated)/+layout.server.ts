@@ -1,8 +1,9 @@
+import { parse } from 'devalue';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { safeParse } from 'valibot';
+import { array, safeParse } from 'valibot';
 import type { LayoutServerLoad } from './$types';
-import { langtagsSchema } from '$lib/ldml';
+import { langtagSchema } from '$lib/ldml';
 import { readLDML } from '$lib/ldml/server';
 import { locales } from '$lib/paraglide/runtime';
 import { getUserTasks } from '$lib/projects/sse';
@@ -32,9 +33,9 @@ export const load: LayoutServerLoad = async (event) => {
     organizations,
     userTasks: await getUserTasks(sec.userId),
     // streaming promise
-    langtags: await readFile(join(localDir, 'langtags.json'))
+    langtags: await readFile(join(localDir, 'langtags.dev'))
       .then((j) => {
-        const res = safeParse(langtagsSchema, JSON.parse(j.toString()));
+        const res = safeParse(array(langtagSchema), parse(j.toString()));
         return res.success ? res.output : [];
       })
       .catch((r) => {
