@@ -186,23 +186,37 @@ const manifestSchema = v.pipe(
     files: v.array(v.string())
   })
 );
+type Manifest = v.InferOutput<typeof manifestSchema>;
 
-export async function getTranslatedManifest<File extends string>(
-  from: ArtifactFrom,
+export async function getFileFromManifest(
   language: string,
-  includeFiles: File[]
+  file: string,
+  manifest: Manifest,
+  baseUrl: URL
 ) {
-  const manifestArtifact = await getPublishedFile(from, 'play-listing-manifest');
+  try {
+    const path = manifest.files.find(
+      (s) => s === `${language}/${file}` || s === `${getBasicVariant(language)}/${file}`
+    );
+    const res = path ? await fetch(new URL(path, baseUrl)) : null;
+    return res?.ok ? (await res.text()).trim() : '';
+  } catch {
+    return '';
+  }
+}
 
-  if (!manifestArtifact?.Url) return null;
+export async function getLatestManifest(from: ArtifactFrom) {
+  const artifact = await getPublishedFile(from, 'play-listing-manifest');
+
+  if (!artifact?.Url) return null;
 
   // Get the size of the apk
   const apkArtifact = await getPublishedFile(from, 'apk');
   if (!apkArtifact?.Url) return null;
-  const { fileSize } = await getFileInfo(apkArtifact.Url);
+  const { fileSize: apkSize } = await getFileInfo(apkArtifact.Url);
 
   // Get the contents of the manifest.json
-  const manifestJson = await fetch(manifestArtifact.Url).then((r) => r.text());
+  const manifestJson = await fetch(artifact.Url).then((r) => r.text());
 
   const manifest = await v
     .safeParseAsync(manifestSchema, manifestJson)
@@ -210,48 +224,52 @@ export async function getTranslatedManifest<File extends string>(
 
   if (!manifest) return null;
 
-  language =
-    manifest.languages.find(
-      (l) =>
-        l === language ||
-        l === getBasicVariant(language) ||
-        getBasicVariant(l) === getBasicVariant(language)
-    ) || manifest['default-language'];
-
-  if (!language) return null;
-
-  const basicVariant = getBasicVariant(language);
-
   // The bucket in the URL stored in the manifest can change over time. The URL from
   // the artifact query is updated when buckets change.  Update the hostname stored
   // in the manifest file based on the hostname from the artifact query.
-  const manifestUri = new URL(manifestArtifact.Url);
   const baseUrl = new URL(manifest.url);
-  baseUrl.host = manifestUri.host;
-  const files = Object.fromEntries(
-    await Promise.all(
-      includeFiles.map(async (f) => {
-        const path = manifest.files.find(
-          (s) => s === `${language}/${f}` || s === `${basicVariant}/${f}`
-        );
-        const res = path ? await fetch(new URL(path, baseUrl)) : null;
-        return [f, res?.ok ? (await res.text()).trim() : ''];
-      })
-    )
-  ) as Record<File, string>;
+  baseUrl.host = new URL(artifact.Url).host;
+
+  return { manifest, baseUrl, productId: artifact.ProductId, apkSize };
+}
+
+export function resolveManifestLanguage(target: string, manifest: Manifest) {
+  return (
+    manifest.languages.find(
+      (l) =>
+        l === target ||
+        l === getBasicVariant(target) ||
+        getBasicVariant(l) === getBasicVariant(target)
+    ) || manifest['default-language']
+  );
+}
+
+export async function translateManifest<File extends string>(
+  fetchedManifest: NonNullable<Awaited<ReturnType<typeof getLatestManifest>>>,
+  target: string,
+  includeFiles: File[]
+) {
+  const { manifest, baseUrl, productId, apkSize } = fetchedManifest;
+
+  const language = resolveManifestLanguage(target, manifest);
 
   return {
-    id: manifestArtifact.ProductId,
-    link: `/api/products/${manifestArtifact.ProductId}/files/published/apk`,
-    size: fileSize,
+    id: productId,
+    link: `/api/products/${productId}/files/published/apk`,
+    size: apkSize,
     icon: new URL(manifest.icon, baseUrl).href,
     // use primary color if match not found
     color: manifest.color.match(/^(#[0-9a-f]{6})/i)?.at(1) ?? '#1c3258',
     downloadTitle:
-      manifest['download-apk-strings'][language] || manifest['download-apk-strings'][basicVariant],
+      manifest['download-apk-strings'][language] ||
+      manifest['download-apk-strings'][getBasicVariant(language)],
     language,
     languages: manifest.languages,
-    ...files
+    ...(Object.fromEntries(
+      await Promise.all(
+        includeFiles.map(async (f) => [f, getFileFromManifest(language, f, manifest, baseUrl)])
+      )
+    ) as Record<File, string>)
   };
 }
 
