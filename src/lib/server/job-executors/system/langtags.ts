@@ -87,7 +87,7 @@ export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): 
 
     job.updateProgress(100);
   } catch (err) {
-    job.log(JSON.stringify(err));
+    job.log((err as Error).message);
   }
 
   return ret;
@@ -136,7 +136,7 @@ async function shouldUpdate(
         remoteLastModified
       };
     } catch (err) {
-      logger(JSON.stringify(err));
+      logger((err as Error).message);
     }
   } else {
     logger(`${localPath} does not exist`);
