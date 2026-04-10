@@ -246,7 +246,8 @@ export async function getTranslatedManifest<File extends string>(
     link: `/api/products/${manifestArtifact.ProductId}/files/published/apk`,
     size: fileSize,
     icon: url + manifest.icon,
-    color: manifest.color,
+    // use primary color if match not found
+    color: manifest.color.match(/^(#[0-9a-f]{6})/i)?.at(1) ?? '#1c3258',
     downloadTitle: manifest['download-apk-strings'][language],
     languages: manifest.languages,
     ...files
