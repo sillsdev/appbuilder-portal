@@ -48,19 +48,19 @@
       ]}
       onclick={() => setLocale(locale)}
     >
-      <div class="flex flex-col py-1 w-full items-start h-full">
-        <span>
-          <IconContainer icon={getFlagIcon(locale, GooglePlayFlags)} width={24} />
-          <span class="grow text-left">
+      <div class="flex flex-row py-1 w-full items-start h-full gap-1">
+        <IconContainer icon={getFlagIcon(locale, GooglePlayFlags)} width={24} />
+        <span class="flex flex-col text-left grow">
+          <span>
             {display}
             {#if display !== fallback}
               &ndash; {locale}
             {/if}
           </span>
+          {#if native !== display && native !== fallback}
+            <i class="opacity-80 text-left">{native}</i>
+          {/if}
         </span>
-        {#if native !== display && native !== fallback}
-          <i class="ps-8 opacity-80 text-left">{native}</i>
-        {/if}
       </div>
     </button>
   {/each}
