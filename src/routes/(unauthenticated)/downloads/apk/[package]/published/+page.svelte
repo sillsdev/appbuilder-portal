@@ -1,5 +1,13 @@
 <script lang="ts">
   import type { PageData } from './$types';
+  import { browser } from '$app/environment';
+  import { afterNavigate, goto } from '$app/navigation';
+  import { page } from '$app/state';
+  import LocaleSelector from '$lib/components/LocaleSelector.svelte';
+  import { GooglePlayFlags } from '$lib/google-play';
+  import { type Locale, localizeHref, setLocale } from '$lib/google-play/paraglide/runtime';
+  import { getFlagIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { bytesToHumanSize } from '$lib/utils';
 
   interface Props {
@@ -18,9 +26,45 @@
     const b = parseInt(rgb.substring(4, 6), 16) / 255;
     return (Math.max(r, g, b) + Math.min(r, g, b)) / 2;
   }
+
+  afterNavigate(() => {
+    if (browser) {
+      // if page isn't explicitly localized to returned language
+      if (!page.url.pathname.match(`^/${data.manifest.language}/`)) {
+        goto(localizeHref(page.url.href, { locale: data.manifest.language as Locale }));
+      }
+    }
+  });
+
+  const current = $derived(data.manifest.language as Locale);
 </script>
 
 <div class="flex flex-col h-full items-center justify-center">
+  <div class="p-2 flex flex-row w-full justify-end">
+    <LocaleSelector
+      getLocale={() => current}
+      {setLocale}
+      l10nMap={data.l10nMap}
+      locales={data.manifest.languages as Locale[]}
+      flagMap={GooglePlayFlags}
+      class={{ dropdown: 'dropdown-end', label: 'border-secondary' }}
+    >
+      {#snippet label(displayNames)}
+        {@const { display, fallback } = displayNames.get(current) ?? {}}
+        <div class="flex flex-row py-1 w-full items-start h-full gap-1">
+          <IconContainer icon={getFlagIcon(current, GooglePlayFlags)} width={24} />
+          <span class="flex flex-col text-start grow">
+            <span>
+              {display}
+              {#if display !== fallback}
+                &ndash; {current}
+              {/if}
+            </span>
+          </span>
+        </div>
+      {/snippet}
+    </LocaleSelector>
+  </div>
   <div class="flex flex-col h-full items-center justify-center">
     <!-- svelte-ignore a11y_missing_attribute -->
     <img src={data.manifest.icon} />

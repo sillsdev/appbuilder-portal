@@ -218,6 +218,8 @@ export async function getTranslatedManifest<File extends string>(
 
   if (!language) return null;
 
+  const basicVariant = getBasicVariant(language);
+
   // The bucket in the URL stored in the manifest can change over time. The URL from
   // the artifact query is updated when buckets change.  Update the hostname stored
   // in the manifest file based on the hostname from the artifact query.
@@ -228,7 +230,8 @@ export async function getTranslatedManifest<File extends string>(
     await Promise.all(
       includeFiles.map(async (f) => {
         const re = new RegExp(`${language}/${f}`);
-        const path = manifest.files.find((s) => re.test(s));
+        const basic = new RegExp(`${basicVariant}/${f}`);
+        const path = manifest.files.find((s) => re.test(s) || basic.test(s));
         return [
           f,
           path
@@ -248,7 +251,9 @@ export async function getTranslatedManifest<File extends string>(
     icon: url + manifest.icon,
     // use primary color if match not found
     color: manifest.color.match(/^(#[0-9a-f]{6})/i)?.at(1) ?? '#1c3258',
-    downloadTitle: manifest['download-apk-strings'][language],
+    downloadTitle:
+      manifest['download-apk-strings'][language] || manifest['download-apk-strings'][basicVariant],
+    language,
     languages: manifest.languages,
     ...files
   };

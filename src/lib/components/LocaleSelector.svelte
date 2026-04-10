@@ -6,9 +6,10 @@
   import type { Locale as GPLocale } from '$lib/google-play/paraglide/runtime';
   import { Icons, getFlagIcon } from '$lib/icons';
   import { type L10NMap, tryLocalize } from '$lib/ldml';
+  import { byString } from '$lib/utils/sorting';
 
   interface Props {
-    label?: Snippet;
+    label?: Snippet<[typeof displayNames]>;
     class?: DropdownClasses;
     getLocale: () => Locale;
     setLocale: (lang: Locale) => void;
@@ -19,7 +20,7 @@
   }
 
   let {
-    label = defaultLabel,
+    label: _label = defaultLabel,
     class: classes = {},
     getLocale,
     setLocale,
@@ -70,14 +71,16 @@
   <Dropdown
     class={{
       ...classes,
-      content: ['overflow-y-auto', classes.content]
+      content: ['max-h-64 overflow-y-auto', classes.content]
     }}
     bind:open
-    {label}
   >
+    {#snippet label()}
+      {@render _label(displayNames)}
+    {/snippet}
     {#snippet content()}
       <ul class="menu menu-sm gap-1 p-2">
-        {#each locales as locale}
+        {#each locales.toSorted( (a, b) => byString(displayNames.get(a)?.display, displayNames.get(b)?.display, current) ) as locale}
           {@const { display, native, fallback } = displayNames.get(locale)!}
           <li class="w-full">
             <div
@@ -97,7 +100,7 @@
             >
               <div class="flex flex-row py-1 w-full items-start h-full gap-1">
                 <IconContainer icon={getFlagIcon(locale, flagMap)} width={24} />
-                <span class="flex flex-col text-left grow">
+                <span class="flex flex-col text-start grow">
                   <span>
                     {display}
                     {#if display !== fallback}
@@ -105,7 +108,7 @@
                     {/if}
                   </span>
                   {#if native !== display && native !== fallback}
-                    <i class="opacity-80 text-left">{native}</i>
+                    <i class="opacity-80">{native}</i>
                   {/if}
                 </span>
               </div>
