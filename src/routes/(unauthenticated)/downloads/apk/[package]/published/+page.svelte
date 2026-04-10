@@ -1,11 +1,8 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import { browser } from '$app/environment';
-  import { afterNavigate, goto } from '$app/navigation';
-  import { page } from '$app/state';
   import LocaleSelector from '$lib/components/LocaleSelector.svelte';
   import { GooglePlayFlags } from '$lib/google-play';
-  import { type Locale, localizeHref, setLocale } from '$lib/google-play/paraglide/runtime';
+  import { type Locale, setLocale } from '$lib/google-play/paraglide/runtime';
   import { getFlagIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { bytesToHumanSize } from '$lib/utils';
@@ -26,15 +23,6 @@
     const b = parseInt(rgb.substring(4, 6), 16) / 255;
     return (Math.max(r, g, b) + Math.min(r, g, b)) / 2;
   }
-
-  afterNavigate(() => {
-    if (browser) {
-      // if page isn't explicitly localized to returned language
-      if (!page.url.pathname.match(`^/${data.manifest.language}/`)) {
-        goto(localizeHref(page.url.href, { locale: data.manifest.language as Locale }));
-      }
-    }
-  });
 
   const current = $derived(data.manifest.language as Locale);
 </script>
