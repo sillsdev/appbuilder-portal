@@ -156,6 +156,7 @@ export type WorkflowInstanceContext = {
     | 'productDescription'
     | 'appType'
     | 'projectLanguageCode'
+    | 'packageName'
   )[];
   includeReviewers: boolean;
   includeArtifacts: ArtifactLists | null;

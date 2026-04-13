@@ -18,7 +18,15 @@
     <ul>
       <li>
         Set <strong>App name</strong>
-        to Project Name shown above.
+        to
+        <em>Project Name</em>
+        shown above.
+      </li>
+      <li>
+        Set <strong>Package name</strong>
+        to
+        <em>Package Name</em>
+        shown above.
       </li>
       <li>
         Set <strong>Default language</strong>

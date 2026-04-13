@@ -8,6 +8,7 @@
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
+  import CopyField from '$lib/components/settings/CopyField.svelte';
   import { Icons, getAppIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { tryLocalizeName } from '$lib/ldml';
@@ -26,7 +27,6 @@
   const { data } = $props();
 
   let addProductModal: HTMLDialogElement | undefined = $state(undefined);
-  let projectLocationCopied = $state(false);
 
   const currentPageUrl = page.url.pathname;
   let reconnectDelay = 1000;
@@ -181,22 +181,7 @@
                 <p class="grow pr-2">
                   /{projectData.project.RepositoryUrl.split('/').pop()}
                 </p>
-                <button
-                  class="cursor-copy float-right"
-                  onclick={() => {
-                    navigator.clipboard.writeText(projectData.project.RepositoryUrl!);
-                    projectLocationCopied = true;
-                    setTimeout(() => {
-                      projectLocationCopied = false;
-                    }, 5000);
-                  }}
-                >
-                  {#if projectLocationCopied}
-                    <IconContainer icon={Icons.Checkmark} width={24} class="text-success" />
-                  {:else}
-                    <IconContainer icon={Icons.Copy} width={24} />
-                  {/if}
-                </button>
+                <CopyField value={projectData.project.RepositoryUrl!} />
               {/if}
             </div>
           </div>
