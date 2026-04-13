@@ -1,5 +1,7 @@
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
+import type { Prisma } from '@prisma/client';
+import type { RequirePrimitive } from './utility';
 
 /**
  * Helper: Get all unique project IDs that contain the given products
@@ -21,68 +23,17 @@ export type RebuildRequest = {
   organizationId: number;
 };
 
-/**
- * Records rebuild intents by grouping items per (engine, appType, version, organization) and
- * creating one SoftwareUpdates row per group, connecting all products in that group.
- */
-export async function recordRebuilds(params: {
-  initiatorId: number;
-  comment: string;
-  items: RebuildRequest[];
-}): Promise<{ Id: number }[]> {
-  if (!params.items.length) return [];
+export async function create(data: RequirePrimitive<Prisma.SoftwareUpdatesUncheckedCreateInput>) {
+  return await prisma.$transaction(async (tx) => {
+    const softwareUpdate = await tx.softwareUpdates.create({
+      data
+    });
 
-  // Group items by key (organization + engine + appType + version)
-  const groups = new Map<string, Omit<RebuildRequest, 'productId'> & { productIds: string[] }>();
-
-  // Populate groups
-  for (const it of params.items) {
-    if (!it.version) continue;
-    const key = `${it.organizationId}|${it.buildEngineUrl}|${it.applicationTypeId}|${it.version}`;
-    const g = groups.get(key);
-    if (g) g.productIds.push(it.productId);
-    else
-      groups.set(key, {
-        organizationId: it.organizationId,
-        buildEngineUrl: it.buildEngineUrl,
-        applicationTypeId: it.applicationTypeId,
-        version: it.version,
-        productIds: [it.productId]
-      });
-  }
-
-  if (!groups.size) return [];
-
-  // Create SoftwareUpdates entries for each group
-  const created = await prisma.$transaction(
-    Array.from(groups.values()).map((g) =>
-      prisma.softwareUpdates.create({
-        data: {
-          InitiatedById: params.initiatorId,
-          Comment: params.comment,
-          BuildEngineUrl: g.buildEngineUrl,
-          ApplicationTypeId: g.applicationTypeId,
-          Version: g.version,
-          Products: { connect: g.productIds.map((Id) => ({ Id })) }
-        },
-        select: { Id: true }
-      })
-    )
-  );
-
-  // Notify SSE clients about the new software updates
-  if (created.length > 0) {
-    const projectIds = await getProjectIdsFromProductIds(params.items.map((it) => it.productId));
-    if (projectIds.length > 0) {
-      getQueues().SvelteSSE.add('Update Software Updates (rebuild initiated)', {
-        type: BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates,
-        projectIds
-      });
-    }
-  }
-
-  return created;
+    return softwareUpdate;
+  });
 }
+
+
 
 /**
  * Checks if a specific product's successful build completes any open SoftwareUpdates.

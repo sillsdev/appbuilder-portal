@@ -1,10 +1,9 @@
 <script lang="ts">
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import TaskComment from '$lib/products/components/TaskComment.svelte';
-  import type { RebuildItem } from '$lib/software-updates/sse';
-  import { byString } from '$lib/utils/sorting';
+  import type { RebuildItem } from '$lib/software-updates';
   import { getTimeDateString } from '$lib/utils/time';
 
   interface Props {
@@ -12,8 +11,6 @@
   }
 
   let { rebuild }: Props = $props();
-
-  const locale = getLocale();
 </script>
 
 <div class="rounded-md bg-neutral border border-slate-400 my-6 overflow-hidden w-full">
@@ -22,19 +19,11 @@
       <div class="mr-2">
         <span class="flex items-center mb-1" title={m.admin_software_update_organization_title()}>
           <IconContainer icon="clarity:organization-solid" width={20} class="mr-1 shrink-0" />
-          {rebuild.Organization.Name ?? ''}
+          {rebuild.Organizations.join(',') ?? ''}
         </span>
         <span class="flex items-center mb-1" title={m.admin_software_update_initiated_by()}>
           <IconContainer icon="mdi:user" width={20} class="mr-1 shrink-0" />
-          {rebuild.InitiatedBy.Name ?? ''}
-        </span>
-        <span
-          class="flex items-center mb-1"
-          title={m.admin_software_update_application_type_title()}
-        >
-          <IconContainer icon="mdi:tag" width={20} class="mr-1 shrink-0" />
-          {rebuild.ApplicationType.Description ?? ''}
-          {rebuild.Version ?? ''}
+          {rebuild.InitiatedBy ?? ''}
         </span>
         <span class="flex items-center mb-1">
           <IconContainer icon="mdi:package-variant" width={20} class="mr-1 shrink-0" />
@@ -44,7 +33,7 @@
         <span class="flex items-center mb-1">
           <IconContainer icon="mdi:folder-multiple" width={20} class="mr-1 shrink-0" />
           <span class="font-semibold mr-1">{m.admin_software_update_projects_title()}:</span>
-          {rebuild.Projects.length}
+          {rebuild._count.Projects}
         </span>
       </div>
       <div class="items-start">
@@ -80,7 +69,7 @@
         <span class="font-semibold">{m.admin_software_update_projects_title()}:</span>
       </div>
       <div class="flex flex-wrap gap-2">
-        {#each rebuild.Projects.toSorted((a, b) => byString(a.Name, b.Name, locale)) as project}
+        {#each rebuild.Projects as project}
           <a
             href={localizeHref(`/projects/${project.Id}`)}
             class="badge badge-primary badge-lg hover:badge-accent transition-colors"
