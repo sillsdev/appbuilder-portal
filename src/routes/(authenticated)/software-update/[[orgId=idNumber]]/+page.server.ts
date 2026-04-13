@@ -6,12 +6,12 @@ import type { Actions, PageServerLoad } from './$types';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { getRebuildsForOrgIds } from '$lib/software-updates/sse';
+import { getRebuilds } from '$lib/software-updates';
 import { filterAdminOrgs } from '$lib/utils/roles';
 
 const formSchema = v.object({
   comment: v.pipe(v.string(), v.minLength(1)),
-  applicationTypeIds: v.pipe(v.array(v.number()), v.minLength(1))
+  products: v.pipe(v.array(v.string()))
 });
 
 export const load = (async ({ locals, params }) => {
@@ -55,7 +55,6 @@ export const load = (async ({ locals, params }) => {
     }
   });
 
-  console.log(params);
   const systemStatuses = await DatabaseReads.systemStatuses.findMany({
     where: {
       Organization: {
@@ -94,9 +93,6 @@ export const load = (async ({ locals, params }) => {
       };
     });
 
-  console.log(organizations);
-  console.log(products);
-
   // Fetch all available ApplicationTypes for the form toggles
   const applicationTypes = await DatabaseReads.applicationTypes.findMany({
     select: {
@@ -105,7 +101,7 @@ export const load = (async ({ locals, params }) => {
     }
   });
 
-  const rebuilds = (await getRebuildsForOrgIds(Array.from(systems.keys()))).rebuilds;
+  const rebuilds = await getRebuilds(locals.security, Number(params.orgId));
   const form = await superValidate(valibot(formSchema));
 
   return {
@@ -117,10 +113,8 @@ export const load = (async ({ locals, params }) => {
   };
 }) satisfies PageServerLoad;
 
-/// ACTIONS
 export const actions = {
   async start({ request, locals, params }) {
-    // Determine what organizations are being affected and check security
     if (params.orgId) {
       locals.security.requireAdminOfOrg(Number(params.orgId));
     } else {
@@ -132,70 +126,34 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
 
-    const organizations = await DatabaseReads.organizations.findMany({
-      where: filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined),
-      select: {
-        Id: true
-      }
-    });
-
-    const productsToRebuild = await getProductsForRebuild(
-      organizations.map((o) => o.Id),
-      form.data.applicationTypeIds
-    );
-
-    // TODO Simply give a product ID to have it rebuilt.
-    // WARNING check that user has permission to rebuild a product.
-    // select organizations having projects having productid matching one of these products and then locals.security.requireAdminOfOrgIn(orgs)
-    // Attempt rebuilds for each affected product
-    const rebuildResults = await Promise.allSettled(
-      productsToRebuild.map((p) => {
-        return doProductAction(p.id, ProductActionType.Rebuild, form.data.comment);
-      })
-    );
-
-    // Separate successful and failed products
-    const successfulProducts: typeof productsToRebuild = [];
-    const failedProducts: Array<{ id: string; projectName: string; error: string }> = [];
-
-    rebuildResults.forEach((result, index) => {
-      const product = productsToRebuild[index];
-      if (result.status === 'fulfilled') {
-        successfulProducts.push(product);
-      } else {
-        failedProducts.push({
-          id: product.id,
-          projectName: product.projectName,
-          error: result.reason instanceof Error ? result.reason.message : String(result.reason)
-        });
-      }
-    });
-
-    // Record only successful rebuilds in SoftwareUpdates table
-    if (successfulProducts.length > 0) {
-      await DatabaseWrites.softwareUpdates.recordRebuilds({
-        initiatorId: locals.security.userId,
-        comment: form.data.comment,
-        items: successfulProducts.map((p) => ({
-          buildEngineUrl: p.buildEngineUrl,
-          applicationTypeId: p.applicationTypeId,
-          version: p.requiredVersion!,
-          productId: p.id,
-          organizationId: p.organizationId
-        }))
-      });
-    }
-
-    return {
-      form,
-      ok: failedProducts.length === 0,
-      ...(failedProducts.length > 0 && {
-        failures: {
-          count: failedProducts.length,
-          products: failedProducts,
-          successCount: successfulProducts.length
+    const products = (await DatabaseReads.products.findMany({
+      where: {
+        Id: {
+          in: form.data.products
+        },
+        Project: {
+          Organization: {
+            ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined)
+          },
         }
+      },
+      select: {
+        Id: true,
+      }
+    }));
+
+    await DatabaseWrites.softwareUpdates.create({
+      InitiatedById: locals.security.userId,
+      Comment: form.data.comment,
+      Products: {
+        connect: products
+      }
+    });
+
+    await Promise.allSettled(
+      products.map((p) => {
+        return doProductAction(p.Id, ProductActionType.Rebuild, locals.security.userId, form.data.comment);
       })
-    };
+    );
   }
 } satisfies Actions;

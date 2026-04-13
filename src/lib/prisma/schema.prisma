@@ -16,7 +16,6 @@ model ApplicationTypes {
   ProjectImports     ProjectImports[]
   Projects           Projects[]
   SystemVersions     SystemVersions[]
-  SoftwareUpdates    SoftwareUpdates[]
   ProductDefinitions ProductDefinitions[]
 }
 
@@ -394,14 +393,8 @@ model SoftwareUpdates {
   Comment           String
   Paused            Boolean          @default(false)
   DateCreated       DateTime?        @default(now()) @db.Timestamp(6)
-  DateUpdated       DateTime?        @updatedAt @db.Timestamp(6)
   DateCompleted     DateTime?        @db.Timestamp(6)
-  // Version information
-  BuildEngineUrl    String
-  ApplicationTypeId Int
-  Version           String
   InitiatedBy       Users            @relation(fields: [InitiatedById], references: [Id])
-  ApplicationType   ApplicationTypes @relation(fields: [ApplicationTypeId], references: [Id])
   // Implicit m-n table. Org and project reachable through this relation
   Products          Products[]
 }
