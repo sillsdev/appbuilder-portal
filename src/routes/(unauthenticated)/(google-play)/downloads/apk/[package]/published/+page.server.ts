@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { type Locale, deLocalizeUrl, localizeUrl } from '$lib/google-play/paraglide/runtime';
+import { deLocalizeUrl, localizeUrl } from '$lib/google-play/paraglide/runtime';
 import {
   getLatestManifest,
   resolveManifestLanguage,
@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
   if (!fetchedManifest) return error(404);
   const lang = resolveManifestLanguage(locals.locale, fetchedManifest?.manifest);
   if (locals.locale !== lang) {
-    return redirect(302, localizeUrl(deLocalizeUrl(url), { locale: lang as Locale }));
+    return redirect(302, localizeUrl(deLocalizeUrl(url), { locale: lang }));
   }
   return {
     manifest: await translateManifest(fetchedManifest, lang, ['title.txt', 'short_description.txt'])

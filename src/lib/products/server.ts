@@ -1,4 +1,5 @@
 import * as v from 'valibot';
+import { isLocale } from '$lib/google-play/paraglide/runtime';
 import { getBasicVariant } from '$lib/ldml';
 import { ProductTransitionType, WorkflowType } from '$lib/prisma';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
@@ -234,14 +235,18 @@ export async function getLatestManifest(from: ArtifactFrom) {
 }
 
 export function resolveManifestLanguage(target: string, manifest: Manifest) {
-  return (
+  const found =
     manifest.languages.find(
       (l) =>
         l === target ||
         l === getBasicVariant(target) ||
         getBasicVariant(l) === getBasicVariant(target)
-    ) || manifest['default-language']
-  );
+    ) || manifest['default-language'];
+  if (isLocale(found)) {
+    return found;
+  } else {
+    throw new Error(`Could not resolve language ${target} from package ${manifest.url}`);
+  }
 }
 
 export async function translateManifest<File extends string>(
