@@ -47,7 +47,7 @@ if (!building) {
 
 // creating a handle to use the paraglide middleware
 const paraglideHandle: Handle = ({ event, resolve }) => {
-  const isGooglePlayRoute = !!event.url.pathname.match('/downloads');
+  const isGooglePlayRoute = !!event.url.pathname.match(/\/(downloads|user-data)/);
 
   event.locals.locale =
     (isGooglePlayRoute ? GooglePlayGetLocaleForUrl : defaultGetLocaleForUrl)(event.url.href) ??

@@ -1,5 +1,5 @@
 import { join } from 'path';
-import type { LayoutServerLoad } from './$types';
+import type { LayoutServerLoad } from './downloads/$types';
 import { withAlternates } from '$lib/google-play';
 import { readLDML } from '$lib/ldml/server';
 import { DatabaseReads } from '$lib/server/database';

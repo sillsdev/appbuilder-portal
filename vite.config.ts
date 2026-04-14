@@ -20,15 +20,18 @@ export default defineConfig({
       project: './paraglide/default.inlang',
       outdir: './src/lib/paraglide',
       strategy: ['url'],
-      // allow for everything except /downloads/*
-      routeStrategies: [{ match: '/downloads', exclude: true }]
+      // allow for everything except /downloads/* or user-data
+      routeStrategies: [
+        { match: '/downloads', exclude: true },
+        { match: '/user-data', exclude: true }
+      ]
     }),
     paraglideVitePlugin({
       project: './paraglide/google-play.inlang',
       outdir: './src/lib/google-play/paraglide',
       strategy: ['url'],
-      // allow only for /downloads/*
-      routeStrategies: [{ match: '((?!downloads))', exclude: true }]
+      // allow only for /downloads/* or user-data
+      routeStrategies: [{ match: '((?!downloads|user-data))', exclude: true }]
     })
   ],
   test: {
