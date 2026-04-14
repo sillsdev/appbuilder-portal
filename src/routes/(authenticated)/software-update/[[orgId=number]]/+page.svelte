@@ -1,28 +1,51 @@
 <script lang="ts">
   import { parse } from 'devalue';
-  import { getLocale } from '$lib/paraglide/runtime';
-  import { byString } from '$lib/utils/sorting';
   import type { Readable } from 'svelte/store';
   import { source } from 'sveltekit-sse';
   import { superForm } from 'sveltekit-superforms';
-  import RebuildCard from '$lib/software-updates/components/RebuildCard.svelte';
   import type { PageData } from './$types';
   import { page } from '$app/state';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import { m } from '$lib/paraglide/messages';
-  import type { RebuildItem, SoftwareUpdatesSSE } from '$lib/software-updates';
+  import { getLocale } from '$lib/paraglide/runtime';
+  import type { RebuildsTable } from '$lib/software-updates';
+  import RebuildCard from '$lib/software-updates/components/RebuildCard.svelte';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
   import { isAdminForOrg } from '$lib/utils/roles';
+  import { byString } from '$lib/utils/sorting';
 
   interface Props {
     data: PageData;
   }
-
   let { data }: Props = $props();
-  const rebuilds = $derived(data.rebuilds);
+
+  const currentPageUrl = page.url.pathname;
+  let reconnectDelay = 1000;
+  const softwareUpdatesSSE: Readable<RebuildsTable> = $derived.by(() => {
+    return source(`${page.url.pathname}/sse`, {
+      close({ connect }) {
+        setTimeout(() => {
+          // If the current page has changed, we don't want to reconnect.
+          if (currentPageUrl !== page.url.pathname) {
+            return;
+          }
+          console.log('Disconnected. Reconnecting...');
+          connect();
+          reconnectDelay = Math.min(reconnectDelay * 2, 30000);
+        }, reconnectDelay);
+      }
+    })
+      .select('rebuilds')
+      .transform((t) => (t ? parse(t) : undefined));
+  });
+
+  // Use SSE data if available, otherwise fall back to server data
+  const rebuilds: RebuildsTable = $derived($softwareUpdatesSSE ?? data.rebuilds);
+
+  //const rebuilds = $derived(data.rebuilds);
   const { form, enhance } = superForm(data.form, {
     resetForm: true,
     onUpdate({ form, result, formElement }) {
@@ -42,7 +65,7 @@
 
   let applicationTypeIds = $state(data.applicationTypes);
   const products = $derived(
-    data.products.filter(({ TypeId }) => applicationTypeIds.includes(TypeId))
+    data.products.filter(({ TypeId }) => applicationTypeIds.find(({ Id }) => Id === TypeId))
   );
 
   const product_versions = $derived(Array.from(new Set(products.map((p) => p.NewVersion))));

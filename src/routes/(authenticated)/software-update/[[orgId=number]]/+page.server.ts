@@ -74,7 +74,7 @@ export const load = (async ({ locals, params }) => {
   const systems = new Map<number, Map<number, string>>(
     systemStatuses.map((s) => [
       s.Organization.Id,
-      new Map(s.SystemVersions.map((v) => [v.ApplicationTypeId, v.Version]))
+      new Map(s.SystemVersions.map((v) => [v.ApplicationTypeId, v.Version ?? '']))
     ])
   );
 
@@ -101,7 +101,9 @@ export const load = (async ({ locals, params }) => {
     }
   });
 
-  const rebuilds = await getRebuilds(locals.security, Number(params.orgId));
+  const orgId = Number(params.orgId);
+  const rebuilds = await getRebuilds(locals.security, orgId ? [orgId] : undefined);
+  console.log(rebuilds);
   const form = await superValidate(valibot(formSchema));
 
   return {

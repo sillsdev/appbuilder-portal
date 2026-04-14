@@ -5,11 +5,17 @@ import { filterAdminOrgs } from '$lib/utils/roles';
 const tracer = trace.getTracer('SoftwareUpdatesSSE');
 
 export interface RebuildItem {
+  Id: number;
   InitiatedBy: string | null;
+  Comment: string;
   DateCreated: Date | null;
   DateCompleted: Date | null;
   Organizations: string[];
-  Projects: string[];
+  OrganizationIds: number[];
+  Projects: {
+    Id: number;
+    Name: string;
+  }[];
   _count: {
     Products: number;
     Projects: number;
@@ -20,10 +26,13 @@ export type RebuildsTable = {
   incomplete: RebuildItem[];
 };
 
-export async function getRebuilds(security: Security, orgId: number): Promise<RebuildsTable> {
+export async function getRebuilds(
+  security: Security,
+  orgIds: number[] | undefined
+): Promise<RebuildsTable> {
   return tracer.startActiveSpan('getRebuildsForOrgIds', async (span) => {
     span.setAttributes({
-      'software-updates.orgId': orgId
+      'software-updates.orgId': orgIds
     });
     try {
       const rebuilds = {
@@ -38,7 +47,10 @@ export async function getRebuilds(security: Security, orgId: number): Promise<Re
                   some: {
                     Project: {
                       Organization: {
-                        ...filterAdminOrgs(security, orgId)
+                        Id: {
+                          in: orgIds
+                        },
+                        ...filterAdminOrgs(security, undefined)
                       }
                     }
                   }
@@ -65,7 +77,10 @@ export async function getRebuilds(security: Security, orgId: number): Promise<Re
                   where: {
                     Project: {
                       Organization: {
-                        ...filterAdminOrgs(security, orgId)
+                        Id: {
+                          in: orgIds
+                        },
+                        ...filterAdminOrgs(security, undefined)
                       }
                     }
                   },
@@ -82,7 +97,8 @@ export async function getRebuilds(security: Security, orgId: number): Promise<Re
                         Name: true,
                         Organization: {
                           select: {
-                            Name: true
+                            Name: true,
+                            Id: true
                           }
                         }
                       }
@@ -106,19 +122,23 @@ export async function getRebuilds(security: Security, orgId: number): Promise<Re
             // - Initiating user
 
             // TODO Figure out what to do about projects across orgs with the same name
-            const projects = [...new Set(rebuild.Products.map((p) => p.Project))];
-            const organizations = [
+            const Projects = [...new Set(rebuild.Products.map((p) => p.Project))];
+            const Organizations = [
               ...new Set(rebuild.Products.map((p) => p.Project.Organization.Name))
             ];
+            const OrganizationIds = rebuild.Products.map((p) => p.Project.Organization.Id);
             return {
+              Id: rebuild.Id,
               InitiatedBy: rebuild.InitiatedBy.Name,
               DateCreated: rebuild.DateCreated,
               DateCompleted: rebuild.DateCompleted,
-              Organizations: organizations,
-              Projects: projects,
+              Organizations,
+              OrganizationIds,
+              Comment: rebuild.Comment,
+              Projects,
               _count: {
                 Products: rebuild._count.Products,
-                Projects: projects.length
+                Projects: Projects.length
               }
             };
           }),
