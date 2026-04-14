@@ -374,6 +374,7 @@
   "tasks_submitted": "<b>{action}</b> submitted",
   "tasks_reloaded": "Task updated by Scriptoria",
   "tasks_previousComment": "Previous Comment ({activityName})",
+  "tasks_packageName": "Package Name",
   "projects_noBuilds": "No Builds Yet",
   "projects_latestBuild": "Latest Build ({version})",
   "projects_buildPending": "Build Pending",

@@ -5,7 +5,7 @@ import { BuildEngine } from '../../build-engine-api';
 import { BullMQ, getQueues } from '../../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../../database';
 import { JobSchedulerId } from '$lib/bullmq';
-import { WorkflowState } from '$lib/workflowTypes';
+import { type WorkflowInstanceContext, WorkflowState } from '$lib/workflowTypes';
 
 export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
   /**
@@ -83,16 +83,14 @@ export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unkn
     job.data.steps?.includes(k as MigrationStep)
   ) as MigrationStep[];
 
-  const results: [
-    string,
-    Error | Awaited<ReturnType<(typeof migrationSteps)[MigrationStep]['f']>>
-  ][] = [];
+  const results: [string, Error | Awaited<ReturnType<(typeof migrationSteps)[MigrationStep]>>][] =
+    [];
 
   for (let i = 0; i < steps.length; i++) {
     const step = steps[i];
     try {
       const op = migrationSteps[step];
-      const res = await op.f(op.a);
+      const res = await op();
       if (res.before && !res.after) {
         await getQueues().Emails.add(`Notify SuperAdmins of Finished Migration Step: ${step}`, {
           type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
@@ -112,6 +110,13 @@ export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unkn
   if (results.every(([_, data]) => 'after' in data && !data['after'])) {
     await getQueues().SystemRecurring.removeJobScheduler(JobSchedulerId.MigrateChunks);
     job.log('All migrations have finished... Removing task');
+    await getQueues().Emails.add(`Notify SuperAdmins of Finished Migration Steps`, {
+      type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
+      messageKey: 'migrationStepFinished',
+      messageProperties: {
+        step: steps.join(', ')
+      }
+    });
   }
 
   return Object.fromEntries(results);
@@ -208,9 +213,52 @@ async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scop
   return { before, orphaned, associated, after };
 }
 
+async function addPackageNameFiles() {
+  const filter: Prisma.WorkflowInstancesWhereInput = {
+    State: WorkflowState.Create_App_Store_Entry,
+    NOT: { Context: { contains: 'packageName' } }
+  };
+  const chunkSize = 100;
+
+  const before = await DatabaseReads.workflowInstances.count({
+    where: filter
+  });
+  const orphaned = await DatabaseReads.workflowInstances.findMany({
+    where: filter,
+    select: {
+      ProductId: true,
+      Context: true
+    },
+    take: chunkSize,
+    skip: Math.max(0, randomInt(before || 1) - chunkSize)
+  });
+
+  const associated = await Promise.all(
+    orphaned.map(async (p) => {
+      try {
+        const parsed = JSON.parse(p.Context) as WorkflowInstanceContext;
+        parsed.includeFields.push('packageName');
+        await DatabaseWrites.workflowInstances.update(p.ProductId, {
+          Context: JSON.stringify(parsed)
+        });
+        return { ...p, Context: parsed };
+      } catch (e) {
+        return { ...p, Error: e };
+      }
+    })
+  );
+
+  const after = await DatabaseReads.workflowInstances.count({
+    where: filter
+  });
+
+  return { before, orphaned, associated, after };
+}
+
 const migrationSteps = {
-  'Associate Builds': { f: associateBuildsOrReleases, a: 'build' },
-  'Associate Releases': { f: associateBuildsOrReleases, a: 'release' }
+  'Associate Builds': () => associateBuildsOrReleases('build'),
+  'Associate Releases': () => associateBuildsOrReleases('release'),
+  'Add PackageName': addPackageNameFiles
 } as const;
 
 export type MigrationStep = keyof typeof migrationSteps;

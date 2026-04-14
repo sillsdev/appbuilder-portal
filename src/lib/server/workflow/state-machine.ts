@@ -685,7 +685,7 @@ export const WorkflowStateMachine = setup({
       },
       entry: assign({
         instructions: 'create_app_entry',
-        includeFields: ['storeDescription', 'listingLanguageCode'],
+        includeFields: ['storeDescription', 'listingLanguageCode', 'packageName'],
         includeArtifacts: 'latestAAB',
         environment: ({ context }) => ({
           ...context.environment,

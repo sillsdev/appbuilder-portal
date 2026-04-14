@@ -29,6 +29,7 @@ type Fields = {
   displayProductDescription: boolean; //Product.ProductDefinition.Description
   appType?: { Id: number; Description: string }; //Product.ProductDefinition.ApplicationTypes.Description
   projectLanguageCode?: string; //Product.Project.Language
+  packageName?: string; // Product.PackageName
 };
 
 export const load = (async ({ params, locals, depends }) => {
@@ -46,6 +47,7 @@ export const load = (async ({ params, locals, depends }) => {
     },
     select: {
       CurrentBuildId: true,
+      PackageName: true,
       Project: {
         select: {
           Id: true,
@@ -190,7 +192,8 @@ export const load = (async ({ params, locals, depends }) => {
         snap.context.includeFields.includes('projectURL') && projectUrl(product.Project.Id),
       displayProductDescription: snap.context.includeFields.includes('productDescription'),
       appType: snap.context.includeFields.includes('appType') && product.Project.ApplicationType,
-      projectLanguageCode: product.Project.Language
+      projectLanguageCode: product.Project.Language,
+      packageName: snap.context.includeFields.includes('packageName') && product.PackageName
     } as Fields,
     files: artifacts,
     release: snap.context.includeArtifacts === 'error' && product.ProductPublications?.at(0),
