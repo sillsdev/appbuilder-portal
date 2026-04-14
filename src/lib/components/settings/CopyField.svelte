@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
   import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
 
@@ -9,6 +10,14 @@
   const { value }: Props = $props();
 
   let copied = $state(false);
+
+  let timeout: ReturnType<typeof setTimeout> | null = $state(null);
+
+  onDestroy(() => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+  });
 </script>
 
 <button
@@ -16,11 +25,18 @@
   type="button"
   onclick={() => {
     if (value) {
-      navigator.clipboard.writeText(value);
-      copied = true;
-      setTimeout(() => {
-        copied = false;
-      }, 5000);
+      navigator.clipboard.writeText(value).then(
+        () => {
+          copied = true;
+          if (timeout) {
+            clearTimeout(timeout);
+          }
+          timeout = setTimeout(() => {
+            copied = false;
+          }, 5000);
+        },
+        (r) => console.log(r)
+      );
     }
   }}
 >
