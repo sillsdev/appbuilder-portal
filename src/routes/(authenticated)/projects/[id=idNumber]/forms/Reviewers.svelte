@@ -9,7 +9,7 @@
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import type { L10NMap } from '$lib/ldml';
   import { m } from '$lib/paraglide/messages';
-  import { type Locale, getLocale, locales } from '$lib/paraglide/runtime';
+  import { type Locale, getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
 
   interface Props {
@@ -102,10 +102,8 @@
                 label: 'select bg-none flex-nowrap grow w-full pl-1 pr-1'
               }}
               {l10nMap}
-              getLocale={() => $form.language}
-              setLocale={(lang) => ($form.language = lang)}
-              {locales}
-              flagMap={DefaultFlags}
+              currentLocale={() => $form.language}
+              onselect={(lang) => ($form.language = lang)}
             >
               {#snippet label()}
                 <span class="flex items-center pl-1 w-full">

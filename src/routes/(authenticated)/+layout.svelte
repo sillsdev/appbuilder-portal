@@ -9,16 +9,10 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import LocaleSelector from '$lib/components/LocaleSelector.svelte';
-  import { DefaultFlags, Icons, getRoleIcon } from '$lib/icons';
+  import { Icons, getRoleIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
-  import {
-    deLocalizeUrl,
-    getLocale,
-    locales,
-    localizeHref,
-    setLocale
-  } from '$lib/paraglide/runtime';
+  import { deLocalizeUrl, getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
   import { orgActive, userTasksSSE } from '$lib/stores';
   import { isAdminForAny, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
@@ -315,10 +309,6 @@
                 'm-2 p-2 rounded-xl items-middle justify-center flex-nowrap text-primary-content hover:text-base-content focus-visible:text-base-content'
             }}
             l10nMap={data.l10nMap}
-            {getLocale}
-            {setLocale}
-            {locales}
-            flagMap={DefaultFlags}
           />
           <Dropdown
             class={{
