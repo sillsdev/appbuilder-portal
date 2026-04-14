@@ -1,6 +1,6 @@
+import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
-import type { Prisma } from '@prisma/client';
 import type { RequirePrimitive } from './utility';
 
 /**
@@ -33,8 +33,6 @@ export async function create(data: RequirePrimitive<Prisma.SoftwareUpdatesUnchec
   });
 }
 
-
-
 /**
  * Checks if a specific product's successful build completes any open SoftwareUpdates.
  * Called after each successful build for immediate completion detection.
@@ -49,36 +47,44 @@ export async function completeForProduct(productId: string): Promise<void> {
     },
     select: {
       Id: true,
-      Version: true,
       DateCreated: true,
-      Products: { select: { Id: true } }
+      Products: {
+        select: {
+          Id: true,
+          Project: {
+            select: {
+              Organization: {
+                select: {
+                  Id: true
+                }
+              }
+            }
+          },
+          ProductBuilds: {
+            orderBy: { DateCreated: 'desc' },
+            take: 1,
+            select: { DateCreated: true }
+          }
+        }
+      }
     }
   });
   if (!openUpdates.length) return;
 
   for (const u of openUpdates) {
-    if (!u.Products.length) continue;
-
     let ok = true;
     for (const p of u.Products) {
       // Require a successful build at the target version at or after the update start time
-      const recent = await prisma.productBuilds.findFirst({
-        where: {
-          ProductId: p.Id,
-          Success: true,
-          AppBuilderVersion: u.Version,
-          DateCreated: { gte: u.DateCreated ?? new Date(0) }
-        },
-        orderBy: { DateCreated: 'desc' },
-        select: { Id: true, AppBuilderVersion: true, DateCreated: true }
-      });
-      if (!recent) {
+      // TODO What is the correct procedure when the update does not have a date created?
+      if (p.ProductBuilds[0].DateCreated < u.DateCreated) {
         ok = false;
         break;
       }
     }
 
     if (ok) {
+      const orgIds = [...new Set<number>(u.Products.map((p) => p.Project.Organization.Id))];
+
       await prisma.softwareUpdates.update({
         where: { Id: u.Id },
         data: { DateCompleted: new Date() }
@@ -89,7 +95,7 @@ export async function completeForProduct(productId: string): Promise<void> {
       if (projectIds.length > 0) {
         getQueues().SvelteSSE.add(`Update Software Updates (rebuild #${u.Id} completed)`, {
           type: BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates,
-          projectIds
+          orgIds
         });
       }
     }

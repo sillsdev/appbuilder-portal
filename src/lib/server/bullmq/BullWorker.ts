@@ -303,7 +303,7 @@ export class SvelteSSE<J extends BullMQ.SvelteSSEJob> extends BullWorker<J> {
         SSEPageUpdates.emit('userTasksPage', job.data.userIds);
         break;
       case BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates:
-        SSEPageUpdates.emit('softwareUpdates', job.data.projectIds);
+        SSEPageUpdates.emit('softwareUpdates', job.data.orgIds);
         break;
     }
   }

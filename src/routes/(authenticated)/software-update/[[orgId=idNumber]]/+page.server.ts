@@ -74,7 +74,7 @@ export const load = (async ({ locals, params }) => {
   const systems = new Map<number, Map<number, string>>(
     systemStatuses.map((s) => [
       s.Organization.Id,
-      new Map(s.SystemVersions.map((v) => [v.ApplicationTypeId, v.Version]))
+      new Map(s.SystemVersions.map((v) => [v.ApplicationTypeId, v.Version ?? '']))
     ])
   );
 
@@ -101,7 +101,9 @@ export const load = (async ({ locals, params }) => {
     }
   });
 
-  const rebuilds = await getRebuilds(locals.security, Number(params.orgId));
+  const orgId = Number(params.orgId);
+  const rebuilds = await getRebuilds(locals.security, orgId ? [orgId] : undefined);
+  console.log(rebuilds);
   const form = await superValidate(valibot(formSchema));
 
   return {
@@ -126,7 +128,7 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
 
-    const products = (await DatabaseReads.products.findMany({
+    const products = await DatabaseReads.products.findMany({
       where: {
         Id: {
           in: form.data.products
@@ -134,13 +136,13 @@ export const actions = {
         Project: {
           Organization: {
             ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined)
-          },
+          }
         }
       },
       select: {
-        Id: true,
+        Id: true
       }
-    }));
+    });
 
     await DatabaseWrites.softwareUpdates.create({
       InitiatedById: locals.security.userId,
@@ -152,7 +154,12 @@ export const actions = {
 
     await Promise.allSettled(
       products.map((p) => {
-        return doProductAction(p.Id, ProductActionType.Rebuild, locals.security.userId, form.data.comment);
+        return doProductAction(
+          p.Id,
+          ProductActionType.Rebuild,
+          locals.security.userId,
+          form.data.comment
+        );
       })
     );
   }

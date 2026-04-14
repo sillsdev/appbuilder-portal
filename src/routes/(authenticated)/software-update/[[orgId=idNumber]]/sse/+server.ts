@@ -1,46 +1,34 @@
 import { stringify } from 'devalue';
 import { produce } from 'sveltekit-sse';
 import { SSEPageUpdates } from '$lib/projects/listener';
-import { DatabaseReads } from '$lib/server/database';
-import { getRebuildsForOrgIds } from '$lib/software-updates/sse';
+import { getRebuilds } from '$lib/software-updates';
 
 // Parse organization IDs from query parameter
 // Handle POST requests to establish an SSE connection for rebuild data
-export async function POST({ locals, request }) {
+export async function POST({ locals, params }) {
   locals.security.requireAuthenticated();
+  const orgId = Number(params.orgId);
+  locals.security.requireAdminOfOrgIn([orgId]);
 
-  // Get organization IDs from query params (passed from client)
-  const orgIds = request.body ? (await request.json()).orgIds : [];
-
-  if (!orgIds.length) {
-    return new Response('No organization IDs provided', { status: 400 });
-  }
-
-  // Check user permissions for organizations
-  locals.security.requireAdminOfOrgIn(orgIds);
-
-  // Return SSE stream
   return produce(async function start({ emit }) {
-    // User will be allowed to see software updates until they reload
-    // even if their permission is revoked during the SSE connection.
-    const { error } = emit('rebuilds', stringify((await getRebuildsForOrgIds(orgIds)).rebuilds));
+    const rebuilds = await getRebuilds(locals.security, orgId ? [orgId] : undefined);
+    const organizations = [
+      ...rebuilds.complete.flatMap((u) => u.OrganizationIds),
+      ...rebuilds.incomplete.flatMap((u) => u.OrganizationIds)
+    ];
+
+    const { error } = emit('rebuilds', stringify(rebuilds));
     if (error) {
       return;
     }
 
-    async function updateCb(updateIds: number[]) {
+    async function updateCb(orgIds: number[]) {
       try {
-        // Find which organizations contain the updated projects
-        const affectedProjects = await DatabaseReads.projects.findMany({
-          where: { Id: { in: updateIds } },
-          select: { OrganizationId: true }
-        });
-        const affectedOrgIds = Array.from(new Set(affectedProjects.map((p) => p.OrganizationId)));
+        const overlap = orgIds.filter((u) => organizations.includes(u));
 
-        // Check if any affected organizations overlap with subscribed organizations
-        if (affectedOrgIds.some((id) => orgIds.includes(id))) {
-          const rebuildsData = await getRebuildsForOrgIds(orgIds);
-          const { error } = emit('rebuilds', stringify(rebuildsData.rebuilds));
+        if (overlap) {
+          const rebuildsData = await getRebuilds(locals.security, overlap ? overlap : undefined);
+          const { error } = emit('rebuilds', stringify(rebuildsData));
           if (error) {
             SSEPageUpdates.off('softwareUpdates', updateCb);
             clearInterval(pingInterval);
@@ -59,7 +47,10 @@ export async function POST({ locals, request }) {
 
     const pingInterval = setInterval(function onDisconnect() {
       const { error } = emit('ping', '');
-      if (!error) return;
+      if (!error) {
+        return;
+      }
+
       SSEPageUpdates.off('softwareUpdates', updateCb);
       clearInterval(pingInterval);
     }, 10000).unref();

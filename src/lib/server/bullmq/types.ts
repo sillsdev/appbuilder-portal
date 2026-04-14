@@ -297,7 +297,7 @@ export namespace SvelteProjectSSE {
 
   export interface UpdateSoftwareUpdates extends BaseJob {
     type: JobType.SvelteSSE_UpdateSoftwareUpdates;
-    projectIds: number[];
+    orgIds: number[];
   }
 }
 
