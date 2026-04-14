@@ -51,7 +51,8 @@ export class Workflow {
   public static async create(
     productId: string,
     config: WorkflowConfig,
-    userId: number
+    userId: number,
+    comment?: string
   ): Promise<Workflow> {
     const check = await DatabaseReads.products.findUnique({
       where: {
@@ -90,6 +91,7 @@ export class Workflow {
       data: {
         ProductId: productId,
         DateTransition: new Date(),
+        Comment: comment,
         TransitionType: ProductTransitionType.StartWorkflow,
         WorkflowType: config.workflowType,
         UserId: userId
