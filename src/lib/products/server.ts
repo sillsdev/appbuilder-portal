@@ -267,7 +267,10 @@ export async function translateManifest<File extends string>(
     languages: manifest.languages,
     ...(Object.fromEntries(
       await Promise.all(
-        includeFiles.map(async (f) => [f, getFileFromManifest(language, f, manifest, baseUrl)])
+        includeFiles.map(async (f) => [
+          f,
+          await getFileFromManifest(language, f, manifest, baseUrl)
+        ])
       )
     ) as Record<File, string>)
   };
