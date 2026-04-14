@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client';
-import type { ValidI13nKey } from './locales.svelte';
+import type { ValidI13nKey } from './utils';
 
 export enum RoleId {
   SuperAdmin = 1,

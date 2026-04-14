@@ -17,10 +17,21 @@ export default defineConfig({
     tailwindcss(),
     sveltekit(),
     paraglideVitePlugin({
-      project: './project.inlang',
+      project: './paraglide/default.inlang',
       outdir: './src/lib/paraglide',
-      // As best as I can tell, `['url']` corresponds the closest to what we were doing before Paraglide changed the API
-      strategy: ['url']
+      strategy: ['url'],
+      // allow for everything except /downloads/* or user-data
+      routeStrategies: [
+        { match: '/downloads', exclude: true },
+        { match: '/user-data', exclude: true }
+      ]
+    }),
+    paraglideVitePlugin({
+      project: './paraglide/google-play.inlang',
+      outdir: './src/lib/google-play/paraglide',
+      strategy: ['url'],
+      // allow only for /downloads/* or user-data
+      routeStrategies: [{ match: '((?!downloads|user-data))', exclude: true }]
     })
   ],
   test: {

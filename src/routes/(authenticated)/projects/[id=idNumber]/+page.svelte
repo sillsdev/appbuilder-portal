@@ -10,7 +10,7 @@
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { Icons, getAppIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
-  import { l10nMap, tryLocalizeName } from '$lib/locales.svelte';
+  import { tryLocalizeName } from '$lib/ldml';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { ProjectActionType } from '$lib/prisma';
@@ -145,7 +145,7 @@
               <span>
                 {projectData.project.Language} ({tryLocalizeName(
                   data.langtags,
-                  l10nMap.value,
+                  data.l10nMap,
                   getLocale(),
                   projectData.project.Language ?? ''
                 )})
@@ -295,6 +295,7 @@
           createEndpoint="addReviewer"
           deleteEndpoint="deleteReviewer"
           {canEdit}
+          l10nMap={data.l10nMap}
         />
       </div>
     </div>

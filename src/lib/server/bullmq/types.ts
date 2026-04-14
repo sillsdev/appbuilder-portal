@@ -2,7 +2,7 @@
 import type { RepeatOptions } from 'bullmq';
 import type { RoleId } from '../../prisma';
 import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-api/types';
-import type { MigrationStep } from '../job-executors/system';
+import type { MigrationStep } from '../job-executors/system/migrate';
 import type { JobType } from '$lib/bullmq';
 import type { NotificationType } from '$lib/users';
 export { JobSchedulerId, JobType, QueueName } from '$lib/bullmq';

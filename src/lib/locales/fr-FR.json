@@ -291,7 +291,8 @@
       "match": {
         "amount=0": "No Product Files",
         "countPlural=one": "{amount} Product File",
-        "countPlural=other": "{amount} Product Files"
+        "countPlural=other": "{amount} Product Files",
+        "amount=*": "{amount} Product Files"
       }
     }
   ],
@@ -606,6 +607,5 @@
   "orgMembership_returnToDashboard": "Go to dashboard",
   "system_buildFailed": "Build failed",
   "system_publishFailed": "Publish failed",
-  "system_unavailable": "Scriptoria is currently unable to process background tasks",
-  "downloads_title": "Downloads"
+  "system_unavailable": "Scriptoria is currently unable to process background tasks"
 }

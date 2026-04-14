@@ -9,6 +9,7 @@
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
   import type { PrunedProject } from '$lib/projects';
   import AppTypeSelector from '$lib/projects/components/AppTypeSelector.svelte';
   import ProductDefinitionFilter from '$lib/projects/components/ProductDefinitionFilter.svelte';
@@ -98,6 +99,8 @@
           bind:langCode={$form.langCode}
           onLangCodeSelected={() => submit()}
           class={{ input: 'w-full md:max-w-xs' }}
+          locale={getLocale()}
+          l10nMap={data.l10nMap}
         />
       </div>
       <ProductDefinitionFilter

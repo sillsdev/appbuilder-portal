@@ -6,8 +6,8 @@
   import type { Snippet } from 'svelte';
   import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
-  import type { ValueKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
+  import type { ValueKey } from '$lib/utils';
 
   interface Props {
     title: string | Snippet<[T | undefined]>;

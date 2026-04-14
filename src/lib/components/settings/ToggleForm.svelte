@@ -6,8 +6,8 @@
   import { enhance } from '$app/forms';
   import Toggle from '$lib/components/settings/Toggle.svelte';
   import type { IconType } from '$lib/icons';
-  import type { ValueKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
+  import type { ValueKey } from '$lib/utils';
   import { toast } from '$lib/utils';
   type Method = 'POST' | 'GET';
 

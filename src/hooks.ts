@@ -1,8 +1,10 @@
 import type { Reroute, Transport } from '@sveltejs/kit';
-import { deLocalizeUrl } from '$lib/paraglide/runtime';
+import { deLocalizeUrl as GooglePlayDeLocalizeUrl } from '$lib/google-play/paraglide/runtime';
+import { deLocalizeUrl as defaultDeLocalizeUrl } from '$lib/paraglide/runtime';
 
 export const reroute: Reroute = (request) => {
-  return deLocalizeUrl(request.url).pathname;
+  const isGooglePlay = !!request.url.pathname.match(/\/(downloads|user-data)/);
+  return (isGooglePlay ? GooglePlayDeLocalizeUrl : defaultDeLocalizeUrl)(request.url).pathname;
 };
 
 export const transport: Transport = {};

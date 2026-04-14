@@ -58,7 +58,7 @@ export async function getFileInfo(url: string) {
   const res = await fetch(url, { method: 'HEAD' });
   return {
     contentType: res.headers.get('Content-Type'),
-    lastModified: new Date(res.headers.get('Last-Modified') ?? 0).toISOString(),
+    lastModified: new Date(res.headers.get('Last-Modified') ?? 0).toUTCString(),
     fileSize:
       res.headers.get('Content-Type') !== 'text/html' ? res.headers.get('Content-Length') : null
   };

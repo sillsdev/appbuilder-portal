@@ -1,9 +1,9 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import IconContainer from '../icons/IconContainer.svelte';
   import Dropdown, { type DropdownClasses } from './Dropdown.svelte';
-  import { Icons, getFlagIcon } from '$lib/icons';
-  import { l10nMap } from '$lib/locales.svelte';
+  import { DefaultFlags, Icons, getFlagIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
+  import { type L10NMap, tryLocalize } from '$lib/ldml';
   import { type Locale, getLocale, locales, setLocale } from '$lib/paraglide/runtime';
 
   interface Props {
@@ -11,29 +11,32 @@
     class?: DropdownClasses;
     currentLocale?: () => Locale;
     onselect?: (lang: Locale) => void;
+    l10nMap: L10NMap<Locale>;
   }
 
   let {
     label = defaultLabel,
     class: classes = {},
     currentLocale = getLocale,
-    onselect = setLocale
+    onselect = setLocale,
+    l10nMap
   }: Props = $props();
 
   let open = $state(false);
 
   function onclick(locale: Locale) {
     open = false;
-    onselect?.(locale);
+    onselect(locale);
   }
+
+  const current = $derived(currentLocale());
 </script>
 
 {#snippet defaultLabel()}
   <IconContainer icon={Icons.Language} width={24} />
 {/snippet}
 
-{#key getLocale()}
-  {@const langMap = l10nMap.value.get(getLocale())?.get('languages')}
+{#key current}
   <Dropdown
     class={{
       ...classes,
@@ -49,7 +52,7 @@
             <div
               class={[
                 'btn flex-nowrap justify-start pl-2 pr-1',
-                locale === currentLocale() ? 'btn-accent' : 'btn-ghost'
+                locale === current ? 'btn-accent' : 'btn-ghost'
               ]}
               onclick={() => onclick(locale)}
               onkeydown={(e) => {
@@ -61,9 +64,9 @@
               role="button"
               tabindex="0"
             >
-              <IconContainer icon={getFlagIcon(locale)} width="24" />
+              <IconContainer icon={getFlagIcon(locale, DefaultFlags)} width="24" />
               <span class="grow text-left">
-                {langMap?.get(locale) ?? langMap?.get(locale.split('-')[0])}
+                {tryLocalize(l10nMap, current, 'languages', locale, locale)}
               </span>
             </div>
           </li>

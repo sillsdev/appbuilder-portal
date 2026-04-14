@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" generics="Locale extends string">
   import Fuse from 'fuse.js';
 
   import type { FuseResultMatch } from 'fuse.js';
@@ -7,47 +7,71 @@
   import TypeaheadInput from './TypeaheadInput.svelte';
   import { page } from '$app/state';
   import { Icons } from '$lib/icons';
-  import { type LangInfo, l10nMap, localizeTagData } from '$lib/locales.svelte';
+  import { type L10NMap, type LangInfo, localizeTagData } from '$lib/ldml';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
 
-  let langtagList = localizeTagData(page.data.langtags as LangInfo[], l10nMap.value, getLocale());
+  interface Props {
+    langCode: string;
+    class?: {
+      dropdown?: ClassValue;
+      input?: ClassValue;
+    };
+    onLangCodeSelected?: (langCode: string) => void;
+    inputElProps?: HTMLInputAttributes;
+    validatorHint?: Snippet;
+    locale: Locale;
+    l10nMap: L10NMap<Locale>;
+  }
+
+  let {
+    langCode = $bindable(),
+    class: classes,
+    onLangCodeSelected,
+    inputElProps = {},
+    validatorHint,
+    locale,
+    l10nMap
+  }: Props = $props();
+
+  const langtagList = $derived(localizeTagData(page.data.langtags as LangInfo[], l10nMap, locale));
 
   // https://www.fusejs.io/api/options.html
   // Search the tag, name and localname. Give tag a double weighting
   // This seems very fast to me, but if it is found to be slow investigate providing an index at compile time
-  const fuzzySearch = new Fuse(langtagList, {
-    keys: [
-      {
-        name: 'tag',
-        weight: 3
-      },
-      {
-        name: 'nameInLocale',
-        weight: 3
-      },
-      {
-        name: 'name',
-        weight: 2
-      },
-      {
-        name: 'localname',
-        weight: 2
-      },
-      // additional matches
-      'region',
-      'regions',
-      'names',
-      'variants'
-    ],
-    includeScore: true,
-    includeMatches: true,
-    isCaseSensitive: false,
-    threshold: 0.2,
-    ignoreLocation: true,
-    ignoreFieldNorm: true
-    // minMatchCharLength: 2
-  });
+  const fuzzySearch = $derived(
+    new Fuse(langtagList, {
+      keys: [
+        {
+          name: 'tag',
+          weight: 3
+        },
+        {
+          name: 'nameInLocale',
+          weight: 3
+        },
+        {
+          name: 'name',
+          weight: 2
+        },
+        {
+          name: 'localname',
+          weight: 2
+        },
+        // additional matches
+        'region',
+        'regions',
+        'names',
+        'variants'
+      ],
+      includeScore: true,
+      includeMatches: true,
+      isCaseSensitive: false,
+      threshold: 0.2,
+      ignoreLocation: true,
+      ignoreFieldNorm: true
+      // minMatchCharLength: 2
+    })
+  );
 
   function search(searchValue: string) {
     return fuzzySearch.search(searchValue, { limit: 5 });
@@ -96,7 +120,7 @@
       const firstSeparated = ret.at(firstSeparatedIndex);
       // truncate separated to just the last bit after the comma
       if (firstSeparated) {
-        firstSeparated.v = firstSeparated.v.split(',')[-1];
+        firstSeparated.v = firstSeparated.v.split(',').at(-1)!;
       }
 
       // return parse matches starting at last non-match with a separator right before the first match
@@ -105,24 +129,6 @@
     return ret;
   }
   let typeaheadInput: HTMLInputElement | undefined = $state(undefined);
-  interface Props {
-    langCode: string;
-    class?: {
-      dropdown?: ClassValue;
-      input?: ClassValue;
-    };
-    onLangCodeSelected?: (langCode: string) => void;
-    inputElProps?: HTMLInputAttributes;
-    validatorHint?: Snippet;
-  }
-
-  let {
-    langCode = $bindable(),
-    class: classes,
-    onLangCodeSelected,
-    inputElProps = {},
-    validatorHint
-  }: Props = $props();
 </script>
 
 {#snippet colorValueForKeyMatch(
@@ -143,7 +149,7 @@
         // first three chars of a string) so we use +1 a lot to get the length of the match
         match.indices.some(([x, y]) => y - x + 1 > 2)
       )}
-      {#each parseMatches(value!, matchList, hasMultiCharMatch) as match}
+      {#each parseMatches(value, matchList, hasMultiCharMatch) as match}
         {#if match.h}
           <span class="bg-yellow-300 dark:bg-accent">{match.v}</span>
         {:else}

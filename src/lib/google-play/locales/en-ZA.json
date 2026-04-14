@@ -1,0 +1,7 @@
+{
+  "downloads_title": "Downloads",
+  "appName": "Scriptoria",
+  "error_notFound": "Something went wrong and the page or resource could not be found!",
+  "error_appUnavailable": "Scriptoria is currently unavailable",
+  "error_generic": "An error occurred! {errorMessage}"
+}

@@ -28,10 +28,10 @@
   import type { Prisma } from '@prisma/client';
   import { getProductIcon, getProjectActionIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
-  import type { ValidI13nKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { ProjectActionString, ProjectActionType } from '$lib/prisma';
   import TaskComment from '$lib/products/components/TaskComment.svelte';
+  import type { ValidI13nKey } from '$lib/utils';
   import { getTimeDateString } from '$lib/utils/time';
 
   interface Props extends Partial<OptionalParams> {

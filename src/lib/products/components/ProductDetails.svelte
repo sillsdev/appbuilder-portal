@@ -60,6 +60,7 @@
   import { Icons, getTransitionIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
+  import type { WorkflowType } from '$lib/prisma';
   import { ProductTransitionType } from '$lib/prisma';
   import type { Action } from '$lib/projects/components/ProjectActionEntry.svelte';
   import ProjectActionEntry from '$lib/projects/components/ProjectActionEntry.svelte';
@@ -88,7 +89,7 @@
     return landmarks.includes(t as Landmark);
   }
 
-  function stateString(workflowTypeNum: number, transitionType: number) {
+  function stateString(workflowTypeNum: WorkflowType, transitionType: ProductTransitionType) {
     if (isLandmark(transitionType)) {
       return m.transitions_types({
         type: transitionType,
@@ -155,7 +156,7 @@
       {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
     {:else}
       {m.transitions_types({
-        type: transition.TransitionType,
+        type: transition.TransitionType as ProductTransitionType,
         workflowType: ''
       })}
     {/if}

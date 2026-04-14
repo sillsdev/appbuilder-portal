@@ -291,7 +291,8 @@
       "match": {
         "amount=0": "No hay archivos de producto",
         "countPlural=one": "{amount} Product File",
-        "countPlural=other": "{amount} Product Files"
+        "countPlural=other": "{amount} Product Files",
+        "amount=*": "{amount} Product Files"
       }
     }
   ],
@@ -607,6 +608,5 @@
   "orgMembership_returnToDashboard": "Go to dashboard",
   "system_buildFailed": "Build failed",
   "system_publishFailed": "Publish failed",
-  "system_unavailable": "Scriptoria actualmente no puede procesar tareas",
-  "downloads_title": "Downloads"
+  "system_unavailable": "Scriptoria actualmente no puede procesar tareas"
 }

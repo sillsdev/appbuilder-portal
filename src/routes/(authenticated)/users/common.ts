@@ -1,4 +1,5 @@
 import type { Prisma } from '@prisma/client';
+import type { RoleId } from '$lib/prisma';
 
 type UserInfo = Prisma.UsersGetPayload<{
   select: {
@@ -29,7 +30,9 @@ export function minifyUser(user: UserInfo) {
     /** User OrganizationMemberships */
     O: user.Organizations.map((org) => ({
       /** Roles */
-      R: user.UserRoles.filter((ur) => ur.OrganizationId === org.Id).map((r) => r.RoleId),
+      R: user.UserRoles.filter((ur) => ur.OrganizationId === org.Id).map(
+        (r) => r.RoleId
+      ) as RoleId[],
       /** Organization Id */
       I: org.Id,
       /** Group Ids */

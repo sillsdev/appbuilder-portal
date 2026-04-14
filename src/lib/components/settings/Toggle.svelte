@@ -3,7 +3,7 @@
   import type { HTMLInputAttributes } from 'svelte/elements';
   import InputWithMessage from './InputWithMessage.svelte';
   import { type IconType, Icons } from '$lib/icons';
-  import type { ValueKey } from '$lib/locales.svelte';
+  import type { ValueKey } from '$lib/utils';
 
   interface Props {
     title?: ValueKey;

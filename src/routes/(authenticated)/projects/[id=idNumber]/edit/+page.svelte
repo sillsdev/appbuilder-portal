@@ -12,7 +12,7 @@
   import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { localizeHref } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { langtagRegex, regExpToInputPattern } from '$lib/valibot';
 
@@ -90,6 +90,8 @@
               required: true,
               pattern: regExpToInputPattern(langtagRegex)
             }}
+            locale={getLocale()}
+            l10nMap={data.l10nMap}
           >
             {#snippet validatorHint()}
               <span class="validator-hint">Invalid BCP 47 Language Tag</span>

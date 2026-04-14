@@ -7,8 +7,8 @@
   /* eslint-disable @typescript-eslint/no-explicit-any */
   import type { Snippet } from 'svelte';
   import type { ClassValue } from 'svelte/elements';
-  import type { ValueKey } from '$lib/locales.svelte';
   import * as m from '$lib/paraglide/messages';
+  import type { ValueKey } from '$lib/utils';
 
   interface Props {
     title?: ValueKey;
