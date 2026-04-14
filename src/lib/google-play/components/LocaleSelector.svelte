@@ -1,6 +1,6 @@
 <script lang="ts">
   import Dropdown from '$lib/components/Dropdown.svelte';
-  import { AlternateCodes, GooglePlayFlags } from '$lib/google-play';
+  import { GooglePlayFlags } from '$lib/google-play';
   import {
     type Locale,
     locales as allLocales,
@@ -32,20 +32,14 @@
     new Map(
       locales.map((locale) => {
         const fallback = fallbacks?.get(locale) ?? locale;
-        const altLocale = AlternateCodes.get(locale as Locale);
-        const localized = tryLocalize(l10nMap, current, 'languages', locale, fallback);
-        const native = tryLocalize(l10nMap, locale, 'languages', locale, fallback);
-        const displayLocal = altLocale
-          ? localized === fallback
-            ? tryLocalize(l10nMap, current, 'languages', altLocale, fallback)
-            : localized
-          : localized;
-        const displayNative = altLocale
-          ? native === fallback
-            ? tryLocalize(l10nMap, locale, 'languages', altLocale, fallback)
-            : native
-          : native;
-        return [locale, { display: displayLocal, native: displayNative, fallback }];
+        return [
+          locale,
+          {
+            display: tryLocalize(l10nMap, current, 'languages', locale, fallback),
+            native: tryLocalize(l10nMap, locale, 'languages', locale, fallback),
+            fallback
+          }
+        ];
       })
     )
   );

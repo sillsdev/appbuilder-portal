@@ -1,4 +1,5 @@
 import * as v from 'valibot';
+import { AlternateCodes } from '$lib/google-play';
 
 export function addBasicVariants(locales: Readonly<string[]>) {
   return new Set(locales.flatMap((locale) => [locale, getBasicVariant(locale)])).values().toArray();
@@ -33,21 +34,34 @@ export function tryLocalize<Locale extends string>(
   code: string,
   fallback: string
 ) {
-  const basicLocale = getBasicVariant(locale) as Locale;
-  const basicCode = getBasicVariant(code);
-  const checkBasicCode = code !== basicCode;
+  const locales = [
+    locale,
+    getBasicVariant(locale),
+    AlternateCodes.get(locale),
+    getBasicVariant(AlternateCodes.get(locale) ?? '')
+  ].filter((l, i) => l && (i === 0 || l !== locale)) as Locale[];
 
-  const map = lookup.get(locale)?.[namespace];
-  const basicMap =
-    locale !== basicLocale && lookup.get(getBasicVariant(locale) as Locale)?.[namespace];
+  const codes =
+    namespace === 'languages'
+      ? ([
+          code,
+          getBasicVariant(code),
+          AlternateCodes.get(code),
+          getBasicVariant(AlternateCodes.get(code) ?? '')
+        ].filter((l, i) => l && (i === 0 || l !== code)) as string[])
+      : [code];
 
-  return (
-    map?.get(code) ||
-    (checkBasicCode && map?.get(basicCode)) ||
-    (basicMap && basicMap.get(code)) ||
-    (checkBasicCode && basicMap && basicMap.get(basicCode)) ||
-    fallback
-  );
+  for (const locale of locales) {
+    const map = lookup.get(locale);
+    if (map) {
+      for (const code of codes) {
+        const found = map[namespace]?.get(code);
+        if (found) return found;
+      }
+    }
+  }
+
+  return fallback;
 }
 
 export function tryLocalizeName<Locale extends string>(
