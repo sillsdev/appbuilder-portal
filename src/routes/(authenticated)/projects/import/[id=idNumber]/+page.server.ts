@@ -4,7 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
-import { RoleId } from '$lib/prisma';
+import { ProjectActionString, ProjectActionType, RoleId } from '$lib/prisma';
 import { importJSONSchema } from '$lib/projects';
 import { verifyCanCreateProject } from '$lib/projects/server';
 import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
@@ -222,6 +222,17 @@ export const actions: Actions = {
               projectId: p
             }
           }))
+        );
+        await Promise.all(
+          projects.map((project) =>
+            DatabaseWrites.projectActions.create({
+              ProjectId: project,
+              UserId: event.locals.security.userId,
+              DateAction: imp.DateCreated ?? new Date(),
+              ActionType: ProjectActionType.Creation,
+              Action: ProjectActionString.ImportProject
+            })
+          )
         );
       }
     }

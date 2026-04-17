@@ -35,7 +35,8 @@ export enum ProjectActionType {
   OwnerGroup, // Reassign owner or group
   Author, // Add or Remove
   Reviewer, // Add or Remove
-  EditField // Edit other fields
+  EditField, // Edit other fields
+  Creation // Creation of the project itself
 }
 
 export const ProjectActionString = {
@@ -46,6 +47,8 @@ export const ProjectActionString = {
   Claim: 'project_claimOwnership',
   AssignOwner: 'project_dropdown_transfer',
   AssignGroup: 'project_action_group',
+  CreateProject: 'sidebar_addProject',
+  ImportProject: 'projectImport_title',
   // with authors_title
   AddAuthor: 'models_add',
   RemoveAuthor: 'models_delete',

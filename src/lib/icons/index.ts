@@ -174,6 +174,13 @@ export function getProjectActionIcon(
         default:
           return Icons.Edit;
       }
+    case ProjectActionType.Creation:
+      switch (args.Action) {
+        case ProjectActionString.CreateProject:
+          return Icons.AddProject;
+        default:
+          return Icons.Import;
+      }
     default:
       return '';
   }

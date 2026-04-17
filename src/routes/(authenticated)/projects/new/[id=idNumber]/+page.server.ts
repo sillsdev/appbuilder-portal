@@ -3,7 +3,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
-import { RoleId } from '$lib/prisma';
+import { ProjectActionString, ProjectActionType, RoleId } from '$lib/prisma';
 import { projectCreateSchema } from '$lib/projects';
 import { verifyCanCreateProject } from '$lib/projects/server';
 import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
@@ -72,6 +72,13 @@ export const actions: Actions = {
     });
 
     if (project !== false) {
+      await DatabaseWrites.projectActions.create({
+        ProjectId: project,
+        UserId: event.locals.security.userId,
+        DateAction: new Date(),
+        ActionType: ProjectActionType.Creation,
+        Action: ProjectActionString.CreateProject
+      });
       await getQueues().Projects.add(
         `Create Project #${project}`,
         {

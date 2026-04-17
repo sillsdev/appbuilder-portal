@@ -19,7 +19,7 @@ import { RoleId } from '$lib/prisma';
 
 export async function create(
   projectData: RequirePrimitive<Prisma.ProjectsUncheckedCreateInput>
-): Promise<boolean | number> {
+): Promise<false | number> {
   if (
     !(await validateProjectBase(
       projectData.OrganizationId,
