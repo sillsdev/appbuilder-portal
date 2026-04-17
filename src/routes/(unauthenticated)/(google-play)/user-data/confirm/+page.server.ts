@@ -1,124 +1,71 @@
 import { Prisma } from '@prisma/client';
-import { error, fail } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { randomInt } from 'crypto';
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import type { AppInfo, PlayListingManifest } from '$lib/products/UDMtypes';
-import { getPublishedFile } from '$lib/products/server';
-
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import prisma from '$lib/server/database/prisma';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
 
+const uuidSchema = v.pipe(
+  v.string(),
+  v.regex(
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    'Invalid product id.'
+  )
+);
+
 const sendCodeSchema = v.object({
-  email: v.pipe(v.string(), v.email('Please enter a valid email address.'))
+  email: v.pipe(v.string(), v.email('Please enter a valid email address.')),
+  productId: uuidSchema
 });
 
 const verifyCodeSchema = v.object({
   email: v.pipe(v.string(), v.email()),
-  code: v.pipe(v.string(), v.length(6, 'Code must be 6 digits.'))
+  code: v.pipe(v.string(), v.length(6, 'Code must be 6 digits.')),
+  productId: uuidSchema
 });
 
-function resolveIconUrl(
-  icon: string | null | undefined,
-  manifestUrl: string | undefined,
-  artifactUrlString: string
-) {
-  if (!icon) return null;
-  const artifactUrl = new URL(artifactUrlString);
-  const baseUrl = manifestUrl ? new URL(manifestUrl, artifactUrl) : artifactUrl;
-
-  try {
-    const iconUrl = new URL(icon, baseUrl);
-    iconUrl.host = artifactUrl.host;
-    iconUrl.protocol = artifactUrl.protocol;
-    return iconUrl.toString();
-  } catch {
-    return null;
-  }
-}
-
-export const load: PageServerLoad = async ({ locals, params }) => {
+export const load: PageServerLoad = async ({ parent, locals }) => {
   locals.security.requireNothing();
 
+  const { productId } = await parent();
   const email = '';
 
-  const product = await DatabaseReads.products.findUnique({
-    where: { Id: params.id },
-    select: {
-      Id: true,
-      Project: {
-        select: {
-          Name: true,
-          Organization: { select: { Name: true } }
-        }
-      },
-      PackageName: true
-    }
-  });
+  const sendCodeForm = await superValidate({ email, productId }, valibot(sendCodeSchema));
+  const verifyCodeForm = await superValidate(
+    { email, code: '', productId },
+    valibot(verifyCodeSchema)
+  );
 
-  if (!product) throw error(404);
-
-  const developer =
-    product.Project.Organization?.Name ?? product.Project.Name ?? 'Unknown developer';
-
-  const app: AppInfo = {
-    id: product.Id,
-    icon: null,
-    name: product.Project.Name ?? 'App',
-    developer,
-    themeColor: null,
-    shortDesc: '',
-    longDesc: ''
-  };
-
-  const manifestArtifact = await getPublishedFile(product.Id, 'play-listing-manifest');
-
-  const sendCodeForm = await superValidate({ email }, valibot(sendCodeSchema));
-  const verifyCodeForm = await superValidate({ email }, valibot(verifyCodeSchema));
-
-  if (!manifestArtifact?.Url) return { email, app, sendCodeForm, verifyCodeForm };
-
-  let manifest: PlayListingManifest | null = null;
-  try {
-    manifest = (await fetch(manifestArtifact.Url).then((res) => res.json())) as PlayListingManifest;
-  } catch {
-    manifest = null;
-  }
-
-  if (manifest) {
-    app.icon = resolveIconUrl(manifest.icon, manifest?.url, manifestArtifact.Url);
-    app.themeColor = manifest.color || null;
-  }
-
-  return { email, app, sendCodeForm, verifyCodeForm };
+  return { email, sendCodeForm, verifyCodeForm, productId };
 };
 
 export const actions: Actions = {
-  sendCode: async ({ request, locals, params }) => {
+  sendCode: async ({ request, locals }) => {
     locals.security.requireNothing();
     const form = await superValidate(request, valibot(sendCodeSchema));
 
     if (!form.valid) {
       return fail(400, { form });
     }
-    const normalizedEmail = form.data.email.trim().toLowerCase();
 
-    // 1. Generate a random 6-digit code
+    const normalizedEmail = form.data.email.trim().toLowerCase();
+    const productId = form.data.productId;
+
     const code = randomInt(100000, 1000000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
     const now = new Date();
 
     try {
-      // 2. Save to DB atomically so only one pending code remains active.
       await prisma.$transaction(
         async (tx) => {
           const existingRequests = await tx.productUserChanges.findMany({
             where: {
               Email: normalizedEmail,
-              ProductId: params.id,
+              ProductId: productId,
               DateConfirmed: null
             },
             orderBy: {
@@ -156,7 +103,7 @@ export const actions: Actions = {
 
           await tx.productUserChanges.create({
             data: {
-              ProductId: params.id,
+              ProductId: productId,
               Email: normalizedEmail,
               Change: 'User data deletion request verification',
               DateCreated: now,
@@ -172,7 +119,6 @@ export const actions: Actions = {
         }
       );
 
-      // 3. Send the email
       await sendEmail(
         [{ email: normalizedEmail, name: normalizedEmail }],
         'Your verification code',
@@ -181,7 +127,7 @@ export const actions: Actions = {
 
       if (process.env.NODE_ENV === 'development') {
         console.log(
-          `[UDM TEST] Verification code for ${normalizedEmail} (product ${params.id}): ${code}`
+          `[UDM TEST] Verification code for ${normalizedEmail} (product ${productId}): ${code}`
         );
       }
 
@@ -191,7 +137,7 @@ export const actions: Actions = {
     }
   },
 
-  verifyCode: async ({ request, locals, params }) => {
+  verifyCode: async ({ request, locals }) => {
     locals.security.requireNothing();
     const form = await superValidate(request, valibot(verifyCodeSchema));
 
@@ -201,13 +147,13 @@ export const actions: Actions = {
 
     const normalizedEmail = form.data.email.trim().toLowerCase();
     const normalizedCode = form.data.code.trim();
+    const productId = form.data.productId;
 
     try {
-      // 1. Fetch record from DB
       const userChange = await DatabaseReads.productUserChanges.findFirst({
         where: {
           Email: normalizedEmail,
-          ProductId: params.id,
+          ProductId: productId,
           DateConfirmed: null
         },
         orderBy: {
@@ -215,27 +161,25 @@ export const actions: Actions = {
         }
       });
 
-      // 2. Validation Checks
-      if (!userChange)
+      if (!userChange) {
         return message(form, { error: 'No code sent to this email.' }, { status: 400 });
-      if (new Date() > userChange.DateExpires)
+      }
+      if (new Date() > userChange.DateExpires) {
         return message(form, { error: 'Code expired.' }, { status: 400 });
+      }
 
-      // 3. Compare
       if (userChange.ConfirmationCode !== normalizedCode) {
-        // If wrong code, move expiration up by minute to act as attempt counter
         await DatabaseWrites.productUserChanges.update({
           where: {
             Id: userChange.Id
           },
           data: {
-            DateExpires: new Date(userChange.DateExpires.getTime() - 1 * 60 * 1000) // 1 minute
+            DateExpires: new Date(userChange.DateExpires.getTime() - 1 * 60 * 1000)
           }
         });
         return message(form, { error: 'Invalid code.', step: 'verify' }, { status: 400 });
       }
 
-      // 4. Success logic
       await DatabaseWrites.productUserChanges.update({
         where: {
           Id: userChange.Id
@@ -245,9 +189,6 @@ export const actions: Actions = {
           DateConfirmed: new Date()
         }
       });
-      // Store user task since verification successful.
-
-      // possibly delete entry?
 
       return message(form, { verified: true });
     } catch {

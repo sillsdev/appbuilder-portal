@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
-  import { m } from '$lib/paraglide/messages';
   import {
     DEFAULT_ICON,
     applyThemeToDocument,
@@ -57,21 +56,20 @@
       />
       <div class="grid justify-items-start text-left gap-0">
         <h2 class="text-lg font-bold tracking-tight leading-none">{app.name}</h2>
-
         <p class="text-sm text-primary font-bold leading-tight ml-4">{app.developer}</p>
       </div>
     </div>
     <div class="px-5 pb-8">
       <div class="card bg-base-100 shadow-sm border border-base-300 rounded-lg">
         <div class="card-body space-y-3">
-          <h2 class="card-title text-lg font-bold">{m.udm_about_title()}</h2>
+          <h2 class="card-title text-lg font-bold">About this app</h2>
           <p class="text-sm leading-relaxed text-base-content/80">{app.shortDesc}</p>
 
           <details class="group">
             <summary
               class="list-none text-sm font-bold text-primary cursor-pointer hover:underline flex items-center gap-2 select-none"
             >
-              {m.udm_show_more()}
+              Show more
             </summary>
             <div class="pt-3 text-sm whitespace-pre-line leading-relaxed text-base-content/80">
               {app.longDesc}
@@ -82,10 +80,10 @@
 
       <a
         class="btn w-full mt-6 border border-primary/20 text-black shadow-sm dark:text-white"
-        href="./"
+        href={`/user-data?${data.udmQuery}`}
         style="background-color: var(--color-primary);"
       >
-        {m.udm_back_manage()}
+        Back to Manage my data
       </a>
     </div>
   </div>

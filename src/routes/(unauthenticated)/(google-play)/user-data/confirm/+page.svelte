@@ -3,7 +3,6 @@
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-  import { m } from '$lib/paraglide/messages';
   import { DEFAULT_ICON, applyThemeToDocument, deriveColorFromIcon } from '$lib/utils/theme';
 
   interface Props {
@@ -35,7 +34,7 @@
         $verifyForm.email = form.message.email;
         sessionStorage.setItem(confirmEmailStorageKey, form.message.email);
       } else if (!form.valid && !form.message?.error) {
-        $sendMessage = { error: m.udm_confirm_send_code_failed() };
+        $sendMessage = { error: 'Failed to send code. Please try again.' };
       }
     }
   });
@@ -52,7 +51,7 @@
         step = 'verified';
         sessionStorage.removeItem(confirmEmailStorageKey);
       } else if (!form.valid && !form.message?.error) {
-        $verifyMessage = { error: m.udm_confirm_verify_failed() };
+        $verifyMessage = { error: 'Invalid code. Please check your email and try again.' };
       }
     }
   });
@@ -107,11 +106,11 @@
       </div>
       <h1 class="m-0 text-2xl font-bold">
         {#if step === 'verified'}
-          {m.udm_confirm_verified()}
+          Verified
         {:else if step === 'code'}
-          {m.udm_confirm_check_email()}
+          Check your email
         {:else}
-          {m.udm_confirm_enter_email()}
+          Enter your email
         {/if}
       </h1>
     </div>
@@ -119,18 +118,19 @@
     <div class="p-8">
       {#if step === 'email'}
         <p class="text-base-content/70 text-center leading-relaxed mb-8">
-          {m.udm_confirm_enter_email_desc()}
+          Enter your email address to receive a verification code.
         </p>
 
         <form method="POST" action="?/sendCode" use:sendEnhance>
+          <input type="hidden" name="productId" bind:value={$sendForm.productId} />
           <div class="mb-6 flex flex-col gap-2">
-            <label for="email" class="sr-only">{m.udm_confirm_email_placeholder()}</label>
+            <label for="email" class="sr-only">name@example.com</label>
             <input
               id="email"
               type="email"
               name="email"
               bind:value={$sendForm.email}
-              placeholder={m.udm_confirm_email_placeholder()}
+              placeholder="name@example.com"
               required
               class="input input-bordered w-full h-14 text-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
             />
@@ -150,25 +150,27 @@
             {#if $sendDelayed}
               <span class="loading loading-spinner"></span>
             {:else}
-              {m.udm_confirm_send_code()}
+              Send Code
             {/if}
           </button>
         </form>
       {:else if step === 'code'}
         <p class="text-base-content/70 text-center leading-relaxed mb-8">
-          {m.udm_confirm_code_sent({ email: $verifyForm.email })}
+          We've sent a 6-digit verification code to {$verifyForm.email}. Enter it below to complete
+          the process.
         </p>
 
         <form method="POST" action="?/verifyCode" use:verifyEnhance>
           <input type="hidden" name="email" bind:value={$verifyForm.email} />
+          <input type="hidden" name="productId" bind:value={$verifyForm.productId} />
           <div class="mb-6 flex flex-col gap-2">
-            <label for="code" class="sr-only">{m.udm_confirm_code_placeholder()}</label>
+            <label for="code" class="sr-only">000000</label>
             <input
               id="code"
               type="text"
               name="code"
               bind:value={$verifyForm.code}
-              placeholder={m.udm_confirm_code_placeholder()}
+              placeholder="000000"
               maxlength="6"
               autocomplete="one-time-code"
               required
@@ -190,14 +192,14 @@
             {#if $verifyDelayed}
               <span class="loading loading-spinner"></span>
             {:else}
-              {m.udm_confirm_verify_code()}
+              Verify Code
             {/if}
           </button>
         </form>
 
         <div class="mt-6 text-center text-sm text-base-content/60">
           <p>
-            {m.udm_confirm_didnt_receive()}
+            Did not receive the code?
             <button
               type="button"
               onclick={() => {
@@ -206,15 +208,15 @@
               }}
               class="link link-primary font-bold no-underline hover:underline bg-transparent border-none p-0 cursor-pointer"
             >
-              {m.udm_confirm_change_email()}
+              Change Email
             </button>
           </p>
         </div>
       {:else if step === 'verified'}
         <div class="text-center flex flex-col gap-4">
-          <p class="text-lg font-bold text-base-content">{m.udm_confirm_complete()}</p>
+          <p class="text-lg font-bold text-base-content">Verification Complete</p>
           <p class="text-base-content/70 text-[0.95rem]">
-            {m.udm_confirm_submitted()}
+            A request was submitted to delete your data.
           </p>
         </div>
       {/if}
