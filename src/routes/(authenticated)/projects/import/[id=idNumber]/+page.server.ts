@@ -30,6 +30,13 @@ export const load = (async ({ locals, params }) => {
     select: {
       Id: true,
       Groups: {
+        where: {
+          Users: {
+            some: {
+              Id: locals.security.userId
+            }
+          }
+        },
         select: {
           Id: true,
           Name: true
