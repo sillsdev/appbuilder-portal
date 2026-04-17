@@ -75,7 +75,15 @@
           {/if}
         </th>
         <td>
-          <a href={release.LogUrl} class="link" target="_blank">{m.publications_console()}</a>
+          {#if release.LogUrl}
+            <a class="link" href={release.LogUrl} target="_blank">
+              {m.publications_console()}
+            </a>
+          {:else}
+            <span class="link link-error">
+              {m.publications_console()}
+            </span>
+          {/if}
         </td>
       </tr>
     </tbody>
@@ -120,7 +128,15 @@
         {/if}
         <td>{getTimeDateString(release.DateCreated)}</td>
         <td>
-          <a href={release.LogUrl} class="link" target="_blank">{m.publications_console()}</a>
+          {#if release.LogUrl}
+            <a class="link" href={release.LogUrl} target="_blank">
+              {m.publications_console()}
+            </a>
+          {:else}
+            <span class="link link-error">
+              {m.publications_console()}
+            </span>
+          {/if}
         </td>
       </tr>
     </tbody>

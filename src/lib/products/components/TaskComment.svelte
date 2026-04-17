@@ -12,6 +12,7 @@
 
 <div class={['comment m-1 mx-2 p-1', classes]}>
   {#if comment?.startsWith('system.')}
+    {@const href = comment.replace(/system\.(build|publish)-failed,/, '')}
     {#if comment.startsWith('system.build-failed')}
       <span>
         {m.system_buildFailed()}
@@ -22,13 +23,15 @@
       </span>
     {/if}
     <span>-</span>
-    <a
-      class="link link-info"
-      href={comment.replace(/system\.(build|publish)-failed,/, '')}
-      target="_blank"
-    >
-      {m.publications_console()}
-    </a>
+    {#if href}
+      <a class="link link-info" {href} target="_blank">
+        {m.publications_console()}
+      </a>
+    {:else}
+      <span class="link link-error">
+        {m.publications_console()}
+      </span>
+    {/if}
   {:else}
     {comment ?? ''}
   {/if}
