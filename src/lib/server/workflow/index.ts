@@ -315,9 +315,12 @@ export class Workflow {
             ProductId: this.productId,
             DateTransition: null,
             UserId: null,
-            QueueRecords: {
-              none: {}
-            }
+            QueueRecords:
+              event.type === WorkflowAction.Cancel
+                ? undefined
+                : {
+                    none: {}
+                  }
           }
         },
         (await DatabaseReads.products.findUnique({

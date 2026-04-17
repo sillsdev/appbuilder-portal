@@ -94,6 +94,19 @@ export async function doProductAction(
               UserId: userId
             }
           });
+          await DatabaseWrites.productTransitions.deleteMany(
+            {
+              where: {
+                ProductId: productId,
+                DateTransition: null,
+                UserId: null
+              }
+            },
+            (await DatabaseReads.products.findUnique({
+              where: { Id: productId },
+              select: { ProjectId: true }
+            }))!.ProjectId
+          );
           await DatabaseWrites.workflowInstances.delete(productId, product.ProjectId);
         }
         break;
