@@ -46,7 +46,7 @@
   const rebuilds: RebuildsTable = $derived($softwareUpdatesSSE ?? data.rebuilds);
 
   //const rebuilds = $derived(data.rebuilds);
-  const { form, enhance } = superForm(data.form, {
+  const { form, enhance, errors } = superForm(data.form, {
     resetForm: true,
     onUpdate({ form, result, formElement }) {
       if (form.valid && result.type === 'success') {
@@ -156,11 +156,13 @@
         <input
           type="text"
           name="comment"
-          class="input input-bordered w-full validator"
+          class="input input-bordered w-full"
           bind:value={$form.comment}
-          required
         />
-        <span class="validator-hint">{m.admin_software_update_comment_required()}</span>
+        {#if $errors.comment}
+          <span class="text-error text-sm">{m.admin_software_update_comment_required()}</span>
+        {/if}
+        <!--<span class="validator-hint">{m.admin_software_update_comment_required()}</span>-->
       </LabeledFormInput>
 
       <input type="hidden" name="products" value={products.map((p) => p.Id)} />
