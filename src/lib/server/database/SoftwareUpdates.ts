@@ -24,12 +24,8 @@ export type RebuildRequest = {
 };
 
 export async function create(data: RequirePrimitive<Prisma.SoftwareUpdatesUncheckedCreateInput>) {
-  return await prisma.$transaction(async (tx) => {
-    const softwareUpdate = await tx.softwareUpdates.create({
-      data
-    });
-
-    return softwareUpdate;
+  return await prisma.softwareUpdates.create({
+    data
   });
 }
 
