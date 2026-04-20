@@ -193,6 +193,7 @@
                 </a>
               </li>
               {#if $orgActive ? isAdminForOrg($orgActive, data.session.user.roles) : isAdminForAny(data.session.user.roles)}
+                
                 <li>
                   <a
                     class="rounded-none"
@@ -233,6 +234,7 @@
                     href={activeOrgUrl('/software-update')}
                     onclick={closeDrawer}
                   >
+                    <IconContainer icon={Icons.UpdateOn} width={24} />
                     {m.admin_nav_software_update()}
                   </a>
                 </li>

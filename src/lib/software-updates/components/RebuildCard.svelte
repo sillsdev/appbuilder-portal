@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
@@ -18,20 +19,20 @@
     <div class="flex flex-wrap justify-between p-2">
       <div class="mr-2">
         <span class="flex items-center mb-1" title={m.admin_software_update_organization_title()}>
-          <IconContainer icon="clarity:organization-solid" width={20} class="mr-1 shrink-0" />
+          <IconContainer icon={Icons.Organization} width={20} class="mr-1 shrink-0" />
           {rebuild.Organizations.join(',') ?? ''}
         </span>
         <span class="flex items-center mb-1" title={m.admin_software_update_initiated_by()}>
-          <IconContainer icon="mdi:user" width={20} class="mr-1 shrink-0" />
+          <IconContainer icon={Icons.User} width={20} class="mr-1 shrink-0" />
           {rebuild.InitiatedBy ?? ''}
         </span>
         <span class="flex items-center mb-1">
-          <IconContainer icon="mdi:package-variant" width={20} class="mr-1 shrink-0" />
+          <IconContainer icon={Icons.Package} width={20} class="mr-1 shrink-0" />
           <span class="font-semibold mr-1">{m.admin_software_update_products_title()}:</span>
           {rebuild._count.Products}
         </span>
         <span class="flex items-center mb-1">
-          <IconContainer icon="mdi:folder-multiple" width={20} class="mr-1 shrink-0" />
+          <IconContainer icon={Icons.Directory} width={20} class="mr-1 shrink-0" />
           <span class="font-semibold mr-1">{m.admin_software_update_projects_title()}:</span>
           {rebuild._count.Projects}
         </span>
