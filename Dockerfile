@@ -23,7 +23,7 @@ RUN npm run build
 RUN npm run fix-sourcemaps
 
 # Docs Container
-FROM lscr.io/linuxserver/libreoffice:25.2.5 AS docs-builder
+FROM lscr.io/linuxserver/libreoffice:25.8.1 AS docs-builder
 WORKDIR /docs 
 
 COPY ./docs /docs/
