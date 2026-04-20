@@ -26,7 +26,7 @@ export async function POST({ locals, params }) {
       try {
         const overlap = orgIds.filter((u) => organizations.includes(u));
 
-        if (overlap) {
+        if (overlap.length > 0) {
           const rebuildsData = await getRebuilds(locals.security, overlap ? overlap : undefined);
           const { error } = emit('rebuilds', stringify(rebuildsData));
           if (error) {
