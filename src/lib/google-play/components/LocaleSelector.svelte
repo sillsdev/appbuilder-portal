@@ -76,20 +76,13 @@
         {#each locales.toSorted( (a, b) => byString(displayNames.get(a)?.display, displayNames.get(b)?.display, current) ) as locale}
           {@const { display, native, fallback } = displayNames.get(locale)!}
           <li class="w-full">
-            <div
+            <button
+              type="button"
               class={[
                 'btn flex-nowrap justify-start pl-2 pr-1 h-auto min-w-2xs',
                 locale === current ? 'btn-accent' : 'btn-ghost'
               ]}
               onclick={() => onclick(locale)}
-              onkeydown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onclick(locale);
-                }
-              }}
-              role="button"
-              tabindex="0"
             >
               <div class="flex flex-row py-1 w-full items-start h-full gap-1">
                 <IconContainer icon={getFlagIcon(locale, GooglePlayFlags)} width={24} />
@@ -105,7 +98,7 @@
                   {/if}
                 </span>
               </div>
-            </div>
+            </button>
           </li>
         {/each}
       </ul>
