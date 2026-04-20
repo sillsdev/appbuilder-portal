@@ -1,7 +1,7 @@
 import { stringify } from 'devalue';
 import { produce } from 'sveltekit-sse';
 import { SSEPageUpdates } from '$lib/projects/listener';
-import { getRebuilds } from '$lib/software-updates';
+import { getRebuilds } from '$lib/software-updates/server';
 
 // Parse organization IDs from query parameter
 // Handle POST requests to establish an SSE connection for rebuild data

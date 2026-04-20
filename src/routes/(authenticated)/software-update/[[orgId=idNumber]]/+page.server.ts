@@ -6,7 +6,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { getRebuilds } from '$lib/software-updates';
+import { getRebuilds } from '$lib/software-updates/server';
 import { filterAdminOrgs } from '$lib/utils/roles';
 
 const formSchema = v.object({
