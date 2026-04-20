@@ -5,6 +5,7 @@ import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { m } from '$lib/google-play/paraglide/messages';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import prisma from '$lib/server/database/prisma';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
@@ -13,18 +14,18 @@ const uuidSchema = v.pipe(
   v.string(),
   v.regex(
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-    'Invalid product id.'
+    m.udm_error_invalid_product_id()
   )
 );
 
 const sendCodeSchema = v.object({
-  email: v.pipe(v.string(), v.email('Please enter a valid email address.')),
+  email: v.pipe(v.string(), v.email(m.udm_alert_valid_email())),
   productId: uuidSchema
 });
 
 const verifyCodeSchema = v.object({
   email: v.pipe(v.string(), v.email()),
-  code: v.pipe(v.string(), v.length(6, 'Code must be 6 digits.')),
+  code: v.pipe(v.string(), v.length(6, m.udm_error_code_6_digits())),
   productId: uuidSchema
 });
 
@@ -92,7 +93,7 @@ export const actions: Actions = {
             await tx.productUserChanges.update({
               where: { Id: latestRequest.Id },
               data: {
-                Change: 'User data deletion request verification',
+                Change: m.udm_change_description(),
                 ConfirmationCode: code,
                 DateUpdated: now,
                 DateExpires: expiresAt
@@ -105,7 +106,7 @@ export const actions: Actions = {
             data: {
               ProductId: productId,
               Email: normalizedEmail,
-              Change: 'User data deletion request verification',
+              Change: m.udm_change_description(),
               DateCreated: now,
               DateUpdated: now,
               ConfirmationCode: code,
@@ -121,8 +122,8 @@ export const actions: Actions = {
 
       await sendEmail(
         [{ email: normalizedEmail, name: normalizedEmail }],
-        'Your verification code',
-        '<p>Your verification code is: <strong>' + code + '</strong></p>'
+        m.udm_email_subject(),
+        m.udm_email_body({ code })
       );
 
       if (process.env.NODE_ENV === 'development') {
@@ -133,7 +134,7 @@ export const actions: Actions = {
 
       return message(form, { step: 'verify', email: normalizedEmail });
     } catch {
-      return message(form, { error: 'Failed to send code. Please try again.' }, { status: 500 });
+      return message(form, { error: m.udm_alert_verification_failed() }, { status: 500 });
     }
   },
 
@@ -162,10 +163,10 @@ export const actions: Actions = {
       });
 
       if (!userChange) {
-        return message(form, { error: 'No code sent to this email.' }, { status: 400 });
+        return message(form, { error: m.udm_error_no_code_sent() }, { status: 400 });
       }
       if (new Date() > userChange.DateExpires) {
-        return message(form, { error: 'Code expired.' }, { status: 400 });
+        return message(form, { error: m.udm_error_code_expired() }, { status: 400 });
       }
 
       if (userChange.ConfirmationCode !== normalizedCode) {
@@ -177,7 +178,11 @@ export const actions: Actions = {
             DateExpires: new Date(userChange.DateExpires.getTime() - 1 * 60 * 1000)
           }
         });
-        return message(form, { error: 'Invalid code.', step: 'verify' }, { status: 400 });
+        return message(
+          form,
+          { error: m.udm_error_invalid_code(), step: 'verify' },
+          { status: 400 }
+        );
       }
 
       await DatabaseWrites.productUserChanges.update({
@@ -192,11 +197,7 @@ export const actions: Actions = {
 
       return message(form, { verified: true });
     } catch {
-      return message(
-        form,
-        { error: 'Invalid code. Please check your email and try again.' },
-        { status: 500 }
-      );
+      return message(form, { error: m.udm_error_invalid_code_retry() }, { status: 500 });
     }
   }
 };
