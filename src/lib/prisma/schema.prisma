@@ -200,38 +200,39 @@ model QueueRecords {
 }
 
 model Products {
-  Id                  String                @id(map: "PK_Products") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  ProjectId           Int
-  ProductDefinitionId Int
-  StoreId             Int
-  StoreLanguageId     Int?
-  DateCreated         DateTime?             @default(now()) @db.Timestamp(6)
-  DateUpdated         DateTime?             @updatedAt @db.Timestamp(6)
-  BuildEngineJobId    Int
-  CurrentBuildId      Int?
-  DateBuilt           DateTime?             @db.Timestamp(6)
-  CurrentReleaseId    Int?
-  DatePublished       DateTime?             @db.Timestamp(6)
-  PublishLink         String?
-  VersionBuilt        String?
-  Properties          String?
-  PackageName         String?
-  ProductArtifacts    ProductArtifacts[]
+  Id                        String                      @id(map: "PK_Products") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  ProjectId                 Int
+  ProductDefinitionId       Int
+  StoreId                   Int
+  StoreLanguageId           Int?
+  DateCreated               DateTime?                   @default(now()) @db.Timestamp(6)
+  DateUpdated               DateTime?                   @updatedAt @db.Timestamp(6)
+  BuildEngineJobId          Int
+  CurrentBuildId            Int?
+  DateBuilt                 DateTime?                   @db.Timestamp(6)
+  CurrentReleaseId          Int?
+  DatePublished             DateTime?                   @db.Timestamp(6)
+  PublishLink               String?
+  VersionBuilt              String?
+  Properties                String?
+  PackageName               String?
+  ProductArtifacts          ProductArtifacts[]
   // Note: this should only set CurrentBuildId to null
-  CurrentBuild        ProductBuilds?        @relation(name: "Products_ProductBuilds_CurrentBuild", fields: [Id, CurrentBuildId], references: [ProductId, BuildEngineBuildId], onDelete: SetNull, onUpdate: NoAction, map: "FK_Products_ProductBuilds_CurrentBuildId")
-  ProductBuilds       ProductBuilds[]       @relation("Products_ProductBuilds_all")
+  CurrentBuild              ProductBuilds?              @relation(name: "Products_ProductBuilds_CurrentBuild", fields: [Id, CurrentBuildId], references: [ProductId, BuildEngineBuildId], onDelete: SetNull, onUpdate: NoAction, map: "FK_Products_ProductBuilds_CurrentBuildId")
+  ProductBuilds             ProductBuilds[]             @relation("Products_ProductBuilds_all")
   // Note: this should only set CurrentReleaseId to null
-  CurrentRelease      ProductPublications?  @relation(name: "Products_ProductPublications_CurrentRelease", fields: [Id, CurrentReleaseId], references: [ProductId, BuildEngineReleaseId], onDelete: SetNull, onUpdate: NoAction, map: "FK_Products_ProductPublications_CurrentReleaseId")
-  ProductPublications ProductPublications[] @relation("Products_ProductPublications_all")
-  ProductTransitions  ProductTransitions[]
-  ProductDefinition   ProductDefinitions    @relation(fields: [ProductDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_ProductDefinitions_ProductDefinitionId")
-  Project             Projects              @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_Projects_ProjectId")
-  StoreLanguage       StoreLanguages?       @relation(fields: [StoreLanguageId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_StoreLanguages_StoreLanguageId")
-  Store               Stores                @relation(fields: [StoreId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_Stores_StoreId")
-  UserTasks           UserTasks[]
-  WorkflowInstance    WorkflowInstances?
-  ProductUserChanges  ProductUserChanges[]
-  SoftwareUpdates     SoftwareUpdates[]
+  CurrentRelease            ProductPublications?        @relation(name: "Products_ProductPublications_CurrentRelease", fields: [Id, CurrentReleaseId], references: [ProductId, BuildEngineReleaseId], onDelete: SetNull, onUpdate: NoAction, map: "FK_Products_ProductPublications_CurrentReleaseId")
+  ProductPublications       ProductPublications[]       @relation("Products_ProductPublications_all")
+  ProductTransitions        ProductTransitions[]
+  ProductDefinition         ProductDefinitions          @relation(fields: [ProductDefinitionId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_ProductDefinitions_ProductDefinitionId")
+  Project                   Projects                    @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Products_Projects_ProjectId")
+  StoreLanguage             StoreLanguages?             @relation(fields: [StoreLanguageId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_StoreLanguages_StoreLanguageId")
+  Store                     Stores                      @relation(fields: [StoreId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Products_Stores_StoreId")
+  UserTasks                 UserTasks[]
+  WorkflowInstance          WorkflowInstances?
+  ProductUserChanges        ProductUserChanges[]
+  SoftwareUpdates           SoftwareUpdates[]
+  SoftwareUpdatesOnProducts SoftwareUpdatesOnProducts[]
 
   @@unique([Id, CurrentBuildId])
   @@unique([Id, CurrentReleaseId])
@@ -388,15 +389,29 @@ model SystemVersions {
 }
 
 model SoftwareUpdates {
-  Id                Int              @id(map: "PK_SoftwareUpdates") @default(autoincrement())
-  InitiatedById     Int
-  Comment           String
-  Paused            Boolean          @default(false)
-  DateCreated       DateTime         @default(now()) @db.Timestamp(6)
-  DateCompleted     DateTime?        @db.Timestamp(6)
-  InitiatedBy       Users            @relation(fields: [InitiatedById], references: [Id])
-  // Implicit m-n table. Org and project reachable through this relation
-  Products          Products[]
+  Id                        Int                         @id(map: "PK_SoftwareUpdates") @default(autoincrement())
+  InitiatedById             Int
+  Comment                   String
+  Paused                    Boolean                     @default(false)
+  DateCreated               DateTime                    @default(now()) @db.Timestamp(6)
+  DateCompleted             DateTime?                   @db.Timestamp(6)
+  InitiatedBy               Users                       @relation(fields: [InitiatedById], references: [Id])
+  Workflows                 WorkflowInstances[]
+  Products                  Products?                   @relation(fields: [productsId], references: [Id])
+  productsId                String?                     @db.Uuid
+  SoftwareUpdatesOnProducts SoftwareUpdatesOnProducts[]
+}
+
+model SoftwareUpdatesOnProducts {
+  softwareUpdate   SoftwareUpdates @relation(fields: [softwareUpdateId], references: [Id])
+  softwareUpdateId Int
+  product          Products        @relation(fields: [productId], references: [Id])
+  productId        String          @db.Uuid
+  DateCompleted    DateTime?
+  Versions         String[]
+  Success          Boolean
+
+  @@id([productId, softwareUpdateId])
 }
 
 model UserRoles {
@@ -503,4 +518,6 @@ model WorkflowInstances {
   DateUpdated          DateTime?           @updatedAt @db.Timestamp
   Product              Products            @relation(fields: [ProductId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_Products_ProductId")
   WorkflowDefinition   WorkflowDefinitions @relation(fields: [WorkflowDefinitionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_WorkflowDefinitions_WorkflowDefinitionId")
+  SoftwareUpdates      SoftwareUpdates?    @relation(fields: [softwareUpdatesId], references: [Id])
+  softwareUpdatesId    Int?
 }
