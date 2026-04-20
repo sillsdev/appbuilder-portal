@@ -3,7 +3,7 @@
   import type { PageData } from './$types';
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
   import { m } from '$lib/google-play/paraglide/messages';
-  import type { Locale } from '$lib/google-play/paraglide/runtime';
+  import { type Locale, localizeHref } from '$lib/google-play/paraglide/runtime';
   import {
     DEFAULT_ICON,
     applyThemeToDocument,
@@ -70,7 +70,9 @@
     }
 
     sessionStorage.setItem(confirmEmailStorageKey, email);
-    window.location.assign(`/user-data/confirm?${data.udmQuery}`);
+    window.location.assign(
+      localizeHref(`/user-data/confirm?${data.udmQuery}`, { locale: currentLocale })
+    );
   }
 
   let themeVars = $derived(getThemeVariables(themeColor));
@@ -109,16 +111,16 @@
 >
   <div class="w-full bg-base-100 min-h-screen sm:max-w-xl sm:mx-auto">
     <div class="udm-header px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-4">
-      <div class="relative">
-        <div class="min-w-0 border-l-4 border-base-content pl-3 pr-16">
-          <h1 class="text-2xl font-bold tracking-tight leading-none">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0 flex-1 ps-3 pe-2" style="border-inline-start: 4px solid currentColor;">
+          <h1 class="text-2xl font-bold tracking-tight leading-none break-words">
             {m.udm_manage_data_title()}
           </h1>
-          <p class="mt-0 pl-8 text-xs leading-tight text-base-content/75">
+          <p class="mt-1 text-xs leading-tight text-base-content/75 break-words">
             {m.udm_manage_data_description()}
           </p>
         </div>
-        <div class="absolute top-0 right-0 rounded-xl bg-neutral p-1 shadow-sm">
+        <div class="max-w-full shrink-0 rounded-xl bg-neutral p-1 shadow-sm">
           <LocaleSelector
             current={currentLocale}
             l10nMap={data.l10nMap}
@@ -134,16 +136,16 @@
           <img src={iconSrc} alt={m.app_icon_alt()} />
         </div>
       </div>
-      <div class="grid justify-items-start text-left gap-0">
-        <h2 class="text-lg font-bold tracking-tight leading-none">{app.name}</h2>
-        <p class="text-sm text-primary font-bold leading-tight ml-4">{app.developer}</p>
+      <div class="min-w-0 grow text-start">
+        <h2 class="text-lg font-bold tracking-tight leading-tight break-words">{app.name}</h2>
+        <p class="mt-1 text-sm text-primary font-bold leading-tight break-words">{app.developer}</p>
       </div>
     </div>
 
     <div class="px-5">
       <a
         class="btn btn-ghost btn-sm border border-base-300 mb-4 btn-block"
-        href={`/user-data/about?${data.udmQuery}`}
+        href={localizeHref(`/user-data/about?${data.udmQuery}`, { locale: currentLocale })}
       >
         {m.udm_about_app()}
       </a>

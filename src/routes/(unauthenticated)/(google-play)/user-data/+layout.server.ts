@@ -1,12 +1,7 @@
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-import { deLocalizeUrl, localizeUrl } from '$lib/google-play/paraglide/runtime';
 import type { AppInfo } from '$lib/products/UDMtypes';
-import {
-  getLatestManifest,
-  resolveManifestLanguage,
-  translateManifest
-} from '$lib/products/server';
+import { getLatestManifest, translateManifest } from '$lib/products/server';
 import { DatabaseReads } from '$lib/server/database';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -41,12 +36,7 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 
   if (!fetchedManifest) throw error(404);
 
-  const lang = resolveManifestLanguage(locals.locale, fetchedManifest.manifest);
-  if (locals.locale !== lang) {
-    throw redirect(302, localizeUrl(deLocalizeUrl(url), { locale: lang }));
-  }
-
-  const translatedManifest = await translateManifest(fetchedManifest, lang, [
+  const translatedManifest = await translateManifest(fetchedManifest, locals.locale, [
     'title.txt',
     'short_description.txt',
     'full_description.txt',
