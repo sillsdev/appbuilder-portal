@@ -96,6 +96,20 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         }
       }
     );
+    getQueues().SystemRecurring.upsertJobScheduler(
+      BullMQ.JobSchedulerId.MigrateChunks,
+      {
+        pattern: '*/15 * * * *', // every 15 minutes
+        immediately: false
+      },
+      {
+        name: 'Migrate Features (chunked)',
+        data: {
+          type: BullMQ.JobType.System_Migrate,
+          steps: ['Associate Builds', 'Associate Releases', 'Add PackageName']
+        }
+      }
+    );
   }
   async run(job: Job<J>) {
     switch (job.data.type) {
@@ -103,6 +117,8 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         return Executor.System.checkSystemStatuses(job as Job<BullMQ.System.CheckEngineStatuses>);
       case BullMQ.JobType.System_RefreshLangTags:
         return Executor.System.refreshLangTags(job as Job<BullMQ.System.RefreshLangTags>);
+      case BullMQ.JobType.System_Migrate:
+        return Executor.System.lazyMigrate(job as Job<BullMQ.System.Migrate>);
     }
   }
 }
@@ -113,21 +129,21 @@ export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
     super(BullMQ.QueueName.System_Startup);
     const startupJobs = [
       [
-        'Check System Statuses (Startup)',
-        {
-          type: BullMQ.JobType.System_CheckEngineStatuses
-        }
-      ],
-      [
         'Refresh LangTags (Startup)',
         {
           type: BullMQ.JobType.System_RefreshLangTags
         }
       ],
       [
-        'Migrate Features from S1 to S2 (Startup)',
+        'Migrate Features (Startup)',
         {
           type: BullMQ.JobType.System_Migrate
+        }
+      ],
+      [
+        'Check System Statuses (Startup)',
+        {
+          type: BullMQ.JobType.System_CheckEngineStatuses
         }
       ]
     ] as const;

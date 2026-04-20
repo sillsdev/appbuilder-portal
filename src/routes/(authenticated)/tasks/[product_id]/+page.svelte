@@ -7,6 +7,7 @@
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
+  import CopyField from '$lib/components/settings/CopyField.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import {
     Icons,
@@ -54,7 +55,6 @@
       }
     }
   });
-  let urlCopied = $state(false);
   let waiting = $state(false);
 
   $effect(() => {
@@ -119,7 +119,10 @@
       <ul>
         <li><a class="link" href={localizeHref('/tasks')}>{m.sidebar_myTasks({ count: 0 })}</a></li>
         <li>
-          <a class="link" href={localizeHref(`/projects/${data.projectId}`)}>
+          <a
+            class="link"
+            href={localizeHref(`/projects/${data.projectId}#${page.params.product_id}`)}
+          >
             {data.fields.projectName}
           </a>
         </li>
@@ -180,9 +183,25 @@
         <TaskComment comment={data.previousTask.Comment} />
       </LabeledFormInput>
     {/if}
-    <LabeledFormInput key="project_name">
-      <input type="text" class="input w-full" readonly value={data.fields.projectName} />
-    </LabeledFormInput>
+    <div class="flex flex-col w-full md:flex-row" class:gap-x-2={data.fields.packageName}>
+      <LabeledFormInput
+        key="project_name"
+        class={['w-full', data.fields.packageName && 'md:w-1/2']}
+      >
+        <span class="input w-full flex flex-row gap-2 items-center">
+          <input type="text" class="grow" readonly value={data.fields.projectName} />
+          <CopyField value={data.fields.projectName} />
+        </span>
+      </LabeledFormInput>
+      {#if data.fields.packageName}
+        <LabeledFormInput key="tasks_packageName" class="md:w-1/2">
+          <span class="input w-full flex flex-row gap-2 items-center">
+            <input type="text" class="grow" readonly value={data.fields.packageName} />
+            <CopyField value={data.fields.packageName} />
+          </span>
+        </LabeledFormInput>
+      {/if}
+    </div>
     <LabeledFormInput key="common_description">
       <textarea class="textarea w-full" readonly value={data.fields.projectDescription}></textarea>
     </LabeledFormInput>
@@ -197,7 +216,9 @@
           }}
           value={data.fields.ownerName}
           validate={false}
-        />{/if}{#if data.fields.ownerEmail}
+        />
+      {/if}
+      {#if data.fields.ownerEmail}
         <LabeledFormInput
           key="profile_email"
           class="md:w-1/2"
@@ -238,24 +259,7 @@
           <span class="input w-full flex flex-row gap-2 items-center">
             <IconContainer icon={Icons.URL} width={20} />
             <input type="text" class="grow" readonly value={data.fields.projectURL} />
-            <button
-              class="cursor-copy"
-              onclick={() => {
-                if (data.fields.projectURL) {
-                  navigator.clipboard.writeText(data.fields.projectURL);
-                  urlCopied = true;
-                  setTimeout(() => {
-                    urlCopied = false;
-                  }, 5000);
-                }
-              }}
-            >
-              {#if urlCopied}
-                <IconContainer icon={Icons.Checkmark} width={24} class="text-success" />
-              {:else}
-                <IconContainer icon={Icons.Copy} width={24} />
-              {/if}
-            </button>
+            <CopyField value={data.fields.projectURL} />
           </span>
         </LabeledFormInput>
       {/if}
@@ -493,14 +497,16 @@
     text-decoration-line: underline;
   }
 
-  #fields :global(label):nth-child(odd) {
-    padding-right: calc(var(--spacing) * 1);
-  }
-  #fields :global(label):nth-child(even) {
-    padding-left: calc(var(--spacing) * 1);
-  }
-  #fields :global(label):nth-child(odd):last-child {
-    padding-right: 0px;
-    width: 100%;
+  @media (width >= 48rem /* 768px */) {
+    #fields :global(label):nth-child(odd) {
+      padding-right: calc(var(--spacing) * 1);
+    }
+    #fields :global(label):nth-child(even) {
+      padding-left: calc(var(--spacing) * 1);
+    }
+    #fields :global(label):nth-child(odd):last-child {
+      padding-right: 0px;
+      width: 100%;
+    }
   }
 </style>

@@ -1,4 +1,6 @@
 import { toast } from '@zerodevx/svelte-toast';
+import type { ClassValue } from 'svelte/elements';
+import type { m } from '$lib/paraglide/messages';
 
 export function sanitizeInput(unsafe: string): string {
   return unsafe
@@ -24,8 +26,6 @@ export function bytesToHumanSize(bytes: bigint | null) {
   }
 }
 
-export type Entries<K, V> = [K, V][];
-
 export type ValidKey<T extends object> = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [K in keyof T]: T[K] extends (...args: any[]) => void ? K : never;
@@ -39,8 +39,8 @@ export type ValidKey<T extends object> = {
  * @param e any enum
  * @returns the numeric values of the enum
  */
-export function enumNumVals<E extends Record<string, string | number>>(e: E): number[] {
-  return Object.values(e).filter((v) => !(typeof v === 'string'));
+export function enumNumVals<E extends Record<string, string | number>>(e: E) {
+  return Object.values(e).filter((v) => !(typeof v === 'string')) as Extract<E[keyof E], number>[];
 }
 
 function pushToast(type: 'info' | 'success' | 'warning' | 'error', message: string) {
@@ -83,3 +83,10 @@ export function filterSet<T>(values: Set<T>, filter: SetFilter<T>) {
     return values.isDisjointFrom(filter.none);
   }
 }
+
+export type ValidI13nKey = ValidKey<typeof m>;
+export type ValueKey<T extends ValidI13nKey = ValidI13nKey> = {
+  key: T;
+  params?: Parameters<(typeof m)[T]>[0];
+  class?: ClassValue;
+};

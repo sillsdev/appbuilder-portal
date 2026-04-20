@@ -13,7 +13,7 @@
   import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { localizeHref } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import AppTypeSelector from '$lib/projects/components/AppTypeSelector.svelte';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
@@ -86,6 +86,8 @@
               input: 'w-full md:max-w-xs validator'
             }}
             inputElProps={{ required: true, pattern: regExpToInputPattern(langtagRegex) }}
+            locale={getLocale()}
+            l10nMap={data.l10nMap}
           >
             {#snippet validatorHint()}
               <span class="validator-hint">Invalid BCP 47 Language Tag</span>

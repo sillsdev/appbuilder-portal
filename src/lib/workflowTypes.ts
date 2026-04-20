@@ -124,7 +124,9 @@ export enum WorkflowAction {
   Email_Reviewers = 'Email Reviewers',
   Publish_Completed = 'Publish Completed',
   Publish_Failed = 'Publish Failed',
-  Google_API_Error = 'Google API Error'
+  Google_API_Error = 'Google API Error',
+  Cancel = 'Cancel',
+  Reset = 'Reset'
 }
 
 export type WorkflowInstanceContext = {
@@ -154,6 +156,7 @@ export type WorkflowInstanceContext = {
     | 'productDescription'
     | 'appType'
     | 'projectLanguageCode'
+    | 'packageName'
   )[];
   includeReviewers: boolean;
   includeArtifacts: ArtifactLists | null;
@@ -233,6 +236,8 @@ export type WorkflowTransitionMeta = {
   type: ActionType;
   user?: RoleId;
   includeWhen?: MetaFilter;
+  // only a value of false will block tasks
+  createTasks?: boolean;
 };
 
 /**

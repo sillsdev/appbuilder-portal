@@ -12,18 +12,21 @@
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
-  import { type ProductActionType } from '$lib/products';
+  import type { WorkflowType } from '$lib/prisma';
+  import { BuildStatus } from '$lib/prisma';
+  import { ProductActionType } from '$lib/products';
   import ProductDetails, {
     type Props as ProductDetailProps,
     type Transition,
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
+  import type { Action } from '$lib/projects/components/ProjectActionEntry.svelte';
   import { sanitizeInput, toast } from '$lib/utils';
   import { isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
-  import type { WorkflowState } from '$lib/workflowTypes';
   import {
     ProductType,
+    WorkflowState,
     formatBuildEngineLink,
     isBackground,
     linkToBuildEngine
@@ -32,6 +35,7 @@
   interface Props {
     project: Prisma.ProjectsGetPayload<{
       select: {
+        Id: true;
         Name: true;
         DateArchived: true;
         OrganizationId: true;
@@ -62,6 +66,22 @@
         WorkflowInstance: {
           select: {
             State: true;
+            WorkflowDefinition: {
+              select: {
+                Type: true;
+              };
+            };
+          };
+        };
+        Store: { select: { StoreTypeId: true; Description: true } };
+        ProductBuilds: {
+          select: {
+            Status: true;
+          };
+        };
+        ProductPublications: {
+          select: {
+            Status: true;
           };
         };
       };
@@ -75,14 +95,24 @@
     deleteEndpoint: string;
     updateEndpoint: string;
     canEdit: boolean;
+    projectActions: Action[];
   }
 
-  let { product, project, actionEndpoint, deleteEndpoint, updateEndpoint, canEdit }: Props =
-    $props();
+  let {
+    product,
+    project,
+    actionEndpoint,
+    deleteEndpoint,
+    updateEndpoint,
+    canEdit,
+    projectActions
+  }: Props = $props();
 
   let deleteProductModal: HTMLDialogElement | undefined = $state(undefined);
   let updateProductModal: HTMLDialogElement | undefined = $state(undefined);
   const showTaskWaiting = $derived(!!product.WorkflowInstance);
+
+  const highlighted = $derived(page.url.hash.substring(1));
 
   async function handleProductAction(productId: string, action: string) {
     try {
@@ -117,16 +147,25 @@
   const publishedTime = $derived(getRelativeTime(product.DatePublished));
 </script>
 
-<div class="rounded-md border border-slate-400 w-full my-2">
+<div
+  class={[
+    'rounded-md border border-slate-400 w-full my-2',
+    product.Id === highlighted && 'border-2 border-accent!'
+  ]}
+  id={product.Id}
+>
   <div class="bg-neutral p-2 flex flex-col rounded-t-md" class:rounded-b-md={!showTaskWaiting}>
     <div class="flex flex-row items-start">
       <IconContainer
         icon={getProductIcon(product.ProductDefinition.Workflow.ProductType)}
         width={30}
       />
-      <span class="min-w-0 grow">
+      <a
+        class="min-w-0 grow hover:underline ml-0.5"
+        href={localizeHref(`/projects/${project.Id}#${product.Id}`)}
+      >
         {product.ProductDefinition.Name}
-      </span>
+      </a>
       <Dropdown
         class={{
           label: 'px-1 btn-square btn-xs',
@@ -178,25 +217,27 @@
         {/snippet}
       </Dropdown>
     </div>
-    <div class="flex flex-row gap-2">
+    <div class="flex flex-row gap-2 py-1">
       <div class="flex flex-row gap-1 grow">
-        {m.common_updated()}:
-        <Tooltip tip={getTimeDateString(product.DateUpdated)}>
-          {$updatedTime}
-        </Tooltip>
-      </div>
-      {#if product.PublishLink}
-        <a class="link" href={product.PublishLink} target="_blank">
-          <IconContainer icon={getStoreIcon(product.Store?.StoreTypeId ?? 0)} width={24} />
-        </a>
-      {/if}
-    </div>
-    <div class="flex flex-row gap-2">
-      <div class="flex flex-row gap-1 grow">
-        {m.products_published()}:
-        <Tooltip tip={getTimeDateString(product.DatePublished)}>
-          {$publishedTime}
-        </Tooltip>
+        <IconContainer
+          icon={getStoreIcon(product.Store?.StoreTypeId ?? 0)}
+          width={24}
+          class="mx-0.5"
+        />
+        {#if product.PublishLink}
+          <a class="link" href={product.PublishLink} target="_blank">
+            {product.Store?.Description}
+          </a>
+        {:else}
+          {product.Store?.Description}
+        {/if}
+        <span class="hidden sm:inline-block">
+          {#if product.DatePublished}
+            [<Tooltip tip={getTimeDateString(product.DatePublished)}>
+              {$publishedTime}
+            </Tooltip>]
+          {/if}
+        </span>
       </div>
       {#if product.PublishLink}
         {@const pType = product.ProductDefinition.Workflow.ProductType}
@@ -213,6 +254,22 @@
         {/if}
       {/if}
     </div>
+    <div class="flex flex-row gap-2">
+      <div class="flex flex-row gap-1 grow">
+        {m.common_updated()}:
+        <Tooltip tip={getTimeDateString(product.DateUpdated)}>
+          {$updatedTime}
+        </Tooltip>
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 sm:hidden">
+      <div class="flex flex-row gap-1 grow">
+        {m.products_published()}:
+        <Tooltip tip={getTimeDateString(product.DatePublished)}>
+          {$publishedTime}
+        </Tooltip>
+      </div>
+    </div>
     <div class="flex flex-row gap-2 p-1 mt-1 rounded-md">
       <button
         class="text-nowrap btn btn-secondary btn-sm"
@@ -224,22 +281,29 @@
       {#each product.actions as action}
         {@const message =
           //@ts-expect-error this is in fact correct
-          m['products_acts_' + action]()}
-        <BlockIfJobsUnavailable class="text-nowrap">
-          {#snippet altContent()}
-            <IconContainer icon={getActionIcon(action)} width={20} />
-            {message}
-          {/snippet}
-          <button
-            class="text-nowrap btn btn-secondary btn-sm"
-            onclick={(event) => {
-              handleProductAction(product.Id, action);
-              event.currentTarget.blur();
-            }}
-          >
-            {@render altContent()}
-          </button>
-        </BlockIfJobsUnavailable>
+          m['products_acts_' + action]({
+            workflow: m.flowDefs_types({
+              type: (product.WorkflowInstance?.WorkflowDefinition.Type ?? 0) as WorkflowType
+            })
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any)}
+        {#if !((action === ProductActionType.StopBuild && product.ProductBuilds.at(0)?.Status === BuildStatus.PostProcessing) || (action === ProductActionType.StopPublish && product.ProductPublications.at(0)?.Status === BuildStatus.PostProcessing))}
+          <BlockIfJobsUnavailable class="text-nowrap">
+            {#snippet altContent()}
+              <IconContainer icon={getActionIcon(action)} width={20} />
+              {message}
+            {/snippet}
+            <button
+              class="text-nowrap btn btn-secondary btn-sm"
+              onclick={(event) => {
+                handleProductAction(product.Id, action);
+                event.currentTarget.blur();
+              }}
+            >
+              {@render altContent()}
+            </button>
+          </BlockIfJobsUnavailable>
+        {/if}
       {/each}
     </div>
     {#if canEdit}
@@ -263,18 +327,8 @@
           </span>
         {:else}
           <span>
-            <span class="text-red-500">
-              {m.tasks_waiting({
-                // waiting since EITHER (the last task exists) -> that task's creation time
-                // OR (there are no tasks for this product) -> the last completed transition's completion time
-                waitTime: $waitTime
-              })}
-            </span>
-            {@html m.tasks_forNames({
-              allowedNames: sanitizeInput(
-                product.ActiveTransition?.AllowedUserNames || m.appName()
-              ),
-              activityName: formatBuildEngineLink(
+            <b>
+              {@html formatBuildEngineLink(
                 linkToBuildEngine(
                   isSuperAdmin(page.data.session!.user.roles) &&
                     product.WorkflowInstance &&
@@ -285,8 +339,32 @@
                   product.WorkflowInstance?.State as WorkflowState
                 ),
                 product.ActiveTransition?.InitialState ?? ''
-              )
+              )}
+            </b>
+            {#snippet statusBadge(status: string)}
+              <span
+                class="badge font-bold
+                  {status === BuildStatus.Pending
+                  ? 'badge-secondary text-secondary-content'
+                  : status === BuildStatus.PostProcessing
+                    ? 'badge-warning text-warning-content'
+                    : 'badge-info text-info-content'}
+                "
+              >
+                {status}
+              </span>
+            {/snippet}
+            {#if product.WorkflowInstance?.State === WorkflowState.Product_Build && product.ProductBuilds[0]?.Status}
+              {@render statusBadge(product.ProductBuilds[0].Status)}
+            {:else if product.WorkflowInstance?.State === WorkflowState.Product_Publish && product.ProductPublications[0]?.Status}
+              {@render statusBadge(product.ProductPublications[0].Status)}
+            {/if}
+            &mdash;
+            {m.tasks_waiting({
+              allowedNames: product.ActiveTransition?.AllowedUserNames || m.appName()
             })}
+            &bull;
+            {$waitTime}
           </span>
         {/if}
       </div>
@@ -304,5 +382,5 @@
       </div>
     </div>
   {/if}
-  <ProductDetails {product} transitions={product.Transitions} />
+  <ProductDetails {product} transitions={product.Transitions} {projectActions} />
 </div>

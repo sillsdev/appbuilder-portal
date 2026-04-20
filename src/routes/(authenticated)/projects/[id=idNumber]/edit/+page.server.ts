@@ -3,16 +3,17 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { ProjectActionString, ProjectActionType } from '$lib/prisma';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { idSchema, requiredString } from '$lib/valibot';
 
-const projectPropertyEditSchema = v.object({
-  name: requiredString,
-  group: idSchema,
-  owner: idSchema,
-  language: v.string(),
-  description: v.nullable(v.string())
+const projectPropertyEditSchema = v.strictObject({
+  Name: requiredString,
+  GroupId: idSchema,
+  OwnerId: idSchema,
+  Language: v.string(),
+  Description: v.nullable(v.string())
 });
 
 export const load = (async ({ params, locals }) => {
@@ -34,11 +35,11 @@ export const load = (async ({ params, locals }) => {
     project,
     form: await superValidate(
       {
-        name: project.Name!,
-        group: project.GroupId,
-        owner: project.OwnerId,
-        language: project.Language!,
-        description: project.Description
+        Name: project.Name,
+        GroupId: project.GroupId,
+        OwnerId: project.OwnerId,
+        Language: project.Language,
+        Description: project.Description
       },
       valibot(projectPropertyEditSchema)
     ),
@@ -73,21 +74,56 @@ export const actions: Actions = {
     const projectId = parseInt(event.params.id);
     const project = await DatabaseReads.projects.findUnique({
       where: { Id: projectId },
-      select: { OwnerId: true, OrganizationId: true }
+      select: {
+        Name: true,
+        GroupId: true,
+        Language: true,
+        Description: true,
+        OwnerId: true,
+        OrganizationId: true
+      }
     });
     event.locals.security.requireProjectWriteAccess(project);
     if (!QueueConnected()) return error(503);
     const form = await superValidate(event.request, valibot(projectPropertyEditSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     // block if changing owner
-    if (project!.OwnerId !== form.data.owner && !QueueConnected()) return error(503);
-    const success = await DatabaseWrites.projects.update(projectId, {
-      Name: form.data.name,
-      GroupId: form.data.group,
-      OwnerId: form.data.owner,
-      Language: form.data.language,
-      Description: form.data.description ?? ''
-    });
+    if (project!.OwnerId !== form.data.OwnerId && !QueueConnected()) return error(503);
+    const success = await DatabaseWrites.projects.update(projectId, form.data);
+    if (success) {
+      await DatabaseWrites.projectActions.createMany(
+        Object.entries(form.data)
+          .map(([k, v]) =>
+            project![k as keyof typeof form.data] !== v
+              ? {
+                  ProjectId: projectId,
+                  UserId: event.locals.security.userId,
+                  ...(k === 'OwnerId' || k === 'GroupId'
+                    ? {
+                        ActionType: ProjectActionType.OwnerGroup,
+                        Action:
+                          k === 'GroupId'
+                            ? ProjectActionString.AssignGroup
+                            : v === event.locals.security.userId
+                              ? ProjectActionString.Claim
+                              : ProjectActionString.AssignOwner,
+                        ExternalId: v as number
+                      }
+                    : {
+                        ActionType: ProjectActionType.EditField,
+                        Action:
+                          ProjectActionString[
+                            `Edit${k as keyof Omit<typeof form.data, 'OwnerId' | 'GroupId'>}`
+                          ],
+                        Value: v as string
+                      })
+                }
+              : null
+          )
+          .filter((o) => !!o),
+        projectId
+      );
+    }
     return { form, ok: success };
   }
 };

@@ -10,9 +10,9 @@
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { Icons, getStoreIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
-  import type { ValidI13nKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { StoreType, displayStoreGPTitle } from '$lib/prisma';
+  import type { ValidI13nKey } from '$lib/utils';
 
   interface Props {
     editable: boolean;

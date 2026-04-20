@@ -220,7 +220,9 @@
   "products_acts_cancelled": "{actionName} fue cancelado con éxito.",
   "products_acts_rebuild": "Reconstruir",
   "products_acts_republish": "Publicar nuevamente",
-  "products_acts_cancel": "Cancelar",
+  "products_acts_cancel_workflow": "Cancelar {workflow}",
+  "products_acts_stop_build": "Detener compilación",
+  "products_acts_stop_publish": "Detener publicación",
   "products_acts_noneAvailable": "No hay acciones disponibles actualmente para este producto.",
   "products_acts_bulkNotAllAllowed": "No todos los productos de los proyectos seleccionados pueden tener la acción {action} aplicada.",
   "products_acts_dispatched": "La acción {action} ha sido enviada.",
@@ -232,7 +234,7 @@
   "products_remove": "Remove Products",
   "products_addTitle": "Select Product to Add",
   "products_removeTitle": "Select Product to Remove",
-  "products_details": "Detalles",
+  "products_details": "Historia",
   "products_jobRecords": "Registros de trabajo",
   "publications_channel": "Channel",
   "publications_status": "Estado",
@@ -262,7 +264,9 @@
         "type=5": "{workflowType} Project Access",
         "type=6": "Workflow Migration",
         "type=7": "Archivado",
-        "type=8": "Reactivado"
+        "type=8": "Reactivado",
+        "type=9": "Transferir Tienda",
+        "type=10": "Actualizar Propiedades"
       }
     }
   ],
@@ -287,7 +291,8 @@
       "match": {
         "amount=0": "No hay archivos de producto",
         "countPlural=one": "{amount} Product File",
-        "countPlural=other": "{amount} Product Files"
+        "countPlural=other": "{amount} Product Files",
+        "amount=*": "{amount} Product Files"
       }
     }
   ],
@@ -360,8 +365,7 @@
   "tasks_noTasksTitle": "No tiene tareas asignadas.",
   "tasks_noTasksDescription": "Las tareas que requieren su atención aparecerán aquí.",
   "tasks_reassign": "Reasignar",
-  "tasks_waiting": "Esperando {waitTime}",
-  "tasks_forNames": "para {allowedNames} a <b>{activityName}</b>",
+  "tasks_waiting": "Esperando para {allowedNames}",
   "tasks_archivedAt": "Archivado en <b>{activityName}</b>",
   "tasks_scriptoria": "Scriptoria",
   "tasks_storeLanguage": "Idioma del listado de la tienda",
@@ -370,6 +374,7 @@
   "tasks_submitted": "<b>{action}</b> enviado",
   "tasks_reloaded": "Tarea actualizada por Scriptoria",
   "tasks_previousComment": "Comentario anterior ({activityName})",
+  "tasks_packageName": "Package Name",
   "projects_noBuilds": "No Builds Yet",
   "projects_latestBuild": "Última compilación ({version})",
   "projects_buildPending": "Build Pending",
@@ -382,6 +387,7 @@
   "projects_bulk_buildModal_title": "Perform Bulk Rebuild/Republish",
   "filters_allProdDefs": "Todos los proyectos que contienen...",
   "filters_dateRange": "Rango de Fechas",
+  "filters_allAppTypes": "Todos los tipos de aplicaciones",
   "projectImport_title": "Import Projects",
   "projectImport_help": "Import Projects Help",
   "projectImport_file": "Import JSON File",
@@ -413,6 +419,7 @@
   "project_details_title": "Detalles",
   "project_details_language": "Lenguaje",
   "project_details_type": "Tipo de proyecto",
+  "project_details_action": "Acción",
   "project_settings_title": "Configuración",
   "project_autoPublish_title": "Publicación Automática al Reconstruir",
   "project_autoPublish_description": "Cuando se ejecuta la compilación, omite la verificación y publica la aplicación. Notificar al propietaro y a los revisores que la aplicación se publicó sin revisión.",
@@ -427,6 +434,7 @@
   "project_location": "Ubicación del repositorio",
   "project_location_placeholder": "Creando el repositorio...",
   "project_org": "Organización",
+  "project_action_group": "Transferencia entre grupos",
   "authors_title": "Autores",
   "authors_submit": "Agregar autor(a)",
   "authors_empty": "Sin autores",

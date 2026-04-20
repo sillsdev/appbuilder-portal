@@ -65,8 +65,8 @@ model Organizations {
   Id                            Int                             @id(map: "PK_Organizations") @default(autoincrement())
   Name                          String
   WebsiteUrl                    String?
-  BuildEngineUrl                String?
-  BuildEngineApiAccessToken     String?
+  BuildEngineUrl                String? // remove at a later date
+  BuildEngineApiAccessToken     String? // remove at a later date
   LogoUrl                       String?
   UseDefaultBuildEngine         Boolean                         @default(true)
   PublicByDefault               Boolean                         @default(true)
@@ -80,6 +80,7 @@ model Organizations {
   UserRoles                     UserRoles[]
   Stores                        Stores[]                        @relation("OrganizationsToStores")
   ManagedStores                 Stores[]                        @relation("ManagedStores")
+  System                        SystemStatuses?
 }
 
 model ProductArtifacts {
@@ -107,6 +108,7 @@ model ProductBuilds {
   Success             Boolean?
   AppBuilderVersion   String?
   TransitionId        Int?
+  Status              String?
   ProductArtifacts    ProductArtifacts[]
   Product             Products              @relation(name: "Products_ProductBuilds_all", fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductBuilds_Products_ProductId")
   Current             Products?             @relation("Products_ProductBuilds_CurrentBuild")
@@ -152,6 +154,7 @@ model ProductPublications {
   Package              String?
   DateResolved         DateTime?           @db.Timestamp(6)
   TransitionId         Int?
+  Status               String?
   ProductBuild         ProductBuilds       @relation(fields: [ProductId, BuildEngineBuildId], references: [ProductId, BuildEngineBuildId], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_ProductBuilds_ProductId_BEBuildId")
   Product              Products            @relation(name: "Products_ProductPublications_all", fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductPublications_Products_ProductId")
   Current              Products?           @relation("Products_ProductPublications_CurrentRelease")
@@ -288,12 +291,30 @@ model Projects {
   ProjectImport           ProjectImports?  @relation(fields: [ImportId], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_Projects_ProjectImports_ImportId")
   Owner                   Users            @relation(fields: [OwnerId], references: [Id], onUpdate: NoAction, map: "FK_Projects_Users_OwnerId")
   Reviewers               Reviewers[]
+  ProjectActions          ProjectActions[]
 
   @@index([GroupId], map: "IX_Projects_GroupId")
   @@index([ImportId], map: "IX_Projects_ImportId")
   @@index([OrganizationId], map: "IX_Projects_OrganizationId")
   @@index([OwnerId], map: "IX_Projects_OwnerId")
   @@index([TypeId], map: "IX_Projects_TypeId")
+}
+
+model ProjectActions {
+  Id         Int      @id(map: "PK_ProjectActions") @default(autoincrement())
+  ProjectId  Int
+  UserId     Int
+  DateAction DateTime @default(now()) @db.Timestamp(6)
+  ActionType Int
+  Action     String // Archive/Reactivate, Upload/Download, Add/Remove, Owner/Group, Field Name
+  Value      String? // Store.BuildEnginePublisherId, Reviewer.Email, Field Value
+  ExternalId Int? // Variable link to ProductDefinitions, Users, and Groups
+
+  Project Projects @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProjectActions_Projects_ProjectId")
+  User    Users    @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProjectActions_Users_UserId")
+
+  @@index([ProjectId], map: "IX_ProjectActions_ProjectId")
+  @@index([UserId], map: "IX_ProjectActions_UserId")
 }
 
 model Reviewers {
@@ -343,24 +364,28 @@ model Stores {
 }
 
 model SystemStatuses {
-  Id                        Int       @id(map: "PK_SystemStatuses") @default(autoincrement())
-  BuildEngineUrl            String?
-  BuildEngineApiAccessToken String?
+  Id                        Int              @id(map: "PK_SystemStatuses") @default(autoincrement())
+  BuildEngineUrl            String
+  BuildEngineApiAccessToken String
   SystemAvailable           Boolean
-  DateCreated               DateTime? @default(now()) @db.Timestamp(6)
-  DateUpdated               DateTime? @updatedAt @db.Timestamp(6)
+  DateCreated               DateTime?        @default(now()) @db.Timestamp(6)
+  DateUpdated               DateTime?        @updatedAt @db.Timestamp(6)
+  OrganizationId            Int?             @unique
+  Organization              Organizations?   @relation(fields: [OrganizationId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_SystemStatuses_Organizations_OrganizationId")
+  SystemVersions            SystemVersions[]
 }
 
 model SystemVersions {
-  BuildEngineUrl    String // weak link to SystemStatuses table
+  SystemId          Int
   ApplicationTypeId Int
   Version           String?          @default("13.2") // defaulting to 13.2 because this is what BuildEngine supports at this time
   DateCreated       DateTime?        @default(now()) @db.Timestamp(6)
   DateUpdated       DateTime?        @updatedAt @db.Timestamp(6)
   ImageHash         String?
+  System            SystemStatuses   @relation(fields: [SystemId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_SystemVersions_SystemStatuses_SystemId")
   ApplicationType   ApplicationTypes @relation(fields: [ApplicationTypeId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_SystemVersions_ApplicationTypes_ ApplicationTypeId")
 
-  @@id([BuildEngineUrl, ApplicationTypeId], map: "PK_SystemVersions_BuildEngineUrl_ApplicationTypeId")
+  @@id([SystemId, ApplicationTypeId], map: "PK_SystemVersions_SystemId_ApplicationTypeId")
 }
 
 model SoftwareUpdates {
@@ -437,6 +462,7 @@ model Users {
   UserTasks                     UserTasks[]
   ProductTransitions            ProductTransitions[]
   SoftwareUpdates               SoftwareUpdates[]
+  ProjectActions                ProjectActions[]
 }
 
 model WorkflowDefinitions {

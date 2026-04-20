@@ -7,9 +7,19 @@ import { type Handle, type HandleServerError, error } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { authRouteHandle, organizationInviteHandle, populateSecurityInfo } from './auth';
 import { building } from '$app/environment';
+import {
+  extractLocaleFromUrl as GooglePlayGetLocaleForUrl,
+  getTextDirection as GooglePlayGetTextDirection
+} from '$lib/google-play/paraglide/runtime';
+import { paraglideMiddleware as GooglePlayParaglideMiddleware } from '$lib/google-play/paraglide/server';
 import OTEL from '$lib/otel';
 
-import { paraglideMiddleware } from '$lib/paraglide/server';
+import {
+  baseLocale,
+  extractLocaleFromUrl as defaultGetLocaleForUrl,
+  getTextDirection as defaultGetTextDirection
+} from '$lib/paraglide/runtime';
+import { paraglideMiddleware as defaultParaglideMiddleware } from '$lib/paraglide/server';
 import { RoleId } from '$lib/prisma';
 import { QueueConnected, getQueues } from '$lib/server/bullmq';
 import { bullboardHandle } from '$lib/server/bullmq/BullBoard';
@@ -36,15 +46,31 @@ if (!building) {
 }
 
 // creating a handle to use the paraglide middleware
-const paraglideHandle: Handle = ({ event, resolve }) =>
-  paraglideMiddleware(event.request, ({ request: localizedRequest, locale }) => {
-    event.request = localizedRequest;
-    return resolve(event, {
-      transformPageChunk: ({ html }) => {
-        return html.replace('%lang%', locale);
-      }
-    });
-  });
+const paraglideHandle: Handle = ({ event, resolve }) => {
+  const isGooglePlayRoute = !!event.url.pathname.match(/\/(downloads|user-data)/);
+
+  event.locals.locale =
+    (isGooglePlayRoute ? GooglePlayGetLocaleForUrl : defaultGetLocaleForUrl)(event.url.href) ??
+    /* baseLocale is same for both environments */
+    baseLocale;
+
+  return (isGooglePlayRoute ? GooglePlayParaglideMiddleware : defaultParaglideMiddleware)(
+    event.request,
+    ({ request: localizedRequest, locale }) => {
+      event.request = localizedRequest;
+      return resolve(event, {
+        transformPageChunk: ({ html }) => {
+          return html
+            .replace('%lang%', locale)
+            .replace(
+              '%dir%',
+              (isGooglePlayRoute ? GooglePlayGetTextDirection : defaultGetTextDirection)(locale)
+            );
+        }
+      });
+    }
+  );
+};
 
 const heartbeat: Handle = async ({ event, resolve }) => {
   // this check is important to prevent infinite redirects...

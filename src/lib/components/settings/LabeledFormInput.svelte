@@ -2,23 +2,29 @@
     @component
     An input slot for a form (stylized)
 -->
-<script lang="ts" generics="T">
+<script lang="ts" module>
   import type { Snippet } from 'svelte';
   import type { ClassValue, HTMLInputAttributes } from 'svelte/elements';
-  import IconContainer from '../../icons/IconContainer.svelte';
   import type { IconType } from '$lib/icons';
-  import type { ValueKey } from '$lib/locales.svelte';
-  import { m } from '$lib/paraglide/messages';
-
-  interface Props extends ValueKey {
+  import type { ValueKey } from '$lib/utils';
+  export interface Props extends ValueKey {
     children?: Snippet;
     input?: HTMLInputAttributes & {
       class?: ClassValue;
       err?: string;
       icon?: IconType;
+      after?: Snippet;
     };
-    value?: T;
     validate?: boolean;
+  }
+</script>
+
+<script lang="ts" generics="T">
+  import IconContainer from '$lib/icons/IconContainer.svelte';
+  import { m } from '$lib/paraglide/messages';
+
+  interface InstanceProps extends Props {
+    value?: T;
   }
 
   let {
@@ -29,7 +35,7 @@
     input,
     value = $bindable(),
     validate = true
-  }: Props = $props();
+  }: InstanceProps = $props();
 </script>
 
 <label class={['flex flex-col w-full', classes]}>
@@ -45,6 +51,7 @@
         <IconContainer icon={input.icon} width={20} class="cursor-pointer opacity-80" />
       {/if}
       <input type="text" {...input} bind:value />
+      {@render input.after?.()}
     </div>
     {#if validate}
       <span class="validator-hint">

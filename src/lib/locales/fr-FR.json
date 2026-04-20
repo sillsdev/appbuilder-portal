@@ -220,7 +220,9 @@
   "products_acts_cancelled": "{actionName} was successfully cancelled.",
   "products_acts_rebuild": "Rebuild",
   "products_acts_republish": "Republish",
-  "products_acts_cancel": "Cancel",
+  "products_acts_cancel_workflow": "Cancel {workflow}",
+  "products_acts_stop_build": "Stop Build",
+  "products_acts_stop_publish": "Stop Publish",
   "products_acts_noneAvailable": "No actions are currently available for this product.",
   "products_acts_bulkNotAllAllowed": "Not all of the selected projects' products can have the {action} action(s) applied.",
   "products_acts_dispatched": "The {action} action has been dispatched.",
@@ -232,7 +234,7 @@
   "products_remove": "Remove Products",
   "products_addTitle": "Select Product to Add",
   "products_removeTitle": "Select Product to Remove",
-  "products_details": "Details",
+  "products_details": "History",
   "products_jobRecords": "Job Records",
   "publications_channel": "Channel",
   "publications_status": "Status",
@@ -262,7 +264,9 @@
         "type=5": "{workflowType} Project Access",
         "type=6": "Workflow Migration",
         "type=7": "Archived",
-        "type=8": "Reactivated"
+        "type=8": "Reactivated",
+        "type=9": "Transfer Store",
+        "type=10": "Update Properties"
       }
     }
   ],
@@ -287,7 +291,8 @@
       "match": {
         "amount=0": "No Product Files",
         "countPlural=one": "{amount} Product File",
-        "countPlural=other": "{amount} Product Files"
+        "countPlural=other": "{amount} Product Files",
+        "amount=*": "{amount} Product Files"
       }
     }
   ],
@@ -360,8 +365,7 @@
   "tasks_noTasksTitle": "No tasks are assigned to you.",
   "tasks_noTasksDescription": "Tasks that require your attention will appear here.",
   "tasks_reassign": "Reassign",
-  "tasks_waiting": "Waiting {waitTime}",
-  "tasks_forNames": "for {allowedNames} to <b>{activityName}</b>",
+  "tasks_waiting": "waiting for {allowedNames}",
   "tasks_archivedAt": "Archived at <b>{activityName}</b>",
   "tasks_scriptoria": "Scriptoria",
   "tasks_storeLanguage": "Store Listing Language",
@@ -370,6 +374,7 @@
   "tasks_submitted": "<b>{action}</b> submitted",
   "tasks_reloaded": "Task updated by Scriptoria",
   "tasks_previousComment": "Previous Comment ({activityName})",
+  "tasks_packageName": "Package Name",
   "projects_noBuilds": "No Builds Yet",
   "projects_latestBuild": "Latest Build ({version})",
   "projects_buildPending": "Build Pending",
@@ -382,6 +387,7 @@
   "projects_bulk_buildModal_title": "Perform Bulk Rebuild/Republish",
   "filters_allProdDefs": "All projects that contain...",
   "filters_dateRange": "Last Updated Date Between",
+  "filters_allAppTypes": "All application types",
   "projectImport_title": "Import Projects",
   "projectImport_help": "Import Projects Help",
   "projectImport_file": "Import JSON File",
@@ -413,6 +419,7 @@
   "project_details_title": "Details",
   "project_details_language": "Language",
   "project_details_type": "Project Type",
+  "project_details_action": "Action",
   "project_settings_title": "Settings",
   "project_autoPublish_title": "Auto Publish on Rebuild",
   "project_autoPublish_description": "When the rebuild workflow is run, skip verification and publish the app. Send a notification to owner and reviewers that the app was published without review.",
@@ -426,6 +433,7 @@
   "project_visibility_description": "Public Projects allow any Scriptoria User to view your project in the Directory",
   "project_location": "Repository Location",
   "project_org": "Organization",
+  "project_action_group": "Transfer Group",
   "authors_title": "Authors",
   "authors_submit": "Add Author",
   "authors_empty": "No authors",

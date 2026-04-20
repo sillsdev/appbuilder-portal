@@ -1,10 +1,9 @@
 import { error, redirect } from '@sveltejs/kit';
-import { getFileInfo } from '$lib/products';
-import { getPublishedFile } from '$lib/products/server';
+import { getArtifactHeaders, getPublishedFile } from '$lib/products/server';
 
 export async function GET({ params, locals }) {
   locals.security.requireNothing();
-  const productArtifact = await getPublishedFile(params.product_id, params.type);
+  const productArtifact = await getPublishedFile({ productId: params.product_id }, params.type);
   if (!productArtifact?.Url) {
     return error(404);
   }
@@ -15,7 +14,7 @@ export async function HEAD({ params, request, locals }) {
   locals.security.requireNothing();
   const ifModifiedSince = request.headers.get('If-Modified-Since') ?? '';
 
-  const res = await _getHeaders(params.product_id, params.type);
+  const res = await getArtifactHeaders(params.product_id, params.type);
   if (!res) return error(404);
 
   const { headers } = res;
@@ -31,21 +30,4 @@ export async function HEAD({ params, request, locals }) {
     status: 200,
     headers
   });
-}
-
-export async function _getHeaders(product_id: string, type: string) {
-  const productArtifact = await getPublishedFile(product_id, type);
-  if (!productArtifact?.Url) return null;
-
-  const { lastModified, fileSize } = await getFileInfo(productArtifact.Url);
-
-  const headers: { 'Last-Modified': string; 'Content-Length'?: string } = {
-    'Last-Modified': lastModified
-  };
-
-  if (fileSize) {
-    headers['Content-Length'] = fileSize;
-  }
-
-  return { product: productArtifact, headers };
 }

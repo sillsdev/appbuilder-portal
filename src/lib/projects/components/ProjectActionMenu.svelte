@@ -54,9 +54,9 @@
 
 <Dropdown
   class={{
-    dropdown: 'dropdown-bottom dropdown-end',
+    dropdown: 'dropdown-bottom dropdown-end max-h-fit',
     label: 'max-h-fit min-h-fit p-1 inline',
-    content: 'p-1 min-w-36 w-auto'
+    content: 'mt-1 p-1 min-w-36 w-auto'
   }}
   onclick={() => {
     $form.projectId = project.Id;

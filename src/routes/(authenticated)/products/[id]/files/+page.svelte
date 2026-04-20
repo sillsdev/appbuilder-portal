@@ -1,6 +1,7 @@
 <script lang="ts">
   import { type FormResult, superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import { page } from '$app/state';
   import Pagination from '$lib/components/Pagination.svelte';
   import { getProductIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
@@ -39,7 +40,10 @@
     <div class="breadcrumbs text-sm pl-4">
       <ul>
         <li>
-          <a class="link" href={localizeHref(`/projects/${data.product.Project.Id}`)}>
+          <a
+            class="link"
+            href={localizeHref(`/projects/${data.product.Project.Id}#${page.params.id}`)}
+          >
             {data.product.Project.Name}
           </a>
         </li>

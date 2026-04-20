@@ -42,12 +42,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
           DateCreated: 'desc'
         }
       },
-      Store: {
-        select: {
-          StoreTypeId: true,
-          Description: true
-        }
-      },
       Project: {
         select: {
           Id: true,
@@ -56,9 +50,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
             select: {
               Id: true,
               Name: true,
-              BuildEngineUrl: true,
-              BuildEngineApiAccessToken: true,
-              UseDefaultBuildEngine: true
+              UseDefaultBuildEngine: true,
+              System: {
+                select: {
+                  BuildEngineUrl: true,
+                  BuildEngineApiAccessToken: true
+                }
+              }
             }
           }
         }
@@ -120,6 +118,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         Comment: true,
         User: {
           select: {
+            Id: true,
             Name: true
           }
         },

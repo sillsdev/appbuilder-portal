@@ -102,20 +102,28 @@ export async function tryConnect(
         });
 
         if (scope === 'build' && transition?.InitialState === WorkflowState.Product_Build) {
-          return await tx.productBuilds.updateMany({
+          return await tx.productBuilds.updateManyAndReturn({
             where: { ProductId: productId, BuildEngineBuildId: buildOrReleaseId },
             data: {
               TransitionId: transitionId
+            },
+            select: {
+              BuildEngineBuildId: true,
+              TransitionId: true
             }
           });
         } else if (
           scope === 'release' &&
           transition?.InitialState === WorkflowState.Product_Publish
         ) {
-          return await tx.productPublications.updateMany({
+          return await tx.productPublications.updateManyAndReturn({
             where: { ProductId: productId, BuildEngineReleaseId: buildOrReleaseId },
             data: {
               TransitionId: transitionId
+            },
+            select: {
+              BuildEngineReleaseId: true,
+              TransitionId: true
             }
           });
         }

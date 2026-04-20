@@ -1,17 +1,11 @@
 import type { Prisma } from '@prisma/client';
-import { ProductTransitionType, RoleId } from '$lib/prisma';
-import { type ProjectForAction, canClaimProject } from '$lib/projects';
+import { ProjectActionString, ProjectActionType, RoleId } from '$lib/prisma';
+import { type ProjectForAction, type ProjectSearch, canClaimProject } from '$lib/projects';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { isAdminForOrg } from '$lib/utils/roles';
 
-export function projectFilter(args: {
-  organizationId: number | null;
-  langCode: string;
-  productDefinitionId: number | null;
-  dateUpdatedRange: [Date, Date | null] | null;
-  search: string;
-}) {
+export function projectFilter(args: ProjectSearch) {
   return {
     OrganizationId: args.organizationId !== null ? args.organizationId : undefined,
     Language: args.langCode
@@ -28,6 +22,7 @@ export function projectFilter(args: {
             }
           }
         : undefined,
+    TypeId: args.appType ? args.appType : undefined,
     AND: [
       {
         OR:
@@ -130,22 +125,13 @@ export async function doProjectAction(
     await DatabaseWrites.projects.update(project.Id, {
       DateArchived: timestamp
     });
-    await DatabaseWrites.productTransitions.createMany(
-      {
-        data: (
-          await DatabaseReads.products.findMany({
-            where: { ProjectId: project.Id },
-            select: { Id: true }
-          })
-        ).map((p) => ({
-          ProductId: p.Id,
-          UserId: security.userId,
-          DateTransition: timestamp,
-          TransitionType: ProductTransitionType.Archival
-        }))
-      },
-      project.Id
-    );
+    await DatabaseWrites.projectActions.create({
+      ProjectId: project.Id,
+      UserId: security.userId,
+      DateAction: timestamp,
+      ActionType: ProjectActionType.Archival,
+      Action: ProjectActionString.Archive
+    });
     await getQueues().UserTasks.add(`Delete UserTasks for Archived Project #${project.Id}`, {
       type: BullMQ.JobType.UserTasks_Workflow,
       scope: 'Project',
@@ -159,22 +145,13 @@ export async function doProjectAction(
     await DatabaseWrites.projects.update(project.Id, {
       DateArchived: null
     });
-    await DatabaseWrites.productTransitions.createMany(
-      {
-        data: (
-          await DatabaseReads.products.findMany({
-            where: { ProjectId: project.Id },
-            select: { Id: true }
-          })
-        ).map((p) => ({
-          ProductId: p.Id,
-          UserId: security.userId,
-          DateTransition: timestamp,
-          TransitionType: ProductTransitionType.Reactivation
-        }))
-      },
-      project.Id
-    );
+    await DatabaseWrites.projectActions.create({
+      ProjectId: project.Id,
+      UserId: security.userId,
+      DateAction: timestamp,
+      ActionType: ProjectActionType.Archival,
+      Action: ProjectActionString.Reactivate
+    });
     await getQueues().UserTasks.add(`Create UserTasks for Reactivated Project #${project.Id}`, {
       type: BullMQ.JobType.UserTasks_Workflow,
       scope: 'Project',
@@ -193,9 +170,18 @@ export async function doProjectAction(
       groups
     )
   ) {
-    await DatabaseWrites.projects.update(project.Id, {
+    const success = await DatabaseWrites.projects.update(project.Id, {
       OwnerId: security.userId
     });
+    if (success) {
+      await DatabaseWrites.projectActions.create({
+        ProjectId: project.Id,
+        UserId: security.userId,
+        ActionType: ProjectActionType.OwnerGroup,
+        Action: ProjectActionString.Claim,
+        ExternalId: security.userId
+      });
+    }
   }
 }
 

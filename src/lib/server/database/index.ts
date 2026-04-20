@@ -4,9 +4,12 @@ import { Prisma } from '@prisma/client';
 import * as authors from './Authors';
 import * as groups from './Groups';
 import * as organizations from './Organizations';
+import * as productBuilds from './ProductBuilds';
 import * as productDefinitions from './ProductDefinitions';
+import * as productPublications from './ProductPublications';
 import * as productTransitions from './ProductTransitions';
 import * as products from './Products';
+import * as projectActions from './ProjectActions';
 import * as projects from './Projects';
 import type { WRITE_METHODS } from './ReadonlyPrisma';
 import * as reviewers from './Reviewers';
@@ -43,10 +46,13 @@ const handlers = {
   reviewers,
   products,
   projects,
+  projectActions,
   groups,
   userTasks,
   stores,
+  productBuilds,
   productDefinitions,
+  productPublications,
   organizations,
   productTransitions,
   users,

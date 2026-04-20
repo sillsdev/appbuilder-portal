@@ -15,7 +15,7 @@
       Command: true;
       Comment: true;
       DateTransition: true;
-      User: { select: { Name: true } };
+      User: { select: { Id: true; Name: true } };
       QueueRecords: {
         select: {
           Queue: true;
@@ -30,7 +30,6 @@
     product: Prisma.ProductsGetPayload<{
       select: {
         Id: true;
-        Store: { select: { StoreTypeId: true; Description: true } };
         BuildEngineJobId: true;
         CurrentBuildId: true;
         CurrentReleaseId: true;
@@ -49,6 +48,7 @@
       };
     }> & { BuildEngineUrl?: string };
     transitions: Transition[];
+    projectActions?: Action[];
   }
 </script>
 
@@ -57,10 +57,13 @@
   import type { Prisma } from '@prisma/client';
   import TaskComment from './TaskComment.svelte';
   import { page } from '$app/state';
-  import { Icons, getStoreIcon, getTransitionIcon } from '$lib/icons';
+  import { Icons, getTransitionIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
+  import type { WorkflowType } from '$lib/prisma';
   import { ProductTransitionType } from '$lib/prisma';
+  import type { Action } from '$lib/projects/components/ProjectActionEntry.svelte';
+  import ProjectActionEntry from '$lib/projects/components/ProjectActionEntry.svelte';
   import { isSuperAdmin } from '$lib/utils/roles';
   import { getTimeDateString } from '$lib/utils/time';
   import {
@@ -70,7 +73,15 @@
     linkToBuildEngine
   } from '$lib/workflowTypes';
 
-  let { product, transitions }: Props = $props();
+  let { product, transitions, projectActions = [] }: Props = $props();
+
+  const entries = $derived(
+    [...transitions, ...projectActions].sort((a, b) => {
+      const da = 'DateTransition' in a ? a.DateTransition?.valueOf() : a.DateAction.valueOf();
+      const db = 'DateTransition' in b ? b.DateTransition?.valueOf() : b.DateAction.valueOf();
+      return da === db ? 0 : da === undefined ? 1 : db === undefined ? -1 : da < db ? -1 : 1;
+    })
+  );
 
   const landmarks = [2, 3, 4, 6] as const;
   type Landmark = (typeof landmarks)[number];
@@ -78,7 +89,7 @@
     return landmarks.includes(t as Landmark);
   }
 
-  function stateString(workflowTypeNum: number, transitionType: number) {
+  function stateString(workflowTypeNum: WorkflowType, transitionType: ProductTransitionType) {
     if (isLandmark(transitionType)) {
       return m.transitions_types({
         type: transitionType,
@@ -144,12 +155,10 @@
     {:else if isLandmark(transition.TransitionType)}
       {stateString(transition.WorkflowType ?? 1, transition.TransitionType)}
     {:else}
-      <b>
-        {m.transitions_types({
-          type: transition.TransitionType,
-          workflowType: ''
-        })}
-      </b>
+      {m.transitions_types({
+        type: transition.TransitionType as ProductTransitionType,
+        workflowType: ''
+      })}
     {/if}
   {/if}
 {/snippet}
@@ -189,25 +198,6 @@
         <IconContainer icon={Icons.Close} width={36} class="opacity-80" />
       </button>
     </div>
-    <table class="table table-sm">
-      <thead>
-        <tr>
-          <th>{m.transitions_storeName()}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <IconContainer
-              icon={getStoreIcon(product.Store?.StoreTypeId ?? 0)}
-              width={24}
-              class="mr-1"
-            />
-            {product.Store?.Description}
-          </td>
-        </tr>
-      </tbody>
-    </table>
     <table class="hidden md:table table-sm">
       <thead>
         <tr>
@@ -218,42 +208,48 @@
         </tr>
       </thead>
       <tbody>
-        {#each transitions as transition}
-          {@const showRecs = isSuper && !!transition.QueueRecords.length}
-          <tr
-            class:font-bold={isLandmark(transition.TransitionType)}
-            class:no-border={transition.Comment || showRecs}
-          >
-            <td>
-              {@render transitionType(transition, showRecs)}
-            </td>
-            <td>
-              {#if !isLandmark(transition.TransitionType)}
-                {transition.User?.Name || transition.AllowedUserNames || m.appName()}
-              {/if}
-            </td>
-            <td>
-              {transition.TransitionType === ProductTransitionType.Activity
-                ? transition.Command
-                : ''}
-            </td>
-            <td>
-              {getTimeDateString(transition.DateTransition)}
-            </td>
-          </tr>
-          {#if showRecs}
-            <tr class:no-border={transition.Comment}>
-              <td colspan="4">
-                {@render queueRecords(transition)}
+        {#each entries as transition}
+          {#if 'DateTransition' in transition}
+            {@const showRecs = isSuper && !!transition.QueueRecords.length}
+            <tr
+              class:font-bold={isLandmark(transition.TransitionType)}
+              class:no-border={transition.Comment || showRecs}
+            >
+              <td>
+                {@render transitionType(transition, showRecs)}
+              </td>
+              <td>
+                {#if !isLandmark(transition.TransitionType)}
+                  {(transition.User && (transition.User.Name ?? `User #${transition.User.Id}`)) ||
+                    transition.AllowedUserNames ||
+                    m.appName()}
+                {/if}
+              </td>
+              <td>
+                {transition.TransitionType === ProductTransitionType.Activity
+                  ? transition.Command
+                  : ''}
+              </td>
+              <td>
+                {getTimeDateString(transition.DateTransition)}
               </td>
             </tr>
-          {/if}
-          {#if transition.Comment}
-            <tr>
-              <td colspan="4">
-                <TaskComment comment={transition.Comment} />
-              </td>
-            </tr>
+            {#if showRecs}
+              <tr class:no-border={transition.Comment}>
+                <td colspan="4">
+                  {@render queueRecords(transition)}
+                </td>
+              </tr>
+            {/if}
+            {#if transition.Comment}
+              <tr>
+                <td colspan="4">
+                  <TaskComment comment={transition.Comment} />
+                </td>
+              </tr>
+            {/if}
+          {:else}
+            <ProjectActionEntry act={transition} compact={false} />
           {/if}
         {/each}
       </tbody>
@@ -266,44 +262,50 @@
         </tr>
       </thead>
       <tbody>
-        {#each transitions as transition}
-          {@const showRecs = isSuper && !!transition.QueueRecords.length}
-          <tr
-            class:font-bold={isLandmark(transition.TransitionType)}
-            class:no-border={!isLandmark(transition.TransitionType) ||
-              transition.Comment ||
-              showRecs}
-          >
-            <td>
-              {@render transitionType(transition, showRecs)}
-            </td>
-            <td>
-              {getTimeDateString(transition.DateTransition)}
-            </td>
-          </tr>
-          {#if !isLandmark(transition.TransitionType)}
-            <tr class:no-border={transition.Comment || showRecs}>
+        {#each entries as transition}
+          {#if 'DateTransition' in transition}
+            {@const showRecs = isSuper && !!transition.QueueRecords.length}
+            <tr
+              class:font-bold={isLandmark(transition.TransitionType)}
+              class:no-border={!isLandmark(transition.TransitionType) ||
+                transition.Comment ||
+                showRecs}
+            >
               <td>
-                {transition.User?.Name || transition.AllowedUserNames || m.appName()}
+                {@render transitionType(transition, showRecs)}
               </td>
               <td>
-                {transition.TransitionType === ProductTransitionType.Activity
-                  ? transition.Command
-                  : ''}
+                {getTimeDateString(transition.DateTransition)}
               </td>
             </tr>
-          {/if}
-          {#if showRecs}
-            <tr class:no-border={transition.Comment}>
-              <td colspan="2">
-                {@render queueRecords(transition)}
-              </td>
-            </tr>
-          {/if}
-          {#if transition.Comment}
-            <tr>
-              <td colspan="2"><TaskComment comment={transition.Comment} /></td>
-            </tr>
+            {#if !isLandmark(transition.TransitionType)}
+              <tr class:no-border={transition.Comment || showRecs}>
+                <td>
+                  {(transition.User && (transition.User.Name ?? `User #${transition.User.Id}`)) ||
+                    transition.AllowedUserNames ||
+                    m.appName()}
+                </td>
+                <td>
+                  {transition.TransitionType === ProductTransitionType.Activity
+                    ? transition.Command
+                    : ''}
+                </td>
+              </tr>
+            {/if}
+            {#if showRecs}
+              <tr class:no-border={transition.Comment}>
+                <td colspan="2">
+                  {@render queueRecords(transition)}
+                </td>
+              </tr>
+            {/if}
+            {#if transition.Comment}
+              <tr>
+                <td colspan="2"><TaskComment comment={transition.Comment} /></td>
+              </tr>
+            {/if}
+          {:else}
+            <ProjectActionEntry act={transition} compact={true} />
           {/if}
         {/each}
       </tbody>
@@ -319,7 +321,13 @@
     padding-top: 2px;
     padding-bottom: 2px;
   }
-  :where(thead tr, tbody tr:not(:last-child)) {
+  table :global(:where(thead tr)) {
+    @supports (color: color-mix(in lab, red, red)) {
+      /* Copied from DaisyUI source. Modified opacity */
+      border-bottom: var(--border) solid color-mix(in oklch, var(--color-base-content) 25%, #0000);
+    }
+  }
+  table :global(:where(tbody tr:not(:last-child))) {
     @supports (color: color-mix(in lab, red, red)) {
       /* Copied from DaisyUI source. Modified opacity */
       border-bottom: var(--border) solid color-mix(in oklch, var(--color-base-content) 25%, #0000);

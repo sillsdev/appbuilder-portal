@@ -118,7 +118,7 @@ export async function deleteProduct(job: Job<BullMQ.Product.Delete>): Promise<un
       job.data.buildEngineJobId
     );
     job.updateProgress(50);
-    if (response.responseType === 'error') {
+    if (response.responseType === 'error' && response.status !== 404) {
       job.log(response.message);
       throw new Error(response.message);
     } else {
@@ -254,11 +254,15 @@ export async function createLocal(job: Job<BullMQ.Product.CreateLocal>): Promise
     )?.Workflow;
 
     if (flowDefinition) {
-      await Workflow.create(productId, {
-        productType: flowDefinition.ProductType,
-        options: new Set(flowDefinition.WorkflowOptions),
-        workflowType: flowDefinition.Type
-      });
+      await Workflow.create(
+        productId,
+        {
+          productType: flowDefinition.ProductType,
+          options: new Set(flowDefinition.WorkflowOptions),
+          workflowType: flowDefinition.Type
+        },
+        job.data.userId
+      );
     }
 
     return productId;

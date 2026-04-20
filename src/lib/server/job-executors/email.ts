@@ -12,6 +12,7 @@ import {
   addProperties
 } from '../email-service/EmailTemplates';
 import { getOwnerAdminVariantKeys, translate } from '../email-service/locales/locale';
+import { activeSystems } from '$lib/organizations/server';
 import { RoleId } from '$lib/prisma';
 import type { ProjectImportJSON } from '$lib/projects';
 import { NotificationType } from '$lib/users';
@@ -82,7 +83,7 @@ export async function sendNotificationToReviewers(
           }
         },
         orderBy: {
-          DateUpdated: 'desc'
+          DateCreated: 'desc'
         },
         take: 1
       },
@@ -228,7 +229,8 @@ export async function notifySuperAdminsOfOfflineSystems(
 ): Promise<unknown> {
   const statuses = await DatabaseReads.systemStatuses.findMany({
     where: {
-      SystemAvailable: false
+      SystemAvailable: false,
+      ...activeSystems
     }
   });
   if (statuses.length === 0) {

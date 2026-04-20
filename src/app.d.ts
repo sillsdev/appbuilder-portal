@@ -71,6 +71,7 @@ declare global {
       // This typing doesn't work, but we never use it
       paraglide: ParaglideLocals<AvailableLanguageTag>;
       security: Security;
+      locale: string;
     }
     // interface PageData {}
     // interface Platform {}

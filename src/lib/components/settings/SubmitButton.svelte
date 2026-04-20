@@ -2,8 +2,8 @@
   import type { Snippet } from 'svelte';
   import IconContainer from '../../icons/IconContainer.svelte';
   import { type IconType, Icons } from '$lib/icons';
-  import type { ValueKey } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
+  import type { ValueKey } from '$lib/utils';
 
   interface Props extends Partial<ValueKey> {
     icon?: IconType;

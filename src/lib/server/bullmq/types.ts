@@ -2,6 +2,7 @@
 import type { RepeatOptions } from 'bullmq';
 import type { RoleId } from '../../prisma';
 import type { BuildResponse, Channels, ReleaseResponse } from '../build-engine-api/types';
+import type { MigrationStep } from '../job-executors/system/migrate';
 import type { JobType } from '$lib/bullmq';
 import type { NotificationType } from '$lib/users';
 export { JobSchedulerId, JobType, QueueName } from '$lib/bullmq';
@@ -93,6 +94,7 @@ export namespace Product {
     projectId: number;
     productDefinitionId: number;
     storeId: number;
+    userId: number;
   }
 
   export interface UpdateStore extends BaseJob {
@@ -151,6 +153,7 @@ export namespace System {
   }
   export interface Migrate extends BaseJob {
     type: JobType.System_Migrate;
+    steps?: MigrationStep[];
   }
 }
 
@@ -301,7 +304,8 @@ export type BuildJob = JobTypeMap[
   | JobType.Build_Delete];
 export type RecurringJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
-  | JobType.System_RefreshLangTags];
+  | JobType.System_RefreshLangTags
+  | JobType.System_Migrate];
 export type StartupJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags

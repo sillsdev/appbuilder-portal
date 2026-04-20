@@ -11,7 +11,6 @@
   import LocaleSelector from '$lib/components/LocaleSelector.svelte';
   import { Icons, getRoleIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
-  import { createl10nMapFromEntries, l10nMap } from '$lib/locales.svelte';
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeUrl, getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
@@ -41,10 +40,6 @@
   function activeOrgUrl(route: string) {
     return localizeHref($orgActive ? `${route}/${$orgActive}` : route);
   }
-
-  $effect(() => {
-    l10nMap.value = createl10nMapFromEntries(data.localizedNames);
-  });
 
   $effect(() => {
     if ($orgActive && !data.organizations.find((o) => o.Id === $orgActive)) {
@@ -313,6 +308,7 @@
               label:
                 'm-2 p-2 rounded-xl items-middle justify-center flex-nowrap text-primary-content hover:text-base-content focus-visible:text-base-content'
             }}
+            l10nMap={data.l10nMap}
           />
           <Dropdown
             class={{

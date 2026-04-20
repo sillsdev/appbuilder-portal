@@ -96,7 +96,13 @@
               icon={getProductIcon(product.ProductDefinition.Workflow.ProductType)}
               width="32"
             />
-            {product.ProductDefinition.Name}
+            {#if canViewProject(data.project)}
+              <a class="link" href={localizeHref(`/projects/${data.project.Id}#${product.Id}`)}>
+                {product.ProductDefinition.Name}
+              </a>
+            {:else}
+              {product.ProductDefinition.Name}
+            {/if}
           </div>
           {#if build}
             <BuildArtifacts

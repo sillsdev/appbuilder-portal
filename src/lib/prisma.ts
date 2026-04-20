@@ -1,4 +1,5 @@
 import type { Prisma } from '@prisma/client';
+import type { ValidI13nKey } from './utils';
 
 export enum RoleId {
   SuperAdmin = 1,
@@ -27,15 +28,62 @@ export function displayStoreGPTitle(
   return store.StoreTypeId === StoreType.GooglePlay ? (store.GooglePlayTitle ?? '') : '';
 }
 
+export enum ProjectActionType {
+  Archival = 1, // Archive or Reactivate
+  Access, // Upload or Download
+  Product, // Add or Remove
+  OwnerGroup, // Reassign owner or group
+  Author, // Add or Remove
+  Reviewer, // Add or Remove
+  EditField, // Edit other fields
+  Creation // Creation of the project itself
+}
+
+export const ProjectActionString = {
+  Archive: 'common_archive',
+  Reactivate: 'common_reactivate',
+  AddProduct: 'products_add',
+  RemoveProduct: 'products_remove',
+  Claim: 'project_claimOwnership',
+  AssignOwner: 'project_dropdown_transfer',
+  AssignGroup: 'project_action_group',
+  CreateProject: 'sidebar_addProject',
+  ImportProject: 'projectImport_title',
+  // with authors_title
+  AddAuthor: 'models_add',
+  RemoveAuthor: 'models_delete',
+  // with reviewers_title
+  AddReviewer: 'models_add',
+  RemoveReviewer: 'models_delete',
+  // with models_edit
+  EditName: 'project_name',
+  EditLanguage: 'project_languageCode',
+  EditDescription: 'common_description',
+  EditSettings: 'project_settings_title'
+} as const satisfies Record<string, ValidI13nKey>;
+
+export const ProjectActionValue = {
+  RebuildsOn: 'project_acts_autoBuilds_on',
+  RebuildsOff: 'project_acts_autoBuilds_off',
+  DownloadsOn: 'project_acts_downloads_on',
+  DownloadsOff: 'project_acts_downloads_off',
+  AutoPublishOn: 'project_acts_autoPublish_on',
+  AutoPublishOff: 'project_acts_autoPublish_off',
+  VisibilityOn: 'project_acts_isPublic_on',
+  VisibilityOff: 'project_acts_isPublic_off'
+} as const satisfies Record<string, ValidI13nKey>;
+
 export enum ProductTransitionType {
   Activity = 1,
   StartWorkflow,
   EndWorkflow,
   CancelWorkflow,
-  ProjectAccess,
+  /* deprecated */ ProjectAccess,
   Migration,
-  Archival,
-  Reactivation
+  /* deprecated */ Archival,
+  /* deprecated */ Reactivation,
+  Transfer,
+  Update
 }
 
 export enum WorkflowType {
@@ -49,4 +97,14 @@ export const WorkflowTypeString = ['', 'Startup', 'Rebuild', 'Republish'];
 export enum TaskType {
   Workflow = 1,
   DeletionRequest
+}
+
+/**
+ * this is not an exhaustive list of states from BuildEngine,
+ * just the ones we currently care about in Scriptoria
+ */
+export enum BuildStatus {
+  Pending = 'pending',
+  PostProcessing = 'postprocessing',
+  Completed = 'completed'
 }

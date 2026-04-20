@@ -5,6 +5,7 @@ import { DatabaseReads, DatabaseWrites } from '../database';
 import { notifyProductNotFound as build_notifyProductNotFound } from './build';
 import { notifyNotFound } from './project';
 import { notifyProductNotFound as publish_notifyProductNotFound } from './publish';
+import { BuildStatus } from '$lib/prisma';
 import { NotificationType } from '$lib/users';
 
 export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
@@ -18,15 +19,15 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
         select: {
           ProductId: true
         }
-      }
+      },
+      ProjectId: true
     }
   });
-  if (!product) {
-    return await build_notifyProductNotFound(job.data.productId);
-  }
-  if (!product.WorkflowInstance || product.CurrentBuildId !== job.data.buildId) {
+  if (!product?.WorkflowInstance || product.CurrentBuildId !== job.data.buildId) {
     await getQueues().Polling.removeJobScheduler(job.name);
-    if (!product.WorkflowInstance) {
+    if (!product) {
+      return await build_notifyProductNotFound(job.data.productId);
+    } else if (!product.WorkflowInstance) {
       job.log('No WorkflowInstance found. Workflow cancelled?');
     } else {
       job.log(
@@ -43,9 +44,11 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
       },
       BullMQ.Retry0f600
     );
-    await DatabaseWrites.productBuilds.deleteMany({
-      where: { ProductId: job.data.productId, BuildEngineBuildId: job.data.buildId }
-    });
+    await DatabaseWrites.productBuilds.delete(
+      product.ProjectId,
+      job.data.productId,
+      job.data.buildId
+    );
     job.updateProgress(100);
     return { product };
   }
@@ -59,8 +62,11 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
   if (response.responseType === 'error') {
     throw new Error(response.message);
   } else {
-    if (response.status === 'completed') {
-      await getQueues().Polling.removeJobScheduler(job.name);
+    await DatabaseWrites.productBuilds.update(job.data.productId, job.data.buildId, {
+      Status:
+        response.status === BuildStatus.Completed ? BuildStatus.PostProcessing : response.status
+    });
+    if (response.status === BuildStatus.Completed) {
       await getQueues().Builds.add(
         `PostProcess Build #${job.data.buildId} for Product #${job.data.productId}`,
         {
@@ -70,6 +76,7 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
           transition: job.data.transition
         }
       );
+      await getQueues().Polling.removeJobScheduler(job.name);
     }
     job.updateProgress(100);
     return {
@@ -90,15 +97,15 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
         select: {
           ProductId: true
         }
-      }
+      },
+      ProjectId: true
     }
   });
-  if (!product) {
-    return await publish_notifyProductNotFound(job.data.productId);
-  }
-  if (!product.WorkflowInstance || product.CurrentReleaseId !== job.data.releaseId) {
+  if (!product?.WorkflowInstance || product.CurrentReleaseId !== job.data.releaseId) {
     await getQueues().Polling.removeJobScheduler(job.name);
-    if (!product.WorkflowInstance) {
+    if (!product) {
+      return await publish_notifyProductNotFound(job.data.productId);
+    } else if (!product.WorkflowInstance) {
       job.log('No WorkflowInstance found. Workflow cancelled?');
     } else {
       job.log(
@@ -116,12 +123,11 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
       },
       BullMQ.Retry0f600
     );
-    await DatabaseWrites.productPublications.deleteMany({
-      where: {
-        ProductId: job.data.productId,
-        BuildEngineReleaseId: job.data.releaseId
-      }
-    });
+    await DatabaseWrites.productPublications.delete(
+      product.ProjectId,
+      job.data.productId,
+      job.data.releaseId
+    );
     job.updateProgress(100);
     return { product };
   }
@@ -136,8 +142,11 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
   if (response.responseType === 'error') {
     throw new Error(response.message);
   } else {
-    if (response.status === 'completed') {
-      await getQueues().Polling.removeJobScheduler(job.name);
+    await DatabaseWrites.productPublications.update(job.data.productId, job.data.releaseId, {
+      Status:
+        response.status === BuildStatus.Completed ? BuildStatus.PostProcessing : response.status
+    });
+    if (response.status === BuildStatus.Completed) {
       await getQueues().Publishing.add(
         `PostProcess Release #${job.data.releaseId} for Product #${job.data.productId}`,
         {
@@ -148,6 +157,7 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
           transition: job.data.transition
         }
       );
+      await getQueues().Polling.removeJobScheduler(job.name);
     }
     job.updateProgress(100);
     return {

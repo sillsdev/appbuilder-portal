@@ -5,7 +5,9 @@
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import type { WorkflowType } from '$lib/prisma';
   import { byName } from '$lib/utils/sorting';
+  import type { ProductType, WorkflowOptions } from '$lib/workflowTypes';
 
   interface Props {
     data: PageData;
@@ -26,7 +28,7 @@
 {#snippet flowType(wd?: (typeof data)['workflowDefinitions'][number])}
   {#if wd?.Type}
     <IconContainer icon={getWorkflowIcon(wd.Type)} width={16} class="mr-1" />{m.flowDefs_types({
-      type: wd.Type
+      type: wd.Type as WorkflowType
     })}
   {/if}
 {/snippet}
@@ -54,7 +56,7 @@
         },
         {
           key: 'flowDefs_productType',
-          value: m.flowDefs_productTypes({ type: wd.ProductType })
+          value: m.flowDefs_productTypes({ type: wd.ProductType as ProductType })
         },
         {
           key: 'flowDefs_type',
@@ -80,7 +82,7 @@
   <span class="opacity-70 font-semibold">
     {#if wd?.WorkflowOptions.length}
       {#each wd.WorkflowOptions as option}
-        <div>{m.flowDefs_options({ option })}</div>
+        <div>{m.flowDefs_options({ option: option as WorkflowOptions })}</div>
       {/each}
     {:else}
       {m.common_none()}

@@ -7,6 +7,7 @@ import { DatabaseReads } from '$lib/server/database';
 import { paginateSchema } from '$lib/valibot';
 
 export const load = (async ({ params, locals }) => {
+  locals.security.requireAuthenticated();
   const project = (
     await DatabaseReads.products.findUnique({
       where: { Id: params.id },
@@ -17,7 +18,6 @@ export const load = (async ({ params, locals }) => {
     })
   )?.Project;
   if (!project) error(404);
-  locals.security.requireAuthenticated();
   locals.security.requireProjectReadAccess(
     await DatabaseReads.groups.findMany({
       where: { Users: { some: { Id: locals.security.userId } }, Id: project.GroupId }
@@ -25,11 +25,9 @@ export const load = (async ({ params, locals }) => {
     project
   );
   const builds = await DatabaseReads.productBuilds.findMany({
-    orderBy: [
-      {
-        DateUpdated: 'desc'
-      }
-    ],
+    orderBy: {
+      DateCreated: 'desc'
+    },
     where: {
       ProductId: params.id
     },
@@ -50,14 +48,14 @@ export const load = (async ({ params, locals }) => {
         select: {
           Channel: true,
           Success: true,
-          DateUpdated: true,
+          DateCreated: true,
           LogUrl: true,
           PublishLink: true,
           DateResolved: true,
           BuildEngineReleaseId: true
         },
         orderBy: {
-          DateUpdated: 'desc'
+          DateCreated: 'desc'
         },
         take: 1
       }
@@ -102,6 +100,7 @@ export const load = (async ({ params, locals }) => {
 
 export const actions = {
   page: async ({ request, params, locals }) => {
+    locals.security.requireAuthenticated();
     const project = (
       await DatabaseReads.products.findUnique({
         where: { Id: params.id },
@@ -111,7 +110,6 @@ export const actions = {
       })
     )?.Project;
     if (!project) error(404);
-    locals.security.requireAuthenticated();
     locals.security.requireProjectReadAccess(
       await DatabaseReads.groups.findMany({
         where: { Users: { some: { Id: locals.security.userId } }, Id: project.GroupId }
@@ -122,16 +120,15 @@ export const actions = {
     if (!form.valid) return fail(400, { form, ok: false });
 
     const builds = await DatabaseReads.productBuilds.findMany({
-      orderBy: [
-        {
-          DateUpdated: 'desc'
-        }
-      ],
+      orderBy: {
+        DateCreated: 'desc'
+      },
       where: {
         ProductId: params.id
       },
       select: {
         Version: true,
+        AppBuilderVersion: true,
         BuildEngineBuildId: true,
         Success: true,
         ProductArtifacts: {
@@ -146,14 +143,14 @@ export const actions = {
           select: {
             Channel: true,
             Success: true,
-            DateUpdated: true,
+            DateCreated: true,
             LogUrl: true,
             PublishLink: true,
             DateResolved: true,
             BuildEngineReleaseId: true
           },
           orderBy: {
-            DateUpdated: 'desc'
+            DateCreated: 'desc'
           },
           take: 1
         }

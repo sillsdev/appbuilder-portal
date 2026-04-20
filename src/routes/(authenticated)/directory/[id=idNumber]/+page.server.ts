@@ -62,7 +62,7 @@ export const load = (async ({ params, locals }) => {
               Success: true
             },
             orderBy: {
-              DateUpdated: 'desc'
+              DateCreated: 'desc'
             },
             take: 1,
             select: {

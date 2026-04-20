@@ -1,24 +1,18 @@
-import type { Locale } from '$lib/paraglide/runtime';
+import type { Prisma } from '@prisma/client';
+import type { Locale as DefaultLocale } from '$lib/paraglide/runtime';
 import {
   ApplicationType,
   ProductTransitionType,
+  ProjectActionString,
+  ProjectActionType,
+  ProjectActionValue,
   RoleId,
   StoreType,
   WorkflowType
 } from '$lib/prisma';
 import { ProductActionType } from '$lib/products';
+import type { ValidI13nKey } from '$lib/utils';
 import { ProductType, WorkflowAction } from '$lib/workflowTypes';
-
-export function getAccessIcon(use: string | null) {
-  switch (use) {
-    case 'Upload':
-      return 'material-symbols:upload';
-    case 'Download':
-      return Icons.Download;
-    default:
-      return Icons.Star;
-  }
-}
 
 export function getActionIcon(type: ProductActionType) {
   switch (type) {
@@ -26,8 +20,10 @@ export function getActionIcon(type: ProductActionType) {
       return 'carbon:build-run';
     case ProductActionType.Republish:
       return 'carbon:ibm-elo-publishing';
-    case ProductActionType.Cancel:
+    case ProductActionType.CancelWorkflow:
       return 'mdi:cancel-octagon';
+    default:
+      return 'carbon:stop-filled';
   }
 }
 
@@ -79,17 +75,22 @@ export function getFileIcon(fileType: string) {
   }
 }
 
-export function getFlagIcon(locale: Locale) {
-  switch (locale) {
-    case 'en-US':
-      return 'circle-flags:us';
-    case 'es-419':
-      return 'circle-flags:mx';
-    case 'fr-FR':
-      return 'circle-flags:fr';
-    default:
-      console.warn(`Unrecognized language tag ${locale} in getFlag, using default flag.`);
-      return 'circle-flags:un'; // UN flag as fallback
+export const DefaultFlags = new Map<DefaultLocale, string>([
+  ['en-US', 'circle-flags:us'],
+  ['es-419', 'circle-flags:mx'],
+  ['fr-FR', 'circle-flags:fr']
+]) as ReadonlyMap<DefaultLocale, string>;
+
+export function getFlagIcon<Locale extends string>(
+  locale: Locale,
+  map: ReadonlyMap<Locale, string>
+) {
+  const f = map.get(locale);
+  if (!f) {
+    console.warn(`Unrecognized language tag ${locale} in getFlag, using default flag.`);
+    return 'circle-flags:un'; // UN flag as fallback
+  } else {
+    return f;
   }
 }
 
@@ -101,6 +102,87 @@ export function getProductIcon(type: ProductType) {
       return 'mdi:archive';
     default:
       return 'flat-color-icons:android-os';
+  }
+}
+
+export function getProjectActionIcon(
+  args: Prisma.ProjectActionsGetPayload<{ select: { ActionType: true; Action: true; Value: true } }>
+) {
+  switch (args.ActionType) {
+    case ProjectActionType.Archival:
+      switch (args.Action as ValidI13nKey) {
+        case ProjectActionString.Archive:
+          return Icons.Archive;
+        default:
+          return Icons.ReactivateProject;
+      }
+    case ProjectActionType.Access:
+      switch (args.Action.replace(/Project /, '')) {
+        case 'Upload':
+          return 'material-symbols:upload';
+        case 'Download':
+          return Icons.Download;
+        default:
+          return Icons.Star;
+      }
+    case ProjectActionType.OwnerGroup:
+      switch (args.Action as ValidI13nKey) {
+        case ProjectActionString.AssignGroup:
+          return Icons.AddGroup;
+        default:
+          return Icons.AddUser;
+      }
+    case ProjectActionType.Product:
+      switch (args.Action as ValidI13nKey) {
+        case ProjectActionString.AddProduct:
+          return Icons.AddProduct;
+        default:
+          return Icons.Trash;
+      }
+    case ProjectActionType.Author:
+      switch (args.Action as ValidI13nKey) {
+        case ProjectActionString.AddAuthor:
+          return Icons.AddAuthor;
+        default:
+          return Icons.Trash;
+      }
+    case ProjectActionType.Reviewer:
+      switch (args.Action as ValidI13nKey) {
+        case ProjectActionString.AddReviewer:
+          return Icons.AddReviewer;
+        default:
+          return Icons.Trash;
+      }
+    case ProjectActionType.EditField:
+      switch (args.Value as ValidI13nKey) {
+        case ProjectActionValue.AutoPublishOn:
+          return Icons.RefreshOn;
+        case ProjectActionValue.AutoPublishOff:
+          return Icons.RefreshOff;
+        case ProjectActionValue.DownloadsOn:
+          return Icons.Download;
+        case ProjectActionValue.DownloadsOff:
+          return Icons.DownloadOff;
+        case ProjectActionValue.RebuildsOn:
+          return Icons.UpdateOn;
+        case ProjectActionValue.RebuildsOff:
+          return Icons.UpdateOff;
+        case ProjectActionValue.VisibilityOn:
+          return Icons.Visible;
+        case ProjectActionValue.VisibilityOff:
+          return Icons.Invisible;
+        default:
+          return Icons.Edit;
+      }
+    case ProjectActionType.Creation:
+      switch (args.Action) {
+        case ProjectActionString.CreateProject:
+          return Icons.AddProject;
+        default:
+          return Icons.Import;
+      }
+    default:
+      return '';
   }
 }
 
@@ -142,15 +224,23 @@ export function getTransitionIcon(
     case ProductTransitionType.EndWorkflow:
       return Icons.Checkmark;
     case ProductTransitionType.CancelWorkflow:
-      return getActionIcon(ProductActionType.Cancel);
+      return getActionIcon(ProductActionType.CancelWorkflow);
     case ProductTransitionType.ProjectAccess:
-      return getAccessIcon(command);
+      return getProjectActionIcon({
+        ActionType: ProjectActionType.Access,
+        Action: command ?? '',
+        Value: null
+      });
     case ProductTransitionType.Migration:
       return Icons.Transfer;
     case ProductTransitionType.Archival:
       return Icons.Archive;
     case ProductTransitionType.Reactivation:
       return Icons.ReactivateProject;
+    case ProductTransitionType.Transfer:
+      return Icons.Transfer;
+    case ProductTransitionType.Update:
+      return Icons.Edit;
   }
 }
 
@@ -175,6 +265,7 @@ export function getWorkflowActionIcon(type: WorkflowAction) {
       return 'mdi:approve';
     case WorkflowAction.Hold:
       return 'gridicons:pause';
+    case WorkflowAction.Cancel:
     case WorkflowAction.Reject:
       return 'mdi:cancel';
     case WorkflowAction.Jump:
@@ -189,6 +280,8 @@ export function getWorkflowActionIcon(type: WorkflowAction) {
       return 'icon-park-outline:return';
     case WorkflowAction.Email_Reviewers:
       return Icons.Email;
+    case WorkflowAction.Reset:
+      return Icons.RefreshOn;
     default:
       return '';
   }
@@ -285,6 +378,7 @@ export type IconType =
       | typeof getFileIcon
       | typeof getFlagIcon
       | typeof getProductIcon
+      | typeof getProjectActionIcon
       | typeof getRoleIcon
       | typeof getStoreIcon
       | typeof getTransitionIcon

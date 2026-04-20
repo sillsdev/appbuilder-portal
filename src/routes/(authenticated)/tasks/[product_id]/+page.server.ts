@@ -29,6 +29,7 @@ type Fields = {
   displayProductDescription: boolean; //Product.ProductDefinition.Description
   appType?: { Id: number; Description: string }; //Product.ProductDefinition.ApplicationTypes.Description
   projectLanguageCode?: string; //Product.Project.Language
+  packageName?: string; // Product.PackageName
 };
 
 export const load = (async ({ params, locals, depends }) => {
@@ -46,6 +47,7 @@ export const load = (async ({ params, locals, depends }) => {
     },
     select: {
       CurrentBuildId: true,
+      PackageName: true,
       Project: {
         select: {
           Id: true,
@@ -122,7 +124,7 @@ export const load = (async ({ params, locals, depends }) => {
                 DateUpdated: true
               },
               orderBy: {
-                DateUpdated: 'desc'
+                DateCreated: 'desc'
               },
               take: 1
             }
@@ -190,7 +192,8 @@ export const load = (async ({ params, locals, depends }) => {
         snap.context.includeFields.includes('projectURL') && projectUrl(product.Project.Id),
       displayProductDescription: snap.context.includeFields.includes('productDescription'),
       appType: snap.context.includeFields.includes('appType') && product.Project.ApplicationType,
-      projectLanguageCode: product.Project.Language
+      projectLanguageCode: product.Project.Language,
+      packageName: snap.context.includeFields.includes('packageName') && product.PackageName
     } as Fields,
     files: artifacts,
     release: snap.context.includeArtifacts === 'error' && product.ProductPublications?.at(0),
@@ -315,22 +318,19 @@ export const actions = {
   }
 } satisfies Actions;
 
-// allowed if SuperAdmin, or the user has a UserTask for the Product
+// allowed if the user has a UserTask for the Product
 async function verifyCanViewTask(security: Security, productId: string): Promise<boolean> {
-  if (!security) return false;
+  if (!security.userId) return false;
 
-  return (
-    security.isSuperAdmin ||
-    !!(await DatabaseReads.userTasks.findFirst({
-      where: {
-        ProductId: productId,
-        UserId: security.userId
-      },
-      select: {
-        Id: true
-      }
-    }))
-  );
+  return !!(await DatabaseReads.userTasks.findFirst({
+    where: {
+      ProductId: productId,
+      UserId: security.userId
+    },
+    select: {
+      Id: true
+    }
+  }));
 }
 
 function filterAvailableActions(
@@ -350,6 +350,7 @@ function filterAvailableActions(
 ): boolean {
   if (userId === undefined) return false;
   return action.some((a) => {
+    if (a.meta?.createTasks === false) return false;
     switch (a.meta?.user) {
       case RoleId.AppBuilder:
         return userId === project.Owner.Id;

@@ -17,6 +17,7 @@
   import { ProductActionType } from '$lib/products';
   import type { ProjectForAction, PrunedProject } from '$lib/projects';
   import { canArchive, canClaimProject, canReactivate } from '$lib/projects';
+  import AppTypeSelector from '$lib/projects/components/AppTypeSelector.svelte';
   import ProjectActionMenu from '$lib/projects/components/ProjectActionMenu.svelte';
   import ProjectCard from '$lib/projects/components/ProjectCard.svelte';
   import ProjectFilterSelector from '$lib/projects/components/ProjectFilterSelector.svelte';
@@ -201,6 +202,12 @@
       <div
         class="flex flex-row flex-wrap md:flex-nowrap place-content-end items-center mx-4 gap-1 {mobileSizing}"
       >
+        <AppTypeSelector
+          types={data.appTypes}
+          bind:value={$pageForm.appType}
+          allowNull
+          class={{ dropdown: 'md:w-auto!' }}
+        />
         <Tooltip class="tooltip-bottom {mobileSizing}">
           <div class="tooltip-content text-left">
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -423,7 +430,7 @@
     {@const locale = getLocale()}
     <div class="w-full relative p-4">
       {#each projects.toSorted((a, b) => byName(a, b, locale)) as project}
-        <ProjectCard {project}>
+        <ProjectCard {project} search={$pageForm.search}>
           {#snippet select()}
             {#if canModifyProjects}
               <input

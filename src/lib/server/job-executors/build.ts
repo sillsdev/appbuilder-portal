@@ -5,6 +5,7 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
+import { BuildStatus, ProductTransitionType } from '$lib/prisma';
 import { fetchPackageName, getComputeType, updateComputeType } from '$lib/products';
 import { projectUrl } from '$lib/projects/server';
 import { NotificationType } from '$lib/users';
@@ -92,10 +93,9 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
       throw new Error(message);
     } else {
       await DatabaseWrites.productBuilds.create({
-        data: {
-          ProductId: job.data.productId,
-          BuildEngineBuildId: response.id
-        }
+        ProductId: job.data.productId,
+        BuildEngineBuildId: response.id,
+        Status: BuildStatus.Pending
       });
       await DatabaseWrites.productTransitions.tryConnect(
         job.data.productId,
@@ -185,16 +185,8 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
             if (type === 'version' && res.headers.get('Content-Type') === 'application/json') {
               const version = JSON.parse(await fetch(url).then((r) => r.text()));
               if (version['version']) {
-                await DatabaseWrites.productBuilds.update({
-                  where: {
-                    ProductId_BuildEngineBuildId: {
-                      ProductId: job.data.productId,
-                      BuildEngineBuildId: job.data.build.id
-                    }
-                  },
-                  data: {
-                    Version: version['version']
-                  }
+                await DatabaseWrites.productBuilds.update(job.data.productId, job.data.build.id, {
+                  Version: version['version']
                 });
                 if (job.data.build.result === 'SUCCESS') {
                   await DatabaseWrites.products.update(job.data.productId, {
@@ -203,16 +195,8 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
                 }
               }
               if (version['appbuilderVersion']) {
-                await DatabaseWrites.productBuilds.update({
-                  where: {
-                    ProductId_BuildEngineBuildId: {
-                      ProductId: job.data.productId,
-                      BuildEngineBuildId: job.data.build.id
-                    }
-                  },
-                  data: {
-                    AppBuilderVersion: version['appbuilderVersion']
-                  }
+                await DatabaseWrites.productBuilds.update(job.data.productId, job.data.build.id, {
+                  AppBuilderVersion: version['appbuilderVersion']
                 });
               }
             }
@@ -270,16 +254,9 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
     DateBuilt: latestArtifactDate
   });
   job.updateProgress(75);
-  await DatabaseWrites.productBuilds.update({
-    where: {
-      ProductId_BuildEngineBuildId: {
-        ProductId: job.data.productId,
-        BuildEngineBuildId: job.data.build.id
-      }
-    },
-    data: {
-      Success: job.data.build.result === 'SUCCESS'
-    }
+  await DatabaseWrites.productBuilds.update(job.data.productId, job.data.build.id, {
+    Success: job.data.build.result === 'SUCCESS',
+    Status: BuildStatus.Completed
   });
   job.updateProgress(90);
   const flow = await Workflow.restore(job.data.productId);
@@ -311,6 +288,15 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
               }))
             ) {
               action = WorkflowAction.Retry;
+              await DatabaseWrites.productTransitions.create({
+                data: {
+                  UserId: null,
+                  ProductId: job.data.productId,
+                  Comment: newProps,
+                  DateTransition: new Date(),
+                  TransitionType: ProductTransitionType.Update
+                }
+              });
             }
           }
         } catch {
@@ -362,7 +348,7 @@ export async function deleteBuild(job: Job<BullMQ.Build.Delete>): Promise<unknow
     job.data.buildEngineBuildId
   );
   job.updateProgress(50);
-  if (response.responseType === 'error') {
+  if (response.responseType === 'error' && response.status !== 404) {
     job.log(response.message);
     throw new Error(response.message);
   } else {

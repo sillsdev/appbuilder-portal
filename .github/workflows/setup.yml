@@ -85,7 +85,8 @@ jobs:
       - name: Compile paraglide messages and run svelte-check
         run: |
           echo "Compiling paraglide messages..."
-          npx @inlang/paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide
+          npx @inlang/paraglide-js compile --project ./paraglide/default.inlang --outdir ./src/lib/paraglide
+          npx @inlang/paraglide-js compile --project ./paraglide/google-play.inlang --outdir ./src/lib/google-play/paraglide
           echo "Running svelte-check..."
           npm run check
 

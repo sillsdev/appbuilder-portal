@@ -50,7 +50,7 @@ export async function workflow(job: Job<BullMQ.UserTasks.Workflow>): Promise<unk
   let deletedCount = 0;
 
   // Clear PreExecuteEntries
-  if (!project.DateArchived) {
+  if (!project.DateArchived || job.data.operation.type === BullMQ.UserTasks.OpType.Reassign) {
     await DatabaseWrites.productTransitions.deleteMany(
       {
         where: {
@@ -123,7 +123,9 @@ export async function workflow(job: Job<BullMQ.UserTasks.Workflow>): Promise<unk
             new Set(
               (
                 availableTransitions
-                  .filter((t) => t[0].meta.type === ActionType.User)
+                  .filter(
+                    (t) => t[0].meta.type === ActionType.User && t[0].meta.createTasks !== false
+                  )
                   .map((t) => t[0].meta.user) as RoleId[]
               ).filter((r) => job.data.operation.roles?.includes(r) ?? true)
             ),
@@ -263,7 +265,10 @@ export async function deleteRequest(job: Job<BullMQ.UserTasks.DeleteRequest>): P
       const product = products[i];
 
       // Create tasks for all users that could perform this activity
-      if (job.data.operation.type !== BullMQ.UserTasks.OpType.Delete) {
+      if (
+        job.data.operation.type !== BullMQ.UserTasks.OpType.Delete &&
+        (await DatabaseReads.productUserChanges.findFirst({ where: { ProductId: product.Id } }))
+      ) {
         const toCreate = await createTasks(
           new Set(
             job.data.operation.roles ??

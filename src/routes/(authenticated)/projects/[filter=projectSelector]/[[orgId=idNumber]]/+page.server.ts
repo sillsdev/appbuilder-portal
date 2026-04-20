@@ -20,7 +20,9 @@ import { stringIdSchema } from '$lib/valibot';
 
 const bulkProductActionSchema = v.object({
   products: v.array(stringIdSchema),
-  operation: v.nullable(v.pipe(v.enum(ProductActionType), v.excludes(ProductActionType.Cancel)))
+  operation: v.nullable(
+    v.pipe(v.picklist([ProductActionType.Rebuild, ProductActionType.Republish]))
+  )
 });
 
 function whereStatements(paramFilter: string, user: Security, orgIds?: number[]) {
@@ -137,6 +139,7 @@ export const load = (async ({ params, locals }) => {
     count: await DatabaseReads.projects.count({
       where: whereStatements(params.filter, locals.security, orgIds)
     }),
+    appTypes: await DatabaseReads.applicationTypes.findMany(),
     actionForm: await superValidate(valibot(bulkProjectActionSchema)),
     productForm: await superValidate(valibot(bulkProductActionSchema)),
     productDefinitions: await DatabaseReads.productDefinitions.findMany(),
@@ -298,7 +301,11 @@ export const actions: Actions = {
       })
     ).forEach((p) => locals.security.requireProjectWriteAccess(p));
 
-    await Promise.all(form.data.products.map((p) => doProductAction(p, form.data.operation!)));
+    await Promise.all(
+      form.data.products.map((p) =>
+        doProductAction(p, form.data.operation!, locals.security.userId)
+      )
+    );
 
     return { form, ok: true };
   }

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
+  import SecureDisplay from '$lib/components/settings/SecureDisplay.svelte';
   import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
@@ -42,13 +43,14 @@
           key: 'org_buildEngineURL',
           value: organization.BuildEngineUrl,
           faint: !!organization.UseDefaultBuildEngine
-        },
-        {
-          key: 'org_accessToken',
-          value: organization.BuildEngineApiAccessToken,
-          faint: !!organization.UseDefaultBuildEngine
         }
       ]}
-    />
+    >
+      <div style="padding-left: 1rem; text-indent: -1rem" class="opacity-40">
+        <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
+        <b>{m.org_accessToken()}:</b>
+        <SecureDisplay value={organization.BuildEngineApiAccessToken} />
+      </div>
+    </DataDisplayBox>
   {/each}
 </div>

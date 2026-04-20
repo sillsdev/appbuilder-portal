@@ -28,6 +28,7 @@ export const load = (async (event) => {
   return {
     projects: pruneProjects(projects),
     productDefinitions,
+    appTypes: await DatabaseReads.applicationTypes.findMany(),
     form: await superValidate(
       {
         page: {
