@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
+  import { m } from '$lib/google-play/paraglide/messages';
   import {
     DEFAULT_ICON,
     applyThemeToDocument,
@@ -51,7 +52,7 @@
     <div class="udm-header px-5 pt-8 pb-4 flex items-start gap-4">
       <img
         src={iconSrc}
-        alt="App icon"
+        alt={m.app_icon_alt()}
         class="w-14 h-14 rounded-2xl shadow-sm bg-primary/5 p-0.5"
       />
       <div class="grid justify-items-start text-left gap-0">
@@ -62,14 +63,14 @@
     <div class="px-5 pb-8">
       <div class="card bg-base-100 shadow-sm border border-base-300 rounded-lg">
         <div class="card-body space-y-3">
-          <h2 class="card-title text-lg font-bold">About this app</h2>
+          <h2 class="card-title text-lg font-bold">{m.udm_about_app()}</h2>
           <p class="text-sm leading-relaxed text-base-content/80">{app.shortDesc}</p>
 
           <details class="group">
             <summary
               class="list-none text-sm font-bold text-primary cursor-pointer hover:underline flex items-center gap-2 select-none"
             >
-              Show more
+              {m.udm_show_more()}
             </summary>
             <div class="pt-3 text-sm whitespace-pre-line leading-relaxed text-base-content/80">
               {app.longDesc}
@@ -83,7 +84,7 @@
         href={`/user-data?${data.udmQuery}`}
         style="background-color: var(--color-primary);"
       >
-        Back to Manage my data
+        {m.udm_back_to_manage_data()}
       </a>
     </div>
   </div>
