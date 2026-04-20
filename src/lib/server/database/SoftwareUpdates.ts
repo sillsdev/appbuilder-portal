@@ -3,18 +3,6 @@ import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
 import type { RequirePrimitive } from './utility';
 
-/**
- * Helper: Get all unique project IDs that contain the given products
- */
-async function getProjectIdsFromProductIds(productIds: string[]): Promise<number[]> {
-  if (!productIds.length) return [];
-  const products = await prisma.products.findMany({
-    where: { Id: { in: productIds } },
-    select: { ProjectId: true }
-  });
-  return Array.from(new Set(products.map((p) => p.ProjectId)));
-}
-
 export type RebuildRequest = {
   buildEngineUrl: string;
   applicationTypeId: number;
@@ -65,7 +53,7 @@ export async function completeForProduct(productId: string): Promise<void> {
       }
     }
   });
-  if (!openUpdates.length) return;
+  if (openUpdates.length === 0) return;
 
   for (const u of openUpdates) {
     let ok = true;
@@ -87,13 +75,10 @@ export async function completeForProduct(productId: string): Promise<void> {
       });
 
       // Notify SSE clients about the completed software update
-      const projectIds = await getProjectIdsFromProductIds(u.Products.map((p) => p.Id));
-      if (projectIds.length > 0) {
-        getQueues().SvelteSSE.add(`Update Software Updates (rebuild #${u.Id} completed)`, {
-          type: BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates,
-          orgIds
-        });
-      }
+      getQueues().SvelteSSE.add(`Update Software Updates (rebuild #${u.Id} completed)`, {
+        type: BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates,
+        orgIds
+      });
     }
   }
 }
