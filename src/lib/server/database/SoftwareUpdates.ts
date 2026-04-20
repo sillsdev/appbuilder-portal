@@ -60,7 +60,7 @@ export async function completeForProduct(productId: string): Promise<void> {
     for (const p of u.Products) {
       // Require a successful build at the target version at or after the update start time
       // TODO What is the correct procedure when the update does not have a date created?
-      if (p.ProductBuilds[0].DateCreated < u.DateCreated) {
+      if ((p.ProductBuilds[0].DateCreated?.valueOf() ?? 0) < u.DateCreated.valueOf()) {
         ok = false;
         break;
       }
