@@ -75,7 +75,7 @@ export async function completeForProduct(productId: string): Promise<void> {
       });
 
       // Notify SSE clients about the completed software update
-      if(orgIds.length > 0) {
+      if (orgIds.length > 0) {
         getQueues().SvelteSSE.add(`Update Software Updates (rebuild #${u.Id} completed)`, {
           type: BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates,
           orgIds
