@@ -1,4 +1,9 @@
-import { RebuildsTable } from '$lib/software-updates';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { DatabaseReads } from '$lib/server/database';
+import type { RebuildsTable } from '$lib/software-updates';
+import { filterAdminOrgs } from '$lib/utils/roles';
+
+const tracer = trace.getTracer('SoftwareUpdatesSSE');
 
 export async function getRebuilds(
   security: Security,

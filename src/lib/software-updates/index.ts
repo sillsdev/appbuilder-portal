@@ -1,9 +1,3 @@
-import { SpanStatusCode, trace } from '@opentelemetry/api';
-import { DatabaseReads } from '$lib/server/database';
-import { filterAdminOrgs } from '$lib/utils/roles';
-
-const tracer = trace.getTracer('SoftwareUpdatesSSE');
-
 export interface RebuildItem {
   Id: number;
   InitiatedBy: string | null;
@@ -25,4 +19,3 @@ export type RebuildsTable = {
   complete: RebuildItem[];
   incomplete: RebuildItem[];
 };
-
