@@ -14,3 +14,9 @@ languages
 /out/
 Thumbs.db
 ehthumbs.db
+
+# Inlang/Paraglide generated files
+paraglide/**/*.inlang/cache/
+paraglide/**/*.inlang/project_id
+project.inlang/cache/
+project.inlang/project_id
