@@ -7,6 +7,8 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { m } from '$lib/google-play/paraglide/messages';
 import type { Locale } from '$lib/google-play/paraglide/runtime';
+import { RoleId } from '$lib/prisma';
+import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import prisma from '$lib/server/database/prisma';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
@@ -199,6 +201,21 @@ export const actions: Actions = {
           DateConfirmed: new Date()
         }
       });
+
+      await getQueues().UserTasks.add(
+        `Create data deletion request task for Product #${productId}`,
+        {
+          type: BullMQ.JobType.UserTasks_DeleteRequest,
+          scope: 'Product',
+          productId,
+          requestId: userChange.Id,
+          comment: userChange.Change ?? undefined,
+          operation: {
+            type: BullMQ.UserTasks.OpType.Create,
+            roles: [RoleId.OrgAdmin]
+          }
+        }
+      );
 
       return message(form, { verified: true });
     } catch {
