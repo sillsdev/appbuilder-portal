@@ -4,7 +4,7 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { RoleId } from '$lib/prisma';
+import { RoleId, TaskType } from '$lib/prisma';
 import { projectUrl } from '$lib/projects/server';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads } from '$lib/server/database';
@@ -325,7 +325,8 @@ async function verifyCanViewTask(security: Security, productId: string): Promise
   return !!(await DatabaseReads.userTasks.findFirst({
     where: {
       ProductId: productId,
-      UserId: security.userId
+      UserId: security.userId,
+      Type: TaskType.Workflow
     },
     select: {
       Id: true

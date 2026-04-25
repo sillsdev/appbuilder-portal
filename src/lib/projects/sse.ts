@@ -1,6 +1,6 @@
 import type { Session } from '@auth/sveltekit';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
-import { ProjectActionString, ProjectActionType, RoleId } from '$lib/prisma';
+import { ProjectActionString, ProjectActionType, RoleId, TaskType } from '$lib/prisma';
 import { getProductActions } from '$lib/products';
 import { canModifyProject } from '$lib/projects';
 import { userGroupsForOrg } from '$lib/projects/server';
@@ -391,41 +391,84 @@ export async function getProjectDetails(id: number, userSession: Session['user']
 
 export type UserTaskDataSSE = Awaited<ReturnType<typeof getUserTasks>>;
 export async function getUserTasks(userId: number) {
-  const tasks = await DatabaseReads.userTasks.findMany({
-    where: {
-      UserId: userId
+  const taskSelect = {
+    Status: true,
+    Comment: true,
+    Id: true,
+    Type: true,
+    DateUpdated: true,
+    ProductId: true,
+    ChangeRequests: {
+      select: {
+        Id: true,
+        Change: true
+      },
+      orderBy: {
+        DateCreated: 'desc'
+      },
+      take: 1
     },
-    select: {
-      Status: true,
-      Comment: true,
-      DateUpdated: true,
-      ProductId: true,
-      Product: {
-        select: {
-          ProductDefinition: {
-            select: {
-              Name: true,
-              Workflow: {
-                select: {
-                  ProductType: true
-                }
+    Product: {
+      select: {
+        ProductDefinition: {
+          select: {
+            Name: true,
+            Workflow: {
+              select: {
+                ProductType: true
               }
             }
-          },
-          ProjectId: true,
-          Project: {
-            select: {
-              Name: true
-            }
+          }
+        },
+        ProjectId: true,
+        Project: {
+          select: {
+            Name: true
           }
         }
       }
+    }
+  } as const;
+
+  const workflowTasks = await DatabaseReads.userTasks.findMany({
+    where: {
+      UserId: userId,
+      Type: TaskType.Workflow
     },
+    select: taskSelect,
     distinct: 'ProductId',
     orderBy: {
       // most recent first
       DateUpdated: 'desc'
     }
   });
-  return tasks;
+
+  const deletionTasks = await DatabaseReads.userTasks.findMany({
+    where: {
+      UserId: userId,
+      Type: TaskType.DeletionRequest,
+      ChangeRequests: {
+        some: {
+          DateCompleted: null
+        }
+      }
+    },
+    select: taskSelect,
+    orderBy: {
+      // most recent first
+      DateUpdated: 'desc'
+    }
+  });
+
+  const seenDeletionRequests = new Set<string>();
+  const uniqueDeletionTasks = deletionTasks.filter((task) => {
+    const requestId = task.ChangeRequests[0]?.Id ?? `task:${task.Id}`;
+    if (seenDeletionRequests.has(requestId)) return false;
+    seenDeletionRequests.add(requestId);
+    return true;
+  });
+
+  return [...workflowTasks, ...uniqueDeletionTasks].toSorted(
+    (a, b) => (b.DateUpdated?.valueOf() ?? 0) - (a.DateUpdated?.valueOf() ?? 0)
+  );
 }
