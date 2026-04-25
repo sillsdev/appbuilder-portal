@@ -21,10 +21,6 @@
   "udm_delete_account_description": "ಇದು ನಿಮ್ಮ ಲಾಗಿನ್ ಮತ್ತು ಉಳಿಸಿದ ವಿಷಯವನ್ನು ಶಾಶ್ವತವಾಗಿ ತೆಗೆದುಹಾಕುತ್ತದೆ.",
   "udm_deletion_warning": "ಎಚ್ಚರಿಕೆ: ಅಳಿಸುವಿಕೆಗಳು ಶಾಶ್ವತವಾಗಿರುತ್ತವೆ ಮತ್ತು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಕಾನೂನು ಅಥವಾ ಅನುಸರಣೆ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಕೆಲವು ಡೇಟಾವನ್ನು ಉಳಿಸಿಕೊಳ್ಳಬಹುದು.",
   "udm_items_to_be_removed_title": "ತೆಗೆದುಹಾಕಬೇಕಾದ ಐಟಂಗಳು",
-  "udm_item_bookmarks": "ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು",
-  "udm_item_notes": "ಟಿಪ್ಪಣಿಗಳು",
-  "udm_item_highlights": "ಮುಖ್ಯಾಂಶಗಳು",
-  "udm_item_reading_plans": "ಓದುವ ಯೋಜನೆಯ ಪ್ರಗತಿ",
   "udm_verification_label": "ಪರಿಶೀಲನೆ",
   "udm_send_verification_code": "ಪರಿಶೀಲನಾ ಕೋಡ್ ಕಳುಹಿಸಿ",
   "udm_footer_text": "ಈ ಪುಟವನ್ನು Google Play ನಲ್ಲಿ {appName} ಗಾಗಿ ಒದಗಿಸಲಾಗಿದೆ. ಸಹಾಯ ಬೇಕೇ? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "ಈ ಇಮೇಲ್‌ಗೆ ಯಾವುದೇ ಕೋಡ್ ಕಳುಹಿಸಲಾಗಿಲ್ಲ.",
   "udm_error_code_expired": "ಕೋಡ್ ಅವಧಿ ಮುಗಿದಿದೆ.",
   "udm_error_invalid_code": "ಅಮಾನ್ಯ ಕೋಡ್.",
-  "udm_error_invalid_code_retry": "ಅಮಾನ್ಯ ಕೋಡ್. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಮೇಲ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+  "udm_error_invalid_code_retry": "ಅಮಾನ್ಯ ಕೋಡ್. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಮೇಲ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+  "udm_items_to_be_removed_list": "ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು\nಟಿಪ್ಪಣಿಗಳು\nಮುಖ್ಯಾಂಶಗಳು\nಓದುವ ಯೋಜನೆಯ ಪ್ರಗತಿ"
 }

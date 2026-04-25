@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Ez véglegesen eltávolítja a bejelentkezését és a mentett tartalmakat.",
   "udm_deletion_warning": "Figyelmeztetés: A törlések véglegesek és nem vonhatók vissza. Bizonyos adatokat jogi vagy megfelelőségi okokból megőrizhetünk.",
   "udm_items_to_be_removed_title": "Eltávolítandó elemek",
-  "udm_item_bookmarks": "Könyvjelzők",
-  "udm_item_notes": "Jegyzetek",
-  "udm_item_highlights": "Kiemelések",
-  "udm_item_reading_plans": "Olvasási terv állapota",
   "udm_verification_label": "Ellenőrzés",
   "udm_send_verification_code": "Ellenőrző kód küldése",
   "udm_footer_text": "Ezt az oldalt a(z) {appName} számára biztosítjuk a Google Playen. Segítségre van szüksége? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Erre az e-mail címre nem küldtünk kódot.",
   "udm_error_code_expired": "A kód lejárt.",
   "udm_error_invalid_code": "Érvénytelen kód.",
-  "udm_error_invalid_code_retry": "Érvénytelen kód. Kérjük, ellenőrizze az e-mailjeit, és próbálja újra."
+  "udm_error_invalid_code_retry": "Érvénytelen kód. Kérjük, ellenőrizze az e-mailjeit, és próbálja újra.",
+  "udm_items_to_be_removed_list": "Könyvjelzők\nJegyzetek\nKiemelések\nOlvasási terv állapota"
 }

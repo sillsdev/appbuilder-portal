@@ -21,10 +21,6 @@
   "udm_delete_account_description": "这将永久移除您的登录信息和保存的内容。",
   "udm_deletion_warning": "警告：删除是永久性的，无法撤消。某些数据可能会因法律或合规目的而保留。",
   "udm_items_to_be_removed_title": "待移除的项目",
-  "udm_item_bookmarks": "书签",
-  "udm_item_notes": "笔记",
-  "udm_item_highlights": "高亮",
-  "udm_item_reading_plans": "阅读计划进度",
   "udm_verification_label": "验证",
   "udm_send_verification_code": "发送验证码",
   "udm_footer_text": "此页面是为 Google Play 上的 {appName} 提供的。需要帮助？",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "未向此电子邮件发送代码。",
   "udm_error_code_expired": "代码已过期。",
   "udm_error_invalid_code": "无效代码。",
-  "udm_error_invalid_code_retry": "代码无效。请检查您的电子邮件并重试。"
+  "udm_error_invalid_code_retry": "代码无效。请检查您的电子邮件并重试。",
+  "udm_items_to_be_removed_list": "书签\n笔记\n高亮\n阅读计划进度"
 }

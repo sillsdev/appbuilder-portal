@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Acest lucru va elimina definitiv autentificarea și conținutul salvat.",
   "udm_deletion_warning": "Avertisment: Ștergerile sunt permanente și nu pot fi anulate. Unele date pot fi păstrate din motive legale sau de conformitate.",
   "udm_items_to_be_removed_title": "Elemente care vor fi eliminate",
-  "udm_item_bookmarks": "Semne de carte",
-  "udm_item_notes": "Note",
-  "udm_item_highlights": "Sublinieri",
-  "udm_item_reading_plans": "Progresul planului de lectură",
   "udm_verification_label": "Verificare",
   "udm_send_verification_code": "Trimite codul de verificare",
   "udm_footer_text": "Această pagină este furnizată pentru {appName} pe Google Play. Aveți nevoie de ajutor? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Nu a fost trimis niciun cod la acest e-mail.",
   "udm_error_code_expired": "Cod expirat.",
   "udm_error_invalid_code": "Cod nevalid.",
-  "udm_error_invalid_code_retry": "Cod nevalid. Vă rugăm să verificați e-mailul și să încercați din nou."
+  "udm_error_invalid_code_retry": "Cod nevalid. Vă rugăm să verificați e-mailul și să încercați din nou.",
+  "udm_items_to_be_removed_list": "Semne de carte\nNote\nSublinieri\nProgresul planului de lectură"
 }

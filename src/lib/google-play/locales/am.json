@@ -21,10 +21,6 @@
   "udm_delete_account_description": "ይህ የእርስዎን መግቢያ እና የተቀመጠ ይዘት በቋሚነት ያስወግዳል።",
   "udm_deletion_warning": "ማስጠንቀቂያ፡ ስረዛዎች ቋሚ ናቸው እና ወደ ቀድሞው ሁኔታ መመለስ አይችሉም። አንዳንድ ውሂብ ለህጋዊ ወይም ለተገዢነት ዓላማዎች ሊቀመጥ ይችላል።",
   "udm_items_to_be_removed_title": "የሚወገዱ እቃዎች",
-  "udm_item_bookmarks": "ዕልባቶች",
-  "udm_item_notes": "ማስታወሻዎች",
-  "udm_item_highlights": "ዋና ዋና ነጥቦች",
-  "udm_item_reading_plans": "የንባብ ዕቅድ ሂደት",
   "udm_verification_label": "ማረጋገጫ",
   "udm_send_verification_code": "የማረጋገጫ ኮድ ላክ",
   "udm_footer_text": "ይህ ገጽ በGoogle Play ላይ ለ{appName} የቀረበ ነው። እርዳታ ይፈልጋሉ? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "ወደዚህ ኢሜይል የተላከ ኮድ የለም።",
   "udm_error_code_expired": "ኮዱ ጊዜው አልፎበታል።",
   "udm_error_invalid_code": "ልክ ያልሆነ ኮድ።",
-  "udm_error_invalid_code_retry": "ልክ ያልሆነ ኮድ። እባክዎ ኢሜይልዎን ያረጋግጡ እና እንደገና ይሞክሩ።"
+  "udm_error_invalid_code_retry": "ልክ ያልሆነ ኮድ። እባክዎ ኢሜይልዎን ያረጋግጡ እና እንደገና ይሞክሩ።",
+  "udm_items_to_be_removed_list": "ዕልባቶች\nማስታወሻዎች\nዋና ዋና ነጥቦች\nየንባብ ዕቅድ ሂደት"
 }

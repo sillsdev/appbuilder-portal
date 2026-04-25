@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Ini akan menghapus login dan konten simpanan Anda secara permanen.",
   "udm_deletion_warning": "Peringatan: Penghapusan bersifat permanen dan tidak dapat dibatalkan. Beberapa data mungkin dipertahankan untuk tujuan hukum atau kepatuhan.",
   "udm_items_to_be_removed_title": "Item yang akan dihapus",
-  "udm_item_bookmarks": "Bookmark",
-  "udm_item_notes": "Catatan",
-  "udm_item_highlights": "Sorotan",
-  "udm_item_reading_plans": "Kemajuan rencana membaca",
   "udm_verification_label": "Verifikasi",
   "udm_send_verification_code": "Kirim kode verifikasi",
   "udm_footer_text": "Halaman ini disediakan untuk {appName} di Google Play. Butuh bantuan? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Tidak ada kode yang dikirim ke email ini.",
   "udm_error_code_expired": "Kode kadaluarsa.",
   "udm_error_invalid_code": "Kode tidak valid.",
-  "udm_error_invalid_code_retry": "Kode tidak valid. Periksa email Anda dan coba lagi."
+  "udm_error_invalid_code_retry": "Kode tidak valid. Periksa email Anda dan coba lagi.",
+  "udm_items_to_be_removed_list": "Bookmark\nCatatan\nSorotan\nKemajuan rencana membaca"
 }

@@ -20,7 +20,7 @@ export const load: LayoutServerLoad = async (event) => {
             Description: true
           }
         })
-      ).map((l) => [l.Name, l.Description])
+      ).map((language) => [language.Name, language.Description ?? language.Name])
     )
   };
 };

@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Това за постоянно ще премахне вашия достъп и запазено съдържание.",
   "udm_deletion_warning": "Предупреждение: Изтриванията са постоянни и не могат да бъдат отменени. Някои данни могат да бъдат запазени за законови цели или цели на съответствието.",
   "udm_items_to_be_removed_title": "Елементи за премахване",
-  "udm_item_bookmarks": "Отметки",
-  "udm_item_notes": "Бележки",
-  "udm_item_highlights": "Акценти",
-  "udm_item_reading_plans": "Прогрес на плановете за четене",
   "udm_verification_label": "Потвърждение",
   "udm_send_verification_code": "Изпращане на код за потвърждение",
   "udm_footer_text": "Тази страница се предоставя за {appName} в Google Play. Нуждаете се от помощ? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "На този имейл не е изпратен код.",
   "udm_error_code_expired": "Кодът е изтекъл.",
   "udm_error_invalid_code": "Невалиден код.",
-  "udm_error_invalid_code_retry": "Невалиден код. Моля, проверете имейла си и опитайте отново."
+  "udm_error_invalid_code_retry": "Невалиден код. Моля, проверете имейла си и опитайте отново.",
+  "udm_items_to_be_removed_list": "Отметки\nБележки\nАкценти\nПрогрес на плановете за четене"
 }

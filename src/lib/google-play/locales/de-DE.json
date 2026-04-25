@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Dies wird Ihren Login und Ihre gespeicherten Inhalte dauerhaft entfernen.",
   "udm_deletion_warning": "Warnung: Löschungen sind dauerhaft und können nicht rückgängig gemacht werden. Einige Daten können aus rechtlichen oder Compliance-Gründen aufbewahrt werden.",
   "udm_items_to_be_removed_title": "Zu entfernende Elemente",
-  "udm_item_bookmarks": "Lesezeichen",
-  "udm_item_notes": "Notizen",
-  "udm_item_highlights": "Hervorhebungen",
-  "udm_item_reading_plans": "Fortschritt der Lesepläne",
   "udm_verification_label": "Verifizierung",
   "udm_send_verification_code": "Verifizierungscode senden",
   "udm_footer_text": "Diese Seite wird für {appName} bei Google Play bereitgestellt. Brauchen Sie Hilfe? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Es wurde kein Code an diese E-Mail gesendet.",
   "udm_error_code_expired": "Code abgelaufen.",
   "udm_error_invalid_code": "Ungültiger Code.",
-  "udm_error_invalid_code_retry": "Ungültiger Code. Bitte prüfen Sie Ihre E-Mails und versuchen Sie es erneut."
+  "udm_error_invalid_code_retry": "Ungültiger Code. Bitte prüfen Sie Ihre E-Mails und versuchen Sie es erneut.",
+  "udm_items_to_be_removed_list": "Lesezeichen\nNotizen\nHervorhebungen\nFortschritt der Lesepläne"
 }

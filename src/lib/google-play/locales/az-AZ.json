@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Bu, girişinizi və saxlanılan məzmunu daimi olaraq siləcək.",
   "udm_deletion_warning": "Xəbərdarlıq: Silinmələr daimidir və geri qaytarıla bilməz. Bəzi məlumatlar hüquqi və ya uyğunluq məqsədləri üçün saxlanıla bilər.",
   "udm_items_to_be_removed_title": "Silinəcək elementlər",
-  "udm_item_bookmarks": "Əlfəcinlər",
-  "udm_item_notes": "Qeydlər",
-  "udm_item_highlights": "Seçilmişlər",
-  "udm_item_reading_plans": "Mütaliə planı tərəqqisi",
   "udm_verification_label": "Təsdiqləmə",
   "udm_send_verification_code": "Təsdiq kodunu göndər",
   "udm_footer_text": "Bu səhifə Google Play-də {appName} üçün təmin edilmişdir. Kömək lazımdır? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Bu e-poçta kod göndərilməyib.",
   "udm_error_code_expired": "Kodun vaxtı bitib.",
   "udm_error_invalid_code": "Yanlış kod.",
-  "udm_error_invalid_code_retry": "Yanlış kod. Zəhmət olmasa e-poçtunuzu yoxlayın və yenidən cəhd edin."
+  "udm_error_invalid_code_retry": "Yanlış kod. Zəhmət olmasa e-poçtunuzu yoxlayın və yenidən cəhd edin.",
+  "udm_items_to_be_removed_list": "Əlfəcinlər\nQeydlər\nSeçilmişlər\nMütaliə planı tərəqqisi"
 }

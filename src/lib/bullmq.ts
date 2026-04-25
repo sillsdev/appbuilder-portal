@@ -54,7 +54,7 @@ export enum JobType {
   SvelteSSE_UpdateProject = 'Update Project',
   SvelteSSE_UpdateUserTasks = 'Update UserTasks',
   // User Data Management
-  UDM_Cleanup = 'User Data Management Cleanup'
+  System_Cleanup = 'System Cleanup'
 }
 
 export enum JobSchedulerId {
@@ -62,5 +62,5 @@ export enum JobSchedulerId {
   RefreshLangTags = 'RefreshLangTags',
   CheckSystemStatuses = 'CheckSystemStatuses',
   MigrateChunks = 'MigrateChunks',
-  CleanupUserData = 'CleanupEmailVerificationRequests'
+  CleanupExpiredData = 'CleanupExpiredData'
 }

@@ -21,10 +21,6 @@
   "udm_delete_account_description": "這將永久移除您的登入資訊和儲存的内容。",
   "udm_deletion_warning": "警告：刪除是永久性的，無法撤消。某些資料可能會因法律或合規目的而保留。",
   "udm_items_to_be_removed_title": "待移除的項目",
-  "udm_item_bookmarks": "書籤",
-  "udm_item_notes": "筆記",
-  "udm_item_highlights": "醒目提示",
-  "udm_item_reading_plans": "閱讀計劃進度",
   "udm_verification_label": "驗證",
   "udm_send_verification_code": "發送驗證碼",
   "udm_footer_text": "此頁面是為 Google Play 上的 {appName} 提供的。需要幫助？",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "未向此電子郵件發送代碼。",
   "udm_error_code_expired": "代碼已過期。",
   "udm_error_invalid_code": "無效代碼。",
-  "udm_error_invalid_code_retry": "代碼無效。請檢查您的電子郵件並重試。"
+  "udm_error_invalid_code_retry": "代碼無效。請檢查您的電子郵件並重試。",
+  "udm_items_to_be_removed_list": "書籤\n筆記\n醒目提示\n閱讀計劃進度"
 }

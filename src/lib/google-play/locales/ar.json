@@ -21,10 +21,6 @@
   "udm_delete_account_description": "سيؤدي هذا إلى إزالة تسجيل دخولك والمحتوى المحفوظ نهائيًا.",
   "udm_deletion_warning": "تحذير: عمليات الحذف نهائية ولا يمكن التراجع عنها. قد يتم الاحتفاظ ببعض البيانات لأسباب قانونية أو تتعلق بالامتثال.",
   "udm_items_to_be_removed_title": "العناصر التي سيتم إزالتها",
-  "udm_item_bookmarks": "الإشارات المرجعية",
-  "udm_item_notes": "الملاحظات",
-  "udm_item_highlights": "التظليلات",
-  "udm_item_reading_plans": "تقدم خطة القراءة",
   "udm_verification_label": "التحقق",
   "udm_send_verification_code": "إرسال رمز التحقق",
   "udm_footer_text": "تم توفير هذه الصفحة لـ {appName} على Google Play. هل تحتاج إلى مساعدة؟ ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "لم يتم إرسال أي رمز إلى هذا البريد الإلكتروني.",
   "udm_error_code_expired": "انتهت صلاحية الرمز.",
   "udm_error_invalid_code": "رمز غير صالح.",
-  "udm_error_invalid_code_retry": "رمز غير صالح. يرجى التحقق من بريدك الإلكتروني والمحاولة مرة أخرى."
+  "udm_error_invalid_code_retry": "رمز غير صالح. يرجى التحقق من بريدك الإلكتروني والمحاولة مرة أخرى.",
+  "udm_items_to_be_removed_list": "الإشارات المرجعية\nالملاحظات\nالتظليلات\nتقدم خطة القراءة"
 }

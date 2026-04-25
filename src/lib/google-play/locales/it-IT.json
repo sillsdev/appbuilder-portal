@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Questo rimuoverà permanentemente il tuo account e i contenuti salvati.",
   "udm_deletion_warning": "Avviso: le cancellazioni sono permanenti e non possono essere annullate. Alcuni dati potrebbero essere conservati per scopi legali o di conformità.",
   "udm_items_to_be_removed_title": "Elementi da rimuovere",
-  "udm_item_bookmarks": "Segnalibri",
-  "udm_item_notes": "Note",
-  "udm_item_highlights": "Evidenziazioni",
-  "udm_item_reading_plans": "Progressi del piano di lettura",
   "udm_verification_label": "Verifica",
   "udm_send_verification_code": "Invia codice di verifica",
   "udm_footer_text": "Questa pagina è fornita per {appName} su Google Play. Serve aiuto? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Nessun codice inviato a questa email.",
   "udm_error_code_expired": "Codice scaduto.",
   "udm_error_invalid_code": "Codice non valido.",
-  "udm_error_invalid_code_retry": "Codice non valido. Per favore, controlla la tua email e riprova."
+  "udm_error_invalid_code_retry": "Codice non valido. Per favore, controlla la tua email e riprova.",
+  "udm_items_to_be_removed_list": "Segnalibri\nNote\nEvidenziazioni\nProgressi del piano di lettura"
 }

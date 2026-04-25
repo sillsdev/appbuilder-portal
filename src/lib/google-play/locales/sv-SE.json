@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Detta kommer att permanent ta bort din inloggning och ditt sparade innehåll.",
   "udm_deletion_warning": "Varning: Raderingar är permanenta och kan inte ångras. Vissa data kan behållas för juridiska ändamål eller efterlevnadsändamål.",
   "udm_items_to_be_removed_title": "Objekt som ska tas bort",
-  "udm_item_bookmarks": "Bokmärken",
-  "udm_item_notes": "Anteckningar",
-  "udm_item_highlights": "Markeringar",
-  "udm_item_reading_plans": "Framsteg i läsplaner",
   "udm_verification_label": "Verifiering",
   "udm_send_verification_code": "Skicka verifieringskod",
   "udm_footer_text": "Denna sida tillhandahålls för {appName} på Google Play. Behöver du hjälp? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Ingen kod skickad till denna e-post.",
   "udm_error_code_expired": "Koden har gått ut.",
   "udm_error_invalid_code": "Ogiltig kod.",
-  "udm_error_invalid_code_retry": "Ogiltig kod. Kontrollera din e-post och försök igen."
+  "udm_error_invalid_code_retry": "Ogiltig kod. Kontrollera din e-post och försök igen.",
+  "udm_items_to_be_removed_list": "Bokmärken\nAnteckningar\nMarkeringar\nFramsteg i läsplaner"
 }

@@ -1,14 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import type { PageData } from './$types';
   import { m } from '$lib/google-play/paraglide/messages';
-  import { type Locale, localizeHref } from '$lib/google-play/paraglide/runtime';
-  import {
-    DEFAULT_ICON,
-    applyThemeToDocument,
-    deriveColorFromIcon,
-    getThemeVariables
-  } from '$lib/utils/theme';
+  import { type Locale, getLocale, localizeHref } from '$lib/google-play/paraglide/runtime';
+  import { DEFAULT_ICON, getThemeVariables } from '$lib/utils/theme';
 
   interface Props {
     data: PageData;
@@ -17,34 +11,15 @@
   let { data }: Props = $props();
 
   const app = data.app;
-  const currentLocale = data.locale as Locale;
+  const currentLocale = getLocale() as Locale;
   const iconSrc = app.icon ?? DEFAULT_ICON;
   let themeColor = $state(app.themeColor ?? '#0e795b');
 
   let themeVars = $derived(getThemeVariables(themeColor));
   let themeStyle = $derived(
-    `--color-primary: ${themeVars.primaryHex}; --color-primary-content: ${themeVars.primaryContentHex}; --p: ${themeVars.primaryHSL}; --pf: ${themeVars.primaryHSL}; --pc: ${themeVars.primaryContentHSL}; --udm-shell-light: ${themeVars.shellLightHex}; --udm-shell-dark: ${themeVars.shellDarkHex}; --udm-header-light: ${themeVars.headerLightHex}; --udm-header-dark: ${themeVars.headerDarkHex};`
+    `--color-primary: ${themeVars.primaryHex}; --color-primary-content: ${themeVars.primaryContentHex}; --udm-shell-light: ${themeVars.shellLightHex}; --udm-shell-dark: ${themeVars.shellDarkHex}; --udm-header-light: ${themeVars.headerLightHex}; --udm-header-dark: ${themeVars.headerDarkHex};`
   );
-
-  $effect(() => {
-    applyThemeToDocument(themeColor);
-  });
-
-  onMount(() => {
-    if (!app.themeColor) {
-      deriveColorFromIcon(iconSrc, themeColor).then((hex) => (themeColor = hex));
-    }
-  });
 </script>
-
-<svelte:head>
-  <style>
-    :global(html),
-    :global(body) {
-      min-height: 100%;
-    }
-  </style>
-</svelte:head>
 
 <div
   class="udm-shell min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
@@ -82,9 +57,8 @@
       </div>
 
       <a
-        class="btn w-full mt-6 border border-primary/20 text-black shadow-sm dark:text-white"
-        href={localizeHref(`/user-data?${data.udmQuery}`, { locale: currentLocale })}
-        style="background-color: var(--color-primary);"
+        class="btn btn-primary w-full mt-6"
+        href={localizeHref(`/user-data/${app.id}`, { locale: currentLocale })}
       >
         {m.udm_back_to_manage_data()}
       </a>

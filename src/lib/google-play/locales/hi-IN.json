@@ -21,10 +21,6 @@
   "udm_delete_account_description": "यह आपके लॉगिन और सहेजी गई सामग्री को स्थायी रूप से हटा देगा।",
   "udm_deletion_warning": "चेतावनी: विलोपन स्थायी हैं और इन्हें पूर्ववत नहीं किया जा सकता है। कुछ डेटा कानूनी या अनुपालन उद्देश्यों के लिए रखा जा सकता है।",
   "udm_items_to_be_removed_title": "हटाए जाने वाले आइटम",
-  "udm_item_bookmarks": "बुकमार्क",
-  "udm_item_notes": "नोट्स",
-  "udm_item_highlights": "हाइलाइट्स",
-  "udm_item_reading_plans": "पढ़ने की योजना की प्रगति",
   "udm_verification_label": "सत्यापन",
   "udm_send_verification_code": "सत्यापन कोड भेजें",
   "udm_footer_text": "यह पृष्ठ Google Play पर {appName} के लिए प्रदान किया गया है। मदद चाहिए? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "इस ईमेल पर कोई код नहीं भेजा गया।",
   "udm_error_code_expired": "कोड की अवधि समाप्त हो गई।",
   "udm_error_invalid_code": "अमान्य कोड।",
-  "udm_error_invalid_code_retry": "अमान्य कोड। कृपया अपना ईमेल जांचें और पुन: प्रयास करें।"
+  "udm_error_invalid_code_retry": "अमान्य कोड। कृपया अपना ईमेल जांचें और पुन: प्रयास करें।",
+  "udm_items_to_be_removed_list": "बुकमार्क\nनोट्स\nहाइलाइट्स\nपढ़ने की योजना की प्रगति"
 }

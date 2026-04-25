@@ -21,10 +21,6 @@
   "udm_delete_account_description": "See eemaldab jäädavalt teie sisselogimise ja salvestatud sisu.",
   "udm_deletion_warning": "Hoiatus: Kustutamised on püsivad ja neid ei saa tühistada. Teatud andmeid võidakse säilitada õiguslikel või vastavuse eesmärkidel.",
   "udm_items_to_be_removed_title": "Eemaldatavad üksused",
-  "udm_item_bookmarks": "Järjehoidjad",
-  "udm_item_notes": "Märkmed",
-  "udm_item_highlights": "Esiletõstetud",
-  "udm_item_reading_plans": "Lugemisplaani edenemine",
   "udm_verification_label": "Kinnitamine",
   "udm_send_verification_code": "Saada kinnituskood",
   "udm_footer_text": "See leht on ette nähtud {appName} jaoks Google Plays. Vajate abi? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Sellele e-postile pole koodi saadetud.",
   "udm_error_code_expired": "Kood on aegunud.",
   "udm_error_invalid_code": "Vigane kood.",
-  "udm_error_invalid_code_retry": "Vigane kood. Palun kontrollige oma e-posti ja proovige uuesti."
+  "udm_error_invalid_code_retry": "Vigane kood. Palun kontrollige oma e-posti ja proovige uuesti.",
+  "udm_items_to_be_removed_list": "Järjehoidjad\nMärkmed\nEsiletõstetud\nLugemisplaani edenemine"
 }

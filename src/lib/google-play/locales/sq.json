@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Kjo do të heqë përgjithmonë hyrjen tuaj dhe përmbajtjen e ruajtur.",
   "udm_deletion_warning": "Paralajmërim: Fshirjet janë të përhershme dhe nuk mund të zhbëhen. Disa të dhëna mund të mbahen për qëllime ligjore ose pajtueshmërie.",
   "udm_items_to_be_removed_title": "Elementet që do të hiqen",
-  "udm_item_bookmarks": "Faqeshënuesit",
-  "udm_item_notes": "Shënimet",
-  "udm_item_highlights": "Theksimet",
-  "udm_item_reading_plans": "Progresi i planit të leximit",
   "udm_verification_label": "Verifikimi",
   "udm_send_verification_code": "Dërgo kodin e verifikimit",
   "udm_footer_text": "Kjo faqe ofrohet për {appName} në Google Play. Keni nevojë për ndihmë? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Asnjë kod nuk u dërgua në këtë email.",
   "udm_error_code_expired": "Kodi ka skaduar.",
   "udm_error_invalid_code": "Kod i pavlefshëm.",
-  "udm_error_invalid_code_retry": "Kod i pavlefshëm. Ju lutemi kontrolloni emailin tuaj dhe provoni përsëri."
+  "udm_error_invalid_code_retry": "Kod i pavlefshëm. Ju lutemi kontrolloni emailin tuaj dhe provoni përsëri.",
+  "udm_items_to_be_removed_list": "Faqeshënuesit\nShënimet\nTheksimet\nProgresi i planit të leximit"
 }

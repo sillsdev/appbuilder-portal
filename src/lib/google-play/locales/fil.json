@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Permanenteng aalisin nito ang iyong login at naka-save na nilalaman.",
   "udm_deletion_warning": "Babala: Ang mga pagtanggal ay permanente at hindi na mababawi. Ang ilang data ay maaaring mapanatili para sa mga legal o layuning pagsunod.",
   "udm_items_to_be_removed_title": "Mga item na aalisin",
-  "udm_item_bookmarks": "Mga Bookmark",
-  "udm_item_notes": "Mga Tala",
-  "udm_item_highlights": "Mga Highlight",
-  "udm_item_reading_plans": "Progress sa planong pagbabasa",
   "udm_verification_label": "Pag-verify",
   "udm_send_verification_code": "Ipadala ang verification code",
   "udm_footer_text": "Ang page na ito ay ibinigay para sa {appName} sa Google Play. Kailangan ng tulong? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Walang code na ipinadala sa email na ito.",
   "udm_error_code_expired": "Expired na ang code.",
   "udm_error_invalid_code": "Invalid na code.",
-  "udm_error_invalid_code_retry": "Invalid na code. Mangyaring suriin ang iyong email at subukang muli."
+  "udm_error_invalid_code_retry": "Invalid na code. Mangyaring suriin ang iyong email at subukang muli.",
+  "udm_items_to_be_removed_list": "Mga Bookmark\nMga Tala\nMga Highlight\nProgress sa planong pagbabasa"
 }

@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Սա ընդմիշտ կհեռացնի ձեր մուտքը և պահպանված բովանդակությունը:",
   "udm_deletion_warning": "Զգուշացում. Ջնջումները վերջնական են և չեն կարող չեղարկվել: Որոշ տվյալներ կարող են պահպանվել իրավական կամ համապատասխանության նպատակներով:",
   "udm_items_to_be_removed_title": "Հեռացման ենթակա տարրերը",
-  "udm_item_bookmarks": "Էջանիշեր",
-  "udm_item_notes": "Նշումներ",
-  "udm_item_highlights": "Ընդգծումներ",
-  "udm_item_reading_plans": "Ընթերցանության պլանի ընթացքը",
   "udm_verification_label": "Հաստատում",
   "udm_send_verification_code": "Ուղարկել հաստատման կոդը",
   "udm_footer_text": "Այս էջը տրամադրված է {appName}-ի համար Google Play-ում: Օգնության կարիք ունե՞ք: ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Այս էլփոստին կոդ չի ուղարկվել:",
   "udm_error_code_expired": "Կոդի ժամկետը սպառվել է:",
   "udm_error_invalid_code": "Անվավեր կոդ:",
-  "udm_error_invalid_code_retry": "Անվավեր կոդ: Խնդրում ենք ստուգել ձեր էլփոստը և նորից փորձել:"
+  "udm_error_invalid_code_retry": "Անվավեր կոդ: Խնդրում ենք ստուգել ձեր էլփոստը և նորից փորձել:",
+  "udm_items_to_be_removed_list": "Էջանիշեր\nՆշումներ\nԸնդգծումներ\nԸնթերցանության պլանի ընթացքը"
 }

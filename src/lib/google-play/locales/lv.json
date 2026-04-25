@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Tas neatgriezeniski noņems jūsu pieteikšanās vārdu un saglabāto saturu.",
   "udm_deletion_warning": "Brīdinājums: Dzēšana ir neatgriezeniska un to nevar atcelt. Daži dati var tikt saglabāti juridisku vai atbilstības iemeslu dēļ.",
   "udm_items_to_be_removed_title": "Noņemamie vienumi",
-  "udm_item_bookmarks": "Grāmatzīmes",
-  "udm_item_notes": "Piezīmes",
-  "udm_item_highlights": "Izcēlumi",
-  "udm_item_reading_plans": "Lasīšanas plāna progress",
   "udm_verification_label": "Verifikācija",
   "udm_send_verification_code": "Nosūtīt verifikācijas kodu",
   "udm_footer_text": "Šī lapa ir paredzēta {appName} vietnē Google Play. Nepieciešama palīdzība? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Uz šo e-pastu netika nosūtīts neviens kods.",
   "udm_error_code_expired": "Koda derīguma termiņš ir beidzies.",
   "udm_error_invalid_code": "Nederīgs kods.",
-  "udm_error_invalid_code_retry": "Nederīgs kods. Lūdzu, pārbaudiet savu e-pastu un mēģiniet vēlreiz."
+  "udm_error_invalid_code_retry": "Nederīgs kods. Lūdzu, pārbaudiet savu e-pastu un mēģiniet vēlreiz.",
+  "udm_items_to_be_removed_list": "Grāmatzīmes\nPiezīmes\nIzcēlumi\nLasīšanas plāna progress"
 }

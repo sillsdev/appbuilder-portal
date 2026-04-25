@@ -21,10 +21,6 @@
   "udm_delete_account_description": "This will permanently remove your login and saved content.",
   "udm_deletion_warning": "Warning: Deletions are permanent and cannot be undone. Some data may be retained for legal or compliance purposes.",
   "udm_items_to_be_removed_title": "Items to be removed",
-  "udm_item_bookmarks": "Bookmarks",
-  "udm_item_notes": "Notes",
-  "udm_item_highlights": "Highlights",
-  "udm_item_reading_plans": "Reading plan progress",
   "udm_verification_label": "Verification",
   "udm_send_verification_code": "Send verification code",
   "udm_footer_text": "This page is provided for {appName} on Google Play. Need help? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "No code sent to this email.",
   "udm_error_code_expired": "Code expired.",
   "udm_error_invalid_code": "Invalid code.",
-  "udm_error_invalid_code_retry": "Invalid code. Please check your email and try again."
+  "udm_error_invalid_code_retry": "Invalid code. Please check your email and try again.",
+  "udm_items_to_be_removed_list": "Bookmarks\nNotes\nHighlights\nReading plan progress"
 }

@@ -21,10 +21,6 @@
   "udm_delete_account_description": "یہ آپ کے لاگ ان اور محفوظ کردہ مواد کو مستقل طور پر ہٹا دے گا۔",
   "udm_deletion_warning": "انتباہ: حذف کرنا مستقل ہے اور اسے واپس نہیں لیا جا سکتا۔ کچھ ڈیٹا قانونی یا تعمیل کے مقاصد کے لیے رکھا جا सकता ہے۔",
   "udm_items_to_be_removed_title": "ہٹائی جانے والی اشیاء",
-  "udm_item_bookmarks": "بک مارکس",
-  "udm_item_notes": "نوٹس",
-  "udm_item_highlights": "ہائی لائٹس",
-  "udm_item_reading_plans": "پڑھنے کے منصوبے کی پیشرفت",
   "udm_verification_label": "تصدیق",
   "udm_send_verification_code": "تصدیقی کوڈ بھیجیں",
   "udm_footer_text": "یہ صفحہ Google Play پر {appName} کے لیے فراہم کیا گیا ہے۔ مدد چاہیے؟ ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "اس ای میل پر کوئی کوڈ نہیں بھیجا گیا۔",
   "udm_error_code_expired": "کوڈ کی میعاد ختم ہو گئی۔",
   "udm_error_invalid_code": "غلط کوڈ۔",
-  "udm_error_invalid_code_retry": "غلط کوڈ۔ براہ کرم اپنا ای میل چیک کریں اور دوبارہ کوشش کریں۔"
+  "udm_error_invalid_code_retry": "غلط کوڈ۔ براہ کرم اپنا ای میل چیک کریں اور دوبارہ کوشش کریں۔",
+  "udm_items_to_be_removed_list": "بک مارکس\nنوٹس\nہائی لائٹس\nپڑھنے کے منصوبے کی پیشرفت"
 }

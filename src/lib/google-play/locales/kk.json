@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Бұл сіздің кіру деректеріңізді және сақталған мазмұнды біржола жояды.",
   "udm_deletion_warning": "Ескерту: Жою тұрақты болып табылады және оны болдырмау мүмкін емес. Кейбір деректер заңды немесе сәйкестік мақсаттары үшін сақталуы мүмкін.",
   "udm_items_to_be_removed_title": "Жойылатын элементтер",
-  "udm_item_bookmarks": "Бетбелгілер",
-  "udm_item_notes": "Жазбалар",
-  "udm_item_highlights": "Ерекшелеулер",
-  "udm_item_reading_plans": "Оқу жоспарының барысы",
   "udm_verification_label": "Растау",
   "udm_send_verification_code": "Растау кодын жіберу",
   "udm_footer_text": "Бұл бет Google Play-дегі {appName} үшін берілген. Көмек керек пе? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Бұл электрондық поштаға код жіберілмеген.",
   "udm_error_code_expired": "Кодтың мерзімі өтіп кетті.",
   "udm_error_invalid_code": "Код жарамсыз.",
-  "udm_error_invalid_code_retry": "Код жарамсыз. Электрондық поштаңызды тексеріп, әрекетті қайталаңыз."
+  "udm_error_invalid_code_retry": "Код жарамсыз. Электрондық поштаңызды тексеріп, әрекетті қайталаңыз.",
+  "udm_items_to_be_removed_list": "Бетбелгілер\nЖазбалар\nЕрекшелеулер\nОқу жоспарының барысы"
 }

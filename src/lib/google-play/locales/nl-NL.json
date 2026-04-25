@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Dit verwijdert permanent uw login en opgeslagen inhoud.",
   "udm_deletion_warning": "Waarschuwing: Verwijderingen zijn permanent en kunnen niet ongedaan worden gemaakt. Sommige gegevens kunnen worden bewaard voor juridische of compliance-doeleinden.",
   "udm_items_to_be_removed_title": "Items om te verwijderen",
-  "udm_item_bookmarks": "Bladwijzers",
-  "udm_item_notes": "Notities",
-  "udm_item_highlights": "Markeringen",
-  "udm_item_reading_plans": "Voortgang leesplan",
   "udm_verification_label": "Verificatie",
   "udm_send_verification_code": "Verificatiecode verzenden",
   "udm_footer_text": "Deze pagina wordt aangeboden voor {appName} op Google Play. Hulp nodig? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Geen code verzonden naar dit e-mailadres.",
   "udm_error_code_expired": "Code verlopen.",
   "udm_error_invalid_code": "Ongeldige code.",
-  "udm_error_invalid_code_retry": "Ongeldige code. Controleer uw e-mail en probeer het opnieuw."
+  "udm_error_invalid_code_retry": "Ongeldige code. Controleer uw e-mail en probeer het opnieuw.",
+  "udm_items_to_be_removed_list": "Bladwijzers\nNotities\nMarkeringen\nVoortgang leesplan"
 }

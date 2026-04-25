@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Lokhu kuzosusa unomphela ukungena kwakho nokuqukethwe okulondoloziwe.",
   "udm_deletion_warning": "Isexwayiso: Ukususa unomphela futhi akunakuhlehliswa. Enye idatha ingase igcinwe ngezizathu zomthetho noma zokuthobela umthetho.",
   "udm_items_to_be_removed_title": "Izinto ezizosuseka",
-  "udm_item_bookmarks": "Amabhukumaka",
-  "udm_item_notes": "Amanothi",
-  "udm_item_highlights": "Amaphuzu avelele",
-  "udm_item_reading_plans": "Inqubekelaphambili yohlelo lokufunda",
   "udm_verification_label": "Ukuqinisekisa",
   "udm_send_verification_code": "Thumela ikhodi yokuqinisekisa",
   "udm_footer_text": "Leli khasi lihlinzekelwe {appName} ku-Google Play. Udinga usizo? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Ayikho ikhodi ethunyelwe kule-imeyili.",
   "udm_error_code_expired": "Ikhodi iphelelwe yisikhathi.",
   "udm_error_invalid_code": "Ikhodi engavumelekile.",
-  "udm_error_invalid_code_retry": "Ikhodi engavumelekile. Sicela uhlole i-imeyili yakho bese uzama futhi."
+  "udm_error_invalid_code_retry": "Ikhodi engavumelekile. Sicela uhlole i-imeyili yakho bese uzama futhi.",
+  "udm_items_to_be_removed_list": "Amabhukumaka\nAmanothi\nAmaphuzu avelele\nInqubekelaphambili yohlelo lokufunda"
 }

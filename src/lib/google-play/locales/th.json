@@ -21,10 +21,6 @@
   "udm_delete_account_description": "การดำเนินการนี้จะลบการเข้าสู่ระบบและเนื้อหาที่บันทึกไว้ของคุณอย่างถาวร",
   "udm_deletion_warning": "คำเตือน: การลบจะเป็นการลบถาวรและไม่สามารถยกเลิกได้ ข้อมูลบางอย่างอาจถูกเก็บรักษาไว้เพื่อเหตุผลทางกฎหมายหรือการปฏิบัติตามข้อกำหนด",
   "udm_items_to_be_removed_title": "รายการที่จะถูกลบ",
-  "udm_item_bookmarks": "บุ๊กมาร์ก",
-  "udm_item_notes": "บันทึก",
-  "udm_item_highlights": "ไฮไลต์",
-  "udm_item_reading_plans": "ความคืบหน้าของแผนการอ่าน",
   "udm_verification_label": "การยืนยันตัวตน",
   "udm_send_verification_code": "ส่งรหัสยืนยัน",
   "udm_footer_text": "หน้านี้จัดทำขึ้นสำหรับ {appName} บน Google Play หากต้องการความช่วยเหลือ?",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "ไม่มีการส่งรหัสไปยังอีเมลนี้",
   "udm_error_code_expired": "รหัสหมดอายุ",
   "udm_error_invalid_code": "รหัสไม่ถูกต้อง",
-  "udm_error_invalid_code_retry": "รหัสไม่ถูกต้อง โปรดตรวจสอบอีเมลของคุณแล้วลองอีกครั้ง"
+  "udm_error_invalid_code_retry": "รหัสไม่ถูกต้อง โปรดตรวจสอบอีเมลของคุณแล้วลองอีกครั้ง",
+  "udm_items_to_be_removed_list": "บุ๊กมาร์ก\nบันทึก\nไฮไลต์\nความคืบหน้าของแผนการอ่าน"
 }

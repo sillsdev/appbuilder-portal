@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Ini akan memadamkan log masuk dan kandungan simpanan anda secara kekal.",
   "udm_deletion_warning": "Amaran: Pemadaman adalah kekal dan tidak boleh ditarik balik. Sesetengah data mungkin disimpan untuk tujuan undang-undang atau pematuhan.",
   "udm_items_to_be_removed_title": "Item yang akan dipadamkan",
-  "udm_item_bookmarks": "Penanda buku",
-  "udm_item_notes": "Nota",
-  "udm_item_highlights": "Sorotan",
-  "udm_item_reading_plans": "Kemajuan pelan bacaan",
   "udm_verification_label": "Pengesahan",
   "udm_send_verification_code": "Hantar kod pengesahan",
   "udm_footer_text": "Halaman ini disediakan untuk {appName} di Google Play. Perlukan bantuan? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Tiada kod dihantar ke e-mel ini.",
   "udm_error_code_expired": "Kod tamat tempoh.",
   "udm_error_invalid_code": "Kod tidak sah.",
-  "udm_error_invalid_code_retry": "Kod tidak sah. Sila semak e-mel anda dan cuba lagi."
+  "udm_error_invalid_code_retry": "Kod tidak sah. Sila semak e-mel anda dan cuba lagi.",
+  "udm_items_to_be_removed_list": "Penanda buku\nNota\nSorotan\nKemajuan pelan bacaan"
 }

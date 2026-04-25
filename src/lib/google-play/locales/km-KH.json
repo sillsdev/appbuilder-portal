@@ -21,10 +21,6 @@
   "udm_delete_account_description": "វានឹងលុបការចូល និងខ្លឹមសារដែលបានរក្សាទុករបស់អ្នកជាអចិន្ត្រៃយ៍។",
   "udm_deletion_warning": "ការព្រមាន៖ ការលុបគឺជាអចិន្ត្រៃយ៍ និងមិនអាចមិនធ្វើវិញបានទេ។ ទិន្នន័យមួយចំនួនអាចត្រូវបានរក្សាទុកសម្រាប់ហេតុផលច្បាប់ ឬការអនុលោមតាមច្បាប់។",
   "udm_items_to_be_removed_title": "ធាតុដែលត្រូវដកចេញ",
-  "udm_item_bookmarks": "ចំណាំ",
-  "udm_item_notes": "កំណត់ចំណាំ",
-  "udm_item_highlights": "ការរំលេច",
-  "udm_item_reading_plans": "វឌ្ឍនភាពផែនការអាន",
   "udm_verification_label": "ការផ្ទៀងផ្ទាត់",
   "udm_send_verification_code": "ផ្ញើលេខកូដផ្ទៀងផ្ទាត់",
   "udm_footer_text": "ទំព័រនេះត្រូវបានផ្តល់ជូនសម្រាប់ {appName} នៅលើ Google Play។ ត្រូវការជំនួយ? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "មិនមានលេខកូដផ្ញើទៅអ៊ីមែលនេះទេ។",
   "udm_error_code_expired": "លេខកូដហួសសុពលភាព។",
   "udm_error_invalid_code": "លេខកូដមិនត្រឹមត្រូវ។",
-  "udm_error_invalid_code_retry": "លេខកូដមិនត្រឹមត្រូវ។ សូមពិនិត្យមើលអ៊ីមែលរបស់អ្នក ហើយព្យាយាមម្តងទៀត។"
+  "udm_error_invalid_code_retry": "លេខកូដមិនត្រឹមត្រូវ។ សូមពិនិត្យមើលអ៊ីមែលរបស់អ្នក ហើយព្យាយាមម្តងទៀត។",
+  "udm_items_to_be_removed_list": "ចំណាំ\nកំណត់ចំណាំ\nការរំលេច\nវឌ្ឍនភាពផែនការអាន"
 }

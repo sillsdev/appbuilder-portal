@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Αυτό θα καταργήσει οριστικά τη σύνδεσή σας και το αποθηκευμένο περιεχόμενο.",
   "udm_deletion_warning": "Προειδοποίηση: Οι διαγραφές είναι μόνιμες και δεν μπορούν να αναιρεθούν. Ορισμένα δεδομένα ενδέχεται να διατηρηθούν για νομικούς σκοπούς ή σκοπούς συμμόρφωσης.",
   "udm_items_to_be_removed_title": "Στοιχεία προς κατάργηση",
-  "udm_item_bookmarks": "Σελιδοδείκτες",
-  "udm_item_notes": "Σημειώσεις",
-  "udm_item_highlights": "Επισημάνσεις",
-  "udm_item_reading_plans": "Πρόοδος αναγνωστικού σχεδίου",
   "udm_verification_label": "Επαλήθευση",
   "udm_send_verification_code": "Αποστολή κωδικού επαλήθευσης",
   "udm_footer_text": "Αυτή η σελίδα παρέχεται για το {appName} στο Google Play. Χρειάζεστε βοήθεια; ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Δεν στάλθηκε κωδικός σε αυτό το email.",
   "udm_error_code_expired": "Ο κωδικός έληξε.",
   "udm_error_invalid_code": "Μη έγκυρος κωδικός.",
-  "udm_error_invalid_code_retry": "Μη έγκυρος κωδικός. Ελέγξτε το email σας και δοκιμάστε ξανά."
+  "udm_error_invalid_code_retry": "Μη έγκυρος κωδικός. Ελέγξτε το email σας και δοκιμάστε ξανά.",
+  "udm_items_to_be_removed_list": "Σελιδοδείκτες\nΣημειώσεις\nΕπισημάνσεις\nΠρόοδος αναγνωστικού σχεδίου"
 }

@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Hii itaondoa kabisa kuingia kwako na maudhui yaliyohifadhiwa.",
   "udm_deletion_warning": "Onyo: Kufuta ni kwa kudumu na hakuwezi kutenguliwa. Baadhi ya data inaweza kuhifadhiwa kwa sababu za kisheria au za kufuata sheria.",
   "udm_items_to_be_removed_title": "Vitu vitakavyoondolewa",
-  "udm_item_bookmarks": "Alama za kurasa",
-  "udm_item_notes": "Vidokezo",
-  "udm_item_highlights": "Vivutio",
-  "udm_item_reading_plans": "Maendeleo ya mpango wa kusoma",
   "udm_verification_label": "Uthibitishaji",
   "udm_send_verification_code": "Tuma nambari ya kuthibitisha",
   "udm_footer_text": "Ukurasa huu umetolewa kwa {appName} kwenye Google Play. Unahitaji msaada? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Hakuna nambari iliyotumwa kwa barua pepe hii.",
   "udm_error_code_expired": "Nambari imหมົດ muda.",
   "udm_error_invalid_code": "Nambari si halali.",
-  "udm_error_invalid_code_retry": "Nambari si halali. Tafadhali angalia barua pepe yako na ujaribu tena."
+  "udm_error_invalid_code_retry": "Nambari si halali. Tafadhali angalia barua pepe yako na ujaribu tena.",
+  "udm_items_to_be_removed_list": "Alama za kurasa\nVidokezo\nVivutio\nMaendeleo ya mpango wa kusoma"
 }

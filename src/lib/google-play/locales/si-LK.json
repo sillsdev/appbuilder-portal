@@ -21,10 +21,6 @@
   "udm_delete_account_description": "මෙය ඔබේ පිවිසුම සහ සුරකින ලද අන්තර්ගතය ස්ථිරවම ඉවත් කරනු ඇත.",
   "udm_deletion_warning": "අවවාදයයි: මැකීම් ස්ථිර වන අතර ඒවා ආපසු හැරවිය නොහැක. නීතිමය හෝ අනුකූලතා අරමුණු සඳහා සමහර දත්ත රඳවා ගත හැක.",
   "udm_items_to_be_removed_title": "ඉවත් කළ යුතු අයිතම",
-  "udm_item_bookmarks": "පොත් සලකුණු",
-  "udm_item_notes": "සටහන්",
-  "udm_item_highlights": "මතු කිරීම්",
-  "udm_item_reading_plans": "කියවීමේ සැලැස්මේ ප්‍රගතිය",
   "udm_verification_label": "සත්‍යාපනය",
   "udm_send_verification_code": "සත්‍යාපන කේතය යවන්න",
   "udm_footer_text": "මෙම පිටුව Google Play හි {appName} සඳහා සපයා ඇත. උදව් අවශ්‍යද? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "මෙම ඊමේල් ලිපිනයට කේතයක් එවා නැත.",
   "udm_error_code_expired": "කේතය කල් ඉකුත් වී ඇත.",
   "udm_error_invalid_code": "වලංගු නොවන කේතයක්.",
-  "udm_error_invalid_code_retry": "වලංගු නොවන කේතයක්. කරුණාකර ඔබේ ඊමේල් පරීක්ෂා කර නැවත උත්සාහ කරන්න."
+  "udm_error_invalid_code_retry": "වලංගු නොවන කේතයක්. කරුණාකර ඔබේ ඊමේල් පරීක්ෂා කර නැවත උත්සාහ කරන්න.",
+  "udm_items_to_be_removed_list": "පොත් සලකුණු\nසටහන්\nමතු කිරීම්\nකියවීමේ සැලැස්මේ ප්‍රගතිය"
 }

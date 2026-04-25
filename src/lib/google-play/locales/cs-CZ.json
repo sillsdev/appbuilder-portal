@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Tímto trvale odstraníte své přihlášení a uložený obsah.",
   "udm_deletion_warning": "Upozornění: Smazání je trvalé a nelze jej vrátit zpět. Některé údaje mohou být uchovávány z právních důvodů nebo z důvodů dodržování předpisov.",
   "udm_items_to_be_removed_title": "Položky k odstranění",
-  "udm_item_bookmarks": "Záložky",
-  "udm_item_notes": "Poznámky",
-  "udm_item_highlights": "Zvýraznění",
-  "udm_item_reading_plans": "Pokrok v plánu čtení",
   "udm_verification_label": "Ověření",
   "udm_send_verification_code": "Odeslat ověřovací kód",
   "udm_footer_text": "Tato stránka je poskytována pro {appName} v Google Play. Potřebujete pomoc? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Na tento e-mail nebyl odeslán žádný kód.",
   "udm_error_code_expired": "Kód vypršel.",
   "udm_error_invalid_code": "Neplatný kód.",
-  "udm_error_invalid_code_retry": "Neplatný kód. Zkontrolujte prosím svůj e-mail a zkuste to znovu."
+  "udm_error_invalid_code_retry": "Neplatný kód. Zkontrolujte prosím svůj e-mail a zkuste to znovu.",
+  "udm_items_to_be_removed_list": "Záložky\nPoznámky\nZvýraznění\nPokrok v plánu čtení"
 }

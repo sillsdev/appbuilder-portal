@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Це назавжди видалить ваш логін і збережений вміст.",
   "udm_deletion_warning": "Попередження: видалення є остаточним і його неможливо скасувати. Деякі дані можуть зберігатися з юридичних причин або з метою дотримання нормативних вимог.",
   "udm_items_to_be_removed_title": "Елементи для видалення",
-  "udm_item_bookmarks": "Закладки",
-  "udm_item_notes": "Нотатки",
-  "udm_item_highlights": "Виділення",
-  "udm_item_reading_plans": "Прогрес планів читання",
   "udm_verification_label": "Перевірка",
   "udm_send_verification_code": "Надіслати код підтвердження",
   "udm_footer_text": "Ця сторінка надається для {appName} у Google Play. Потрібна допомога? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "На цю пошту код не надсилався.",
   "udm_error_code_expired": "Термін дії коду закінчився.",
   "udm_error_invalid_code": "Недійсний код.",
-  "udm_error_invalid_code_retry": "Недійсний код. Будь ласка, перевірте свою пошту та спробуйте ще раз."
+  "udm_error_invalid_code_retry": "Недійсний код. Будь ласка, перевірте свою пошту та спробуйте ще раз.",
+  "udm_items_to_be_removed_list": "Закладки\nНотатки\nВиділення\nПрогрес планів читання"
 }
