@@ -55,10 +55,7 @@
         </thead>
         <tbody>
           {#each userTasks as task, i}
-            <tr
-              class="cursor-pointer no-border"
-              onclick={() => goto(getTaskHref(task))}
-            >
+            <tr class="cursor-pointer no-border" onclick={() => goto(getTaskHref(task))}>
               <td colspan="3">
                 <span class="flex items-center">
                   <IconContainer
@@ -83,11 +80,7 @@
               </td>
             </tr>
             <tr class="cursor-pointer" class:no-border={getTaskComment(task)}>
-              <td
-                colspan="2"
-                class="pl-2"
-                onclick={() => goto(getTaskHref(task))}
-              >
+              <td colspan="2" class="pl-2" onclick={() => goto(getTaskHref(task))}>
                 <span
                   class="rounded-xl h-auto badge badge-secondary uppercase font-bold [top:-5px] relative mt-2 text-center"
                 >
