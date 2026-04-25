@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Tai visam laikui pašalins jūsų prisijungimo duomenis ir išsaugotą turinį.",
   "udm_deletion_warning": "Įspėjimas: Ištrynimas yra nuolatinis ir negali būti atšauktas. Kai kurie duomenys gali būti saugomi teisiniais ar atitikties tikslais.",
   "udm_items_to_be_removed_title": "Elementai, kurie bus pašalinti",
-  "udm_item_bookmarks": "Žymės",
-  "udm_item_notes": "Užrašai",
-  "udm_item_highlights": "Paryškinimai",
-  "udm_item_reading_plans": "Skaitymo plano eiga",
   "udm_verification_label": "Patvirtinimas",
   "udm_send_verification_code": "Siųsti patvirtinimo kodą",
   "udm_footer_text": "Šis puslapis skirtas „{appName}“ platformoje „Google Play“. Reikia pagalbos? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Šiuo el. pašto adresu kodas nebuvo išsiųstas.",
   "udm_error_code_expired": "Kodo galiojimo laikas baigėsi.",
   "udm_error_invalid_code": "Neteisingas kodas.",
-  "udm_error_invalid_code_retry": "Neteisingas kodas. Patikrinkite savo el. paštą ir bandykite dar kartą."
+  "udm_error_invalid_code_retry": "Neteisingas kodas. Patikrinkite savo el. paštą ir bandykite dar kartą.",
+  "udm_items_to_be_removed_list": "Žymės\nUžrašai\nParyškinimai\nSkaitymo plano eiga"
 }

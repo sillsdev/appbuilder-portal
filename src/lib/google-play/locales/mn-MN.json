@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Энэ нь таны нэвтрэх эрх болон хадгалсан агуулгыг бүрмөсөн устгах болно.",
   "udm_deletion_warning": "Анхааруулга: Устгасан өгөгдлийг буцаах боломжгүй. Зарим өгөгдлийг хууль ёсны эсвэл дагаж мөрдөх зорилгоор хадгалж болно.",
   "udm_items_to_be_removed_title": "Устгагдах зүйлс",
-  "udm_item_bookmarks": "Хавчуурга",
-  "udm_item_notes": "Тэмдэглэл",
-  "udm_item_highlights": "Тодруулга",
-  "udm_item_reading_plans": "Унших төлөвлөгөөний явц",
   "udm_verification_label": "Баталгаажуулалт",
   "udm_send_verification_code": "Баталгаажуулах код илгээх",
   "udm_footer_text": "Энэ хуудсыг Google Play дээрх {appName}-д зориулан гаргасан болно. Тусламж хэрэгтэй юу? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Энэ имэйл хаяг руу код илгээгдээгүй байна.",
   "udm_error_code_expired": "Кодны хугацаа дууссан байна.",
   "udm_error_invalid_code": "Хүчингүй код.",
-  "udm_error_invalid_code_retry": "Хүчингүй код. Имэйлээ шалгаад дахин оролдоно уу."
+  "udm_error_invalid_code_retry": "Хүчингүй код. Имэйлээ шалгаад дахин оролдоно уу.",
+  "udm_items_to_be_removed_list": "Хавчуурга\nТэмдэглэл\nТодруулга\nУнших төлөвлөгөөний явц"
 }

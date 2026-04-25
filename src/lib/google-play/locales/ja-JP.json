@@ -21,10 +21,6 @@
   "udm_delete_account_description": "これにより、ログインと保存されたコンテンツが完全に削除されます。",
   "udm_deletion_warning": "警告：削除は永続的であり、元に戻すことはできません。一部のデータは、法的またはコンプライアンスの目的で保持される場合があります。",
   "udm_items_to_be_removed_title": "削除されるアイテム",
-  "udm_item_bookmarks": "ブックマーク",
-  "udm_item_notes": "メモ",
-  "udm_item_highlights": "ハイライト",
-  "udm_item_reading_plans": "読書プランの進捗",
   "udm_verification_label": "検証",
   "udm_send_verification_code": "確認コードを送信",
   "udm_footer_text": "このページはGoogle Playの {appName} 用に提供されています。お困りですか？",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "このメールアドレスにコードは送信されていません。",
   "udm_error_code_expired": "コードの期限が切れています。",
   "udm_error_invalid_code": "無効なコードです。",
-  "udm_error_invalid_code_retry": "無効なコードです。メールを確認して、もう一度お試しください。"
+  "udm_error_invalid_code_retry": "無効なコードです。メールを確認して、もう一度お試しください。",
+  "udm_items_to_be_removed_list": "ブックマーク\nメモ\nハイライト\n読書プランの進捗"
 }

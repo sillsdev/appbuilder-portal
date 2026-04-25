@@ -21,10 +21,6 @@
   "udm_delete_account_description": "این کار ورود و محتوای ذخیره شده شما را برای همیشه حذف می‌کند.",
   "udm_deletion_warning": "هشدار: حذف‌ها دائمی هستند و قابل بازگشت نیستند. برخی از داده‌ها ممکن است به دلایل قانونی یا انطباق نگهداری شوند.",
   "udm_items_to_be_removed_title": "موارد قابل حذف",
-  "udm_item_bookmarks": "نشانک‌ها",
-  "udm_item_notes": "یادداشت‌ها",
-  "udm_item_highlights": "برجستگی‌ها",
-  "udm_item_reading_plans": "پیشرفت طرح مطالعه",
   "udm_verification_label": "تأییدیه",
   "udm_send_verification_code": "ارسال کد تأیید",
   "udm_footer_text": "این صفحه برای {appName} در Google Play ارائه شده است. به کمک نیاز دارید؟ ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "هیچ کدی به این ایمیل ارسال نشده است.",
   "udm_error_code_expired": "کد منقضی شده است.",
   "udm_error_invalid_code": "کد نامعتبر است.",
-  "udm_error_invalid_code_retry": "کد نامعتبر است. لطفاً ایمیل خود را بررسی کرده و دوباره امتحان کنید."
+  "udm_error_invalid_code_retry": "کد نامعتبر است. لطفاً ایمیل خود را بررسی کرده و دوباره امتحان کنید.",
+  "udm_items_to_be_removed_list": "نشانک‌ها\nیادداشت‌ها\nبرجستگی‌ها\nپیشرفت طرح مطالعه"
 }

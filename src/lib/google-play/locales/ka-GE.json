@@ -21,10 +21,6 @@
   "udm_delete_account_description": "ეს სამუდამოდ წაშლის თქვენს ავტორიზაციას და შენახულ კონტენტს.",
   "udm_deletion_warning": "გაფრთხილება: წაშლა შეუქცევადია. ზოგიერთი მონაცემი შეიძლება შენარჩუნდეს სამართლებრივი ან შესაბამისობის მიზნებისთვის.",
   "udm_items_to_be_removed_title": "წასაშლელი ელემენტები",
-  "udm_item_bookmarks": "სანიშნეები",
-  "udm_item_notes": "შენიშვნები",
-  "udm_item_highlights": "მონიშვნები",
-  "udm_item_reading_plans": "კითხვის გეგმის პროგრესი",
   "udm_verification_label": "ვერიფიკაცია",
   "udm_send_verification_code": "ვერიფიკაციის კოდის გაგზავნა",
   "udm_footer_text": "ეს გვერდი მოწოდებულია {appName}-სთვის Google Play-ზე. გჭირდებათ დახმარება? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "ამ ელფოსტაზე კოდი არ გაგზავნილა.",
   "udm_error_code_expired": "კოდს ვადა გაუვიდა.",
   "udm_error_invalid_code": "არასწორი კოდი.",
-  "udm_error_invalid_code_retry": "არასწორი კოდი. გთხოვთ, შეამოწმოთ თქვენი ელფოსტა და სცადოთ თავიდან."
+  "udm_error_invalid_code_retry": "არასწორი კოდი. გთხოვთ, შეამოწმოთ თქვენი ელფოსტა და სცადოთ თავიდან.",
+  "udm_items_to_be_removed_list": "სანიშნეები\nშენიშვნები\nმონიშვნები\nკითხვის გეგმის პროგრესი"
 }

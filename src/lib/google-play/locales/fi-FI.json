@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Tämä poistaa kirjautumisesi ja tallennetun sisältösi pysyvästi.",
   "udm_deletion_warning": "Varoitus: Poistot ovat pysyviä, eikä niitä voi peruuttaa. Joitakin tietoja voidaan säilyttää lainmukaisista tai vaatimustenmukaisuuteen liittyvistä syistä.",
   "udm_items_to_be_removed_title": "Poistettavat kohteet",
-  "udm_item_bookmarks": "Kirjanmerkit",
-  "udm_item_notes": "Muistiinpanot",
-  "udm_item_highlights": "Korostukset",
-  "udm_item_reading_plans": "Lukusuunnitelman edistyminen",
   "udm_verification_label": "Vahvistus",
   "udm_send_verification_code": "Lähetä vahvistuskoodi",
   "udm_footer_text": "Tämä sivu on tarkoitettu sovellukselle {appName} Google Playssa. Tarvitsetko apua? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Tähän sähköpostiosoitteeseen ei ole lähetetty koodia.",
   "udm_error_code_expired": "Koodi on vanhentunut.",
   "udm_error_invalid_code": "Virheellinen koodi.",
-  "udm_error_invalid_code_retry": "Virheellinen koodi. Tarkista sähköpostisi ja yritä uudelleen."
+  "udm_error_invalid_code_retry": "Virheellinen koodi. Tarkista sähköpostisi ja yritä uudelleen.",
+  "udm_items_to_be_removed_list": "Kirjanmerkit\nMuistiinpanot\nKorostukset\nLukusuunnitelman edistyminen"
 }

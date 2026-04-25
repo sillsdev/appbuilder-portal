@@ -21,10 +21,6 @@
   "udm_delete_account_description": "ນີ້ຈະລຶບການເຂົ້າສູ່ລະບົບ ແລະ ເນື້ອຫາທີ່ບັນທຶກໄວ້ຂອງທ່ານຖາວອນ.",
   "udm_deletion_warning": "ຄຳເຕືອນ: ການລຶບແມ່ນຖາວອນ ແລະ ບໍ່ສາມາດຍົກເລີກໄດ້. ຂໍ້ມູນບາງຢ່າງອາດຈະຖືກເກັບຮັກສາໄວ້ຍ້ອນເຫດຜົນທາງກົດໝາຍ ຫຼື ການປະຕິບັດຕາມກົດລະບຽບ.",
   "udm_items_to_be_removed_title": "ລາຍການທີ່ຈະຖືກລຶບອອກ",
-  "udm_item_bookmarks": "ບຸກມາກ",
-  "udm_item_notes": "ໝາຍເຫດ",
-  "udm_item_highlights": "ໄຮໄລ້",
-  "udm_item_reading_plans": "ຄວາມຄືບໜ້າຂອງແຜນການອ່ານ",
   "udm_verification_label": "ການຢືນຢັນ",
   "udm_send_verification_code": "ສົ່ງລະຫັດຢືນຢັນ",
   "udm_footer_text": "ໜ້ານີ້ຖືກຈັດໃຫ້ສຳລັບ {appName} ໃນ Google Play. ຕ້ອງການຄວາມຊ່ວຍເຫຼືອບໍ? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "ບໍ່ມີລະຫັດສົ່ງຫາອີເມວນີ້.",
   "udm_error_code_expired": "ລະຫັດໝົດອາຍຸແລ້ວ.",
   "udm_error_invalid_code": "ລະຫັດບໍ່ຖືກຕ້ອງ.",
-  "udm_error_invalid_code_retry": "ລະຫັດບໍ່ຖືກຕ້ອງ. ກະລຸນາກວດເບິ່ງອີເມວຂອງທ່ານແລ້ວລອງໃໝ່."
+  "udm_error_invalid_code_retry": "ລະຫັດບໍ່ຖືກຕ້ອງ. ກະລຸນາກວດເບິ່ງອີເມວຂອງທ່ານແລ້ວລອງໃໝ່.",
+  "udm_items_to_be_removed_list": "ບຸກມາກ\nໝາຍເຫດ\nໄຮໄລ້\nຄວາມຄືບໜ້າຂອງແຜນການອ່ານ"
 }

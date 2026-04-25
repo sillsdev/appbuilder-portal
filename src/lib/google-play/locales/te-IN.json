@@ -21,10 +21,6 @@
   "udm_delete_account_description": "ఇది మీ లాగిన్ మరియు సేవ్ చేసిన కంటెంట్‌ను శాశ్వతంగా తొలగిస్తుంది.",
   "udm_deletion_warning": "హెచ్చరిక: తొలగింపులు శాశ్వతమైనవి మరియు అన్డు చేయలేము. చట్టపరమైన లేదా సమ్మతి ప్రయోజనాల కోసం కొంత డేటా నిలుపుకోబడవచ్చు.",
   "udm_items_to_be_removed_title": "తొలగించాల్సిన అంశాలు",
-  "udm_item_bookmarks": "బుక్‌మార్క్‌లు",
-  "udm_item_notes": "గమనికలు",
-  "udm_item_highlights": "హైలైట్‌లు",
-  "udm_item_reading_plans": "రీడింగ్ ప్లాన్ పురోగతి",
   "udm_verification_label": "ధృవీకరణ",
   "udm_send_verification_code": "ధృవీకరణ కోడ్‌ను పంపు",
   "udm_footer_text": "ఈ పేజీ Google Playలో {appName} కోసం అందించబడింది. సహాయం కావాలా? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "ఈ ఇమెయిల్‌కి కోడ్ పంపబడలేదు.",
   "udm_error_code_expired": "కోడ్ గడువు ముగిసింది.",
   "udm_error_invalid_code": "చెల్లుబాటు కాని కోడ్.",
-  "udm_error_invalid_code_retry": "చెల్లుబాటు కాని కోడ్. దయచేసి మీ ఇమెయిల్ తనిఖీ చేసి మళ్లీ ప్రయత్నించండి."
+  "udm_error_invalid_code_retry": "చెల్లుబాటు కాని కోడ్. దయచేసి మీ ఇమెయిల్ తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.",
+  "udm_items_to_be_removed_list": "బుక్‌మార్క్‌లు\nగమనికలు\nహైలైట్‌లు\nరీడింగ్ ప్లాన్ పురోగతి"
 }

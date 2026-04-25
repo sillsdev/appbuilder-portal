@@ -159,6 +159,9 @@ export namespace System {
   export interface CheckPendingUpdates extends BaseJob {
     type: JobType.System_CheckPendingUpdates;
   }
+  export interface CleanupExpiredData extends BaseJob {
+    type: JobType.System_Cleanup;
+  }
 }
 
 export namespace UserTasks {
@@ -310,14 +313,6 @@ export namespace SvelteProjectSSE {
   }
 }
 
-// User Data Management: jobs related to cleanup of user data, such as old email verification requests, GDPR data, etc.
-export namespace UserDataManagement {
-  // This cleans up old email verification requests that are past their expiration date. It runs every night.
-  export interface Cleanup extends BaseJob {
-    type: JobType.UDM_Cleanup;
-  }
-}
-
 export type Job = JobTypeMap[keyof JobTypeMap];
 
 export type BuildJob = JobTypeMap[
@@ -329,7 +324,7 @@ export type RecurringJob = JobTypeMap[
   | JobType.System_RefreshLangTags
   | JobType.System_Migrate
   | JobType.System_CheckPendingUpdates
-  | JobType.UDM_Cleanup];
+  | JobType.System_Cleanup];
 export type StartupJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags
@@ -384,6 +379,7 @@ export type JobTypeMap = {
   [JobType.System_RefreshLangTags]: System.RefreshLangTags;
   [JobType.System_Migrate]: System.Migrate;
   [JobType.System_CheckPendingUpdates]: System.CheckPendingUpdates;
+  [JobType.System_Cleanup]: System.CleanupExpiredData;
   [JobType.UserTasks_Workflow]: UserTasks.Workflow;
   [JobType.UserTasks_DeleteRequest]: UserTasks.DeleteRequest;
   [JobType.Email_InviteUser]: Email.InviteUser;
@@ -399,6 +395,5 @@ export type JobTypeMap = {
   [JobType.SvelteSSE_UpdateUserTasks]: SvelteProjectSSE.UpdateUserTasks;
   [JobType.SvelteSSE_UpdateSoftwareUpdates]: SvelteProjectSSE.UpdateSoftwareUpdates;
   [JobType.SvelteSSE_UpdateUpdatableProducts]: SvelteProjectSSE.UpdateUpdatableProducts;
-  [JobType.UDM_Cleanup]: UserDataManagement.Cleanup;
   // Add more mappings here as needed
 };

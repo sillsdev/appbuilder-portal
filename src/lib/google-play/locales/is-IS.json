@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Þetta mun fjarlægja innskráninguna þína og vistað efni varanlega.",
   "udm_deletion_warning": "Viðvörun: Eyðingar eru varanlegar og ekki er hægt að afturkalla þær. Sumum gögnum gæti verið haldið eftir af lagalegum ástæðum eða í reglufylgniskyni.",
   "udm_items_to_be_removed_title": "Atriði sem á að fjarlægja",
-  "udm_item_bookmarks": "Bókamerki",
-  "udm_item_notes": "Glósur",
-  "udm_item_highlights": "Áherslur",
-  "udm_item_reading_plans": "Framvinda lestraráætlunar",
   "udm_verification_label": "Staðfesting",
   "udm_send_verification_code": "Senda staðfestingarkóða",
   "udm_footer_text": "Þessi síða er útveguð fyrir {appName} á Google Play. Vantar þig hjálp? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Enginn kóði sendur á þetta netfang.",
   "udm_error_code_expired": "Kóði rann út.",
   "udm_error_invalid_code": "Ógildur kóði.",
-  "udm_error_invalid_code_retry": "Ógildur kóði. Vinsamlegast athugaðu netfangið þitt og reyndu aftur."
+  "udm_error_invalid_code_retry": "Ógildur kóði. Vinsamlegast athugaðu netfangið þitt og reyndu aftur.",
+  "udm_items_to_be_removed_list": "Bókamerki\nGlósur\nÁherslur\nFramvinda lestraráætlunar"
 }

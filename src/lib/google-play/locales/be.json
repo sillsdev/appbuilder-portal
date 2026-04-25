@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Гэта назаўжды выдаліць ваш лагін і захаваны кантэнт.",
   "udm_deletion_warning": "Папярэджанне: выдаленні з’яўляюцца канчатковымі і не могуць быць адменены. Некаторыя дадзеныя могуць захоўвацца па юрыдычных прычынах або ў мэтах выканання нарматыўных патрабаванняў.",
   "udm_items_to_be_removed_title": "Элементы для выдалення",
-  "udm_item_bookmarks": "Закладкі",
-  "udm_item_notes": "Нататкі",
-  "udm_item_highlights": "Вылучэнні",
-  "udm_item_reading_plans": "Прагрэс планаў чытання",
   "udm_verification_label": "Праверка",
   "udm_send_verification_code": "Адправіць код пацверджання",
   "udm_footer_text": "Гэтая старонка прадастаўлена для {appName} у Google Play. Патрэбна дапамога? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Код на гэтую пошту не адпраўляўся.",
   "udm_error_code_expired": "Тэрмін дзеяння кода скончыўся.",
   "udm_error_invalid_code": "Несапраўдны код.",
-  "udm_error_invalid_code_retry": "Несапраўдны код. Калі ласка, праверце сваю пошту і паспрабуйце яшчэ раз."
+  "udm_error_invalid_code_retry": "Несапраўдны код. Калі ласка, праверце сваю пошту і паспрабуйце яшчэ раз.",
+  "udm_items_to_be_removed_list": "Закладкі\nНататкі\nВылучэнні\nПрагрэс планаў чытання"
 }

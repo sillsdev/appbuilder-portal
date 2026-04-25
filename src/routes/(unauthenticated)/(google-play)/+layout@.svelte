@@ -21,21 +21,15 @@
 
   afterNavigate(() => {
     if (browser) {
-      // If page isn't explicitly localized, redirect to preferred locale.
-      // Do not override locale when URL already contains one (e.g. /ar/user-data).
-      const hasLocalePrefix = locales.some(
-        (locale) =>
-          page.url.pathname === `/${locale}` || page.url.pathname.startsWith(`/${locale}/`)
-      );
+      // if page isn't explicitly localized redirect to locale based on preference
+      if (!page.url.pathname.match(`^/${data.locale}/`)) {
+        const target = (window.navigator.languages as Locale[]).find(
+          (l) => locales.includes(l) || locales.includes(getBasicVariant(l) as Locale)
+        );
 
-      if (hasLocalePrefix) return;
-
-      const target = (window.navigator.languages as Locale[]).find(
-        (l) => locales.includes(l) || locales.includes(getBasicVariant(l) as Locale)
-      );
-
-      if (target && target !== data.locale && target !== baseLocale) {
-        goto(localizeHref(page.url.href, { locale: target }));
+        if (target && target !== data.locale && target !== baseLocale) {
+          goto(localizeHref(page.url.href, { locale: target }));
+        }
       }
     }
   });

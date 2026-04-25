@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Bu işlem, giriş bilgilerinizi ve kaydedilmiş içeriğinizi kalıcı olarak kaldıracaktır.",
   "udm_deletion_warning": "Uyarı: Silme işlemleri kalıcıdır ve geri alınamaz. Bazı veriler yasal veya uyumluluk amaçlarıyla saklanabilir.",
   "udm_items_to_be_removed_title": "Kaldırılacak öğeler",
-  "udm_item_bookmarks": "Yer İşaretleri",
-  "udm_item_notes": "Notlar",
-  "udm_item_highlights": "Vurgular",
-  "udm_item_reading_plans": "Okuma planı ilerlemesi",
   "udm_verification_label": "Doğrulama",
   "udm_send_verification_code": "Doğrulama kodu gönder",
   "udm_footer_text": "Bu sayfa Google Play'deki {appName} için sağlanmıştır. Yardıma mı ihtiyacınız var? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Bu e-postaya kod gönderilmedi.",
   "udm_error_code_expired": "Kodun süresi doldu.",
   "udm_error_invalid_code": "Geçersiz kod.",
-  "udm_error_invalid_code_retry": "Geçersiz kod. Lütfen e-postanızı kontrol edip tekrar deneyin."
+  "udm_error_invalid_code_retry": "Geçersiz kod. Lütfen e-postanızı kontrol edip tekrar deneyin.",
+  "udm_items_to_be_removed_list": "Yer İşaretleri\nNotlar\nVurgular\nOkuma planı ilerlemesi"
 }

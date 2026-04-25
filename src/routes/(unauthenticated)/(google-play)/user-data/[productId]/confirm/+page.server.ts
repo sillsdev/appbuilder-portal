@@ -6,27 +6,24 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { m } from '$lib/google-play/paraglide/messages';
+import type { Locale } from '$lib/google-play/paraglide/runtime';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import prisma from '$lib/server/database/prisma';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
 
-function createSchemas() {
-  const uuidSchema = v.pipe(
-    v.string(),
-    v.regex(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-      m.udm_error_invalid_product_id()
-    )
-  );
+const UDM_CHANGE_DESCRIPTION = 'User data deletion request verification';
+
+function createSchemas(locale: Locale) {
+  const uuidSchema = v.pipe(v.string(), v.uuid(m.udm_error_invalid_product_id({}, { locale })));
 
   const sendCodeSchema = v.object({
-    email: v.pipe(v.string(), v.email(m.udm_alert_valid_email())),
+    email: v.pipe(v.string(), v.email(m.udm_alert_valid_email({}, { locale }))),
     productId: uuidSchema
   });
 
   const verifyCodeSchema = v.object({
     email: v.pipe(v.string(), v.email()),
-    code: v.pipe(v.string(), v.length(6, m.udm_error_code_6_digits())),
+    code: v.pipe(v.string(), v.length(6, m.udm_error_code_6_digits({}, { locale }))),
     productId: uuidSchema
   });
 
@@ -35,7 +32,8 @@ function createSchemas() {
 
 export const load: PageServerLoad = async ({ parent, locals }) => {
   locals.security.requireNothing();
-  const { sendCodeSchema, verifyCodeSchema } = createSchemas();
+  const locale = locals.locale as Locale;
+  const { sendCodeSchema, verifyCodeSchema } = createSchemas(locale);
 
   const { productId } = await parent();
   const email = '';
@@ -52,7 +50,8 @@ export const load: PageServerLoad = async ({ parent, locals }) => {
 export const actions: Actions = {
   sendCode: async ({ request, locals }) => {
     locals.security.requireNothing();
-    const { sendCodeSchema } = createSchemas();
+    const locale = locals.locale as Locale;
+    const { sendCodeSchema } = createSchemas(locale);
     const form = await superValidate(request, valibot(sendCodeSchema));
 
     if (!form.valid) {
@@ -99,7 +98,7 @@ export const actions: Actions = {
             await tx.productUserChanges.update({
               where: { Id: latestRequest.Id },
               data: {
-                Change: m.udm_change_description(),
+                Change: UDM_CHANGE_DESCRIPTION,
                 ConfirmationCode: code,
                 DateUpdated: now,
                 DateExpires: expiresAt
@@ -112,7 +111,7 @@ export const actions: Actions = {
             data: {
               ProductId: productId,
               Email: normalizedEmail,
-              Change: m.udm_change_description(),
+              Change: UDM_CHANGE_DESCRIPTION,
               DateCreated: now,
               DateUpdated: now,
               ConfirmationCode: code,
@@ -128,25 +127,24 @@ export const actions: Actions = {
 
       await sendEmail(
         [{ email: normalizedEmail, name: normalizedEmail }],
-        m.udm_email_subject(),
-        m.udm_email_body({ code })
+        m.udm_email_subject({}, { locale }),
+        m.udm_email_body({ code }, { locale })
       );
-
-      if (process.env.NODE_ENV === 'development') {
-        console.log(
-          `[UDM TEST] Verification code for ${normalizedEmail} (product ${productId}): ${code}`
-        );
-      }
 
       return message(form, { step: 'verify', email: normalizedEmail });
     } catch {
-      return message(form, { error: m.udm_alert_verification_failed() }, { status: 500 });
+      return message(
+        form,
+        { error: m.udm_alert_verification_failed({}, { locale }) },
+        { status: 500 }
+      );
     }
   },
 
   verifyCode: async ({ request, locals }) => {
     locals.security.requireNothing();
-    const { verifyCodeSchema } = createSchemas();
+    const locale = locals.locale as Locale;
+    const { verifyCodeSchema } = createSchemas(locale);
     const form = await superValidate(request, valibot(verifyCodeSchema));
 
     if (!form.valid) {
@@ -170,10 +168,10 @@ export const actions: Actions = {
       });
 
       if (!userChange) {
-        return message(form, { error: m.udm_error_no_code_sent() }, { status: 400 });
+        return message(form, { error: m.udm_error_no_code_sent({}, { locale }) }, { status: 400 });
       }
       if (new Date() > userChange.DateExpires) {
-        return message(form, { error: m.udm_error_code_expired() }, { status: 400 });
+        return message(form, { error: m.udm_error_code_expired({}, { locale }) }, { status: 400 });
       }
 
       if (userChange.ConfirmationCode !== normalizedCode) {
@@ -187,7 +185,7 @@ export const actions: Actions = {
         });
         return message(
           form,
-          { error: m.udm_error_invalid_code(), step: 'verify' },
+          { error: m.udm_error_invalid_code({}, { locale }), step: 'verify' },
           { status: 400 }
         );
       }
@@ -204,7 +202,11 @@ export const actions: Actions = {
 
       return message(form, { verified: true });
     } catch {
-      return message(form, { error: m.udm_error_invalid_code_retry() }, { status: 500 });
+      return message(
+        form,
+        { error: m.udm_error_invalid_code_retry({}, { locale }) },
+        { status: 500 }
+      );
     }
   }
 };

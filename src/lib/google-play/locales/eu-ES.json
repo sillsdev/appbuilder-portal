@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Honek zure saio-hasiera eta gordetako edukia betiko kenduko ditu.",
   "udm_deletion_warning": "Abisua: Ezabaketak iraunkorrak dira eta ezin dira desegin. Datu batzuk gorde daitezke legezko edo betetze-helburuetarako.",
   "udm_items_to_be_removed_title": "Kendu beharreko elementuak",
-  "udm_item_bookmarks": "Laster-markak",
-  "udm_item_notes": "Oharrak",
-  "udm_item_highlights": "Nabarmendutakoak",
-  "udm_item_reading_plans": "Irakurketa planaren aurrerapena",
   "udm_verification_label": "Egiaztapena",
   "udm_send_verification_code": "Bidali egiaztapen-kodea",
   "udm_footer_text": "Orrialde hau {appName} aplikaziorako eskaintzen da Google Play-n. Laguntza behar duzu? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Ez da koderik bidali posta elektroniko honetara.",
   "udm_error_code_expired": "Kodea iraungi da.",
   "udm_error_invalid_code": "Kode baliogabea.",
-  "udm_error_invalid_code_retry": "Kode baliogabea. Mesedez, begiratu zure posta elektronikoa eta saiatu berriro."
+  "udm_error_invalid_code_retry": "Kode baliogabea. Mesedez, begiratu zure posta elektronikoa eta saiatu berriro.",
+  "udm_items_to_be_removed_list": "Laster-markak\nOharrak\nNabarmendutakoak\nIrakurketa planaren aurrerapena"
 }
