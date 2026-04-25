@@ -155,6 +155,9 @@ export namespace System {
     type: JobType.System_Migrate;
     steps?: MigrationStep[];
   }
+  export interface CleanupExpiredData extends BaseJob {
+    type: JobType.System_Cleanup;
+  }
 }
 
 export namespace UserTasks {
@@ -305,7 +308,8 @@ export type BuildJob = JobTypeMap[
 export type RecurringJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags
-  | JobType.System_Migrate];
+  | JobType.System_Migrate
+  | JobType.System_Cleanup];
 export type StartupJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags
@@ -370,5 +374,6 @@ export type JobTypeMap = {
   [JobType.Email_ProjectImportReport]: Email.ProjectImportReport;
   [JobType.SvelteSSE_UpdateProject]: SvelteProjectSSE.UpdateProject;
   [JobType.SvelteSSE_UpdateUserTasks]: SvelteProjectSSE.UpdateUserTasks;
+  [JobType.System_Cleanup]: System.CleanupExpiredData;
   // Add more mappings here as needed
 };

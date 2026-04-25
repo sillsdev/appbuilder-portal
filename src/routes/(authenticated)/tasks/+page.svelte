@@ -6,6 +6,7 @@
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
+  import { TaskType } from '$lib/prisma';
   import TaskComment from '$lib/products/components/TaskComment.svelte';
   import { userTasksSSE } from '$lib/stores';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
@@ -19,6 +20,25 @@
   const userTasks = $derived($userTasksSSE ?? data.userTasks);
 
   const dateUpdated = $derived(getRelativeTime(userTasks.map((task) => task.DateUpdated)));
+
+  function getTaskHref(task: (typeof userTasks)[number]) {
+    const route =
+      task.Type === TaskType.DeletionRequest
+        ? `/tasks/${task.ProductId}/delete-requests/${task.Id}`
+        : `/tasks/${task.ProductId}`;
+    return localizeHref(route);
+  }
+
+  function getTaskStatus(task: (typeof userTasks)[number]) {
+    return task.Type === TaskType.DeletionRequest
+      ? (task.ChangeRequests[0]?.Change ?? task.Status)
+      : task.Status;
+  }
+
+  function getTaskComment(task: (typeof userTasks)[number]) {
+    const status = getTaskStatus(task);
+    return task.Comment && task.Comment !== status ? task.Comment : null;
+  }
 </script>
 
 <div class="w-full">
@@ -35,10 +55,7 @@
         </thead>
         <tbody>
           {#each userTasks as task, i}
-            <tr
-              class="cursor-pointer no-border"
-              onclick={() => goto(localizeHref(`/tasks/${task.ProductId}`))}
-            >
+            <tr class="cursor-pointer no-border" onclick={() => goto(getTaskHref(task))}>
               <td colspan="3">
                 <span class="flex items-center">
                   <IconContainer
@@ -62,16 +79,12 @@
                 </a>
               </td>
             </tr>
-            <tr class="cursor-pointer" class:no-border={task.Comment}>
-              <td
-                colspan="2"
-                class="pl-2"
-                onclick={() => goto(localizeHref(`/tasks/${task.ProductId}`))}
-              >
+            <tr class="cursor-pointer" class:no-border={getTaskComment(task)}>
+              <td colspan="2" class="pl-2" onclick={() => goto(getTaskHref(task))}>
                 <span
                   class="rounded-xl h-auto badge badge-secondary uppercase font-bold [top:-5px] relative mt-2 text-center"
                 >
-                  {task.Status}
+                  {getTaskStatus(task)}
                 </span>
               </td>
               <td>
@@ -80,10 +93,10 @@
                 </Tooltip>
               </td>
             </tr>
-            {#if task.Comment}
+            {#if getTaskComment(task)}
               <tr>
                 <td class="p-0" colspan="3">
-                  <TaskComment comment={task.Comment} />
+                  <TaskComment comment={getTaskComment(task)} />
                 </td>
               </tr>
             {/if}
@@ -102,8 +115,8 @@
           {#each userTasks as task, i}
             <tr
               class="cursor-pointer"
-              onclick={() => goto(localizeHref(`/tasks/${task.ProductId}`))}
-              class:no-border={task.Comment}
+              onclick={() => goto(getTaskHref(task))}
+              class:no-border={getTaskComment(task)}
             >
               <td>
                 <span class="flex items-center">
@@ -118,7 +131,7 @@
                 <span
                   class="rounded-xl h-auto badge badge-secondary uppercase font-bold ml-10 [top:-5px] relative mt-2 text-center"
                 >
-                  {task.Status}
+                  {getTaskStatus(task)}
                 </span>
               </td>
               <td>
@@ -135,10 +148,10 @@
                 </Tooltip>
               </td>
             </tr>
-            {#if task.Comment}
+            {#if getTaskComment(task)}
               <tr>
                 <td class="pl-7 pt-0" colspan="3">
-                  <TaskComment comment={task.Comment} />
+                  <TaskComment comment={getTaskComment(task)} />
                 </td>
               </tr>
             {/if}
