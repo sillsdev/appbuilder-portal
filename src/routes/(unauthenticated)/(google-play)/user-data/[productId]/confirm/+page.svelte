@@ -4,7 +4,7 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { m } from '$lib/google-play/paraglide/messages';
-  import { DEFAULT_ICON, getThemeStyle } from '$lib/utils/theme';
+  import { getThemeStyle } from '$lib/utils/theme';
 
   type ConfirmStep = 'email' | 'code' | 'verified';
 
@@ -15,10 +15,9 @@
   let { data }: Props = $props();
 
   const app = data.app;
-  const iconSrc = app.icon ?? DEFAULT_ICON;
+  const iconSrc = app.icon || app.fallbackIcon;
   const confirmEmailStorageKey = `udm-confirm-email:${app.id}`;
-  let themeColor = $state(app.themeColor);
-  let themeStyle = $derived(getThemeStyle(themeColor));
+  const themeStyle = getThemeStyle(app.themeColor);
 
   const {
     form: sendForm,
@@ -126,7 +125,7 @@
               bind:value={$sendForm.email}
               placeholder={m.udm_email_placeholder_name()}
               required
-              class="input input-bordered w-full h-14 text-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+              class="input h-14 w-full border border-base-300 text-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
             />
             {#if $sendErrors.email}
               <span class="text-error text-sm text-center mt-1">{$sendErrors.email[0]}</span>
@@ -136,11 +135,7 @@
             {/if}
           </div>
 
-          <button
-            type="submit"
-            class="btn btn-primary w-full text-white no-animation h-14"
-            disabled={$sendDelayed}
-          >
+          <button type="submit" class="btn btn-primary h-14 w-full" disabled={$sendDelayed}>
             {#if $sendDelayed}
               <span class="loading loading-spinner"></span>
             {:else}
@@ -167,7 +162,7 @@
               maxlength="6"
               autocomplete="one-time-code"
               required
-              class="input input-bordered w-full h-16 text-[2rem] text-center tracking-[0.5rem] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+              class="input h-16 w-full border border-base-300 text-center text-[2rem] tracking-[0.5rem] focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
             />
             {#if $verifyErrors.code}
               <span class="text-error text-sm text-center mt-1">{$verifyErrors.code[0]}</span>
@@ -177,11 +172,7 @@
             {/if}
           </div>
 
-          <button
-            type="submit"
-            class="btn btn-primary w-full text-white no-animation h-14"
-            disabled={$verifyDelayed}
-          >
+          <button type="submit" class="btn btn-primary h-14 w-full" disabled={$verifyDelayed}>
             {#if $verifyDelayed}
               <span class="loading loading-spinner"></span>
             {:else}

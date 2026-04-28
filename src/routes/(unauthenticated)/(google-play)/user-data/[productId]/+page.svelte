@@ -5,7 +5,7 @@
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
   import { m } from '$lib/google-play/paraglide/messages';
   import { type Locale, localizeHref } from '$lib/google-play/paraglide/runtime';
-  import { DEFAULT_ICON, getThemeStyle } from '$lib/utils/theme';
+  import { getThemeStyle } from '$lib/utils/theme';
 
   interface Props {
     data: PageData;
@@ -15,11 +15,11 @@
   let turnstileToken: string | null = null;
 
   const app = data.app;
-  const iconSrc = app.icon ?? DEFAULT_ICON;
+  const iconSrc = app.icon || app.fallbackIcon;
   const currentLocale = app.language as Locale;
   const localeFallbacks = data.fallbacks;
   const confirmEmailStorageKey = `udm-confirm-email:${app.id}`;
-  let themeColor = $state(app.themeColor);
+  const themeStyle = getThemeStyle(app.themeColor);
 
   const {
     form: deleteForm,
@@ -71,8 +71,6 @@
     }
   });
 
-  let themeStyle = $derived(getThemeStyle(themeColor));
-
   onMount(() => {
     window.handleTurnstileSuccess = (token: string) => {
       turnstileToken = token;
@@ -87,12 +85,6 @@
 
 <svelte:head>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-  <style>
-    :global(html),
-    :global(body) {
-      min-height: 100%;
-    }
-  </style>
 </svelte:head>
 
 <div
@@ -102,7 +94,7 @@
   <div class="w-full bg-base-100 min-h-screen sm:max-w-xl sm:mx-auto">
     <div class="udm-header px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-4">
       <div class="flex items-start justify-between gap-3">
-        <div class="min-w-0 flex-1 ps-3 pe-2" style="border-inline-start: 4px solid currentColor;">
+        <div class="min-w-0 flex-1 border-s-4 border-base-content ps-3 pe-2">
           <h1 class="text-2xl font-bold tracking-tight leading-none break-words">
             {m.udm_manage_data_title()}
           </h1>
@@ -135,7 +127,7 @@
 
     <div class="px-5">
       <a
-        class="btn btn-ghost btn-sm border border-base-300 mb-4 btn-block"
+        class="btn btn-ghost btn-sm mb-4 w-full border border-base-300"
         href={localizeHref(`/user-data/${app.id}/about`, { locale: currentLocale })}
       >
         {m.udm_about_app()}
@@ -143,14 +135,14 @@
     </div>
 
     <div class="px-5 pb-8">
-      <div class="card bg-base-100 shadow-sm card-bordered">
+      <div class="card bg-base-100 shadow-sm border border-base-300">
         <div class="card-body p-5 space-y-4 break-words">
           <div>
             <h2 class="card-title text-lg font-bold">{m.udm_deletion_request_title()}</h2>
-            <p class="mt-1 text-xs leading-relaxed text-base-content/80" style="text-indent: 10px;">
+            <p class="mt-1 ps-3 text-xs leading-relaxed text-base-content/80">
               {m.udm_deletion_request_description_1()}
             </p>
-            <p class="mt-1 text-xs leading-relaxed text-base-content/80" style="text-indent: 10px;">
+            <p class="mt-1 ps-3 text-xs leading-relaxed text-base-content/80">
               {m.udm_deletion_request_description_2()}
             </p>
           </div>
@@ -159,54 +151,43 @@
             <input type="hidden" name="productId" bind:value={$deleteForm.productId} />
             <input type="hidden" name="turnstileToken" bind:value={$deleteForm.turnstileToken} />
 
-            <div class="form-control w-full">
-              <label class="label pb-1 pt-0" for="email">
-                <span
-                  class="label-text text-xs font-bold uppercase tracking-wide text-base-content/70"
-                >
-                  {m.udm_email_label()}
-                </span>
+            <div class="flex w-full flex-col gap-1">
+              <label
+                class="text-xs font-bold uppercase tracking-wide text-base-content/70"
+                for="email"
+              >
+                {m.udm_email_label()}
               </label>
               <input
                 id="email"
                 type="email"
                 placeholder={m.udm_email_placeholder()}
-                class="input input-bordered w-full text-base sm:text-sm h-11 focus:border-primary focus:outline-primary"
+                class="input h-11 w-full border border-base-300 text-base focus:border-primary focus:outline-primary sm:text-sm"
                 name="email"
                 bind:value={$deleteForm.email}
               />
-              <label class="label pt-1 pb-0" for="email">
-                <span class="label-text-alt text-[10px] text-base-content/70">
-                  {m.udm_email_hint()}
-                </span>
-              </label>
+              <p class="text-[10px] text-base-content/70">{m.udm_email_hint()}</p>
               {#if $deleteErrors.email}
                 <span class="text-error text-xs leading-tight">{$deleteErrors.email[0]}</span>
               {/if}
             </div>
 
-            <div class="form-control">
-              <p class="label pb-1 pt-0">
-                <span
-                  class="label-text text-xs font-bold uppercase tracking-wide text-base-content/70"
-                >
-                  {m.udm_deletion_scope_label()}
-                </span>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wide text-base-content/70">
+                {m.udm_deletion_scope_label()}
               </p>
               <div class="flex flex-col gap-3 mt-1">
-                <label
-                  class="label cursor-pointer items-start justify-start gap-3 p-0 group min-w-0"
-                >
+                <label class="flex cursor-pointer items-start gap-3 group min-w-0">
                   <input
                     type="radio"
                     name="deletionType"
-                    class="radio radio-primary radio-sm mt-1 shrink-0 border-2 border-black bg-white text-black dark:border-white dark:bg-transparent dark:text-white"
+                    class="radio radio-primary radio-sm mt-1 shrink-0"
                     value="data"
                     bind:group={$deleteForm.deletionType}
                   />
                   <div class="min-w-0">
                     <span
-                      class="label-text font-bold text-sm group-hover:text-primary transition-colors whitespace-normal break-words"
+                      class="font-bold text-sm group-hover:text-primary transition-colors whitespace-normal break-words"
                     >
                       {m.udm_delete_data_label()}
                     </span>
@@ -217,19 +198,17 @@
                     </p>
                   </div>
                 </label>
-                <label
-                  class="label cursor-pointer items-start justify-start gap-3 p-0 group min-w-0"
-                >
+                <label class="flex cursor-pointer items-start gap-3 group min-w-0">
                   <input
                     type="radio"
                     name="deletionType"
                     value="account"
                     bind:group={$deleteForm.deletionType}
-                    class="radio radio-primary radio-sm mt-1 shrink-0 border-2 border-black bg-white text-black dark:border-white dark:bg-transparent dark:text-white"
+                    class="radio radio-primary radio-sm mt-1 shrink-0"
                   />
                   <div class="min-w-0">
                     <span
-                      class="label-text font-bold text-sm group-hover:text-primary transition-colors whitespace-normal break-words"
+                      class="font-bold text-sm group-hover:text-primary transition-colors whitespace-normal break-words"
                     >
                       {m.udm_delete_account_label()}
                     </span>
@@ -257,13 +236,9 @@
               </ul>
             </div>
 
-            <div class="form-control">
-              <p class="label pb-1 pt-0">
-                <span
-                  class="label-text text-xs font-bold uppercase tracking-wide text-base-content/70"
-                >
-                  {m.udm_verification_label()}
-                </span>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wide text-base-content/70">
+                {m.udm_verification_label()}
               </p>
               <div class="mt-2">
                 <div

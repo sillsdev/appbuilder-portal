@@ -1,24 +1,13 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import { deLocalizeUrl, localizeUrl } from '$lib/google-play/paraglide/runtime';
+import { getAppFallbackIcon } from '$lib/icons';
 import {
   getLatestManifest,
   resolveManifestLanguage,
   translateManifest
 } from '$lib/products/server';
 import { DatabaseReads } from '$lib/server/database';
-
-function getFallbackIcon(appTypeName: string | null | undefined) {
-  const normalizedType = appTypeName?.trim().toLowerCase() ?? '';
-
-  if (normalizedType === 'keyboardappbuilder') return '/placeholder-kab.png';
-  if (normalizedType === 'dictionaryappbuilder') return '/placeholder-dab.png';
-  if (normalizedType === 'scriptureappbuilder' || normalizedType === 'readingappbuilder') {
-    return '/placeholder-sab-rab.png';
-  }
-
-  return '/placeholder-sab-rab.png';
-}
 
 export const load: LayoutServerLoad = async ({ locals, params, url }) => {
   locals.security.requireNothing();
@@ -56,7 +45,7 @@ export const load: LayoutServerLoad = async ({ locals, params, url }) => {
       Project: {
         select: {
           Name: true,
-          ApplicationType: { select: { Name: true } }
+          ApplicationType: { select: { Id: true } }
         }
       },
       Store: {
@@ -72,11 +61,12 @@ export const load: LayoutServerLoad = async ({ locals, params, url }) => {
   const developer = product.Store.GooglePlayTitle?.trim() || 'Unknown developer';
   const longDesc =
     translatedManifest['full_description.txt'] || translatedManifest['description.txt'] || '';
-  const fallbackIcon = getFallbackIcon(product.Project.ApplicationType?.Name);
+  const fallbackIcon = getAppFallbackIcon(product.Project.ApplicationType?.Id);
 
   const app = {
     id: product.Id,
     icon: translatedManifest.icon || fallbackIcon,
+    fallbackIcon,
     name: translatedManifest['title.txt'] || product.Project.Name || 'App',
     developer,
     language: translatedManifest.language,
