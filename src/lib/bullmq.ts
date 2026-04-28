@@ -38,6 +38,7 @@ export enum JobType {
   System_RefreshLangTags = 'Refresh langtags.json',
   System_Migrate = 'Migrate Features from S1 to S2',
   System_CheckPendingUpdates = 'Check Pending Software Updates',
+  System_Cleanup = 'System Cleanup',
   // UserTasks Job
   UserTasks_Workflow = 'Modify Workflow UserTasks',
   UserTasks_DeleteRequest = 'Modify Data Deletion UserTasks',
@@ -55,9 +56,7 @@ export enum JobType {
   SvelteSSE_UpdateProject = 'Update Project',
   SvelteSSE_UpdateUserTasks = 'Update UserTasks',
   SvelteSSE_UpdateSoftwareUpdates = 'Update Software Updates',
-  SvelteSSE_UpdateUpdatableProducts = 'Update Updatable Products',
-  // User Data Management
-  System_Cleanup = 'System Cleanup'
+  SvelteSSE_UpdateUpdatableProducts = 'Update Updatable Products'
 }
 
 export enum JobSchedulerId {
