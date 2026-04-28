@@ -7,18 +7,19 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { env } from '$env/dynamic/private';
 import { m } from '$lib/google-play/paraglide/messages';
+import type { Locale } from '$lib/google-play/paraglide/runtime';
 import { DatabaseWrites } from '$lib/server/database';
 import prisma from '$lib/server/database/prisma';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
 
 const TURNSTILE_TIMEOUT_MS = 5000;
 
-function createDeleteRequestSchema() {
-  const uuidSchema = v.pipe(v.string(), v.uuid(m.udm_error_invalid_product_id()));
+function createDeleteRequestSchema(locale: Locale) {
+  const uuidSchema = v.pipe(v.string(), v.uuid(m.udm_error_invalid_product_id({}, { locale })));
 
   return v.object({
-    email: v.pipe(v.string(), v.email(m.udm_alert_valid_email())),
-    turnstileToken: v.pipe(v.string(), v.minLength(1, m.udm_alert_verify_human())),
+    email: v.pipe(v.string(), v.email(m.udm_alert_valid_email({}, { locale }))),
+    turnstileToken: v.pipe(v.string(), v.minLength(1, m.udm_alert_verify_human({}, { locale }))),
     productId: uuidSchema,
     deletionType: v.picklist(['data', 'account'])
   });
@@ -30,7 +31,8 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
   if (env.APP_ENV === 'prd') return error(404);
 
   const { productId } = await parent();
-  const schema = createDeleteRequestSchema();
+  const locale = locals.locale as Locale;
+  const schema = createDeleteRequestSchema(locale);
   const form = await superValidate(
     { email: '', turnstileToken: '', productId, deletionType: 'data' as const },
     valibot(schema)
@@ -42,7 +44,8 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
 export const actions: Actions = {
   sendCode: async ({ request, locals }) => {
     locals.security.requireNothing();
-    const schema = createDeleteRequestSchema();
+    const locale = locals.locale as Locale;
+    const schema = createDeleteRequestSchema(locale);
     const requestFormData = await request.formData();
     const turnstileToken = requestFormData.get('turnstileToken');
     const turnstileResponse = requestFormData.get('cf-turnstile-response');
@@ -70,7 +73,11 @@ export const actions: Actions = {
     const secret = process.env.TURNSTILE_SECRET_KEY;
     if (!secret) {
       console.error('Turnstile secret key is not configured');
-      return message(form, { error: m.udm_alert_verification_failed() }, { status: 500 });
+      return message(
+        form,
+        { error: m.udm_alert_verification_failed({}, { locale }) },
+        { status: 500 }
+      );
     }
 
     const formData = new URLSearchParams();
@@ -86,7 +93,11 @@ export const actions: Actions = {
       });
     } catch (error) {
       console.warn('Turnstile verification request failed', { error });
-      return message(form, { error: m.udm_alert_verification_failed() }, { status: 503 });
+      return message(
+        form,
+        { error: m.udm_alert_verification_failed({}, { locale }) },
+        { status: 503 }
+      );
     }
 
     const result = await verification.json().catch(() => null);
@@ -94,7 +105,11 @@ export const actions: Actions = {
       console.warn('Turnstile verification returned an invalid response', {
         status: verification.status
       });
-      return message(form, { error: m.udm_alert_verification_failed() }, { status: 502 });
+      return message(
+        form,
+        { error: m.udm_alert_verification_failed({}, { locale }) },
+        { status: 502 }
+      );
     }
 
     if (!result.success) {
@@ -103,7 +118,11 @@ export const actions: Actions = {
         hostname: result.hostname,
         action: result.action
       });
-      return message(form, { error: m.udm_alert_verification_failed() }, { status: 400 });
+      return message(
+        form,
+        { error: m.udm_alert_verification_failed({}, { locale }) },
+        { status: 400 }
+      );
     }
 
     const code = randomInt(100000, 1000000).toString();
@@ -174,7 +193,11 @@ export const actions: Actions = {
       pendingRequestId = pendingRequest.Id;
     } catch (error) {
       console.error('Failed to store delete request verification code', { error, productId });
-      return message(form, { error: m.udm_alert_verification_failed() }, { status: 500 });
+      return message(
+        form,
+        { error: m.udm_alert_verification_failed({}, { locale }) },
+        { status: 500 }
+      );
     }
 
     if (process.env.NODE_ENV === 'development') {
@@ -186,8 +209,8 @@ export const actions: Actions = {
     try {
       await sendEmail(
         [{ email: normalizedEmail, name: normalizedEmail }],
-        m.udm_email_subject(),
-        m.udm_email_body({ code })
+        m.udm_email_subject({}, { locale }),
+        m.udm_email_body({ code }, { locale })
       );
     } catch (error) {
       await DatabaseWrites.productUserChanges.update({
@@ -203,7 +226,11 @@ export const actions: Actions = {
         error,
         productId
       });
-      return message(form, { error: m.udm_alert_verification_failed() }, { status: 500 });
+      return message(
+        form,
+        { error: m.udm_alert_verification_failed({}, { locale }) },
+        { status: 500 }
+      );
     }
 
     return message(form, { step: 'verify', email: normalizedEmail });

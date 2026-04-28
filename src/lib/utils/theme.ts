@@ -1,5 +1,3 @@
-export const DEFAULT_ICON = '/placeholder-icon.svg';
-
 export function getThemeStyle(themeColor: string | null | undefined) {
   if (!themeColor) return '';
 
