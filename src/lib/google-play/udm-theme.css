@@ -1,0 +1,37 @@
+.udm-theme {
+  /* Product pages set --color-primary from the Google Play manifest. */
+  --udm-outer-light: color-mix(in oklch, var(--color-primary) 8%, white);
+  --udm-outer-dark: color-mix(in srgb, var(--color-primary) 45%, black);
+  --udm-shell-light: color-mix(in oklch, var(--color-primary) 12%, white);
+  --udm-shell-dark: color-mix(in srgb, var(--color-primary) 28%, black);
+  --udm-header-light: color-mix(in oklch, var(--color-primary) 30%, white);
+  --udm-header-dark: color-mix(in srgb, var(--color-primary) 58%, black);
+  --outer-bg: var(--udm-outer-light);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.udm-theme.udm-shell {
+  background-color: var(--udm-shell-light);
+}
+
+.udm-theme .udm-header {
+  background-color: var(--udm-header-light);
+}
+
+.udm-theme.udm-confirm-root {
+  background-color: var(--udm-outer-light);
+}
+
+[data-theme='dark'] .udm-theme.udm-shell {
+  /* Shade the manifest color directly so dark mode keeps the same hue. */
+  background-color: var(--udm-shell-dark);
+}
+
+[data-theme='dark'] .udm-theme .udm-header {
+  background-color: var(--udm-header-dark);
+}
+
+[data-theme='dark'] .udm-theme.udm-confirm-root {
+  background-color: var(--udm-outer-dark);
+}

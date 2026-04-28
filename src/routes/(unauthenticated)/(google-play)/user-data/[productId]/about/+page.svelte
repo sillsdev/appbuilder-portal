@@ -2,7 +2,7 @@
   import type { PageData } from './$types';
   import { m } from '$lib/google-play/paraglide/messages';
   import { type Locale, getLocale, localizeHref } from '$lib/google-play/paraglide/runtime';
-  import { DEFAULT_ICON, getThemeVariables } from '$lib/utils/theme';
+  import { DEFAULT_ICON, getThemeStyle } from '$lib/utils/theme';
 
   interface Props {
     data: PageData;
@@ -13,16 +13,13 @@
   const app = data.app;
   const currentLocale = getLocale() as Locale;
   const iconSrc = app.icon ?? DEFAULT_ICON;
-  let themeColor = $state(app.themeColor ?? '#0e795b');
+  let themeColor = $state(app.themeColor);
 
-  let themeVars = $derived(getThemeVariables(themeColor));
-  let themeStyle = $derived(
-    `--color-primary: ${themeVars.primaryHex}; --color-primary-content: ${themeVars.primaryContentHex}; --udm-shell-light: ${themeVars.shellLightHex}; --udm-shell-dark: ${themeVars.shellDarkHex}; --udm-header-light: ${themeVars.headerLightHex}; --udm-header-dark: ${themeVars.headerDarkHex};`
-  );
+  let themeStyle = $derived(getThemeStyle(themeColor));
 </script>
 
 <div
-  class="udm-shell min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
+  class="udm-theme udm-shell min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
   style={themeStyle}
 >
   <div class="w-full bg-base-100 min-h-screen sm:max-w-xl sm:mx-auto">
@@ -65,21 +62,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  .udm-shell {
-    background-color: var(--udm-shell-light);
-  }
-
-  .udm-header {
-    background-color: var(--udm-header-light);
-  }
-
-  :global([data-theme='dark']) .udm-shell {
-    background-color: var(--udm-shell-dark);
-  }
-
-  :global([data-theme='dark']) .udm-header {
-    background-color: var(--udm-header-dark);
-  }
-</style>

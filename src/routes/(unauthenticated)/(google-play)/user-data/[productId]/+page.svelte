@@ -5,7 +5,7 @@
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
   import { m } from '$lib/google-play/paraglide/messages';
   import { type Locale, localizeHref } from '$lib/google-play/paraglide/runtime';
-  import { DEFAULT_ICON, getThemeVariables } from '$lib/utils/theme';
+  import { DEFAULT_ICON, getThemeStyle } from '$lib/utils/theme';
 
   interface Props {
     data: PageData;
@@ -19,7 +19,7 @@
   const currentLocale = app.language as Locale;
   const localeFallbacks = data.fallbacks;
   const confirmEmailStorageKey = `udm-confirm-email:${app.id}`;
-  let themeColor = $state(app.themeColor ?? '#0e795b');
+  let themeColor = $state(app.themeColor);
 
   const {
     form: deleteForm,
@@ -71,10 +71,7 @@
     }
   });
 
-  let themeVars = $derived(getThemeVariables(themeColor));
-  let themeStyle = $derived(
-    `--color-primary: ${themeVars.primaryHex}; --color-primary-content: ${themeVars.primaryContentHex}; --udm-shell-light: ${themeVars.shellLightHex}; --udm-shell-dark: ${themeVars.shellDarkHex}; --udm-header-light: ${themeVars.headerLightHex}; --udm-header-dark: ${themeVars.headerDarkHex}; word-break: break-word; overflow-wrap: anywhere;`
-  );
+  let themeStyle = $derived(getThemeStyle(themeColor));
 
   onMount(() => {
     window.handleTurnstileSuccess = (token: string) => {
@@ -99,7 +96,7 @@
 </svelte:head>
 
 <div
-  class="udm-shell min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
+  class="udm-theme udm-shell min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
   style={themeStyle}
 >
   <div class="w-full bg-base-100 min-h-screen sm:max-w-xl sm:mx-auto">
@@ -311,21 +308,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  .udm-shell {
-    background-color: var(--udm-shell-light);
-  }
-
-  .udm-header {
-    background-color: var(--udm-header-light);
-  }
-
-  :global([data-theme='dark']) .udm-shell {
-    background-color: var(--udm-shell-dark);
-  }
-
-  :global([data-theme='dark']) .udm-header {
-    background-color: var(--udm-header-dark);
-  }
-</style>

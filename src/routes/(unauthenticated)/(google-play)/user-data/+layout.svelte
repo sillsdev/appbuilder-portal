@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import { browser } from '$app/environment';
+  import '$lib/google-play/udm-theme.css';
 
   interface Props {
     children?: Snippet;
@@ -29,11 +30,5 @@
 </script>
 
 <div data-theme={isDarkMode ? 'dark' : 'light'} class="relative w-full min-h-screen">
-  <div
-    class="pointer-events-none fixed inset-0 z-0"
-    style={`background-color: ${isDarkMode ? 'var(--udm-outer-dark, #111827)' : 'var(--udm-outer-light, #f5f7fa)'};`}
-  ></div>
-  <div class="relative z-10">
-    {@render children?.()}
-  </div>
+  {@render children?.()}
 </div>
