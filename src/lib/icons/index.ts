@@ -41,6 +41,19 @@ export function getAppIcon(type: ApplicationType) {
   );
 }
 
+export function getAppFallbackIcon(type: ApplicationType | number | null | undefined) {
+  switch (type) {
+    case ApplicationType.DAB:
+      return '/placeholder-dab.png';
+    case ApplicationType.KAB:
+      return '/placeholder-kab.png';
+    case ApplicationType.SAB:
+    case ApplicationType.RAB:
+    default:
+      return '/placeholder-sab-rab.png';
+  }
+}
+
 export function getAuthIcon(id: string) {
   if (id.startsWith('google-')) {
     return 'flat-color-icons:google';

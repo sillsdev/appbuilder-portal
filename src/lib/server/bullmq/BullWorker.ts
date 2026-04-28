@@ -126,11 +126,11 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
     getQueues().SystemRecurring.upsertJobScheduler(
       BullMQ.JobSchedulerId.CleanupExpiredData,
       {
-        pattern: '0 0 * * *', // every night at midnight
+        pattern: '@daily',
         immediately: false
       },
       {
-        name: 'Cleanup old/Expired Data',
+        name: 'Cleanup Old/Expired Data',
         data: {
           type: BullMQ.JobType.System_Cleanup
         }

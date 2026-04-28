@@ -298,12 +298,13 @@ export async function translateManifest<File extends string>(
   const { manifest, baseUrl, productId, apkSize } = fetchedManifest;
 
   const language = resolveManifestLanguage(target, manifest);
+  const iconPath = manifest.icon.trim();
 
   return {
     id: productId,
     link: `/api/products/${productId}/files/published/apk`,
     size: apkSize,
-    icon: new URL(manifest.icon, baseUrl).href,
+    icon: iconPath ? new URL(iconPath, baseUrl).href : '',
     // use primary color if match not found
     color: manifest.color.match(/^(#[0-9a-f]{6})/i)?.at(1) ?? '#1c3258',
     downloadTitle:

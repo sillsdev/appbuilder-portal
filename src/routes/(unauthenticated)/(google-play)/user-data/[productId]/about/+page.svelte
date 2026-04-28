@@ -2,7 +2,7 @@
   import type { PageData } from './$types';
   import { m } from '$lib/google-play/paraglide/messages';
   import { type Locale, getLocale, localizeHref } from '$lib/google-play/paraglide/runtime';
-  import { DEFAULT_ICON, getThemeStyle } from '$lib/utils/theme';
+  import { getThemeStyle } from '$lib/utils/theme';
 
   interface Props {
     data: PageData;
@@ -12,10 +12,8 @@
 
   const app = data.app;
   const currentLocale = getLocale() as Locale;
-  const iconSrc = app.icon ?? DEFAULT_ICON;
-  let themeColor = $state(app.themeColor);
-
-  let themeStyle = $derived(getThemeStyle(themeColor));
+  const iconSrc = app.icon || app.fallbackIcon;
+  const themeStyle = getThemeStyle(app.themeColor);
 </script>
 
 <div
