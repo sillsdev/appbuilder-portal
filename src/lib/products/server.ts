@@ -196,6 +196,15 @@ export async function getPublishedFile(from: ArtifactFrom, type: string) {
   return null;
 }
 
+/**
+ * Normalize an RGB hex color string to a length of 6+ with no leading #.
+ * eg. fb9 => f0b090
+ */
+function normalizeColorString(color: string = '#1c3258') {
+  const c = color.replaceAll('#', '');
+  return c.length < 6 ? `${c[0]}0${c[1]}0${c[2]}0` : c.substring(0, 6);
+}
+
 const manifestSchema = v.pipe(
   v.string(),
   // make sure it is valid JSON
@@ -221,7 +230,16 @@ const manifestSchema = v.pipe(
   v.object({
     url: v.string(),
     icon: v.string(),
-    color: v.string(),
+    color: v.pipe(
+      v.string(),
+      v.transform((s) => {
+        const colors = s.trim().split('\n');
+        return {
+          light: normalizeColorString(colors[0]),
+          dark: normalizeColorString(colors.at(-1))
+        };
+      })
+    ),
     'default-language': v.string(),
     'download-apk-strings': v.record(v.string(), v.string()),
     languages: v.array(v.string()),
@@ -272,6 +290,19 @@ export async function getLatestManifest(from: ArtifactFrom) {
   const baseUrl = new URL(manifest.url);
   baseUrl.host = new URL(artifact.Url).host;
 
+  try {
+    const iconURL = new URL(manifest.icon, baseUrl);
+    // Empty manifest.icon before fetching so unreachable icons use the fallback.
+    manifest.icon = '';
+
+    const iconCheck = await fetch(iconURL, { method: 'HEAD' });
+    if (iconCheck.ok) {
+      manifest.icon = iconURL.href;
+    }
+  } catch {
+    // Empty manifest.icon means callers should use their fallback icon.
+  }
+
   return { manifest, baseUrl, productId: artifact.ProductId, apkSize };
 }
 
@@ -298,15 +329,13 @@ export async function translateManifest<File extends string>(
   const { manifest, baseUrl, productId, apkSize } = fetchedManifest;
 
   const language = resolveManifestLanguage(target, manifest);
-  const iconPath = manifest.icon.trim();
 
   return {
     id: productId,
     link: `/api/products/${productId}/files/published/apk`,
     size: apkSize,
-    icon: iconPath ? new URL(iconPath, baseUrl).href : '',
-    // use primary color if match not found
-    color: manifest.color.match(/^(#[0-9a-f]{6})/i)?.at(1) ?? '#1c3258',
+    icon: manifest.icon,
+    color: manifest.color,
     downloadTitle:
       manifest['download-apk-strings'][language] ||
       manifest['download-apk-strings'][getBasicVariant(language)],

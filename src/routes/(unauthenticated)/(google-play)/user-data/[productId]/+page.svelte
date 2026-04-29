@@ -13,6 +13,7 @@
 
   let { data }: Props = $props();
   let turnstileToken: string | null = null;
+  let deleteSubmitAttempted = $state(false);
 
   const app = data.app;
   const iconSrc = app.icon || app.fallbackIcon;
@@ -29,6 +30,8 @@
     errors: deleteErrors
   } = superForm(data.form, {
     onSubmit: ({ cancel, formData }) => {
+      deleteSubmitAttempted = true;
+
       if (!turnstileToken) {
         const tokenFromForm = formData.get('cf-turnstile-response');
         const tokenFromWidget = window.turnstile?.getResponse?.();
@@ -75,12 +78,28 @@
     window.handleTurnstileSuccess = (token: string) => {
       turnstileToken = token;
       $deleteForm.turnstileToken = token;
+      clearDeleteError('turnstileToken');
+      $deleteMessage = undefined;
     };
 
     return () => {
       delete window.handleTurnstileSuccess;
     };
   });
+
+  function clearDeleteError(field: 'email' | 'turnstileToken') {
+    if ($deleteErrors[field]) {
+      $deleteErrors = { ...$deleteErrors, [field]: undefined };
+    }
+  }
+
+  function handleEmailInput(event: Event) {
+    const input = event.currentTarget as HTMLInputElement;
+    if (input.checkValidity()) {
+      clearDeleteError('email');
+      $deleteMessage = undefined;
+    }
+  }
 </script>
 
 <svelte:head>
@@ -165,9 +184,10 @@
                 class="input h-11 w-full border border-base-300 text-base focus:border-primary focus:outline-primary sm:text-sm"
                 name="email"
                 bind:value={$deleteForm.email}
+                oninput={handleEmailInput}
               />
               <p class="text-[10px] text-base-content/70">{m.udm_email_hint()}</p>
-              {#if $deleteErrors.email}
+              {#if deleteSubmitAttempted && $deleteErrors.email}
                 <span class="text-error text-xs leading-tight">{$deleteErrors.email[0]}</span>
               {/if}
             </div>
@@ -247,7 +267,7 @@
                   data-callback="handleTurnstileSuccess"
                 ></div>
               </div>
-              {#if $deleteErrors.turnstileToken}
+              {#if deleteSubmitAttempted && $deleteErrors.turnstileToken}
                 <span class="mt-2 text-error text-xs leading-tight">
                   {$deleteErrors.turnstileToken[0]}
                 </span>

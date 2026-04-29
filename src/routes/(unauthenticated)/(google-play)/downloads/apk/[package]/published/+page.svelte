@@ -47,11 +47,8 @@
       href={data.manifest.link}
       download
       target="_blank"
-      class={[
-        'btn',
-        lightness(data.manifest.color.substring(1 /*ignore #*/)) < 0.5 ? 'text-white' : 'text-black'
-      ]}
-      style="background-color: {data.manifest.color}"
+      class={['btn', lightness(data.manifest.color.light) < 0.5 ? 'text-white' : 'text-black']}
+      style="background-color: #{data.manifest.color.light}"
     >
       {data.manifest.downloadTitle}
     </a>
