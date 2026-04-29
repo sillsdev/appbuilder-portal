@@ -1,7 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import { deLocalizeUrl, localizeUrl } from '$lib/google-play/paraglide/runtime';
-import { getAppFallbackIcon } from '$lib/icons';
+import { getGPFallbackIcon } from '$lib/icons';
 import {
   getLatestManifest,
   resolveManifestLanguage,
@@ -45,7 +45,7 @@ export const load: LayoutServerLoad = async ({ locals, params, url }) => {
       Project: {
         select: {
           Name: true,
-          ApplicationType: { select: { Id: true } }
+          TypeId: true
         }
       },
       Store: {
@@ -61,7 +61,7 @@ export const load: LayoutServerLoad = async ({ locals, params, url }) => {
   const developer = product.Store.GooglePlayTitle?.trim() || 'Unknown developer';
   const longDesc =
     translatedManifest['full_description.txt'] || translatedManifest['description.txt'] || '';
-  const fallbackIcon = getAppFallbackIcon(product.Project.ApplicationType?.Id);
+  const fallbackIcon = getGPFallbackIcon(product.Project.TypeId);
 
   const app = {
     id: product.Id,
