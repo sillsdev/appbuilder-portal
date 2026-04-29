@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import { fail } from '@sveltejs/kit';
 import { randomInt } from 'crypto';
 import { message, superValidate } from 'sveltekit-superforms';
@@ -7,10 +6,10 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { m } from '$lib/google-play/paraglide/messages';
 import type { Locale } from '$lib/google-play/paraglide/runtime';
+import { saveDeleteRequestVerificationCode } from '$lib/google-play/server/udm';
 import { RoleId } from '$lib/prisma';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import prisma from '$lib/server/database/prisma';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
 
 const UDM_CHANGE_DESCRIPTION = 'User data deletion request verification';
@@ -65,67 +64,15 @@ export const actions: Actions = {
 
     const code = randomInt(100000, 1000000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
-    const now = new Date();
 
     try {
-      await prisma.$transaction(
-        async (tx) => {
-          const existingRequests = await tx.productUserChanges.findMany({
-            where: {
-              Email: normalizedEmail,
-              ProductId: productId,
-              DateConfirmed: null
-            },
-            orderBy: {
-              DateCreated: 'desc'
-            }
-          });
-
-          const [latestRequest, ...staleRequests] = existingRequests;
-          if (staleRequests.length > 0) {
-            await tx.productUserChanges.updateMany({
-              where: {
-                Id: {
-                  in: staleRequests.map((request) => request.Id)
-                }
-              },
-              data: {
-                DateUpdated: now,
-                DateExpires: now
-              }
-            });
-          }
-
-          if (latestRequest) {
-            await tx.productUserChanges.update({
-              where: { Id: latestRequest.Id },
-              data: {
-                Change: UDM_CHANGE_DESCRIPTION,
-                ConfirmationCode: code,
-                DateUpdated: now,
-                DateExpires: expiresAt
-              }
-            });
-            return;
-          }
-
-          await tx.productUserChanges.create({
-            data: {
-              ProductId: productId,
-              Email: normalizedEmail,
-              Change: UDM_CHANGE_DESCRIPTION,
-              DateCreated: now,
-              DateUpdated: now,
-              ConfirmationCode: code,
-              DateExpires: expiresAt,
-              DateConfirmed: null
-            }
-          });
-        },
-        {
-          isolationLevel: Prisma.TransactionIsolationLevel.Serializable
-        }
-      );
+      await saveDeleteRequestVerificationCode({
+        productId,
+        email: normalizedEmail,
+        change: UDM_CHANGE_DESCRIPTION,
+        code,
+        expiresAt
+      });
 
       await sendEmail(
         [{ email: normalizedEmail, name: normalizedEmail }],
@@ -203,7 +150,7 @@ export const actions: Actions = {
       });
 
       await getQueues().UserTasks.add(
-        `Create data deletion request task for Product #${productId}`,
+        `Update data deletion request task for Product #${productId}`,
         {
           type: BullMQ.JobType.UserTasks_DeleteRequest,
           scope: 'Product',
@@ -211,8 +158,8 @@ export const actions: Actions = {
           requestId: userChange.Id,
           comment: userChange.Change ?? undefined,
           operation: {
-            type: BullMQ.UserTasks.OpType.Create,
-            roles: [RoleId.OrgAdmin]
+            type: BullMQ.UserTasks.OpType.Update,
+            targetRole: RoleId.AppBuilder
           }
         }
       );

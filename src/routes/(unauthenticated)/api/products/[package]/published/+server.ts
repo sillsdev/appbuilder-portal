@@ -13,7 +13,7 @@ export async function GET({ params, locals }) {
       id: productId,
       link: `/api/products/${productId}/files/published/apk`,
       size: apkSize,
-      icon: new URL(manifest.icon, baseUrl),
+      icon: manifest.icon,
       titles: Object.fromEntries(
         await Promise.all(
           manifest.languages.map(async (lang) => [
