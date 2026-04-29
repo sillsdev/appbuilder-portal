@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import { error, fail } from '@sveltejs/kit';
 import { randomInt } from 'crypto';
 import { message, superValidate } from 'sveltekit-superforms';
@@ -8,8 +7,8 @@ import type { Actions, PageServerLoad } from './$types';
 import { env } from '$env/dynamic/private';
 import { m } from '$lib/google-play/paraglide/messages';
 import type { Locale } from '$lib/google-play/paraglide/runtime';
+import { saveDeleteRequestVerificationCode } from '$lib/google-play/server/udm';
 import { DatabaseWrites } from '$lib/server/database';
-import prisma from '$lib/server/database/prisma';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
 
 const TURNSTILE_TIMEOUT_MS = 5000;
@@ -127,69 +126,17 @@ export const actions: Actions = {
 
     const code = randomInt(100000, 1000000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
-    const now = new Date();
 
     let pendingRequestId: string;
 
     try {
-      const pendingRequest = await prisma.$transaction(
-        async (tx) => {
-          const existingRequests = await tx.productUserChanges.findMany({
-            where: {
-              ProductId: productId,
-              Email: normalizedEmail,
-              DateConfirmed: null
-            },
-            orderBy: {
-              DateCreated: 'desc'
-            }
-          });
-
-          const [latestRequest, ...staleRequests] = existingRequests;
-          if (staleRequests.length > 0) {
-            await tx.productUserChanges.updateMany({
-              where: {
-                Id: {
-                  in: staleRequests.map((request) => request.Id)
-                }
-              },
-              data: {
-                DateUpdated: now,
-                DateExpires: now
-              }
-            });
-          }
-
-          if (latestRequest) {
-            return tx.productUserChanges.update({
-              where: { Id: latestRequest.Id },
-              data: {
-                Change: change,
-                ConfirmationCode: code,
-                DateUpdated: now,
-                DateExpires: expiresAt
-              }
-            });
-          }
-
-          return tx.productUserChanges.create({
-            data: {
-              ProductId: productId,
-              Email: normalizedEmail,
-              Change: change,
-              ConfirmationCode: code,
-              DateCreated: now,
-              DateUpdated: now,
-              DateExpires: expiresAt,
-              DateConfirmed: null
-            }
-          });
-        },
-        {
-          isolationLevel: Prisma.TransactionIsolationLevel.Serializable
-        }
-      );
-
+      const pendingRequest = await saveDeleteRequestVerificationCode({
+        productId,
+        email: normalizedEmail,
+        change,
+        code,
+        expiresAt
+      });
       pendingRequestId = pendingRequest.Id;
     } catch (error) {
       console.error('Failed to store delete request verification code', { error, productId });
