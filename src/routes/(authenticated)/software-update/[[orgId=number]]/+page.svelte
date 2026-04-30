@@ -63,9 +63,10 @@
     }
   });
 
-  let applicationTypeIds = $state(data.applicationTypes);
+  let applicationTypeIds = $state(data.applicationTypes.map(( {Id} ) => Id));
+
   const products = $derived(
-    data.products.filter(({ TypeId }) => applicationTypeIds.find(({ Id }) => Id === TypeId))
+    data.products.filter(({ TypeId }) => applicationTypeIds.find((id) => id === TypeId))
   );
 
   const product_versions = $derived(Array.from(new Set(products.map((p) => p.NewVersion))));
