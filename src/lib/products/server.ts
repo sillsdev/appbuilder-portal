@@ -9,7 +9,8 @@ export async function doProductAction(
   productId: string,
   action: ProductActionType,
   userId: number,
-  comment?: string
+  comment?: string,
+  softwareUpdatesId?: number
 ) {
   const product = await DatabaseReads.products.findUnique({
     where: {
@@ -61,7 +62,8 @@ export async function doProductAction(
               workflowType: product.ProductDefinition[flowType].Type
             },
             userId,
-            comment
+            comment,
+            softwareUpdatesId
           );
         }
         break;
