@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Предмети што треба да се отстранат",
   "udm_verification_label": "Верификација",
   "udm_send_verification_code": "Испрати код за верификација",
-  "udm_footer_text": "Оваа страница е обезбедена за {appName} на Google Play. Ви треба помош? ",
-  "udm_contact_support": "Контактирајте со поддршката",
   "udm_alert_verify_human": "Ве молиме потврдете дека сте човек.",
   "udm_alert_valid_email": "Ве молиме внесете важечка адреса на е-пошта.",
   "udm_alert_verification_failed": "Верификацијата не успеа. Ве молиме обидете се повторно.",

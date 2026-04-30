@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "รายการที่จะถูกลบ",
   "udm_verification_label": "การยืนยันตัวตน",
   "udm_send_verification_code": "ส่งรหัสยืนยัน",
-  "udm_footer_text": "หน้านี้จัดทำขึ้นสำหรับ {appName} บน Google Play หากต้องการความช่วยเหลือ?",
-  "udm_contact_support": "ติดต่อฝ่ายสนับสนุน",
   "udm_alert_verify_human": "โปรดยืนยันว่าคุณเป็นมนุษย์",
   "udm_alert_valid_email": "โปรดป้อนที่อยู่อีเมลที่ถูกต้อง",
   "udm_alert_verification_failed": "การยืนยันล้มเหลว โปรดลองอีกครั้ง",

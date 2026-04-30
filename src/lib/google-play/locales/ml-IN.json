@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "നീക്കം ചെയ്യേണ്ട ഇനങ്ങൾ",
   "udm_verification_label": "സ്ഥിരീകരണം",
   "udm_send_verification_code": "വെരിഫിക്കേഷൻ കോഡ് അയയ്ക്കുക",
-  "udm_footer_text": "ഈ പേജ് Google Play-യിലെ {appName}-നായി നൽകിയിട്ടുള്ളതാണ്. സഹായം വേണോ? ",
-  "udm_contact_support": "പിന്തുണയുമായി ബന്ധപ്പെടുക",
   "udm_alert_verify_human": "നിങ്ങൾ ഒരു മനുഷ്യനാണെന്ന് ദയവായി പരിശോധിക്കുക.",
   "udm_alert_valid_email": "സാധുവായ ഒരു ഇമെയിൽ വിലാസം നൽകുക.",
   "udm_alert_verification_failed": "സ്ഥിരീകരണം പരാജയപ്പെട്ടു. ദയവായി വീണ്ടും ശ്രമിക്കുക.",

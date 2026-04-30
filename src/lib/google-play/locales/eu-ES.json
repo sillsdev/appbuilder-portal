@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Kendu beharreko elementuak",
   "udm_verification_label": "Egiaztapena",
   "udm_send_verification_code": "Bidali egiaztapen-kodea",
-  "udm_footer_text": "Orrialde hau {appName} aplikaziorako eskaintzen da Google Play-n. Laguntza behar duzu? ",
-  "udm_contact_support": "Jarri harremanetan laguntzarekin",
   "udm_alert_verify_human": "Mesedez, egiaztatu gizakia zarela.",
   "udm_alert_valid_email": "Mesedez, sartu baliozko posta elektroniko helbide bat.",
   "udm_alert_verification_failed": "Egiaztapenak huts egin du. Mesedez, saiatu berriro.",

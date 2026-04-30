@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "წასაშლელი ელემენტები",
   "udm_verification_label": "ვერიფიკაცია",
   "udm_send_verification_code": "ვერიფიკაციის კოდის გაგზავნა",
-  "udm_footer_text": "ეს გვერდი მოწოდებულია {appName}-სთვის Google Play-ზე. გჭირდებათ დახმარება? ",
-  "udm_contact_support": "დაუკავშირდით მხარდაჭერას",
   "udm_alert_verify_human": "გთხოვთ, დაადასტუროთ, რომ ადამიანი ხართ.",
   "udm_alert_valid_email": "გთხოვთ, შეიყვანოთ სწორი ელფოსტის მისამართი.",
   "udm_alert_verification_failed": "ვერიფიკაცია ვერ მოხერხდა. გთხოვთ, სცადოთ თავიდან.",

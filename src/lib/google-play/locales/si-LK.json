@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "ඉවත් කළ යුතු අයිතම",
   "udm_verification_label": "සත්‍යාපනය",
   "udm_send_verification_code": "සත්‍යාපන කේතය යවන්න",
-  "udm_footer_text": "මෙම පිටුව Google Play හි {appName} සඳහා සපයා ඇත. උදව් අවශ්‍යද? ",
-  "udm_contact_support": "සහාය අමතන්න",
   "udm_alert_verify_human": "කරුණාකර ඔබ මිනිසෙකු බව තහවුරු කරන්න.",
   "udm_alert_valid_email": "කරුණාකර වලංගු ඊමේල් ලිපිනයක් ඇතුළත් කරන්න.",
   "udm_alert_verification_failed": "සත්‍යාපනය අසාර්ථක විය. කරුණාකර නැවත උත්සාහ කරන්න.",

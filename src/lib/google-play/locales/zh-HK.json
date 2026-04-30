@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "待移除的項目",
   "udm_verification_label": "驗證",
   "udm_send_verification_code": "發送驗證碼",
-  "udm_footer_text": "此頁面是為 Google Play 上的 {appName} 提供的。需要幫助？",
-  "udm_contact_support": "聯絡支援人員",
   "udm_alert_verify_human": "請驗證您是人類。",
   "udm_alert_valid_email": "請輸入有效的電子郵件地址。",
   "udm_alert_verification_failed": "驗證失敗。請重試。",

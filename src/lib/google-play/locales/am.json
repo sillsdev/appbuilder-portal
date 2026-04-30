@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "የሚወገዱ እቃዎች",
   "udm_verification_label": "ማረጋገጫ",
   "udm_send_verification_code": "የማረጋገጫ ኮድ ላክ",
-  "udm_footer_text": "ይህ ገጽ በGoogle Play ላይ ለ{appName} የቀረበ ነው። እርዳታ ይፈልጋሉ? ",
-  "udm_contact_support": "ድጋፍን ያግኙ",
   "udm_alert_verify_human": "እባክዎ ሰው መሆንዎን ያረጋግጡ።",
   "udm_alert_valid_email": "እባክዎ ትክክለኛ የኢሜይል አድራሻ ያስገቡ።",
   "udm_alert_verification_failed": "ማረጋገጥ አልተቻለም። እባክዎ እንደገና ይሞክሩ።",

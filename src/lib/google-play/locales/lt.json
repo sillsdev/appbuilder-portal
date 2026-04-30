@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Elementai, kurie bus pašalinti",
   "udm_verification_label": "Patvirtinimas",
   "udm_send_verification_code": "Siųsti patvirtinimo kodą",
-  "udm_footer_text": "Šis puslapis skirtas „{appName}“ platformoje „Google Play“. Reikia pagalbos? ",
-  "udm_contact_support": "Susisiekti su pagalba",
   "udm_alert_verify_human": "Patvirtinkite, kad esate žmogus.",
   "udm_alert_valid_email": "Įveskite galiojantį el. pašto adresą.",
   "udm_alert_verification_failed": "Patvirtinimas nepavyko. Bandykite dar kartą.",

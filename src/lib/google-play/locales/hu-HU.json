@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Eltávolítandó elemek",
   "udm_verification_label": "Ellenőrzés",
   "udm_send_verification_code": "Ellenőrző kód küldése",
-  "udm_footer_text": "Ezt az oldalt a(z) {appName} számára biztosítjuk a Google Playen. Segítségre van szüksége? ",
-  "udm_contact_support": "Kapcsolatfelvétel az ügyfélszolgálattal",
   "udm_alert_verify_human": "Kérjük, igazolja, hogy Ön ember.",
   "udm_alert_valid_email": "Kérjük, adjon meg egy érvényes e-mail címet.",
   "udm_alert_verification_failed": "Az ellenőrzés sikertelen. Kérjük, próbálja újra.",

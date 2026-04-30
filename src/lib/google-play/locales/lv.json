@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Noņemamie vienumi",
   "udm_verification_label": "Verifikācija",
   "udm_send_verification_code": "Nosūtīt verifikācijas kodu",
-  "udm_footer_text": "Šī lapa ir paredzēta {appName} vietnē Google Play. Nepieciešama palīdzība? ",
-  "udm_contact_support": "Sazināties ar atbalsta dienestu",
   "udm_alert_verify_human": "Lūdzu, apstipriniet, ka esat cilvēks.",
   "udm_alert_valid_email": "Lūdzu, ievadiet derīgu e-pasta adresi.",
   "udm_alert_verification_failed": "Verifikācija neizdevās. Lūdzu, mēģiniet vēlreiz.",

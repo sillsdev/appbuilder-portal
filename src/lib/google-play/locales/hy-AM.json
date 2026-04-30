@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Հեռացման ենթակա տարրերը",
   "udm_verification_label": "Հաստատում",
   "udm_send_verification_code": "Ուղարկել հաստատման կոդը",
-  "udm_footer_text": "Այս էջը տրամադրված է {appName}-ի համար Google Play-ում: Օգնության կարիք ունե՞ք: ",
-  "udm_contact_support": "Կապվել աջակցման կենտրոնի հետ",
   "udm_alert_verify_human": "Խնդրում ենք հաստատել, որ դուք մարդ եք:",
   "udm_alert_valid_email": "Խնդրում ենք մուտքագրել վավեր էլփոստի հասցե:",
   "udm_alert_verification_failed": "Հաստատումը ձախողվեց: Խնդրում ենք նորից փորձել:",

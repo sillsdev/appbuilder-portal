@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Elementer, der skal fjernes",
   "udm_verification_label": "Bekræftelse",
   "udm_send_verification_code": "Send bekræftelseskode",
-  "udm_footer_text": "Denne side leveres til {appName} på Google Play. Har du brug for hjælp? ",
-  "udm_contact_support": "Kontakt support",
   "udm_alert_verify_human": "Bekræft venligst, at du er et menneske.",
   "udm_alert_valid_email": "Indtast venligst en gyldig e-mailadresse.",
   "udm_alert_verification_failed": "Bekræftelse mislykkedes. Prøv venligst igen.",

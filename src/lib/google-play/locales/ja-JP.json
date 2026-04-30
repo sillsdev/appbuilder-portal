@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "削除されるアイテム",
   "udm_verification_label": "検証",
   "udm_send_verification_code": "確認コードを送信",
-  "udm_footer_text": "このページはGoogle Playの {appName} 用に提供されています。お困りですか？",
-  "udm_contact_support": "サポートに連絡",
   "udm_alert_verify_human": "人間であることを確認してください。",
   "udm_alert_valid_email": "有効なメールアドレスを入力してください。",
   "udm_alert_verification_failed": "検証に失敗しました。もう一度お試しください。",

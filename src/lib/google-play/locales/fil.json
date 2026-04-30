@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Mga item na aalisin",
   "udm_verification_label": "Pag-verify",
   "udm_send_verification_code": "Ipadala ang verification code",
-  "udm_footer_text": "Ang page na ito ay ibinigay para sa {appName} sa Google Play. Kailangan ng tulong? ",
-  "udm_contact_support": "Makipag-ugnayan sa suporta",
   "udm_alert_verify_human": "Mangyaring i-verify na ikaw ay tao.",
   "udm_alert_valid_email": "Mangyaring maglagay ng valid na email address.",
   "udm_alert_verification_failed": "Nabigo ang pag-verify. Mangyaring subukang muli.",

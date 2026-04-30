@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Elemente care vor fi eliminate",
   "udm_verification_label": "Verificare",
   "udm_send_verification_code": "Trimite codul de verificare",
-  "udm_footer_text": "Această pagină este furnizată pentru {appName} pe Google Play. Aveți nevoie de ajutor? ",
-  "udm_contact_support": "Contactați asistența",
   "udm_alert_verify_human": "Vă rugăm să verificați că sunteți om.",
   "udm_alert_valid_email": "Vă rugăm să introduceți o adresă de e-mail validă.",
   "udm_alert_verification_failed": "Verificarea a eșuat. Vă rugăm să încercați din nou.",

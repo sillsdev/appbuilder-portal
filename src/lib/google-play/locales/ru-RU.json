@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Элементы для удаления",
   "udm_verification_label": "Проверка",
   "udm_send_verification_code": "Отправить код подтверждения",
-  "udm_footer_text": "Эта страница предоставлена для {appName} в Google Play. Нужна помощь? ",
-  "udm_contact_support": "Связаться с поддержкой",
   "udm_alert_verify_human": "Пожалуйста, подтвердите, что вы человек.",
   "udm_alert_valid_email": "Пожалуйста, введите корректный адрес электронной почты.",
   "udm_alert_verification_failed": "Проверка не удалась. Пожалуйста, попробуйте еще раз.",

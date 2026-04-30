@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Poistettavat kohteet",
   "udm_verification_label": "Vahvistus",
   "udm_send_verification_code": "Lähetä vahvistuskoodi",
-  "udm_footer_text": "Tämä sivu on tarkoitettu sovellukselle {appName} Google Playssa. Tarvitsetko apua? ",
-  "udm_contact_support": "Ota yhteyttä tukeen",
   "udm_alert_verify_human": "Vahvista, että olet ihminen.",
   "udm_alert_valid_email": "Anna voimassa oleva sähköpostiosoite.",
   "udm_alert_verification_failed": "Vahvistus epäonnistui. Yritä uudelleen.",

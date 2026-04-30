@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Elementi za odstranitev",
   "udm_verification_label": "Verifikacija",
   "udm_send_verification_code": "Pošlji potrditveno kodo",
-  "udm_footer_text": "Ta stran je na voljo za {appName} v Google Play. Potrebujete pomoč? ",
-  "udm_contact_support": "Stik s podporo",
   "udm_alert_verify_human": "Potrdite, da ste človek.",
   "udm_alert_valid_email": "Vnesite veljaven e-poštni naslov.",
   "udm_alert_verification_failed": "Preverjanje ni uspelo. Poskusite znova.",

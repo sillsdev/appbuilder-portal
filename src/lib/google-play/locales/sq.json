@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Elementet që do të hiqen",
   "udm_verification_label": "Verifikimi",
   "udm_send_verification_code": "Dërgo kodin e verifikimit",
-  "udm_footer_text": "Kjo faqe ofrohet për {appName} në Google Play. Keni nevojë për ndihmë? ",
-  "udm_contact_support": "Kontaktoni mbështetjen",
   "udm_alert_verify_human": "Ju lutemi verifikoni që jeni njeri.",
   "udm_alert_valid_email": "Ju lutemi vendosni një adresë emaili të vlefshme.",
   "udm_alert_verification_failed": "Verifikimi dështoi. Ju lutemi provoni përsëri.",

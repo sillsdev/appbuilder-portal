@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Atriði sem á að fjarlægja",
   "udm_verification_label": "Staðfesting",
   "udm_send_verification_code": "Senda staðfestingarkóða",
-  "udm_footer_text": "Þessi síða er útveguð fyrir {appName} á Google Play. Vantar þig hjálp? ",
-  "udm_contact_support": "Hafa samband við þjónustuver",
   "udm_alert_verify_human": "Vinsamlegast staðfestu að þú sért manneskja.",
   "udm_alert_valid_email": "Vinsamlegast sláðu inn gilt netfang.",
   "udm_alert_verification_failed": "Staðfesting tókst ekki. Vinsamlegast reyndu aftur.",

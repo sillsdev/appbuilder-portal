@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Өчүрүлө турган нерселер",
   "udm_verification_label": "Ырастоо",
   "udm_send_verification_code": "Ырастоо кодун жөнөтүү",
-  "udm_footer_text": "Бул барак Google Play'деги {appName} үчүн берилген. Жардам керекпи? ",
-  "udm_contact_support": "Колдоо кызматына кайрылыңыз",
   "udm_alert_verify_human": "Адам экениңизди ырастаңыз.",
   "udm_alert_valid_email": "Сураныч, жарактуу электрондук почта дарегин киргизиңиз.",
   "udm_alert_verification_failed": "Ырастоо ишке ашкан жок. Кайра аракет кылыңыз.",
