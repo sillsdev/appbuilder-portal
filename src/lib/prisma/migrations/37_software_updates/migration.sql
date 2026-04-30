@@ -9,7 +9,6 @@
   - Made the column `DateCreated` on table `SoftwareUpdates` required. This step will fail if there are existing NULL values in that column.
 
 */
-
 -- DropForeignKey
 ALTER TABLE "public"."SoftwareUpdates" DROP CONSTRAINT "SoftwareUpdates_ApplicationTypeId_fkey";
 
@@ -18,9 +17,6 @@ ALTER TABLE "public"."_ProductsToSoftwareUpdates" DROP CONSTRAINT "_ProductsToSo
 
 -- DropForeignKey
 ALTER TABLE "public"."_ProductsToSoftwareUpdates" DROP CONSTRAINT "_ProductsToSoftwareUpdates_B_fkey";
-
--- AlterTable
-ALTER TABLE "Organizations" ADD COLUMN     "softwareUpdatesId" INTEGER;
 
 -- AlterTable
 ALTER TABLE "SoftwareUpdates" DROP COLUMN "ApplicationTypeId",
@@ -40,14 +36,11 @@ CREATE TABLE "SoftwareUpdatesOnProducts" (
     "softwareUpdateId" INTEGER NOT NULL,
     "productId" UUID NOT NULL,
     "DateCompleted" TIMESTAMP(3),
-    "Versions" TEXT[],
-    "Success" BOOLEAN NOT NULL,
+    "Version" TEXT NOT NULL,
+    "Success" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "SoftwareUpdatesOnProducts_pkey" PRIMARY KEY ("productId","softwareUpdateId")
 );
-
--- AddForeignKey
-ALTER TABLE "Organizations" ADD CONSTRAINT "Organizations_softwareUpdatesId_fkey" FOREIGN KEY ("softwareUpdatesId") REFERENCES "SoftwareUpdates"("Id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "SoftwareUpdatesOnProducts" ADD CONSTRAINT "SoftwareUpdatesOnProducts_softwareUpdateId_fkey" FOREIGN KEY ("softwareUpdateId") REFERENCES "SoftwareUpdates"("Id") ON DELETE RESTRICT ON UPDATE CASCADE;

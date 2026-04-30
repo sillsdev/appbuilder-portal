@@ -80,8 +80,6 @@ model Organizations {
   Stores                        Stores[]                        @relation("OrganizationsToStores")
   ManagedStores                 Stores[]                        @relation("ManagedStores")
   System                        SystemStatuses?
-  SoftwareUpdates               SoftwareUpdates?                @relation(fields: [softwareUpdatesId], references: [Id])
-  softwareUpdatesId             Int?
 }
 
 model ProductArtifacts {
@@ -397,7 +395,6 @@ model SoftwareUpdates {
   DateCreated               DateTime                    @default(now()) @db.Timestamp(6)
   DateCompleted             DateTime?                   @db.Timestamp(6)
   InitiatedBy               Users                       @relation(fields: [InitiatedById], references: [Id])
-  Organizations             Organizations[]
   Workflows                 WorkflowInstances[]
   SoftwareUpdatesOnProducts SoftwareUpdatesOnProducts[]
 }
@@ -408,8 +405,8 @@ model SoftwareUpdatesOnProducts {
   product          Products        @relation(fields: [productId], references: [Id])
   productId        String          @db.Uuid
   DateCompleted    DateTime?
-  Versions         String[]
-  Success          Boolean
+  Version          String
+  Success          Boolean         @default(false)
 
   @@id([productId, softwareUpdateId])
 }
