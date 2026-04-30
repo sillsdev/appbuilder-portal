@@ -22,14 +22,16 @@ export async function getRebuilds(
           (
             await DatabaseReads.softwareUpdates.findMany({
               where: {
-                Products: {
+                SoftwareUpdatesOnProducts: {
                   some: {
-                    Project: {
-                      Organization: {
-                        Id: {
-                          in: orgIds
-                        },
-                        ...filterAdminOrgs(security, undefined)
+                    product: {
+                      Project: {
+                        Organization: {
+                          Id: {
+                            in: orgIds
+                          },
+                          ...filterAdminOrgs(security, undefined)
+                        }
                       }
                     }
                   }
@@ -52,41 +54,50 @@ export async function getRebuilds(
                   }
                 },
 
-                Products: {
+                SoftwareUpdatesOnProducts: {
                   where: {
-                    Project: {
-                      Organization: {
-                        Id: {
-                          in: orgIds
-                        },
-                        ...filterAdminOrgs(security, undefined)
+                    product: {
+                      Project: {
+                        Organization: {
+                          Id: {
+                            in: orgIds
+                          },
+                          ...filterAdminOrgs(security, undefined)
+                        }
                       }
                     }
                   },
                   orderBy: {
-                    Project: {
-                      Name: 'desc'
+                    product: {
+                      Project: {
+                        Name: 'desc'
+                      }
                     }
                   },
                   select: {
-                    Id: true,
-                    Project: {
+                    product: {
                       select: {
                         Id: true,
-                        Name: true,
-                        Organization: {
+                        Project: {
                           select: {
+                            Id: true,
                             Name: true,
-                            Id: true
+                            Organization: {
+                              select: {
+                                Name: true,
+                                Id: true
+                              }
+                            }
                           }
                         }
                       }
                     }
-                  }
+                  },
                 },
+
                 _count: {
                   select: {
-                    Products: true
+                    SoftwareUpdatesOnProducts: true
                   }
                 }
               }
@@ -101,11 +112,11 @@ export async function getRebuilds(
             // - Initiating user
 
             // TODO Figure out what to do about projects across orgs with the same name
-            const Projects = [...new Set(rebuild.Products.map((p) => p.Project))];
+            const Projects = [...new Set(rebuild.SoftwareUpdatesOnProducts.map((p) => p.product.Project))];
             const Organizations = [
-              ...new Set(rebuild.Products.map((p) => p.Project.Organization.Name))
+              ...new Set(rebuild.SoftwareUpdatesOnProducts.map((p) => p.product.Project.Organization.Name))
             ];
-            const OrganizationIds = rebuild.Products.map((p) => p.Project.Organization.Id);
+            const OrganizationIds = rebuild.SoftwareUpdatesOnProducts.map((p) => p.product.Project.Organization.Id);
             return {
               Id: rebuild.Id,
               InitiatedBy: rebuild.InitiatedBy.Name,
@@ -116,7 +127,7 @@ export async function getRebuilds(
               Comment: rebuild.Comment,
               Projects,
               _count: {
-                Products: rebuild._count.Products,
+                Products: rebuild._count.SoftwareUpdatesOnProducts,
                 Projects: Projects.length
               }
             };

@@ -13,7 +13,8 @@ export async function doProductAction(
   action: ProductActionType,
   userId: number,
   comment?: string,
-  isAutomatic = false
+  isAutomatic = false,
+  softwareUpdatesId?: number
 ) {
   const product = await DatabaseReads.products.findUnique({
     where: {
@@ -66,7 +67,8 @@ export async function doProductAction(
               isAutomatic
             },
             userId,
-            comment
+            comment,
+            softwareUpdatesId
           );
         }
         break;

@@ -70,7 +70,6 @@ export const load = (async ({ locals, params }) => {
     }
   });
 
-  const organizations = systemStatuses.map((ss) => ss.Organization.Name);
   const systems = new Map<number, Map<number, string>>(
     systemStatuses.map((s) => [
       s.Organization.Id,
@@ -93,25 +92,15 @@ export const load = (async ({ locals, params }) => {
       };
     });
 
-  // Fetch all available ApplicationTypes for the form toggles
-  const applicationTypes = await DatabaseReads.applicationTypes.findMany({
-    select: {
-      Id: true,
-      Description: true
-    }
-  });
-
   const orgId = Number(params.orgId);
-  const rebuilds = await getRebuilds(locals.security, orgId ? [orgId] : undefined);
-  console.log(rebuilds);
-  const form = await superValidate(valibot(formSchema));
-
   return {
-    form,
-    applicationTypes,
+    form: await superValidate(valibot(formSchema)),
+    applicationTypes: await DatabaseReads.applicationTypes.findMany({
+      select: { Id: true, Description: true }
+    }),
     products,
-    organizations,
-    rebuilds
+    organizations: systemStatuses.map((ss) => ss.Organization.Name),
+    rebuilds: await getRebuilds(locals.security, orgId ? [orgId] : undefined)
   };
 }) satisfies PageServerLoad;
 
@@ -140,28 +129,66 @@ export const actions = {
         }
       },
       select: {
-        Id: true
+        Id: true,
+        Project: {
+          select: {
+            Organization: {
+              select: { Id: true }
+            },
+            ApplicationType: {
+              select: {
+                Id: true
+              }
+            }
+          }
+        }
       }
     });
 
-    await DatabaseWrites.softwareUpdates.create({
+    const systems = new Map<number, Map<number, string>>(
+      (
+        await DatabaseReads.systemStatuses.findMany({
+          where: {
+            Organization: {
+              ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined),
+              Id: {
+                in: products.map((p) => p.Project.Organization.Id)
+              }
+            }
+          },
+          select: {
+            Organization: { select: { Id: true, Name: true } },
+            SystemVersions: { select: { ApplicationTypeId: true, Version: true } }
+          }
+        })
+      ).map((s) => [
+        s.Organization.Id,
+        new Map(s.SystemVersions.map((v) => [v.ApplicationTypeId, v.Version ?? '']))
+      ])
+    );
+
+    const update = await DatabaseWrites.softwareUpdates.create({
       InitiatedById: locals.security.userId,
       Comment: form.data.comment,
-      Products: {
-        connect: products
+      SoftwareUpdatesOnProducts: {
+        create: products.map((p) => ({
+          productId: p.Id,
+          Version: systems.get(p.Project.Organization.Id).get(p.Project.ApplicationType.Id)
+        }))
       }
     });
 
     await Promise.allSettled(
-      products.map((p) => {
-        return doProductAction(
+      products.map((p) =>
+        doProductAction(
           p.Id,
           ProductActionType.Rebuild,
           locals.security.userId,
           form.data.comment,
-          true
-        );
-      })
+          true,
+          update.Id
+        )
+      )
     );
   }
 } satisfies Actions;
