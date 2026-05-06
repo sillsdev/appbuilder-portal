@@ -305,11 +305,7 @@ export function newGPApp(args: { context: WorkflowInput }): boolean {
   );
 }
 export function autoPublishOnRebuild(args: { context: WorkflowInput }): boolean {
-  return (
-    args.context.autoPublishOnRebuild &&
-    args.context.isAutomatic &&
-    args.context.workflowType === WorkflowType.Rebuild
-  );
+  return args.context.autoPublishOnRebuild && args.context.workflowType !== WorkflowType.Startup;
 }
 export type Guards =
   | typeof hasAuthors

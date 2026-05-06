@@ -25,6 +25,22 @@ import { DatabaseWrites } from '../database';
 import { deleteWorkflow, markResolved, notifyAutoPublishOwner } from './dbProcedures';
 import { Workflow } from './index';
 
+function notifyAutoPublishOwnerAction({ context }: { context: WorkflowContext }) {
+  if (!autoPublishOnRebuild({ context })) {
+    return;
+  }
+
+  void notifyAutoPublishOwner(context.productId).catch((err) => {
+    console.error(`Failed to notify owner of auto publish for Product #${context.productId}`, err);
+  });
+}
+
+function markResolvedAction({ context }: { context: WorkflowContext }) {
+  void markResolved(context.productId).catch((err) => {
+    console.error(`Failed to mark Product #${context.productId} publication as resolved`, err);
+  });
+}
+
 /**
  * IMPORTANT: READ THIS BEFORE EDITING A STATE MACHINE!
  *
@@ -586,11 +602,6 @@ export const WorkflowStateMachine = setup({
                 guards: [autoPublishOnRebuild]
               }
             },
-            actions: ({ context }) => {
-              console.log('[Workflow] Auto publish on rebuild triggered after build success', {
-                productId: context.productId
-              });
-            },
             guard: autoPublishOnRebuild,
             target: WorkflowState.Product_Publish
           },
@@ -908,25 +919,12 @@ export const WorkflowStateMachine = setup({
                 guards: [newGPApp]
               }
             },
-            actions: ({ context }) => {
-              if (context.autoPublishOnRebuild && context.isAutomatic) {
-                void notifyAutoPublishOwner(context.productId);
-              }
-            },
             guard: newGPApp,
             target: WorkflowState.Make_It_Live
           },
           {
             meta: { type: ActionType.Auto },
-            actions: ({ context }) => {
-              if (context.autoPublishOnRebuild && context.isAutomatic) {
-                void notifyAutoPublishOwner(context.productId);
-              }
-            },
-            guard: ({ context }) =>
-              context.productType !== ProductType.Android_GooglePlay ||
-              context.workflowType !== WorkflowType.Startup ||
-              context.environment[ENVKeys.GOOGLE_PLAY_EXISTING] === '1',
+            actions: notifyAutoPublishOwnerAction,
             target: WorkflowState.Published
           }
         ],
@@ -989,7 +987,7 @@ export const WorkflowStateMachine = setup({
                 guards: [newGPApp]
               }
             },
-            actions: ({ context }) => markResolved(context.productId),
+            actions: markResolvedAction,
             guard: newGPApp,
             target: WorkflowState.Make_It_Live
           },
@@ -1001,7 +999,7 @@ export const WorkflowStateMachine = setup({
                 guards: [newGPApp]
               }
             },
-            actions: ({ context }) => markResolved(context.productId),
+            actions: markResolvedAction,
             guard: newGPApp,
             target: WorkflowState.Make_It_Live
           },
@@ -1013,7 +1011,7 @@ export const WorkflowStateMachine = setup({
                 options: { has: WorkflowOptions.AdminStoreAccess }
               }
             },
-            actions: ({ context }) => markResolved(context.productId),
+            actions: markResolvedAction,
             target: WorkflowState.Published
           },
           {
@@ -1024,7 +1022,7 @@ export const WorkflowStateMachine = setup({
                 options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
               }
             },
-            actions: ({ context }) => markResolved(context.productId),
+            actions: markResolvedAction,
             target: WorkflowState.Published
           }
         ],
