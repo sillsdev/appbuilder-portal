@@ -142,7 +142,7 @@ async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scop
   const before = await DatabaseReads.products.count({
     where: { [member]: { some: filter } }
   });
-  const orphaned = (await DatabaseReads.products.findMany({
+  const chunk = (await DatabaseReads.products.findMany({
     where: { [member]: { some: filter } },
     select: {
       Id: true,
@@ -178,8 +178,8 @@ async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scop
     };
   }> & { ProductBuilds: Build[]; ProductPublications: Release[] })[];
 
-  const associated = await Promise.all(
-    orphaned.map(async (p) => ({
+  const fixed = await Promise.all(
+    chunk.map(async (p) => ({
       Id: p.Id,
       // find first transition where DateTransition is greater than Build.DateCreated
       // problem, date transition isn't set until build is completed... so we only do this for completed builds
@@ -210,7 +210,7 @@ async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scop
     where: { [member]: { some: filter } }
   });
 
-  return { before, orphaned, associated, after };
+  return { before, chunk, fixed, after };
 }
 
 async function addPackageNameFiles() {
@@ -223,7 +223,7 @@ async function addPackageNameFiles() {
   const before = await DatabaseReads.workflowInstances.count({
     where: filter
   });
-  const orphaned = await DatabaseReads.workflowInstances.findMany({
+  const chunk = await DatabaseReads.workflowInstances.findMany({
     where: filter,
     select: {
       ProductId: true,
@@ -233,8 +233,8 @@ async function addPackageNameFiles() {
     skip: Math.max(0, randomInt(before || 1) - chunkSize)
   });
 
-  const associated = await Promise.all(
-    orphaned.map(async (p) => {
+  const fixed = await Promise.all(
+    chunk.map(async (p) => {
       try {
         const parsed = JSON.parse(p.Context) as WorkflowInstanceContext;
         parsed.includeFields.push('packageName');
@@ -252,13 +252,81 @@ async function addPackageNameFiles() {
     where: filter
   });
 
-  return { before, orphaned, associated, after };
+  return { before, chunk, fixed, after };
+}
+
+async function renameRetryComments() {
+  const filter: Prisma.ProductTransitionsWhereInput = {
+    Comment: 'Build may have failed due to insufficient memory. Retrying with medium compute type.'
+  };
+  const chunkSize = 100;
+
+  const before = await DatabaseReads.productTransitions.count({
+    where: filter
+  });
+  const chunk = await DatabaseReads.productTransitions.findMany({
+    where: filter,
+    select: {
+      Id: true,
+      ProductBuilds: {
+        where: {
+          Success: false,
+          ProductArtifacts: {
+            some: {
+              ArtifactType: 'consoleText'
+            }
+          }
+        },
+        select: {
+          ProductArtifacts: {
+            where: {
+              ArtifactType: 'consoleText'
+            },
+
+            select: {
+              Url: true
+            }
+          }
+        },
+        orderBy: {
+          DateCreated: 'asc'
+        },
+        take: 1
+      }
+    },
+    take: chunkSize,
+    skip: Math.max(0, randomInt(before || 1) - chunkSize)
+  });
+
+  const fixed = await Promise.all(
+    chunk.map(async (p) => {
+      try {
+        const url = p.ProductBuilds.at(0)?.ProductArtifacts?.at(0)?.Url ?? '';
+        await DatabaseWrites.productTransitions.update({
+          where: { Id: p.Id },
+          data: {
+            Comment: `system.build-retry,${url}`
+          }
+        });
+        return { ...p, ConsoleText: url };
+      } catch (e) {
+        return { ...p, Error: e };
+      }
+    })
+  );
+
+  const after = await DatabaseReads.productTransitions.count({
+    where: filter
+  });
+
+  return { before, chunk, fixed, after };
 }
 
 const migrationSteps = {
   'Associate Builds': () => associateBuildsOrReleases('build'),
   'Associate Releases': () => associateBuildsOrReleases('release'),
-  'Add PackageName': addPackageNameFiles
+  'Add PackageName': addPackageNameFiles,
+  'Rename Retry Comments': renameRetryComments
 } as const;
 
 export type MigrationStep = keyof typeof migrationSteps;
