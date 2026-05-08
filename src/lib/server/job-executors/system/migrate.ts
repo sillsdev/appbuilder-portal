@@ -332,9 +332,77 @@ async function backfillAppBuilderVersion(): Promise<MigrationOutput> {
   return { before, chunk, after };
 }
 
+async function renameRetryComments() {
+  const filter: Prisma.ProductTransitionsWhereInput = {
+    Comment: 'Build may have failed due to insufficient memory. Retrying with medium compute type.'
+  };
+  const chunkSize = 100;
+
+  const before = await DatabaseReads.productTransitions.count({
+    where: filter
+  });
+  const chunk = await DatabaseReads.productTransitions.findMany({
+    where: filter,
+    select: {
+      Id: true,
+      ProductBuilds: {
+        where: {
+          Success: false,
+          ProductArtifacts: {
+            some: {
+              ArtifactType: 'consoleText'
+            }
+          }
+        },
+        select: {
+          ProductArtifacts: {
+            where: {
+              ArtifactType: 'consoleText'
+            },
+
+            select: {
+              Url: true
+            }
+          }
+        },
+        orderBy: {
+          DateCreated: 'asc'
+        },
+        take: 1
+      }
+    },
+    take: chunkSize,
+    skip: Math.max(0, randomInt(before || 1) - chunkSize)
+  });
+
+  const fixed = await Promise.all(
+    chunk.map(async (p) => {
+      try {
+        const url = p.ProductBuilds.at(0)?.ProductArtifacts?.at(0)?.Url ?? '';
+        await DatabaseWrites.productTransitions.update({
+          where: { Id: p.Id },
+          data: {
+            Comment: `system.build-retry,${url}`
+          }
+        });
+        return { ...p, ConsoleText: url };
+      } catch (e) {
+        return { ...p, Error: e };
+      }
+    })
+  );
+
+  const after = await DatabaseReads.productTransitions.count({
+    where: filter
+  });
+
+  return { before, chunk, fixed, after };
+}
+
 const migrationSteps = {
   'Patch ProductPublications.LogUrl': backfillPublicationLogUrl,
-  'Backfill Remaining ProductBuilds.AppBuilderVersion': backfillAppBuilderVersion
+  'Backfill Remaining ProductBuilds.AppBuilderVersion': backfillAppBuilderVersion,
+  'Rename Retry Comments': renameRetryComments
 } as const satisfies Record<string, () => Promise<MigrationOutput>>;
 
 export type MigrationStep = keyof typeof migrationSteps;
