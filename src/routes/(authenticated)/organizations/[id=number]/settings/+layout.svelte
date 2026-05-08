@@ -15,7 +15,7 @@
 </script>
 
 <TabbedMenu
-  baseRouteId={'/(authenticated)/organizations/[id=idNumber]/settings'}
+  baseRouteId={'/(authenticated)/organizations/[id=number]/settings'}
   routeParams={{ id: page.params.id! }}
   menuItems={[
     {
