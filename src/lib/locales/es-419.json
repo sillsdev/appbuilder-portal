@@ -609,6 +609,7 @@
   "orgMembership_joined": "¡Se unió a la organización!",
   "orgMembership_returnToDashboard": "Go to dashboard",
   "system_buildFailed": "Build failed",
+  "system_buildRetry": "Build may have failed due to insufficient memory. Retrying with medium compute type.",
   "system_publishFailed": "Publish failed",
   "system_unavailable": "Scriptoria actualmente no puede procesar tareas",
   "downloads_title": "Downloads",
