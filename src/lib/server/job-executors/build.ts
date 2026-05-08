@@ -327,8 +327,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
         flow.send({
           type: action,
           userId: null,
-          comment:
-            'Build may have failed due to insufficient memory. Retrying with medium compute type.'
+          comment: `system.build-retry,${job.data.build.artifacts['consoleText'] ?? ''}`
         });
       }
     }

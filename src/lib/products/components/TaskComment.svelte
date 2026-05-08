@@ -12,10 +12,14 @@
 
 <div class={['comment m-1 mx-2 p-1', classes]}>
   {#if comment?.startsWith('system.')}
-    {@const href = comment.replace(/system\.(build|publish)-failed,/, '')}
+    {@const href = comment.replace(/system\.(build|publish)-(failed|retry),/, '')}
     {#if comment.startsWith('system.build-failed')}
       <span>
         {m.system_buildFailed()}
+      </span>
+    {:else if comment.startsWith('system.build-retry')}
+      <span>
+        {m.system_buildRetry()}
       </span>
     {:else if comment.startsWith('system.publish-failed')}
       <span>

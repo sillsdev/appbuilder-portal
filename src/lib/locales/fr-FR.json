@@ -607,6 +607,7 @@
   "orgMembership_joined": "Organization joined!",
   "orgMembership_returnToDashboard": "Go to dashboard",
   "system_buildFailed": "Build failed",
+  "system_buildRetry": "Build may have failed due to insufficient memory. Retrying with medium compute type.",
   "system_publishFailed": "Publish failed",
   "system_unavailable": "Scriptoria is currently unable to process background tasks"
 }
