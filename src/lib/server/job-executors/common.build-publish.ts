@@ -164,3 +164,9 @@ export async function getWorkflowParameters(
 
   return { ...result, environment: environment };
 }
+
+export async function checkBuildRetryCondition(consoleTextUrl: string) {
+  return fetch(consoleTextUrl)
+    .then((r) => r.text())
+    .then((t) => !!t.match('Gradle build daemon disappeared unexpectedly'));
+}

@@ -4,7 +4,11 @@ import { BuildEngine } from '../build-engine-api';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
-import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
+import {
+  addProductPropertiesToEnvironment,
+  checkBuildRetryCondition,
+  getWorkflowParameters
+} from './common.build-publish';
 import { BuildStatus, ProductTransitionType } from '$lib/prisma';
 import { fetchPackageName, getComputeType, updateComputeType } from '$lib/products';
 import { projectUrl } from '$lib/projects/server';
@@ -277,8 +281,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
       const currentCompute = getComputeType(product.Properties);
       if (currentCompute !== 'medium') {
         try {
-          const text = await fetch(job.data.build.artifacts['consoleText']).then((r) => r.text());
-          if (text.match('Gradle build daemon disappeared unexpectedly')) {
+          if (await checkBuildRetryCondition(job.data.build.artifacts['consoleText'])) {
             const newProps = updateComputeType(product.Properties, 'medium');
             // make sure props are actually updated...
             // we don't want infinite retries if this somehow fails...

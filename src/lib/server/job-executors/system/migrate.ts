@@ -5,6 +5,7 @@ import * as v from 'valibot';
 import { BuildEngine } from '../../build-engine-api';
 import { BullMQ, getQueues } from '../../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../../database';
+import { checkBuildRetryCondition } from '../common.build-publish';
 import { JobSchedulerId } from '$lib/bullmq';
 import { fetchPublicationDetails } from '$lib/products/server';
 import { getRelease } from '$lib/server/build-engine-api/requests';
@@ -336,7 +337,7 @@ async function renameRetryComments() {
   const filter: Prisma.ProductTransitionsWhereInput = {
     Comment: 'Build may have failed due to insufficient memory. Retrying with medium compute type.'
   };
-  const chunkSize = 100;
+  const chunkSize = 20;
 
   const before = await DatabaseReads.productTransitions.count({
     where: filter
@@ -359,16 +360,14 @@ async function renameRetryComments() {
             where: {
               ArtifactType: 'consoleText'
             },
-
             select: {
               Url: true
             }
           }
         },
         orderBy: {
-          DateCreated: 'asc'
-        },
-        take: 1
+          DateCreated: 'desc'
+        }
       }
     },
     take: chunkSize,
@@ -378,14 +377,18 @@ async function renameRetryComments() {
   const fixed = await Promise.all(
     chunk.map(async (p) => {
       try {
-        const url = p.ProductBuilds.at(0)?.ProductArtifacts?.at(0)?.Url ?? '';
+        const urls = p.ProductBuilds.map((b) => b.ProductArtifacts?.at(0)?.Url ?? '');
+        let matchingUrl = '';
+        for (const url of urls) {
+          if (url && (await checkBuildRetryCondition(url))) matchingUrl = url;
+        }
         await DatabaseWrites.productTransitions.update({
           where: { Id: p.Id },
           data: {
-            Comment: `system.build-retry,${url}`
+            Comment: `system.build-retry,${matchingUrl}`
           }
         });
-        return { ...p, ConsoleText: url };
+        return { ...p, ConsoleText: matchingUrl };
       } catch (e) {
         return { ...p, Error: e };
       }
