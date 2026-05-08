@@ -8,12 +8,7 @@ import { isAdminForOrg } from '$lib/utils/roles';
 export function projectFilter(args: ProjectSearch) {
   return {
     OrganizationId: args.organizationId !== null ? args.organizationId : undefined,
-    Language: args.langCode
-      ? {
-          contains: args.langCode,
-          mode: 'insensitive'
-        }
-      : undefined,
+    Language: args.langCode ? args.langCode : undefined,
     Products:
       args.productDefinitionId !== null
         ? {
