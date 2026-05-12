@@ -1,3 +1,4 @@
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { assign, setup } from 'xstate';
 import { RoleId, WorkflowType } from '../../prisma';
 import type {
@@ -24,22 +25,6 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseWrites } from '../database';
 import { deleteWorkflow, markResolved, notifyAutoPublishOwner } from './dbProcedures';
 import { Workflow } from './index';
-
-function notifyAutoPublishOwnerAction({ context }: { context: WorkflowContext }) {
-  if (!autoPublishOnRebuild({ context })) {
-    return;
-  }
-
-  void notifyAutoPublishOwner(context.productId).catch((err) => {
-    console.error(`Failed to notify owner of auto publish for Product #${context.productId}`, err);
-  });
-}
-
-function markResolvedAction({ context }: { context: WorkflowContext }) {
-  void markResolved(context.productId).catch((err) => {
-    console.error(`Failed to mark Product #${context.productId} publication as resolved`, err);
-  });
-}
 
 /**
  * IMPORTANT: READ THIS BEFORE EDITING A STATE MACHINE!
@@ -825,15 +810,25 @@ export const WorkflowStateMachine = setup({
             }
           }
         }),
-        async ({ context }) => {
-          if (!context.isAutomatic) {
+        ({ context }) => {
+          if (!context.isAutomatic || !hasReviewers({ context })) {
             return;
           }
 
-          await getQueues().Emails.add(`Email reviewers for Product #${context.productId}`, {
-            type: BullMQ.JobType.Email_SendNotificationToReviewers,
-            productId: context.productId
-          });
+          void getQueues()
+            .Emails.add(`Email reviewers for Product #${context.productId}`, {
+              type: BullMQ.JobType.Email_SendNotificationToReviewers,
+              productId: context.productId
+            })
+            .catch((err) => {
+              const exception = err instanceof Error ? err : new Error(String(err));
+              const span = trace.getActiveSpan();
+              span?.recordException(exception);
+              span?.setStatus({
+                code: SpanStatusCode.ERROR,
+                message: `Failed to email reviewers for Product #${context.productId}`
+              });
+            });
         }
       ],
       exit: assign({
@@ -924,7 +919,11 @@ export const WorkflowStateMachine = setup({
           },
           {
             meta: { type: ActionType.Auto },
-            actions: notifyAutoPublishOwnerAction,
+            actions: ({ context }) => {
+              if (autoPublishOnRebuild({ context })) {
+                void notifyAutoPublishOwner(context.productId);
+              }
+            },
             target: WorkflowState.Published
           }
         ],
@@ -987,7 +986,9 @@ export const WorkflowStateMachine = setup({
                 guards: [newGPApp]
               }
             },
-            actions: markResolvedAction,
+            actions: ({ context }) => {
+              void markResolved(context.productId);
+            },
             guard: newGPApp,
             target: WorkflowState.Make_It_Live
           },
@@ -999,7 +1000,9 @@ export const WorkflowStateMachine = setup({
                 guards: [newGPApp]
               }
             },
-            actions: markResolvedAction,
+            actions: ({ context }) => {
+              void markResolved(context.productId);
+            },
             guard: newGPApp,
             target: WorkflowState.Make_It_Live
           },
@@ -1011,7 +1014,9 @@ export const WorkflowStateMachine = setup({
                 options: { has: WorkflowOptions.AdminStoreAccess }
               }
             },
-            actions: markResolvedAction,
+            actions: ({ context }) => {
+              void markResolved(context.productId);
+            },
             target: WorkflowState.Published
           },
           {
@@ -1022,7 +1027,9 @@ export const WorkflowStateMachine = setup({
                 options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
               }
             },
-            actions: markResolvedAction,
+            actions: ({ context }) => {
+              void markResolved(context.productId);
+            },
             target: WorkflowState.Published
           }
         ],
