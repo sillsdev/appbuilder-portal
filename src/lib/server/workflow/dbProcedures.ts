@@ -1,4 +1,6 @@
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { ProductTransitionType } from '../../prisma';
+import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseWrites } from '../database';
 import { DatabaseReads } from '../database/prisma';
 
@@ -26,37 +28,86 @@ export async function deleteWorkflow(productId: string) {
 }
 
 export async function markResolved(productId: string) {
-  const product = await DatabaseReads.products.findFirst({
-    where: { Id: productId },
-    select: {
-      ProductPublications: {
-        select: {
-          ProductId: true,
-          BuildEngineReleaseId: true,
-          PublishLink: true
-        },
-        orderBy: {
-          DateCreated: 'desc'
-        },
-        take: 1
+  try {
+    const product = await DatabaseReads.products.findFirst({
+      where: { Id: productId },
+      select: {
+        ProductPublications: {
+          select: {
+            ProductId: true,
+            BuildEngineReleaseId: true,
+            PublishLink: true
+          },
+          orderBy: {
+            DateCreated: 'desc'
+          },
+          take: 1
+        }
       }
-    }
-  });
-  if (product?.ProductPublications.length) {
-    const resolved = new Date();
-    const release = product.ProductPublications[0];
-    await DatabaseWrites.productPublications.update(
-      release.ProductId,
-      release.BuildEngineReleaseId,
-      {
-        DateResolved: resolved,
-        Success: true
-      }
-    );
+    });
+    if (product?.ProductPublications.length) {
+      const resolved = new Date();
+      const release = product.ProductPublications[0];
+      await DatabaseWrites.productPublications.update(
+        release.ProductId,
+        release.BuildEngineReleaseId,
+        {
+          DateResolved: resolved,
+          Success: true
+        }
+      );
 
-    await DatabaseWrites.products.update(productId, {
-      DatePublished: resolved,
-      PublishLink: release.PublishLink ?? undefined
+      await DatabaseWrites.products.update(productId, {
+        DatePublished: resolved,
+        PublishLink: release.PublishLink ?? undefined
+      });
+    }
+  } catch (err) {
+    const exception = err instanceof Error ? err : new Error(String(err));
+    const span = trace.getActiveSpan();
+    span?.recordException(exception);
+    span?.setStatus({
+      code: SpanStatusCode.ERROR,
+      message: `Failed to mark Product #${productId} publication as resolved`
+    });
+  }
+}
+
+export async function notifyAutoPublishOwner(productId: string) {
+  try {
+    const product = await DatabaseReads.products.findUnique({
+      where: { Id: productId },
+      select: {
+        ProductDefinition: {
+          select: {
+            Name: true
+          }
+        },
+        Project: {
+          select: {
+            Name: true,
+            OwnerId: true
+          }
+        }
+      }
+    });
+    if (!product?.Project.OwnerId) return;
+    await getQueues().Emails.add(`Notify Owner of Auto Publish for Product #${productId}`, {
+      type: BullMQ.JobType.Email_SendNotificationToUser,
+      userId: product.Project.OwnerId,
+      messageKey: 'autoPublishOnRebuildCompleted',
+      messageProperties: {
+        projectName: product.Project.Name ?? '',
+        productName: product.ProductDefinition.Name ?? ''
+      }
+    });
+  } catch (err) {
+    const exception = err instanceof Error ? err : new Error(String(err));
+    const span = trace.getActiveSpan();
+    span?.recordException(exception);
+    span?.setStatus({
+      code: SpanStatusCode.ERROR,
+      message: `Failed to notify owner of auto publish for Product #${productId}`
     });
   }
 }

@@ -1,3 +1,4 @@
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { assign, setup } from 'xstate';
 import { RoleId, WorkflowType } from '../../prisma';
 import type {
@@ -14,6 +15,7 @@ import {
   WorkflowAction,
   WorkflowOptions,
   WorkflowState,
+  autoPublishOnRebuild,
   hasAuthors,
   hasReviewers,
   jump,
@@ -21,7 +23,7 @@ import {
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseWrites } from '../database';
-import { deleteWorkflow, markResolved } from './dbProcedures';
+import { deleteWorkflow, markResolved, notifyAutoPublishOwner } from './dbProcedures';
 import { Workflow } from './index';
 
 /**
@@ -57,12 +59,14 @@ export const WorkflowStateMachine = setup({
     /** Reset to null on exit */
     includeArtifacts: null,
     environment: {},
+    isAutomatic: input.isAutomatic,
     workflowType: input.workflowType,
     productType: input.productType,
     options: input.options,
     productId: input.productId,
     hasAuthors: input.hasAuthors,
     hasReviewers: input.hasReviewers,
+    autoPublishOnRebuild: input.autoPublishOnRebuild,
     existingApp: input.existingApp
   }),
   states: {
@@ -580,6 +584,16 @@ export const WorkflowStateMachine = setup({
             meta: {
               type: ActionType.Auto,
               includeWhen: {
+                guards: [autoPublishOnRebuild]
+              }
+            },
+            guard: autoPublishOnRebuild,
+            target: WorkflowState.Product_Publish
+          },
+          {
+            meta: {
+              type: ActionType.Auto,
+              includeWhen: {
                 guards: [newGPApp]
               }
             },
@@ -762,39 +776,61 @@ export const WorkflowStateMachine = setup({
       }
     },
     [WorkflowState.Verify_and_Publish]: {
-      entry: assign({
-        instructions: ({ context }) => {
-          switch (context.productType) {
-            case ProductType.Android_GooglePlay:
-              return 'googleplay_verify_and_publish';
-            case ProductType.Android_S3:
-              return 'verify_and_publish';
-            case ProductType.AssetPackage:
-              return 'asset_package_verify_and_publish';
-            case ProductType.Web:
-              return 'web_verify';
+      entry: [
+        assign({
+          instructions: ({ context }) => {
+            switch (context.productType) {
+              case ProductType.Android_GooglePlay:
+                return 'googleplay_verify_and_publish';
+              case ProductType.Android_S3:
+                return 'verify_and_publish';
+              case ProductType.AssetPackage:
+                return 'asset_package_verify_and_publish';
+              case ProductType.Web:
+                return 'web_verify';
+            }
+          },
+          includeFields: ({ context }) => {
+            switch (context.productType) {
+              case ProductType.Android_GooglePlay:
+              case ProductType.Android_S3:
+                return ['storeDescription', 'listingLanguageCode'];
+              case ProductType.AssetPackage:
+              case ProductType.Web:
+                return ['storeDescription'];
+            }
+          },
+          includeReviewers: true,
+          includeArtifacts: ({ context }) => {
+            switch (context.productType) {
+              case ProductType.AssetPackage:
+                return 'latestAssetPackage';
+              default:
+                return 'all';
+            }
           }
-        },
-        includeFields: ({ context }) => {
-          switch (context.productType) {
-            case ProductType.Android_GooglePlay:
-            case ProductType.Android_S3:
-              return ['storeDescription', 'listingLanguageCode'];
-            case ProductType.AssetPackage:
-            case ProductType.Web:
-              return ['storeDescription'];
+        }),
+        ({ context }) => {
+          if (!context.isAutomatic || !hasReviewers({ context })) {
+            return;
           }
-        },
-        includeReviewers: true,
-        includeArtifacts: ({ context }) => {
-          switch (context.productType) {
-            case ProductType.AssetPackage:
-              return 'latestAssetPackage';
-            default:
-              return 'all';
-          }
+
+          void getQueues()
+            .Emails.add(`Email reviewers for Product #${context.productId}`, {
+              type: BullMQ.JobType.Email_SendNotificationToReviewers,
+              productId: context.productId
+            })
+            .catch((err) => {
+              const exception = err instanceof Error ? err : new Error(String(err));
+              const span = trace.getActiveSpan();
+              span?.recordException(exception);
+              span?.setStatus({
+                code: SpanStatusCode.ERROR,
+                message: `Failed to email reviewers for Product #${context.productId}`
+              });
+            });
         }
-      }),
+      ],
       exit: assign({
         includeReviewers: false,
         includeArtifacts: null
@@ -883,6 +919,11 @@ export const WorkflowStateMachine = setup({
           },
           {
             meta: { type: ActionType.Auto },
+            actions: ({ context }) => {
+              if (autoPublishOnRebuild({ context })) {
+                void notifyAutoPublishOwner(context.productId);
+              }
+            },
             target: WorkflowState.Published
           }
         ],
@@ -945,7 +986,9 @@ export const WorkflowStateMachine = setup({
                 guards: [newGPApp]
               }
             },
-            actions: ({ context }) => markResolved(context.productId),
+            actions: ({ context }) => {
+              void markResolved(context.productId);
+            },
             guard: newGPApp,
             target: WorkflowState.Make_It_Live
           },
@@ -957,7 +1000,9 @@ export const WorkflowStateMachine = setup({
                 guards: [newGPApp]
               }
             },
-            actions: ({ context }) => markResolved(context.productId),
+            actions: ({ context }) => {
+              void markResolved(context.productId);
+            },
             guard: newGPApp,
             target: WorkflowState.Make_It_Live
           },
@@ -969,7 +1014,9 @@ export const WorkflowStateMachine = setup({
                 options: { has: WorkflowOptions.AdminStoreAccess }
               }
             },
-            actions: ({ context }) => markResolved(context.productId),
+            actions: ({ context }) => {
+              void markResolved(context.productId);
+            },
             target: WorkflowState.Published
           },
           {
@@ -980,7 +1027,9 @@ export const WorkflowStateMachine = setup({
                 options: { none: new Set([WorkflowOptions.AdminStoreAccess]) }
               }
             },
-            actions: ({ context }) => markResolved(context.productId),
+            actions: ({ context }) => {
+              void markResolved(context.productId);
+            },
             target: WorkflowState.Published
           }
         ],
