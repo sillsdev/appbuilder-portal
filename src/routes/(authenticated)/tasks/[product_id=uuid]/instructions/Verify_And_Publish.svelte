@@ -7,10 +7,7 @@
     grid view.
   </li>
   <li>
-    Test the app. See <a
-      href="https://app.scriptoria.io/docs/Installing+Android+Apps+For+Testing.pdf"
-      target="_blank"
-    >
+    Test the app. See <a href="/docs/Installing Android Apps For Testing.pdf" target="_blank">
       Installing Android Apps For Testing
     </a>
     for help.
