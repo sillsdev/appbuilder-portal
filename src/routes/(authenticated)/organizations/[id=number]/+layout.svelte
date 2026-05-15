@@ -15,7 +15,7 @@
 
   let { data, children }: Props = $props();
 
-  type baseRouteId = '/(authenticated)/organizations/[id=idNumber]' & RouteId;
+  type baseRouteId = '/(authenticated)/organizations/[id=number]' & RouteId;
 
   onMount(() => {
     setOrgFromParams($orgActive, page.params.id);

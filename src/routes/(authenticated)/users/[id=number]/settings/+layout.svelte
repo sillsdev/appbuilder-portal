@@ -24,7 +24,7 @@
 <!-- permissions handled in server -->
 {#if data.canEdit}
   <TabbedMenu
-    baseRouteId="/(authenticated)/users/[id=idNumber]/settings"
+    baseRouteId="/(authenticated)/users/[id=number]/settings"
     routeParams={{ id: page.params.id! }}
     titleString={m.users_settingsTitle() + ': ' + data.subject.Name}
     menuItems={userSettingsLinks}
