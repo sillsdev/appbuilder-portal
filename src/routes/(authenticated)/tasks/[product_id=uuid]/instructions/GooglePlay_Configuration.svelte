@@ -69,7 +69,7 @@
         to the name of a keystore. Check with the Organization Administrator if you are unsure.
       </li>
       <li>
-        See the <a href="https://app.scriptoria.io/docs/Publishing+Properties.pdf" target="_blank">
+        See the <a href="/docs/Publishing Properties.pdf" target="_blank">
           Publishing Properties Documentation
         </a>
         for more details.

@@ -347,10 +347,7 @@
                   </a>
                 </li>
                 <li>
-                  <a
-                    target="_blank"
-                    href="https://app.scriptoria.io/docs/Help+Guide+for+Scriptoria.pdf"
-                  >
+                  <a target="_blank" href="/docs/Help Guide for Scriptoria.pdf">
                     <IconContainer icon={Icons.Help} width={16} />
                     {m.header_help()}
                   </a>

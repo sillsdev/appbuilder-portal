@@ -91,11 +91,7 @@
 <div class="w-full max-w-6xl mx-auto relative p-2">
   <form action="" method="post" use:enhance>
     <h1 class="pl-4">{m.projectImport_title()}</h1>
-    <a
-      href="https://sil-prd-scriptoria-resources.s3.amazonaws.com/Project+Import.pdf"
-      target="_blank"
-      class="link pl-4"
-    >
+    <a href="/docs/Project Import.pdf" target="_blank" class="link pl-4">
       {m.projectImport_help()}
     </a>
     <div class="flex flex-row gap-4 flex-wrap place-content-center sm:place-content-start p-4">
