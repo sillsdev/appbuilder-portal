@@ -149,7 +149,8 @@ export async function getPublishedFile(from: ArtifactFrom, type: string) {
             select: {
               ProductId: true,
               ArtifactType: true,
-              Url: true
+              Url: true,
+              ContentType: true
             }
           }
         }
@@ -300,14 +301,18 @@ export async function getArtifactHeaders(product_id: string, type: string) {
   const productArtifact = await getPublishedFile({ productId: product_id }, type);
   if (!productArtifact?.Url) return null;
 
-  const { lastModified, fileSize } = await getFileInfo(productArtifact.Url);
+  const { lastModified, fileSize, contentType } = await getFileInfo(productArtifact.Url);
 
-  const headers: { 'Last-Modified': string; 'Content-Length'?: string } = {
+  const headers: { 'Last-Modified': string; 'Content-Length'?: string; 'Content-Type'?: string } = {
     'Last-Modified': lastModified
   };
 
   if (fileSize) {
     headers['Content-Length'] = fileSize;
+  }
+
+  if (contentType) {
+    headers['Content-Type'] = contentType;
   }
 
   return { product: productArtifact, headers };
