@@ -9,9 +9,13 @@ import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { getRebuilds } from '$lib/software-updates/server';
 import { filterAdminOrgs } from '$lib/utils/roles';
 
-const formSchema = v.object({
+const startFormSchema = v.object({
   comment: v.pipe(v.string(), v.minLength(1)),
   products: v.pipe(v.array(v.string()))
+});
+
+const cancelFormSchema = v.object({
+  rebuildId: v.pipe(v.number())
 });
 
 export const load = (async ({ locals, params }) => {
@@ -94,7 +98,7 @@ export const load = (async ({ locals, params }) => {
 
   const orgId = Number(params.orgId);
   return {
-    form: await superValidate(valibot(formSchema)),
+    form: await superValidate(valibot(startFormSchema)),
     applicationTypes: await DatabaseReads.applicationTypes.findMany({select: {Id: true, Description: true}}),
     products,
     organizations: systemStatuses.map((ss) => ss.Organization.Name),
@@ -110,7 +114,7 @@ export const actions = {
       locals.security.requireAdminOfAny();
     }
 
-    const form = await superValidate(request, valibot(formSchema));
+    const form = await superValidate(request, valibot(startFormSchema));
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
@@ -185,5 +189,51 @@ export const actions = {
         update.Id
       ))
     );
+  },
+
+  async cancel({ request, locals, params }) {
+    if (params.orgId) {
+      locals.security.requireAdminOfOrg(Number(params.orgId));
+    } else {
+      locals.security.requireAdminOfAny();
+    }
+
+    const form = await superValidate(request, valibot(cancelFormSchema));
+    if (!form.valid) {
+      return fail(400, { form, ok: false });
+    }
+    
+
+    const update = await DatabaseReads.softwareUpdates.findUnique({ 
+      where: {
+        Id: form.data.rebuildId
+      },
+      select: {
+        Workflows: {
+          where: {
+            Product: {
+              Project: {
+                Organization: {
+                  ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined)
+                }
+              }
+            }
+          },
+          select: {
+            ProductId: true
+          }
+        }
+      }
+    });
+    
+    console.log(update);
+    await Promise.allSettled(
+      update?.Workflows.map((p) => doProductAction(
+        p.ProductId,
+        ProductActionType.Cancel,
+        locals.security.userId,
+      ))
+    );
+
   }
 } satisfies Actions;
