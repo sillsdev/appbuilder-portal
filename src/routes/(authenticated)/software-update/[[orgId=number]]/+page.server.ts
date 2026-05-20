@@ -170,18 +170,18 @@ export const actions = {
       ])
     );
 
-    const update = await DatabaseWrites.softwareUpdates.create({
-      InitiatedById: locals.security.userId,
-      Comment: form.data.comment,
-      UpdatedProducts: {
-        create: products
-          .filter((p) => systems.get(p.Project.Organization.Id)?.get(p.Project.ApplicationType.Id))
-          .map((p) => ({
-            ProductId: p.Id,
-            Version: systems.get(p.Project.Organization.Id)!.get(p.Project.ApplicationType.Id)!
-          }))
-      }
-    });
+    const update = await DatabaseWrites.softwareUpdates.create(
+      {
+        InitiatedById: locals.security.userId,
+        Comment: form.data.comment
+      },
+      products
+        .filter((p) => systems.get(p.Project.Organization.Id)?.get(p.Project.ApplicationType.Id))
+        .map((p) => ({
+          ProductId: p.Id,
+          Version: systems.get(p.Project.Organization.Id)!.get(p.Project.ApplicationType.Id)!
+        }))
+    );
 
     await Promise.allSettled(
       products.map((p) =>

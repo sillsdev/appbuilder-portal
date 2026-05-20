@@ -11,9 +11,12 @@ export type RebuildRequest = {
   organizationId: number;
 };
 
-export async function create(data: RequirePrimitive<Prisma.SoftwareUpdatesUncheckedCreateInput>) {
+export async function create(
+  data: RequirePrimitive<Prisma.SoftwareUpdatesUncheckedCreateInput>,
+  products: Prisma.SoftwareUpdatesOnProductsUncheckedCreateWithoutSoftwareUpdateInput[]
+) {
   return await prisma.softwareUpdates.create({
-    data
+    data: { ...data, UpdatedProducts: { create: products } }
   });
 }
 
