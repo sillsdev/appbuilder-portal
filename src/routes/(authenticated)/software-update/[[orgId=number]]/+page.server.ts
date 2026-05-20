@@ -76,25 +76,24 @@ export const load = (async ({ locals, params }) => {
 
   const systems = new Map<number, Map<number, string>>(
     systemStatuses.map((s) => [
-      s.Organization.Id,
+      s.Organization!.Id,
       new Map(s.SystemVersions.map((v) => [v.ApplicationTypeId, v.Version ?? '']))
     ])
   );
 
   const products = eligibleProducts
-    .filter(
-      (p) =>
-        p.ProductBuilds[0].AppBuilderVersion !==
-        systems.get(p.Project.Organization.Id).get(p.Project.ApplicationType.Id)
-    )
-    .map((p) => {
-      return {
-        ProjectName: p.Project.Name,
-        TypeId: p.Project.ApplicationType.Id,
-        Id: p.Id,
-        NewVersion: systems.get(p.Project.Organization.Id).get(p.Project.ApplicationType.Id)
-      };
-    });
+    .filter((p) => {
+      const targetVersion = systems
+        .get(p.Project.Organization.Id)
+        ?.get(p.Project.ApplicationType.Id);
+      return targetVersion && targetVersion !== p.ProductBuilds[0].AppBuilderVersion;
+    })
+    .map((p) => ({
+      ProjectName: p.Project.Name,
+      TypeId: p.Project.ApplicationType.Id,
+      Id: p.Id,
+      NewVersion: systems.get(p.Project.Organization.Id)!.get(p.Project.ApplicationType.Id)!
+    }));
 
   const orgId = Number(params.orgId);
   return {
@@ -103,7 +102,7 @@ export const load = (async ({ locals, params }) => {
       select: { Id: true, Description: true }
     }),
     products,
-    organizations: systemStatuses.map((ss) => ss.Organization.Name),
+    organizations: systemStatuses.map((ss) => ss.Organization!.Name),
     rebuilds: await getRebuilds(locals.security, orgId ? [orgId] : undefined)
   };
 }) satisfies PageServerLoad;
@@ -166,7 +165,7 @@ export const actions = {
           }
         })
       ).map((s) => [
-        s.Organization.Id,
+        s.Organization!.Id,
         new Map(s.SystemVersions.map((v) => [v.ApplicationTypeId, v.Version ?? '']))
       ])
     );
@@ -175,10 +174,12 @@ export const actions = {
       InitiatedById: locals.security.userId,
       Comment: form.data.comment,
       UpdatedProducts: {
-        create: products.map((p) => ({
-          ProductId: p.Id,
-          Version: systems.get(p.Project.Organization.Id).get(p.Project.ApplicationType.Id)
-        }))
+        create: products
+          .filter((p) => systems.get(p.Project.Organization.Id)?.get(p.Project.ApplicationType.Id))
+          .map((p) => ({
+            ProductId: p.Id,
+            Version: systems.get(p.Project.Organization.Id)!.get(p.Project.ApplicationType.Id)!
+          }))
       }
     });
 
