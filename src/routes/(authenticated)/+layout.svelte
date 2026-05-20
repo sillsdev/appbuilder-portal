@@ -229,7 +229,7 @@
                     onclick={closeDrawer}
                   >
                     <IconContainer icon={Icons.UpdateOn} width={24} />
-                    {m.admin_nav_software_update()}
+                    {m.softwareUpdate()}
                   </a>
                 </li>
               {/if}

@@ -18,29 +18,29 @@
   <div class="p-4 pb-2 w-full">
     <div class="flex flex-wrap justify-between p-2">
       <div class="mr-2">
-        <span class="flex items-center mb-1" title={m.admin_software_update_organization_title()}>
+        <span class="flex items-center mb-1" title={m.softwareUpdate_organization_title()}>
           <IconContainer icon={Icons.Organization} width={20} class="mr-1 shrink-0" />
           {rebuild.Organizations.join(',') ?? ''}
         </span>
-        <span class="flex items-center mb-1" title={m.admin_software_update_initiated_by()}>
+        <span class="flex items-center mb-1" title={m.softwareUpdate_initiated_by()}>
           <IconContainer icon={Icons.User} width={20} class="mr-1 shrink-0" />
           {rebuild.InitiatedBy ?? ''}
         </span>
         <span class="flex items-center mb-1">
           <IconContainer icon={Icons.Package} width={20} class="mr-1 shrink-0" />
-          <span class="font-semibold mr-1">{m.admin_software_update_products_title()}:</span>
+          <span class="font-semibold mr-1">{m.softwareUpdate_products_title()}:</span>
           {rebuild._count.Products}
         </span>
         <span class="flex items-center mb-1">
           <IconContainer icon={Icons.Directory} width={20} class="mr-1 shrink-0" />
-          <span class="font-semibold mr-1">{m.admin_software_update_projects_title()}:</span>
+          <span class="font-semibold mr-1">{m.softwareUpdate_projects_title()}:</span>
           {rebuild._count.Projects}
         </span>
       </div>
       <div class="items-start flex flex-col">
-        <span class="flex items-center" title={m.admin_software_update_created_title()}>
+        <span class="flex items-center" title={m.softwareUpdate_created_title()}>
           <span class="text-nowrap overflow-hidden text-center mr-1">
-            {m.admin_software_update_created_title()}:
+            {m.softwareUpdate_created_title()}:
           </span>
           <span class="w-40 text-center">
             {getTimeDateString(rebuild.DateCreated)}
@@ -48,9 +48,9 @@
         </span>
 
         {#if rebuild.DateCompleted}
-          <span class="flex items-center" title={m.admin_software_update_status_completed()}>
+          <span class="flex items-center" title={m.softwareUpdate_status_completed()}>
             <span class="text-nowrap overflow-hidden text-center mr-1">
-              {m.admin_software_update_status_completed()}:
+              {m.softwareUpdate_status_completed()}:
             </span>
             <span class="w-40 text-center">
               {getTimeDateString(rebuild.DateCompleted)}
@@ -76,7 +76,7 @@
   <div class="w-full bg-base-100 p-6 pt-2">
     {#if rebuild.Projects.length > 0}
       <div class="mb-2">
-        <span class="font-semibold">{m.admin_software_update_projects_title()}:</span>
+        <span class="font-semibold">{m.softwareUpdate_projects_title()}:</span>
       </div>
       <div class="flex flex-wrap gap-2">
         {#each rebuild.Projects as project}

@@ -50,7 +50,7 @@
     resetForm: true,
     onUpdate({ form, result, formElement }) {
       if (form.valid && result.type === 'success') {
-        toast('success', m.admin_software_update_toast_success());
+        toast('success', m.softwareUpdate_toast_success());
         formElement.reset();
       }
     },
@@ -87,15 +87,15 @@
 </script>
 
 <div class="w-full px-4">
-  <h1>{m.admin_nav_software_update()}</h1>
-  <p class="pl-8 mt-2 mb-6">{m.admin_nav_software_update_description()}</p>
+  <h1>{m.softwareUpdate()}</h1>
+  <p class="pl-8 mt-2 mb-6">{m.softwareUpdate_description()}</p>
   <div class="m-4">
     <div class="flex flex-col lg:flex-row m-6">
       <!-- Application Type Toggles -->
       <div class="flex-1">
-        <h2 class="font-semibold mb-2">{m.admin_software_update_application_types_title()}</h2>
+        <h2 class="font-semibold mb-2">{m.softwareUpdate_application_types_title()}</h2>
         <p class="text-sm text-gray-500 mb-4">
-          {m.admin_software_update_application_types_description()}
+          {m.softwareUpdate_application_types_description()}
         </p>
 
         <div class="flex w-full">
@@ -121,28 +121,28 @@
       <!-- Summary Information -->
       <div class="flex-2 mt-18">
         <DataDisplayBox
-          title={m.admin_software_update_summary_title()}
+          title={m.softwareUpdate_summary_title()}
           fields={[
             {
-              key: 'admin_software_update_affected_organizations',
+              key: 'softwareUpdate_affected_organizations',
               value: data.organizations.join(', '),
               faint: data.organizations.length === 0
             },
             {
-              key: 'admin_software_update_projects_label',
+              key: 'softwareUpdate_projects_label',
               value: project_names.length
             },
             {
-              key: 'admin_software_update_products_label',
+              key: 'softwareUpdate_products_label',
               value: products.length
             },
             {
-              key: 'admin_software_update_project_names_label',
+              key: 'softwareUpdate_project_names_label',
               value: project_names.join(', '),
               faint: project_names.length === 0
             },
             {
-              key: 'admin_software_update_target_versions_label',
+              key: 'softwareUpdate_target_versions_label',
               value: product_versions.join(', '),
               faint: product_versions.length === 0
             }
@@ -153,7 +153,7 @@
     <br />
 
     <form class="mx-4" method="post" action="?/start" use:enhance>
-      <LabeledFormInput key="admin_nav_software_update_comment">
+      <LabeledFormInput key="softwareUpdate_comment">
         <input
           type="text"
           name="comment"
@@ -161,16 +161,16 @@
           bind:value={$form.comment}
         />
         {#if $errors.comment}
-          <span class="text-error text-sm">{m.admin_software_update_comment_required()}</span>
+          <span class="text-error text-sm">{m.softwareUpdate_comment_required()}</span>
         {/if}
-        <!--<span class="validator-hint">{m.admin_software_update_comment_required()}</span>-->
+        <!--<span class="validator-hint">{m.softwareUpdate_comment_required()}</span>-->
       </LabeledFormInput>
 
       <input type="hidden" name="products" value={products.map((p) => p.Id)} />
       <input
         type="submit"
         class="btn btn-primary mt-6"
-        value={m.admin_software_update_rebuild_start()}
+        value={m.softwareUpdate_rebuild_start()}
         disabled={applicationTypeIds.length === 0 || products.length === 0}
       />
     </form>
@@ -179,14 +179,14 @@
     <div class="m-4">
       <div class="space-y-6">
         {#if rebuilds.incomplete.length > 0}
-          <h1>{m.admin_software_update_active_rebuilds_title()}</h1>
+          <h1>{m.softwareUpdate_active_rebuilds_title()}</h1>
           {#each rebuilds.incomplete as rebuild}
             <div class="mb-4"><RebuildCard {rebuild} /></div>
           {/each}
         {/if}
 
         {#if rebuilds.complete.length > 0}
-          <h1 class="mt-8">{m.admin_software_update_completed_rebuilds_title()}</h1>
+          <h1 class="mt-8">{m.softwareUpdate_completed_rebuilds_title()}</h1>
           {#each rebuilds.complete as rebuild}
             <div class="mb-4"><RebuildCard {rebuild} /></div>
           {/each}
