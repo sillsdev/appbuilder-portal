@@ -36,16 +36,16 @@ import { WorkflowStateMachine } from './state-machine';
 export class Workflow {
   private flow: Actor<typeof WorkflowStateMachine> | null;
   private productId: string;
-  private softwareUpdatesId?: number;
+  private softwareUpdateId?: number;
   private currentState: XStateNode<WorkflowContext, WorkflowEvent> | null;
   private input: WorkflowInput;
 
-  private constructor(productId: string, input: WorkflowInput, softwareUpdatesId?: number) {
+  private constructor(productId: string, input: WorkflowInput, softwareUpdateId?: number) {
     this.flow = null; // to make svelte-check happy
     this.currentState = null; // ^^^
     this.productId = productId;
     this.input = input;
-    this.softwareUpdatesId = softwareUpdatesId;
+    this.softwareUpdateId = softwareUpdateId;
   }
 
   /* PUBLIC METHODS */
@@ -55,7 +55,7 @@ export class Workflow {
     config: WorkflowConfig,
     userId: number,
     comment?: string,
-    softwareUpdatesId?: number
+    softwareUpdateId?: number
   ): Promise<Workflow> {
     const check = await DatabaseReads.products.findUnique({
       where: {
@@ -86,7 +86,7 @@ export class Workflow {
         productId,
         existingApp: false
       },
-      softwareUpdatesId
+      softwareUpdateId
     );
     flow.flow = createActor(WorkflowStateMachine, {
       inspect: (e) => {
@@ -402,7 +402,7 @@ export class Workflow {
             : context.workflowType === WorkflowType.Republish
               ? prodDefinition.RepublishWorkflowId!
               : prodDefinition.WorkflowId!,
-        softwareUpdatesId: this.softwareUpdatesId
+        SoftwareUpdateId: this.softwareUpdateId
       },
       update: {
         State: Workflow.stateName(this.currentState ?? { id: 'Start' }),

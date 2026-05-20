@@ -22,9 +22,9 @@ export async function getRebuilds(
           (
             await DatabaseReads.softwareUpdates.findMany({
               where: {
-                SoftwareUpdatesOnProducts: {
+                UpdatedProducts: {
                   some: {
-                    product: {
+                    Product: {
                       Project: {
                         Organization: {
                           Id: {
@@ -54,9 +54,9 @@ export async function getRebuilds(
                   }
                 },
 
-                SoftwareUpdatesOnProducts: {
+                UpdatedProducts: {
                   where: {
-                    product: {
+                    Product: {
                       Project: {
                         Organization: {
                           Id: {
@@ -68,14 +68,14 @@ export async function getRebuilds(
                     }
                   },
                   orderBy: {
-                    product: {
+                    Product: {
                       Project: {
                         Name: 'desc'
                       }
                     }
                   },
                   select: {
-                    product: {
+                    Product: {
                       select: {
                         Id: true,
                         Project: {
@@ -97,7 +97,7 @@ export async function getRebuilds(
 
                 _count: {
                   select: {
-                    SoftwareUpdatesOnProducts: true
+                    UpdatedProducts: true
                   }
                 }
               }
@@ -112,16 +112,12 @@ export async function getRebuilds(
             // - Initiating user
 
             // TODO Figure out what to do about projects across orgs with the same name
-            const Projects = [
-              ...new Set(rebuild.SoftwareUpdatesOnProducts.map((p) => p.product.Project))
-            ];
+            const Projects = [...new Set(rebuild.UpdatedProducts.map((p) => p.Product.Project))];
             const Organizations = [
-              ...new Set(
-                rebuild.SoftwareUpdatesOnProducts.map((p) => p.product.Project.Organization.Name)
-              )
+              ...new Set(rebuild.UpdatedProducts.map((p) => p.Product.Project.Organization.Name))
             ];
-            const OrganizationIds = rebuild.SoftwareUpdatesOnProducts.map(
-              (p) => p.product.Project.Organization.Id
+            const OrganizationIds = rebuild.UpdatedProducts.map(
+              (p) => p.Product.Project.Organization.Id
             );
             return {
               Id: rebuild.Id,
@@ -133,7 +129,7 @@ export async function getRebuilds(
               Comment: rebuild.Comment,
               Projects,
               _count: {
-                Products: rebuild._count.SoftwareUpdatesOnProducts,
+                Products: rebuild._count.UpdatedProducts,
                 Projects: Projects.length
               }
             };

@@ -26,27 +26,27 @@ DROP COLUMN "Version",
 ALTER COLUMN "DateCreated" SET NOT NULL;
 
 -- AlterTable
-ALTER TABLE "WorkflowInstances" ADD COLUMN     "softwareUpdatesId" INTEGER;
+ALTER TABLE "WorkflowInstances" ADD COLUMN     "SoftwareUpdateId" INTEGER;
 
 -- DropTable
 DROP TABLE "public"."_ProductsToSoftwareUpdates";
 
 -- CreateTable
 CREATE TABLE "SoftwareUpdatesOnProducts" (
-    "softwareUpdateId" INTEGER NOT NULL,
-    "productId" UUID NOT NULL,
+    "SoftwareUpdateId" INTEGER NOT NULL,
+    "ProductId" UUID NOT NULL,
     "DateCompleted" TIMESTAMP(3),
     "Version" TEXT NOT NULL,
     "Success" BOOLEAN NOT NULL DEFAULT false,
 
-    CONSTRAINT "SoftwareUpdatesOnProducts_pkey" PRIMARY KEY ("productId","softwareUpdateId")
+    CONSTRAINT "PK_SoftwareUpdatesOnProducts_SoftwareUpdateId_ProductId" PRIMARY KEY ("SoftwareUpdateId", "ProductId")
 );
 
 -- AddForeignKey
-ALTER TABLE "SoftwareUpdatesOnProducts" ADD CONSTRAINT "SoftwareUpdatesOnProducts_softwareUpdateId_fkey" FOREIGN KEY ("softwareUpdateId") REFERENCES "SoftwareUpdates"("Id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "SoftwareUpdatesOnProducts" ADD CONSTRAINT "FK_SoftwareUpdatesOnProducts_SoftwareUpdates_SoftwareUpdateId" FOREIGN KEY ("SoftwareUpdateId") REFERENCES "SoftwareUpdates"("Id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SoftwareUpdatesOnProducts" ADD CONSTRAINT "SoftwareUpdatesOnProducts_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Products"("Id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "SoftwareUpdatesOnProducts" ADD CONSTRAINT "FK_SoftwareUpdatesOnProducts_Products_ProductId" FOREIGN KEY ("ProductId") REFERENCES "Products"("Id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "WorkflowInstances" ADD CONSTRAINT "WorkflowInstances_softwareUpdatesId_fkey" FOREIGN KEY ("softwareUpdatesId") REFERENCES "SoftwareUpdates"("Id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "WorkflowInstances" ADD CONSTRAINT "FK_WorkflowInstances_SoftwareUpdates_SoftwareUpdateId" FOREIGN KEY ("SoftwareUpdateId") REFERENCES "SoftwareUpdates"("Id") ON DELETE SET NULL ON UPDATE NO ACTION;

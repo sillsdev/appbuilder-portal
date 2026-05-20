@@ -27,27 +27,31 @@ export async function completeForProduct(productId: string): Promise<void> {
     where: {
       DateCompleted: null,
       Paused: false,
-      Products: { some: { Id: productId } }
+      UpdatedProducts: { some: { ProductId: productId } }
     },
     select: {
       Id: true,
       DateCreated: true,
-      Products: {
+      UpdatedProducts: {
         select: {
-          Id: true,
-          Project: {
+          ProductId: true,
+          Product: {
             select: {
-              Organization: {
+              Project: {
                 select: {
-                  Id: true
+                  Organization: {
+                    select: {
+                      Id: true
+                    }
+                  }
                 }
+              },
+              ProductBuilds: {
+                orderBy: { DateCreated: 'desc' },
+                take: 1,
+                select: { DateCreated: true }
               }
             }
-          },
-          ProductBuilds: {
-            orderBy: { DateCreated: 'desc' },
-            take: 1,
-            select: { DateCreated: true }
           }
         }
       }
@@ -57,17 +61,19 @@ export async function completeForProduct(productId: string): Promise<void> {
 
   for (const u of openUpdates) {
     let ok = true;
-    for (const p of u.Products) {
+    for (const p of u.UpdatedProducts) {
       // Require a successful build at the target version at or after the update start time
       // TODO What is the correct procedure when the update does not have a date created?
-      if ((p.ProductBuilds[0].DateCreated?.valueOf() ?? 0) < u.DateCreated.valueOf()) {
+      if ((p.Product.ProductBuilds[0].DateCreated?.valueOf() ?? 0) < u.DateCreated.valueOf()) {
         ok = false;
         break;
       }
     }
 
     if (ok) {
-      const orgIds = [...new Set<number>(u.Products.map((p) => p.Project.Organization.Id))];
+      const orgIds = [
+        ...new Set<number>(u.UpdatedProducts.map((p) => p.Product.Project.Organization.Id))
+      ];
 
       await prisma.softwareUpdates.update({
         where: { Id: u.Id },

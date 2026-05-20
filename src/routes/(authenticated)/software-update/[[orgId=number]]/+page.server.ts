@@ -174,9 +174,9 @@ export const actions = {
     const update = await DatabaseWrites.softwareUpdates.create({
       InitiatedById: locals.security.userId,
       Comment: form.data.comment,
-      SoftwareUpdatesOnProducts: {
+      UpdatedProducts: {
         create: products.map((p) => ({
-          productId: p.Id,
+          ProductId: p.Id,
           Version: systems.get(p.Project.Organization.Id).get(p.Project.ApplicationType.Id)
         }))
       }
