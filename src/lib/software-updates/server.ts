@@ -92,7 +92,7 @@ export async function getRebuilds(
                         }
                       }
                     }
-                  },
+                  }
                 },
 
                 _count: {
@@ -112,11 +112,17 @@ export async function getRebuilds(
             // - Initiating user
 
             // TODO Figure out what to do about projects across orgs with the same name
-            const Projects = [...new Set(rebuild.SoftwareUpdatesOnProducts.map((p) => p.product.Project))];
-            const Organizations = [
-              ...new Set(rebuild.SoftwareUpdatesOnProducts.map((p) => p.product.Project.Organization.Name))
+            const Projects = [
+              ...new Set(rebuild.SoftwareUpdatesOnProducts.map((p) => p.product.Project))
             ];
-            const OrganizationIds = rebuild.SoftwareUpdatesOnProducts.map((p) => p.product.Project.Organization.Id);
+            const Organizations = [
+              ...new Set(
+                rebuild.SoftwareUpdatesOnProducts.map((p) => p.product.Project.Organization.Name)
+              )
+            ];
+            const OrganizationIds = rebuild.SoftwareUpdatesOnProducts.map(
+              (p) => p.product.Project.Organization.Id
+            );
             return {
               Id: rebuild.Id,
               InitiatedBy: rebuild.InitiatedBy.Name,

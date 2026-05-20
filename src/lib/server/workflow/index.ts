@@ -76,14 +76,18 @@ export class Workflow {
         }
       }
     });
-    const flow = new Workflow(productId, {
-      ...config,
-      hasAuthors: !!check?.Project._count.Authors,
-      hasReviewers: !!check?.Project._count.Reviewers,
-      autoPublishOnRebuild: !!check?.Project.AutoPublishOnRebuild,
+    const flow = new Workflow(
       productId,
-      existingApp: false
-    }, softwareUpdatesId);
+      {
+        ...config,
+        hasAuthors: !!check?.Project._count.Authors,
+        hasReviewers: !!check?.Project._count.Reviewers,
+        autoPublishOnRebuild: !!check?.Project.AutoPublishOnRebuild,
+        productId,
+        existingApp: false
+      },
+      softwareUpdatesId
+    );
     flow.flow = createActor(WorkflowStateMachine, {
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);

@@ -63,7 +63,7 @@
     }
   });
 
-  let applicationTypeIds = $state(data.applicationTypes.map(( {Id} ) => Id));
+  let applicationTypeIds = $state(data.applicationTypes.map(({ Id }) => Id));
 
   const products = $derived(
     data.products.filter(({ TypeId }) => applicationTypeIds.find((id) => id === TypeId))
