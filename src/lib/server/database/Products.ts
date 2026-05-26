@@ -272,7 +272,7 @@ async function validateProductBase(
     const span = trace.getActiveSpan();
     if (span) {
       const msg = `Product validation failed for ${productId || 'new product'}`;
-      span.addEvent(msg, {
+      const log = {
         'product.project-id': projectId,
         'product.product-definition-id': productDefinitionId,
         'product.store-id': storeId,
@@ -282,7 +282,11 @@ async function validateProductBase(
         'product.language-allowed': optionalLanguageAllowed,
         'product.product-definition-allowed': productInOrg,
         'product.project-type-allowed': projectTypeAllowed
-      });
+      };
+      if (process.env.NODE_ENV === 'development') {
+        console.log(log);
+      }
+      span.addEvent(msg, log);
 
       span.recordException(new Error(msg));
       span.setStatus({
