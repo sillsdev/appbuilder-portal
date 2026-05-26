@@ -616,7 +616,7 @@
   "softwareUpdate_rebuild_start": "Commencer les Reconstructions",
   "softwareUpdate_comment_required": "Un commentaire est requis pour commencer les constructions.",
   "softwareUpdate_toast_success": "Les reconstructions ont commencé avec succès !",
-  "softwareUpdate_affected_organizations": "Cela affectera les organisations suivantes",
+  "softwareUpdate_organizations": "Organisations ({amount})",
   "softwareUpdate_initiated_by": "Lancé par",
   "softwareUpdate_summary_title": "Résumé de la reconstruction",
   "softwareUpdate_projects": "Projets ({amount})",
@@ -639,6 +639,5 @@
   "softwareUpdate_application_type_title": "Type d'application",
   "softwareUpdate_version_title": "Version",
   "softwareUpdate_created_title": "Créé",
-  "softwareUpdate_organization_title": "Organisation",
   "softwareUpdate_products_title": "Produits"
 }

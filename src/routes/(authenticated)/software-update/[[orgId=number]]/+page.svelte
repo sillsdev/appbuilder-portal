@@ -73,7 +73,9 @@
   let applicationTypeIds = $state(data.applicationTypes.map(({ Id }) => Id));
 
   const filteredProjects = $derived(
-    data.projects.filter((p) => applicationTypeIds.find((id) => id === p.TypeId))
+    data.organizations.flatMap((o) =>
+      o.Projects.filter((p) => applicationTypeIds.find((id) => id === p.TypeId))
+    )
   );
 
   const products = $derived(filteredProjects.flatMap((p) => p.Products));
@@ -144,18 +146,21 @@
           title={m.softwareUpdate_summary_title()}
           fields={[
             {
-              key: 'softwareUpdate_affected_organizations',
-              value: data.organizations.join(', '),
+              key: 'softwareUpdate_organizations',
+              params: { amount: data.organizations.length },
+              value: data.organizations.map((o) => o.Name).join(', '),
               faint: data.organizations.length === 0
             },
             {
               key: 'softwareUpdate_projects',
               params: { amount: filteredProjects.length },
-              snippet: projects
+              snippet: projects,
+              faint: filteredProjects.length === 0
             },
             {
               key: 'softwareUpdate_products_label',
-              value: products.length
+              value: products.length,
+              faint: products.length === 0
             },
             {
               key: 'softwareUpdate_target_versions_label',
@@ -166,10 +171,10 @@
           data={filteredProjects}
         />
       </div>
-      <input
-        type="submit"
-        class="btn btn-primary mt-6"
-        value={m.softwareUpdate_rebuild_start()}
+      <SubmitButton
+        class="mt-6"
+        key="softwareUpdate_rebuild_start"
+        icon={Icons.UpdateOn}
         disabled={applicationTypeIds.length === 0 || products.length === 0}
       />
     </form>
@@ -218,7 +223,10 @@
     <div class="p-4 pb-2 w-full">
       <div class="flex flex-wrap justify-between p-2">
         <div class="mr-2">
-          <span class="flex items-center mb-1" title={m.softwareUpdate_organization_title()}>
+          <span
+            class="flex items-center mb-1"
+            title={m.softwareUpdate_organizations({ amount: rebuild.Organizations.length })}
+          >
             <IconContainer icon={Icons.Organization} width={20} class="mr-1 shrink-0" />
             {rebuild.Organizations.join(',') ?? ''}
           </span>

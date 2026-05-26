@@ -38,66 +38,69 @@ export const load = (async ({ locals, params }) => {
     locals.security.requireAdminOfAny();
   }
 
-  const projects = await DatabaseReads.projects.findMany({
+  const organizations = await DatabaseReads.organizations.findMany({
     where: {
-      Products: { some: productsWhere },
-      Organization: {
-        ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined)
-      }
+      Projects: { some: { Products: { some: productsWhere } } },
+      ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined)
     },
     select: {
       Id: true,
       Name: true,
-      TypeId: true,
-      OrganizationId: true,
-      Products: {
-        where: productsWhere,
+      System: {
+        select: {
+          SystemVersions: {
+            select: {
+              ApplicationTypeId: true,
+              Version: true
+            }
+          }
+        }
+      },
+      Projects: {
         select: {
           Id: true,
-          ProductBuilds: {
-            orderBy: { DateCreated: 'desc' },
-            take: 1,
-            select: { AppBuilderVersion: true }
+          Name: true,
+          TypeId: true,
+          Products: {
+            where: productsWhere,
+            select: {
+              Id: true,
+              ProductBuilds: {
+                orderBy: { DateCreated: 'desc' },
+                take: 1,
+                select: { AppBuilderVersion: true }
+              }
+            }
           }
         }
       }
     }
   });
 
-  const systemStatuses = await DatabaseReads.systemStatuses.findMany({
-    where: {
-      Organization: {
-        ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined),
-        Id: {
-          in: projects.map((p) => p.OrganizationId)
-        }
-      }
-    },
-    select: {
-      Organization: { select: { Id: true, Name: true } },
-      SystemVersions: { select: { ApplicationTypeId: true, Version: true } }
-    }
-  });
-
   const systems = new Map<number, Map<number, string>>(
-    systemStatuses.map((s) => [
-      s.Organization!.Id,
-      new Map(s.SystemVersions.map((v) => [v.ApplicationTypeId, v.Version ?? '']))
+    organizations.map((o) => [
+      o.Id,
+      new Map(o.System?.SystemVersions.map((v) => [v.ApplicationTypeId, v.Version ?? '']))
     ])
   );
 
-  const withFilteredProducts = projects
-    .map((pj) => ({
-      ...pj,
-      Products: pj.Products.filter((p) => {
-        const targetVersion = systems.get(pj.OrganizationId)?.get(pj.TypeId);
-        return targetVersion && targetVersion !== p.ProductBuilds[0].AppBuilderVersion;
-      }).map((p) => ({
-        Id: p.Id,
-        NewVersion: systems.get(pj.OrganizationId)!.get(pj.TypeId)!
-      }))
+  const withFilteredProducts = organizations
+    .map((o) => ({
+      Name: o.Name,
+      Versions: o.System?.SystemVersions,
+      Projects: o.Projects.map((pj) => ({
+        ...pj,
+        Products: pj.Products.filter((p) => {
+          const targetVersion = systems.get(o.Id)?.get(pj.TypeId);
+          const update = targetVersion && targetVersion !== p.ProductBuilds[0].AppBuilderVersion;
+          return update;
+        }).map((p) => ({
+          Id: p.Id,
+          NewVersion: systems.get(o.Id)!.get(pj.TypeId)!
+        }))
+      })).filter((pj) => pj.Products.length)
     }))
-    .filter((pj) => pj.Products.length);
+    .filter((o) => o.Projects.length);
 
   const orgId = Number(params.orgId);
   return {
@@ -105,8 +108,7 @@ export const load = (async ({ locals, params }) => {
     applicationTypes: await DatabaseReads.applicationTypes.findMany({
       select: { Id: true, Description: true }
     }),
-    projects: withFilteredProducts,
-    organizations: systemStatuses.map((ss) => ss.Organization!.Name),
+    organizations: withFilteredProducts,
     rebuilds: await getRebuilds(locals.security, orgId ? [orgId] : undefined)
   };
 }) satisfies PageServerLoad;

@@ -617,7 +617,7 @@
   "softwareUpdate_rebuild_start": "Start Rebuilds",
   "softwareUpdate_comment_required": "A comment is required to start builds.",
   "softwareUpdate_toast_success": "Successfully started rebuilds!",
-  "softwareUpdate_affected_organizations": "This rebuild will affect the following organizations",
+  "softwareUpdate_organizations": "Organizations ({amount})",
   "softwareUpdate_initiated_by": "Initiated by",
   "softwareUpdate_summary_title": "Rebuild Summary",
   "softwareUpdate_projects": "Projects ({amount})",
@@ -640,6 +640,5 @@
   "softwareUpdate_application_type_title": "Application Type",
   "softwareUpdate_version_title": "Version",
   "softwareUpdate_created_title": "Created",
-  "softwareUpdate_organization_title": "Organization",
   "softwareUpdate_products_title": "Products"
 }
