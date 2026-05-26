@@ -2,7 +2,7 @@
     @component
     A container box with a title and rows of internationalized information   
 -->
-<script lang="ts" generics="T extends Record<string, unknown>">
+<script lang="ts" generics="T extends Record<string, unknown> | Record<string, unknown>[]">
   import type { Snippet } from 'svelte';
   import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';

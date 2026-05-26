@@ -46,6 +46,7 @@ export const load = (async ({ locals, params }) => {
       }
     },
     select: {
+      Id: true,
       Name: true,
       TypeId: true,
       OrganizationId: true,

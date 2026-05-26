@@ -82,6 +82,7 @@ export async function getRebuilds(
                           select: {
                             Id: true,
                             Name: true,
+                            TypeId: true,
                             Organization: {
                               select: {
                                 Name: true,

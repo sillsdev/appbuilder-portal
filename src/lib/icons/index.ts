@@ -328,7 +328,6 @@ export const Icons = {
   Back: 'mdi:arrow-left',
   BuildEngine: 'carbon:build-image',
   Cancel: 'icon-park-outline:return',
-  CancelOctagon: 'mdi:cancel-octagon',
   Checkmark: 'mdi:check',
   Close: 'mdi:close',
   Copy: 'mdi:content-copy',

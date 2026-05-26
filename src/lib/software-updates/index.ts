@@ -9,6 +9,7 @@ export interface RebuildItem {
   Projects: {
     Id: number;
     Name: string;
+    TypeId: number;
   }[];
   _count: {
     Products: number;

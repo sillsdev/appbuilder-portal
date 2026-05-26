@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Prisma } from '@prisma/client';
   import { parse } from 'devalue';
   import type { Readable } from 'svelte/store';
   import { source } from 'sveltekit-sse';
@@ -7,17 +8,21 @@
   import { page } from '$app/state';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import { getAppIcon } from '$lib/icons';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons, getActionIcon, getAppIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
+  import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import type { ApplicationType } from '$lib/prisma';
-  import type { RebuildsTable } from '$lib/software-updates';
-  import RebuildCard from '$lib/software-updates/components/RebuildCard.svelte';
+  import { ProductActionType } from '$lib/products';
+  import TaskComment from '$lib/products/components/TaskComment.svelte';
+  import type { RebuildItem, RebuildsTable } from '$lib/software-updates';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
   import { isAdminForOrg } from '$lib/utils/roles';
   import { byString } from '$lib/utils/sorting';
+  import { getTimeDateString } from '$lib/utils/time';
 
   interface Props {
     data: PageData;
@@ -158,6 +163,7 @@
               faint: product_versions.length === 0
             }
           ]}
+          data={filteredProjects}
         />
       </div>
       <input
@@ -174,14 +180,14 @@
         {#if rebuilds.incomplete.length > 0}
           <h1>{m.softwareUpdate_active_rebuilds_title()}</h1>
           {#each rebuilds.incomplete as rebuild}
-            <div class="mb-4"><RebuildCard {rebuild} /></div>
+            <div class="mb-4">{@render rebuildCard(rebuild)}</div>
           {/each}
         {/if}
 
         {#if rebuilds.complete.length > 0}
           <h1 class="mt-8">{m.softwareUpdate_completed_rebuilds_title()}</h1>
           {#each rebuilds.complete as rebuild}
-            <div class="mb-4"><RebuildCard {rebuild} /></div>
+            <div class="mb-4">{@render rebuildCard(rebuild)}</div>
           {/each}
         {/if}
       </div>
@@ -189,14 +195,96 @@
   </div>
 </div>
 
-{#snippet projects()}
-  <span class="indent-0">
-    {#each filteredProjects as project, i}
-      {#if i > 0},{/if}
-      <span class="inline-flex flex-row gap-2">
+{#snippet projects(
+  list: Prisma.ProjectsGetPayload<{
+    select: { Id: true; Name: true; TypeId: true };
+  }>[] = filteredProjects
+)}
+  <span class="indent-0 inline-flex flex-row flex-wrap gap-1">
+    {#each list as project, i}
+      <a
+        href={localizeHref(`/projects/${project.Id}`)}
+        class="badge badge-primary badge-lg hover:badge-accent transition-colors"
+      >
         {project.Name}
         <img src={getAppIcon(project.TypeId)} width={20} alt="" />
-      </span>
+      </a>
     {/each}
   </span>
+{/snippet}
+
+{#snippet rebuildCard(rebuild: RebuildItem)}
+  <div class="rounded-md bg-neutral border border-slate-400 my-6 overflow-hidden w-full">
+    <div class="p-4 pb-2 w-full">
+      <div class="flex flex-wrap justify-between p-2">
+        <div class="mr-2">
+          <span class="flex items-center mb-1" title={m.softwareUpdate_organization_title()}>
+            <IconContainer icon={Icons.Organization} width={20} class="mr-1 shrink-0" />
+            {rebuild.Organizations.join(',') ?? ''}
+          </span>
+          <span class="flex items-center mb-1" title={m.softwareUpdate_initiated_by()}>
+            <IconContainer icon={Icons.User} width={20} class="mr-1 shrink-0" />
+            {rebuild.InitiatedBy ?? ''}
+          </span>
+          <span class="flex items-center mb-1">
+            <IconContainer icon={Icons.Package} width={20} class="mr-1 shrink-0" />
+            <span class="font-semibold mr-1">{m.softwareUpdate_products_title()}:</span>
+            {rebuild._count.Products}
+          </span>
+          <span class="flex items-center mb-1">
+            <IconContainer icon={Icons.Directory} width={20} class="mr-1 shrink-0" />
+            <span class="font-semibold mr-1">
+              {m.softwareUpdate_projects({ amount: rebuild._count.Projects })}:
+            </span>
+          </span>
+        </div>
+        <div class="items-start flex flex-col">
+          <span class="flex items-center" title={m.softwareUpdate_created_title()}>
+            <span class="text-nowrap overflow-hidden text-center mr-1">
+              {m.softwareUpdate_created_title()}:
+            </span>
+            <span class="w-40 text-center">
+              {getTimeDateString(rebuild.DateCreated)}
+            </span>
+          </span>
+
+          {#if rebuild.DateCompleted}
+            <span class="flex items-center" title={m.softwareUpdate_status_completed()}>
+              <span class="text-nowrap overflow-hidden text-center mr-1">
+                {m.softwareUpdate_status_completed()}:
+              </span>
+              <span class="w-40 text-center">
+                {getTimeDateString(rebuild.DateCompleted)}
+              </span>
+            </span>
+          {:else}
+            <form class="mt-auto" method="post" action="?/cancel">
+              <input type="hidden" name="rebuildId" value={rebuild.Id} />
+              <SubmitButton
+                key="common_cancel"
+                icon={getActionIcon(ProductActionType.CancelWorkflow)}
+                class="btn-secondary btn-sm"
+              />
+            </form>
+          {/if}
+        </div>
+      </div>
+      <div class="text-sm opacity-75 pl-2">
+        <TaskComment comment={rebuild.Comment} />
+      </div>
+    </div>
+
+    <div class="w-full bg-base-100 p-6 pt-2">
+      {#if rebuild.Projects.length > 0}
+        <div class="mb-2">
+          <span class="font-semibold">
+            {m.softwareUpdate_projects({ amount: rebuild._count.Projects })}:
+          </span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          {@render projects(rebuild.Projects)}
+        </div>
+      {/if}
+    </div>
+  </div>
 {/snippet}
