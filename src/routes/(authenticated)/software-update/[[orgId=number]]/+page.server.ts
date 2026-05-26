@@ -86,16 +86,19 @@ export const load = (async ({ locals, params }) => {
     ])
   );
 
-  const withFilteredProducts = projects.map((pj) => ({
-    ...pj,
-    Products: pj.Products.filter((p) => {
-      const targetVersion = systems.get(pj.OrganizationId)?.get(pj.TypeId);
-      return targetVersion && targetVersion !== p.ProductBuilds[0].AppBuilderVersion;
-    }).map((p) => ({
-      Id: p.Id,
-      NewVersion: systems.get(pj.OrganizationId)!.get(pj.TypeId)!
+  const withFilteredProducts = projects
+    .map((pj) => ({
+      ...pj,
+      Products: pj.Products.filter((p) => {
+        const targetVersion = systems.get(pj.OrganizationId)?.get(pj.TypeId);
+        return targetVersion && targetVersion !== p.ProductBuilds[0].AppBuilderVersion;
+      }).map((p) => ({
+        Id: p.Id,
+        NewVersion: systems.get(pj.OrganizationId)!.get(pj.TypeId)!
+      }))
     }))
-  }));
+    .filter((pj) => pj.Products.length);
+
   const orgId = Number(params.orgId);
   return {
     form: await superValidate(valibot(startFormSchema)),
