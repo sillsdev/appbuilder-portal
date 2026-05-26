@@ -84,6 +84,8 @@ export const load = (async ({ locals, params }) => {
     ])
   );
 
+  const presentAppTypes = new Set<number>();
+
   const withFilteredProducts = organizations
     .map((o) => ({
       Name: o.Name,
@@ -93,6 +95,9 @@ export const load = (async ({ locals, params }) => {
         Products: pj.Products.filter((p) => {
           const targetVersion = systems.get(o.Id)?.get(pj.TypeId);
           const update = targetVersion && targetVersion !== p.ProductBuilds[0].AppBuilderVersion;
+          if (update) {
+            presentAppTypes.add(pj.TypeId);
+          }
           return update;
         }).map((p) => ({
           Id: p.Id,
@@ -106,6 +111,9 @@ export const load = (async ({ locals, params }) => {
   return {
     form: await superValidate(valibot(startFormSchema)),
     applicationTypes: await DatabaseReads.applicationTypes.findMany({
+      where: {
+        Id: { in: Array.from(presentAppTypes.values()) }
+      },
       select: { Id: true, Description: true }
     }),
     organizations: withFilteredProducts,
