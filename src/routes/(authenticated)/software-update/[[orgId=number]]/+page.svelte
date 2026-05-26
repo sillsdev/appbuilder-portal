@@ -7,8 +7,10 @@
   import { page } from '$app/state';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import { getAppIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
+  import type { ApplicationType } from '$lib/prisma';
   import type { RebuildsTable } from '$lib/software-updates';
   import RebuildCard from '$lib/software-updates/components/RebuildCard.svelte';
   import { orgActive } from '$lib/stores';
@@ -46,7 +48,7 @@
   const rebuilds: RebuildsTable = $derived($softwareUpdatesSSE ?? data.rebuilds);
 
   //const rebuilds = $derived(data.rebuilds);
-  const { form, enhance, errors } = superForm(data.form, {
+  const { form, enhance } = superForm(data.form, {
     resetForm: true,
     onUpdate({ form, result, formElement }) {
       if (form.valid && result.type === 'success') {
@@ -65,12 +67,13 @@
 
   let applicationTypeIds = $state(data.applicationTypes.map(({ Id }) => Id));
 
-  const products = $derived(
-    data.products.filter(({ TypeId }) => applicationTypeIds.find((id) => id === TypeId))
+  const filteredProjects = $derived(
+    data.projects.filter((p) => applicationTypeIds.find((id) => id === p.TypeId))
   );
 
+  const products = $derived(filteredProjects.flatMap((p) => p.Products));
+
   const product_versions = $derived(Array.from(new Set(products.map((p) => p.NewVersion))));
-  const project_names = $derived(Array.from(new Set(products.map((p) => p.ProjectName))));
 
   // Switch orgs properly
   $effect(() => {
@@ -90,36 +93,48 @@
   <h1>{m.softwareUpdate()}</h1>
   <p class="pl-8 mt-2 mb-6">{m.softwareUpdate_description()}</p>
   <div class="m-4">
-    <div class="flex flex-col lg:flex-row m-6">
-      <!-- Application Type Toggles -->
-      <div class="flex-1">
-        <h2 class="font-semibold mb-2">{m.softwareUpdate_application_types_title()}</h2>
-        <p class="text-sm text-gray-500 mb-4">
-          {m.softwareUpdate_application_types_description()}
-        </p>
+    <form class="mx-4 flex flex-col" method="post" action="?/start" use:enhance>
+      <input type="hidden" name="products" value={products.map((p) => p.Id)} />
 
-        <div class="flex w-full">
-          <div class="shrink space-y-2">
-            {#each data.applicationTypes.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as appType}
-              <div class="flex space-x-2">
-                <input
-                  type="checkbox"
-                  name="applicationTypeIds"
-                  value={appType.Id}
-                  bind:group={applicationTypeIds}
-                  class="toggle toggle-accent toggle-sm"
-                />
-                <div>
+      <div class="flex flex-col md:flex-row">
+        <!-- Application Type Toggles -->
+        <div class="grow min-w-xs mb-2">
+          <h3 class="font-semibold mb-2 pl-0">{m.softwareUpdate_application_types_title()}</h3>
+          <p class="text-sm text-gray-500 mb-4">
+            {m.softwareUpdate_application_types_description()}
+          </p>
+
+          <div class="flex w-full">
+            <div class="shrink space-y-2">
+              {#each data.applicationTypes.toSorted( (a, b) => byString(a.Description, b.Description, getLocale()) ) as appType}
+                <div class="flex space-x-2 items-center">
+                  <input
+                    type="checkbox"
+                    name="applicationTypeIds"
+                    value={appType.Id}
+                    bind:group={applicationTypeIds}
+                    class="toggle toggle-accent toggle-sm"
+                  />
+                  <img src={getAppIcon(appType.Id as ApplicationType)} width={24} alt="" />
                   <div class="font-medium">{appType.Description ?? ''}</div>
                 </div>
-              </div>
-            {/each}
+              {/each}
+            </div>
+            <div class="grow"></div>
           </div>
-          <div class="grow"></div>
         </div>
+        <LabeledFormInput key="softwareUpdate_comment" class="md:mt-12">
+          <textarea
+            name="comment"
+            class="textarea w-full validator min-h-42"
+            bind:value={$form.comment}
+            required
+          ></textarea>
+          <span class="validator-hint">{m.softwareUpdate_comment_required()}</span>
+        </LabeledFormInput>
       </div>
       <!-- Summary Information -->
-      <div class="flex-2 mt-18">
+      <div class="flex-2">
         <DataDisplayBox
           title={m.softwareUpdate_summary_title()}
           fields={[
@@ -129,17 +144,13 @@
               faint: data.organizations.length === 0
             },
             {
-              key: 'softwareUpdate_projects_label',
-              value: project_names.length
+              key: 'softwareUpdate_projects',
+              params: { amount: filteredProjects.length },
+              snippet: projects
             },
             {
               key: 'softwareUpdate_products_label',
               value: products.length
-            },
-            {
-              key: 'softwareUpdate_project_names_label',
-              value: project_names.join(', '),
-              faint: project_names.length === 0
             },
             {
               key: 'softwareUpdate_target_versions_label',
@@ -149,24 +160,6 @@
           ]}
         />
       </div>
-    </div>
-    <br />
-
-    <form class="mx-4" method="post" action="?/start" use:enhance>
-      <LabeledFormInput key="softwareUpdate_comment">
-        <input
-          type="text"
-          name="comment"
-          class="input input-bordered w-full"
-          bind:value={$form.comment}
-        />
-        {#if $errors.comment}
-          <span class="text-error text-sm">{m.softwareUpdate_comment_required()}</span>
-        {/if}
-        <!--<span class="validator-hint">{m.softwareUpdate_comment_required()}</span>-->
-      </LabeledFormInput>
-
-      <input type="hidden" name="products" value={products.map((p) => p.Id)} />
       <input
         type="submit"
         class="btn btn-primary mt-6"
@@ -195,3 +188,15 @@
     </div>
   </div>
 </div>
+
+{#snippet projects()}
+  <span class="indent-0">
+    {#each filteredProjects as project, i}
+      {#if i > 0},{/if}
+      <span class="inline-flex flex-row gap-2">
+        {project.Name}
+        <img src={getAppIcon(project.TypeId)} width={20} alt="" />
+      </span>
+    {/each}
+  </span>
+{/snippet}

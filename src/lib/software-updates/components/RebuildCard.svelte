@@ -33,8 +33,9 @@
         </span>
         <span class="flex items-center mb-1">
           <IconContainer icon={Icons.Directory} width={20} class="mr-1 shrink-0" />
-          <span class="font-semibold mr-1">{m.softwareUpdate_projects_title()}:</span>
-          {rebuild._count.Projects}
+          <span class="font-semibold mr-1">
+            {m.softwareUpdate_projects({ amount: rebuild._count.Projects })}:
+          </span>
         </span>
       </div>
       <div class="items-start flex flex-col">
@@ -76,7 +77,9 @@
   <div class="w-full bg-base-100 p-6 pt-2">
     {#if rebuild.Projects.length > 0}
       <div class="mb-2">
-        <span class="font-semibold">{m.softwareUpdate_projects_title()}:</span>
+        <span class="font-semibold">
+          {m.softwareUpdate_projects({ amount: rebuild._count.Projects })}:
+        </span>
       </div>
       <div class="flex flex-wrap gap-2">
         {#each rebuild.Projects as project}

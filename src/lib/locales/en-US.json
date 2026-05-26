@@ -620,7 +620,7 @@
   "softwareUpdate_affected_organizations": "This rebuild will affect the following organizations",
   "softwareUpdate_initiated_by": "Initiated by",
   "softwareUpdate_summary_title": "Rebuild Summary",
-  "softwareUpdate_projects_label": "Affected Projects",
+  "softwareUpdate_projects": "Projects ({amount})",
   "softwareUpdate_products_label": "Affected Products",
   "softwareUpdate_project_names_label": "Project Names",
   "softwareUpdate_target_versions_label": "Target Versions",
@@ -641,6 +641,5 @@
   "softwareUpdate_version_title": "Version",
   "softwareUpdate_created_title": "Created",
   "softwareUpdate_organization_title": "Organization",
-  "softwareUpdate_projects_title": "Projects",
   "softwareUpdate_products_title": "Products"
 }

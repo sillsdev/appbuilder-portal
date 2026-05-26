@@ -619,7 +619,7 @@
   "softwareUpdate_affected_organizations": "Cela affectera les organisations suivantes",
   "softwareUpdate_initiated_by": "Lancé par",
   "softwareUpdate_summary_title": "Résumé de la reconstruction",
-  "softwareUpdate_projects_label": "Projets",
+  "softwareUpdate_projects": "Projets ({amount})",
   "softwareUpdate_products_label": "Produits",
   "softwareUpdate_project_names_label": "Noms des projets",
   "softwareUpdate_target_versions_label": "Versions cibles",
@@ -640,6 +640,5 @@
   "softwareUpdate_version_title": "Version",
   "softwareUpdate_created_title": "Créé",
   "softwareUpdate_organization_title": "Organisation",
-  "softwareUpdate_projects_title": "Projets",
   "softwareUpdate_products_title": "Produits"
 }

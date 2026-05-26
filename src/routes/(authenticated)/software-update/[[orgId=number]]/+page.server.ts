@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import { fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -18,6 +19,18 @@ const cancelFormSchema = v.object({
   rebuildId: v.pipe(v.number())
 });
 
+const productsWhere: Prisma.ProductsWhereInput = {
+  // Products that are rebuildable:
+  // - Have already been published once
+  DatePublished: { not: null },
+  // - Are not currently being rebuild
+  WorkflowInstance: null,
+  // - Have a definition that specifies a rebuild workflow
+  NOT: {
+    ProductDefinition: { RebuildWorkflow: null }
+  }
+};
+
 export const load = (async ({ locals, params }) => {
   if (params.orgId) {
     locals.security.requireAdminOfOrg(Number(params.orgId));
@@ -25,36 +38,27 @@ export const load = (async ({ locals, params }) => {
     locals.security.requireAdminOfAny();
   }
 
-  const eligibleProducts = await DatabaseReads.products.findMany({
-    // Products that are rebuildable:
+  const projects = await DatabaseReads.projects.findMany({
     where: {
-      // - Have already been published once
-      DatePublished: { not: null },
-      // - Are not currently being rebuild
-      WorkflowInstance: null,
-      // - Have a definition that specifies a rebuild workflow
-      NOT: {
-        ProductDefinition: { RebuildWorkflow: null }
-      },
-      Project: {
-        Organization: {
-          ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined)
-        }
+      Products: { some: productsWhere },
+      Organization: {
+        ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined)
       }
     },
     select: {
-      Id: true,
-      Project: {
+      Name: true,
+      TypeId: true,
+      OrganizationId: true,
+      Products: {
+        where: productsWhere,
         select: {
-          Name: true,
-          ApplicationType: { select: { Id: true } },
-          Organization: { select: { Id: true } }
+          Id: true,
+          ProductBuilds: {
+            orderBy: { DateCreated: 'desc' },
+            take: 1,
+            select: { AppBuilderVersion: true }
+          }
         }
-      },
-      ProductBuilds: {
-        orderBy: { DateCreated: 'desc' },
-        take: 1,
-        select: { AppBuilderVersion: true }
       }
     }
   });
@@ -64,7 +68,7 @@ export const load = (async ({ locals, params }) => {
       Organization: {
         ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined),
         Id: {
-          in: eligibleProducts.map((p) => p.Project.Organization.Id)
+          in: projects.map((p) => p.OrganizationId)
         }
       }
     },
@@ -81,27 +85,23 @@ export const load = (async ({ locals, params }) => {
     ])
   );
 
-  const products = eligibleProducts
-    .filter((p) => {
-      const targetVersion = systems
-        .get(p.Project.Organization.Id)
-        ?.get(p.Project.ApplicationType.Id);
+  const withFilteredProducts = projects.map((pj) => ({
+    ...pj,
+    Products: pj.Products.filter((p) => {
+      const targetVersion = systems.get(pj.OrganizationId)?.get(pj.TypeId);
       return targetVersion && targetVersion !== p.ProductBuilds[0].AppBuilderVersion;
-    })
-    .map((p) => ({
-      ProjectName: p.Project.Name,
-      TypeId: p.Project.ApplicationType.Id,
+    }).map((p) => ({
       Id: p.Id,
-      NewVersion: systems.get(p.Project.Organization.Id)!.get(p.Project.ApplicationType.Id)!
-    }));
-
+      NewVersion: systems.get(pj.OrganizationId)!.get(pj.TypeId)!
+    }))
+  }));
   const orgId = Number(params.orgId);
   return {
     form: await superValidate(valibot(startFormSchema)),
     applicationTypes: await DatabaseReads.applicationTypes.findMany({
       select: { Id: true, Description: true }
     }),
-    products,
+    projects: withFilteredProducts,
     organizations: systemStatuses.map((ss) => ss.Organization!.Name),
     rebuilds: await getRebuilds(locals.security, orgId ? [orgId] : undefined)
   };
