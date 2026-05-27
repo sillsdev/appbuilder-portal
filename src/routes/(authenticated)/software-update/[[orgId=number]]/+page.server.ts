@@ -65,6 +65,7 @@ export const load = (async ({ locals, params }) => {
             where: productsWhere,
             select: {
               Id: true,
+              ProductDefinitionId: true,
               ProductBuilds: {
                 orderBy: { DateCreated: 'desc' },
                 take: 1,
@@ -101,6 +102,8 @@ export const load = (async ({ locals, params }) => {
           return update;
         }).map((p) => ({
           Id: p.Id,
+          Type: p.ProductDefinitionId,
+          OldVersion: p.ProductBuilds[0].AppBuilderVersion,
           NewVersion: systems.get(o.Id)!.get(pj.TypeId)!
         }))
       })).filter((pj) => pj.Products.length)
@@ -111,13 +114,22 @@ export const load = (async ({ locals, params }) => {
   return {
     form: await superValidate(valibot(startFormSchema)),
     applicationTypes: await DatabaseReads.applicationTypes.findMany({
-      where: {
-        Id: { in: Array.from(presentAppTypes.values()) }
-      },
       select: { Id: true, Description: true }
     }),
+    productTypes: new Map(
+      (
+        await DatabaseReads.productDefinitions.findMany({
+          select: { Id: true, Name: true, Workflow: { select: { ProductType: true } } }
+        })
+      ).map((pd) => [pd.Id, pd])
+    ),
     organizations: withFilteredProducts,
-    rebuilds: await getRebuilds(locals.security, orgId ? [orgId] : undefined)
+    presentAppTypes,
+    rebuilds: await getRebuilds(locals.security, orgId ? [orgId] : undefined),
+    user: await DatabaseReads.users.findUniqueOrThrow({
+      where: { Id: locals.security.userId },
+      select: { Name: true }
+    })
   };
 }) satisfies PageServerLoad;
 

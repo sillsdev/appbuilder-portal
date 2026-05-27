@@ -621,7 +621,7 @@
   "softwareUpdate_initiated_by": "Initiated by",
   "softwareUpdate_summary_title": "Rebuild Summary",
   "softwareUpdate_projects": "Projects ({amount})",
-  "softwareUpdate_products_label": "Affected Products",
+  "softwareUpdate_products": "Products ({amount})",
   "softwareUpdate_project_names_label": "Project Names",
   "softwareUpdate_target_versions_label": "Target Versions",
   "softwareUpdate_rebuild_started_title": "Rebuild Started",
@@ -639,6 +639,5 @@
   "softwareUpdate_completed_rebuilds_title": "Completed Software Updates",
   "softwareUpdate_application_type_title": "Application Type",
   "softwareUpdate_version_title": "Version",
-  "softwareUpdate_created_title": "Created",
-  "softwareUpdate_products_title": "Products"
+  "softwareUpdate_created_title": "Created"
 }

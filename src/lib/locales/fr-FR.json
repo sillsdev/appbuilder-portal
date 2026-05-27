@@ -620,7 +620,7 @@
   "softwareUpdate_initiated_by": "Lancé par",
   "softwareUpdate_summary_title": "Résumé de la reconstruction",
   "softwareUpdate_projects": "Projets ({amount})",
-  "softwareUpdate_products_label": "Produits",
+  "softwareUpdate_products": "Produits ({amount})",
   "softwareUpdate_project_names_label": "Noms des projets",
   "softwareUpdate_target_versions_label": "Versions cibles",
   "softwareUpdate_rebuild_started_title": "Reconstruction démarrée",
@@ -638,6 +638,5 @@
   "softwareUpdate_completed_rebuilds_title": "Mises à jour du logiciel terminées",
   "softwareUpdate_application_type_title": "Type d'application",
   "softwareUpdate_version_title": "Version",
-  "softwareUpdate_created_title": "Créé",
-  "softwareUpdate_products_title": "Produits"
+  "softwareUpdate_created_title": "Créé"
 }

@@ -64,10 +64,10 @@
         },
         {
           key: 'flowDefs_options_title',
-          snippet: options
+          snippet: options,
+          args: wd
         }
       ]}
-      data={wd}
     >
       {#snippet title()}
         <h3>
