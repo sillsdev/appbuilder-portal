@@ -57,6 +57,9 @@ export const load = (async ({ locals, params }) => {
         }
       },
       Projects: {
+        where: {
+          Products: { some: productsWhere }
+        },
         select: {
           Id: true,
           Name: true,
@@ -102,9 +105,9 @@ export const load = (async ({ locals, params }) => {
           return update;
         }).map((p) => ({
           Id: p.Id,
-          Type: p.ProductDefinitionId,
+          ProductDefinitionId: p.ProductDefinitionId,
           OldVersion: p.ProductBuilds[0].AppBuilderVersion,
-          NewVersion: systems.get(o.Id)!.get(pj.TypeId)!
+          Version: systems.get(o.Id)!.get(pj.TypeId)!
         }))
       })).filter((pj) => pj.Products.length)
     }))

@@ -7,10 +7,9 @@
   import type { PageData } from './$types';
   import { afterNavigate } from '$app/navigation';
   import { page } from '$app/state';
-  import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
-  import { Icons, getActionIcon, getAppIcon, getProductIcon } from '$lib/icons';
+  import { Icons, getActionIcon, getAppIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -18,11 +17,12 @@
   import { ProductActionType } from '$lib/products';
   import TaskComment from '$lib/products/components/TaskComment.svelte';
   import type { RebuildItem, RebuildsTable } from '$lib/software-updates';
+  import UpdateSummary from '$lib/software-updates/components/UpdateSummary.svelte';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
   import { isAdminForOrg } from '$lib/utils/roles';
-  import { byName, byString } from '$lib/utils/sorting';
+  import { byString } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
 
   interface Props {
@@ -96,42 +96,24 @@
               presentAppTypes.add(p.TypeId);
             }
             return present;
-          }).sort((a, b) => byName(a, b, locale)),
+          }),
           Versions:
-            o.Versions?.filter((v) => presentAppTypes.has(v.ApplicationTypeId))
-              .map((v) => ({
-                Type: v.ApplicationTypeId,
-                Versions: [v.Version],
-                Name: data.applicationTypes.find((at) => at.Id === v.ApplicationTypeId)?.Description
-              }))
-              .sort((a, b) => byName(a, b, locale)) ?? []
+            o.Versions?.filter((v) => v.Version && presentAppTypes.has(v.ApplicationTypeId)).map(
+              (v) => ({
+                ApplicationTypeId: v.ApplicationTypeId,
+                Versions: [v.Version ?? '']
+              })
+            ) ?? []
         };
 
         return filtered;
       })
       .filter((o) => o.Projects.length)
-      .sort((a, b) => byName(a, b, locale))
   );
 
   const filteredProjects = $derived(filteredOrgs.flatMap((o) => o.Projects));
 
   const products = $derived(filteredProjects.flatMap((p) => p.Products.map((p) => p.Id)));
-
-  const allVersions = $derived(
-    applicationTypeIds
-      .map((id) => ({
-        Type: id,
-        Versions: Array.from(
-          new Set(
-            filteredProjects
-              .filter((p) => p.TypeId === id)
-              .flatMap((p) => p.Products.map((p) => p.NewVersion))
-          )
-        ),
-        Name: data.applicationTypes.find((at) => at.Id === id)?.Description
-      }))
-      .sort((a, b) => byName(a, b, locale))
-  );
 
   // Switch orgs properly
   $effect(() => {
@@ -146,18 +128,6 @@
     }
   });
 </script>
-
-{#snippet versions(args: { list: (typeof filteredOrgs)[number]['Versions']; classes?: string })}
-  <ul class={args.classes ?? ''}>
-    {#each args.list as version}
-      <li class="flex flex-row gap-x-1">
-        <img src={getAppIcon(version.Type)} width={20} alt="" />
-        {version.Name}
-        ({version.Versions.join(', ')})
-      </li>
-    {/each}
-  </ul>
-{/snippet}
 
 <div class="w-full px-2 pb-1">
   <h1>{m.softwareUpdate()}</h1>
@@ -211,122 +181,18 @@
         </LabeledFormInput>
       </div>
       <!-- Summary Information -->
-      <DataDisplayBox
-        title={m.softwareUpdate_summary_title()}
-        fields={[
-          {
-            key: 'softwareUpdate_initiated_by',
-            value: data.user.Name
-          },
-          {
-            key: 'common_projects',
-            value: filteredProjects.length,
-            faint: !filteredProjects.length
-          },
-          {
-            key: 'products_title',
-            value: products.length,
-            faint: !products.length
-          },
-          {
-            key: 'softwareUpdate_target_versions_label',
-            snippet: versions,
-            args: { list: allVersions, classes: 'indent-0' },
-            faint: !allVersions.length
+      <UpdateSummary
+        update={{
+          InitiatedBy: data.user,
+          Comment: $form.comment,
+          _count: {
+            UpdatedProducts: products.length
           }
-        ]}
-      >
-        {#if $form.comment}
-          <div class="text-sm opacity-75 pt-1">
-            <TaskComment comment={$form.comment} />
-          </div>
-        {/if}
-        <details
-          class={[
-            'collapse',
-            filteredOrgs.length ? 'collapse-arrow' : 'opacity-40 pointer-events-none'
-          ]}
-        >
-          <summary class="collapse-title font-bold pl-0 py-1">
-            {#if filteredOrgs.length}
-              {m.org_title()}
-              ({filteredOrgs.length})
-            {/if}
-          </summary>
-          <div class="collapse-content flex flex-col gap-y-2 px-0">
-            {#each filteredOrgs as org}
-              <DataDisplayBox
-                class="border-base-content/25! m-0!"
-                title={org.Name}
-                fields={[
-                  {
-                    key: 'softwareUpdate_target_versions_label',
-                    snippet: versions,
-                    args: { list: org.Versions, classes: 'pl-2 indent-0' }
-                  }
-                ]}
-              >
-                <details class="collapse collapse-arrow rounded-none">
-                  <summary class="collapse-title font-semibold pl-0 py-0">
-                    {m.common_projects()} ({org.Projects.length})
-                  </summary>
-                  <div class="collapse-content flex flex-col gap-y-2 p-0!">
-                    {#each org.Projects as project}
-                      <DataDisplayBox
-                        class="border-base-content/25! m-0!"
-                        fields={[
-                          {
-                            key: 'softwareUpdate_target_versions_label',
-                            value: Array.from(
-                              new Set(project.Products.map((p) => p.NewVersion))
-                            ).join(', ')
-                          }
-                        ]}
-                      >
-                        {#snippet title()}
-                          <a
-                            href={localizeHref(`/projects/${project.Id}`)}
-                            class="link flex flex-row gap-x-1"
-                          >
-                            {project.Name}
-                            <img src={getAppIcon(project.TypeId)} width={20} alt="" />
-                          </a>
-                        {/snippet}
-                        <details class="collapse collapse-arrow rounded-none">
-                          <summary class="collapse-title font-semibold pl-0 py-0">
-                            {m.products_title()} ({project.Products.length})
-                          </summary>
-                          <div class="collapse-content p-0!">
-                            <ul>
-                              {#each project.Products.toSorted( (a, b) => byName(data.productTypes.get(a.Type), data.productTypes.get(b.Type), locale) ) as product}
-                                {@const pd = data.productTypes.get(product.Type)}
-                                <li>
-                                  <IconContainer
-                                    icon={getProductIcon(pd?.Workflow.ProductType ?? 0)}
-                                    width={30}
-                                  />
-                                  <a
-                                    class="hover:underline"
-                                    href={localizeHref(`/projects/${project.Id}#${product.Id}`)}
-                                  >
-                                    {pd?.Name}
-                                  </a>
-                                  <s>{product.OldVersion}</s>
-                                  &rarr; {product.NewVersion}
-                                </li>
-                              {/each}
-                            </ul>
-                          </div>
-                        </details>
-                      </DataDisplayBox>
-                    {/each}
-                  </div>
-                </details>
-              </DataDisplayBox>
-            {/each}
-          </div>
-        </details>
-      </DataDisplayBox>
+        }}
+        orgs={filteredOrgs}
+        presentAppTypes={data.applicationTypes.filter((at) => applicationTypeIds.includes(at.Id))}
+        productTypes={data.productTypes}
+      />
       <SubmitButton
         class="mt-6"
         key="softwareUpdate_rebuild_start"
