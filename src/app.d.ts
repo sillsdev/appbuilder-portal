@@ -1,6 +1,8 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 
+import type { Snippet } from 'svelte';
+
 // Security class type because this file cannot import anything
 declare global {
   interface SecurityLike {

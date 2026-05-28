@@ -49,7 +49,8 @@
       fields={[
         {
           key: 'prodDefs_type',
-          snippet: appType
+          snippet: appType,
+          args: pD
         },
         {
           key: 'prodDefs_flow',
