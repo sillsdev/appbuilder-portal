@@ -6,38 +6,11 @@
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import TaskComment from '$lib/products/components/TaskComment.svelte';
+  import type { UpdateSummaryData } from '$lib/software-updates';
   import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
-    update: Prisma.SoftwareUpdatesGetPayload<{
-      select: {
-        InitiatedBy: { select: { Name: true } };
-        Comment: true;
-        _count: { select: { UpdatedProducts: true } };
-      };
-    }>;
-    orgs: (Prisma.OrganizationsGetPayload<{
-      select: {
-        Name: true;
-      };
-    }> & {
-      Projects: (Prisma.ProjectsGetPayload<{
-        select: {
-          Id: true;
-          Name: true;
-          TypeId: true;
-        };
-      }> & {
-        Products: (Prisma.ProductsGetPayload<{
-          select: { Id: true; ProductDefinitionId: true };
-        }> & { OldVersion?: string | null; Version: string })[];
-      })[];
-    } & {
-      Versions: {
-        ApplicationTypeId: number;
-        Versions: string[];
-      }[];
-    })[];
+    update: UpdateSummaryData;
     presentAppTypes: Prisma.ApplicationTypesGetPayload<{
       select: { Id: true; Description: true };
     }>[];
@@ -49,9 +22,9 @@
     >;
   }
 
-  let { update, orgs, presentAppTypes, productTypes }: Props = $props();
+  let { update, presentAppTypes, productTypes }: Props = $props();
 
-  const projects = $derived(orgs.flatMap((o) => o.Projects));
+  const projects = $derived(update.Organizations.flatMap((o) => o.Projects));
 
   const locale = $derived(getLocale());
 
@@ -71,7 +44,8 @@
             new Set(
               projects
                 .filter((p) => p.TypeId === at.Id)
-                .flatMap((p) => p.Products.map((p) => p.Version))
+                .flatMap((p) => p.Products.map((p) => p.Version ?? ''))
+                .filter((v) => !!v)
             )
           ),
           Description: at.Description ?? ''
@@ -116,15 +90,20 @@
       <TaskComment comment={update.Comment} />
     </div>
   {/if}
-  <details class={['collapse', orgs.length ? 'collapse-arrow' : 'opacity-40 pointer-events-none']}>
+  <details
+    class={[
+      'collapse',
+      update.Organizations.length ? 'collapse-arrow' : 'opacity-40 pointer-events-none'
+    ]}
+  >
     <summary class="collapse-title font-bold pl-0 py-1">
-      {#if orgs.length}
+      {#if update.Organizations.length}
         {m.org_title()}
-        ({orgs.length})
+        ({update.Organizations.length})
       {/if}
     </summary>
     <div class="collapse-content flex flex-col gap-y-2 px-0">
-      {#each orgs.toSorted((a, b) => byName(a, b, locale)) as org}
+      {#each update.Organizations.toSorted((a, b) => byName(a, b, locale)) as org}
         <DataDisplayBox
           class="border-base-content/25! m-0!"
           title={org.Name}

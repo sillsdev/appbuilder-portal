@@ -6,16 +6,19 @@ import { getRebuilds } from '$lib/software-updates/server';
 // Parse organization IDs from query parameter
 // Handle POST requests to establish an SSE connection for rebuild data
 export async function POST({ locals, params }) {
-  locals.security.requireAuthenticated();
-  const orgId = Number(params.orgId);
-  locals.security.requireAdminOfOrgIn([orgId]);
+  const orgId = params.orgId;
+  if (orgId) {
+    locals.security.requireAdminOfOrg(Number(orgId));
+  } else {
+    locals.security.requireAdminOfAny();
+  }
 
   return produce(async function start({ emit }) {
-    const rebuilds = await getRebuilds(locals.security, orgId ? [orgId] : undefined);
-    const organizations = [
+    const rebuilds = await getRebuilds(locals.security, orgId ? [Number(orgId)] : undefined);
+    const organizations = new Set([
       ...rebuilds.complete.flatMap((u) => u.OrganizationIds),
       ...rebuilds.incomplete.flatMap((u) => u.OrganizationIds)
-    ];
+    ]);
 
     const { error } = emit('rebuilds', stringify(rebuilds));
     if (error) {
@@ -24,10 +27,10 @@ export async function POST({ locals, params }) {
 
     async function updateCb(orgIds: number[]) {
       try {
-        const overlap = orgIds.filter((u) => organizations.includes(u));
+        const overlap = orgIds.filter((u) => organizations.has(u));
 
         if (overlap.length > 0) {
-          const rebuildsData = await getRebuilds(locals.security, overlap ? overlap : undefined);
+          const rebuildsData = await getRebuilds(locals.security, overlap);
           const { error } = emit('rebuilds', stringify(rebuildsData));
           if (error) {
             SSEPageUpdates.off('softwareUpdates', updateCb);

@@ -7,7 +7,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { getRebuilds } from '$lib/software-updates/server';
+import { getUpdates } from '$lib/software-updates/server';
 import { filterAdminOrgs } from '$lib/utils/roles';
 
 const startFormSchema = v.object({
@@ -128,7 +128,7 @@ export const load = (async ({ locals, params }) => {
     ),
     organizations: withFilteredProducts,
     presentAppTypes,
-    rebuilds: await getRebuilds(locals.security, orgId ? [orgId] : undefined),
+    updates: await getUpdates(locals.security, orgId ? [orgId] : undefined),
     user: await DatabaseReads.users.findUniqueOrThrow({
       where: { Id: locals.security.userId },
       select: { Name: true }
