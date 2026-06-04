@@ -121,6 +121,25 @@ jobs:
 
       - name: Build, Install Playwright dependencies, and seed database
         run: |
+          timeout 10m bash <<'EOF'
+          print_command_output() {
+            if [ -f command-output/build-output.txt ]; then
+              echo "Build output:"
+              cat command-output/build-output.txt
+            fi
+            if [ -f command-output/playwright-output.txt ]; then
+              echo "Playwright output:"
+              cat command-output/playwright-output.txt
+            fi
+          }
+
+          timeout_handler() {
+            echo "Build, Playwright installation, and database seeding timed out after 5 minutes. Printing captured output..."
+            print_command_output
+            exit 124
+          }
+
+          trap timeout_handler TERM
           echo "Building .env file..."
           echo "AUTH0_CLIENT_ID=" > .env
           echo "AUTH0_CLIENT_SECRET=" >> .env
@@ -154,6 +173,7 @@ jobs:
             exit $PLAYWRIGHT_EXIT_CODE
           fi
           echo "Build and Playwright installation completed."
+          EOF
         env:
           DATABASE_URL: 'postgresql://db-user:1234@localhost:5432/development?schema=public'
 
