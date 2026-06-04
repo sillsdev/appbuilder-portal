@@ -25,43 +25,51 @@ export type RebuildsTable = {
 
 export type UpdateSummaryData = Prisma.SoftwareUpdatesGetPayload<{
   select: {
-    DateCreated: true;
+    Id: true;
     DateCompleted: true;
     InitiatedBy: { select: { Name: true } };
     Comment: true;
     _count: { select: { UpdatedProducts: true } };
   };
-}> & {
-  _count: {
-    Completed?: number;
-    Failed?: number;
-  };
-} & {
-  Organizations: (Prisma.OrganizationsGetPayload<{
-    select: {
-      Name: true;
+}> &
+  (
+    | Prisma.SoftwareUpdatesGetPayload<{
+        select: {
+          DateCreated: true;
+        };
+      }>
+    | { DateCreated: null }
+  ) & {
+    _count: {
+      Completed?: number;
+      Failed?: number;
     };
-  }> & {
-    Projects: (Prisma.ProjectsGetPayload<{
+  } & {
+    Organizations: (Prisma.OrganizationsGetPayload<{
       select: {
-        Id: true;
         Name: true;
-        TypeId: true;
       };
     }> & {
-      Products: (Prisma.ProductsGetPayload<{
-        select: { Id: true; ProductDefinitionId: true };
-      }> &
-        Partial<
-          Prisma.SoftwareUpdatesOnProductsGetPayload<{
-            select: { Version: true; DateCompleted: true; Success: true };
-          }>
-        > & { OldVersion?: string | null })[];
+      Projects: (Prisma.ProjectsGetPayload<{
+        select: {
+          Id: true;
+          Name: true;
+          TypeId: true;
+        };
+      }> & {
+        Products: (Prisma.ProductsGetPayload<{
+          select: { Id: true; ProductDefinitionId: true };
+        }> &
+          Partial<
+            Prisma.SoftwareUpdatesOnProductsGetPayload<{
+              select: { Version: true; DateCompleted: true; Success: true };
+            }>
+          > & { OldVersion?: string | null })[];
+      })[];
+    } & {
+      Versions: {
+        ApplicationTypeId: number;
+        Versions: string[];
+      }[];
     })[];
-  } & {
-    Versions: {
-      ApplicationTypeId: number;
-      Versions: string[];
-    }[];
-  })[];
-};
+  };

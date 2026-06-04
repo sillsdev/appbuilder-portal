@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Prisma } from '@prisma/client';
+  import type { Snippet } from 'svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { getAppIcon, getProductIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
@@ -8,6 +9,7 @@
   import TaskComment from '$lib/products/components/TaskComment.svelte';
   import type { UpdateSummaryData } from '$lib/software-updates';
   import { byName, byString } from '$lib/utils/sorting';
+  import { getTimeDateString } from '$lib/utils/time';
 
   interface Props {
     update: UpdateSummaryData;
@@ -20,9 +22,10 @@
         select: { Name: true; Workflow: { select: { ProductType: true } } };
       }>
     >;
+    actions?: Snippet;
   }
 
-  let { update, presentAppTypes, productTypes }: Props = $props();
+  let { update, presentAppTypes, productTypes, actions }: Props = $props();
 
   const projects = $derived(update.Organizations.flatMap((o) => o.Projects));
 
@@ -34,7 +37,7 @@
     Description: string;
   };
 
-  const allVersions = $derived(
+  const appVersions = $derived(
     new Map<number, VersionType>(
       presentAppTypes.map((at) => [
         at.Id,
@@ -53,10 +56,14 @@
       ])
     )
   );
+
+  const allVersions = $derived(
+    Array.from(new Set(Array.from(appVersions.values()).flatMap((v) => v.Versions))).join(', ')
+  );
 </script>
 
 <DataDisplayBox
-  title={m.softwareUpdate_summary_title()}
+  class="mx-0!"
   fields={[
     {
       key: 'softwareUpdate_initiated_by',
@@ -76,15 +83,58 @@
       key: 'softwareUpdate_target_versions_label',
       snippet: versions,
       args: {
-        list: Array.from(allVersions.values()).sort((a, b) =>
+        list: Array.from(appVersions.values()).sort((a, b) =>
           byString(a.Description, b.Description, locale)
         ),
         classes: 'indent-0'
       },
-      faint: !allVersions.size
+      faint: !appVersions.size
     }
   ]}
 >
+  {#snippet title()}
+    {@const { Completed: complete = 0, Failed: failed = 0, UpdatedProducts: total } = update._count}
+    {@const left = total - (complete + failed)}
+    <span class="flex flex-col w-full">
+      <span class="flex flex-row">
+        <h3 class="grow">
+          {#if update.DateCreated}
+            [{allVersions}] {getTimeDateString(update.DateCreated)}
+          {:else}
+            {m.softwareUpdate_summary_title()}
+          {/if}
+        </h3>
+        {#if actions}
+          {@render actions?.()}
+        {:else}
+          <span class="p-2">
+            <b>{m.softwareUpdate_status_completed()}:</b>
+            {getTimeDateString(update.DateCompleted)}
+          </span>
+        {/if}
+      </span>
+      <span class="flex flex-row my-2">
+        <span class="join grow rounded-md text-sm mr-2 my-1">
+          {@render progress(
+            complete,
+            total,
+            'bg-success text-success-content',
+            !!complete,
+            !(failed || left)
+          )}
+          {@render progress(failed, total, 'bg-error text-error-content', !complete, !left)}
+          {@render progress(
+            left,
+            total,
+            'bg-base-300 text-base-content',
+            !(complete || failed),
+            !!left
+          )}
+        </span>
+        {m.common_total({ total })}
+      </span>
+    </span>
+  {/snippet}
   {#if update.Comment}
     <div class="text-sm opacity-75 pt-1">
       <TaskComment comment={update.Comment} />
@@ -114,7 +164,7 @@
               args: {
                 list: org.Versions.map((v) => ({
                   ...v,
-                  Description: allVersions.get(v.ApplicationTypeId)?.Description ?? ''
+                  Description: appVersions.get(v.ApplicationTypeId)?.Description ?? ''
                 })).sort((a, b) => byString(a.Description, b.Description, locale)),
                 classes: 'pl-2 indent-0'
               }
@@ -193,4 +243,20 @@
       </li>
     {/each}
   </ul>
+{/snippet}
+
+{#snippet progress(value: number, total: number, classes: string, first = false, last = false)}
+  {#if value && total}
+    <span
+      class={[
+        'min-w-fit px-1 text-xs text-center',
+        classes,
+        first && 'rounded-l-lg',
+        last && 'rounded-r-lg'
+      ]}
+      style="width: {(100 * value) / total}%;"
+    >
+      {value}
+    </span>
+  {/if}
 {/snippet}

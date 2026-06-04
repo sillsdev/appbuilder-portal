@@ -9,14 +9,11 @@ import { doProductAction } from '$lib/products/server';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { getUpdates } from '$lib/software-updates/server';
 import { filterAdminOrgs } from '$lib/utils/roles';
+import { deleteSchema } from '$lib/valibot';
 
 const startFormSchema = v.object({
   comment: v.pipe(v.string(), v.minLength(1)),
   products: v.pipe(v.array(v.string()))
-});
-
-const cancelFormSchema = v.object({
-  rebuildId: v.pipe(v.number())
 });
 
 const productsWhere: Prisma.ProductsWhereInput = {
@@ -149,43 +146,12 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
 
-    const products = await DatabaseReads.products.findMany({
-      where: {
-        Id: {
-          in: form.data.products
-        },
-        Project: {
-          Organization: {
-            ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined)
-          }
-        }
-      },
-      select: {
-        Id: true,
-        Project: {
-          select: {
-            Organization: {
-              select: { Id: true }
-            },
-            ApplicationType: {
-              select: {
-                Id: true
-              }
-            }
-          }
-        }
-      }
-    });
-
     const systems = new Map<number, Map<number, string>>(
       (
         await DatabaseReads.systemStatuses.findMany({
           where: {
             Organization: {
-              ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined),
-              Id: {
-                in: products.map((p) => p.Project.Organization.Id)
-              }
+              ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined)
             }
           },
           select: {
@@ -199,17 +165,39 @@ export const actions = {
       ])
     );
 
+    const products = (
+      await DatabaseReads.products.findMany({
+        where: {
+          Id: {
+            in: form.data.products
+          },
+          Project: {
+            Organization: {
+              ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined)
+            }
+          }
+        },
+        select: {
+          Id: true,
+          Project: {
+            select: {
+              OrganizationId: true,
+              TypeId: true
+            }
+          }
+        }
+      })
+    ).filter((p) => systems.get(p.Project.OrganizationId)?.get(p.Project.TypeId));
+
     const update = await DatabaseWrites.softwareUpdates.create(
       {
         InitiatedById: locals.security.userId,
         Comment: form.data.comment
       },
-      products
-        .filter((p) => systems.get(p.Project.Organization.Id)?.get(p.Project.ApplicationType.Id))
-        .map((p) => ({
-          ProductId: p.Id,
-          Version: systems.get(p.Project.Organization.Id)!.get(p.Project.ApplicationType.Id)!
-        }))
+      products.map((p) => ({
+        ProductId: p.Id,
+        Version: systems.get(p.Project.OrganizationId)!.get(p.Project.TypeId)!
+      }))
     );
 
     await Promise.allSettled(
@@ -233,14 +221,14 @@ export const actions = {
       locals.security.requireAdminOfAny();
     }
 
-    const form = await superValidate(request, valibot(cancelFormSchema));
+    const form = await superValidate(request, valibot(deleteSchema));
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
 
     const update = await DatabaseReads.softwareUpdates.findUnique({
       where: {
-        Id: form.data.rebuildId
+        Id: form.data.id
       },
       select: {
         Workflows: {

@@ -4,14 +4,18 @@
   import { source } from 'sveltekit-sse';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import { enhance as svk_enhance } from '$app/forms';
   import { afterNavigate } from '$app/navigation';
   import { page } from '$app/state';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
-  import { Icons, getAppIcon } from '$lib/icons';
+  import { Icons, getActionIcon, getAppIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import type { ApplicationType } from '$lib/prisma';
+  import { ProductActionType } from '$lib/products';
   import type { RebuildsTable } from '$lib/software-updates';
   import UpdateSummary from '$lib/software-updates/components/UpdateSummary.svelte';
   import { orgActive } from '$lib/stores';
@@ -181,8 +185,9 @@
       <!-- Summary Information -->
       <UpdateSummary
         update={{
+          Id: 0,
           InitiatedBy: data.user,
-          DateCreated: new Date(),
+          DateCreated: null,
           DateCompleted: null,
           Comment: $form.comment,
           _count: {
@@ -192,20 +197,22 @@
         }}
         presentAppTypes={data.applicationTypes.filter((at) => applicationTypeIds.includes(at.Id))}
         productTypes={data.productTypes}
-      />
-      <SubmitButton
-        class="mt-6"
-        key="softwareUpdate_rebuild_start"
-        icon={Icons.UpdateOn}
-        disabled={applicationTypeIds.length === 0 || products.length === 0}
-      />
+      >
+        {#snippet actions()}
+          <SubmitButton
+            key="softwareUpdate_rebuild_start"
+            icon={Icons.UpdateOn}
+            disabled={applicationTypeIds.length === 0 || products.length === 0}
+          />
+        {/snippet}
+      </UpdateSummary>
     </form>
 
     <!-- Rebuilds List -->
     <div class="m-4">
       <div class="space-y-6">
         {#if updates.active.length > 0}
-          <h1>{m.softwareUpdate_active_rebuilds_title()}</h1>
+          <h2>{m.softwareUpdate_active_rebuilds_title()}</h2>
           {#each updates.active as update}
             {@const apps = new Set(
               update.Organizations.flatMap((o) => o.Versions.map((v) => v.ApplicationTypeId))
@@ -215,13 +222,40 @@
                 {update}
                 presentAppTypes={data.applicationTypes.filter((at) => apps.has(at.Id))}
                 productTypes={data.productTypes}
-              />
+              >
+                {#snippet actions()}
+                  <BlockIfJobsUnavailable>
+                    {#snippet altContent()}
+                      <IconContainer icon={Icons.Close} width="24" />
+                    {/snippet}
+                    <form
+                      action="?/cancel"
+                      method="post"
+                      use:svk_enhance={() =>
+                        ({ update, result }) => {
+                          if (result.type === 'error') {
+                            if (result.status === 503) {
+                              toast('error', m.system_unavailable());
+                            }
+                          }
+                          update({ reset: false });
+                        }}
+                    >
+                      <input type="hidden" name="id" value={update.Id} />
+                      <SubmitButton
+                        key="common_cancel"
+                        icon={getActionIcon(ProductActionType.CancelWorkflow)}
+                      />
+                    </form>
+                  </BlockIfJobsUnavailable>
+                {/snippet}
+              </UpdateSummary>
             </div>
           {/each}
         {/if}
 
         {#if updates.complete.length > 0}
-          <h1 class="mt-8">{m.softwareUpdate_completed_rebuilds_title()}</h1>
+          <h2 class="mt-8">{m.softwareUpdate_completed_rebuilds_title()}</h2>
           {#each updates.complete as update}
             {@const apps = new Set(
               update.Organizations.flatMap((o) => o.Versions.map((v) => v.ApplicationTypeId))
