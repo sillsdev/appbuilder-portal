@@ -86,12 +86,9 @@ export async function request(resource: string, auth: Types.Auth, opts?: Types.R
       span.end();
       return ret;
     } catch (e) {
-      const ts = new Date().toISOString();
-      console.log(`[${ts}] Error recorded in catch block:\n${e}`);
       span.setStatus({ code: SpanStatusCode.ERROR, message: 'Request failed' });
       span.recordException(e as Error);
       span.end();
-      console.log(`[${ts}] In catch, after OTEL calls`);
       return {
         ok: false,
         status: 500,
