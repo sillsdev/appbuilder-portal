@@ -3,7 +3,7 @@
 // when code is bundled, we cannot keep the file separate to import it first.
 
 import { SpanStatusCode, trace } from '@opentelemetry/api';
-import { type Handle, type HandleServerError, error } from '@sveltejs/kit';
+import { type Handle, type HandleServerError, error, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { authRouteHandle, organizationInviteHandle, populateSecurityInfo } from './auth';
 import { building } from '$app/environment';
@@ -94,6 +94,11 @@ const tracer = trace.getTracer('IncomingRequest');
 const authSequence = sequence(authRouteHandle, populateSecurityInfo);
 
 export const handle: Handle = async ({ event, resolve }) => {
+  if (event.url.pathname !== '/maintenance.html') {
+    // Temporary maintenance page
+    // Redirect
+    return redirect(302, '/maintenance.html');
+  }
   if (event.url.pathname.startsWith('/.well-known/appspecific/')) {
     // Ignore these requests without logging them`
     return new Response('', { status: 404 });
