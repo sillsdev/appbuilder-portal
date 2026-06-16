@@ -1,11 +1,8 @@
-import type { Prisma } from '@prisma/client';
 import type { Job } from 'bullmq';
-import { randomInt } from 'crypto';
 import { BuildEngine } from '../../build-engine-api';
 import { BullMQ, getQueues } from '../../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../../database';
 import { JobSchedulerId } from '$lib/bullmq';
-import { type WorkflowInstanceContext, WorkflowState } from '$lib/workflowTypes';
 
 export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
   /**
@@ -122,143 +119,10 @@ export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unkn
   return Object.fromEntries(results);
 }
 
-async function associateBuildsOrReleases<Scope extends 'build' | 'release'>(scope: Scope) {
-  const filter = { TransitionId: null, Success: { not: null } };
-  const chunkSize = 100;
-
-  const members = { build: 'ProductBuilds', release: 'ProductPublications' } as const;
-  const member = members[scope];
-  const idTypes = { build: 'BuildEngineBuildId', release: 'BuildEngineReleaseId' } as const;
-  const idType = idTypes[scope];
-
-  type Build = Prisma.ProductBuildsGetPayload<{
-    select: { BuildEngineBuildId: true; DateCreated: true };
-  }>;
-  type Release = Prisma.ProductPublicationsGetPayload<{
-    select: { BuildEngineReleaseId: true; DateCreated: true };
-  }>;
-
-  // only try to associate completed builds/releases
-  const before = await DatabaseReads.products.count({
-    where: { [member]: { some: filter } }
-  });
-  const orphaned = (await DatabaseReads.products.findMany({
-    where: { [member]: { some: filter } },
-    select: {
-      Id: true,
-      [member]: {
-        where: filter,
-        select: {
-          [idType]: true,
-          DateCreated: true
-        },
-        orderBy: { DateCreated: 'asc' }
-      },
-      ProductTransitions: {
-        where: {
-          InitialState:
-            scope === 'build' ? WorkflowState.Product_Build : WorkflowState.Product_Publish,
-          DateTransition: { not: null }
-        },
-        select: {
-          Id: true,
-          DateTransition: true
-        },
-        orderBy: {
-          DateTransition: 'asc'
-        }
-      }
-    },
-    take: chunkSize,
-    skip: Math.max(0, randomInt(before || 1) - chunkSize)
-  })) as unknown as (Prisma.ProductsGetPayload<{
-    select: {
-      Id: true;
-      ProductTransitions: { select: { Id: true; DateTransition: true } };
-    };
-  }> & { ProductBuilds: Build[]; ProductPublications: Release[] })[];
-
-  const associated = await Promise.all(
-    orphaned.map(async (p) => ({
-      Id: p.Id,
-      // find first transition where DateTransition is greater than Build.DateCreated
-      // problem, date transition isn't set until build is completed... so we only do this for completed builds
-      [member]: await Promise.all(
-        p[member].map((obj) => {
-          const narrowed = obj as Scope extends 'build' ? Build : Release;
-          const id = p.ProductTransitions.find(
-            (pt) =>
-              pt.DateTransition!.valueOf() > obj.DateCreated!.valueOf() ||
-              // or within 5 seconds
-              Math.abs(pt.DateTransition!.valueOf() - obj.DateCreated!.valueOf()) < 5000
-          )?.Id;
-
-          //@ts-expect-error this is actually correct. I am tired of fighting the type system further
-          const objId: number = narrowed[idType];
-
-          if (id) {
-            return DatabaseWrites.productTransitions.tryConnect(p.Id, objId, scope, id);
-          } else {
-            return { [idType]: objId };
-          }
-        })
-      )
-    }))
-  );
-
-  const after = await DatabaseReads.products.count({
-    where: { [member]: { some: filter } }
-  });
-
-  return { before, orphaned, associated, after };
-}
-
-async function addPackageNameFiles() {
-  const filter: Prisma.WorkflowInstancesWhereInput = {
-    State: WorkflowState.Create_App_Store_Entry,
-    NOT: { Context: { contains: 'packageName' } }
-  };
-  const chunkSize = 100;
-
-  const before = await DatabaseReads.workflowInstances.count({
-    where: filter
-  });
-  const orphaned = await DatabaseReads.workflowInstances.findMany({
-    where: filter,
-    select: {
-      ProductId: true,
-      Context: true
-    },
-    take: chunkSize,
-    skip: Math.max(0, randomInt(before || 1) - chunkSize)
-  });
-
-  const associated = await Promise.all(
-    orphaned.map(async (p) => {
-      try {
-        const parsed = JSON.parse(p.Context) as WorkflowInstanceContext;
-        parsed.includeFields.push('packageName');
-        await DatabaseWrites.workflowInstances.update(p.ProductId, {
-          Context: JSON.stringify(parsed)
-        });
-        return { ...p, Context: parsed };
-      } catch (e) {
-        return { ...p, Error: e };
-      }
-    })
-  );
-
-  const after = await DatabaseReads.workflowInstances.count({
-    where: filter
-  });
-
-  return { before, orphaned, associated, after };
-}
-
-const migrationSteps = {
-  'Associate Builds': () => associateBuildsOrReleases('build'),
-  'Associate Releases': () => associateBuildsOrReleases('release'),
-  'Add PackageName': addPackageNameFiles
-} as const;
+const migrationSteps: Record<string, () => Promise<{ before: number; after: number }>> =
+  {} as const;
+// const migrationSteps = {
+//   migrateStep1Name: () => Promise.resolve({ before: 0, after: 0 })
+// } as const;
 
 export type MigrationStep = keyof typeof migrationSteps;
