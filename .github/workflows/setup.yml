@@ -25,6 +25,9 @@ jobs:
       BACKUP_AUTH0_SECRET: ${{ steps.set-vars.outputs.BACKUP_AUTH0_SECRET }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v6
         with:
           node-version: 24
@@ -72,6 +75,9 @@ jobs:
     needs: setup
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v6
         with:
           node-version: 24
@@ -109,6 +115,9 @@ jobs:
       AUTH0_CONNECTION: ${{ vars.AUTH0_CONNECTION }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@v6
         with:
           node-version: 24
