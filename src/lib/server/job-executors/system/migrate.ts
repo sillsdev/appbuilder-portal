@@ -104,7 +104,7 @@ export async function lazyMigrate(job: Job<BullMQ.System.Migrate>): Promise<unkn
     }
   }
 
-  if (results.every(([_, data]) => 'after' in data && !data['after'])) {
+  if (results.length && results.every(([_, data]) => 'after' in data && !data['after'])) {
     await getQueues().SystemRecurring.removeJobScheduler(JobSchedulerId.MigrateChunks);
     job.log('All migrations have finished... Removing task');
     await getQueues().Emails.add(`Notify SuperAdmins of Finished Migration Steps`, {
