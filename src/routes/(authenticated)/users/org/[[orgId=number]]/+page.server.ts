@@ -107,12 +107,14 @@ export const load = (async ({ locals, params }) => {
       // this filters for OrgAdmin, using the Security object does not
       const orgIds = organizations.map((o) => o.Id);
 
+      const where = userFilter(isSuper, orgIds, orgId);
+
       const users = await DatabaseReads.users.findMany({
         orderBy: {
           Name: 'asc'
         },
         select: select(isSuper ? undefined : orgIds, orgId),
-        where: userFilter(isSuper, orgIds, orgId),
+        where,
         take: 50
       });
 
@@ -134,7 +136,7 @@ export const load = (async ({ locals, params }) => {
         // Only superadmins would see this larger size, most users have organizations with much fewer users where it does not matter
 
         users: users.map(minifyUser),
-        userCount: users.length,
+        userCount: await DatabaseReads.users.count({ where }),
         organizations,
         groups: await DatabaseReads.groups.findMany({
           where: {
@@ -261,7 +263,7 @@ export const actions: Actions = {
         ok: true,
         query: {
           data: users.map(minifyUser),
-          count: await DatabaseReads.users.count({ where: where })
+          count: await DatabaseReads.users.count({ where })
         }
       };
     });
