@@ -1,8 +1,7 @@
 processors:
   memory_limiter:
     check_interval: 5s
-    limit_mib: 500
-    spike_limit_mib: 100
+    limit_percentage: 75
   batch:
   # Add SampleRate attribute to traces for Honeycomb automatic accounting
   # SampleRate = N where we keep 1/N traces, or (sampled traces)/(real traces)
@@ -15,7 +14,7 @@ processors:
     actions:
       - key: SampleRate
         action: insert
-        value: 2
+        value: 20
   attributes/default:
     actions:
       - key: SampleRate
