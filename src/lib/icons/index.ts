@@ -41,6 +41,18 @@ export function getAppIcon(type: ApplicationType) {
   );
 }
 
+export function getAuthIcon(id: string) {
+  if (id.startsWith('google-')) {
+    return 'flat-color-icons:google';
+  } else if (id.startsWith('auth0')) {
+    return 'simple-icons:auth0';
+  } else if (/\|paratext\|/.test(id)) {
+    return getStaticImage('paratext.png');
+  } else {
+    return 'carbon:unknown';
+  }
+}
+
 export function getFileIcon(fileType: string) {
   switch (fileType) {
     case 'aab':
@@ -197,6 +209,18 @@ export function getRoleIcon(role: RoleId) {
     case RoleId.Author:
       return 'mdi:pencil';
   }
+}
+
+const staticIcons = import.meta.glob('/src/lib/icons/static/*', {
+  eager: true,
+  import: 'default',
+  query: '?url'
+}) as Record<string, string>;
+
+type StaticImage = 'paratext.png';
+
+export function getStaticImage(src: StaticImage) {
+  return staticIcons[`/src/lib/icons/static/${src}`] ?? '';
 }
 
 export function getStoreIcon(type: StoreType) {
@@ -382,6 +406,7 @@ export type IconType =
       | typeof getProductIcon
       | typeof getProjectActionIcon
       | typeof getRoleIcon
+      | typeof getStaticImage
       | typeof getStoreIcon
       | typeof getTransitionIcon
       | typeof getWorkflowIcon
