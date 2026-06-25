@@ -114,7 +114,9 @@
         {/if}
       </span>
       <span class="flex flex-row my-2">
-        <span class="join grow rounded-md text-sm mr-2 my-1">
+        <span
+          class="join grow rounded-lg text-sm mr-2 my-1 border border-secondary gap-0.5 bg-secondary"
+        >
           {@render progress(
             complete,
             total,
