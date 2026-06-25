@@ -29,7 +29,8 @@ export function getActionIcon(type: ProductActionType) {
 
 const appIcons = import.meta.glob('/src/lib/icons/app-builders/*.svg', {
   eager: true,
-  import: 'default'
+  import: 'default',
+  query: '?url'
 }) as Record<string, string>;
 
 export function getAppIcon(type: ApplicationType) {
@@ -375,6 +376,7 @@ export type IconType =
   | (typeof Icons)[keyof typeof Icons]
   | ReturnType<
       | typeof getActionIcon
+      | typeof getAppIcon
       | typeof getFileIcon
       | typeof getFlagIcon
       | typeof getProductIcon

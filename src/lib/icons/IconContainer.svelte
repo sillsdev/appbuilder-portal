@@ -18,5 +18,9 @@
   style="width: {width}px; height: {width}px"
   title={tooltip}
 >
-  <Icon {icon} {width} class="" height={width} />
+  {#if icon.startsWith('/')}
+    <img src={icon} {width} height={width} alt="" />
+  {:else}
+    <Icon {icon} {width} class="" height={width} />
+  {/if}
 </span>

@@ -276,20 +276,26 @@
         />
       {/if}
       {#if data.fields.appType}
-        <LabeledFormInput key="project_appType" class="md:w-1/2">
-          <div class="input w-full">
-            <img src={getAppIcon(data.fields.appType.Id)} width={24} alt="" />
-            <input type="text" readonly value={data.fields.appType.Description} />
-          </div>
-        </LabeledFormInput>
+        <LabeledFormInput
+          key="project_appType"
+          class="md:w-1/2"
+          input={{
+            readonly: true,
+            icon: getAppIcon(data.fields.appType.Id)
+          }}
+          value={data.fields.appType.Description}
+        />
       {/if}
       {#if data.fields.projectLanguageCode}
-        <LabeledFormInput key="project_languageCode" class="md:w-1/2">
-          <div class="input w-full">
-            <IconContainer icon={Icons.Language} width={20} />
-            <input type="text" readonly value={data.fields.projectLanguageCode} />
-          </div>
-        </LabeledFormInput>
+        <LabeledFormInput
+          key="project_languageCode"
+          class="md:w-1/2"
+          input={{
+            icon: Icons.Language,
+            readonly: true
+          }}
+          value={data.fields.projectLanguageCode}
+        />
       {/if}
     </div>
   {/if}

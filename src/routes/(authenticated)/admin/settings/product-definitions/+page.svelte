@@ -25,7 +25,7 @@
       <div class="flex flex-row flex-wrap gap-2 indent-0">
         {#each pD.ApplicationTypes.toSorted( (a, b) => byString(a.Description, b.Description, locale) ) as at}
           <span class="flex flex-row gap-1">
-            <img src={getAppIcon(at.Id)} width={24} alt="" />
+            <IconContainer icon={getAppIcon(at.Id)} width={24} />
             {at.Description}
           </span>
         {/each}

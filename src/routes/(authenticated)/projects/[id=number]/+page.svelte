@@ -154,7 +154,10 @@
             <div class="flex place-content-between">
               <span>{m.project_details_type()}:</span>
               <span class="flex flex-row gap-1">
-                <img src={getAppIcon(projectData.project.ApplicationType.Id)} width={24} alt="" />
+                <IconContainer
+                  icon={getAppIcon(projectData.project.ApplicationType.Id)}
+                  width={24}
+                />
                 {projectData.project.ApplicationType.Description}
               </span>
             </div>

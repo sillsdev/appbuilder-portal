@@ -10,6 +10,7 @@
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
   import { type IconType, Icons, getAppIcon, getProductIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
@@ -71,8 +72,8 @@
   {#if !$form.allowAll}
     <LabeledFormInput key="prodDefs_type" class="border border-warning p-1 my-4 rounded-lg">
       {#each data.options.applicationTypes.toSorted( (a, b) => byString(a.Description, b.Description, locale) ) as type}
-        <span class="flex flex-row gap-1">
-          <img src={getAppIcon(type.Id)} width={24} alt="" />
+        <span class="flex flex-row gap-1 items-center">
+          <IconContainer icon={getAppIcon(type.Id)} width={24} />
           <InputWithMessage
             message={{ key: 'common_passThrough', params: { value: type.Description } }}
             class="my-1 grow"
