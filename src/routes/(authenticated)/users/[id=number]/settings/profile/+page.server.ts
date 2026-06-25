@@ -15,7 +15,8 @@ const profileSchema = v.object({
   notifications: v.boolean(),
   emailOptions: v.array(v.pipe(idSchema, v.enum(NotificationType))),
   visible: v.boolean(),
-  active: v.boolean()
+  active: v.boolean(),
+  externalId: v.nullable(v.string())
 });
 
 export const load = (async (event) => {
@@ -28,6 +29,9 @@ export const load = (async (event) => {
   if (event.locals.security.userId !== parseInt(event.params.id)) {
     event.locals.security.requireAdminOfOrgIn(user.Organizations.map((o) => o.Id));
   }
+
+  const { canEdit } = await event.parent();
+
   return {
     form: await superValidate(
       {
@@ -38,7 +42,8 @@ export const load = (async (event) => {
         notifications: user.EmailNotification,
         emailOptions: user.NotificationOptions,
         visible: !!user.ProfileVisibility,
-        active: !user.IsLocked
+        active: !user.IsLocked,
+        externalId: canEdit ? user.ExternalId : null
       },
       valibot(profileSchema)
     )

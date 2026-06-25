@@ -10,7 +10,7 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
-  import { Icons } from '$lib/icons';
+  import { Icons, getAuthIcon } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import type { RoleId } from '$lib/prisma';
   import { NotificationType } from '$lib/users';
@@ -96,6 +96,17 @@
       }}
       bind:value={$form.email}
     />
+    {#if data.canEdit}
+      <LabeledFormInput
+        key="auth_login"
+        input={{
+          name: 'externalId',
+          icon: getAuthIcon($form.externalId ?? ''),
+          readonly: true
+        }}
+        bind:value={$form.externalId}
+      />
+    {/if}
     <LabeledFormInput
       key="profile_phone"
       input={{
