@@ -239,7 +239,7 @@
                     {#snippet altContent()}
                       <IconContainer icon={Icons.Dashboard} width={24} />
                       {m.sidebar_jobAdministration()}
-                      <IconContainer icon={Icons.Open} width="18" />
+                      <IconContainer icon={Icons.Open} width={18} />
                     {/snippet}
                     <a
                       class="rounded-none"

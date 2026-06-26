@@ -64,7 +64,7 @@
               role="button"
               tabindex="0"
             >
-              <IconContainer icon={getFlagIcon(locale, DefaultFlags)} width="24" />
+              <IconContainer icon={getFlagIcon(locale, DefaultFlags)} width={24} />
               <span class="grow text-left">
                 {tryLocalize(l10nMap, current, 'languages', locale, locale)}
               </span>

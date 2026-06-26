@@ -118,7 +118,7 @@
             {product.Project.Name}:
             <IconContainer
               icon={getProductIcon(product.ProductDefinition.Workflow.ProductType)}
-              width="24"
+              width={24}
             />
             {product.ProductDefinition.Name}
           </label>

@@ -178,7 +178,7 @@
       {#if isAdminForAny(data.session?.user.roles)}
         <BlockIfJobsUnavailable class="btn btn-outline">
           {#snippet altContent()}
-            <IconContainer icon={Icons.AddUser} width="20" />
+            <IconContainer icon={Icons.AddUser} width={20} />
             <span>{m.orgMembership_title()}</span>
           {/snippet}
           <a href={localizeHref('/users/invite')} class="btn btn-outline">

@@ -147,7 +147,7 @@
     <span class="navbar-end w-auto">
       <Dropdown class={{ label: 'px-1', content: 'top-12 right-0 p-1 min-w-36 w-auto' }}>
         {#snippet label()}
-          <IconContainer icon={Icons.Kebab} width="20" />
+          <IconContainer icon={Icons.Kebab} width={20} />
         {/snippet}
         {#snippet content()}
           <ul class="menu overflow-hidden rounded-md">

@@ -53,7 +53,7 @@
             <form action="?/{deleteEndpoint}" method="post" use:svk_enhance>
               <input type="hidden" name="id" value={reviewer.Id} />
               <button type="submit" class="cursor-pointer" title={m.common_delete()}>
-                <IconContainer icon={Icons.Close} width="24" />
+                <IconContainer icon={Icons.Close} width={24} />
               </button>
             </form>
           {/if}
@@ -108,10 +108,10 @@
               {#snippet label()}
                 <span class="flex items-center pl-1 w-full">
                   <span class="grow">
-                    <IconContainer icon={getFlagIcon($form.language, DefaultFlags)} width="24" />
+                    <IconContainer icon={getFlagIcon($form.language, DefaultFlags)} width={24} />
                     {$form.language?.split('-')[0]}
                   </span>
-                  <IconContainer icon={Icons.Dropdown} width="20" />
+                  <IconContainer icon={Icons.Dropdown} width={20} />
                 </span>
               {/snippet}
             </LocaleSelector>

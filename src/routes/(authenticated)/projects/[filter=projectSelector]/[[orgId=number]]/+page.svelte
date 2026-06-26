@@ -320,7 +320,7 @@
                             bind:group={selectedProducts}
                             value={product}
                           />
-                          <IconContainer icon={getProductIcon(product.Type)} width="24" />
+                          <IconContainer icon={getProductIcon(product.Type)} width={24} />
                           {product.ProductDefinitionName}
                           <div class="basis-full h-0"></div>
                           {#if product.CanRebuild}

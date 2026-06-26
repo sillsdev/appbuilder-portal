@@ -5,7 +5,7 @@
 
   interface Props {
     icon: IconType;
-    width: number | string;
+    width: number;
     tooltip?: string;
     class?: ClassValue;
   }

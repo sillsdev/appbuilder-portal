@@ -81,7 +81,7 @@
     <div class="flex flex-col py-4">
       <div class="flex flex-col place-content-between px-4">
         <span class="items-center flex gap-x-1">
-          <IconContainer icon={Icons.Organization} width="20" />
+          <IconContainer icon={Icons.Organization} width={20} />
           {m.project_org()}
         </span>
         <span class="text-right">
@@ -91,7 +91,7 @@
       <div class="divider my-2"></div>
       <div class="flex flex-col place-content-between px-4 pr-2">
         <span>
-          <IconContainer icon={Icons.User} width="20" />
+          <IconContainer icon={Icons.User} width={20} />
           {m.project_owner()}
         </span>
         <span class="text-right flex place-content-end dropdown-wrapper">
@@ -109,7 +109,7 @@
                   {#snippet altContent()}
                     <span class="flex items-center pl-1">
                       {project?.Owner.Name}
-                      <IconContainer icon={Icons.Dropdown} width="20" />
+                      <IconContainer icon={Icons.Dropdown} width={20} />
                     </span>
                   {/snippet}
                   {@render altContent()}
@@ -165,7 +165,7 @@
               {#snippet label()}
                 <span class="flex items-center pl-1">
                   {project?.Group.Name}
-                  <IconContainer icon={Icons.Dropdown} width="20" />
+                  <IconContainer icon={Icons.Dropdown} width={20} />
                 </span>
               {/snippet}
               {#snippet content()}
