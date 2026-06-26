@@ -28,7 +28,6 @@ function select(orgIds: number[] | undefined, specificOrg: number | undefined) {
     Id: true,
     Name: true,
     Email: true,
-    ExternalId: true,
     IsLocked: true,
     UserRoles: {
       where: orgIds ? { OrganizationId: { in: orgIds } } : undefined,

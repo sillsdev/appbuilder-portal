@@ -6,7 +6,6 @@ type UserInfo = Prisma.UsersGetPayload<{
     Id: true;
     Name: true;
     Email: true;
-    ExternalId: true;
     UserRoles: { select: { OrganizationId: true; RoleId: true } };
     Groups: { select: { Id: true; OwnerId: true } };
     Organizations: {
@@ -28,8 +27,6 @@ export function minifyUser(user: UserInfo) {
     N: user.Name,
     /** User Email */
     E: user.Email,
-    /** User ExternalId */
-    X: user.ExternalId,
     /** User OrganizationMemberships */
     O: user.Organizations.map((org) => ({
       /** Roles */
