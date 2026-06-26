@@ -43,7 +43,8 @@ export const load = (async (event) => {
         emailOptions: user.NotificationOptions,
         visible: !!user.ProfileVisibility,
         active: !user.IsLocked,
-        externalId: canEditOrgFeatures ? user.ExternalId : null
+        externalId:
+          canEditOrgFeatures || user.Id === event.locals.security.userId ? user.ExternalId : null
       },
       valibot(profileSchema)
     )
