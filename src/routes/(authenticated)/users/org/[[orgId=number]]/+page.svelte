@@ -8,14 +8,15 @@
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import SearchBar, { focusSearchBar } from '$lib/components/SearchBar.svelte';
-  import { Icons } from '$lib/icons';
+  import Tooltip from '$lib/components/Tooltip.svelte';
+  import { Icons, getAuthIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
-  import { isAdminForAny, isAdminForOrg } from '$lib/utils/roles';
+  import { isAdminForAny, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
   import { byName, byString } from '$lib/utils/sorting';
 
   interface Props {
@@ -87,15 +88,23 @@
 </script>
 
 {#snippet name(user: (typeof users)[0])}
-  <div class="overflow-x-auto">
-    <p>
-      <a href={localizeHref(`/users/${user.I}/settings`)} class="link pb-2">
-        {user.N}
-      </a>
-    </p>
-    <p class="text-sm wrap-break-word">
-      {user.E}
-    </p>
+  <div class="flex flex-row gap-1">
+    {#if isSuperAdmin(data.session.user.roles)}
+      <Tooltip class="tooltip-right">
+        <div class="tooltip-content">{user.X}</div>
+        <IconContainer icon={getAuthIcon(user.X ?? '')} width={20} />
+      </Tooltip>
+    {/if}
+    <div class="overflow-x-auto">
+      <p>
+        <a href={localizeHref(`/users/${user.I}/settings`)} class="link pb-2">
+          {user.N}
+        </a>
+      </p>
+      <p class="text-sm wrap-break-word">
+        {user.E}
+      </p>
+    </div>
   </div>
 {/snippet}
 
