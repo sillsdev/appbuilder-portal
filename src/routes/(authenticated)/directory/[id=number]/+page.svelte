@@ -94,7 +94,7 @@
           <div>
             <IconContainer
               icon={getProductIcon(product.ProductDefinition.Workflow.ProductType)}
-              width="32"
+              width={32}
             />
             {#if canViewProject(data.project)}
               <a class="link" href={localizeHref(`/projects/${data.project.Id}#${product.Id}`)}>

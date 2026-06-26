@@ -50,7 +50,7 @@
         <li>
           <IconContainer
             icon={getProductIcon(data.product.ProductDefinition.Workflow.ProductType)}
-            width="24"
+            width={24}
           />{data.product.ProductDefinition.Name}
         </li>
       </ul>

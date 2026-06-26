@@ -54,7 +54,7 @@
   {#snippet label()}
     <div class="flex flex-row items-center gap-1 w-full">
       {#if current}
-        <img src={getAppIcon(current.Id)} width={24} alt="" />
+        <IconContainer icon={getAppIcon(current.Id)} width={24} />
         <span class="grow text-left">
           {current.Description}
         </span>
@@ -103,7 +103,7 @@
             role="button"
             tabindex="0"
           >
-            <img src={getAppIcon(type.Id)} width={24} alt="" />
+            <IconContainer icon={getAppIcon(type.Id)} width={24} />
             <span class="grow text-left">
               {type.Description}
             </span>

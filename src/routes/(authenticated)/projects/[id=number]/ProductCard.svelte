@@ -173,7 +173,7 @@
         }}
       >
         {#snippet label()}
-          <IconContainer icon={Icons.Kebab} width="20" class="" />
+          <IconContainer icon={Icons.Kebab} width={20} class="" />
         {/snippet}
         {#snippet content()}
           <ul class="menu overflow-hidden rounded-md">

@@ -77,7 +77,7 @@
       <ul>
         {#each buildEngine.SystemVersions.map( (v) => ({ ...v, Name: data.applications.get(v.ApplicationTypeId) }) ).toSorted( (a, b) => byName(a, b, getLocale()) ) as version}
           <li class="flex flex-row gap-1 indent-0 mt-1">
-            <img src={getAppIcon(version.ApplicationTypeId)} width={24} alt="" />
+            <IconContainer icon={getAppIcon(version.ApplicationTypeId)} width={24} />
             {version.Name}: {version.Version} ({getTimeDateString(version.DateUpdated)})
           </li>
         {/each}

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Icon from '@iconify/svelte';
   import { page } from '$app/state';
   import Dropdown, { type DropdownClasses } from '$lib/components/Dropdown.svelte';
   import { Icons } from '$lib/icons';
@@ -39,7 +38,7 @@
         <IconContainer icon={route.ic} width={24} class="mr-1" />
         {route.msg}
         <div class="dropdown-icon" class:open>
-          <Icon width="24" class="dropdown-icon" icon={Icons.Dropdown} />
+          <IconContainer width={24} class="dropdown-icon" icon={Icons.Dropdown} />
         </div>
       </div>
     </h1>

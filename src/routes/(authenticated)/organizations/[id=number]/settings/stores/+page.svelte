@@ -24,7 +24,7 @@
   <h2>{m.org_storesTitle()}</h2>
   <BlockIfJobsUnavailable class="btn btn-outline">
     {#snippet altContent()}
-      <IconContainer icon={Icons.Transfer} width="20" />
+      <IconContainer icon={Icons.Transfer} width={20} />
       <span>{m.org_storesTransfer()}</span>
     {/snippet}
     <a href={localizeHref(`${base}/transfer`)} class="btn btn-outline">

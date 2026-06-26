@@ -67,7 +67,7 @@
           {#if canEdit}
             <BlockIfJobsUnavailable>
               {#snippet altContent()}
-                <IconContainer icon={Icons.Close} width="24" />
+                <IconContainer icon={Icons.Close} width={24} />
               {/snippet}
               <form
                 action="?/{deleteEndpoint}"
@@ -84,7 +84,7 @@
               >
                 <input type="hidden" name="id" value={author.User.Id} />
                 <button type="submit" class="cursor-pointer" title={m.common_delete()}>
-                  <IconContainer icon={Icons.Close} width="24" />
+                  <IconContainer icon={Icons.Close} width={24} />
                 </button>
               </form>
             </BlockIfJobsUnavailable>

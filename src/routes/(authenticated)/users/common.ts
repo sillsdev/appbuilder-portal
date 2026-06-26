@@ -15,7 +15,8 @@ type UserInfo = Prisma.UsersGetPayload<{
     };
     IsLocked: true;
   };
-}>;
+}> &
+  Partial<Prisma.UsersGetPayload<{ select: { ExternalId: true } }>>;
 
 // or by using smaller (or even minified) keys (eg N instead of Name, O instead of Organizations)
 // Done - Aidan
@@ -27,6 +28,8 @@ export function minifyUser(user: UserInfo) {
     N: user.Name,
     /** User Email */
     E: user.Email,
+    /** User ExternalId */
+    X: user.ExternalId,
     /** User OrganizationMemberships */
     O: user.Organizations.map((org) => ({
       /** Roles */

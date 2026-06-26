@@ -59,7 +59,7 @@
           <b class="[color:#55f]">
             {@render highlight(project.Name)}
           </b>
-          <img src={getAppIcon(project.TypeId)} width={20} alt="" />
+          <IconContainer icon={getAppIcon(project.TypeId)} width={20} />
         </a>
         <div class="grow"></div>
         <span class="hidden sm:inline">{@render langIcon(project.Language)}</span>
@@ -143,7 +143,7 @@
               <th class="text-left opacity-75">{m.projectTable_appBuilderVersion()}</th>
               <td class="flex flex-row gap-1">
                 {#if product.AppBuilderVersion}
-                  <img src={getAppIcon(project.TypeId)} width={20} alt="" />
+                  <IconContainer icon={getAppIcon(project.TypeId)} width={20} />
                   {product.AppBuilderVersion}
                 {:else}
                   -
@@ -198,7 +198,7 @@
               <td>
                 <span class="flex flex-row gap-1">
                   {#if product.AppBuilderVersion}
-                    <img src={getAppIcon(project.TypeId)} width={20} alt="" />
+                    <IconContainer icon={getAppIcon(project.TypeId)} width={20} />
                     {product.AppBuilderVersion}
                   {:else}
                     -
