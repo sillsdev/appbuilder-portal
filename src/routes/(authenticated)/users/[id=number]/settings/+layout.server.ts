@@ -28,12 +28,12 @@ export const load = (async ({ params, locals }) => {
   // return only orgs containing the subject that the current user is also an admin for
   const filter = adminOrgs(subject.Id, locals.security.userId, locals.security.isSuperAdmin);
 
-  const canEdit = !!(await DatabaseReads.organizations.findFirst({ where: filter }));
+  const canEditOrgFeatures = !!(await DatabaseReads.organizations.findFirst({ where: filter }));
 
   return {
     subject,
-    canEdit,
-    subjectOrgs: canEdit
+    canEditOrgFeatures,
+    subjectOrgs: canEditOrgFeatures
       ? await DatabaseReads.organizations.findMany({
           where: filter,
           select: {

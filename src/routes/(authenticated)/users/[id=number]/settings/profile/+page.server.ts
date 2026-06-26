@@ -30,7 +30,7 @@ export const load = (async (event) => {
     event.locals.security.requireAdminOfOrgIn(user.Organizations.map((o) => o.Id));
   }
 
-  const { canEdit } = await event.parent();
+  const { canEditOrgFeatures } = await event.parent();
 
   return {
     form: await superValidate(
@@ -43,7 +43,7 @@ export const load = (async (event) => {
         emailOptions: user.NotificationOptions,
         visible: !!user.ProfileVisibility,
         active: !user.IsLocked,
-        externalId: canEdit ? user.ExternalId : null
+        externalId: canEditOrgFeatures ? user.ExternalId : null
       },
       valibot(profileSchema)
     )

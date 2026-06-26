@@ -22,7 +22,7 @@
 </script>
 
 <!-- permissions handled in server -->
-{#if data.canEdit}
+{#if data.canEditOrgFeatures}
   <TabbedMenu
     baseRouteId="/(authenticated)/users/[id=number]/settings"
     routeParams={{ id: page.params.id! }}

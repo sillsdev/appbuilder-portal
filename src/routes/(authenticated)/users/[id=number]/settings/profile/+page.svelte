@@ -96,7 +96,7 @@
       }}
       bind:value={$form.email}
     />
-    {#if data.canEdit}
+    {#if data.canEditOrgFeatures}
       <LabeledFormInput
         key="auth_login"
         input={{
