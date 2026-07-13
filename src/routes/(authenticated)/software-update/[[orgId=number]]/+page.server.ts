@@ -44,6 +44,7 @@ export const load = (async ({ locals, params }) => {
     select: {
       Id: true,
       Name: true,
+      UseDefaultBuildEngine: true,
       System: {
         select: {
           SystemVersions: {
@@ -68,6 +69,9 @@ export const load = (async ({ locals, params }) => {
               Id: true,
               ProductDefinitionId: true,
               ProductBuilds: {
+                where: {
+                  ProductPublications: { some: { Success: true } }
+                },
                 orderBy: { DateCreated: 'desc' },
                 take: 1,
                 select: { AppBuilderVersion: true }
@@ -148,6 +152,7 @@ export const actions = {
         where: filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined),
         select: {
           Id: true,
+          UseDefaultBuildEngine: true,
           System: {
             select: {
               SystemVersions: { select: { ApplicationTypeId: true, Version: true } }

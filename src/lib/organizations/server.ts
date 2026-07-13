@@ -16,6 +16,7 @@ export async function mapSystems(
   organizations: Prisma.OrganizationsGetPayload<{
     select: {
       Id: true;
+      UseDefaultBuildEngine: true;
       System: {
         select: { SystemVersions: { select: { ApplicationTypeId: true; Version: true } } };
       };
@@ -33,7 +34,7 @@ export async function mapSystems(
     organizations.map((o) => [
       o.Id,
       new Map(
-        (o.System ?? defaultSystem).SystemVersions.map((v) => [
+        ((!o.UseDefaultBuildEngine && o.System) || defaultSystem).SystemVersions.map((v) => [
           v.ApplicationTypeId,
           v.Version ?? ''
         ])
