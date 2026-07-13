@@ -4,6 +4,7 @@ import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { mapSystems } from '$lib/organizations/server';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
@@ -78,12 +79,7 @@ export const load = (async ({ locals, params }) => {
     }
   });
 
-  const systems = new Map<number, Map<number, string>>(
-    organizations.map((o) => [
-      o.Id,
-      new Map(o.System?.SystemVersions.map((v) => [v.ApplicationTypeId, v.Version ?? '']))
-    ])
-  );
+  const systems = await mapSystems(organizations);
 
   const presentAppTypes = new Set<number>();
 
@@ -147,23 +143,18 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
 
-    const systems = new Map<number, Map<number, string>>(
-      (
-        await DatabaseReads.systemStatuses.findMany({
-          where: {
-            Organization: {
-              ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined)
+    const systems = await mapSystems(
+      await DatabaseReads.organizations.findMany({
+        where: filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined),
+        select: {
+          Id: true,
+          System: {
+            select: {
+              SystemVersions: { select: { ApplicationTypeId: true, Version: true } }
             }
-          },
-          select: {
-            Organization: { select: { Id: true, Name: true } },
-            SystemVersions: { select: { ApplicationTypeId: true, Version: true } }
           }
-        })
-      ).map((s) => [
-        s.Organization!.Id,
-        new Map(s.SystemVersions.map((v) => [v.ApplicationTypeId, v.Version ?? '']))
-      ])
+        }
+      })
     );
 
     const products = (
