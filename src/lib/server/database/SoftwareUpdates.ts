@@ -2,6 +2,9 @@ import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
 import type { RequirePrimitive } from './utility';
+import { ProductActionType } from '$lib/products';
+import { doProductAction } from '$lib/products/server';
+import { filterAdminOrgs } from '$lib/utils/roles';
 
 export async function create(
   data: RequirePrimitive<Prisma.SoftwareUpdatesUncheckedCreateInput>,
@@ -87,5 +90,63 @@ export async function completeForProduct(
           : [product.Project.OrganizationId]
       }
     );
+  }
+}
+
+export async function cancel(updateId: number, orgId: number | undefined, security: Security) {
+  const productFilter = {
+    Project: {
+      Organization: {
+        ...filterAdminOrgs(security, orgId)
+      }
+    }
+  };
+
+  const update = await prisma.softwareUpdates.findUniqueOrThrow({
+    where: {
+      Id: updateId
+    },
+    select: {
+      UpdatedProducts: {
+        select: {
+          Product: { select: { Project: { select: { OrganizationId: true } } } }
+        }
+      },
+      Workflows: {
+        where: {
+          Product: productFilter
+        },
+        select: {
+          ProductId: true
+        }
+      }
+    }
+  });
+
+  await Promise.allSettled(
+    update?.Workflows.map((p) =>
+      doProductAction(p.ProductId, ProductActionType.CancelWorkflow, security.userId)
+    ) ?? []
+  );
+
+  await prisma.softwareUpdatesOnProducts.deleteMany({
+    where: { SoftwareUpdateId: updateId, Product: productFilter }
+  });
+
+  const organizations = new Set(
+    update.UpdatedProducts.flatMap((up) => up.Product.Project.OrganizationId)
+  );
+
+  if (organizations.size > 0) {
+    getQueues().SvelteSSE.add(`Update Software Updates (update #${updateId} canceled)`, {
+      type: BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates,
+      orgIds: Array.from(organizations)
+    });
+  }
+
+  if (
+    !(await prisma.softwareUpdatesOnProducts.findFirst({ where: { SoftwareUpdateId: updateId } }))
+  ) {
+    await prisma.softwareUpdates.deleteMany({ where: { Id: updateId } });
   }
 }

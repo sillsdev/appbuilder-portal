@@ -212,8 +212,9 @@ export const actions = {
   },
 
   async cancel({ request, locals, params }) {
-    if (params.orgId) {
-      locals.security.requireAdminOfOrg(Number(params.orgId));
+    const orgId = params.orgId ? Number(params.orgId) : undefined;
+    if (orgId) {
+      locals.security.requireAdminOfOrg(orgId);
     } else {
       locals.security.requireAdminOfAny();
     }
@@ -223,36 +224,6 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
 
-    const update = await DatabaseReads.softwareUpdates.findUnique({
-      where: {
-        Id: form.data.id
-      },
-      select: {
-        Workflows: {
-          where: {
-            Product: {
-              Project: {
-                Organization: {
-                  ...filterAdminOrgs(
-                    locals.security,
-                    params.orgId ? Number(params.orgId) : undefined
-                  )
-                }
-              }
-            }
-          },
-          select: {
-            ProductId: true
-          }
-        }
-      }
-    });
-
-    console.log(update);
-    await Promise.allSettled(
-      update?.Workflows.map((p) =>
-        doProductAction(p.ProductId, ProductActionType.CancelWorkflow, locals.security.userId)
-      ) ?? []
-    );
+    await DatabaseWrites.softwareUpdates.cancel(form.data.id, orgId, locals.security);
   }
 } satisfies Actions;
