@@ -60,6 +60,22 @@
   const allVersions = $derived(
     Array.from(new Set(Array.from(appVersions.values()).flatMap((v) => v.Versions))).join(', ')
   );
+
+  function getStatus(
+    product: Pick<
+      UpdateSummaryData['Organizations'][number]['Projects'][number]['Products'][number],
+      'DateCompleted' | 'Success'
+    >
+  ): { color: string; status: 'success' | 'error' | 'pending' } {
+    return {
+      color: product.DateCompleted
+        ? product.Success
+          ? 'badge-success'
+          : 'badge-error'
+        : 'badge-secondary',
+      status: product.DateCompleted ? (product.Success ? 'success' : 'error') : 'pending'
+    };
+  }
 </script>
 
 <DataDisplayBox
@@ -205,7 +221,11 @@
                       <ul>
                         {#each project.Products.toSorted( (a, b) => byName(productTypes.get(a.ProductDefinitionId), productTypes.get(b.ProductDefinitionId), locale) ) as product}
                           {@const pd = productTypes.get(product.ProductDefinitionId)}
+                          {@const { color, status } = getStatus(product)}
                           <li>
+                            <span class={['badge badge-sm font-bold', color]}>
+                              {m.softwareUpdate_status({ status })}
+                            </span>
                             <IconContainer
                               icon={getProductIcon(pd?.Workflow.ProductType ?? 0)}
                               width={30}
@@ -220,6 +240,9 @@
                               <s>{product.OldVersion}</s>
                             {/if}
                             &rarr; {product.Version}
+                            {#if product.DateCompleted}
+                              ({getTimeDateString(product.DateCompleted)})
+                            {/if}
                           </li>
                         {/each}
                       </ul>

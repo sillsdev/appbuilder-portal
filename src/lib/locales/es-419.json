@@ -628,6 +628,15 @@
   "softwareUpdate_products_rebuilding_label": "Productos en reconstrucción",
   "softwareUpdate_no_products_message": "No hay productos elegibles para reconstruir en este momento.",
   "softwareUpdate_progress_label": "Progreso",
+  "softwareUpdate_status": [
+    {
+      "match": {
+        "status=pending": "Pendiente",
+        "status=success": "Éxito",
+        "status=error": "Error"
+      }
+    }
+  ],
   "softwareUpdate_status_active": "Activo",
   "softwareUpdate_status_paused": "En pausa",
   "softwareUpdate_status_completed": "Completado",

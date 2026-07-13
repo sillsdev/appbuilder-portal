@@ -627,6 +627,15 @@
   "softwareUpdate_products_rebuilding_label": "Produits en reconstruction",
   "softwareUpdate_no_products_message": "Il n'y a aucun produit éligible pour la reconstruction pour le moment.",
   "softwareUpdate_progress_label": "Progrès",
+  "softwareUpdate_status": [
+    {
+      "match": {
+        "status=pending": "Pending",
+        "status=success": "Success",
+        "status=error": "Error"
+      }
+    }
+  ],
   "softwareUpdate_status_active": "Actif",
   "softwareUpdate_status_paused": "En pause",
   "softwareUpdate_status_completed": "Terminé",
