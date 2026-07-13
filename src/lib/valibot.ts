@@ -105,3 +105,11 @@ export const langtagRegex = new RegExp(
 export function regExpToInputPattern(re: RegExp) {
   return re.toString().slice(1, -1);
 }
+
+export function resetValidity(form: HTMLFormElement) {
+  for (const el of form.querySelectorAll('input, textarea, select') as NodeListOf<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >) {
+    el.setCustomValidity('');
+  }
+}

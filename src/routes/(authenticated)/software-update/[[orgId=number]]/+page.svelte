@@ -23,6 +23,7 @@
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
   import { isAdminForOrg } from '$lib/utils/roles';
   import { byString } from '$lib/utils/sorting';
+  import { resetValidity } from '$lib/valibot';
 
   interface Props {
     data: PageData;
@@ -57,6 +58,7 @@
 
   //const rebuilds = $derived(data.rebuilds);
   const { form, enhance } = superForm(data.form, {
+    dataType: 'json',
     resetForm: true,
     onUpdate({ form, result, formElement }) {
       if (form.valid && result.type === 'success') {
@@ -116,6 +118,9 @@
   const filteredProjects = $derived(filteredOrgs.flatMap((o) => o.Projects));
 
   const products = $derived(filteredProjects.flatMap((p) => p.Products.map((p) => p.Id)));
+  $effect(() => {
+    $form.products = products;
+  });
 
   // Switch orgs properly
   $effect(() => {
@@ -135,9 +140,13 @@
   <h1>{m.softwareUpdate()}</h1>
   <p class="pl-8 mt-2 mb-6">{m.softwareUpdate_description()}</p>
   <div class="w-full m-auto md:max-w-3xl">
-    <form class="mx-4 flex flex-col" method="post" action="?/start" use:enhance>
-      <input type="hidden" name="products" value={products} />
-
+    <form
+      class="mx-4 flex flex-col"
+      method="post"
+      action="?/start"
+      use:enhance
+      onreset={(e) => resetValidity(e.currentTarget)}
+    >
       <div class="flex flex-col md:flex-row">
         <!-- Application Type Toggles -->
         <div class="grow min-w-xs mb-2">
@@ -149,7 +158,7 @@
           <div class="flex w-full">
             <div class="shrink space-y-2">
               {#each data.applicationTypes.toSorted( (a, b) => byString(a.Description, b.Description, locale) ) as appType}
-                <div
+                <label
                   class={[
                     'flex space-x-2 items-center',
                     data.presentAppTypes.has(appType.Id) ||
@@ -166,7 +175,7 @@
                   />
                   <IconContainer icon={getAppIcon(appType.Id as ApplicationType)} width={24} />
                   <div class="font-medium">{appType.Description ?? ''}</div>
-                </div>
+                </label>
               {/each}
             </div>
             <div class="grow"></div>

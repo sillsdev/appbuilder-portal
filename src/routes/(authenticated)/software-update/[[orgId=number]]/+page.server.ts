@@ -10,11 +10,11 @@ import { doProductAction } from '$lib/products/server';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { getUpdates } from '$lib/software-updates/server';
 import { filterAdminOrgs } from '$lib/utils/roles';
-import { deleteSchema } from '$lib/valibot';
+import { deleteSchema, stringIdSchema } from '$lib/valibot';
 
 const startFormSchema = v.object({
   comment: v.pipe(v.string(), v.minLength(1)),
-  products: v.pipe(v.array(v.string()))
+  products: v.pipe(v.array(stringIdSchema))
 });
 
 const productsWhere: Prisma.ProductsWhereInput = {
