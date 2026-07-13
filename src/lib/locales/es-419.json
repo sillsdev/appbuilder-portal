@@ -613,21 +613,12 @@
   "downloads_title": "Downloads",
   "softwareUpdate": "Actualización de Software",
   "softwareUpdate_description": "Esta acción iniciará una reconstrucción para todos los proyectos elegibles que tengan habilitada la opción Reconstruir al actualizar el software. Solo se incluirán los proyectos que tengan al menos un producto completamente publicado y que no se estén reconstruyendo actualmente.",
-  "softwareUpdate_comment": "Comentario",
-  "softwareUpdate_rebuild_start": "Empezar a Reconstruir",
-  "softwareUpdate_comment_required": "Se requiere un comentario para iniciar las compilaciones.",
-  "softwareUpdate_toast_success": "¡Comenzó con éxito las reconstrucciones!",
-  "softwareUpdate_organizations": "Organizaciones ({amount})",
-  "softwareUpdate_initiated_by": "Iniciado por",
-  "softwareUpdate_summary_title": "Resumen de la reconstrucción",
-  "softwareUpdate_projects": "Proyectos ({amount})",
-  "softwareUpdate_products": "Productos ({amount})",
-  "softwareUpdate_project_names_label": "Nombres de proyectos",
-  "softwareUpdate_target_versions_label": "Versiones objetivo",
-  "softwareUpdate_rebuild_started_title": "Reconstrucción iniciada",
-  "softwareUpdate_products_rebuilding_label": "Productos en reconstrucción",
-  "softwareUpdate_no_products_message": "No hay productos elegibles para reconstruir en este momento.",
-  "softwareUpdate_progress_label": "Progreso",
+  "softwareUpdate_start": "Iniciar actualización",
+  "softwareUpdate_commentRequired": "Se requiere un comentario para iniciar la actualización.",
+  "softwareUpdate_toast_success": "¡La actualización se ha iniciado correctamente!",
+  "softwareUpdate_initiatedBy": "Iniciado por",
+  "softwareUpdate_summary": "Resumen de la actualización",
+  "softwareUpdate_targetVersions": "Versiones objetivo",
   "softwareUpdate_status": [
     {
       "match": {
@@ -637,16 +628,9 @@
       }
     }
   ],
-  "softwareUpdate_status_active": "Activo",
-  "softwareUpdate_status_paused": "En pausa",
-  "softwareUpdate_status_completed": "Completado",
-  "softwareUpdate_paused_message": "Actualización de software pausada",
-  "softwareUpdate_all_completed_message": "Todas las reconstrucciones completadas",
-  "softwareUpdate_application_types_title": "Tipos de aplicación",
-  "softwareUpdate_application_types_description": "Seleccione qué tipos de aplicación reconstruir",
-  "softwareUpdate_active_rebuilds_title": "Actualizaciones de software activas",
-  "softwareUpdate_completed_rebuilds_title": "Actualizaciones de software completadas",
-  "softwareUpdate_application_type_title": "Tipo de aplicación",
-  "softwareUpdate_version_title": "Versión",
-  "softwareUpdate_created_title": "Creado"
+  "softwareUpdate_completed": "Completado",
+  "softwareUpdate_applicationTypes": "Tipos de aplicación",
+  "softwareUpdate_applicationTypes_description": "SSeleccione uno o varios tipos de aplicación para actualizar.",
+  "softwareUpdate_listActive": "Actualizaciones de software activas",
+  "softwareUpdate_listCompleted": "Actualizaciones de software completadas"
 }

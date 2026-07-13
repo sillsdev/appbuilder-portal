@@ -613,21 +613,12 @@
   "downloads_title": "Downloads",
   "softwareUpdate": "Software Update",
   "softwareUpdate_description": "This action will initiate a rebuild for all eligible projects with \"Rebuild on software update\" enabled. Only projects with at least one fully published product that are not currently rebuilding will be included.",
-  "softwareUpdate_comment": "Comment",
-  "softwareUpdate_rebuild_start": "Start Rebuilds",
-  "softwareUpdate_comment_required": "A comment is required to start builds.",
-  "softwareUpdate_toast_success": "Successfully started rebuilds!",
-  "softwareUpdate_organizations": "Organizations ({amount})",
-  "softwareUpdate_initiated_by": "Initiated by",
-  "softwareUpdate_summary_title": "Rebuild Summary",
-  "softwareUpdate_projects": "Projects ({amount})",
-  "softwareUpdate_products": "Products ({amount})",
-  "softwareUpdate_project_names_label": "Project Names",
-  "softwareUpdate_target_versions_label": "Target Versions",
-  "softwareUpdate_rebuild_started_title": "Rebuild Started",
-  "softwareUpdate_products_rebuilding_label": "Products Rebuilding",
-  "softwareUpdate_no_products_message": "There are no products eligible for rebuild at this time.",
-  "softwareUpdate_progress_label": "Progress",
+  "softwareUpdate_start": "Start Update",
+  "softwareUpdate_commentRequired": "A comment is required to start update.",
+  "softwareUpdate_toast_success": "Successfully started update!",
+  "softwareUpdate_initiatedBy": "Initiated by",
+  "softwareUpdate_summary": "Update Summary",
+  "softwareUpdate_targetVersions": "Target Versions",
   "softwareUpdate_status": [
     {
       "match": {
@@ -637,16 +628,9 @@
       }
     }
   ],
-  "softwareUpdate_status_active": "Active",
-  "softwareUpdate_status_paused": "Paused",
-  "softwareUpdate_status_completed": "Completed",
-  "softwareUpdate_paused_message": "Software update paused",
-  "softwareUpdate_all_completed_message": "All rebuilds completed",
-  "softwareUpdate_application_types_title": "Application Types",
-  "softwareUpdate_application_types_description": "Select one or more application types to rebuild",
-  "softwareUpdate_active_rebuilds_title": "Active Software Updates",
-  "softwareUpdate_completed_rebuilds_title": "Completed Software Updates",
-  "softwareUpdate_application_type_title": "Application Type",
-  "softwareUpdate_version_title": "Version",
-  "softwareUpdate_created_title": "Created"
+  "softwareUpdate_completed": "Completed",
+  "softwareUpdate_applicationTypes": "Application Types",
+  "softwareUpdate_applicationTypes_description": "Select one or more application types to update",
+  "softwareUpdate_listActive": "Active Software Updates",
+  "softwareUpdate_listCompleted": "Completed Software Updates"
 }

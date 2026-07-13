@@ -82,7 +82,7 @@
   class="mx-0!"
   fields={[
     {
-      key: 'softwareUpdate_initiated_by',
+      key: 'softwareUpdate_initiatedBy',
       value: update.InitiatedBy.Name
     },
     {
@@ -96,7 +96,7 @@
       faint: !update._count.UpdatedProducts
     },
     {
-      key: 'softwareUpdate_target_versions_label',
+      key: 'softwareUpdate_targetVersions',
       snippet: versions,
       args: {
         list: Array.from(appVersions.values()).sort((a, b) =>
@@ -117,14 +117,14 @@
           {#if update.DateCreated}
             [{allVersions}] {getTimeDateString(update.DateCreated)}
           {:else}
-            {m.softwareUpdate_summary_title()}
+            {m.softwareUpdate_summary()}
           {/if}
         </h3>
         {#if actions}
           {@render actions?.()}
         {:else}
           <span class="p-2">
-            <b>{m.softwareUpdate_status_completed()}:</b>
+            <b>{m.softwareUpdate_completed()}:</b>
             {getTimeDateString(update.DateCompleted)}
           </span>
         {/if}
@@ -177,7 +177,7 @@
           title={org.Name}
           fields={[
             {
-              key: 'softwareUpdate_target_versions_label',
+              key: 'softwareUpdate_targetVersions',
               snippet: versions,
               args: {
                 list: org.Versions.map((v) => ({
@@ -199,7 +199,7 @@
                   class="border-base-content/25! m-0!"
                   fields={[
                     {
-                      key: 'softwareUpdate_target_versions_label',
+                      key: 'softwareUpdate_targetVersions',
                       value: Array.from(new Set(project.Products.map((p) => p.Version))).join(', ')
                     }
                   ]}

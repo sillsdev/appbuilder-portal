@@ -141,9 +141,9 @@
       <div class="flex flex-col md:flex-row">
         <!-- Application Type Toggles -->
         <div class="grow min-w-xs mb-2">
-          <h3 class="font-semibold mb-2 pl-0">{m.softwareUpdate_application_types_title()}</h3>
+          <h3 class="font-semibold mb-2 pl-0">{m.softwareUpdate_applicationTypes()}</h3>
           <p class="text-sm text-gray-500 mb-4">
-            {m.softwareUpdate_application_types_description()}
+            {m.softwareUpdate_applicationTypes_description()}
           </p>
 
           <div class="flex w-full">
@@ -172,14 +172,14 @@
             <div class="grow"></div>
           </div>
         </div>
-        <LabeledFormInput key="softwareUpdate_comment" class="md:mt-12">
+        <LabeledFormInput key="transitions_comment" class="md:mt-12">
           <textarea
             name="comment"
             class="textarea w-full validator min-h-42"
             bind:value={$form.comment}
             required
           ></textarea>
-          <span class="validator-hint">{m.softwareUpdate_comment_required()}</span>
+          <span class="validator-hint">{m.softwareUpdate_commentRequired()}</span>
         </LabeledFormInput>
       </div>
       <!-- Summary Information -->
@@ -200,7 +200,7 @@
       >
         {#snippet actions()}
           <SubmitButton
-            key="softwareUpdate_rebuild_start"
+            key="softwareUpdate_start"
             icon={Icons.UpdateOn}
             disabled={applicationTypeIds.length === 0 || products.length === 0}
           />
@@ -212,7 +212,7 @@
     <div class="m-4">
       <div class="space-y-6">
         {#if updates.active.length > 0}
-          <h2>{m.softwareUpdate_active_rebuilds_title()}</h2>
+          <h2>{m.softwareUpdate_listActive()}</h2>
           {#each updates.active as update}
             {@const apps = new Set(
               update.Organizations.flatMap((o) => o.Versions.map((v) => v.ApplicationTypeId))
@@ -255,7 +255,7 @@
         {/if}
 
         {#if updates.complete.length > 0}
-          <h2 class="mt-8">{m.softwareUpdate_completed_rebuilds_title()}</h2>
+          <h2 class="mt-8">{m.softwareUpdate_listCompleted()}</h2>
           {#each updates.complete as update}
             {@const apps = new Set(
               update.Organizations.flatMap((o) => o.Versions.map((v) => v.ApplicationTypeId))

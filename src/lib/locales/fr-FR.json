@@ -612,21 +612,12 @@
   "downloads_title": "Downloads",
   "softwareUpdate": "Mise à jour du logiciel",
   "softwareUpdate_description": "Cette action lancera une reconstruction pour tous les projets éligibles ayant l’option Reconstruire lors d’une mise à jour logicielle activée. Seuls les projets contenant au moins un produit entièrement publié et qui ne sont pas actuellement en cours de reconstruction seront inclus.",
-  "softwareUpdate_comment": "Commentaire",
-  "softwareUpdate_rebuild_start": "Commencer les Reconstructions",
-  "softwareUpdate_comment_required": "Un commentaire est requis pour commencer les constructions.",
-  "softwareUpdate_toast_success": "Les reconstructions ont commencé avec succès !",
-  "softwareUpdate_organizations": "Organisations ({amount})",
-  "softwareUpdate_initiated_by": "Lancé par",
-  "softwareUpdate_summary_title": "Résumé de la reconstruction",
-  "softwareUpdate_projects": "Projets ({amount})",
-  "softwareUpdate_products": "Produits ({amount})",
-  "softwareUpdate_project_names_label": "Noms des projets",
-  "softwareUpdate_target_versions_label": "Versions cibles",
-  "softwareUpdate_rebuild_started_title": "Reconstruction démarrée",
-  "softwareUpdate_products_rebuilding_label": "Produits en reconstruction",
-  "softwareUpdate_no_products_message": "Il n'y a aucun produit éligible pour la reconstruction pour le moment.",
-  "softwareUpdate_progress_label": "Progrès",
+  "softwareUpdate_start": "Lancer la mise à jour",
+  "softwareUpdate_commentRequired": "Un commentaire est requis pour lancer la mise à jour.",
+  "softwareUpdate_toast_success": "Mise à jour lancée avec succès !",
+  "softwareUpdate_initiatedBy": "Lancé par",
+  "softwareUpdate_summary": "Résumé de la mise à jour",
+  "softwareUpdate_targetVersions": "Versions cibles",
   "softwareUpdate_status": [
     {
       "match": {
@@ -636,16 +627,9 @@
       }
     }
   ],
-  "softwareUpdate_status_active": "Actif",
-  "softwareUpdate_status_paused": "En pause",
-  "softwareUpdate_status_completed": "Terminé",
-  "softwareUpdate_paused_message": "Mise à jour du logiciel suspendue",
-  "softwareUpdate_all_completed_message": "Toutes les reconstructions terminées",
-  "softwareUpdate_application_types_title": "Types d'application",
-  "softwareUpdate_application_types_description": "Sélectionnez les types d'application à reconstruire",
-  "softwareUpdate_active_rebuilds_title": "Mises à jour du logiciel actives",
-  "softwareUpdate_completed_rebuilds_title": "Mises à jour du logiciel terminées",
-  "softwareUpdate_application_type_title": "Type d'application",
-  "softwareUpdate_version_title": "Version",
-  "softwareUpdate_created_title": "Créé"
+  "softwareUpdate_completed": "Terminé",
+  "softwareUpdate_applicationTypes": "Types d'application",
+  "softwareUpdate_applicationTypes_description": "Sélectionnez un ou plusieurs types d'application à mettre à jour.",
+  "softwareUpdate_listActive": "Mises à jour du logiciel actives",
+  "softwareUpdate_listCompleted": "Mises à jour du logiciel terminées"
 }
