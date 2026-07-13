@@ -164,7 +164,7 @@
                     class="toggle toggle-accent toggle-sm"
                     disabled={!data.presentAppTypes.has(appType.Id)}
                   />
-                  <img src={getAppIcon(appType.Id as ApplicationType)} width={24} alt="" />
+                  <IconContainer icon={getAppIcon(appType.Id as ApplicationType)} width={24} />
                   <div class="font-medium">{appType.Description ?? ''}</div>
                 </div>
               {/each}

@@ -210,7 +210,7 @@
                       class="link flex flex-row gap-x-1"
                     >
                       {project.Name}
-                      <img src={getAppIcon(project.TypeId)} width={20} alt="" />
+                      <IconContainer icon={getAppIcon(project.TypeId)} width={20} />
                     </a>
                   {/snippet}
                   <details class="collapse collapse-arrow rounded-none">
