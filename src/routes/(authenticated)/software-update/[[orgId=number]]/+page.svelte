@@ -226,7 +226,7 @@
                 {#snippet actions()}
                   <BlockIfJobsUnavailable>
                     {#snippet altContent()}
-                      <IconContainer icon={Icons.Close} width="24" />
+                      <IconContainer icon={Icons.Close} width={24} />
                     {/snippet}
                     <form
                       action="?/cancel"
