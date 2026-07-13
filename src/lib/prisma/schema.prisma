@@ -391,7 +391,6 @@ model SoftwareUpdates {
   Id              Int                         @id(map: "PK_SoftwareUpdates") @default(autoincrement())
   InitiatedById   Int
   Comment         String
-  Paused          Boolean                     @default(false)
   DateCreated     DateTime                    @default(now()) @db.Timestamp(6)
   DateCompleted   DateTime?                   @db.Timestamp(6)
   InitiatedBy     Users                       @relation(fields: [InitiatedById], references: [Id])
@@ -405,8 +404,8 @@ model SoftwareUpdatesOnProducts {
   DateCompleted    DateTime?
   Version          String
   Success          Boolean         @default(false)
-  SoftwareUpdate   SoftwareUpdates @relation(fields: [SoftwareUpdateId], references: [Id], map: "FK_SoftwareUpdatesOnProducts_SoftwareUpdates_SoftwareUpdateId")
-  Product          Products        @relation(fields: [ProductId], references: [Id], map: "FK_SoftwareUpdatesOnProducts_Products_ProductId")
+  SoftwareUpdate   SoftwareUpdates @relation(fields: [SoftwareUpdateId], references: [Id], map: "FK_SoftwareUpdatesOnProducts_SoftwareUpdates_SoftwareUpdateId", onDelete: Cascade, onUpdate: NoAction)
+  Product          Products        @relation(fields: [ProductId], references: [Id], map: "FK_SoftwareUpdatesOnProducts_Products_ProductId", onDelete: Cascade, onUpdate: NoAction)
 
   @@id([SoftwareUpdateId, ProductId], map: "PK_SoftwareUpdatesOnProducts_SoftwareUpdateId_ProductId")
 }

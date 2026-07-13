@@ -23,6 +23,7 @@ ALTER TABLE "SoftwareUpdates" DROP COLUMN "ApplicationTypeId",
 DROP COLUMN "BuildEngineUrl",
 DROP COLUMN "DateUpdated",
 DROP COLUMN "Version",
+DROP COLUMN "Paused",
 ALTER COLUMN "DateCreated" SET NOT NULL;
 
 -- AlterTable
@@ -43,10 +44,10 @@ CREATE TABLE "SoftwareUpdatesOnProducts" (
 );
 
 -- AddForeignKey
-ALTER TABLE "SoftwareUpdatesOnProducts" ADD CONSTRAINT "FK_SoftwareUpdatesOnProducts_SoftwareUpdates_SoftwareUpdateId" FOREIGN KEY ("SoftwareUpdateId") REFERENCES "SoftwareUpdates"("Id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "SoftwareUpdatesOnProducts" ADD CONSTRAINT "FK_SoftwareUpdatesOnProducts_SoftwareUpdates_SoftwareUpdateId" FOREIGN KEY ("SoftwareUpdateId") REFERENCES "SoftwareUpdates"("Id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "SoftwareUpdatesOnProducts" ADD CONSTRAINT "FK_SoftwareUpdatesOnProducts_Products_ProductId" FOREIGN KEY ("ProductId") REFERENCES "Products"("Id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "SoftwareUpdatesOnProducts" ADD CONSTRAINT "FK_SoftwareUpdatesOnProducts_Products_ProductId" FOREIGN KEY ("ProductId") REFERENCES "Products"("Id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "WorkflowInstances" ADD CONSTRAINT "FK_WorkflowInstances_SoftwareUpdates_SoftwareUpdateId" FOREIGN KEY ("SoftwareUpdateId") REFERENCES "SoftwareUpdates"("Id") ON DELETE SET NULL ON UPDATE NO ACTION;
