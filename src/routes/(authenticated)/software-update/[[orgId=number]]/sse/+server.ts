@@ -1,7 +1,7 @@
 import { stringify } from 'devalue';
 import { produce } from 'sveltekit-sse';
 import { SSEPageUpdates } from '$lib/projects/listener';
-import { getRebuilds } from '$lib/software-updates/server';
+import { getUpdates } from '$lib/software-updates/server';
 
 // Parse organization IDs from query parameter
 // Handle POST requests to establish an SSE connection for rebuild data
@@ -14,13 +14,10 @@ export async function POST({ locals, params }) {
   }
 
   return produce(async function start({ emit }) {
-    const rebuilds = await getRebuilds(locals.security, orgId ? [Number(orgId)] : undefined);
-    const organizations = new Set([
-      ...rebuilds.complete.flatMap((u) => u.OrganizationIds),
-      ...rebuilds.incomplete.flatMap((u) => u.OrganizationIds)
-    ]);
+    const updates = await getUpdates(locals.security, orgId ? [Number(orgId)] : undefined);
+    const organizations = new Set(updates.flatMap((u) => u.Organizations.map((o) => o.Id)));
 
-    const { error } = emit('rebuilds', stringify(rebuilds));
+    const { error } = emit('updates', stringify(updates));
     if (error) {
       return;
     }
@@ -30,8 +27,8 @@ export async function POST({ locals, params }) {
         const overlap = orgIds.filter((u) => organizations.has(u));
 
         if (overlap.length > 0) {
-          const rebuildsData = await getRebuilds(locals.security, overlap);
-          const { error } = emit('rebuilds', stringify(rebuildsData));
+          const updates = await getUpdates(locals.security, overlap);
+          const { error } = emit('updates', stringify(updates));
           if (error) {
             SSEPageUpdates.off('softwareUpdates', updateCb);
             clearInterval(pingInterval);

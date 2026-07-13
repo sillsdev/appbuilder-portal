@@ -16,7 +16,7 @@
   import { getLocale } from '$lib/paraglide/runtime';
   import type { ApplicationType } from '$lib/prisma';
   import { ProductActionType } from '$lib/products';
-  import type { RebuildsTable } from '$lib/software-updates';
+  import type { UpdateSummaryData } from '$lib/software-updates';
   import UpdateSummary from '$lib/software-updates/components/UpdateSummary.svelte';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
@@ -31,7 +31,7 @@
 
   const currentPageUrl = page.url.pathname;
   let reconnectDelay = 1000;
-  const softwareUpdatesSSE: Readable<RebuildsTable> = $derived.by(() => {
+  const softwareUpdatesSSE: Readable<UpdateSummaryData[]> = $derived.by(() => {
     return source(`${page.url.pathname}/sse`, {
       close({ connect }) {
         setTimeout(() => {
@@ -45,14 +45,14 @@
         }, reconnectDelay);
       }
     })
-      .select('rebuilds')
+      .select('updates')
       .transform((t) => (t ? parse(t) : undefined));
   });
 
   // Use SSE data if available, otherwise fall back to server data
   const updates = $derived({
-    complete: data.updates.filter((u) => u.DateCompleted),
-    active: data.updates.filter((u) => !u.DateCompleted)
+    complete: ($softwareUpdatesSSE ?? data.updates).filter((u) => u.DateCompleted),
+    active: ($softwareUpdatesSSE ?? data.updates).filter((u) => !u.DateCompleted)
   });
 
   //const rebuilds = $derived(data.rebuilds);

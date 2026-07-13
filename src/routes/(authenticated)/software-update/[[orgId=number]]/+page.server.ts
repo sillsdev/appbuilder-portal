@@ -89,6 +89,7 @@ export const load = (async ({ locals, params }) => {
 
   const withFilteredProducts = organizations
     .map((o) => ({
+      Id: o.Id,
       Name: o.Name,
       Versions: o.System?.SystemVersions,
       Projects: o.Projects.map((pj) => ({

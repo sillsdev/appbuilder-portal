@@ -47,6 +47,7 @@ export type UpdateSummaryData = Prisma.SoftwareUpdatesGetPayload<{
   } & {
     Organizations: (Prisma.OrganizationsGetPayload<{
       select: {
+        Id: true;
         Name: true;
       };
     }> & {
