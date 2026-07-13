@@ -3,14 +3,6 @@ import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
 import type { RequirePrimitive } from './utility';
 
-export type RebuildRequest = {
-  buildEngineUrl: string;
-  applicationTypeId: number;
-  version: string; // required target version
-  productId: string;
-  organizationId: number;
-};
-
 export async function create(
   data: RequirePrimitive<Prisma.SoftwareUpdatesUncheckedCreateInput>,
   products: Prisma.SoftwareUpdatesOnProductsUncheckedCreateWithoutSoftwareUpdateInput[]
@@ -21,75 +13,79 @@ export async function create(
 }
 
 /**
- * Checks if a specific product's successful build completes any open SoftwareUpdates.
- * Called after each successful build for immediate completion detection.
+ * Checks if a specific product's build completes any open SoftwareUpdates.
+ * Called after each build for immediate completion detection.
  */
-export async function completeForProduct(productId: string): Promise<void> {
+export async function completeForProduct(
+  productId: string,
+  buildEngineBuildId: number
+): Promise<void> {
   // Find open updates linked to this product
-  const openUpdates = await prisma.softwareUpdates.findMany({
-    where: {
-      DateCompleted: null,
-      Paused: false,
-      UpdatedProducts: { some: { ProductId: productId } }
-    },
+  const product = await prisma.products.findUniqueOrThrow({
+    where: { Id: productId },
     select: {
-      Id: true,
-      DateCreated: true,
-      UpdatedProducts: {
+      SoftwareUpdates: {
+        where: { SoftwareUpdate: { DateCompleted: null }, DateCompleted: null },
         select: {
-          ProductId: true,
-          Product: {
-            select: {
-              Project: {
-                select: {
-                  Organization: {
-                    select: {
-                      Id: true
-                    }
-                  }
-                }
-              },
-              ProductBuilds: {
-                orderBy: { DateCreated: 'desc' },
-                take: 1,
-                select: { DateCreated: true }
-              }
-            }
-          }
-        }
+          Version: true,
+          SoftwareUpdate: { select: { Id: true, DateCreated: true } }
+        },
+        orderBy: { DateCompleted: 'desc' }
+      },
+      Project: { select: { OrganizationId: true } },
+      ProductBuilds: {
+        where: { BuildEngineBuildId: buildEngineBuildId, Success: { not: null } },
+        select: { DateCreated: true, Success: true, AppBuilderVersion: true }
       }
     }
   });
-  if (openUpdates.length === 0) return;
 
-  for (const u of openUpdates) {
-    let ok = true;
-    for (const p of u.UpdatedProducts) {
-      // Require a successful build at the target version at or after the update start time
-      // TODO What is the correct procedure when the update does not have a date created?
-      if ((p.Product.ProductBuilds[0].DateCreated?.valueOf() ?? 0) < u.DateCreated.valueOf()) {
-        ok = false;
-        break;
+  const build = product.ProductBuilds.at(0);
+  if (!build?.DateCreated) return;
+
+  // search most recent updates first
+  const update = product.SoftwareUpdates.find(
+    (u) =>
+      build.DateCreated!.valueOf() > u.SoftwareUpdate.DateCreated.valueOf() &&
+      (!build.AppBuilderVersion || build.AppBuilderVersion === u.Version)
+  )?.SoftwareUpdate;
+
+  if (update) {
+    await prisma.softwareUpdatesOnProducts.updateMany({
+      where: { ProductId: productId, SoftwareUpdateId: update.Id },
+      data: {
+        DateCompleted: new Date(),
+        // guaranteed not null by query
+        Success: build.Success!
       }
-    }
+    });
 
-    if (ok) {
-      const orgIds = [
-        ...new Set<number>(u.UpdatedProducts.map((p) => p.Product.Project.Organization.Id))
-      ];
+    const checkUpdate = !!(await prisma.softwareUpdatesOnProducts.findFirst({
+      where: { SoftwareUpdateId: update.Id, DateCompleted: null },
+      select: { SoftwareUpdateId: true }
+    }));
 
-      await prisma.softwareUpdates.update({
-        where: { Id: u.Id },
-        data: { DateCompleted: new Date() }
-      });
-
-      // Notify SSE clients about the completed software update
-      if (orgIds.length > 0) {
-        getQueues().SvelteSSE.add(`Update Software Updates (rebuild #${u.Id} completed)`, {
-          type: BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates,
-          orgIds
-        });
+    getQueues().SvelteSSE.add(
+      `Update Software Updates (update #${update.Id} product ${productId} completed)`,
+      {
+        type: BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates,
+        orgIds: checkUpdate
+          ? (
+              await prisma.organizations.findMany({
+                where: {
+                  Projects: {
+                    some: {
+                      Products: {
+                        some: { SoftwareUpdates: { some: { SoftwareUpdateId: update.Id } } }
+                      }
+                    }
+                  }
+                },
+                select: { Id: true }
+              })
+            ).map((o) => o.Id)
+          : [product.Project.OrganizationId]
       }
-    }
+    );
   }
 }
