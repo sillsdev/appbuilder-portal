@@ -57,7 +57,7 @@ export class Workflow {
     comment?: string,
     softwareUpdateId?: number
   ): Promise<Workflow> {
-    const check = await DatabaseReads.products.findUnique({
+    const check = await DatabaseReads.products.findUniqueOrThrow({
       where: {
         Id: productId
       },
@@ -65,6 +65,7 @@ export class Workflow {
         Project: {
           select: {
             Id: true,
+            OrganizationId: true,
             AutoPublishOnRebuild: true,
             _count: {
               select: {
@@ -126,6 +127,17 @@ export class Workflow {
         type: BullMQ.UserTasks.OpType.Create
       }
     });
+
+    // SSE update for Software Update handled there in bulk
+    if (!softwareUpdateId && config.workflowType !== WorkflowType.Startup) {
+      getQueues().SvelteSSE.add(
+        `Update Updatable Products (product #${productId} rebuild/republish)`,
+        {
+          type: BullMQ.JobType.SvelteSSE_UpdateUpdatableProducts,
+          orgIds: [check.Project.OrganizationId]
+        }
+      );
+    }
 
     return flow;
   }

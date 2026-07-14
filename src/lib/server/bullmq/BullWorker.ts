@@ -305,6 +305,9 @@ export class SvelteSSE<J extends BullMQ.SvelteSSEJob> extends BullWorker<J> {
       case BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates:
         SSEPageUpdates.emit('softwareUpdates', job.data.orgIds);
         break;
+      case BullMQ.JobType.SvelteSSE_UpdateUpdatableProducts:
+        SSEPageUpdates.emit('updatableProducts', job.data.orgIds);
+        break;
     }
   }
 }

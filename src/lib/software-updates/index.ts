@@ -74,3 +74,39 @@ export type UpdateSummaryData = Prisma.SoftwareUpdatesGetPayload<{
       }[];
     })[];
   };
+
+export type RebuildableProductsData = {
+  organizations: (Prisma.OrganizationsGetPayload<{
+    select: {
+      Id: true;
+      Name: true;
+      Projects: {
+        select: {
+          Products: {
+            select: {
+              Id: true;
+              ProductDefinitionId: true;
+            };
+          };
+          Id: true;
+          Name: true;
+          TypeId: true;
+        };
+      };
+    };
+  }> & {
+    Versions?: Prisma.SystemVersionsGetPayload<{
+      select: {
+        ApplicationTypeId: true;
+        Version: true;
+      };
+    }>[];
+    Projects: {
+      Products: {
+        OldVersion: string | null;
+        Version: string;
+      }[];
+    }[];
+  })[];
+  presentAppTypes: Set<number>;
+};

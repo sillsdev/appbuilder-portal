@@ -1,10 +1,9 @@
 import { stringify } from 'devalue';
 import { produce } from 'sveltekit-sse';
 import { SSEPageUpdates } from '$lib/projects/listener';
-import { getUpdates } from '$lib/software-updates/server';
+import { getProducts } from '$lib/software-updates/server';
 
-// Parse organization IDs from query parameter
-// Handle POST requests to establish an SSE connection for rebuild data
+// Handle POST requests to establish an SSE connection for products data
 export async function POST({ locals, params }) {
   const orgId = params.orgId ? Number(params.orgId) : undefined;
   if (orgId) {
@@ -15,9 +14,9 @@ export async function POST({ locals, params }) {
 
   return produce(async function start({ emit }) {
     const orgIdAsList = orgId ? [orgId] : undefined;
-    const updates = await getUpdates(locals.security, orgIdAsList);
+    const updates = await getProducts(locals.security, orgIdAsList);
 
-    const { error } = emit('updates', stringify(updates));
+    const { error } = emit('products', stringify(updates));
     if (error) {
       return;
     }
@@ -25,23 +24,23 @@ export async function POST({ locals, params }) {
     async function updateCb(orgIds: number[]) {
       try {
         if (!orgId || orgIds.includes(orgId)) {
-          const updates = await getUpdates(locals.security, orgIdAsList);
-          const { error } = emit('updates', stringify(updates));
+          const updates = await getProducts(locals.security, orgIdAsList);
+          const { error } = emit('products', stringify(updates));
           if (error) {
-            SSEPageUpdates.off('softwareUpdates', updateCb);
+            SSEPageUpdates.off('updatableProducts', updateCb);
             clearInterval(pingInterval);
           }
         }
       } catch (err) {
         console.error('Error in software-update SSE updateCb:', err);
-        SSEPageUpdates.off('softwareUpdates', updateCb);
+        SSEPageUpdates.off('updatableProducts', updateCb);
         clearInterval(pingInterval);
-        emit('error', stringify({ message: 'Failed to fetch software updates' }));
+        emit('error', stringify({ message: 'Failed to fetch updatable products' }));
         return;
       }
     }
 
-    SSEPageUpdates.on('softwareUpdates', updateCb);
+    SSEPageUpdates.on('updatableProducts', updateCb);
 
     const pingInterval = setInterval(function onDisconnect() {
       const { error } = emit('ping', '');
@@ -49,7 +48,7 @@ export async function POST({ locals, params }) {
         return;
       }
 
-      SSEPageUpdates.off('softwareUpdates', updateCb);
+      SSEPageUpdates.off('updatableProducts', updateCb);
       clearInterval(pingInterval);
     }, 10000).unref();
   });

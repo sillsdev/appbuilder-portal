@@ -1,10 +1,11 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import type { Prisma } from '@prisma/client';
+import { mapSystems } from '$lib/organizations/server';
 import { DatabaseReads } from '$lib/server/database';
-import type { UpdateSummaryData } from '$lib/software-updates';
+import type { RebuildableProductsData, UpdateSummaryData } from '$lib/software-updates';
 import { filterAdminOrgs } from '$lib/utils/roles';
 
-const tracer = trace.getTracer('SoftwareUpdatesSSE');
+const tracer = trace.getTracer('SoftwareUpdates');
 
 export async function getUpdates(
   security: Security,
@@ -140,4 +141,101 @@ export async function getUpdates(
       span.end();
     }
   });
+}
+
+export const updatableProductsFilter = {
+  // Products that are rebuildable:
+  // - Have already been published once
+  DatePublished: { not: null },
+  // - Are not currently being rebuild
+  WorkflowInstance: null,
+  // - Have a definition that specifies a rebuild workflow
+  NOT: {
+    ProductDefinition: { RebuildWorkflow: null }
+  }
+} as const satisfies Prisma.ProductsWhereInput;
+
+export async function getProducts(
+  security: Security,
+  orgIds?: number[]
+): Promise<RebuildableProductsData> {
+  const organizations = await DatabaseReads.organizations.findMany({
+    where: {
+      Projects: { some: { Products: { some: updatableProductsFilter } } },
+      AND: [orgIds ? { Id: { in: orgIds } } : {}, filterAdminOrgs(security)]
+    },
+    select: {
+      Id: true,
+      Name: true,
+      UseDefaultBuildEngine: true,
+      System: {
+        select: {
+          SystemVersions: {
+            select: {
+              ApplicationTypeId: true,
+              Version: true
+            }
+          }
+        }
+      },
+      Projects: {
+        where: {
+          Products: { some: updatableProductsFilter }
+        },
+        select: {
+          Id: true,
+          Name: true,
+          TypeId: true,
+          Products: {
+            where: updatableProductsFilter,
+            select: {
+              Id: true,
+              ProductDefinitionId: true,
+              ProductBuilds: {
+                where: {
+                  ProductPublications: { some: { Success: true } }
+                },
+                orderBy: { DateCreated: 'desc' },
+                take: 1,
+                select: { AppBuilderVersion: true }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+
+  const systems = await mapSystems(organizations);
+
+  const presentAppTypes = new Set<number>();
+
+  const withFilteredProducts = organizations
+    .map((o) => ({
+      Id: o.Id,
+      Name: o.Name,
+      Versions: o.System?.SystemVersions,
+      Projects: o.Projects.map((pj) => ({
+        ...pj,
+        Products: pj.Products.filter((p) => {
+          const targetVersion = systems.get(o.Id)?.get(pj.TypeId);
+          const update = targetVersion && targetVersion !== p.ProductBuilds[0].AppBuilderVersion;
+          if (update) {
+            presentAppTypes.add(pj.TypeId);
+          }
+          return update;
+        }).map((p) => ({
+          Id: p.Id,
+          ProductDefinitionId: p.ProductDefinitionId,
+          OldVersion: p.ProductBuilds[0].AppBuilderVersion,
+          Version: systems.get(o.Id)!.get(pj.TypeId)!
+        }))
+      })).filter((pj) => pj.Products.length)
+    }))
+    .filter((o) => o.Projects.length);
+
+  return {
+    organizations: withFilteredProducts,
+    presentAppTypes
+  };
 }

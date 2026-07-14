@@ -142,6 +142,11 @@ export async function cancel(updateId: number, orgId: number | undefined, securi
       type: BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates,
       orgIds: Array.from(organizations)
     });
+
+    getQueues().SvelteSSE.add(`Update Updatable Products (update #${updateId} canceled)`, {
+      type: BullMQ.JobType.SvelteSSE_UpdateUpdatableProducts,
+      orgIds: Array.from(organizations)
+    });
   }
 
   if (

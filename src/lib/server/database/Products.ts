@@ -90,6 +90,13 @@ export async function update(
         }
       );
     }
+
+    if (productData.DatePublished) {
+      getQueues().SvelteSSE.add(`Update Updatable Products (product #${id} published)`, {
+        type: BullMQ.JobType.SvelteSSE_UpdateUpdatableProducts,
+        orgIds: [existing.Project.OrganizationId]
+      });
+    }
   } catch {
     return false;
   }
@@ -137,6 +144,10 @@ async function deleteProduct(productId: string) {
   getQueues().SvelteSSE.add(`Update #${product?.Project.Id} (product delete)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
     projectIds: [product!.Project.Id]
+  });
+  getQueues().SvelteSSE.add(`Update Updatable Products (product #${productId} deleted)`, {
+    type: BullMQ.JobType.SvelteSSE_UpdateUpdatableProducts,
+    orgIds: [product!.Project.OrganizationId]
   });
 }
 export { deleteProduct as delete };

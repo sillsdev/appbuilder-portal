@@ -53,7 +53,8 @@ export enum JobType {
   // Svelte Project SSE
   SvelteSSE_UpdateProject = 'Update Project',
   SvelteSSE_UpdateUserTasks = 'Update UserTasks',
-  SvelteSSE_UpdateSoftwareUpdates = 'Update Software Updates'
+  SvelteSSE_UpdateSoftwareUpdates = 'Update Software Updates',
+  SvelteSSE_UpdateUpdatableProducts = 'Update Updatable Products'
 }
 
 export enum JobSchedulerId {

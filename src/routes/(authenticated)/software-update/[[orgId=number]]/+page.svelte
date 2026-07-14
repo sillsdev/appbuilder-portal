@@ -16,7 +16,7 @@
   import { getLocale } from '$lib/paraglide/runtime';
   import type { ApplicationType } from '$lib/prisma';
   import { ProductActionType } from '$lib/products';
-  import type { UpdateSummaryData } from '$lib/software-updates';
+  import type { RebuildableProductsData, UpdateSummaryData } from '$lib/software-updates';
   import UpdateSummary from '$lib/software-updates/components/UpdateSummary.svelte';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
@@ -31,9 +31,9 @@
   let { data }: Props = $props();
 
   const currentPageUrl = page.url.pathname;
-  let reconnectDelay = 1000;
-  const softwareUpdatesSSE: Readable<UpdateSummaryData[]> = $derived.by(() => {
-    return source(`${page.url.pathname}/sse`, {
+  let reconnectDelaySU = 1000;
+  const softwareUpdatesSSE: Readable<UpdateSummaryData[] | undefined> = $derived.by(() => {
+    return source(`${page.url.pathname}/updates/sse`, {
       close({ connect }) {
         setTimeout(() => {
           // If the current page has changed, we don't want to reconnect.
@@ -42,8 +42,8 @@
           }
           console.log('Disconnected. Reconnecting...');
           connect();
-          reconnectDelay = Math.min(reconnectDelay * 2, 30000);
-        }, reconnectDelay);
+          reconnectDelaySU = Math.min(reconnectDelaySU * 2, 30000);
+        }, reconnectDelaySU);
       }
     })
       .select('updates')
@@ -55,6 +55,33 @@
     complete: ($softwareUpdatesSSE ?? data.updates).filter((u) => u.DateCompleted),
     active: ($softwareUpdatesSSE ?? data.updates).filter((u) => !u.DateCompleted)
   });
+
+  let reconnectDelayUP = 1000;
+  const updatableProductsSSE: Readable<RebuildableProductsData | undefined> = $derived.by(() => {
+    return source(`${page.url.pathname}/products/sse`, {
+      close({ connect }) {
+        setTimeout(() => {
+          // If the current page has changed, we don't want to reconnect.
+          if (currentPageUrl !== page.url.pathname) {
+            return;
+          }
+          console.log('Disconnected. Reconnecting...');
+          connect();
+          reconnectDelayUP = Math.min(reconnectDelaySU * 2, 30000);
+        }, reconnectDelayUP);
+      }
+    })
+      .select('products')
+      .transform((t) => (t ? parse(t) : undefined));
+  });
+
+  const organizations = $derived(
+    $updatableProductsSSE?.organizations ?? data.products.organizations
+  );
+
+  const presentAppTypes = $derived(
+    $updatableProductsSSE?.presentAppTypes ?? data.products.presentAppTypes
+  );
 
   //const rebuilds = $derived(data.rebuilds);
   const { form, enhance } = superForm(data.form, {
@@ -79,20 +106,20 @@
   });
 
   let applicationTypeIds = $state(
-    data.applicationTypes.map(({ Id }) => Id).filter((i) => data.presentAppTypes.has(i))
+    data.applicationTypes.map(({ Id }) => Id).filter((i) => presentAppTypes.has(i))
   );
 
   afterNavigate(() => {
     // reset application type selection to default after navigating
     applicationTypeIds = data.applicationTypes
       .map(({ Id }) => Id)
-      .filter((i) => data.presentAppTypes.has(i));
+      .filter((i) => presentAppTypes.has(i));
   });
 
   const locale = $derived(getLocale());
 
   const filteredOrgs = $derived(
-    data.organizations
+    organizations
       .map((o) => {
         const presentAppTypes = new Set<number>();
         const filtered = {
@@ -164,8 +191,7 @@
                 <label
                   class={[
                     'flex space-x-2 items-center',
-                    data.presentAppTypes.has(appType.Id) ||
-                      'opacity-70 cursor-not-allowed select-none'
+                    presentAppTypes.has(appType.Id) || 'opacity-70 cursor-not-allowed select-none'
                   ]}
                 >
                   <input
@@ -174,7 +200,7 @@
                     value={appType.Id}
                     bind:group={applicationTypeIds}
                     class="toggle toggle-accent toggle-sm"
-                    disabled={!data.presentAppTypes.has(appType.Id)}
+                    disabled={!presentAppTypes.has(appType.Id)}
                   />
                   <IconContainer icon={getAppIcon(appType.Id as ApplicationType)} width={24} />
                   <div class="font-medium">{appType.Description ?? ''}</div>
