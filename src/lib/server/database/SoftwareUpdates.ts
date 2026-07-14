@@ -123,7 +123,7 @@ export async function cancel(updateId: number, orgId: number | undefined, securi
     }
   });
 
-  await Promise.allSettled(
+  const results = await Promise.allSettled(
     update?.Workflows.map((p) =>
       doProductAction(p.ProductId, ProductActionType.CancelWorkflow, security.userId)
     ) ?? []
@@ -149,4 +149,9 @@ export async function cancel(updateId: number, orgId: number | undefined, securi
   ) {
     await prisma.softwareUpdates.deleteMany({ where: { Id: updateId } });
   }
+
+  return {
+    total: results.length,
+    failed: results.filter((r) => r.status === 'rejected').length
+  };
 }

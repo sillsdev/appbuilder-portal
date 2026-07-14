@@ -168,10 +168,12 @@ export const actions = {
           Id: {
             in: form.data.products
           },
+          ...productsWhere,
           Project: {
-            Organization: {
-              ...filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined)
-            }
+            Organization: filterAdminOrgs(
+              locals.security,
+              params.orgId ? Number(params.orgId) : undefined
+            )
           }
         },
         select: {
@@ -181,10 +183,21 @@ export const actions = {
               OrganizationId: true,
               TypeId: true
             }
+          },
+          ProductBuilds: {
+            where: {
+              ProductPublications: { some: { Success: true } }
+            },
+            orderBy: { DateCreated: 'desc' },
+            take: 1,
+            select: { AppBuilderVersion: true }
           }
         }
       })
-    ).filter((p) => systems.get(p.Project.OrganizationId)?.get(p.Project.TypeId));
+    ).filter((p) => {
+      const targetVersion = systems.get(p.Project.OrganizationId)?.get(p.Project.TypeId);
+      return targetVersion && targetVersion !== p.ProductBuilds[0].AppBuilderVersion;
+    });
 
     const update = await DatabaseWrites.softwareUpdates.create(
       {
@@ -197,7 +210,7 @@ export const actions = {
       }))
     );
 
-    await Promise.allSettled(
+    const results = await Promise.allSettled(
       products.map((p) =>
         doProductAction(
           p.Id,
@@ -206,9 +219,18 @@ export const actions = {
           form.data.comment,
           true,
           update.Id
-        )
+        ).then(() => p.Id)
       )
     );
+
+    return {
+      form,
+      data: {
+        total: results.length,
+        failed: results.filter((r) => r.status === 'rejected').length
+      },
+      ok: true
+    };
   },
 
   async cancel({ request, locals, params }) {
@@ -224,6 +246,16 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
 
-    await DatabaseWrites.softwareUpdates.cancel(form.data.id, orgId, locals.security);
+    const results = await DatabaseWrites.softwareUpdates.cancel(
+      form.data.id,
+      orgId,
+      locals.security
+    );
+
+    return {
+      form,
+      data: results,
+      ok: true
+    };
   }
 } satisfies Actions;

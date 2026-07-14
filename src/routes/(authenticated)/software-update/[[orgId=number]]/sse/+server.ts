@@ -6,16 +6,16 @@ import { getUpdates } from '$lib/software-updates/server';
 // Parse organization IDs from query parameter
 // Handle POST requests to establish an SSE connection for rebuild data
 export async function POST({ locals, params }) {
-  const orgId = params.orgId;
+  const orgId = params.orgId ? Number(params.orgId) : undefined;
   if (orgId) {
-    locals.security.requireAdminOfOrg(Number(orgId));
+    locals.security.requireAdminOfOrg(orgId);
   } else {
     locals.security.requireAdminOfAny();
   }
 
   return produce(async function start({ emit }) {
-    const updates = await getUpdates(locals.security, orgId ? [Number(orgId)] : undefined);
-    const organizations = new Set(updates.flatMap((u) => u.Organizations.map((o) => o.Id)));
+    const orgIdAsList = orgId ? [orgId] : undefined;
+    const updates = await getUpdates(locals.security, orgIdAsList);
 
     const { error } = emit('updates', stringify(updates));
     if (error) {
@@ -24,10 +24,8 @@ export async function POST({ locals, params }) {
 
     async function updateCb(orgIds: number[]) {
       try {
-        const overlap = orgIds.filter((u) => organizations.has(u));
-
-        if (overlap.length > 0) {
-          const updates = await getUpdates(locals.security, overlap);
+        if (!orgId || orgIds.includes(orgId)) {
+          const updates = await getUpdates(locals.security, orgIdAsList);
           const { error } = emit('updates', stringify(updates));
           if (error) {
             SSEPageUpdates.off('softwareUpdates', updateCb);

@@ -10,7 +10,7 @@ export async function getUpdates(
   security: Security,
   orgIds?: number[]
 ): Promise<UpdateSummaryData[]> {
-  return tracer.startActiveSpan('getRebuildsForOrgIds', async (span) => {
+  return tracer.startActiveSpan('getUpdatesForOrgIds', async (span) => {
     span.setAttributes({
       'software-updates.orgIds': orgIds
     });
@@ -35,7 +35,7 @@ export async function getUpdates(
       };
 
       const orgs = await DatabaseReads.organizations.findMany({
-        where: { Projects: { some: { Products: { some: productFilter } } } },
+        where: { ...orgFilter, Projects: { some: { Products: { some: productFilter } } } },
         select: {
           Id: true,
           Name: true,
@@ -73,7 +73,7 @@ export async function getUpdates(
           ...u,
           Organizations: orgs
             .map((o) => {
-              const presentAppTypes = new Map<number, string>();
+              const presentAppTypes = new Map<number, Set<string>>();
               return {
                 ...o,
                 Projects: o.Projects.map((pj) => ({
@@ -95,7 +95,9 @@ export async function getUpdates(
                           }
                         }
                         if (!presentAppTypes.get(pj.TypeId)) {
-                          presentAppTypes.set(pj.TypeId, update.Version);
+                          presentAppTypes.set(pj.TypeId, new Set(update.Version));
+                        } else {
+                          presentAppTypes.get(pj.TypeId)!.add(update.Version);
                         }
                         return {
                           ...p,
@@ -110,9 +112,9 @@ export async function getUpdates(
                     .filter((p) => !!p)
                 })).filter((pj) => pj.Products.length),
                 Versions: Array.from(
-                  presentAppTypes.entries().map(([ApplicationTypeId, Version]) => ({
+                  presentAppTypes.entries().map(([ApplicationTypeId, Versions]) => ({
                     ApplicationTypeId,
-                    Versions: [Version]
+                    Versions: Array.from(Versions.values())
                   }))
                 )
               };

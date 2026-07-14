@@ -1,3 +1,4 @@
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import * as v from 'valibot';
 import { isLocale } from '$lib/google-play/paraglide/runtime';
 import { getBasicVariant } from '$lib/ldml';
@@ -8,6 +9,8 @@ import { Workflow } from '$lib/server/workflow';
 import { WorkflowAction, WorkflowState } from '$lib/workflowTypes';
 import { ProductActionType, getFileInfo } from '.';
 
+const tracer = trace.getTracer('LibProducts');
+
 export async function doProductAction(
   productId: string,
   action: ProductActionType,
@@ -16,118 +19,131 @@ export async function doProductAction(
   isAutomatic = false,
   softwareUpdateId?: number
 ) {
-  const product = await DatabaseReads.products.findUnique({
-    where: {
-      Id: productId
-    },
-    select: {
-      Id: true,
-      ProjectId: true,
-      ProductDefinition: {
+  return tracer.startActiveSpan('doProductAction', async (span) => {
+    try {
+      const product = await DatabaseReads.products.findUnique({
+        where: {
+          Id: productId
+        },
         select: {
-          RebuildWorkflow: {
+          Id: true,
+          ProjectId: true,
+          ProductDefinition: {
             select: {
-              Type: true,
-              ProductType: true,
-              WorkflowOptions: true
+              RebuildWorkflow: {
+                select: {
+                  Type: true,
+                  ProductType: true,
+                  WorkflowOptions: true
+                }
+              },
+              RepublishWorkflow: {
+                select: {
+                  Type: true,
+                  ProductType: true,
+                  WorkflowOptions: true
+                }
+              }
             }
           },
-          RepublishWorkflow: {
+          WorkflowInstance: {
             select: {
-              Type: true,
-              ProductType: true,
-              WorkflowOptions: true
+              WorkflowDefinition: {
+                select: { Type: true }
+              },
+              State: true
             }
           }
         }
-      },
-      WorkflowInstance: {
-        select: {
-          WorkflowDefinition: {
-            select: { Type: true }
-          },
-          State: true
+      });
+
+      if (product) {
+        switch (action) {
+          case ProductActionType.Rebuild:
+          case ProductActionType.Republish: {
+            const flowType = action === 'rebuild' ? 'RebuildWorkflow' : 'RepublishWorkflow';
+            if (product.ProductDefinition[flowType] && !product.WorkflowInstance) {
+              await Workflow.create(
+                productId,
+                {
+                  productType: product.ProductDefinition[flowType].ProductType,
+                  options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
+                  workflowType: product.ProductDefinition[flowType].Type,
+                  isAutomatic
+                },
+                userId,
+                comment,
+                softwareUpdateId
+              );
+            }
+            break;
+          }
+          case ProductActionType.CancelWorkflow:
+            if (
+              product.WorkflowInstance?.WorkflowDefinition &&
+              product.WorkflowInstance.WorkflowDefinition.Type !== WorkflowType.Startup
+            ) {
+              await getQueues().UserTasks.add(
+                `Delete UserTasks for canceled workflow (product #${productId})`,
+                {
+                  type: BullMQ.JobType.UserTasks_Workflow,
+                  scope: 'Product',
+                  productId,
+                  operation: {
+                    type: BullMQ.UserTasks.OpType.Delete
+                  }
+                }
+              );
+              await DatabaseWrites.productTransitions.create({
+                data: {
+                  ProductId: productId,
+                  // This is how S1 does it. May want to change later
+                  AllowedUserNames: '',
+                  DateTransition: new Date(),
+                  Comment: comment,
+                  TransitionType: ProductTransitionType.CancelWorkflow,
+                  WorkflowType: product.WorkflowInstance.WorkflowDefinition.Type,
+                  UserId: userId
+                }
+              });
+              await DatabaseWrites.productTransitions.deleteMany(
+                {
+                  where: {
+                    ProductId: productId,
+                    DateTransition: null,
+                    UserId: null
+                  }
+                },
+                (await DatabaseReads.products.findUnique({
+                  where: { Id: productId },
+                  select: { ProjectId: true }
+                }))!.ProjectId
+              );
+              await DatabaseWrites.workflowInstances.delete(productId, product.ProjectId);
+            }
+            break;
+          case ProductActionType.StopBuild:
+          case ProductActionType.StopPublish:
+            if (
+              product.WorkflowInstance?.State === WorkflowState.Product_Build ||
+              product.WorkflowInstance?.State === WorkflowState.Product_Publish
+            ) {
+              const flow = await Workflow.restore(product.Id);
+              flow?.send({ type: WorkflowAction.Cancel, userId });
+            }
         }
       }
+    } catch (e) {
+      span.recordException(e as Error);
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: (e as Error).message
+      });
+      throw e;
+    } finally {
+      span.end();
     }
   });
-
-  if (product) {
-    switch (action) {
-      case ProductActionType.Rebuild:
-      case ProductActionType.Republish: {
-        const flowType = action === 'rebuild' ? 'RebuildWorkflow' : 'RepublishWorkflow';
-        if (product.ProductDefinition[flowType] && !product.WorkflowInstance) {
-          await Workflow.create(
-            productId,
-            {
-              productType: product.ProductDefinition[flowType].ProductType,
-              options: new Set(product.ProductDefinition[flowType].WorkflowOptions),
-              workflowType: product.ProductDefinition[flowType].Type,
-              isAutomatic
-            },
-            userId,
-            comment,
-            softwareUpdateId
-          );
-        }
-        break;
-      }
-      case ProductActionType.CancelWorkflow:
-        if (
-          product.WorkflowInstance?.WorkflowDefinition &&
-          product.WorkflowInstance.WorkflowDefinition.Type !== WorkflowType.Startup
-        ) {
-          await getQueues().UserTasks.add(
-            `Delete UserTasks for canceled workflow (product #${productId})`,
-            {
-              type: BullMQ.JobType.UserTasks_Workflow,
-              scope: 'Product',
-              productId,
-              operation: {
-                type: BullMQ.UserTasks.OpType.Delete
-              }
-            }
-          );
-          await DatabaseWrites.productTransitions.create({
-            data: {
-              ProductId: productId,
-              // This is how S1 does it. May want to change later
-              AllowedUserNames: '',
-              DateTransition: new Date(),
-              Comment: comment,
-              TransitionType: ProductTransitionType.CancelWorkflow,
-              WorkflowType: product.WorkflowInstance.WorkflowDefinition.Type,
-              UserId: userId
-            }
-          });
-          await DatabaseWrites.productTransitions.deleteMany(
-            {
-              where: {
-                ProductId: productId,
-                DateTransition: null,
-                UserId: null
-              }
-            },
-            (await DatabaseReads.products.findUnique({
-              where: { Id: productId },
-              select: { ProjectId: true }
-            }))!.ProjectId
-          );
-          await DatabaseWrites.workflowInstances.delete(productId, product.ProjectId);
-        }
-        break;
-      case ProductActionType.StopBuild:
-      case ProductActionType.StopPublish:
-        if (
-          product.WorkflowInstance?.State === WorkflowState.Product_Build ||
-          product.WorkflowInstance?.State === WorkflowState.Product_Publish
-        ) {
-          const flow = await Workflow.restore(product.Id);
-          flow?.send({ type: WorkflowAction.Cancel, userId });
-        }
-    }
-  }
 }
 
 type ArtifactFrom = { package: string } | { productId: string };

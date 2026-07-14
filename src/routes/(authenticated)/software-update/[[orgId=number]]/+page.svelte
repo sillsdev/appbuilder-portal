@@ -3,7 +3,7 @@
   import type { Readable } from 'svelte/store';
   import { source } from 'sveltekit-sse';
   import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
+  import type { ActionData, PageData } from './$types';
   import { enhance as svk_enhance } from '$app/forms';
   import { afterNavigate } from '$app/navigation';
   import { page } from '$app/state';
@@ -62,7 +62,10 @@
     resetForm: true,
     onUpdate({ form, result, formElement }) {
       if (form.valid && result.type === 'success') {
-        toast('success', m.softwareUpdate_toast_success());
+        const data = result.data as ActionData;
+        const total = data?.data?.total ?? 0;
+        const failed = data?.data?.failed ?? 0;
+        toast('success', m.softwareUpdate_start_success({ successful: total - failed, total }));
         formElement.reset();
       }
     },
@@ -217,7 +220,7 @@
       </UpdateSummary>
     </form>
 
-    <!-- Rebuilds List -->
+    <!-- Updates List -->
     <div class="m-4">
       <div class="space-y-6">
         {#if updates.active.length > 0}
@@ -246,6 +249,14 @@
                             if (result.status === 503) {
                               toast('error', m.system_unavailable());
                             }
+                          } else if (result.type === 'success') {
+                            const data = result.data as ActionData;
+                            const total = data?.data?.total ?? 0;
+                            const failed = data?.data?.failed ?? 0;
+                            toast(
+                              'success',
+                              m.softwareUpdate_cancel_success({ successful: total - failed, total })
+                            );
                           }
                           update({ reset: false });
                         }}
