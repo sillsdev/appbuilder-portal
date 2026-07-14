@@ -67,7 +67,7 @@
           }
           console.log('Disconnected. Reconnecting...');
           connect();
-          reconnectDelayUP = Math.min(reconnectDelaySU * 2, 30000);
+          reconnectDelayUP = Math.min(reconnectDelayUP * 2, 30000);
         }, reconnectDelayUP);
       }
     })

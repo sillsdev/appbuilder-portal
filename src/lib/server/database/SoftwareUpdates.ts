@@ -24,72 +24,77 @@ export async function completeForProduct(
   buildEngineBuildId: number
 ): Promise<void> {
   // Find open updates linked to this product
-  const product = await prisma.products.findUniqueOrThrow({
-    where: { Id: productId },
+  const workflow = await prisma.workflowInstances.findUnique({
+    where: { ProductId: productId },
     select: {
-      SoftwareUpdates: {
-        where: { SoftwareUpdate: { DateCompleted: null }, DateCompleted: null },
+      SoftwareUpdate: {
         select: {
-          Version: true,
-          SoftwareUpdate: { select: { Id: true, DateCreated: true } }
-        },
-        orderBy: { DateCompleted: 'desc' }
-      },
-      Project: { select: { OrganizationId: true } },
-      ProductBuilds: {
-        where: { BuildEngineBuildId: buildEngineBuildId, Success: { not: null } },
-        select: { DateCreated: true, Success: true, AppBuilderVersion: true }
+          Id: true,
+          UpdatedProducts: {
+            where: { ProductId: productId },
+            select: {
+              Product: {
+                select: {
+                  ProductBuilds: {
+                    where: { BuildEngineBuildId: buildEngineBuildId },
+                    select: { Success: true }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   });
 
-  const build = product.ProductBuilds.at(0);
-  if (!build?.DateCreated) return;
+  if (!workflow?.SoftwareUpdate?.UpdatedProducts.at(0)?.Product.ProductBuilds.at(0)) {
+    return;
+  }
 
-  // search most recent updates first
-  const update = product.SoftwareUpdates.find(
-    (u) =>
-      build.DateCreated!.valueOf() > u.SoftwareUpdate.DateCreated.valueOf() &&
-      (!build.AppBuilderVersion || build.AppBuilderVersion === u.Version)
-  )?.SoftwareUpdate;
+  const update = workflow.SoftwareUpdate;
+  const product = update.UpdatedProducts[0].Product;
+  const build = product.ProductBuilds[0];
+  await prisma.softwareUpdatesOnProducts.updateMany({
+    where: { ProductId: productId, SoftwareUpdateId: update.Id },
+    data: {
+      DateCompleted: new Date(),
+      // guaranteed not null by query
+      Success: build.Success!
+    }
+  });
 
-  if (update) {
-    await prisma.softwareUpdatesOnProducts.updateMany({
-      where: { ProductId: productId, SoftwareUpdateId: update.Id },
-      data: {
-        DateCompleted: new Date(),
-        // guaranteed not null by query
-        Success: build.Success!
-      }
+  const checkUpdateIncomplete = !!(await prisma.softwareUpdatesOnProducts.findFirst({
+    where: { SoftwareUpdateId: update.Id, DateCompleted: null },
+    select: { SoftwareUpdateId: true }
+  }));
+
+  getQueues().SvelteSSE.add(
+    `Update Software Updates (update #${update.Id} product ${productId} completed)`,
+    {
+      type: BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates,
+      orgIds: (
+        await prisma.organizations.findMany({
+          where: {
+            Projects: {
+              some: {
+                Products: {
+                  some: { SoftwareUpdates: { some: { SoftwareUpdateId: update.Id } } }
+                }
+              }
+            }
+          },
+          select: { Id: true }
+        })
+      ).map((o) => o.Id)
+    }
+  );
+
+  if (!checkUpdateIncomplete) {
+    await prisma.softwareUpdates.update({
+      where: { Id: update.Id },
+      data: { DateCompleted: new Date() }
     });
-
-    const checkUpdate = !!(await prisma.softwareUpdatesOnProducts.findFirst({
-      where: { SoftwareUpdateId: update.Id, DateCompleted: null },
-      select: { SoftwareUpdateId: true }
-    }));
-
-    getQueues().SvelteSSE.add(
-      `Update Software Updates (update #${update.Id} product ${productId} completed)`,
-      {
-        type: BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates,
-        orgIds: checkUpdate
-          ? (
-              await prisma.organizations.findMany({
-                where: {
-                  Projects: {
-                    some: {
-                      Products: {
-                        some: { SoftwareUpdates: { some: { SoftwareUpdateId: update.Id } } }
-                      }
-                    }
-                  }
-                },
-                select: { Id: true }
-              })
-            ).map((o) => o.Id)
-          : [product.Project.OrganizationId]
-      }
-    );
   }
 }
 
