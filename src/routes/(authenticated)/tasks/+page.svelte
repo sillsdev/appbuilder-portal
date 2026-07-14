@@ -18,13 +18,13 @@
 
   const userTasks = $derived($userTasksSSE ?? data.userTasks);
 
-  const dateUpdated = $derived(getRelativeTime(userTasks.map((task) => task.DateUpdated)));
+  const dateUpdated = $derived(getRelativeTime(userTasks.tasks.map((task) => task.U)));
 </script>
 
 <div class="w-full">
   <h1>{m.tasks_title()}</h1>
   <div class="m-4 relative mt-0">
-    {#if userTasks.length > 0}
+    {#if userTasks.tasks.length > 0}
       <table class="w-full table-fixed sm:hidden">
         <thead>
           <tr class="border-b-2 text-left">
@@ -34,19 +34,19 @@
           </tr>
         </thead>
         <tbody>
-          {#each userTasks as task, i}
+          {#each userTasks.tasks as task, i}
             <tr
               class="cursor-pointer no-border"
-              onclick={() => goto(localizeHref(`/tasks/${task.ProductId}`))}
+              onclick={() => goto(localizeHref(`/tasks/${task.P}`))}
             >
               <td colspan="3">
                 <span class="flex items-center">
                   <IconContainer
-                    icon={getProductIcon(task.Product.ProductDefinition.Workflow.ProductType)}
+                    icon={getProductIcon(userTasks.products.get(task.PD)?.T)}
                     width={30}
                   />
                   <span>
-                    {task.Product.ProductDefinition.Name}
+                    {userTasks.products.get(task.PD)?.N}
                   </span>
                 </span>
               </td>
@@ -54,36 +54,29 @@
             <tr class="no-border">
               <th class="text-left pl-2">{m.tasks_project()}</th>
               <td colspan="2">
-                <a
-                  class="link"
-                  href={localizeHref(`/projects/${task.Product.ProjectId}#${task.ProductId}`)}
-                >
-                  {task.Product.Project.Name}
+                <a class="link" href={localizeHref(`/projects/${task.Pj}#${task.P}`)}>
+                  {userTasks.projects.get(task.Pj)}
                 </a>
               </td>
             </tr>
-            <tr class="cursor-pointer" class:no-border={task.Comment}>
-              <td
-                colspan="2"
-                class="pl-2"
-                onclick={() => goto(localizeHref(`/tasks/${task.ProductId}`))}
-              >
+            <tr class="cursor-pointer" class:no-border={task.C}>
+              <td colspan="2" class="pl-2" onclick={() => goto(localizeHref(`/tasks/${task.P}`))}>
                 <span
                   class="rounded-xl h-auto badge badge-secondary uppercase font-bold [top:-5px] relative mt-2 text-center"
                 >
-                  {task.Status}
+                  {task.S}
                 </span>
               </td>
               <td>
-                <Tooltip tip={getTimeDateString(task.DateUpdated)}>
+                <Tooltip tip={getTimeDateString(task.U)}>
                   {$dateUpdated[i]}
                 </Tooltip>
               </td>
             </tr>
-            {#if task.Comment}
+            {#if task.C}
               <tr>
                 <td class="p-0" colspan="3">
-                  <TaskComment comment={task.Comment} />
+                  <TaskComment comment={task.C} />
                 </td>
               </tr>
             {/if}
@@ -99,46 +92,43 @@
           </tr>
         </thead>
         <tbody>
-          {#each userTasks as task, i}
+          {#each userTasks.tasks as task, i}
             <tr
               class="cursor-pointer"
-              onclick={() => goto(localizeHref(`/tasks/${task.ProductId}`))}
-              class:no-border={task.Comment}
+              onclick={() => goto(localizeHref(`/tasks/${task.P}`))}
+              class:no-border={task.C}
             >
               <td>
                 <span class="flex items-center">
                   <IconContainer
-                    icon={getProductIcon(task.Product.ProductDefinition.Workflow.ProductType)}
+                    icon={getProductIcon(userTasks.products.get(task.PD)?.T)}
                     width={30}
                   />
                   <span>
-                    {task.Product.ProductDefinition.Name}
+                    {userTasks.products.get(task.PD)?.N}
                   </span>
                 </span>
                 <span
                   class="rounded-xl h-auto badge badge-secondary uppercase font-bold ml-10 [top:-5px] relative mt-2 text-center"
                 >
-                  {task.Status}
+                  {task.S}
                 </span>
               </td>
               <td>
-                <a
-                  class="link"
-                  href={localizeHref(`/projects/${task.Product.ProjectId}#${task.ProductId}`)}
-                >
-                  {task.Product.Project.Name}
+                <a class="link" href={localizeHref(`/projects/${task.Pj}#${task.P}`)}>
+                  {userTasks.projects.get(task.Pj)}
                 </a>
               </td>
               <td>
-                <Tooltip tip={getTimeDateString(task.DateUpdated)}>
+                <Tooltip tip={getTimeDateString(task.U)}>
                   {$dateUpdated[i]}
                 </Tooltip>
               </td>
             </tr>
-            {#if task.Comment}
+            {#if task.C}
               <tr>
                 <td class="pl-7 pt-0" colspan="3">
-                  <TaskComment comment={task.Comment} />
+                  <TaskComment comment={task.C} />
                 </td>
               </tr>
             {/if}

@@ -69,9 +69,9 @@
         linkToBuildEngine(
           buildEngineUrl,
           {
-            BuildEngineJobId: 0,
-            CurrentBuildId: build.BuildEngineBuildId,
-            CurrentReleaseId: null
+            J: 0,
+            CB: build.BuildEngineBuildId,
+            CR: null
           },
           WorkflowState.Product_Build
         ),

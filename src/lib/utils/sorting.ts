@@ -1,5 +1,5 @@
 interface NamedEntity {
-  Name: string | null | undefined;
+  Name?: string | null | undefined;
 }
 
 export function byName(
@@ -20,4 +20,11 @@ export function byString(
 
 export function byNumber(a: number | bigint | null, b: number | bigint | null): number {
   return a === b ? 0 : (a ?? 0) > (b ?? 0) ? 1 : -1;
+}
+
+/* null sorted last */
+export function byDate(a: Date | null, b: Date | null): number {
+  const da = a?.valueOf();
+  const db = b?.valueOf();
+  return da === db ? 0 : da === undefined ? 1 : db === undefined ? -1 : da < db ? -1 : 1;
 }

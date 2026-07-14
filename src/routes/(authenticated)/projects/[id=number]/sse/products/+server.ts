@@ -1,4 +1,4 @@
-import { createProducer, getProjectDetails } from '$lib/projects/sse';
+import { createProducer, getProjectProducts } from '$lib/projects/sse';
 import { DatabaseReads } from '$lib/server/database';
 
 export async function POST({ locals, params }) {
@@ -16,8 +16,8 @@ export async function POST({ locals, params }) {
   return createProducer(
     id,
     locals.security.sessionForm,
-    'projectPage',
-    'projectData',
-    getProjectDetails
+    'projectProducts',
+    'productData',
+    getProjectProducts
   );
 }

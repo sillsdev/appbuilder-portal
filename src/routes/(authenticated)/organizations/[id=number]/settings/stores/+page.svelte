@@ -68,6 +68,10 @@
             />
           </InputWithMessage>
         </form>
+        <div class="flex flex-row gap-1">
+          <IconContainer icon={Icons.Product} width={20} tooltip={m.products_title()} />
+          {store._count.Products}
+        </div>
       {/snippet}
     </StoreListDisplay>
   {/each}

@@ -282,3 +282,44 @@ export function canReactivate(
     !!project.DateArchived && canModifyProject(security, project.OwnerId, project.OrganizationId)
   );
 }
+
+/**
+ * U: UserId
+ * D: DateAction
+ * T: ActionType
+ * A: Action
+ * V: Value
+ * E: ExternalId
+ */
+export type MinifiedActions = ReturnType<typeof minifyProjectActions>;
+export function minifyProjectActions(
+  actions: Prisma.ProjectActionsGetPayload<{
+    select: {
+      UserId: true;
+      DateAction: true;
+      ActionType: true;
+      Action: true;
+      Value: true;
+      ExternalId: true;
+    };
+  }>[],
+  prodDefs: Prisma.ProductDefinitionsGetPayload<{
+    select: { Id: true; Name: true; Workflow: { select: { ProductType: true } } };
+  }>[],
+  users: Prisma.UsersGetPayload<{ select: { Id: true; Name: true } }>[],
+  groups: Prisma.GroupsGetPayload<{ select: { Id: true; Name: true } }>[]
+) {
+  return {
+    actions: actions.map((a) => ({
+      U: a.UserId,
+      D: a.DateAction,
+      T: a.ActionType,
+      A: a.Action,
+      V: a.Value,
+      E: a.ExternalId
+    })),
+    users: new Map(users.map((u) => [u.Id, u.Name])),
+    groups: new Map(groups.map((g) => [g.Id, g.Name])),
+    prodDefs: new Map(prodDefs.map((pd) => [pd.Id, { N: pd.Name, T: pd.Workflow.ProductType }]))
+  };
+}

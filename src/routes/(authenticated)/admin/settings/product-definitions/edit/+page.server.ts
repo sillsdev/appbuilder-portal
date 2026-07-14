@@ -61,17 +61,17 @@ export const actions = {
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
-    await DatabaseWrites.productDefinitions.update(form.data.id, {
-      Name: form.data.name,
-      AllowAllApplicationTypes: form.data.allowAll,
-      WorkflowId: form.data.workflow,
-      RebuildWorkflowId: form.data.rebuildWorkflow,
-      RepublishWorkflowId: form.data.republishWorkflow,
-      Description: form.data.description,
-      Properties: form.data.properties
-    });
-    await DatabaseWrites.productDefinitions.setApplicationTypes(
+    await DatabaseWrites.productDefinitions.update(
       form.data.id,
+      {
+        Name: form.data.name,
+        AllowAllApplicationTypes: form.data.allowAll,
+        WorkflowId: form.data.workflow,
+        RebuildWorkflowId: form.data.rebuildWorkflow,
+        RepublishWorkflowId: form.data.republishWorkflow,
+        Description: form.data.description,
+        Properties: form.data.properties
+      },
       form.data.applicationTypes
     );
     return { ok: true, form };
