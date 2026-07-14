@@ -142,11 +142,11 @@
           )}
           {@render progress(failed, total, 'bg-error text-error-content', !complete, !left)}
           {@render progress(
-            left,
+            total ? left : 1,
             total,
             'bg-base-300 text-base-content',
             !(complete || failed),
-            !!left
+            !!(total ? left : true)
           )}
         </span>
         {m.common_total({ total })}
@@ -271,7 +271,7 @@
 {/snippet}
 
 {#snippet progress(value: number, total: number, classes: string, first = false, last = false)}
-  {#if value && total}
+  {#if value}
     <span
       class={[
         'min-w-fit px-1 text-xs text-center',
@@ -279,9 +279,9 @@
         first && 'rounded-l-lg',
         last && 'rounded-r-lg'
       ]}
-      style="width: {(100 * value) / total}%;"
+      style="width: {(100 * value) / (total || 1)}%;"
     >
-      {value}
+      {total ? value : value - 1}
     </span>
   {/if}
 {/snippet}
