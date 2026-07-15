@@ -620,15 +620,6 @@
   "softwareUpdate_initiatedBy": "Iniciado por",
   "softwareUpdate_summary": "Resumen de la actualización",
   "softwareUpdate_targetVersions": "Versiones objetivo",
-  "softwareUpdate_status": [
-    {
-      "match": {
-        "status=pending": "Pendiente",
-        "status=success": "Éxito",
-        "status=error": "Error"
-      }
-    }
-  ],
   "softwareUpdate_completed": "Completado",
   "softwareUpdate_applicationTypes": "Tipos de aplicación",
   "softwareUpdate_applicationTypes_description": "SSeleccione uno o varios tipos de aplicación para actualizar.",
