@@ -3,8 +3,9 @@ import { ProductTransitionType } from '../../prisma';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseWrites } from '../database';
 import { DatabaseReads } from '../database/prisma';
+import type { WorkflowState } from '$lib/workflowTypes';
 
-export async function deleteWorkflow(productId: string) {
+export async function deleteWorkflow(productId: string, status: WorkflowState) {
   const product = await DatabaseReads.products.findUnique({
     where: { Id: productId },
     select: {
@@ -13,7 +14,7 @@ export async function deleteWorkflow(productId: string) {
     }
   });
   if (product?.WorkflowInstance) {
-    await DatabaseWrites.workflowInstances.delete(productId, product.ProjectId);
+    await DatabaseWrites.workflowInstances.delete(productId, product.ProjectId, status);
     await DatabaseWrites.productTransitions.create({
       data: {
         ProductId: productId,

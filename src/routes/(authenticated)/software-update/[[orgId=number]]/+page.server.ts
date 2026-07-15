@@ -11,6 +11,7 @@ import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { getProducts, getUpdates, updatableProductsFilter } from '$lib/software-updates/server';
 import { filterAdminOrgs } from '$lib/utils/roles';
 import { deleteSchema, stringIdSchema } from '$lib/valibot';
+import { WorkflowState } from '$lib/workflowTypes';
 
 const startFormSchema = v.object({
   comment: v.pipe(v.string(), v.minLength(1)),
@@ -118,7 +119,8 @@ export const actions = {
       },
       products.map((p) => ({
         ProductId: p.Id,
-        Version: systems.get(p.Project.OrganizationId)!.get(p.Project.TypeId)!
+        Version: systems.get(p.Project.OrganizationId)!.get(p.Project.TypeId)!,
+        Status: WorkflowState.Start
       }))
     );
 
@@ -163,7 +165,7 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
 
-    const results = await DatabaseWrites.softwareUpdates.cancel(
+    const results = await DatabaseWrites.softwareUpdates.cancelForOrg(
       form.data.id,
       orgId,
       locals.security

@@ -10,6 +10,7 @@
   import type { UpdateSummaryData } from '$lib/software-updates';
   import { byName, byString } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
+  import { WorkflowState } from '$lib/workflowTypes';
 
   interface Props {
     update: UpdateSummaryData;
@@ -60,22 +61,6 @@
   const allVersions = $derived(
     Array.from(new Set(Array.from(appVersions.values()).flatMap((v) => v.Versions))).join(', ')
   );
-
-  function getStatus(
-    product: Pick<
-      UpdateSummaryData['Organizations'][number]['Projects'][number]['Products'][number],
-      'DateCompleted' | 'Success'
-    >
-  ): { color: string; status: 'success' | 'error' | 'pending' } {
-    return {
-      color: product.DateCompleted
-        ? product.Success
-          ? 'badge-success'
-          : 'badge-error'
-        : 'badge-secondary',
-      status: product.DateCompleted ? (product.Success ? 'success' : 'error') : 'pending'
-    };
-  }
 </script>
 
 <DataDisplayBox
@@ -213,41 +198,44 @@
                       <IconContainer icon={getAppIcon(project.TypeId)} width={20} />
                     </a>
                   {/snippet}
-                  <details class="collapse collapse-arrow rounded-none">
-                    <summary class="collapse-title font-semibold pl-0 py-0">
-                      {m.products_title()} ({project.Products.length})
-                    </summary>
-                    <div class="collapse-content p-0!">
-                      <ul>
-                        {#each project.Products.toSorted( (a, b) => byName(productTypes.get(a.ProductDefinitionId), productTypes.get(b.ProductDefinitionId), locale) ) as product}
-                          {@const pd = productTypes.get(product.ProductDefinitionId)}
-                          {@const { color, status } = getStatus(product)}
-                          <li>
-                            <span class={['badge badge-sm font-bold', color]}>
-                              {m.softwareUpdate_status({ status })}
-                            </span>
-                            <IconContainer
-                              icon={getProductIcon(pd?.Workflow.ProductType ?? 0)}
-                              width={30}
-                            />
-                            <a
-                              class="hover:underline"
-                              href={localizeHref(`/projects/${project.Id}#${product.Id}`)}
-                            >
-                              {pd?.Name}
-                            </a>
-                            {#if product.OldVersion}
-                              <s>{product.OldVersion}</s>
-                            {/if}
-                            &rarr; {product.Version}
-                            {#if product.DateCompleted}
-                              ({getTimeDateString(product.DateCompleted)})
-                            {/if}
-                          </li>
-                        {/each}
-                      </ul>
-                    </div>
-                  </details>
+                  <ul>
+                    {#each project.Products.toSorted( (a, b) => byName(productTypes.get(a.ProductDefinitionId), productTypes.get(b.ProductDefinitionId), locale) ) as product}
+                      {@const pd = productTypes.get(product.ProductDefinitionId)}
+                      <li>
+                        {#if product.Status}
+                          <span
+                            class={[
+                              'badge badge-sm font-bold',
+                              product.DateCompleted
+                                ? product.Status === WorkflowState.Published
+                                  ? 'badge-success'
+                                  : 'badge-error'
+                                : 'badge-secondary'
+                            ]}
+                          >
+                            {product.Status}
+                          </span>
+                        {/if}
+                        <IconContainer
+                          icon={getProductIcon(pd?.Workflow.ProductType ?? 0)}
+                          width={30}
+                        />
+                        <a
+                          class="hover:underline"
+                          href={localizeHref(`/projects/${project.Id}#${product.Id}`)}
+                        >
+                          {pd?.Name}
+                        </a>
+                        {#if product.OldVersion}
+                          <s>{product.OldVersion}</s>
+                        {/if}
+                        &rarr; {product.Version}
+                        {#if product.DateCompleted}
+                          ({getTimeDateString(product.DateCompleted)})
+                        {/if}
+                      </li>
+                    {/each}
+                  </ul>
                 </DataDisplayBox>
               {/each}
             </div>

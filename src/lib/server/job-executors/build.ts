@@ -333,10 +333,6 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
       }
     }
   }
-  job.updateProgress(95);
-
-  // Check if this build completes any open SoftwareUpdates
-  await DatabaseWrites.softwareUpdates.completeForProduct(job.data.productId, job.data.build.id);
   job.updateProgress(100);
   return {
     created: artifacts.length,

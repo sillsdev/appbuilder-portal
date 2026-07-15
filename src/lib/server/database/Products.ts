@@ -4,6 +4,7 @@ import { BullMQ, getQueues } from '../bullmq/index';
 import { delete as deleteInstance } from './WorkflowInstances';
 import prisma from './prisma';
 import type { RequirePrimitive } from './utility';
+import { WorkflowState } from '$lib/workflowTypes';
 
 export async function create(
   productData: RequirePrimitive<Prisma.ProductsUncheckedCreateInput>
@@ -90,13 +91,6 @@ export async function update(
         }
       );
     }
-
-    if (productData.DatePublished) {
-      getQueues().SvelteSSE.add(`Update Updatable Products (product #${id} published)`, {
-        type: BullMQ.JobType.SvelteSSE_UpdateUpdatableProducts,
-        orgIds: [existing.Project.OrganizationId]
-      });
-    }
   } catch {
     return false;
   }
@@ -128,19 +122,20 @@ async function deleteProduct(productId: string) {
     },
     BullMQ.Retry0f600
   );
-  await prisma.$transaction([
-    deleteInstance(productId, product!.Project.Id),
-    prisma.userTasks.deleteMany({
+
+  await prisma.$transaction(async (tx) => {
+    await deleteInstance(productId, product!.Project.Id, WorkflowState.Terminated, tx);
+    await tx.userTasks.deleteMany({
       where: {
         ProductId: productId
       }
-    }),
-    prisma.products.delete({
+    });
+    return await tx.products.delete({
       where: {
         Id: productId
       }
-    })
-  ]);
+    });
+  });
   getQueues().SvelteSSE.add(`Update #${product?.Project.Id} (product delete)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
     projectIds: [product!.Project.Id]

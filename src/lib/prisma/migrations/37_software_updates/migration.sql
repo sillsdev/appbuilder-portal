@@ -38,7 +38,7 @@ CREATE TABLE "SoftwareUpdatesOnProducts" (
     "ProductId" UUID NOT NULL,
     "DateCompleted" TIMESTAMP(3),
     "Version" TEXT NOT NULL,
-    "Success" BOOLEAN NOT NULL DEFAULT false,
+    "Status" TEXT NOT NULL,
 
     CONSTRAINT "PK_SoftwareUpdatesOnProducts_SoftwareUpdateId_ProductId" PRIMARY KEY ("SoftwareUpdateId", "ProductId")
 );

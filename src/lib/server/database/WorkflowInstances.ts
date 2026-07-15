@@ -1,7 +1,10 @@
-import type { Prisma } from '@prisma/client';
+import type { Prisma, PrismaClient } from '@prisma/client';
+import type { ITXClientDenyList } from '@prisma/client/runtime/client';
 import { update as projectUpdate } from './Projects';
+import { updateStatus } from './SoftwareUpdates';
 import prisma from './prisma';
 import type { RequirePrimitive } from './utility';
+import type { WorkflowState } from '$lib/workflowTypes';
 
 export async function upsert(
   productId: string,
@@ -39,6 +42,9 @@ export async function upsert(
 
     await projectUpdate(product.ProjectId, { DateActive: new Date() });
   }
+
+  await updateStatus(productId, instanceData.update);
+
   return res;
 }
 
@@ -46,6 +52,7 @@ export async function update(
   productId: string,
   data: Omit<RequirePrimitive<Prisma.WorkflowInstancesUncheckedUpdateInput>, 'ProductId'>
 ) {
+  await updateStatus(productId, data);
   return await prisma.workflowInstances.update({
     where: {
       ProductId: productId
@@ -55,9 +62,16 @@ export async function update(
   });
 }
 
-function deleteInstance(productId: string, projectId: number) {
-  updateProjectDateActive(productId, projectId);
-  return prisma.workflowInstances.deleteMany({ where: { ProductId: productId } });
+async function deleteInstance(
+  productId: string,
+  projectId: number,
+  status: WorkflowState,
+  client: Omit<PrismaClient, ITXClientDenyList> = prisma
+) {
+  await updateProjectDateActive(productId, projectId);
+  await updateStatus(productId, { State: status }, client);
+  await client.workflowInstances.deleteMany({ where: { ProductId: productId } });
+  return;
 }
 export { deleteInstance as delete };
 

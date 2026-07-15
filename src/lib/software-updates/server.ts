@@ -4,6 +4,7 @@ import { mapSystems } from '$lib/organizations/server';
 import { DatabaseReads } from '$lib/server/database';
 import type { RebuildableProductsData, UpdateSummaryData } from '$lib/software-updates';
 import { filterAdminOrgs } from '$lib/utils/roles';
+import { WorkflowState } from '$lib/workflowTypes';
 
 const tracer = trace.getTracer('SoftwareUpdates');
 
@@ -57,7 +58,7 @@ export async function getUpdates(
                     select: {
                       SoftwareUpdateId: true,
                       Version: true,
-                      Success: true,
+                      Status: true,
                       DateCompleted: true
                     }
                   }
@@ -89,7 +90,7 @@ export async function getUpdates(
                       if (update) {
                         count.UpdatedProducts++;
                         if (update.DateCompleted) {
-                          if (update.Success) {
+                          if (update.Status === WorkflowState.Published) {
                             count.Completed++;
                           } else {
                             count.Failed++;

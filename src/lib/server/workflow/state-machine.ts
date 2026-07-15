@@ -285,7 +285,7 @@ export const WorkflowStateMachine = setup({
           workflowType: { is: WorkflowType.Startup }
         }
       },
-      entry: ({ context }) => deleteWorkflow(context.productId),
+      entry: ({ context }) => deleteWorkflow(context.productId, WorkflowState.Terminated),
       type: 'final'
     },
     [WorkflowState.Product_Creation]: {
@@ -1115,7 +1115,7 @@ export const WorkflowStateMachine = setup({
       }
     },
     [WorkflowState.Published]: {
-      entry: ({ context }) => deleteWorkflow(context.productId),
+      entry: ({ context }) => deleteWorkflow(context.productId, WorkflowState.Published),
       type: 'final'
     }
   },

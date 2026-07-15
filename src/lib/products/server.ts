@@ -119,7 +119,11 @@ export async function doProductAction(
                   select: { ProjectId: true }
                 }))!.ProjectId
               );
-              await DatabaseWrites.workflowInstances.delete(productId, product.ProjectId);
+              await DatabaseWrites.workflowInstances.delete(
+                productId,
+                product.ProjectId,
+                WorkflowState.Terminated
+              );
             }
             break;
           case ProductActionType.StopBuild:

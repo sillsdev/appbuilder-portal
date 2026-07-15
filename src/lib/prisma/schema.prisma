@@ -403,7 +403,7 @@ model SoftwareUpdatesOnProducts {
   ProductId        String          @db.Uuid
   DateCompleted    DateTime?
   Version          String
-  Success          Boolean         @default(false)
+  Status           String
   SoftwareUpdate   SoftwareUpdates @relation(fields: [SoftwareUpdateId], references: [Id], map: "FK_SoftwareUpdatesOnProducts_SoftwareUpdates_SoftwareUpdateId", onDelete: Cascade, onUpdate: NoAction)
   Product          Products        @relation(fields: [ProductId], references: [Id], map: "FK_SoftwareUpdatesOnProducts_Products_ProductId", onDelete: Cascade, onUpdate: NoAction)
 
