@@ -92,63 +92,81 @@ export async function cancelForOrg(
 export async function updateStatus(
   productId: string,
   data: Pick<RequirePrimitive<Prisma.WorkflowInstancesUncheckedUpdateInput>, 'State'>,
-  client: Omit<PrismaClient, ITXClientDenyList> = prisma
+  txClient?: Omit<PrismaClient, ITXClientDenyList>
 ) {
   if (data.State) {
-    console.log(`updateStatus(${productId}): ${data.State}`);
-    const update = await client.softwareUpdates.findFirst({
-      where: { Workflows: { some: { ProductId: productId } } },
+    const client = txClient ?? prisma;
+    const complete =
+      data.State === WorkflowState.Published || data.State === WorkflowState.Terminated;
+
+    const product = await prisma.products.findUnique({
+      where: { Id: productId },
       select: {
-        Id: true,
-        UpdatedProducts: {
-          where: { ProductId: productId },
-          select: { Product: { select: { Project: { select: { OrganizationId: true } } } } }
+        Project: {
+          select: {
+            OrganizationId: true
+          }
+        },
+        WorkflowInstance: {
+          select: {
+            SoftwareUpdateId: true
+          }
         }
       }
     });
 
-    if (update?.UpdatedProducts.length) {
-      const complete =
-        data.State === WorkflowState.Published || data.State === WorkflowState.Terminated;
-      await client.softwareUpdatesOnProducts.updateMany({
-        where: { ProductId: productId, SoftwareUpdateId: update.Id },
-        data: {
-          Status: data.State,
-          DateCompleted: complete ? new Date() : undefined
-        }
-      });
+    if (product) {
+      const updateId = product?.WorkflowInstance?.SoftwareUpdateId;
+      const orgId = product?.Project.OrganizationId;
+      if (updateId) {
+        await client.softwareUpdatesOnProducts.updateMany({
+          where: {
+            ProductId: productId,
+            SoftwareUpdateId: updateId
+          },
+          data: {
+            Status: data.State,
+            DateCompleted: complete ? new Date() : undefined
+          }
+        });
 
-      const updateComplete =
-        complete &&
-        !(await client.softwareUpdatesOnProducts.findFirst({
-          where: { SoftwareUpdateId: update.Id, DateCompleted: null },
-          select: { SoftwareUpdateId: true }
-        }));
+        const updateComplete =
+          complete &&
+          !(await client.softwareUpdatesOnProducts.findFirst({
+            where: { SoftwareUpdateId: updateId, DateCompleted: null },
+            select: { SoftwareUpdateId: true }
+          }));
 
-      const orgId = update.UpdatedProducts[0].Product.Project.OrganizationId;
-
-      getQueues().SvelteSSE.add(
-        `Update Software Updates (update #${update.Id} product ${productId} updated)`,
-        {
-          type: BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates,
-          orgIds: updateComplete
-            ? (
-                await client.organizations.findMany({
-                  where: {
-                    Projects: {
-                      some: {
-                        Products: {
-                          some: { SoftwareUpdates: { some: { SoftwareUpdateId: update.Id } } }
+        getQueues().SvelteSSE.add(
+          `Update Software Updates (update #${updateId} product ${productId} updated)`,
+          {
+            type: BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates,
+            orgIds: updateComplete
+              ? (
+                  await client.organizations.findMany({
+                    where: {
+                      Projects: {
+                        some: {
+                          Products: {
+                            some: { SoftwareUpdates: { some: { SoftwareUpdateId: updateId } } }
+                          }
                         }
                       }
-                    }
-                  },
-                  select: { Id: true }
-                })
-              ).map((o) => o.Id)
-            : [orgId]
+                    },
+                    select: { Id: true }
+                  })
+                ).map((o) => o.Id)
+              : [orgId]
+          }
+        );
+
+        if (updateComplete) {
+          await client.softwareUpdates.update({
+            where: { Id: updateId },
+            data: { DateCompleted: new Date() }
+          });
         }
-      );
+      }
 
       if (complete) {
         getQueues().SvelteSSE.add(
@@ -158,13 +176,6 @@ export async function updateStatus(
             orgIds: [orgId]
           }
         );
-      }
-
-      if (updateComplete) {
-        await client.softwareUpdates.update({
-          where: { Id: update.Id },
-          data: { DateCompleted: new Date() }
-        });
       }
     }
   }

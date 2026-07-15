@@ -66,10 +66,14 @@ async function deleteInstance(
   productId: string,
   projectId: number,
   status: WorkflowState,
-  client: Omit<PrismaClient, ITXClientDenyList> = prisma
+  txClient?: Omit<PrismaClient, ITXClientDenyList>
 ) {
+  const client = txClient ?? prisma;
+  console.log('dateActive');
   await updateProjectDateActive(productId, projectId);
+  console.log('updateStatus');
   await updateStatus(productId, { State: status }, client);
+  console.log('delete');
   await client.workflowInstances.deleteMany({ where: { ProductId: productId } });
   return;
 }

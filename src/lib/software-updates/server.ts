@@ -97,7 +97,7 @@ export async function getUpdates(
                           }
                         }
                         if (!presentAppTypes.get(pj.TypeId)) {
-                          presentAppTypes.set(pj.TypeId, new Set(update.Version));
+                          presentAppTypes.set(pj.TypeId, new Set([update.Version]));
                         } else {
                           presentAppTypes.get(pj.TypeId)!.add(update.Version);
                         }
@@ -116,7 +116,7 @@ export async function getUpdates(
                 Versions: Array.from(
                   presentAppTypes.entries().map(([ApplicationTypeId, Versions]) => ({
                     ApplicationTypeId,
-                    Versions: Array.from(Versions.values())
+                    Versions: Array.from(Versions)
                   }))
                 )
               };

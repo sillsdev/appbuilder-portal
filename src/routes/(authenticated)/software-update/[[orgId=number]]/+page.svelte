@@ -5,7 +5,6 @@
   import { superForm } from 'sveltekit-superforms';
   import type { ActionData, PageData } from './$types';
   import { enhance as svk_enhance } from '$app/forms';
-  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
@@ -33,7 +32,7 @@
   const currentPageUrl = page.url.pathname;
   let reconnectDelaySU = 1000;
   const softwareUpdatesSSE: Readable<UpdateSummaryData[] | undefined> = $derived.by(() => {
-    return source(`${page.url.pathname}/updates/sse`, {
+    return source(`${page.url.pathname}/sse/updates`, {
       close({ connect }) {
         setTimeout(() => {
           // If the current page has changed, we don't want to reconnect.
@@ -58,7 +57,7 @@
 
   let reconnectDelayUP = 1000;
   const updatableProductsSSE: Readable<RebuildableProductsData | undefined> = $derived.by(() => {
-    return source(`${page.url.pathname}/products/sse`, {
+    return source(`${page.url.pathname}/sse/products`, {
       close({ connect }) {
         setTimeout(() => {
           // If the current page has changed, we don't want to reconnect.
@@ -105,16 +104,9 @@
     }
   });
 
-  let applicationTypeIds = $state(
+  let applicationTypeIds = $derived(
     data.applicationTypes.map(({ Id }) => Id).filter((i) => presentAppTypes.has(i))
   );
-
-  afterNavigate(() => {
-    // reset application type selection to default after navigating
-    applicationTypeIds = data.applicationTypes
-      .map(({ Id }) => Id)
-      .filter((i) => presentAppTypes.has(i));
-  });
 
   const locale = $derived(getLocale());
 

@@ -250,7 +250,7 @@
   <ul class={args.classes ?? ''}>
     {#each args.list as version}
       <li class="flex flex-row gap-x-1">
-        <img src={getAppIcon(version.ApplicationTypeId)} width={20} alt="" />
+        <IconContainer icon={getAppIcon(version.ApplicationTypeId)} width={20} />
         {version?.Description}
         ({version.Versions.join(', ')})
       </li>
