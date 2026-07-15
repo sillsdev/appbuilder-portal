@@ -69,18 +69,20 @@ async function deleteInstance(
   txClient?: Omit<PrismaClient, ITXClientDenyList>
 ) {
   const client = txClient ?? prisma;
-  console.log('dateActive');
-  await updateProjectDateActive(productId, projectId);
-  console.log('updateStatus');
+  await updateProjectDateActive(productId, projectId, client);
   await updateStatus(productId, { State: status }, client);
-  console.log('delete');
   await client.workflowInstances.deleteMany({ where: { ProductId: productId } });
   return;
 }
 export { deleteInstance as delete };
 
-async function updateProjectDateActive(productId: string, projectId: number) {
-  const project = await prisma.projects.findUniqueOrThrow({
+async function updateProjectDateActive(
+  productId: string,
+  projectId: number,
+  txClient?: Omit<PrismaClient, ITXClientDenyList>
+) {
+  const client = txClient ?? prisma;
+  const project = await client.projects.findUniqueOrThrow({
     where: {
       Id: projectId
     },
@@ -120,6 +122,6 @@ async function updateProjectDateActive(productId: string, projectId: number) {
   }
 
   if (project.DateActive != projectDateActive) {
-    await projectUpdate(projectId, { DateActive: project.DateActive });
+    await projectUpdate(projectId, { DateActive: project.DateActive }, client);
   }
 }

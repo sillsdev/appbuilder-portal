@@ -1,5 +1,6 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
-import type { Prisma } from '@prisma/client';
+import type { Prisma, PrismaClient } from '@prisma/client';
+import type { ITXClientDenyList } from '@prisma/client/runtime/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
 import type { RequirePrimitive } from './utility';
@@ -43,12 +44,14 @@ export async function create(
 
 export async function update(
   id: number,
-  projectData: RequirePrimitive<Prisma.ProjectsUncheckedUpdateInput>
+  projectData: RequirePrimitive<Prisma.ProjectsUncheckedUpdateInput>,
+  txClient?: Omit<PrismaClient, ITXClientDenyList>
 ): Promise<boolean> {
+  const client = txClient ?? prisma;
   // There are cases where a db lookup is not necessary to verify that it will
   // be a legal relation after the update, such as if none of the relevant
   // columns are changed, but for simplicity we just lookup once anyway
-  const existing = await prisma.projects.findUnique({
+  const existing = await client.projects.findUnique({
     where: {
       Id: id
     }
@@ -56,12 +59,12 @@ export async function update(
   const orgId = projectData.OrganizationId ?? existing!.OrganizationId;
   const groupId = projectData.GroupId ?? existing!.GroupId;
   const ownerId = projectData.OwnerId ?? existing!.OwnerId;
-  if (!(await validateProjectBase(orgId, groupId, ownerId, id))) return false;
+  if (!(await validateProjectBase(orgId, groupId, ownerId, id, client))) return false;
 
   // No additional verification steps
 
   try {
-    await prisma.projects.update({
+    await client.projects.update({
       where: {
         Id: id
       },
@@ -130,12 +133,14 @@ async function validateProjectBase(
   orgId: number,
   groupId: number,
   ownerId: number,
-  projectId?: number
+  projectId?: number,
+  txClient?: Omit<PrismaClient, ITXClientDenyList>
 ) {
+  const client = txClient ?? prisma;
   // Each of the criteria for a valid project just needs to checked if
   // the relevant data is supplied. If it isn't, then this is an update
   // and the data was valid already, or PostgreSQL will catch it
-  const user = await prisma.users.findUnique({
+  const user = await client.users.findUnique({
     where: { Id: ownerId },
     select: {
       Groups: { where: { Id: groupId } },
@@ -152,7 +157,7 @@ async function validateProjectBase(
 
   /* project group must be owned by project org */
   const orgOwnsGroup =
-    orgId === (await prisma.groups.findUnique({ where: { Id: groupId } }))?.OwnerId;
+    orgId === (await client.groups.findUnique({ where: { Id: groupId } }))?.OwnerId;
 
   const check = orgOwnsGroup && ((userInGroup && userInOrg) || userIsSuperAdmin);
 
