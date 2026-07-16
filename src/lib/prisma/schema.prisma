@@ -408,6 +408,8 @@ model SoftwareUpdatesOnProducts {
   Product          Products        @relation(fields: [ProductId], references: [Id], map: "FK_SoftwareUpdatesOnProducts_Products_ProductId", onDelete: Cascade, onUpdate: NoAction)
 
   @@id([SoftwareUpdateId, ProductId], map: "PK_SoftwareUpdatesOnProducts_SoftwareUpdateId_ProductId")
+
+  @@index([Status], map: "IX_SoftwareUpdatesOnProducts_Status")
 }
 
 model UserRoles {

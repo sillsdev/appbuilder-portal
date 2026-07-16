@@ -51,3 +51,6 @@ ALTER TABLE "SoftwareUpdatesOnProducts" ADD CONSTRAINT "FK_SoftwareUpdatesOnProd
 
 -- AddForeignKey
 ALTER TABLE "WorkflowInstances" ADD CONSTRAINT "FK_WorkflowInstances_SoftwareUpdates_SoftwareUpdateId" FOREIGN KEY ("SoftwareUpdateId") REFERENCES "SoftwareUpdates"("Id") ON DELETE SET NULL ON UPDATE NO ACTION;
+
+-- CreateIndex
+CREATE INDEX "IX_SoftwareUpdatesOnProducts_Status" ON "SoftwareUpdatesOnProducts"("Status");
