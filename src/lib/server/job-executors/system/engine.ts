@@ -146,47 +146,49 @@ export async function checkPendingUpdates(
   const totalBuilding = buildingProducts.reduce((p, c) => p + c[1], 0);
   const rateLimit = 20;
 
-  job.updateProgress(10);
-
-  if (totalBuilding >= rateLimit) {
-    job.updateProgress(100);
-    return { totalBuilding, status: Object.fromEntries(buildingProducts) };
-  }
-
-  const filter: Prisma.SoftwareUpdatesOnProductsWhereInput = {
-    Status: WorkflowState.Software_Update_Pending
-  };
-
-  const totalWaiting = await DatabaseReads.softwareUpdatesOnProducts.count({ where: filter });
-
-  const chunkSize = rateLimit - totalBuilding;
-
-  const waitingProducts = await DatabaseReads.softwareUpdatesOnProducts.findMany({
-    where: {
-      Status: WorkflowState.Software_Update_Pending
-    },
-    select: {
-      ProductId: true
-    },
-    take: chunkSize,
-    skip: Math.max(0, randomInt(totalWaiting || 1) - chunkSize)
-  });
-
-  job.updateProgress(50);
-
-  await Promise.allSettled(
-    waitingProducts.map(async ({ ProductId }) => {
-      const flow = await Workflow.restore(ProductId);
-      flow?.send({ type: WorkflowAction.Continue, userId: null });
-    })
-  );
-
-  job.updateProgress(100);
-
-  return {
-    started: waitingProducts.map((p) => p.ProductId),
-    remaining: totalWaiting - waitingProducts.length,
+  const summary: Record<string, unknown> = {
     totalBuilding,
     status: Object.fromEntries(buildingProducts)
   };
+
+  job.updateProgress(10);
+
+  if (totalBuilding < rateLimit) {
+    const filter: Prisma.SoftwareUpdatesOnProductsWhereInput = {
+      Status: WorkflowState.Software_Update_Pending
+    };
+
+    const totalWaiting = await DatabaseReads.softwareUpdatesOnProducts.count({ where: filter });
+
+    summary.remaining = totalWaiting;
+
+    if (totalWaiting) {
+      const chunkSize = rateLimit - totalBuilding;
+
+      const waitingProducts = await DatabaseReads.softwareUpdatesOnProducts.findMany({
+        where: filter,
+        select: {
+          ProductId: true
+        },
+        take: chunkSize,
+        skip: Math.max(0, randomInt(totalWaiting || 1) - chunkSize)
+      });
+
+      job.updateProgress(50);
+
+      await Promise.allSettled(
+        waitingProducts.map(async ({ ProductId }) => {
+          const flow = await Workflow.restore(ProductId);
+          flow?.send({ type: WorkflowAction.Continue, userId: null });
+        })
+      );
+
+      summary.started = waitingProducts.map((p) => p.ProductId);
+      summary.remaining = totalWaiting - waitingProducts.length;
+    }
+  }
+
+  job.updateProgress(100);
+
+  return summary;
 }
