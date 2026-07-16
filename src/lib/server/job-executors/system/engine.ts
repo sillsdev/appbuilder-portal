@@ -136,12 +136,12 @@ export async function checkPendingUpdates(
   job: Job<BullMQ.System.CheckPendingUpdates>
 ): Promise<unknown> {
   const buildingProducts = (
-    await DatabaseReads.softwareUpdatesOnProducts.groupBy({
-      by: ['Status'],
-      _count: { Status: true },
-      where: { Status: { in: [WorkflowState.Product_Build, WorkflowState.Product_Publish] } }
+    await DatabaseReads.workflowInstances.groupBy({
+      by: ['State'],
+      _count: { State: true },
+      where: { State: { in: [WorkflowState.Product_Build, WorkflowState.Product_Publish] } }
     })
-  ).map((u) => [u.Status, u._count.Status] as [string, number]);
+  ).map((u) => [u.State, u._count.State] as [string, number]);
 
   const totalBuilding = buildingProducts.reduce((p, c) => p + c[1], 0);
   const rateLimit = 20;
