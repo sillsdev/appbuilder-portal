@@ -47,7 +47,8 @@ export enum WorkflowState {
   Product_Publish = 'Product Publish',
   Evaluate_Error = 'Evaluate Error',
   Make_It_Live = 'Make It Live',
-  Published = 'Published'
+  Published = 'Published',
+  Software_Update_Pending = 'Software Update Pending'
 }
 
 const terminalStates = [WorkflowState.Terminated, WorkflowState.Published] as const;
@@ -224,6 +225,7 @@ export type WorkflowInput = WorkflowConfig & {
   hasReviewers: boolean;
   autoPublishOnRebuild: boolean;
   existingApp: boolean;
+  start?: WorkflowState;
 };
 
 /** Used for filtering based on specified WorkflowOptions and/or ProductType */

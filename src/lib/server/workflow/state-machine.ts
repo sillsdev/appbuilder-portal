@@ -67,7 +67,8 @@ export const WorkflowStateMachine = setup({
     hasAuthors: input.hasAuthors,
     hasReviewers: input.hasReviewers,
     autoPublishOnRebuild: input.autoPublishOnRebuild,
-    existingApp: input.existingApp
+    existingApp: input.existingApp,
+    start: input.start
   }),
   states: {
     [WorkflowState.Start]: {
@@ -149,6 +150,10 @@ export const WorkflowStateMachine = setup({
           }
         }),
         jump({ target: WorkflowState.Published }),
+        jump({
+          target: WorkflowState.Software_Update_Pending,
+          filter: { workflowType: { is: WorkflowType.Rebuild } }
+        }),
         {
           guard: ({ context }) =>
             context.options.has(WorkflowOptions.ApprovalProcess) &&
@@ -1117,6 +1122,20 @@ export const WorkflowStateMachine = setup({
     [WorkflowState.Published]: {
       entry: ({ context }) => deleteWorkflow(context.productId, WorkflowState.Published),
       type: 'final'
+    },
+    [WorkflowState.Software_Update_Pending]: {
+      meta: {
+        includeWhen: {
+          workflowType: { is: WorkflowType.Rebuild }
+        }
+      },
+      entry: assign({ instructions: 'waiting' }),
+      on: {
+        [WorkflowAction.Continue]: {
+          meta: { type: ActionType.Auto },
+          target: WorkflowState.Product_Build
+        }
+      }
     }
   },
   on: {

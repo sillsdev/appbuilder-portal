@@ -155,6 +155,10 @@ export namespace System {
     type: JobType.System_Migrate;
     steps?: MigrationStep[];
   }
+
+  export interface CheckPendingUpdates extends BaseJob {
+    type: JobType.System_CheckPendingUpdates;
+  }
 }
 
 export namespace UserTasks {
@@ -315,7 +319,8 @@ export type BuildJob = JobTypeMap[
 export type RecurringJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags
-  | JobType.System_Migrate];
+  | JobType.System_Migrate
+  | JobType.System_CheckPendingUpdates];
 export type StartupJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags
@@ -369,6 +374,7 @@ export type JobTypeMap = {
   [JobType.System_CheckEngineStatuses]: System.CheckEngineStatuses;
   [JobType.System_RefreshLangTags]: System.RefreshLangTags;
   [JobType.System_Migrate]: System.Migrate;
+  [JobType.System_CheckPendingUpdates]: System.CheckPendingUpdates;
   [JobType.UserTasks_Workflow]: UserTasks.Workflow;
   [JobType.UserTasks_DeleteRequest]: UserTasks.DeleteRequest;
   [JobType.Email_InviteUser]: Email.InviteUser;

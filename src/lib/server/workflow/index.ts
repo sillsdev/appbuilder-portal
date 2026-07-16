@@ -85,7 +85,8 @@ export class Workflow {
         hasReviewers: !!check?.Project._count.Reviewers,
         autoPublishOnRebuild: !!check?.Project.AutoPublishOnRebuild,
         productId,
-        existingApp: false
+        existingApp: false,
+        start: softwareUpdateId ? WorkflowState.Software_Update_Pending : undefined
       },
       softwareUpdateId
     );
@@ -236,7 +237,8 @@ export class Workflow {
         autoPublishOnRebuild: !!instance.Product.Project.AutoPublishOnRebuild,
         isAutomatic: context.isAutomatic ?? false,
         productId,
-        existingApp: !!context.environment[ENVKeys.GOOGLE_PLAY_EXISTING]
+        existingApp: !!context.environment[ENVKeys.GOOGLE_PLAY_EXISTING],
+        start: context.start
       }
     };
   }
