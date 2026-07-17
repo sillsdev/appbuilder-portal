@@ -1,6 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { Command, Option } from 'commander';
-import { AdminSettings } from '$lib/admin-settings';
+
+const AdminSettings = {
+  SoftwareUpdates: 'software-updates'
+};
 
 const ProductType = {
   Android_GooglePlay: 0,
