@@ -1,18 +1,19 @@
-<script lang="ts">
+<script lang="ts" generics="V extends JsonSchema">
   import type { ClassValue } from 'svelte/elements';
   import { flatten, safeParse } from 'valibot';
-  import { propertiesSchema } from '$lib/valibot';
+  import { type JsonSchema } from '$lib/valibot';
 
   interface Props {
     value: string | null;
     name: string;
     class?: ClassValue;
     ok?: boolean;
+    schema: V;
   }
 
-  let { value = $bindable(), name, class: classes, ok = $bindable(true) }: Props = $props();
+  let { value = $bindable(), name, class: classes, ok = $bindable(true), schema }: Props = $props();
 
-  const parsed = $derived(safeParse(propertiesSchema, value));
+  const parsed = $derived(safeParse(schema, value));
 
   let showErrors = $state(true);
 
@@ -34,7 +35,7 @@
     bind:value
   ></textarea>
   {#if showErrors && parsed.issues}
-    {@const parseErrors = flatten<typeof propertiesSchema>(parsed.issues)}
+    {@const parseErrors = flatten<V>(parsed.issues)}
     <ul>
       {#each parseErrors.root ?? [] as error}
         <li class="text-red-500">

@@ -4,6 +4,7 @@ import { randomInt } from 'node:crypto';
 import { BuildEngine } from '../../build-engine-api';
 import { BullMQ, getQueues } from '../../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../../database';
+import { getSoftwareUpdatesRateLimit } from '$lib/admin-settings/server';
 import { activeSystems } from '$lib/organizations/server';
 import { Workflow } from '$lib/server/workflow';
 import { WorkflowAction, WorkflowState } from '$lib/workflowTypes';
@@ -144,7 +145,7 @@ export async function checkPendingUpdates(
   ).map((u) => [u.State, u._count.State] as [string, number]);
 
   const totalBuilding = buildingProducts.reduce((p, c) => p + c[1], 0);
-  const rateLimit = 20;
+  const rateLimit = await getSoftwareUpdatesRateLimit();
 
   const summary: Record<string, unknown> = {
     totalBuilding,

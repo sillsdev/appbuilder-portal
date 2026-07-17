@@ -408,7 +408,6 @@ model SoftwareUpdatesOnProducts {
   Product          Products        @relation(fields: [ProductId], references: [Id], map: "FK_SoftwareUpdatesOnProducts_Products_ProductId", onDelete: Cascade, onUpdate: NoAction)
 
   @@id([SoftwareUpdateId, ProductId], map: "PK_SoftwareUpdatesOnProducts_SoftwareUpdateId_ProductId")
-
   @@index([Status], map: "IX_SoftwareUpdatesOnProducts_Status")
 }
 
@@ -469,6 +468,7 @@ model Users {
   ProductTransitions            ProductTransitions[]
   SoftwareUpdates               SoftwareUpdates[]
   ProjectActions                ProjectActions[]
+  ModifiedAdminSettings         AdminSettings[]
 }
 
 model WorkflowDefinitions {
@@ -518,4 +518,13 @@ model WorkflowInstances {
   Product              Products            @relation(fields: [ProductId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_Products_ProductId")
   WorkflowDefinition   WorkflowDefinitions @relation(fields: [WorkflowDefinitionId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_WorkflowInstances_WorkflowDefinitions_WorkflowDefinitionId")
   SoftwareUpdate       SoftwareUpdates?    @relation(fields: [SoftwareUpdateId], references: [Id], onDelete: SetNull, onUpdate: NoAction, map: "FK_WorkflowInstances_SoftwareUpdates_SoftwareUpdateId")
+}
+
+model AdminSettings {
+  Key          String    @id(map: "PK_AdminSettings")
+  Value        String?
+  DateCreated  DateTime? @default(now()) @db.Timestamp
+  DateUpdated  DateTime? @updatedAt @db.Timestamp
+  ModifiedById Int?
+  ModifiedBy   Users?    @relation(fields: [ModifiedById], references: [Id], onDelete: Restrict, onUpdate: NoAction)
 }

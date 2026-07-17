@@ -4,8 +4,8 @@
   import { goto } from '$app/navigation';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
+  import JSONEditor from '$lib/components/settings/JSONEditor.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { Icons, getProductIcon, getStoreIcon, getWorkflowIcon } from '$lib/icons';
@@ -14,6 +14,7 @@
   import { WorkflowType } from '$lib/prisma';
   import { enumNumVals, toast } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
+  import { propertiesSchema } from '$lib/valibot';
   import { ProductType, WorkflowOptions } from '$lib/workflowTypes';
 
   interface Props {
@@ -99,11 +100,12 @@
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="flowDefs_properties">
-    <PropertiesEditor
+    <JSONEditor
       name="properties"
       class="w-full"
       bind:value={$form.properties}
       bind:ok={propsOk}
+      schema={propertiesSchema}
     />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>

@@ -514,6 +514,7 @@
   "admin_nav_storeTypes": "Store Types",
   "admin_nav_stores": "Stores",
   "admin_nav_buildEngines": "Build Engine Statuses",
+  "admin_nav_params": "Site Parameters",
   "flowDefs_title": "Workflow Definitions",
   "flowDefs_name": "Workflow Definition Name",
   "flowDefs_properties": "Properties",

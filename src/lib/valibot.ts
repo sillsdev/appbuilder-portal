@@ -20,41 +20,57 @@ export type PaginateSchema = typeof paginateSchema;
 
 const recordSchema = v.record(v.string(), v.string());
 
-export const propertiesSchema = v.nullable(
-  v.pipe(
-    v.string(),
-    // make sure it is valid JSON
-    v.rawTransform(({ dataset, addIssue, NEVER }) => {
-      try {
-        return JSON.parse(dataset.value || '{}');
-      } catch (e) {
-        addIssue({
-          message: e instanceof Error ? e.message : String(e),
-          path: [
-            {
-              type: 'unknown',
-              origin: 'value',
-              input: dataset.value,
-              key: 'root',
-              value: dataset.value
-            }
-          ]
-        });
-        return NEVER;
-      }
-    }),
-    // make sure it has the right structure
-    v.strictObject({
-      environment: v.optional(recordSchema),
-      'build:environment': v.optional(recordSchema),
-      'publish:environment': v.optional(recordSchema),
-      'build:targets': v.optional(v.string()),
-      'publish:targets': v.optional(v.string())
-    }),
-    // transform it back into a string (huzzah!)
-    v.transform((o) => JSON.stringify(o, null, 4))
-  )
+export function JSONSchema(
+  actions?:
+    | v.ObjectSchema<v.ObjectEntries, v.ErrorMessage<v.ObjectIssue> | undefined>
+    | v.StrictObjectSchema<v.ObjectEntries, v.ErrorMessage<v.StrictObjectIssue> | undefined>
+    | v.LooseObjectSchema<v.ObjectEntries, v.ErrorMessage<v.LooseObjectIssue> | undefined>
+    | v.ObjectWithRestSchema<
+        v.ObjectEntries,
+        v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>,
+        v.ErrorMessage<v.ObjectWithRestIssue> | undefined
+      >
+) {
+  return v.nullable(
+    v.pipe(
+      v.string(),
+      v.rawTransform(({ dataset, addIssue, NEVER }) => {
+        try {
+          return JSON.parse(dataset.value || '{}');
+        } catch (e) {
+          addIssue({
+            message: e instanceof Error ? e.message : String(e),
+            path: [
+              {
+                type: 'unknown',
+                origin: 'value',
+                input: dataset.value,
+                key: 'root',
+                value: dataset.value
+              }
+            ]
+          });
+          return NEVER;
+        }
+      }),
+      actions ?? v.looseObject({}),
+      v.transform((o) => JSON.stringify(o, null, 4))
+    )
+  );
+}
+
+export const propertiesSchema = JSONSchema(
+  // make sure it has the right structure
+  v.strictObject({
+    environment: v.optional(recordSchema),
+    'build:environment': v.optional(recordSchema),
+    'publish:environment': v.optional(recordSchema),
+    'build:targets': v.optional(v.string()),
+    'publish:targets': v.optional(v.string())
+  })
 );
+
+export type JsonSchema = ReturnType<typeof JSONSchema> | typeof propertiesSchema;
 
 /** Legal phone numbers: +1 (123) 456-7890 1234567890 123-4567890 123 456-7890 */
 // eslint-disable-next-line no-useless-escape

@@ -516,6 +516,7 @@
   "admin_nav_storeTypes": "Tipos de tienda",
   "admin_nav_stores": "Tiendas",
   "admin_nav_buildEngines": "Build Engine Statuses",
+  "admin_nav_params": "Site Parameters",
   "flowDefs_title": "Definiciones de flujo de trabajo",
   "flowDefs_name": "Nombre de la definición del flujo de trabajo",
   "flowDefs_properties": "Propiedades",

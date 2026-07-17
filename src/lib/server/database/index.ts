@@ -1,6 +1,7 @@
 import type { PrismaClient } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
+import * as adminSettings from './AdminSettings';
 import * as authors from './Authors';
 import * as groups from './Groups';
 import * as organizations from './Organizations';
@@ -43,6 +44,7 @@ type DataType = {
 };
 
 const handlers = {
+  adminSettings,
   authors,
   reviewers,
   products,
