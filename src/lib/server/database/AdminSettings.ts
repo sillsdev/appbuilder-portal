@@ -17,10 +17,7 @@ export async function update(
 
     return await Promise.all(
       Object.entries(data)
-        .filter(([Key, Value]) => {
-          const existingValue = existing.get(Key);
-          return existingValue && existingValue !== Value;
-        })
+        .filter(([Key, Value]) => existing.has(Key) && existing.get(Key) !== Value)
         .map(([Key, Value]) =>
           tx.adminSettings.update({ where: { Key }, data: { Value, ModifiedById: userId } })
         )

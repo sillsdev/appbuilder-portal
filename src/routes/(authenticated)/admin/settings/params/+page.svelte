@@ -26,13 +26,13 @@
     }
   });
 
-  let propsOk = $state(true);
+  let ok = $state(data.settings.map((s) => true));
 </script>
 
 <h3 class="pl-4">{m.admin_nav_params()}</h3>
 
 <form class="m-4" method="post" action="" use:enhance>
-  {#each data.settings.toSorted((a, b) => byString(a.Key, b.Key, getLocale())) as setting}
+  {#each data.settings.toSorted((a, b) => byString(a.Key, b.Key, getLocale())) as setting, i}
     {@const user = setting.ModifiedBy}
     <LabeledFormInput
       key="common_passThrough"
@@ -44,7 +44,7 @@
         name="properties"
         class="w-full"
         bind:value={$form[setting.Key]}
-        bind:ok={propsOk}
+        bind:ok={ok[i]}
         schema={JSONSchema()}
       />
       <span class="validator-hint">&nbsp;</span>
@@ -52,6 +52,6 @@
   {/each}
 
   <div class="my-4">
-    <SubmitButton disabled={!propsOk} />
+    <SubmitButton disabled={!ok.every((f) => f)} />
   </div>
 </form>
