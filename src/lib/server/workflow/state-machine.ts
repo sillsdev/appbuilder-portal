@@ -307,10 +307,10 @@ export const WorkflowStateMachine = setup({
             {
               type: BullMQ.JobType.Product_Create,
               productId: context.productId,
-              transition: await Workflow.currentProductTransition(
-                context.productId,
-                WorkflowState.Product_Creation
-              ).then((pt) => pt?.Id ?? undefined)
+              transition: await Workflow.currentProductTransition({
+                ProductId: context.productId,
+                InitialState: WorkflowState.Product_Creation
+              }).then((pt) => pt?.Id ?? undefined)
             },
             {
               ...BullMQ.Retry0f600,
@@ -554,10 +554,10 @@ export const WorkflowStateMachine = setup({
                           'apk play-listing',
               // extra env handled in getWorkflowParameters
               environment: context.environment,
-              transition: await Workflow.currentProductTransition(
-                context.productId,
-                WorkflowState.Product_Build
-              ).then((pt) => pt?.Id ?? undefined)
+              transition: await Workflow.currentProductTransition({
+                ProductId: context.productId,
+                InitialState: WorkflowState.Product_Build
+              }).then((pt) => pt?.Id ?? undefined)
             },
             BullMQ.Retry0f600
           );
@@ -727,10 +727,10 @@ export const WorkflowStateMachine = setup({
               getQueues().Products.add(`Get VersionCode for Product #${context.productId}`, {
                 type: BullMQ.JobType.Product_GetVersionCode,
                 productId: context.productId,
-                transition: await Workflow.currentProductTransition(
-                  context.productId,
-                  WorkflowState.Create_App_Store_Entry
-                ).then((pt) => pt?.Id ?? undefined)
+                transition: await Workflow.currentProductTransition({
+                  ProductId: context.productId,
+                  InitialState: WorkflowState.Create_App_Store_Entry
+                }).then((pt) => pt?.Id ?? undefined)
               });
             },
             target: WorkflowState.Verify_and_Publish
@@ -747,10 +747,10 @@ export const WorkflowStateMachine = setup({
               getQueues().Products.add(`Get VersionCode for Product #${context.productId}`, {
                 type: BullMQ.JobType.Product_GetVersionCode,
                 productId: context.productId,
-                transition: await Workflow.currentProductTransition(
-                  context.productId,
-                  WorkflowState.Create_App_Store_Entry
-                ).then((pt) => pt?.Id ?? undefined)
+                transition: await Workflow.currentProductTransition({
+                  ProductId: context.productId,
+                  InitialState: WorkflowState.Create_App_Store_Entry
+                }).then((pt) => pt?.Id ?? undefined)
               });
             },
             target: WorkflowState.Verify_and_Publish
@@ -869,10 +869,10 @@ export const WorkflowStateMachine = setup({
               type: BullMQ.JobType.Email_SendNotificationToReviewers,
               productId: context.productId,
               comment,
-              transition: await Workflow.currentProductTransition(
-                context.productId,
-                WorkflowState.Verify_and_Publish
-              ).then((pt) => pt?.Id ?? undefined)
+              transition: await Workflow.currentProductTransition({
+                ProductId: context.productId,
+                InitialState: WorkflowState.Verify_and_Publish
+              }).then((pt) => pt?.Id ?? undefined)
             });
           }
         }
@@ -901,10 +901,10 @@ export const WorkflowStateMachine = setup({
                 context.workflowType === WorkflowType.Republish
                   ? { ...context.environment, [ENVKeys.PUBLISH_NO_APK]: '1' }
                   : context.environment,
-              transition: await Workflow.currentProductTransition(
-                context.productId,
-                WorkflowState.Product_Publish
-              ).then((pt) => pt?.Id ?? undefined)
+              transition: await Workflow.currentProductTransition({
+                ProductId: context.productId,
+                InitialState: WorkflowState.Product_Publish
+              }).then((pt) => pt?.Id ?? undefined)
             },
             BullMQ.Retry0f600
           );

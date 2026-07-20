@@ -28,6 +28,8 @@ import type {
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
+import prismaInternal from '../database/prisma';
+import type { TXClient } from '../database/utility';
 import { WorkflowStateMachine } from './state-machine';
 
 /**
@@ -525,8 +527,13 @@ export class Workflow {
     return ret.filter((r) => !noDateWithRecords.has(r.InitialState ?? ''));
   }
 
-  public static async currentProductTransition(ProductId: string, InitialState?: string) {
-    const noDate = await DatabaseReads.productTransitions.findFirst({
+  public static async currentProductTransition(args: {
+    ProductId: string;
+    InitialState?: string;
+    txClient?: TXClient;
+  }) {
+    const { ProductId, InitialState, txClient: client = prismaInternal } = args;
+    const noDate = await client.productTransitions.findFirst({
       where: {
         ProductId,
         InitialState,
@@ -538,7 +545,7 @@ export class Workflow {
       }
     });
 
-    const withDate = await DatabaseReads.productTransitions.findMany({
+    const withDate = await client.productTransitions.findMany({
       where: {
         ProductId,
         InitialState,

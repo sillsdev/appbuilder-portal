@@ -140,7 +140,12 @@ async function createJobRecord(job: Job<BaseJob>) {
 
         if (!existing) {
           if ('productId' in job.data && job.data.productId) {
-            found = (await Workflow.currentProductTransition(job.data.productId))?.Id;
+            found = (
+              await Workflow.currentProductTransition({
+                ProductId: job.data.productId,
+                txClient: tx
+              })
+            )?.Id;
           }
           if (!found) {
             job.log('Error recovering transition. No job record created.');
