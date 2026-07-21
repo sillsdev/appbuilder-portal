@@ -1,7 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
+import { getGPFallbackIcon } from '$lib/google-play';
 import { deLocalizeUrl, localizeUrl } from '$lib/google-play/paraglide/runtime';
-import { getGPFallbackIcon } from '$lib/icons';
 import {
   getLatestManifest,
   resolveManifestLanguage,
