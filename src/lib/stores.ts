@@ -1,5 +1,5 @@
 import { parse } from 'devalue';
-import { type Readable, type Writable, get, writable } from 'svelte/store';
+import { type Readable, type Writable, derived, get, writable } from 'svelte/store';
 import { source } from 'sveltekit-sse';
 import { browser } from '$app/environment';
 import type { UserTaskDataSSE } from '$lib/projects/sse';
@@ -91,3 +91,15 @@ export const userTasksSSE: Readable<UserTaskDataSSE | undefined> = source(`/task
 })
   .select('userTasks')
   .transform((t) => (t ? parse(t) : undefined));
+
+const _darkMode = writable(
+  browser ? window.matchMedia('(prefers-color-scheme: dark)').matches : false
+);
+
+if (browser) {
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+    _darkMode.set(event.matches);
+  });
+}
+
+export const isDarkMode = derived(_darkMode, (value) => value);
