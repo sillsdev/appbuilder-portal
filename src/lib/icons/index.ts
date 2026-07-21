@@ -33,24 +33,10 @@ const appIcons = import.meta.glob('/src/lib/icons/app-builders/*.svg', {
   query: '?url'
 }) as Record<string, string>;
 
-const GPIcons = import.meta.glob('/src/lib/icons/google-play/*.png', {
-  eager: true,
-  import: 'default',
-  query: '?url'
-}) as Record<string, string>;
-
 export function getAppIcon(type: ApplicationType) {
   return (
     appIcons[
       `/src/lib/icons/app-builders/${typeof type === 'string' ? type : ApplicationType[type]}.svg`
-    ] ?? ''
-  );
-}
-
-export function getGPFallbackIcon(type: ApplicationType) {
-  return (
-    GPIcons[
-      `/src/lib/icons/google-play/${typeof type === 'string' ? type : ApplicationType[type]}.png`
     ] ?? ''
   );
 }

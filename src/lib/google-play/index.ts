@@ -1,4 +1,5 @@
 import { type Locale, locales } from './paraglide/runtime';
+import { ApplicationType } from '$lib/prisma';
 
 export const GooglePlayFlags = new Map<Locale, string>([
   ['af', 'circle-flags:lang-af'],
@@ -97,4 +98,18 @@ export const AlternateCodes = new Map<Locale, Locale>([
 
 export function withAlternates() {
   return locales.concat(AlternateCodes.values().toArray());
+}
+
+const GPIcons = import.meta.glob('/src/lib/icons/google-play/*.png', {
+  eager: true,
+  import: 'default',
+  query: '?url'
+}) as Record<string, string>;
+
+export function getGPFallbackIcon(type: ApplicationType) {
+  return (
+    GPIcons[
+      `/src/lib/icons/google-play/${typeof type === 'string' ? type : ApplicationType[type]}.png`
+    ] ?? ''
+  );
 }
