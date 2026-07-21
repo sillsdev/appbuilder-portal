@@ -1,25 +1,15 @@
 <script lang="ts">
   import sv_flatpickr, { themeChanger, themeNames } from 'svelte-flatpickr-plus';
-  import { browser } from '$app/environment';
   import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { isDarkMode } from '$lib/stores';
   // This component is here because the range mode of the Flatpickr svelte package
   // is a bit broken. Essentially, the 'value' property is updated when the second
   // date is clicked but not reassigned, only when the first is and it is set to a new value.
 
-  // Note: At the moment, the site always follows prefered color scheme
-  // If at some point in the future a manual toggle is added, this will need to be changed
-  let isDarkMode: boolean = $state(
-    browser ? window.matchMedia('(prefers-color-scheme: dark)').matches : false
-  );
-  if (browser) {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
-      isDarkMode = event.matches;
-    });
-  }
   $effect(() => {
-    themeChanger(isDarkMode ? themeNames.dark : themeNames.light);
+    themeChanger($isDarkMode ? themeNames.dark : themeNames.light);
   });
 
   interface Props {
