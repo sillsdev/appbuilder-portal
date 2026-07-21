@@ -6,6 +6,7 @@ import { ProductTransitionType, WorkflowType } from '$lib/prisma';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
+import { transformJSONString } from '$lib/valibot';
 import { WorkflowAction, WorkflowState } from '$lib/workflowTypes';
 import { ProductActionType, getFileInfo } from '.';
 
@@ -208,25 +209,7 @@ function normalizeColorString(color: string = '#1c3258') {
 const manifestSchema = v.pipe(
   v.string(),
   // make sure it is valid JSON
-  v.rawTransform(({ dataset, addIssue, NEVER }) => {
-    try {
-      return JSON.parse(dataset.value || '{}');
-    } catch (e) {
-      addIssue({
-        message: e instanceof Error ? e.message : String(e),
-        path: [
-          {
-            type: 'unknown',
-            origin: 'value',
-            input: dataset.value,
-            key: 'root',
-            value: dataset.value
-          }
-        ]
-      });
-      return NEVER;
-    }
-  }),
+  transformJSONString,
   v.object({
     url: v.string(),
     icon: v.string(),

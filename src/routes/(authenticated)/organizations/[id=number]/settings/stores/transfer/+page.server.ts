@@ -4,12 +4,12 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { ProductTransitionType } from '$lib/prisma';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { idSchema, stringIdSchema } from '$lib/valibot';
+import { UUIDSchema, idSchema } from '$lib/valibot';
 
 const transferSchema = v.object({
   source: idSchema,
   destination: idSchema,
-  products: v.array(stringIdSchema)
+  products: v.array(UUIDSchema)
 });
 
 export const load = (async (event) => {

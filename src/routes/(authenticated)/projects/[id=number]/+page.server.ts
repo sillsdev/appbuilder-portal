@@ -20,7 +20,7 @@ import { doProjectAction, userGroupsForOrg } from '$lib/projects/server';
 import { getProjectDetails } from '$lib/projects/sse';
 import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { deleteSchema, idSchema, propertiesSchema, stringIdSchema } from '$lib/valibot';
+import { UUIDSchema, deleteSchema, idSchema, propertiesSchema } from '$lib/valibot';
 
 const updateOwnerGroupSchema = v.object({
   owner: idSchema,
@@ -31,12 +31,12 @@ const addProductSchema = v.object({
   storeId: idSchema
 });
 const updateProductPropertiesSchema = v.object({
-  productId: stringIdSchema,
+  productId: UUIDSchema,
   properties: propertiesSchema
 });
 
 const productActionSchema = v.object({
-  productId: stringIdSchema,
+  productId: UUIDSchema,
   productAction: v.enum(ProductActionType)
 });
 

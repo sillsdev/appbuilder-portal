@@ -6,7 +6,7 @@ export const idSchema = v.pipe(v.number(), v.minValue(0), v.integer());
 export const requiredString = v.pipe(v.string(), v.trim(), v.minLength(1));
 
 /** mostly for product IDs */
-export const stringIdSchema = v.pipe(v.string(), v.uuid());
+export const UUIDSchema = v.pipe(v.string(), v.uuid());
 
 export const deleteSchema = v.object({
   id: idSchema

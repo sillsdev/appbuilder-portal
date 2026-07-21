@@ -1,5 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
+import { env } from '$env/dynamic/private';
 import { getGPFallbackIcon } from '$lib/google-play';
 import { deLocalizeUrl, localizeUrl } from '$lib/google-play/paraglide/runtime';
 import {
@@ -11,6 +12,9 @@ import { DatabaseReads } from '$lib/server/database';
 
 export const load: LayoutServerLoad = async ({ locals, params, url }) => {
   locals.security.requireNothing();
+
+  // don't render in prod for now
+  if (env.APP_ENV === 'prd') return error(404);
 
   const productId = params.productId?.trim();
   if (!productId) {
@@ -63,21 +67,17 @@ export const load: LayoutServerLoad = async ({ locals, params, url }) => {
     translatedManifest['full_description.txt'] || translatedManifest['description.txt'] || '';
   const fallbackIcon = getGPFallbackIcon(product.Project.TypeId);
 
-  const app = {
-    id: product.Id,
-    icon: translatedManifest.icon || fallbackIcon,
-    fallbackIcon,
-    name: translatedManifest['title.txt'] || product.Project.Name || 'App',
-    developer,
-    language: translatedManifest.language,
-    languages: translatedManifest.languages,
-    themeColor: translatedManifest.color || null,
-    shortDesc: translatedManifest['short_description.txt'] || '',
-    longDesc
-  };
-
   return {
-    app,
-    productId: app.id
+    app: {
+      id: product.Id,
+      icon: translatedManifest.icon || fallbackIcon,
+      name: translatedManifest['title.txt'] || product.Project.Name || 'App',
+      developer,
+      language: translatedManifest.language,
+      languages: translatedManifest.languages,
+      themeColor: translatedManifest.color,
+      shortDesc: translatedManifest['short_description.txt'] || '',
+      longDesc
+    }
   };
 };
