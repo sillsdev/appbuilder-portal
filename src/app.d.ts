@@ -69,10 +69,14 @@ declare global {
     // interface PageData {}
     // interface Platform {}
 
-    type SnippetWithArgs<T> = {
-      snippet: Snippet<[T]>;
-      args: T;
-    };
+    type SnippetWithArgs<T> =
+      | {
+          snippet: Snippet<[T]>;
+          args: T;
+        }
+      | {
+          snippet: Snippet<[]>;
+        };
   }
 }
 

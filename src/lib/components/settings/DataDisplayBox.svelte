@@ -2,7 +2,7 @@
     @component
     A container box with a title and rows of internationalized information   
 -->
-<script lang="ts" generics="T">
+<script lang="ts">
   import type { Snippet } from 'svelte';
   import type { ClassValue } from 'svelte/elements';
   import { Icons } from '$lib/icons';
@@ -10,13 +10,16 @@
   import { m } from '$lib/paraglide/messages';
   import type { ValueKey } from '$lib/utils';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  type FieldProp<T = any> = ValueKey & {
+    faint?: boolean;
+    // eslint-disable-next-line no-undef
+  } & ({ value: string | number | null } | App.SnippetWithArgs<T>);
+
   interface Props {
     class?: ClassValue;
     title: string | Snippet;
-    fields: (ValueKey & {
-      faint?: boolean;
-      // eslint-disable-next-line no-undef
-    } & ({ value?: string | number | null } | App.SnippetWithArgs<T>))[];
+    fields: FieldProp[];
     editable?: boolean;
     editTitle?: string;
     editLink?: string;
