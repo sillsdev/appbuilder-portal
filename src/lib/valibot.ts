@@ -1,4 +1,5 @@
 import * as v from 'valibot';
+import { AdminSettings, softwareUpdatesParametersSchema } from './admin-settings';
 
 export const idSchema = v.pipe(v.number(), v.minValue(0), v.integer());
 
@@ -20,57 +21,71 @@ export type PaginateSchema = typeof paginateSchema;
 
 const recordSchema = v.record(v.string(), v.string());
 
-export function JSONSchema(
-  actions?:
-    | v.ObjectSchema<v.ObjectEntries, v.ErrorMessage<v.ObjectIssue> | undefined>
-    | v.StrictObjectSchema<v.ObjectEntries, v.ErrorMessage<v.StrictObjectIssue> | undefined>
-    | v.LooseObjectSchema<v.ObjectEntries, v.ErrorMessage<v.LooseObjectIssue> | undefined>
-    | v.ObjectWithRestSchema<
-        v.ObjectEntries,
-        v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>,
-        v.ErrorMessage<v.ObjectWithRestIssue> | undefined
-      >
-) {
-  return v.nullable(
-    v.pipe(
-      v.string(),
-      v.rawTransform(({ dataset, addIssue, NEVER }) => {
-        try {
-          return JSON.parse(dataset.value || '{}');
-        } catch (e) {
-          addIssue({
-            message: e instanceof Error ? e.message : String(e),
-            path: [
-              {
-                type: 'unknown',
-                origin: 'value',
-                input: dataset.value,
-                key: 'root',
-                value: dataset.value
-              }
-            ]
-          });
-          return NEVER;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const transformStringToJSON = v.rawTransform<string, any>(({ dataset, addIssue, NEVER }) => {
+  try {
+    return JSON.parse(dataset.value || '{}');
+  } catch (e) {
+    addIssue({
+      message: e instanceof Error ? e.message : String(e),
+      path: [
+        {
+          type: 'unknown',
+          origin: 'value',
+          input: dataset.value,
+          key: 'root',
+          value: dataset.value
         }
-      }),
-      actions ?? v.looseObject({}),
-      v.transform((o) => JSON.stringify(o, null, 4))
-    )
-  );
-}
+      ]
+    });
+    return NEVER;
+  }
+});
 
-export const propertiesSchema = JSONSchema(
-  // make sure it has the right structure
-  v.strictObject({
-    environment: v.optional(recordSchema),
-    'build:environment': v.optional(recordSchema),
-    'publish:environment': v.optional(recordSchema),
-    'build:targets': v.optional(v.string()),
-    'publish:targets': v.optional(v.string())
-  })
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const transformJSONToString = v.transform<any, string>((o) => JSON.stringify(o, null, 4));
+
+export const propertiesSchema = v.nullable(
+  v.pipe(
+    v.string(),
+    transformStringToJSON,
+    // make sure it has the right structure
+    v.strictObject({
+      environment: v.optional(recordSchema),
+      'build:environment': v.optional(recordSchema),
+      'publish:environment': v.optional(recordSchema),
+      'build:targets': v.optional(v.string()),
+      'publish:targets': v.optional(v.string())
+    }),
+    transformJSONToString
+  )
 );
 
-export type JsonSchema = ReturnType<typeof JSONSchema> | typeof propertiesSchema;
+export const JSONStringSchema = v.pipe(
+  v.string(),
+  transformStringToJSON,
+  v.looseObject({}),
+  transformJSONToString
+);
+
+export const siteParamsSchema = v.objectWithRest(
+  {
+    [AdminSettings.SoftwareUpdates]: v.nullish(
+      v.pipe(
+        v.string(),
+        transformStringToJSON,
+        softwareUpdatesParametersSchema,
+        transformJSONToString
+      )
+    )
+  },
+  v.nullable(JSONStringSchema)
+);
+
+export type JsonSchema =
+  | typeof propertiesSchema
+  | typeof JSONStringSchema
+  | typeof siteParamsSchema;
 
 /** Legal phone numbers: +1 (123) 456-7890 1234567890 123-4567890 123 456-7890 */
 // eslint-disable-next-line no-useless-escape

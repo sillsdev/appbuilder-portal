@@ -1,11 +1,18 @@
+import * as v from 'valibot';
+import {
+  AdminSettings,
+  defaultSoftwareUpdatesRateLimit,
+  softwareUpdatesParametersSchema
+} from '$lib/admin-settings';
 import { DatabaseReads } from '$lib/server/database';
-import { AdminSettings } from '.';
+import { transformStringToJSON } from '$lib/valibot';
 
 /**
  * return stored rate limit from DB (default: 20)
  */
 export async function getSoftwareUpdatesRateLimit() {
-  const record = JSON.parse(
+  const record = v.safeParse(
+    v.pipe(v.nullish(v.string(), ''), transformStringToJSON, softwareUpdatesParametersSchema),
     (
       await DatabaseReads.adminSettings.findUnique({
         where: { Key: AdminSettings.SoftwareUpdates },
@@ -13,8 +20,8 @@ export async function getSoftwareUpdatesRateLimit() {
           Value: true
         }
       })
-    )?.Value || '{}'
+    )?.Value
   );
 
-  return record?.['rate-limit'] ?? 20;
+  return record.success ? record.output['rate-limit'] : defaultSoftwareUpdatesRateLimit;
 }

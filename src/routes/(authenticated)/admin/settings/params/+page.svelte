@@ -9,7 +9,7 @@
   import { toast } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
-  import { JSONSchema } from '$lib/valibot';
+  import { siteParamsSchema } from '$lib/valibot';
 
   interface Props {
     data: PageData;
@@ -45,7 +45,7 @@
         class="w-full"
         bind:value={$form[setting.Key]}
         bind:ok={ok[i]}
-        schema={JSONSchema()}
+        schema={siteParamsSchema}
       />
       <span class="validator-hint">&nbsp;</span>
     </LabeledFormInput>
