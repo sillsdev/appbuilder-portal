@@ -2,21 +2,17 @@
     @component
     A container box with a title and rows of internationalized information   
 -->
-<script lang="ts">
-  import type { Snippet } from 'svelte';
-  import type { ClassValue } from 'svelte/elements';
-  import { Icons } from '$lib/icons';
-  import IconContainer from '$lib/icons/IconContainer.svelte';
-  import { m } from '$lib/paraglide/messages';
-  import type { ValueKey } from '$lib/utils';
+
+<script lang="ts" module>
+  type Value = { value?: string | number | null };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   type FieldProp<T = any> = ValueKey & {
     faint?: boolean;
     // eslint-disable-next-line no-undef
-  } & ({ value: string | number | null } | App.SnippetWithArgs<T>);
+  } & (Value | (App.SnippetWithArgs<T> & Value));
 
-  interface Props {
+  export interface DataDisplayBoxProps {
     class?: ClassValue;
     title: string | Snippet;
     fields: FieldProp[];
@@ -25,6 +21,15 @@
     editLink?: string;
     children?: Snippet;
   }
+</script>
+
+<script lang="ts">
+  import type { Snippet } from 'svelte';
+  import type { ClassValue } from 'svelte/elements';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
+  import { m } from '$lib/paraglide/messages';
+  import type { ValueKey } from '$lib/utils';
 
   let {
     class: classes,
@@ -34,7 +39,7 @@
     editTitle,
     editLink,
     children
-  }: Props = $props();
+  }: DataDisplayBoxProps = $props();
 </script>
 
 <div class={['flex flex-row border border-slate-600 p-2 mx-4 m-1 rounded-md', classes]}>
@@ -61,14 +66,14 @@
       >
         <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
         <b>{m[field.key](field.params as any)}:</b>
-        {#if 'snippet' in field}
+        {#if 'snippet' in field && field.snippet}
           {#if 'args' in field}
             {@render field.snippet(field.args)}
           {:else}
             {@render field.snippet()}
           {/if}
         {:else}
-          <span>{field.value ?? ''}</span>
+          <span>{field.value}</span>
         {/if}
       </div>
     {/each}

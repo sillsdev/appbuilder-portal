@@ -71,11 +71,11 @@ declare global {
 
     type SnippetWithArgs<T> =
       | {
-          snippet: Snippet<[T]>;
+          snippet: Snippet<[T]> | null;
           args: T;
         }
       | {
-          snippet: Snippet<[]>;
+          snippet: Snippet<[]> | null;
         };
   }
 }
