@@ -3,7 +3,7 @@ import type { Prisma, PrismaClient } from '@prisma/client';
 import type { ITXClientDenyList } from '@prisma/client/runtime/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
-import type { RequirePrimitive } from './utility';
+import type { RequirePrimitive, TXClient } from './utility';
 import { RoleId } from '$lib/prisma';
 
 /**
@@ -45,7 +45,7 @@ export async function create(
 export async function update(
   id: number,
   projectData: RequirePrimitive<Prisma.ProjectsUncheckedUpdateInput>,
-  txClient?: Omit<PrismaClient, ITXClientDenyList>
+  txClient?: TXClient
 ): Promise<boolean> {
   const client = txClient ?? prisma;
   // There are cases where a db lookup is not necessary to verify that it will
@@ -134,7 +134,7 @@ async function validateProjectBase(
   groupId: number,
   ownerId: number,
   projectId?: number,
-  txClient?: Omit<PrismaClient, ITXClientDenyList>
+  txClient?: TXClient
 ) {
   const client = txClient ?? prisma;
   // Each of the criteria for a valid project just needs to checked if

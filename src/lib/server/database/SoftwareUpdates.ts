@@ -2,7 +2,7 @@ import type { Prisma, PrismaClient } from '@prisma/client';
 import type { ITXClientDenyList } from '@prisma/client/runtime/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
-import type { RequirePrimitive } from './utility';
+import type { RequirePrimitive, TXClient } from './utility';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { filterAdminOrgs } from '$lib/utils/roles';
@@ -92,7 +92,7 @@ export async function cancelForOrg(
 export async function updateStatus(
   productId: string,
   data: Pick<RequirePrimitive<Prisma.WorkflowInstancesUncheckedUpdateInput>, 'State'>,
-  txClient?: Omit<PrismaClient, ITXClientDenyList>
+  txClient?: TXClient
 ) {
   if (data.State) {
     const client = txClient ?? prisma;

@@ -3,7 +3,7 @@ import type { ITXClientDenyList } from '@prisma/client/runtime/client';
 import { update as projectUpdate } from './Projects';
 import { updateStatus } from './SoftwareUpdates';
 import prisma from './prisma';
-import type { RequirePrimitive } from './utility';
+import type { RequirePrimitive, TXClient } from './utility';
 import type { WorkflowState } from '$lib/workflowTypes';
 
 export async function upsert(
@@ -66,7 +66,7 @@ async function deleteInstance(
   productId: string,
   projectId: number,
   status: WorkflowState,
-  txClient?: Omit<PrismaClient, ITXClientDenyList>
+  txClient?: TXClient
 ) {
   const client = txClient ?? prisma;
   await updateProjectDateActive(productId, projectId, client);
@@ -76,11 +76,7 @@ async function deleteInstance(
 }
 export { deleteInstance as delete };
 
-async function updateProjectDateActive(
-  productId: string,
-  projectId: number,
-  txClient?: Omit<PrismaClient, ITXClientDenyList>
-) {
+async function updateProjectDateActive(productId: string, projectId: number, txClient?: TXClient) {
   const client = txClient ?? prisma;
   const project = await client.projects.findUniqueOrThrow({
     where: {
