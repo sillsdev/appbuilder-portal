@@ -1,6 +1,5 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
-import type { Prisma, PrismaClient } from '@prisma/client';
-import type { ITXClientDenyList } from '@prisma/client/runtime/client';
+import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
 import type { RequirePrimitive, TXClient } from './utility';

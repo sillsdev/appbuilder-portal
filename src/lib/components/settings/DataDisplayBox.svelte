@@ -62,7 +62,11 @@
         <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
         <b>{m[field.key](field.params as any)}:</b>
         {#if 'snippet' in field}
-          {@render field.snippet(field.args)}
+          {#if 'args' in field}
+            {@render field.snippet(field.args)}
+          {:else}
+            {@render field.snippet()}
+          {/if}
         {:else}
           <span>{field.value ?? ''}</span>
         {/if}
