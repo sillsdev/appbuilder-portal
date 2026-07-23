@@ -15,7 +15,6 @@ export async function getSoftwareUpdatesRateLimit() {
       })
     )?.Value || '{}'
   );
-  const fromDB = parseInt(String(record?.['rate-limit'] ?? '') || 'NaN', 10);
 
-  return isNaN(fromDB) ? 20 : fromDB;
+  return record?.['rate-limit'] ?? 20;
 }

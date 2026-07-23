@@ -34,10 +34,9 @@ export async function mapSystems(
     organizations.map((o) => [
       o.Id,
       new Map(
-        ((!o.UseDefaultBuildEngine && o.System) || defaultSystem).SystemVersions.map((v) => [
-          v.ApplicationTypeId,
-          v.Version ?? ''
-        ])
+        (o.UseDefaultBuildEngine ? defaultSystem : (o.System ?? defaultSystem)).SystemVersions.map(
+          (v) => [v.ApplicationTypeId, v.Version ?? '']
+        )
       )
     ])
   );

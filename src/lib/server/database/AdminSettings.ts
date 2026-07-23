@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import prisma from './prisma';
+import { AdminSettings } from '$lib/admin-settings';
 
 export async function update(
   userId: number,
@@ -22,5 +23,16 @@ export async function update(
           tx.adminSettings.update({ where: { Key }, data: { Value, ModifiedById: userId } })
         )
     );
+  });
+}
+
+export async function insertPlaceholders() {
+  return await prisma.adminSettings.createMany({
+    data: Object.values(AdminSettings).map((v) => ({
+      Key: v,
+      Value: '{}',
+      ModifiedById: null
+    })),
+    skipDuplicates: true
   });
 }
