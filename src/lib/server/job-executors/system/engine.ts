@@ -1,6 +1,5 @@
 import type { Prisma } from '@prisma/client';
 import type { Job } from 'bullmq';
-import { randomInt } from 'node:crypto';
 import { BuildEngine } from '../../build-engine-api';
 import { BullMQ, getQueues } from '../../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../../database';
@@ -164,15 +163,20 @@ export async function checkPendingUpdates(
     summary.remaining = totalWaiting;
 
     if (totalWaiting) {
-      const chunkSize = rateLimit - totalBuilding;
-
       const waitingProducts = await DatabaseReads.softwareUpdatesOnProducts.findMany({
         where: filter,
         select: {
           ProductId: true
         },
-        take: chunkSize,
-        skip: Math.max(0, randomInt(totalWaiting || 1) - chunkSize)
+        orderBy: [
+          {
+            SoftwareUpdate: { DateCreated: 'asc' }
+          },
+          {
+            Product: { DateCreated: 'asc' }
+          }
+        ],
+        take: rateLimit - totalBuilding
       });
 
       job.updateProgress(50);
