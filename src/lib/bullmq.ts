@@ -37,6 +37,7 @@ export enum JobType {
   System_CheckEngineStatuses = 'Check BuildEngine Statuses',
   System_RefreshLangTags = 'Refresh langtags.json',
   System_Migrate = 'Migrate Features from S1 to S2',
+  System_CheckPendingUpdates = 'Check Pending Software Updates',
   // UserTasks Job
   UserTasks_Workflow = 'Modify Workflow UserTasks',
   UserTasks_DeleteRequest = 'Modify Data Deletion UserTasks',
@@ -52,12 +53,15 @@ export enum JobType {
   Email_ProjectImportReport = 'Project Import Report',
   // Svelte Project SSE
   SvelteSSE_UpdateProject = 'Update Project',
-  SvelteSSE_UpdateUserTasks = 'Update UserTasks'
+  SvelteSSE_UpdateUserTasks = 'Update UserTasks',
+  SvelteSSE_UpdateSoftwareUpdates = 'Update Software Updates',
+  SvelteSSE_UpdateUpdatableProducts = 'Update Updatable Products'
 }
 
 export enum JobSchedulerId {
   SystemStatusEmail = 'SystemStatusEmail',
   RefreshLangTags = 'RefreshLangTags',
   CheckSystemStatuses = 'CheckSystemStatuses',
+  CheckPendingUpdates = 'CheckPendingUpdates',
   MigrateChunks = 'MigrateChunks'
 }

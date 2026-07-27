@@ -4,8 +4,8 @@
   import { goto } from '$app/navigation';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import InputWithMessage from '$lib/components/settings/InputWithMessage.svelte';
+  import JSONEditor from '$lib/components/settings/JSONEditor.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import SelectWithIcon from '$lib/components/settings/SelectWithIcon.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import Toggle from '$lib/components/settings/Toggle.svelte';
@@ -15,6 +15,7 @@
   import { getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
   import { byName, byString } from '$lib/utils/sorting';
+  import { propertiesSchema } from '$lib/valibot';
 
   interface Props {
     data: PageData;
@@ -137,11 +138,12 @@
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
   <LabeledFormInput key="prodDefs_properties">
-    <PropertiesEditor
+    <JSONEditor
       name="properties"
       class="w-full"
       bind:value={$form.properties}
       bind:ok={propsOk}
+      schema={propertiesSchema}
     />
   </LabeledFormInput>
   <div class="my-4">

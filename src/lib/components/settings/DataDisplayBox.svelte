@@ -2,36 +2,52 @@
     @component
     A container box with a title and rows of internationalized information   
 -->
-<script lang="ts" generics="T extends Record<string, unknown>">
-  import type { Snippet } from 'svelte';
-  import { Icons } from '$lib/icons';
-  import IconContainer from '$lib/icons/IconContainer.svelte';
-  import { m } from '$lib/paraglide/messages';
-  import type { ValueKey } from '$lib/utils';
 
-  interface Props {
-    title: string | Snippet<[T | undefined]>;
-    data?: T;
-    fields: (ValueKey & {
-      value?: string | null;
-      snippet?: Snippet<[T | undefined]>;
-      faint?: boolean;
-    })[];
+<script lang="ts" module>
+  type Value = { value?: string | number | null };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  type FieldProp<T = any> = ValueKey & {
+    faint?: boolean;
+    // eslint-disable-next-line no-undef
+  } & (Value | (App.SnippetWithArgs<T> & Value));
+
+  export interface DataDisplayBoxProps {
+    class?: ClassValue;
+    title: string | Snippet;
+    fields: FieldProp[];
     editable?: boolean;
     editTitle?: string;
     editLink?: string;
     children?: Snippet;
   }
-
-  let { title, data, fields, editable = false, editTitle, editLink, children }: Props = $props();
 </script>
 
-<div class="flex flex-row border border-slate-600 p-2 mx-4 m-1 rounded-md">
+<script lang="ts">
+  import type { Snippet } from 'svelte';
+  import type { ClassValue } from 'svelte/elements';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
+  import { m } from '$lib/paraglide/messages';
+  import type { ValueKey } from '$lib/utils';
+
+  let {
+    class: classes,
+    title,
+    fields,
+    editable = false,
+    editTitle,
+    editLink,
+    children
+  }: DataDisplayBoxProps = $props();
+</script>
+
+<div class={['flex flex-row border border-slate-600 p-2 mx-4 m-1 rounded-md', classes]}>
   <div class="relative w-full">
     {#if typeof title === 'string'}
       <h3>{title}</h3>
     {:else}
-      {@render title(data)}
+      {@render title()}
     {/if}
     {#if editable && editLink}
       <a
@@ -50,10 +66,14 @@
       >
         <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
         <b>{m[field.key](field.params as any)}:</b>
-        {#if field.snippet}
-          {@render field.snippet(data)}
+        {#if 'snippet' in field && field.snippet}
+          {#if 'args' in field}
+            {@render field.snippet(field.args)}
+          {:else}
+            {@render field.snippet()}
+          {/if}
         {:else}
-          <span>{field.value ?? ''}</span>
+          <span>{field.value}</span>
         {/if}
       </div>
     {/each}

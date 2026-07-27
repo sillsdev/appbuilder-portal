@@ -2,13 +2,14 @@
   import type { Prisma } from '@prisma/client';
   import { enhance } from '$app/forms';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
+  import IconButton from '$lib/components/settings/IconButton.svelte';
+  import JSONEditor from '$lib/components/settings/JSONEditor.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
-  import PropertiesEditor from '$lib/components/settings/PropertiesEditor.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { Icons } from '$lib/icons';
-  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { type ComputeType, computeTypes, getComputeType, updateComputeType } from '$lib/products';
+  import { propertiesSchema } from '$lib/valibot';
 
   interface Props {
     modal?: HTMLDialogElement;
@@ -74,7 +75,13 @@
           </select>
         </LabeledFormInput>
         <LabeledFormInput key="products_properties_title">
-          <PropertiesEditor name="properties" class="w-full" bind:value bind:ok />
+          <JSONEditor
+            name="properties"
+            class="w-full"
+            bind:value
+            bind:ok
+            schema={propertiesSchema}
+          />
         </LabeledFormInput>
         <div class="flex flex-row gap-2">
           <CancelButton
@@ -83,18 +90,16 @@
               value = product.Properties;
             }}
           />
-          <button
-            class="btn btn-primary"
-            type="button"
+          <IconButton
+            class="btn-primary"
+            icon={Icons.Reset}
+            key="common_default"
             onclick={() => {
               if (ok) {
                 value = updateComputeType(value);
               }
             }}
-          >
-            <IconContainer icon={Icons.Reset} width={20} />
-            {m.common_default()}
-          </button>
+          />
           <SubmitButton
             disabled={!ok}
             onclick={() => {

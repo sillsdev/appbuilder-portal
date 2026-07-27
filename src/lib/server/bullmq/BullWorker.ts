@@ -110,6 +110,19 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         }
       }
     );
+    getQueues().SystemRecurring.upsertJobScheduler(
+      BullMQ.JobSchedulerId.CheckPendingUpdates,
+      {
+        pattern: '*/5 * * * *', // every 5 minutes
+        immediately: false
+      },
+      {
+        name: 'Rate-limit Pending Software Updates',
+        data: {
+          type: BullMQ.JobType.System_CheckPendingUpdates
+        }
+      }
+    );
   }
   async run(job: Job<J>) {
     switch (job.data.type) {
@@ -119,6 +132,8 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         return Executor.System.refreshLangTags(job as Job<BullMQ.System.RefreshLangTags>);
       case BullMQ.JobType.System_Migrate:
         return Executor.System.lazyMigrate(job as Job<BullMQ.System.Migrate>);
+      case BullMQ.JobType.System_CheckPendingUpdates:
+        return Executor.System.checkPendingUpdates(job as Job<BullMQ.System.CheckPendingUpdates>);
     }
   }
 }
@@ -301,6 +316,12 @@ export class SvelteSSE<J extends BullMQ.SvelteSSEJob> extends BullWorker<J> {
         break;
       case BullMQ.JobType.SvelteSSE_UpdateUserTasks:
         SSEPageUpdates.emit('userTasksPage', job.data.userIds);
+        break;
+      case BullMQ.JobType.SvelteSSE_UpdateSoftwareUpdates:
+        SSEPageUpdates.emit('softwareUpdates', job.data.orgIds);
+        break;
+      case BullMQ.JobType.SvelteSSE_UpdateUpdatableProducts:
+        SSEPageUpdates.emit('updatableProducts', job.data.orgIds);
         break;
     }
   }

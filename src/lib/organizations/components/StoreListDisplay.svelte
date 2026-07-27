@@ -7,6 +7,7 @@
   import type { Prisma } from '@prisma/client';
   import type { Snippet } from 'svelte';
   import Tooltip from '$lib/components/Tooltip.svelte';
+  import type { DataDisplayBoxProps } from '$lib/components/settings/DataDisplayBox.svelte';
   import DataDisplayBox from '$lib/components/settings/DataDisplayBox.svelte';
   import { Icons, getStoreIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
@@ -52,8 +53,8 @@
             key: 'stores_gpTitle' as ValidI13nKey,
             value: store.GooglePlayTitle,
             class: { 'text-error': missingGPTitle },
-            snippet: missingGPTitle ? gpTitleError : undefined
-          }
+            snippet: missingGPTitle ? gpTitleError : null
+          } satisfies DataDisplayBoxProps['fields'][number]
         ]
       : [])
   ]}

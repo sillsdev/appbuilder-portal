@@ -61,6 +61,11 @@ export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown>
     });
   }
 
+  job.updateProgress(75);
+
+  // 2. Add placeholder AdminSettings to database
+  await DatabaseWrites.adminSettings.insertPlaceholders();
+
   job.updateProgress(100);
 
   return {

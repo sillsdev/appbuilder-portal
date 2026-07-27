@@ -1,0 +1,360 @@
+<script lang="ts">
+  import { parse } from 'devalue';
+  import type { Readable } from 'svelte/store';
+  import { source } from 'sveltekit-sse';
+  import { superForm } from 'sveltekit-superforms';
+  import type { ActionData, PageData } from './$types';
+  import { enhance as svk_enhance } from '$app/forms';
+  import { page } from '$app/state';
+  import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
+  import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons, getActionIcon, getAppIcon } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
+  import { m } from '$lib/paraglide/messages';
+  import { getLocale } from '$lib/paraglide/runtime';
+  import type { ApplicationType } from '$lib/prisma';
+  import { ProductActionType } from '$lib/products';
+  import { type RebuildableProductsData, type UpdateSummaryData } from '$lib/software-updates';
+  import UpdateSummary from '$lib/software-updates/components/UpdateSummary.svelte';
+  import { orgActive } from '$lib/stores';
+  import { toast } from '$lib/utils';
+  import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
+  import { isAdminForOrg } from '$lib/utils/roles';
+  import { byString } from '$lib/utils/sorting';
+  import { resetValidity } from '$lib/valibot';
+
+  interface Props {
+    data: PageData;
+  }
+  let { data }: Props = $props();
+
+  const currentPageUrl = page.url.pathname;
+  let reconnectDelaySU = 1000;
+  const softwareUpdatesSSE: Readable<UpdateSummaryData[] | undefined> = $derived.by(() => {
+    return source(`${page.url.pathname}/sse/updates`, {
+      close({ connect }) {
+        setTimeout(() => {
+          // If the current page has changed, we don't want to reconnect.
+          if (currentPageUrl !== page.url.pathname) {
+            return;
+          }
+          console.log('Disconnected. Reconnecting...');
+          connect();
+          reconnectDelaySU = Math.min(reconnectDelaySU * 2, 30000);
+        }, reconnectDelaySU);
+      }
+    })
+      .select('updates')
+      .transform((t) => (t ? parse(t) : undefined));
+  });
+
+  // Use SSE data if available, otherwise fall back to server data
+  const updates = $derived({
+    complete: ($softwareUpdatesSSE ?? data.updates).filter((u) => u.DateCompleted),
+    active: ($softwareUpdatesSSE ?? data.updates).filter((u) => !u.DateCompleted)
+  });
+
+  let reconnectDelayUP = 1000;
+  const updatableProductsSSE: Readable<RebuildableProductsData | undefined> = $derived.by(() => {
+    return source(`${page.url.pathname}/sse/products`, {
+      close({ connect }) {
+        setTimeout(() => {
+          // If the current page has changed, we don't want to reconnect.
+          if (currentPageUrl !== page.url.pathname) {
+            return;
+          }
+          console.log('Disconnected. Reconnecting...');
+          connect();
+          reconnectDelayUP = Math.min(reconnectDelayUP * 2, 30000);
+        }, reconnectDelayUP);
+      }
+    })
+      .select('products')
+      .transform((t) => (t ? parse(t) : undefined));
+  });
+
+  const organizations = $derived(
+    $updatableProductsSSE?.organizations ?? data.products.organizations
+  );
+
+  const presentAppTypes = $derived(
+    $updatableProductsSSE?.presentAppTypes ?? data.products.presentAppTypes
+  );
+
+  //const rebuilds = $derived(data.rebuilds);
+  const { form, enhance, submit } = superForm(data.form, {
+    dataType: 'json',
+    resetForm: true,
+    onSubmit({ submitter, cancel }) {
+      if (!confirmationModal?.contains(submitter)) {
+        cancel();
+        confirmationModal?.showModal();
+      }
+    },
+    onUpdate({ form, result, formElement }) {
+      if (form.valid && result.type === 'success') {
+        const data = result.data as ActionData;
+        const total = data?.data?.total ?? 0;
+        const failed = data?.data?.failed ?? 0;
+        toast('success', m.softwareUpdate_start_success({ successful: total - failed, total }));
+        formElement.reset();
+      }
+    },
+    onError({ result }) {
+      if (result.status === 503) {
+        toast('error', m.system_unavailable());
+      } else {
+        console.log('Unspecified error');
+      }
+    }
+  });
+
+  let applicationTypeIds = $derived(
+    data.applicationTypes.map(({ Id }) => Id).filter((i) => presentAppTypes.has(i))
+  );
+
+  const locale = $derived(getLocale());
+
+  const filteredOrgs = $derived(
+    organizations
+      .map((o) => {
+        const presentAppTypes = new Set<number>();
+        const filtered = {
+          ...o,
+          Projects: o.Projects.filter((p) => {
+            const present = applicationTypeIds.includes(p.TypeId);
+            if (present) {
+              presentAppTypes.add(p.TypeId);
+            }
+            return present;
+          }),
+          Versions:
+            o.Versions?.filter((v) => v.Version && presentAppTypes.has(v.ApplicationTypeId)).map(
+              (v) => ({
+                ApplicationTypeId: v.ApplicationTypeId,
+                Versions: [v.Version ?? '']
+              })
+            ) ?? []
+        };
+
+        return filtered;
+      })
+      .filter((o) => o.Projects.length)
+  );
+
+  const filteredProjects = $derived(filteredOrgs.flatMap((o) => o.Projects));
+
+  const products = $derived(filteredProjects.flatMap((p) => p.Products.map((p) => p.Id)));
+  $effect(() => {
+    $form.products = products;
+  });
+
+  // Switch orgs properly
+  $effect(() => {
+    if (
+      !selectGotoFromOrg(
+        !!$orgActive && isAdminForOrg($orgActive, data.session.user.roles),
+        `/software-update/${$orgActive}`,
+        `/software-update`
+      )
+    ) {
+      setOrgFromParams($orgActive, page.params.orgId);
+    }
+  });
+
+  let confirmationModal: HTMLDialogElement | undefined = $state(undefined);
+</script>
+
+<div class="w-full px-2 pb-1">
+  <h1>{m.softwareUpdate()}</h1>
+  <p class="pl-8 mt-2 mb-6">{m.softwareUpdate_description()}</p>
+  <div class="w-full m-auto md:max-w-3xl">
+    <form
+      id="new-update-form"
+      class="mx-4 flex flex-col"
+      method="post"
+      action="?/start"
+      use:enhance
+      onreset={(e) => resetValidity(e.currentTarget)}
+    >
+      <div class="flex flex-col md:flex-row">
+        <!-- Application Type Toggles -->
+        <div class="grow min-w-xs mb-2">
+          <h3 class="font-semibold mb-2 pl-0">{m.softwareUpdate_applicationTypes()}</h3>
+          <p class="text-sm text-gray-500 mb-4">
+            {m.softwareUpdate_applicationTypes_description()}
+          </p>
+
+          <div class="flex w-full">
+            <div class="shrink space-y-2">
+              {#each data.applicationTypes.toSorted( (a, b) => byString(a.Description, b.Description, locale) ) as appType}
+                <label
+                  class={[
+                    'flex space-x-2 items-center',
+                    presentAppTypes.has(appType.Id) || 'opacity-70 cursor-not-allowed select-none'
+                  ]}
+                >
+                  <input
+                    type="checkbox"
+                    name="applicationTypeIds"
+                    value={appType.Id}
+                    bind:group={applicationTypeIds}
+                    class="toggle toggle-accent toggle-sm"
+                    disabled={!presentAppTypes.has(appType.Id)}
+                  />
+                  <IconContainer icon={getAppIcon(appType.Id as ApplicationType)} width={24} />
+                  <div class="font-medium">{appType.Description ?? ''}</div>
+                </label>
+              {/each}
+            </div>
+            <div class="grow"></div>
+          </div>
+        </div>
+        <LabeledFormInput key="transitions_comment" class="md:mt-12">
+          <textarea
+            name="comment"
+            class="textarea w-full validator min-h-42"
+            bind:value={$form.comment}
+            required
+          ></textarea>
+          <span class="validator-hint">{m.softwareUpdate_commentRequired()}</span>
+        </LabeledFormInput>
+      </div>
+      <!-- Summary Information -->
+      <UpdateSummary
+        update={{
+          Id: 0,
+          InitiatedBy: data.user,
+          DateCreated: null,
+          DateCompleted: null,
+          Comment: $form.comment,
+          _count: {
+            UpdatedProducts: products.length
+          },
+          Organizations: filteredOrgs
+        }}
+        presentAppTypes={data.applicationTypes.filter((at) => applicationTypeIds.includes(at.Id))}
+        productTypes={data.productTypes}
+      >
+        {#snippet actions()}
+          <SubmitButton
+            key="softwareUpdate_start"
+            icon={Icons.UpdateOn}
+            disabled={applicationTypeIds.length === 0 || products.length === 0}
+          />
+        {/snippet}
+      </UpdateSummary>
+    </form>
+
+    <dialog bind:this={confirmationModal} class="modal">
+      <div class="modal-box">
+        <div class="items-center text-center">
+          <h2 class="text-lg font-bold grow">
+            {m.softwareUpdate_confirm({ total: products.length })}
+          </h2>
+          <div class="flex flex-col gap-2 items-center w-full pt-2 text-left">
+            <div class="flex flex-row gap-2">
+              <CancelButton
+                onclick={() => {
+                  confirmationModal?.close();
+                }}
+              />
+              <BlockIfJobsUnavailable class="btn btn-primary">
+                {#snippet altContent()}
+                  <IconContainer icon={Icons.UpdateOn} width={20} />
+                  {m.softwareUpdate_start()}
+                {/snippet}
+                <SubmitButton
+                  form="new-update-form"
+                  onclick={(e) => {
+                    submit(e.currentTarget);
+                    confirmationModal?.close();
+                  }}
+                >
+                  {@render altContent()}
+                </SubmitButton>
+              </BlockIfJobsUnavailable>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>{m.common_close()}</button>
+      </form>
+    </dialog>
+
+    <!-- Updates List -->
+    <div class="m-4">
+      <div class="space-y-6">
+        {#if updates.active.length > 0}
+          <h2>{m.softwareUpdate_listActive()}</h2>
+          {#each updates.active as update}
+            {@const apps = new Set(
+              update.Organizations.flatMap((o) => o.Versions.map((v) => v.ApplicationTypeId))
+            )}
+            <div class="mb-4">
+              <UpdateSummary
+                {update}
+                presentAppTypes={data.applicationTypes.filter((at) => apps.has(at.Id))}
+                productTypes={data.productTypes}
+              >
+                {#snippet actions()}
+                  <BlockIfJobsUnavailable>
+                    {#snippet altContent()}
+                      <IconContainer icon={Icons.Close} width={24} />
+                    {/snippet}
+                    <form
+                      action="?/cancel"
+                      method="post"
+                      use:svk_enhance={() =>
+                        ({ update, result }) => {
+                          if (result.type === 'error') {
+                            if (result.status === 503) {
+                              toast('error', m.system_unavailable());
+                            }
+                          } else if (result.type === 'success') {
+                            const data = result.data as ActionData;
+                            const total = data?.data?.total ?? 0;
+                            const failed = data?.data?.failed ?? 0;
+                            toast(
+                              'success',
+                              m.softwareUpdate_cancel_success({ successful: total - failed, total })
+                            );
+                          }
+                          update({ reset: false });
+                        }}
+                    >
+                      <input type="hidden" name="id" value={update.Id} />
+                      <SubmitButton
+                        key="common_cancel"
+                        icon={getActionIcon(ProductActionType.CancelWorkflow)}
+                      />
+                    </form>
+                  </BlockIfJobsUnavailable>
+                {/snippet}
+              </UpdateSummary>
+            </div>
+          {/each}
+        {/if}
+
+        {#if updates.complete.length > 0}
+          <h2 class="mt-8">{m.softwareUpdate_listCompleted()}</h2>
+          {#each updates.complete as update}
+            {@const apps = new Set(
+              update.Organizations.flatMap((o) => o.Versions.map((v) => v.ApplicationTypeId))
+            )}
+            <div class="mb-4">
+              <UpdateSummary
+                {update}
+                presentAppTypes={data.applicationTypes.filter((at) => apps.has(at.Id))}
+                productTypes={data.productTypes}
+              />
+            </div>
+          {/each}
+        {/if}
+      </div>
+    </div>
+  </div>
+</div>

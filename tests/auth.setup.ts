@@ -24,6 +24,15 @@ setup.describe('login setup', () => {
     await page.getByPlaceholder('your password').fill(CI_PASSWORD!);
     // Click the login button
     await page.getByRole('button', { name: 'Log In' }).click();
+
+    // handle auth0 tenant access request that sometimes shows up
+    if (await page.getByText('Authorize App').isVisible()) {
+      console.log('Reached auth0 tenant access request page');
+      const allowBtn = page.getByRole('button', { name: 'Allow' });
+      await expect(allowBtn).toBeVisible();
+      await allowBtn.click();
+    }
+
     // Wait for the page to load
     await expect(page.getByRole('heading', { name: 'My Tasks' })).toBeVisible();
 

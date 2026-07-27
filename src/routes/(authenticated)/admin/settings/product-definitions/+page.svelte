@@ -49,7 +49,8 @@
       fields={[
         {
           key: 'prodDefs_type',
-          snippet: appType
+          snippet: appType,
+          args: pD
         },
         {
           key: 'prodDefs_flow',
@@ -57,11 +58,11 @@
         },
         {
           key: 'prodDefs_rebuildFlow',
-          value: pD.RebuildWorkflow?.Name
+          value: pD.RebuildWorkflow?.Name ?? null
         },
         {
           key: 'prodDefs_republishFlow',
-          value: pD.RepublishWorkflow?.Name
+          value: pD.RepublishWorkflow?.Name ?? null
         },
         {
           key: 'common_description',

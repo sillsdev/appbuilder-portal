@@ -28,6 +28,8 @@ import type {
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
+import prismaInternal from '../database/prisma';
+import type { TXClient } from '../database/utility';
 import { WorkflowStateMachine } from './state-machine';
 
 /**
@@ -36,14 +38,16 @@ import { WorkflowStateMachine } from './state-machine';
 export class Workflow {
   private flow: Actor<typeof WorkflowStateMachine> | null;
   private productId: string;
+  private softwareUpdateId?: number;
   private currentState: XStateNode<WorkflowContext, WorkflowEvent> | null;
   private input: WorkflowInput;
 
-  private constructor(productId: string, input: WorkflowInput) {
+  private constructor(productId: string, input: WorkflowInput, softwareUpdateId?: number) {
     this.flow = null; // to make svelte-check happy
     this.currentState = null; // ^^^
     this.productId = productId;
     this.input = input;
+    this.softwareUpdateId = softwareUpdateId;
   }
 
   /* PUBLIC METHODS */
@@ -51,9 +55,11 @@ export class Workflow {
   public static async create(
     productId: string,
     config: WorkflowConfig,
-    userId: number
+    userId: number,
+    comment?: string,
+    softwareUpdateId?: number
   ): Promise<Workflow> {
-    const check = await DatabaseReads.products.findUnique({
+    const check = await DatabaseReads.products.findUniqueOrThrow({
       where: {
         Id: productId
       },
@@ -61,6 +67,7 @@ export class Workflow {
         Project: {
           select: {
             Id: true,
+            OrganizationId: true,
             AutoPublishOnRebuild: true,
             _count: {
               select: {
@@ -72,14 +79,19 @@ export class Workflow {
         }
       }
     });
-    const flow = new Workflow(productId, {
-      ...config,
-      hasAuthors: !!check?.Project._count.Authors,
-      hasReviewers: !!check?.Project._count.Reviewers,
-      autoPublishOnRebuild: !!check?.Project.AutoPublishOnRebuild,
+    const flow = new Workflow(
       productId,
-      existingApp: false
-    });
+      {
+        ...config,
+        hasAuthors: !!check?.Project._count.Authors,
+        hasReviewers: !!check?.Project._count.Reviewers,
+        autoPublishOnRebuild: !!check?.Project.AutoPublishOnRebuild,
+        productId,
+        existingApp: false,
+        start: softwareUpdateId ? WorkflowState.Software_Update_Pending : undefined
+      },
+      softwareUpdateId
+    );
     flow.flow = createActor(WorkflowStateMachine, {
       inspect: (e) => {
         if (e.type === '@xstate.snapshot') flow.inspect(e);
@@ -92,6 +104,7 @@ export class Workflow {
       data: {
         ProductId: productId,
         DateTransition: new Date(),
+        Comment: comment,
         TransitionType: ProductTransitionType.StartWorkflow,
         WorkflowType: config.workflowType,
         UserId: userId
@@ -117,6 +130,17 @@ export class Workflow {
         type: BullMQ.UserTasks.OpType.Create
       }
     });
+
+    // SSE update for Software Update handled there in bulk
+    if (!softwareUpdateId && config.workflowType !== WorkflowType.Startup) {
+      getQueues().SvelteSSE.add(
+        `Update Updatable Products (product #${productId} rebuild/republish)`,
+        {
+          type: BullMQ.JobType.SvelteSSE_UpdateUpdatableProducts,
+          orgIds: [check.Project.OrganizationId]
+        }
+      );
+    }
 
     return flow;
   }
@@ -215,7 +239,8 @@ export class Workflow {
         autoPublishOnRebuild: !!instance.Product.Project.AutoPublishOnRebuild,
         isAutomatic: context.isAutomatic ?? false,
         productId,
-        existingApp: !!context.environment[ENVKeys.GOOGLE_PLAY_EXISTING]
+        existingApp: !!context.environment[ENVKeys.GOOGLE_PLAY_EXISTING],
+        start: context.start
       }
     };
   }
@@ -392,7 +417,8 @@ export class Workflow {
             ? prodDefinition.RebuildWorkflowId!
             : context.workflowType === WorkflowType.Republish
               ? prodDefinition.RepublishWorkflowId!
-              : prodDefinition.WorkflowId!
+              : prodDefinition.WorkflowId!,
+        SoftwareUpdateId: this.softwareUpdateId
       },
       update: {
         State: Workflow.stateName(this.currentState ?? { id: 'Start' }),
@@ -501,8 +527,13 @@ export class Workflow {
     return ret.filter((r) => !noDateWithRecords.has(r.InitialState ?? ''));
   }
 
-  public static async currentProductTransition(ProductId: string, InitialState?: string) {
-    const noDate = await DatabaseReads.productTransitions.findFirst({
+  public static async currentProductTransition(args: {
+    ProductId: string;
+    InitialState?: string;
+    txClient?: TXClient;
+  }) {
+    const { ProductId, InitialState, txClient: client = prismaInternal } = args;
+    const noDate = await client.productTransitions.findFirst({
       where: {
         ProductId,
         InitialState,
@@ -514,7 +545,7 @@ export class Workflow {
       }
     });
 
-    const withDate = await DatabaseReads.productTransitions.findMany({
+    const withDate = await client.productTransitions.findMany({
       where: {
         ProductId,
         InitialState,

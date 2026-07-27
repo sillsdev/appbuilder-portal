@@ -1,6 +1,7 @@
 import type { PrismaClient } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 
+import * as adminSettings from './AdminSettings';
 import * as authors from './Authors';
 import * as groups from './Groups';
 import * as organizations from './Organizations';
@@ -13,6 +14,7 @@ import * as projectActions from './ProjectActions';
 import * as projects from './Projects';
 import type { WRITE_METHODS } from './ReadonlyPrisma';
 import * as reviewers from './Reviewers';
+import * as softwareUpdates from './SoftwareUpdates';
 import * as stores from './Stores';
 import * as userTasks from './UserTasks';
 import * as users from './Users';
@@ -42,6 +44,7 @@ type DataType = {
 };
 
 const handlers = {
+  adminSettings,
   authors,
   reviewers,
   products,
@@ -56,6 +59,7 @@ const handlers = {
   organizations,
   productTransitions,
   users,
+  softwareUpdates,
   workflowInstances
 };
 // @ts-expect-error this is in fact immediately populated

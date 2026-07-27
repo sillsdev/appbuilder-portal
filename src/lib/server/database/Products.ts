@@ -4,6 +4,7 @@ import { BullMQ, getQueues } from '../bullmq/index';
 import { delete as deleteInstance } from './WorkflowInstances';
 import prisma from './prisma';
 import type { RequirePrimitive } from './utility';
+import { WorkflowState } from '$lib/workflowTypes';
 
 export async function create(
   productData: RequirePrimitive<Prisma.ProductsUncheckedCreateInput>
@@ -121,22 +122,27 @@ async function deleteProduct(productId: string) {
     },
     BullMQ.Retry0f600
   );
-  await prisma.$transaction([
-    deleteInstance(productId, product!.Project.Id),
-    prisma.userTasks.deleteMany({
+
+  await prisma.$transaction(async (tx) => {
+    await deleteInstance(productId, product!.Project.Id, WorkflowState.Terminated, tx);
+    await tx.userTasks.deleteMany({
       where: {
         ProductId: productId
       }
-    }),
-    prisma.products.delete({
+    });
+    return await tx.products.delete({
       where: {
         Id: productId
       }
-    })
-  ]);
+    });
+  });
   getQueues().SvelteSSE.add(`Update #${product?.Project.Id} (product delete)`, {
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
     projectIds: [product!.Project.Id]
+  });
+  getQueues().SvelteSSE.add(`Update Updatable Products (product #${productId} deleted)`, {
+    type: BullMQ.JobType.SvelteSSE_UpdateUpdatableProducts,
+    orgIds: [product!.Project.OrganizationId]
   });
 }
 export { deleteProduct as delete };
@@ -272,7 +278,7 @@ async function validateProductBase(
     const span = trace.getActiveSpan();
     if (span) {
       const msg = `Product validation failed for ${productId || 'new product'}`;
-      span.addEvent(msg, {
+      const log = {
         'product.project-id': projectId,
         'product.product-definition-id': productDefinitionId,
         'product.store-id': storeId,
@@ -282,7 +288,11 @@ async function validateProductBase(
         'product.language-allowed': optionalLanguageAllowed,
         'product.product-definition-allowed': productInOrg,
         'product.project-type-allowed': projectTypeAllowed
-      });
+      };
+      if (process.env.NODE_ENV === 'development') {
+        console.log(log);
+      }
+      span.addEvent(msg, log);
 
       span.recordException(new Error(msg));
       span.setStatus({

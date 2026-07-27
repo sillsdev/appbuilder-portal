@@ -41,7 +41,7 @@ export function isSuperAdmin(roles: ClientRolesArray): boolean {
  * @param sec Security object
  * @param orgId Id of specific organization
  */
-export function filterAdminOrgs(sec: Security, orgId: number | undefined) {
+export function filterAdminOrgs(sec: Security, orgId?: number) {
   return (
     orgId
       ? { Id: orgId }

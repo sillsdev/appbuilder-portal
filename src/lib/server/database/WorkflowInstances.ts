@@ -1,7 +1,9 @@
 import type { Prisma } from '@prisma/client';
 import { update as projectUpdate } from './Projects';
+import { updateStatus } from './SoftwareUpdates';
 import prisma from './prisma';
-import type { RequirePrimitive } from './utility';
+import type { RequirePrimitive, TXClient } from './utility';
+import type { WorkflowState } from '$lib/workflowTypes';
 
 export async function upsert(
   productId: string,
@@ -39,6 +41,9 @@ export async function upsert(
 
     await projectUpdate(product.ProjectId, { DateActive: new Date() });
   }
+
+  await updateStatus(productId, instanceData.update);
+
   return res;
 }
 
@@ -46,6 +51,7 @@ export async function update(
   productId: string,
   data: Omit<RequirePrimitive<Prisma.WorkflowInstancesUncheckedUpdateInput>, 'ProductId'>
 ) {
+  await updateStatus(productId, data);
   return await prisma.workflowInstances.update({
     where: {
       ProductId: productId
@@ -55,14 +61,23 @@ export async function update(
   });
 }
 
-function deleteInstance(productId: string, projectId: number) {
-  updateProjectDateActive(productId, projectId);
-  return prisma.workflowInstances.deleteMany({ where: { ProductId: productId } });
+async function deleteInstance(
+  productId: string,
+  projectId: number,
+  status: WorkflowState,
+  txClient?: TXClient
+) {
+  const client = txClient ?? prisma;
+  await updateProjectDateActive(productId, projectId, client);
+  await updateStatus(productId, { State: status }, client);
+  await client.workflowInstances.deleteMany({ where: { ProductId: productId } });
+  return;
 }
 export { deleteInstance as delete };
 
-async function updateProjectDateActive(productId: string, projectId: number) {
-  const project = await prisma.projects.findUniqueOrThrow({
+async function updateProjectDateActive(productId: string, projectId: number, txClient?: TXClient) {
+  const client = txClient ?? prisma;
+  const project = await client.projects.findUniqueOrThrow({
     where: {
       Id: projectId
     },
@@ -102,6 +117,6 @@ async function updateProjectDateActive(productId: string, projectId: number) {
   }
 
   if (project.DateActive != projectDateActive) {
-    await projectUpdate(projectId, { DateActive: project.DateActive });
+    await projectUpdate(projectId, { DateActive: project.DateActive }, client);
   }
 }

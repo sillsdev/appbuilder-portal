@@ -8,7 +8,7 @@ export const workflowDefinitionSchemaBase = v.object({
   productType: v.pipe(idSchema, v.enum(ProductType)),
   workflowType: idSchema,
   description: v.nullable(v.string()),
-  properties: propertiesSchema,
+  properties: v.nullable(propertiesSchema),
   options: v.array(v.pipe(idSchema, v.enum(WorkflowOptions))),
   enabled: v.boolean()
 });

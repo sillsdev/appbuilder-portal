@@ -363,6 +363,7 @@ export const Icons = {
   NotifyOn: 'iconamoon:notification-fill',
   Open: 'mdi:open-in-new',
   Organization: 'clarity:organization-solid',
+  Package: 'mdi:package-variant',
   Phone: 'ic:baseline-phone',
   Product: 'system-uicons:box',
   Project: 'material-symbols:credit-card-outline',

@@ -155,6 +155,10 @@ export namespace System {
     type: JobType.System_Migrate;
     steps?: MigrationStep[];
   }
+
+  export interface CheckPendingUpdates extends BaseJob {
+    type: JobType.System_CheckPendingUpdates;
+  }
 }
 
 export namespace UserTasks {
@@ -294,6 +298,16 @@ export namespace SvelteProjectSSE {
     type: JobType.SvelteSSE_UpdateUserTasks;
     userIds: number[];
   }
+
+  export interface UpdateSoftwareUpdates extends BaseJob {
+    type: JobType.SvelteSSE_UpdateSoftwareUpdates;
+    orgIds: number[];
+  }
+
+  export interface UpdateUpdatableProducts extends BaseJob {
+    type: JobType.SvelteSSE_UpdateUpdatableProducts;
+    orgIds: number[];
+  }
 }
 
 export type Job = JobTypeMap[keyof JobTypeMap];
@@ -305,7 +319,8 @@ export type BuildJob = JobTypeMap[
 export type RecurringJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags
-  | JobType.System_Migrate];
+  | JobType.System_Migrate
+  | JobType.System_CheckPendingUpdates];
 export type StartupJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags
@@ -328,7 +343,9 @@ export type EmailJob = JobTypeMap[
   | JobType.Email_ProjectImportReport];
 export type SvelteSSEJob = JobTypeMap[
   | JobType.SvelteSSE_UpdateProject
-  | JobType.SvelteSSE_UpdateUserTasks];
+  | JobType.SvelteSSE_UpdateUserTasks
+  | JobType.SvelteSSE_UpdateSoftwareUpdates
+  | JobType.SvelteSSE_UpdateUpdatableProducts];
 export type ProductJob = JobTypeMap[
   | JobType.Product_Create
   | JobType.Product_Delete
@@ -357,6 +374,7 @@ export type JobTypeMap = {
   [JobType.System_CheckEngineStatuses]: System.CheckEngineStatuses;
   [JobType.System_RefreshLangTags]: System.RefreshLangTags;
   [JobType.System_Migrate]: System.Migrate;
+  [JobType.System_CheckPendingUpdates]: System.CheckPendingUpdates;
   [JobType.UserTasks_Workflow]: UserTasks.Workflow;
   [JobType.UserTasks_DeleteRequest]: UserTasks.DeleteRequest;
   [JobType.Email_InviteUser]: Email.InviteUser;
@@ -370,5 +388,7 @@ export type JobTypeMap = {
   [JobType.Email_ProjectImportReport]: Email.ProjectImportReport;
   [JobType.SvelteSSE_UpdateProject]: SvelteProjectSSE.UpdateProject;
   [JobType.SvelteSSE_UpdateUserTasks]: SvelteProjectSSE.UpdateUserTasks;
+  [JobType.SvelteSSE_UpdateSoftwareUpdates]: SvelteProjectSSE.UpdateSoftwareUpdates;
+  [JobType.SvelteSSE_UpdateUpdatableProducts]: SvelteProjectSSE.UpdateUpdatableProducts;
   // Add more mappings here as needed
 };

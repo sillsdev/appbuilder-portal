@@ -18,14 +18,14 @@
   const base = '/admin/settings/workflow-definitions';
 </script>
 
-{#snippet storeType(wd?: (typeof data)['workflowDefinitions'][number])}
+{#snippet storeType(wd: (typeof data)['workflowDefinitions'][number])}
   {#if wd?.StoreType}
     <IconContainer icon={getStoreIcon(wd.StoreType.Id)} width={16} class="mr-1" />{wd.StoreType
       .Description}
   {/if}
 {/snippet}
 
-{#snippet flowType(wd?: (typeof data)['workflowDefinitions'][number])}
+{#snippet flowType(wd: (typeof data)['workflowDefinitions'][number])}
   {#if wd?.Type}
     <IconContainer icon={getWorkflowIcon(wd.Type)} width={16} class="mr-1" />{m.flowDefs_types({
       type: wd.Type as WorkflowType
@@ -52,7 +52,8 @@
         },
         {
           key: 'flowDefs_storeType',
-          snippet: storeType
+          snippet: storeType,
+          args: wd
         },
         {
           key: 'flowDefs_productType',
@@ -60,14 +61,15 @@
         },
         {
           key: 'flowDefs_type',
-          snippet: flowType
+          snippet: flowType,
+          args: wd
         },
         {
           key: 'flowDefs_options_title',
-          snippet: options
+          snippet: options,
+          args: wd
         }
       ]}
-      data={wd}
     >
       {#snippet title()}
         <h3>
@@ -78,7 +80,7 @@
   {/each}
 </div>
 
-{#snippet options(wd?: (typeof data)['workflowDefinitions'][number])}
+{#snippet options(wd: (typeof data)['workflowDefinitions'][number])}
   <span class="opacity-70 font-semibold">
     {#if wd?.WorkflowOptions.length}
       {#each wd.WorkflowOptions as option}

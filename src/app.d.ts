@@ -1,6 +1,8 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 
+import type { Snippet } from 'svelte';
+
 // Security class type because this file cannot import anything
 declare global {
   interface SecurityLike {
@@ -55,7 +57,8 @@ declare global {
     requireMemberOfAnyOrg(): this | never;
     requireNothing(): this | never;
   }
-  namespace App {
+  declare namespace App {
+    //import type { Snippet } from 'svelte';
     // interface Error {}
     interface Locals {
       // This typing doesn't work, but we never use it
@@ -65,6 +68,15 @@ declare global {
     }
     // interface PageData {}
     // interface Platform {}
+
+    type SnippetWithArgs<T> =
+      | {
+          snippet: Snippet<[T]> | null;
+          args: T;
+        }
+      | {
+          snippet: Snippet<[]> | null;
+        };
   }
 }
 

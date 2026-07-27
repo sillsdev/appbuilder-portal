@@ -11,6 +11,7 @@
   import { m } from '$lib/paraglide/messages';
   import { type Locale, getLocale } from '$lib/paraglide/runtime';
   import { byName } from '$lib/utils/sorting';
+  import { resetValidity } from '$lib/valibot';
 
   interface Props {
     reviewers: Prisma.ReviewersGetPayload<{
@@ -69,11 +70,7 @@
         action="?/{createEndpoint}"
         method="post"
         use:enhance
-        onreset={(e) => {
-          for (const el of e.currentTarget.querySelectorAll('input')) {
-            el.setCustomValidity('');
-          }
-        }}
+        onreset={(e) => resetValidity(e.currentTarget)}
       >
         <div class="flex flex-col place-content-between space-y-2">
           <div class="flex flex-col gap-2 reviewerform">
