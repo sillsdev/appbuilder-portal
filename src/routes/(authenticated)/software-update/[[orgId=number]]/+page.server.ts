@@ -73,16 +73,22 @@ export const actions = {
     const products = (
       await DatabaseReads.products.findMany({
         where: {
-          Id: {
-            in: form.data.products
-          },
-          ...updatableProductsFilter,
-          Project: {
-            Organization: filterAdminOrgs(
-              locals.security,
-              params.orgId ? Number(params.orgId) : undefined
-            )
-          }
+          AND: [
+            {
+              Id: {
+                in: form.data.products
+              }
+            },
+            updatableProductsFilter,
+            {
+              Project: {
+                Organization: filterAdminOrgs(
+                  locals.security,
+                  params.orgId ? Number(params.orgId) : undefined
+                )
+              }
+            }
+          ]
         },
         select: {
           Id: true,

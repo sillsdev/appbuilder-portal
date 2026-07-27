@@ -153,6 +153,9 @@ export const updatableProductsFilter = {
   // - Have a definition that specifies a rebuild workflow
   NOT: {
     ProductDefinition: { RebuildWorkflow: null }
+  },
+  Project: {
+    DateArchived: null
   }
 } as const satisfies Prisma.ProductsWhereInput;
 
