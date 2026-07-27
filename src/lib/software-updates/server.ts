@@ -159,6 +159,8 @@ export const updatableProductsFilter = {
   }
 } as const satisfies Prisma.ProductsWhereInput;
 
+console.log('updatableProductsFilter', updatableProductsFilter);
+
 export async function getProducts(
   security: Security,
   orgIds?: number[]
@@ -210,6 +212,8 @@ export async function getProducts(
     }
   });
 
+  console.log('organizations', organizations);
+
   const systems = await mapSystems(organizations);
 
   const presentAppTypes = new Set<number>();
@@ -223,6 +227,13 @@ export async function getProducts(
         ...pj,
         Products: pj.Products.filter((p) => {
           const targetVersion = systems.get(o.Id)?.get(pj.TypeId);
+          if (targetVersion && !p.ProductBuilds[0]) {
+            console.log(
+              'Impossible: Product has no builds but has a DatePublished. ProductId:',
+              p.Id
+            );
+            return false;
+          }
           const update = targetVersion && targetVersion !== p.ProductBuilds[0].AppBuilderVersion;
           if (update) {
             presentAppTypes.add(pj.TypeId);
