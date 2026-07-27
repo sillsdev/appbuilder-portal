@@ -39,6 +39,8 @@
   --border: 1px;
   --depth: 1;
   --noise: 0;
+
+  --color-link: #55f;
 }
 @plugin "daisyui/theme" {
   name: 'dark';
@@ -73,6 +75,8 @@
   --border: 1px;
   --depth: 1;
   --noise: 0;
+
+  --color-link: #68f;
 }
 
 /*
@@ -145,7 +149,7 @@
     0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 a.link {
-  color: #55f;
+  color: var(--color-link);
 }
 
 /*!important is necessary to take precedence over svelte-toast's internal styling*/

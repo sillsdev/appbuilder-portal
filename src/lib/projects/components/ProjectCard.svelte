@@ -56,7 +56,7 @@
       {@render select?.()}
       <div class="flex flex-row flex-wrap grow">
         <a href={localizeHref(`/${route}/${project.Id}`)} class="flex flex-row gap-2 items-start">
-          <b class="[color:#55f]">
+          <b class="[color:var(--color-link)]">
             {@render highlight(project.Name)}
           </b>
           <IconContainer icon={getAppIcon(project.TypeId)} width={20} />
