@@ -8,7 +8,6 @@ import type { BuildEngine } from '$lib/server/build-engine-api';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
-import { transformJSONString } from '$lib/valibot';
 import { WorkflowAction, WorkflowState } from '$lib/workflowTypes';
 import { ProductActionType, fetchPackageName, getFileInfo } from '.';
 
@@ -211,7 +210,7 @@ function normalizeColorString(color: string = '#1c3258') {
 const manifestSchema = v.pipe(
   v.string(),
   // make sure it is valid JSON
-  transformJSONString,
+  v.parseJson(),
   v.object({
     url: v.string(),
     icon: v.string(),
