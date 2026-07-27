@@ -1,9 +1,14 @@
 <script lang="ts" module>
   export interface IconButtonProps extends Partial<ValueKey> {
+    form?: string;
     type?: HTMLButtonElement['type'];
     icon?: IconType;
     disabled?: boolean;
-    onclick?: () => void;
+    onclick?: (
+      e: MouseEvent & {
+        currentTarget: EventTarget & HTMLButtonElement;
+      }
+    ) => void;
     children?: Snippet;
   }
 </script>
@@ -16,6 +21,7 @@
   import type { ValueKey } from '$lib/utils';
 
   let {
+    form,
     type = 'button',
     class: classes,
     icon = Icons.Save,
@@ -27,7 +33,7 @@
   }: IconButtonProps = $props();
 </script>
 
-<button {type} class={['btn', classes]} {disabled} {onclick}>
+<button {type} {form} class={['btn', classes]} {disabled} {onclick}>
   {#if children}
     {@render children()}
   {:else}

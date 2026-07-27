@@ -1,22 +1,17 @@
 import { fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { mapSystems } from '$lib/organizations/server';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { startFormSchema } from '$lib/software-updates';
 import { getProducts, getUpdates, updatableProductsFilter } from '$lib/software-updates/server';
 import { filterAdminOrgs } from '$lib/utils/roles';
-import { deleteSchema, stringIdSchema } from '$lib/valibot';
+import { deleteSchema } from '$lib/valibot';
 import { WorkflowState } from '$lib/workflowTypes';
-
-const startFormSchema = v.object({
-  comment: v.pipe(v.string(), v.minLength(1)),
-  products: v.pipe(v.array(stringIdSchema))
-});
 
 export const load = (async ({ locals, params }) => {
   const orgId = params.orgId ? Number(params.orgId) : undefined;

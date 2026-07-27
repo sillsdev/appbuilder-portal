@@ -615,6 +615,7 @@
   "softwareUpdate": "Software Update",
   "softwareUpdate_description": "This action will initiate a rebuild for all eligible projects with \"Rebuild on software update\" enabled. Only projects with at least one fully published product that are not currently rebuilding will be included.",
   "softwareUpdate_start": "Start Update",
+  "softwareUpdate_confirm": "About to start update of {total} products. Continue?",
   "softwareUpdate_commentRequired": "A comment is required to start update.",
   "softwareUpdate_start_success": "Successfully started update of {successful}/{total} products!",
   "softwareUpdate_cancel_success": "Successfully canceled update of {successful}/{total} products!",

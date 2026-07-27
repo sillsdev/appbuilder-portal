@@ -7,6 +7,7 @@
   import { enhance as svk_enhance } from '$app/forms';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
+  import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { Icons, getActionIcon, getAppIcon } from '$lib/icons';
@@ -15,7 +16,7 @@
   import { getLocale } from '$lib/paraglide/runtime';
   import type { ApplicationType } from '$lib/prisma';
   import { ProductActionType } from '$lib/products';
-  import type { RebuildableProductsData, UpdateSummaryData } from '$lib/software-updates';
+  import { type RebuildableProductsData, type UpdateSummaryData } from '$lib/software-updates';
   import UpdateSummary from '$lib/software-updates/components/UpdateSummary.svelte';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
@@ -83,9 +84,15 @@
   );
 
   //const rebuilds = $derived(data.rebuilds);
-  const { form, enhance } = superForm(data.form, {
+  const { form, enhance, submit } = superForm(data.form, {
     dataType: 'json',
     resetForm: true,
+    onSubmit({ submitter, cancel }) {
+      if (!confirmationModal?.contains(submitter)) {
+        cancel();
+        confirmationModal?.showModal();
+      }
+    },
     onUpdate({ form, result, formElement }) {
       if (form.valid && result.type === 'success') {
         const data = result.data as ActionData;
@@ -156,6 +163,8 @@
       setOrgFromParams($orgActive, page.params.orgId);
     }
   });
+
+  let confirmationModal: HTMLDialogElement | undefined = $state(undefined);
 </script>
 
 <div class="w-full px-2 pb-1">
@@ -163,6 +172,7 @@
   <p class="pl-8 mt-2 mb-6">{m.softwareUpdate_description()}</p>
   <div class="w-full m-auto md:max-w-3xl">
     <form
+      id="new-update-form"
       class="mx-4 flex flex-col"
       method="post"
       action="?/start"
@@ -237,6 +247,43 @@
         {/snippet}
       </UpdateSummary>
     </form>
+
+    <dialog bind:this={confirmationModal} class="modal">
+      <div class="modal-box">
+        <div class="items-center text-center">
+          <h2 class="text-lg font-bold grow">
+            {m.softwareUpdate_confirm({ total: products.length })}
+          </h2>
+          <div class="flex flex-col gap-2 items-center w-full pt-2 text-left">
+            <div class="flex flex-row gap-2">
+              <CancelButton
+                onclick={() => {
+                  confirmationModal?.close();
+                }}
+              />
+              <BlockIfJobsUnavailable class="btn btn-primary">
+                {#snippet altContent()}
+                  <IconContainer icon={Icons.UpdateOn} width={20} />
+                  {m.softwareUpdate_start()}
+                {/snippet}
+                <SubmitButton
+                  form="new-update-form"
+                  onclick={(e) => {
+                    submit(e.currentTarget);
+                    confirmationModal?.close();
+                  }}
+                >
+                  {@render altContent()}
+                </SubmitButton>
+              </BlockIfJobsUnavailable>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>{m.common_close()}</button>
+      </form>
+    </dialog>
 
     <!-- Updates List -->
     <div class="m-4">

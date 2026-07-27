@@ -1,4 +1,6 @@
 import type { Prisma } from '@prisma/client';
+import * as v from 'valibot';
+import { stringIdSchema } from '$lib/valibot';
 
 export interface RebuildItem {
   Id: number;
@@ -110,3 +112,8 @@ export type RebuildableProductsData = {
   })[];
   presentAppTypes: Set<number>;
 };
+
+export const startFormSchema = v.object({
+  comment: v.pipe(v.string(), v.minLength(1)),
+  products: v.pipe(v.array(stringIdSchema))
+});

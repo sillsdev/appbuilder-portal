@@ -615,6 +615,7 @@
   "softwareUpdate": "Actualización de Software",
   "softwareUpdate_description": "Esta acción iniciará una reconstrucción para todos los proyectos elegibles que tengan habilitada la opción Reconstruir al actualizar el software. Solo se incluirán los proyectos que tengan al menos un producto completamente publicado y que no se estén reconstruyendo actualmente.",
   "softwareUpdate_start": "Iniciar actualización",
+  "softwareUpdate_confirm": "A punto de iniciar la actualización de {total} productos. ¿Continuar?",
   "softwareUpdate_commentRequired": "Se requiere un comentario para iniciar la actualización.",
   "softwareUpdate_start_success": "¡Se ha iniciado con éxito la actualización de {successful}/{total} productos!",
   "softwareUpdate_cancel_success": "¡Se ha cancelado con éxito la actualización de {successful}/{total} productos!",
