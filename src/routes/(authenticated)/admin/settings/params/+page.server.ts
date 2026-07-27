@@ -1,9 +1,13 @@
 import { fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
+import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { siteParamsSchema } from '$lib/valibot';
+
+const schema = v.object({
+  entries: v.record(v.string(), v.nullable(v.string()))
+});
 
 export const load = (async ({ url, locals }) => {
   locals.security.requireSuperAdmin();
@@ -13,8 +17,12 @@ export const load = (async ({ url, locals }) => {
   });
 
   const form = await superValidate(
-    Object.fromEntries(settings.map(({ Key, Value }) => [Key, Value])),
-    valibot(siteParamsSchema)
+    {
+      entries: Object.fromEntries(
+        settings.map(({ Key, Value }) => [Key, Value] as [string, string | null])
+      )
+    },
+    valibot(schema)
   );
 
   return { form, settings };
@@ -23,11 +31,12 @@ export const load = (async ({ url, locals }) => {
 export const actions = {
   async default({ request, locals }) {
     locals.security.requireSuperAdmin();
-    const form = await superValidate(request, valibot(siteParamsSchema));
+    const form = await superValidate(request, valibot(schema));
     if (!form.valid) {
       return fail(400, { form, ok: false });
     }
-    await DatabaseWrites.adminSettings.update(locals.security.userId, form.data);
+
+    await DatabaseWrites.adminSettings.update(locals.security.userId, form.data.entries);
     return { ok: true, form };
   }
 } satisfies Actions;

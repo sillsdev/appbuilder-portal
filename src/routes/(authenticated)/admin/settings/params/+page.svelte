@@ -43,9 +43,9 @@
       <JSONEditor
         name="properties"
         class="w-full"
-        bind:value={$form[setting.Key]}
+        bind:value={$form.entries[setting.Key]}
         bind:ok={ok[i]}
-        schema={siteParamsSchema}
+        schema={siteParamsSchema(setting.Key)}
       />
       <span class="validator-hint">&nbsp;</span>
     </LabeledFormInput>
