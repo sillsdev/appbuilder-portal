@@ -1,34 +1,15 @@
 <script lang="ts">
-  import type { Snippet } from 'svelte';
-  import IconContainer from '../../icons/IconContainer.svelte';
-  import { type IconType, Icons } from '$lib/icons';
-  import { m } from '$lib/paraglide/messages';
-  import type { ValueKey } from '$lib/utils';
-
-  interface Props extends Partial<ValueKey> {
-    icon?: IconType;
-    disabled?: boolean;
-    onclick?: () => void;
-    children?: Snippet;
-  }
+  import IconButton, { type IconButtonProps } from './IconButton.svelte';
+  import { Icons } from '$lib/icons';
 
   let {
     class: classes,
     icon = Icons.Save,
     disabled = false,
     key = 'common_save',
-    params,
-    onclick,
-    children
-  }: Props = $props();
+    // eslint-disable-next-line svelte/valid-compile
+    ...rest
+  }: IconButtonProps = $props();
 </script>
 
-<button type="submit" class={['btn btn-primary', classes]} {disabled} {onclick}>
-  {#if children}
-    {@render children()}
-  {:else}
-    <IconContainer {icon} width={20} />
-    <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
-    {m[key](params as any)}
-  {/if}
-</button>
+<IconButton type="submit" class={['btn-primary', classes]} {icon} {key} {disabled} {...rest} />

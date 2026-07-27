@@ -1,14 +1,10 @@
 <script lang="ts">
-  import type { Snippet } from 'svelte';
   import IconContainer from '../../icons/IconContainer.svelte';
-  import { type IconType, Icons } from '$lib/icons';
+  import IconButton, { type IconButtonProps } from './IconButton.svelte';
+  import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
-  import type { ValueKey } from '$lib/utils';
 
-  interface Props extends Partial<ValueKey> {
-    icon?: IconType;
-    onclick?: () => void;
-    children?: Snippet;
+  interface Props extends IconButtonProps {
     returnTo?: string;
     resetForm?: boolean;
   }
@@ -17,28 +13,25 @@
     class: classes,
     icon = Icons.Cancel,
     key = 'common_cancel',
-    params,
-    onclick,
-    children,
     returnTo: href,
-    resetForm = false
+    resetForm = false,
+    // eslint-disable-next-line svelte/valid-compile
+    ...rest
   }: Props = $props();
 </script>
 
-{#if !children && href}
+{#if !rest.children && href}
   <a class={['btn btn-secondary', classes]} {href}>
     <IconContainer {icon} width={20} />
     <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
-    {m[key](params as any)}
+    {m[key](rest.params as any)}
   </a>
 {:else}
-  <button type={resetForm ? 'reset' : 'button'} class={['btn btn-secondary', classes]} {onclick}>
-    {#if children}
-      {@render children()}
-    {:else}
-      <IconContainer {icon} width={20} />
-      <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
-      {m[key](params as any)}
-    {/if}
-  </button>
+  <IconButton
+    type={resetForm ? 'reset' : 'button'}
+    class={['btn-secondary', classes]}
+    {icon}
+    {key}
+    {...rest}
+  />
 {/if}
