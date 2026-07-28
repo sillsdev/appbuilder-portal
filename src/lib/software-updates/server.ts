@@ -159,7 +159,8 @@ export const updatableProductsFilter = {
     ProductDefinition: { RebuildWorkflow: null }
   },
   Project: {
-    DateArchived: null
+    DateArchived: null,
+    RebuildOnSoftwareUpdate: true
   },
   ProductBuilds: {
     some: productBuildsWhere
