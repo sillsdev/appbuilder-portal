@@ -32,7 +32,7 @@
   let { release, class: classes, buildEngineUrl }: Props = $props();
 </script>
 
-{#if release?.LogUrl}
+{#if release}
   <table class={['table table-auto bg-base-100 sm:hidden', classes?.default]}>
     <tbody>
       <tr>
