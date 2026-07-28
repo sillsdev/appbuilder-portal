@@ -245,6 +245,7 @@ export namespace Email {
     type: JobType.Email_SendNotificationToReviewers;
     productId: string;
     comment?: string;
+    autoPublish?: boolean;
   }
   export interface SendNotificationToOrgAdminsAndOwner extends BaseJob {
     type: JobType.Email_SendNotificationToOrgAdminsAndOwner;

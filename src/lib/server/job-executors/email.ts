@@ -104,7 +104,8 @@ export async function sendNotificationToReviewers(
     'asset-preview': artifacts.find((a) => a.ArtifactType === 'asset-preview')?.Url
   };
   let messageId = 'reviewProduct';
-  if (job.data.comment) messageId += 'WithComment';
+  if (job.data.autoPublish) messageId += 'AutoPublish';
+  else if (job.data.comment) messageId += 'WithComment';
   const properties = {
     productName: product.ProductDefinition.Name,
     projectName: product.Project.Name,

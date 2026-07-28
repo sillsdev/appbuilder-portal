@@ -23,7 +23,7 @@ import {
 } from '../../workflowTypes';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseWrites } from '../database';
-import { deleteWorkflow, markResolved, notifyAutoPublishOwner } from './dbProcedures';
+import { deleteWorkflow, markResolved } from './dbProcedures';
 import { Workflow } from './index';
 
 /**
@@ -926,7 +926,14 @@ export const WorkflowStateMachine = setup({
             meta: { type: ActionType.Auto },
             actions: ({ context }) => {
               if (autoPublishOnRebuild({ context })) {
-                void notifyAutoPublishOwner(context.productId);
+                getQueues().Emails.add(
+                  `Notify Owner/Reviewers of Auto Publish for Product #${context.productId}`,
+                  {
+                    type: BullMQ.JobType.Email_SendNotificationToReviewers,
+                    productId: context.productId,
+                    autoPublish: true
+                  }
+                );
               }
             },
             target: WorkflowState.Published
