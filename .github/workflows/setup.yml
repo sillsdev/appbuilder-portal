@@ -143,7 +143,7 @@ jobs:
           }
 
           timeout_handler() {
-            echo "Build, Playwright installation, and database seeding timed out after 5 minutes. Printing captured output..."
+            echo "Build, Playwright installation, and database seeding timed out after 10 minutes. Printing captured output..."
             print_command_output
             exit 124
           }
@@ -166,7 +166,7 @@ jobs:
           ./run ci up -d db
           sleep 1
           echo "Seeding the database..."
-          npx prisma migrate reset -f --skip-seed --skip-generate && npx prisma db seed
+          npx prisma migrate reset -f --skip-seed --skip-generate && npx prisma db seed -- --verbose --organizations
           echo "Waiting for build and Playwright installation to finish..."
           wait
           if [ -f command-output/build-exit-code.txt ]; then
