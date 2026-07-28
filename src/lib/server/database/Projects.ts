@@ -100,6 +100,19 @@ export async function update(
     type: BullMQ.JobType.SvelteSSE_UpdateProject,
     projectIds: [id]
   });
+
+  if (
+    (projectData.RebuildOnSoftwareUpdate ?? existing!.RebuildOnSoftwareUpdate) !==
+    existing!.RebuildOnSoftwareUpdate
+  ) {
+    getQueues().SvelteSSE.add(
+      `Update Updatable Products (project #${id} set RebuildOnSoftwareUpdate to (${projectData.RebuildOnSoftwareUpdate}))`,
+      {
+        type: BullMQ.JobType.SvelteSSE_UpdateUpdatableProducts,
+        orgIds: [existing!.OrganizationId]
+      }
+    );
+  }
   return true;
 }
 
