@@ -165,6 +165,10 @@ jobs:
           echo "Starting database..."
           ./run ci up -d db
           sleep 1
+          nc -zv localhost 5432 || {
+            echo "Port 5432 is not open. Waiting 5 additional seconds..."
+            sleep 5
+          }
           echo "Seeding the database..."
           npx prisma migrate reset -f --skip-seed --skip-generate && npx prisma db seed -- --verbose --organizations
           echo "Waiting for build and Playwright installation to finish..."
