@@ -224,7 +224,11 @@ export async function getProducts(
     .map((o) => ({
       Id: o.Id,
       Name: o.Name,
-      Versions: o.System?.SystemVersions,
+      Versions: systems
+        .get(o.Id)
+        ?.entries()
+        .map(([ApplicationTypeId, Version]) => ({ ApplicationTypeId, Version }))
+        .toArray(),
       Projects: o.Projects.map((pj) => ({
         ...pj,
         Products: pj.Products.filter((p) => {
