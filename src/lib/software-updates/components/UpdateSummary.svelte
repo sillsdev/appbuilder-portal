@@ -218,10 +218,7 @@
                         >
                           {pd?.Name}
                         </a>
-                        {#if product.PreviousVersion}
-                          <s>{product.PreviousVersion}</s>
-                        {/if}
-                        &rarr; {product.Version}
+                        {product.PreviousVersion} &rarr; {product.Version}
                         {#if product.DateCompleted}
                           ({getTimeDateString(product.DateCompleted)})
                         {/if}
