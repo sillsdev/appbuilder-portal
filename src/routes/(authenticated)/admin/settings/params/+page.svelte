@@ -1,6 +1,7 @@
 <script lang="ts">
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import { invalidate } from '$app/navigation';
   import JSONEditor from '$lib/components/settings/JSONEditor.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
@@ -23,6 +24,8 @@
       if (form.valid) {
         toast('success', m.updated());
       }
+
+      invalidate('admin-settings:params');
     }
   });
 

@@ -9,8 +9,10 @@ const schema = v.object({
   entries: v.record(v.string(), v.nullable(v.string()))
 });
 
-export const load = (async ({ url, locals }) => {
+export const load = (async ({ depends, locals }) => {
   locals.security.requireSuperAdmin();
+
+  depends('admin-settings:params');
 
   const settings = await DatabaseReads.adminSettings.findMany({
     include: { ModifiedBy: { select: { Name: true } } }

@@ -13,12 +13,15 @@
 
   let { value = $bindable(), name, class: classes, ok = $bindable(true), schema }: Props = $props();
 
-  const parsed = $derived(safeParse(schema, value));
+  let parsed = $state(safeParse(schema, value));
 
   let showErrors = $state(true);
 
   $effect(() => {
     ok = parsed.success;
+    if (parsed.success) {
+      value = parsed.output;
+    }
   });
 </script>
 
@@ -30,6 +33,7 @@
       showErrors = false;
     }}
     onchange={() => {
+      parsed = safeParse(schema, value);
       showErrors = true;
     }}
     bind:value
