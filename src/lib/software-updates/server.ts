@@ -29,7 +29,8 @@ export async function getUpdates(
               Name: true
             }
           }
-        }
+        },
+        orderBy: [{ DateCompleted: 'desc' }, { DateCreated: 'desc' }]
       });
 
       const productFilter: Prisma.ProductsWhereInput = {
