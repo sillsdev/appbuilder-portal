@@ -144,6 +144,10 @@ export async function getUpdates(
   });
 }
 
+const productBuildsWhere = {
+  ProductPublications: { some: { Success: true } }
+} as const satisfies Prisma.ProductBuildsWhereInput;
+
 export const updatableProductsFilter = {
   // Products that are rebuildable:
   // - Have already been published once
@@ -156,6 +160,9 @@ export const updatableProductsFilter = {
   },
   Project: {
     DateArchived: null
+  },
+  ProductBuilds: {
+    some: productBuildsWhere
   }
 } as const satisfies Prisma.ProductsWhereInput;
 
@@ -196,9 +203,7 @@ export async function getProducts(
               Id: true,
               ProductDefinitionId: true,
               ProductBuilds: {
-                where: {
-                  ProductPublications: { some: { Success: true } }
-                },
+                where: productBuildsWhere,
                 orderBy: { DateCreated: 'desc' },
                 take: 1,
                 select: { AppBuilderVersion: true }
