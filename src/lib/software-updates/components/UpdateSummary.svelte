@@ -180,15 +180,7 @@
             </summary>
             <div class="collapse-content flex flex-col gap-y-2 p-0!">
               {#each org.Projects.toSorted((a, b) => byName(a, b, locale)) as project}
-                <DataDisplayBox
-                  class="border-base-content/25! m-0!"
-                  fields={[
-                    {
-                      key: 'softwareUpdate_targetVersions',
-                      value: Array.from(new Set(project.Products.map((p) => p.Version))).join(', ')
-                    }
-                  ]}
-                >
+                <DataDisplayBox class="border-base-content/25! m-0!" fields={[]}>
                   {#snippet title()}
                     <a
                       href={localizeHref(`/projects/${project.Id}`)}
@@ -226,8 +218,8 @@
                         >
                           {pd?.Name}
                         </a>
-                        {#if product.OldVersion}
-                          <s>{product.OldVersion}</s>
+                        {#if product.PreviousVersion}
+                          <s>{product.PreviousVersion}</s>
                         {/if}
                         &rarr; {product.Version}
                         {#if product.DateCompleted}

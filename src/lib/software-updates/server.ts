@@ -57,6 +57,7 @@ export async function getUpdates(
                   SoftwareUpdates: {
                     select: {
                       SoftwareUpdateId: true,
+                      PreviousVersion: true,
                       Version: true,
                       Status: true,
                       DateCompleted: true
@@ -241,7 +242,7 @@ export async function getProducts(
         }).map((p) => ({
           Id: p.Id,
           ProductDefinitionId: p.ProductDefinitionId,
-          OldVersion: p.ProductBuilds[0].AppBuilderVersion,
+          PreviousVersion: p.ProductBuilds[0].AppBuilderVersion,
           Version: systems.get(o.Id)!.get(pj.TypeId)!
         }))
       })).filter((pj) => pj.Products.length)

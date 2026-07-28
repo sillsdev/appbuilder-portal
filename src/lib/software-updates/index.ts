@@ -65,9 +65,9 @@ export type UpdateSummaryData = Prisma.SoftwareUpdatesGetPayload<{
         }> &
           Partial<
             Prisma.SoftwareUpdatesOnProductsGetPayload<{
-              select: { Version: true; DateCompleted: true; Status: true };
+              select: { PreviousVersion: true; Version: true; DateCompleted: true; Status: true };
             }>
-          > & { OldVersion?: string | null })[];
+          >)[];
       })[];
     } & {
       Versions: {
@@ -105,7 +105,7 @@ export type RebuildableProductsData = {
     }>[];
     Projects: {
       Products: {
-        OldVersion: string | null;
+        PreviousVersion: string | null;
         Version: string;
       }[];
     }[];

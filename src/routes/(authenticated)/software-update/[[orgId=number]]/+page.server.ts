@@ -120,6 +120,7 @@ export const actions = {
       },
       products.map((p) => ({
         ProductId: p.Id,
+        PreviousVersion: p.ProductBuilds[0].AppBuilderVersion,
         Version: systems.get(p.Project.OrganizationId)!.get(p.Project.TypeId)!,
         Status: WorkflowState.Start
       }))
