@@ -32,6 +32,8 @@
   $effect(() => {
     computeType = getComputeType(value);
   });
+
+  let editor: JSONEditor<typeof propertiesSchema>;
 </script>
 
 <dialog bind:this={modal} class="modal">
@@ -58,7 +60,7 @@
             placeholder={m.products_properties_selectComputeType()}
             onchange={(e) => {
               if (ok) {
-                value = updateComputeType(value, e.currentTarget.value as ComputeType);
+                editor.setValue(updateComputeType(value, e.currentTarget.value as ComputeType));
               }
             }}
             bind:value={computeType}
@@ -76,6 +78,7 @@
         </LabeledFormInput>
         <LabeledFormInput key="products_properties_title">
           <JSONEditor
+            bind:this={editor}
             name="properties"
             class="w-full"
             bind:value
@@ -87,7 +90,7 @@
           <CancelButton
             onclick={() => {
               modal?.close();
-              value = product.Properties;
+              editor.setValue(product.Properties);
             }}
           />
           <IconButton
@@ -96,7 +99,7 @@
             key="common_default"
             onclick={() => {
               if (ok) {
-                value = updateComputeType(value);
+                editor.setValue(updateComputeType(value));
               }
             }}
           />

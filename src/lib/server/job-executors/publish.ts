@@ -268,7 +268,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
     job.data.release.id,
     {
       Success: job.data.release.result === 'SUCCESS',
-      LogUrl: job.data.release.consoleText,
+      LogUrl: job.data.release.consoleText || job.data.release.artifacts['consoleText'],
       Package: packageName,
       PublishLink: publishLink,
       Status: BuildStatus.Completed

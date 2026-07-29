@@ -1,4 +1,5 @@
 <script lang="ts" generics="V extends JsonSchema">
+  import { onMount } from 'svelte';
   import type { ClassValue } from 'svelte/elements';
   import { flatten, safeParse } from 'valibot';
   import { type JsonSchema } from '$lib/valibot';
@@ -13,13 +14,25 @@
 
   let { value = $bindable(), name, class: classes, ok = $bindable(true), schema }: Props = $props();
 
-  const parsed = $derived(safeParse(schema, value));
+  let parsed = $state(safeParse(schema, value));
 
   let showErrors = $state(true);
 
-  $effect(() => {
+  function parse() {
+    parsed = safeParse(schema, value);
+    showErrors = true;
     ok = parsed.success;
-  });
+    if (parsed.success) {
+      value = parsed.output;
+    }
+  }
+
+  onMount(() => parse());
+
+  export function setValue(val: string | null) {
+    value = val;
+    parse();
+  }
 </script>
 
 <div class="w-full">
@@ -29,9 +42,7 @@
     onfocus={() => {
       showErrors = false;
     }}
-    onchange={() => {
-      showErrors = true;
-    }}
+    onchange={() => parse()}
     bind:value
   ></textarea>
   {#if showErrors && parsed.issues}
