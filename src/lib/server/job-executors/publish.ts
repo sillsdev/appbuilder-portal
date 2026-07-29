@@ -6,6 +6,7 @@ import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
 import { BuildStatus } from '$lib/prisma';
+import { fetchPublicationDetails } from '$lib/products/server';
 import { projectUrl } from '$lib/projects/server';
 import { NotificationType } from '$lib/users';
 import { WorkflowAction } from '$lib/workflowTypes';
@@ -195,24 +196,6 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
   let publishLink: string | undefined = undefined;
   if (flow) {
     if (job.data.release.result === 'SUCCESS') {
-      const publishUrlFile = job.data.release.artifacts['publishUrl'];
-      publishLink = publishUrlFile
-        ? ((await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined)
-        : undefined;
-      await DatabaseWrites.products.update(job.data.productId, {
-        DatePublished: new Date(),
-        PublishLink: publishLink
-      });
-      await notifyCompleted(
-        job.data.buildId,
-        job.data.release.id,
-        job.data.productId,
-        product.Project.OwnerId,
-        product.Project.Name!,
-        product.ProductDefinition.Name!,
-        job.data.transition
-      );
-      flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
       const packageFile = await DatabaseReads.productPublications.findUnique({
         where: {
           ProductId_BuildEngineReleaseId: {
@@ -228,6 +211,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
                   ArtifactType: 'package_name'
                 },
                 select: {
+                  ArtifactType: true,
                   Url: true
                 },
                 take: 1
@@ -236,11 +220,26 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
           }
         }
       });
-      if (packageFile?.ProductBuild.ProductArtifacts[0]) {
-        packageName = (
-          await fetch(packageFile.ProductBuild.ProductArtifacts[0].Url!).then((r) => r.text())
-        )?.trim();
-      }
+      const details = await fetchPublicationDetails(
+        job.data.release,
+        packageFile?.ProductBuild.ProductArtifacts
+      );
+      publishLink = details.publishLink || undefined;
+      packageName = details.packageName || undefined;
+      await DatabaseWrites.products.update(job.data.productId, {
+        DatePublished: new Date(),
+        PublishLink: publishLink
+      });
+      await notifyCompleted(
+        job.data.buildId,
+        job.data.release.id,
+        job.data.productId,
+        product.Project.OwnerId,
+        product.Project.Name!,
+        product.ProductDefinition.Name!,
+        job.data.transition
+      );
+      flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
     } else {
       await notifyFailed(
         job.data.buildId,
