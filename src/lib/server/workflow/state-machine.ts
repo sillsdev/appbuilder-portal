@@ -926,7 +926,7 @@ export const WorkflowStateMachine = setup({
             meta: { type: ActionType.Auto },
             actions: ({ context }) => {
               if (autoPublishOnRebuild({ context })) {
-                getQueues().Emails.add(
+                void getQueues().Emails.add(
                   `Notify Owner/Reviewers of Auto Publish for Product #${context.productId}`,
                   {
                     type: BullMQ.JobType.Email_SendNotificationToReviewers,

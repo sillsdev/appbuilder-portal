@@ -180,8 +180,8 @@
             </summary>
             <div class="collapse-content flex flex-col gap-y-2 p-0!">
               {#each org.Projects.toSorted((a, b) => byName(a, b, locale)) as project}
-                <DataDisplayBox class="border-base-content/25! m-0!" fields={[]}>
-                  {#snippet title()}
+                <div class="flex flex-row border border-base-content/25 p-2 rounded-md">
+                  <div class="relative w-full">
                     <a
                       href={localizeHref(`/projects/${project.Id}`)}
                       class="link flex flex-row gap-x-1"
@@ -189,43 +189,43 @@
                       {project.Name}
                       <IconContainer icon={getAppIcon(project.TypeId)} width={20} />
                     </a>
-                  {/snippet}
-                  <ul>
-                    {#each project.Products.toSorted( (a, b) => byName(productTypes.get(a.ProductDefinitionId), productTypes.get(b.ProductDefinitionId), locale) ) as product}
-                      {@const pd = productTypes.get(product.ProductDefinitionId)}
-                      <li>
-                        {#if product.Status}
-                          <span
-                            class={[
-                              'badge badge-sm font-bold',
-                              product.DateCompleted
-                                ? product.Status === WorkflowState.Published
-                                  ? 'badge-success'
-                                  : 'badge-error'
-                                : 'badge-secondary'
-                            ]}
+                    <ul>
+                      {#each project.Products.toSorted( (a, b) => byName(productTypes.get(a.ProductDefinitionId), productTypes.get(b.ProductDefinitionId), locale) ) as product}
+                        {@const pd = productTypes.get(product.ProductDefinitionId)}
+                        <li>
+                          {#if product.Status}
+                            <span
+                              class={[
+                                'badge badge-sm font-bold',
+                                product.DateCompleted
+                                  ? product.Status === WorkflowState.Published
+                                    ? 'badge-success'
+                                    : 'badge-error'
+                                  : 'badge-secondary'
+                              ]}
+                            >
+                              {product.Status}
+                            </span>
+                          {/if}
+                          <IconContainer
+                            icon={getProductIcon(pd?.Workflow.ProductType ?? 0)}
+                            width={30}
+                          />
+                          <a
+                            class="hover:underline"
+                            href={localizeHref(`/projects/${project.Id}#${product.Id}`)}
                           >
-                            {product.Status}
-                          </span>
-                        {/if}
-                        <IconContainer
-                          icon={getProductIcon(pd?.Workflow.ProductType ?? 0)}
-                          width={30}
-                        />
-                        <a
-                          class="hover:underline"
-                          href={localizeHref(`/projects/${project.Id}#${product.Id}`)}
-                        >
-                          {pd?.Name}
-                        </a>
-                        {product.PreviousVersion} &rarr; {product.Version}
-                        {#if product.DateCompleted}
-                          ({getTimeDateString(product.DateCompleted)})
-                        {/if}
-                      </li>
-                    {/each}
-                  </ul>
-                </DataDisplayBox>
+                            {pd?.Name}
+                          </a>
+                          {product.PreviousVersion} &rarr; {product.Version}
+                          {#if product.DateCompleted}
+                            ({getTimeDateString(product.DateCompleted)})
+                          {/if}
+                        </li>
+                      {/each}
+                    </ul>
+                  </div>
+                </div>
               {/each}
             </div>
           </details>
@@ -236,7 +236,7 @@
 </DataDisplayBox>
 
 {#snippet versions(args: { list: VersionType[]; classes?: string })}
-  <ul class={args.classes ?? ''}>
+  <ul class={['pt-1', args.classes]}>
     {#each args.list as version}
       <li class="flex flex-row gap-x-1">
         <IconContainer icon={getAppIcon(version.ApplicationTypeId)} width={20} />

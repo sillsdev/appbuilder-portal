@@ -17,12 +17,19 @@
 
   let showErrors = $state(true);
 
-  $effect(() => {
+  function parse() {
+    parsed = safeParse(schema, value);
+    showErrors = true;
     ok = parsed.success;
     if (parsed.success) {
       value = parsed.output;
     }
-  });
+  }
+
+  export function setValue(val: string | null) {
+    value = val;
+    parse();
+  }
 </script>
 
 <div class="w-full">
@@ -32,10 +39,7 @@
     onfocus={() => {
       showErrors = false;
     }}
-    onchange={() => {
-      parsed = safeParse(schema, value);
-      showErrors = true;
-    }}
+    onchange={() => parse()}
     bind:value
   ></textarea>
   {#if showErrors && parsed.issues}
