@@ -218,8 +218,108 @@ async function backfillPublicationLogUrl(): Promise<MigrationOutput> {
   return { before, chunk, after };
 }
 
+async function backfillAppBuilderVersion(): Promise<MigrationOutput> {
+  const chunkSize = 20;
+  const vnum = /\d+\.\d+(\.\d+)?/;
+  const preferredRgx = new RegExp(`APPBUILDER_SCRIPT_VERSION=(${vnum.source})`);
+  const altRgx = [
+    new RegExp(`Version (${vnum.source})`),
+    new RegExp(`\\*\\*\\* (${vnum.source}) \\*\\*\\*`)
+  ];
+  const where = {
+    Success: true,
+    AND: [
+      {
+        OR: [
+          {
+            AppBuilderVersion: null
+          },
+          { AppBuilderVersion: '' }
+        ]
+      },
+      {
+        OR: [
+          {
+            ProductArtifacts: {
+              some: {
+                ArtifactType: 'consoleText'
+              }
+            }
+          },
+          {
+            ProductArtifacts: {
+              some: {
+                ArtifactType: 'version'
+              }
+            }
+          }
+        ]
+      }
+    ]
+  } as const satisfies Prisma.ProductBuildsWhereInput;
+
+  const before = await DatabaseReads.productBuilds.count({ where });
+
+  const chunk = await Promise.all(
+    (
+      await DatabaseReads.productBuilds.findMany({
+        where,
+        ...sample(before, chunkSize),
+        select: {
+          ProductId: true,
+          BuildEngineBuildId: true,
+          AppBuilderVersion: true,
+          ProductArtifacts: {
+            where: {
+              ArtifactType: { in: ['consoleText', 'version'] }
+            },
+            select: {
+              ArtifactType: true,
+              Url: true
+            }
+          }
+        }
+      })
+    ).map(async (pb) => {
+      try {
+        const logUrl = pb.ProductArtifacts.find((pa) => pa.ArtifactType === 'consoleText')?.Url;
+        const versionJSON = pb.ProductArtifacts.find((pa) => pa.ArtifactType === 'version')?.Url;
+        let appVersion: string = '';
+        // fetch version.json first
+        const parsedJSON =
+          !versionJSON || JSON.parse(await fetch(versionJSON).then((r) => r.text())) || {};
+        appVersion = parsedJSON['appbuilderVersion'] ?? '';
+
+        // if appbuilderVersion not present, try parsing console.
+        if (!appVersion && logUrl) {
+          const log = await fetch(logUrl).then((r) => r.text());
+          const preferred = log.match(preferredRgx)?.at(1);
+          const alts = altRgx.map((alt) => log.match(alt)?.at(1));
+
+          appVersion ||= preferred ?? alts.find((a) => !!a) ?? '';
+        }
+
+        if (appVersion) {
+          await DatabaseWrites.productBuilds.update(pb.ProductId, pb.BuildEngineBuildId, {
+            AppBuilderVersion: appVersion
+          });
+        }
+
+        return { pb, appVersion };
+      } catch (error) {
+        return { pb, error };
+      }
+    })
+  );
+
+  const after = await DatabaseReads.productBuilds.count({ where });
+
+  return { before, chunk, after };
+}
+
 const migrationSteps = {
-  'Patch ProductPublications.LogUrl': backfillPublicationLogUrl
+  'Patch ProductPublications.LogUrl': backfillPublicationLogUrl,
+  'Backfill Remaining ProductBuilds.AppBuilderVersion': backfillAppBuilderVersion
 } as const satisfies Record<string, () => Promise<MigrationOutput>>;
 
 export type MigrationStep = keyof typeof migrationSteps;
