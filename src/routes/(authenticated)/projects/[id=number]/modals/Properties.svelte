@@ -60,7 +60,7 @@
             placeholder={m.products_properties_selectComputeType()}
             onchange={(e) => {
               if (ok) {
-                value = updateComputeType(value, e.currentTarget.value as ComputeType);
+                editor.setValue(updateComputeType(value, e.currentTarget.value as ComputeType));
               }
             }}
             bind:value={computeType}
@@ -90,7 +90,7 @@
           <CancelButton
             onclick={() => {
               modal?.close();
-              value = product.Properties;
+              editor.setValue(product.Properties);
             }}
           />
           <IconButton

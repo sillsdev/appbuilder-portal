@@ -1,4 +1,5 @@
 <script lang="ts" generics="V extends JsonSchema">
+  import { onMount } from 'svelte';
   import type { ClassValue } from 'svelte/elements';
   import { flatten, safeParse } from 'valibot';
   import { type JsonSchema } from '$lib/valibot';
@@ -25,6 +26,8 @@
       value = parsed.output;
     }
   }
+
+  onMount(() => parse());
 
   export function setValue(val: string | null) {
     value = val;
