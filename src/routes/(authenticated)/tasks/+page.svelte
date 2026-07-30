@@ -31,7 +31,7 @@
 
   function getTaskStatus(task: (typeof userTasks)[number]) {
     return task.Type === TaskType.DeletionRequest
-      ? (task.ChangeRequests[0]?.Change ?? task.Status)
+      ? m.udm_delete_type({ scope: task.ChangeRequests[0]?.Change ?? task.Status ?? '' })
       : task.Status;
   }
 

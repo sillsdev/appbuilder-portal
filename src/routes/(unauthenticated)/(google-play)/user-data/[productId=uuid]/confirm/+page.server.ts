@@ -134,7 +134,6 @@ export const actions: Actions = {
           scope: 'Product',
           productId: params.productId,
           requestId: userChange.Id,
-          comment: userChange.Change ?? undefined,
           operation: {
             type: BullMQ.UserTasks.OpType.Update,
             targetRole: RoleId.AppBuilder
