@@ -83,9 +83,10 @@ export class Workflow {
       productId,
       {
         ...config,
-        hasAuthors: !!check?.Project._count.Authors,
-        hasReviewers: !!check?.Project._count.Reviewers,
-        autoPublishOnRebuild: !!check?.Project.AutoPublishOnRebuild,
+        hasAuthors: !!check.Project._count.Authors,
+        hasReviewers: !!check.Project._count.Reviewers,
+        autoPublishOnRebuild: !!check.Project.AutoPublishOnRebuild,
+        projectId: check.Project.Id,
         productId,
         existingApp: false,
         start: softwareUpdateId ? WorkflowState.Software_Update_Pending : undefined
@@ -208,6 +209,7 @@ export class Workflow {
           select: {
             Project: {
               select: {
+                Id: true,
                 AutoPublishOnRebuild: true,
                 _count: {
                   select: {
@@ -238,6 +240,7 @@ export class Workflow {
         hasReviewers: !!instance.Product.Project._count.Reviewers,
         autoPublishOnRebuild: !!instance.Product.Project.AutoPublishOnRebuild,
         isAutomatic: context.isAutomatic ?? false,
+        projectId: instance.Product.Project.Id,
         productId,
         existingApp: !!context.environment[ENVKeys.GOOGLE_PLAY_EXISTING],
         start: context.start

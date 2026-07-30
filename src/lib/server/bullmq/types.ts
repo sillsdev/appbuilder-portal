@@ -30,6 +30,7 @@ export interface BaseJob {
 export namespace Build {
   export interface Product extends BaseJob {
     type: JobType.Build_Product;
+    projectId: number;
     productId: string;
     defaultTargets: string;
     environment: Record<string, string>;
@@ -37,6 +38,7 @@ export namespace Build {
 
   export interface PostProcess extends BaseJob {
     type: JobType.Build_PostProcess;
+    projectId: number;
     productId: string;
     build: BuildResponse;
   }
@@ -53,6 +55,7 @@ export namespace Polling {
   export interface Build extends BaseJob {
     type: JobType.Poll_Build;
     organizationId: number;
+    projectId: number;
     productId: string;
     jobId: number;
     buildId: number;
@@ -68,6 +71,7 @@ export namespace Polling {
   export interface Publish extends BaseJob {
     type: JobType.Poll_Publish;
     organizationId: number;
+    projectId: number;
     productId: string;
     jobId: number;
     buildId: number;
@@ -83,6 +87,7 @@ export namespace Product {
   export interface Delete extends BaseJob {
     type: JobType.Product_Delete;
     organizationId: number;
+    projectId: number;
     buildEngineJobId: number;
   }
   export interface GetVersionCode extends BaseJob {
@@ -122,6 +127,7 @@ export namespace Project {
 export namespace Publish {
   export interface Product extends BaseJob {
     type: JobType.Publish_Product;
+    projectId: number;
     productId: string;
     defaultChannel: Channels;
     defaultTargets: string;
@@ -130,6 +136,7 @@ export namespace Publish {
 
   export interface PostProcess extends BaseJob {
     type: JobType.Publish_PostProcess;
+    projectId: number;
     productId: string;
     buildId: number;
     release: ReleaseResponse;

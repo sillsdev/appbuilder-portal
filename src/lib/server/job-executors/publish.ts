@@ -43,12 +43,12 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     }
   });
   if (!productData) {
-    return await notifyProductNotFound(job.data.productId);
+    return await notifyProductNotFound(job.data.productId, job.data.projectId);
   }
   job.updateProgress(10);
   if (!productData.CurrentBuild) {
     // ISSUE: #1100 I don't like this, but it's the most appropriate message currently available
-    await notifyProductNotFound(job.data.productId);
+    await notifyProductNotFound(job.data.productId, job.data.projectId);
     const flow = await Workflow.restore(job.data.productId);
     flow?.send({
       type: WorkflowAction.Publish_Failed,
@@ -140,6 +140,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
         data: {
           type: BullMQ.JobType.Poll_Publish,
           productId: job.data.productId,
+          projectId: job.data.projectId,
           organizationId: productData.Project.OrganizationId,
           jobId: productData.BuildEngineJobId,
           buildId: productData.CurrentBuild.BuildEngineBuildId,
@@ -185,7 +186,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
     }
   });
   if (!product) {
-    return await notifyProductNotFound(job.data.productId);
+    return await notifyProductNotFound(job.data.productId, job.data.projectId);
   }
   if (job.data.release.error) {
     job.log(job.data.release.error);
@@ -408,12 +409,19 @@ async function notifyFailed(
     }
   );
 }
-export async function notifyProductNotFound(productId: string) {
+export async function notifyProductNotFound(productId: string, projectId: number) {
   await getQueues().Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
     type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
     messageKey: 'releaseProductRecordNotFound',
     messageProperties: {
-      productId
+      productId,
+      projectName:
+        (
+          await DatabaseReads.projects.findUnique({
+            where: { Id: projectId },
+            select: { Name: true }
+          })
+        )?.Name || `Project #${projectId}`
     }
   });
   return { message: 'Product Not Found' };

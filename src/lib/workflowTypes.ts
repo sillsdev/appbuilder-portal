@@ -221,6 +221,7 @@ export type WorkflowConfig = {
 
 export type WorkflowInput = WorkflowConfig & {
   productId: string;
+  projectId: number;
   hasAuthors: boolean;
   hasReviewers: boolean;
   autoPublishOnRebuild: boolean;
