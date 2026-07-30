@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client';
 import type { Job } from 'bullmq';
 import { randomInt } from 'crypto';
+import * as v from 'valibot';
 import { BuildEngine } from '../../build-engine-api';
 import { BullMQ, getQueues } from '../../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../../database';
@@ -221,8 +222,10 @@ async function backfillPublicationLogUrl(): Promise<MigrationOutput> {
 async function backfillAppBuilderVersion(): Promise<MigrationOutput> {
   const chunkSize = 20;
   const vnum = /\d+\.\d+(\.\d+)?/;
-  const preferredRgx = new RegExp(`APPBUILDER_SCRIPT_VERSION=(${vnum.source})`);
-  const altRgx = [
+  const matchers = [
+    /** Preferred */
+    new RegExp(`APPBUILDER_SCRIPT_VERSION=(${vnum.source})`),
+    /** Alternates */
     new RegExp(`Version (${vnum.source})`),
     new RegExp(`\\*\\*\\* (${vnum.source}) \\*\\*\\*`)
   ];
@@ -281,34 +284,46 @@ async function backfillAppBuilderVersion(): Promise<MigrationOutput> {
         }
       })
     ).map(async (pb) => {
+      let appVersion: string = '';
+      const versionJSON = pb.ProductArtifacts.find((pa) => pa.ArtifactType === 'version')?.Url;
+      const logUrl = pb.ProductArtifacts.find((pa) => pa.ArtifactType === 'consoleText')?.Url;
       try {
-        const logUrl = pb.ProductArtifacts.find((pa) => pa.ArtifactType === 'consoleText')?.Url;
-        const versionJSON = pb.ProductArtifacts.find((pa) => pa.ArtifactType === 'version')?.Url;
-        let appVersion: string = '';
-        // fetch version.json first
-        const parsedJSON =
-          !versionJSON || JSON.parse(await fetch(versionJSON).then((r) => r.text())) || {};
-        appVersion = parsedJSON['appbuilderVersion'] ?? '';
-
-        // if appbuilderVersion not present, try parsing console.
-        if (!appVersion && logUrl) {
-          const log = await fetch(logUrl).then((r) => r.text());
-          const preferred = log.match(preferredRgx)?.at(1);
-          const alts = altRgx.map((alt) => log.match(alt)?.at(1));
-
-          appVersion ||= preferred ?? alts.find((a) => !!a) ?? '';
-        }
-
-        if (appVersion) {
-          await DatabaseWrites.productBuilds.update(pb.ProductId, pb.BuildEngineBuildId, {
-            AppBuilderVersion: appVersion
-          });
-        }
-
-        return { pb, appVersion };
+        appVersion = await v
+          .safeParseAsync(
+            v.pipe(
+              v.string(),
+              v.parseJson(),
+              v.object({ appbuilderVersion: v.optional(v.string()) })
+            ),
+            versionJSON && (await fetch(versionJSON).then((r) => r.text()))
+          )
+          .then((r) => (r.success && r.output.appbuilderVersion) || '');
       } catch (error) {
-        return { pb, error };
+        if (!logUrl) {
+          return { pb, error };
+        }
       }
+      if (!appVersion && logUrl) {
+        try {
+          const log = await fetch(logUrl).then((r) => r.text());
+
+          for (const matcher of matchers) {
+            const match = log.match(matcher)?.at(1);
+            if (match) {
+              appVersion = match;
+              break;
+            }
+          }
+        } catch (error) {
+          return { pb, error };
+        }
+      }
+      if (appVersion) {
+        await DatabaseWrites.productBuilds.update(pb.ProductId, pb.BuildEngineBuildId, {
+          AppBuilderVersion: appVersion
+        });
+      }
+      return { pb, appVersion };
     })
   );
 
