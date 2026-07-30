@@ -20,7 +20,8 @@ export const softwareUpdatesParametersSchema = v.strictObject({
     defaultSoftwareUpdatesRateLimit
   ),
   [AdminSettingsKeys[AdminSettings.SoftwareUpdates].AllowOrgs]: v.optional(
-    v.union([v.array(v.number()), v.picklist(['all'])])
+    v.union([v.array(v.number()), v.picklist(['all'])]),
+    []
   )
 });
 

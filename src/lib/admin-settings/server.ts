@@ -35,6 +35,6 @@ export async function getSoftwareUpdatesRateLimit() {
 export async function getOrgAllowlist() {
   const record = await getSoftwareUpdatesSettings();
   return record.success
-    ? (record.output[AdminSettingsKeys[AdminSettings.SoftwareUpdates].AllowOrgs] ?? [])
+    ? record.output[AdminSettingsKeys[AdminSettings.SoftwareUpdates].AllowOrgs]
     : [];
 }
