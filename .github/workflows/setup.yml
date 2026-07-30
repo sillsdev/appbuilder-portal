@@ -51,7 +51,7 @@ jobs:
 
       - name: Restore node_modules cache
         id: restore-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'src/lib/prisma/schema.prisma') }}
@@ -64,7 +64,7 @@ jobs:
 
       - name: Cache node_modules
         if: steps.restore-cache.outputs.cache-hit != 'true'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'src/lib/prisma/schema.prisma') }}
@@ -83,7 +83,7 @@ jobs:
           node-version: 24
 
       - name: Restore node_modules cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'src/lib/prisma/schema.prisma') }}
@@ -123,7 +123,7 @@ jobs:
           node-version: 24
 
       - name: Restore node_modules cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'src/lib/prisma/schema.prisma') }}
