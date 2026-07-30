@@ -15,8 +15,13 @@ export const AdminSettingsKeys = {
 export const defaultSoftwareUpdatesRateLimit = 20;
 
 export const softwareUpdatesParametersSchema = v.strictObject({
-  'rate-limit': v.optional(v.number(), defaultSoftwareUpdatesRateLimit),
-  'allow-orgs': v.optional(v.union([v.array(v.number()), v.picklist(['all'])]))
+  [AdminSettingsKeys[AdminSettings.SoftwareUpdates].RateLimit]: v.optional(
+    v.number(),
+    defaultSoftwareUpdatesRateLimit
+  ),
+  [AdminSettingsKeys[AdminSettings.SoftwareUpdates].AllowOrgs]: v.optional(
+    v.union([v.array(v.number()), v.picklist(['all'])])
+  )
 });
 
 export function getSchemaForSetting(setting: string) {
