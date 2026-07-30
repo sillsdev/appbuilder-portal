@@ -6,21 +6,32 @@ import {
 } from '$lib/admin-settings';
 import { DatabaseReads } from '$lib/server/database';
 
-/**
- * return stored rate limit from DB (default: 20)
- */
-export async function getSoftwareUpdatesRateLimit() {
-  const record = v.safeParse(
+async function getSoftwareUpdatesSettings() {
+  return v.safeParse(
     v.pipe(v.nullish(v.string(), ''), v.parseJson(), softwareUpdatesParametersSchema),
     (
       await DatabaseReads.adminSettings.findUnique({
-        where: { Key: AdminSettings.SoftwareUpdates },
+        where: { Key: AdminSettings.SoftwareUpdates.Key },
         select: {
           Value: true
         }
       })
     )?.Value
   );
+}
 
-  return record.success ? record.output['rate-limit'] : defaultSoftwareUpdatesRateLimit;
+/**
+ * return stored rate limit from DB (default: 20)
+ */
+export async function getSoftwareUpdatesRateLimit() {
+  const record = await getSoftwareUpdatesSettings();
+
+  return record.success
+    ? record.output[AdminSettings.SoftwareUpdates.RateLimit]
+    : defaultSoftwareUpdatesRateLimit;
+}
+
+export async function getOrgAllowlist() {
+  const record = await getSoftwareUpdatesSettings();
+  return record.success ? (record.output[AdminSettings.SoftwareUpdates.AllowOrgs] ?? []) : [];
 }

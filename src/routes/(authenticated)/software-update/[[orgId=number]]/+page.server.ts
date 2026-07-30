@@ -1,7 +1,8 @@
-import { fail } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
+import { getOrgAllowlist } from '$lib/admin-settings/server';
 import { mapSystems } from '$lib/organizations/server';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
@@ -21,6 +22,11 @@ export const load = (async ({ locals, params }) => {
     locals.security.requireAdminOfAny();
   }
 
+  const allowlist = await getOrgAllowlist();
+  if (orgId && allowlist !== 'all' && !allowlist?.includes(orgId)) {
+    return error(403);
+  }
+
   return {
     form: await superValidate(valibot(startFormSchema)),
     applicationTypes: await DatabaseReads.applicationTypes.findMany({
@@ -33,8 +39,14 @@ export const load = (async ({ locals, params }) => {
         })
       ).map((pd) => [pd.Id, pd])
     ),
-    products: await getProducts(locals.security, orgId ? [orgId] : undefined),
-    updates: await getUpdates(locals.security, orgId ? [orgId] : undefined),
+    products: await getProducts(
+      locals.security,
+      orgId ? [orgId] : allowlist !== 'all' ? allowlist : undefined
+    ),
+    updates: await getUpdates(
+      locals.security,
+      orgId ? [orgId] : allowlist !== 'all' ? allowlist : undefined
+    ),
     user: await DatabaseReads.users.findUniqueOrThrow({
       where: { Id: locals.security.userId },
       select: { Name: true }
@@ -44,10 +56,16 @@ export const load = (async ({ locals, params }) => {
 
 export const actions = {
   async start({ request, locals, params }) {
-    if (params.orgId) {
-      locals.security.requireAdminOfOrg(Number(params.orgId));
+    const orgId = params.orgId ? Number(params.orgId) : undefined;
+    if (orgId) {
+      locals.security.requireAdminOfOrg(orgId);
     } else {
       locals.security.requireAdminOfAny();
+    }
+
+    const allowlist = await getOrgAllowlist();
+    if (orgId && allowlist !== 'all' && !allowlist?.includes(orgId)) {
+      return error(403);
     }
 
     const form = await superValidate(request, valibot(startFormSchema));
@@ -57,7 +75,12 @@ export const actions = {
 
     const systems = await mapSystems(
       await DatabaseReads.organizations.findMany({
-        where: filterAdminOrgs(locals.security, params.orgId ? Number(params.orgId) : undefined),
+        where: {
+          AND: [
+            allowlist !== 'all' ? { Id: { in: allowlist } } : {},
+            filterAdminOrgs(locals.security, orgId)
+          ]
+        },
         select: {
           Id: true,
           UseDefaultBuildEngine: true,
@@ -82,10 +105,12 @@ export const actions = {
             updatableProductsFilter,
             {
               Project: {
-                Organization: filterAdminOrgs(
-                  locals.security,
-                  params.orgId ? Number(params.orgId) : undefined
-                )
+                Organization: {
+                  AND: [
+                    allowlist !== 'all' ? { Id: { in: allowlist } } : {},
+                    filterAdminOrgs(locals.security, orgId)
+                  ]
+                }
               }
             }
           ]
@@ -161,6 +186,8 @@ export const actions = {
     } else {
       locals.security.requireAdminOfAny();
     }
+
+    // I don't think we need to check the allowlist for cancellation. - Aidan
 
     const form = await superValidate(request, valibot(deleteSchema));
     if (!form.valid) {
