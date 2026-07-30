@@ -4,7 +4,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
-import { env } from '$env/dynamic/private';
+import { getOrgAllowlist } from '$lib/admin-settings/server';
 import { baseLocale } from '$lib/paraglide/runtime';
 import {
   ProductTransitionType,
@@ -41,22 +41,25 @@ const productActionSchema = v.object({
 });
 
 export const load = (async ({ locals, params }) => {
-  const projectId = Number(params.id);
-  if (isNaN(projectId)) throw error(404, 'Not Found');
   // Check authentication first, before any db calls
   // If the user is not logged in at all (locals.security.userId === null),
   // groups.findMany will error and security will not be handled
   locals.security.requireAuthenticated();
+  const projectId = Number(params.id);
+  const check = await DatabaseReads.projects.findUnique({
+    where: { Id: projectId },
+    select: { OwnerId: true, OrganizationId: true, GroupId: true }
+  });
+  if (!check) throw error(404, 'Not Found');
   locals.security.requireProjectReadAccess(
     await DatabaseReads.groups.findMany({
       where: { Users: { some: { Id: locals.security.userId } } },
       select: { Id: true }
     }),
-    await DatabaseReads.projects.findUnique({
-      where: { Id: projectId },
-      select: { OwnerId: true, OrganizationId: true, GroupId: true }
-    })
+    check
   );
+
+  const allowlist = await getOrgAllowlist();
 
   return {
     projectData: await getProjectDetails(projectId, locals.security.sessionForm),
@@ -64,7 +67,7 @@ export const load = (async ({ locals, params }) => {
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
     jobsAvailable: QueueConnected(),
-    showRebuildToggles: env.APP_ENV !== 'prd'
+    showRebuildToggles: allowlist === 'all' || allowlist.includes(check!.OrganizationId)
   };
 }) satisfies PageServerLoad;
 
