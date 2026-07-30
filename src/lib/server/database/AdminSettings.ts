@@ -29,7 +29,7 @@ export async function update(
 export async function insertPlaceholders() {
   return await prisma.adminSettings.createMany({
     data: Object.values(AdminSettings).map((v) => ({
-      Key: v.Key,
+      Key: v,
       Value: '{}',
       ModifiedById: null
     })),

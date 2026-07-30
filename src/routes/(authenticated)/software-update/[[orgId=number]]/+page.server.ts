@@ -138,36 +138,40 @@ export const actions = {
       return targetVersion && targetVersion !== p.ProductBuilds[0].AppBuilderVersion;
     });
 
-    const update = await DatabaseWrites.softwareUpdates.create(
-      {
-        InitiatedById: locals.security.userId,
-        Comment: form.data.comment
-      },
-      products.map((p) => ({
-        ProductId: p.Id,
-        PreviousVersion: p.ProductBuilds[0].AppBuilderVersion,
-        Version: systems.get(p.Project.OrganizationId)!.get(p.Project.TypeId)!,
-        Status: WorkflowState.Start
-      }))
-    );
+    let results: PromiseSettledResult<unknown>[] = [];
 
-    const results = await Promise.allSettled(
-      products.map((p) =>
-        doProductAction(
-          p.Id,
-          ProductActionType.Rebuild,
-          locals.security.userId,
-          form.data.comment,
-          true,
-          update.Id
-        ).then(() => p.Id)
-      )
-    );
+    if (products.length) {
+      const update = await DatabaseWrites.softwareUpdates.create(
+        {
+          InitiatedById: locals.security.userId,
+          Comment: form.data.comment
+        },
+        products.map((p) => ({
+          ProductId: p.Id,
+          PreviousVersion: p.ProductBuilds[0].AppBuilderVersion,
+          Version: systems.get(p.Project.OrganizationId)!.get(p.Project.TypeId)!,
+          Status: WorkflowState.Start
+        }))
+      );
 
-    getQueues().SvelteSSE.add(`Update Updatable Products (update #${update.Id} started)`, {
-      type: BullMQ.JobType.SvelteSSE_UpdateUpdatableProducts,
-      orgIds: Array.from(new Set(products.map((p) => p.Project.OrganizationId)))
-    });
+      results = await Promise.allSettled(
+        products.map((p) =>
+          doProductAction(
+            p.Id,
+            ProductActionType.Rebuild,
+            locals.security.userId,
+            form.data.comment,
+            true,
+            update.Id
+          ).then(() => p.Id)
+        )
+      );
+
+      getQueues().SvelteSSE.add(`Update Updatable Products (update #${update.Id} started)`, {
+        type: BullMQ.JobType.SvelteSSE_UpdateUpdatableProducts,
+        orgIds: Array.from(new Set(products.map((p) => p.Project.OrganizationId)))
+      });
+    }
 
     return {
       form,

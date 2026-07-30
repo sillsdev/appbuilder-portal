@@ -1,10 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Command, Option } from 'commander';
 
-const AdminSettings = {
-  SoftwareUpdates: 'software-updates'
-};
-
 const ProductType = {
   Android_GooglePlay: 0,
   Android_S3: 1,
@@ -29,12 +25,6 @@ if (options.verbose) console.log(options);
 
 const prisma = new PrismaClient();
 async function main() {
-  await prisma.adminSettings.upsert({
-    where: { Key: AdminSettings.SoftwareUpdates },
-    create: { Key: AdminSettings.SoftwareUpdates, Value: '{ "rate-limit": 20 }' },
-    update: { Value: '{ "rate-limit": 20 }' }
-  });
-
   type ApplicationType = [number, string, string];
   const applicationTypes: ApplicationType[] = [
     [1, 'scriptureappbuilder', 'Scripture App Builder'],

@@ -1,6 +1,7 @@
 import * as v from 'valibot';
 import {
   AdminSettings,
+  AdminSettingsKeys,
   defaultSoftwareUpdatesRateLimit,
   softwareUpdatesParametersSchema
 } from '$lib/admin-settings';
@@ -11,7 +12,7 @@ async function getSoftwareUpdatesSettings() {
     v.pipe(v.nullish(v.string(), ''), v.parseJson(), softwareUpdatesParametersSchema),
     (
       await DatabaseReads.adminSettings.findUnique({
-        where: { Key: AdminSettings.SoftwareUpdates.Key },
+        where: { Key: AdminSettings.SoftwareUpdates },
         select: {
           Value: true
         }
@@ -27,11 +28,13 @@ export async function getSoftwareUpdatesRateLimit() {
   const record = await getSoftwareUpdatesSettings();
 
   return record.success
-    ? record.output[AdminSettings.SoftwareUpdates.RateLimit]
+    ? record.output[AdminSettingsKeys[AdminSettings.SoftwareUpdates].RateLimit]
     : defaultSoftwareUpdatesRateLimit;
 }
 
 export async function getOrgAllowlist() {
   const record = await getSoftwareUpdatesSettings();
-  return record.success ? (record.output[AdminSettings.SoftwareUpdates.AllowOrgs] ?? []) : [];
+  return record.success
+    ? (record.output[AdminSettingsKeys[AdminSettings.SoftwareUpdates].AllowOrgs] ?? [])
+    : [];
 }
