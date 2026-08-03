@@ -3,6 +3,7 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { array, safeParse } from 'valibot';
 import type { LayoutServerLoad } from './$types';
+import { getOrgAllowlist } from '$lib/admin-settings/server';
 import { langtagSchema } from '$lib/ldml';
 import { readLDML } from '$lib/ldml/server';
 import { locales } from '$lib/paraglide/runtime';
@@ -29,6 +30,8 @@ export const load: LayoutServerLoad = async (event) => {
 
   const localDir = join(process.cwd(), 'languages');
 
+  const updatesAllowList = await getOrgAllowlist();
+
   return {
     organizations,
     userTasks: await getUserTasks(sec.userId),
@@ -43,6 +46,10 @@ export const load: LayoutServerLoad = async (event) => {
         return [];
       }),
     l10nMap: await readLDML(localDir, locales),
-    jobsAvailable: QueueConnected()
+    jobsAvailable: QueueConnected(),
+    updatesAllowList,
+    anyAllowedForUpdates:
+      updatesAllowList === 'all' ||
+      !new Set(updatesAllowList).isDisjointFrom(new Set(organizations.map((o) => o.Id)))
   };
 };

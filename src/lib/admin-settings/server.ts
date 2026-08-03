@@ -1,16 +1,14 @@
 import * as v from 'valibot';
 import {
   AdminSettings,
+  AdminSettingsKeys,
   defaultSoftwareUpdatesRateLimit,
   softwareUpdatesParametersSchema
 } from '$lib/admin-settings';
 import { DatabaseReads } from '$lib/server/database';
 
-/**
- * return stored rate limit from DB (default: 20)
- */
-export async function getSoftwareUpdatesRateLimit() {
-  const record = v.safeParse(
+async function getSoftwareUpdatesSettings() {
+  return v.safeParse(
     v.pipe(v.nullish(v.string(), ''), v.parseJson(), softwareUpdatesParametersSchema),
     (
       await DatabaseReads.adminSettings.findUnique({
@@ -21,6 +19,22 @@ export async function getSoftwareUpdatesRateLimit() {
       })
     )?.Value
   );
+}
 
-  return record.success ? record.output['rate-limit'] : defaultSoftwareUpdatesRateLimit;
+/**
+ * return stored rate limit from DB (default: 20)
+ */
+export async function getSoftwareUpdatesRateLimit() {
+  const record = await getSoftwareUpdatesSettings();
+
+  return record.success
+    ? record.output[AdminSettingsKeys[AdminSettings.SoftwareUpdates].RateLimit]
+    : defaultSoftwareUpdatesRateLimit;
+}
+
+export async function getOrgAllowlist() {
+  const record = await getSoftwareUpdatesSettings();
+  return record.success
+    ? record.output[AdminSettingsKeys[AdminSettings.SoftwareUpdates].AllowOrgs]
+    : [];
 }

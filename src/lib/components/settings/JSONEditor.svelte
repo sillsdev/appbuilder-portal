@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import type { ClassValue } from 'svelte/elements';
   import { flatten, safeParse } from 'valibot';
+  import { m } from '$lib/paraglide/messages';
+  import type { ValueKey } from '$lib/utils';
   import { type JsonSchema } from '$lib/valibot';
 
   interface Props {
@@ -10,9 +12,17 @@
     class?: ClassValue;
     ok?: boolean;
     schema: V;
+    hint?: ValueKey;
   }
 
-  let { value = $bindable(), name, class: classes, ok = $bindable(true), schema }: Props = $props();
+  let {
+    value = $bindable(),
+    name,
+    class: classes,
+    ok = $bindable(true),
+    schema,
+    hint
+  }: Props = $props();
 
   let parsed = $state(safeParse(schema, value));
 
@@ -48,6 +58,10 @@
   {#if showErrors && parsed.issues}
     {@const parseErrors = flatten<V>(parsed.issues)}
     <ul>
+      {#if hint}
+        <!-- eslint-disable-next-line @typescript-eslint/no-explicit-any -->
+        <li>{m[hint.key](hint.params as any)}</li>
+      {/if}
       {#each parseErrors.root ?? [] as error}
         <li class="text-red-500">
           <b>{error}</b>
