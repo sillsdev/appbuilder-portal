@@ -38,7 +38,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
     }
   });
   if (!productData) {
-    return await notifyProductNotFound(job.data.productId);
+    return await notifyProductNotFound(job.data.productId, job.data.projectId);
   }
   job.updateProgress(10);
   if (productData.WorkflowInstance) {
@@ -117,6 +117,7 @@ export async function product(job: Job<BullMQ.Build.Product>): Promise<unknown> 
         data: {
           type: BullMQ.JobType.Poll_Build,
           productId: job.data.productId,
+          projectId: job.data.projectId,
           organizationId: productData.Project.OrganizationId,
           jobId: productData.BuildEngineJobId,
           buildId: response.id,
@@ -162,7 +163,7 @@ export async function postProcess(job: Job<BullMQ.Build.PostProcess>): Promise<u
     }
   });
   if (!product) {
-    return await notifyProductNotFound(job.data.productId);
+    return await notifyProductNotFound(job.data.productId, job.data.projectId);
   }
   if (job.data.build.error) {
     job.log(job.data.build.error);
@@ -467,12 +468,19 @@ async function notifyFailed(
     }
   );
 }
-export async function notifyProductNotFound(productId: string) {
+export async function notifyProductNotFound(productId: string, projectId: number) {
   await getQueues().Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
     type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
     messageKey: 'buildProductRecordNotFound',
     messageProperties: {
-      productId
+      productId,
+      projectName:
+        (
+          await DatabaseReads.projects.findUnique({
+            where: { Id: projectId },
+            select: { Name: true }
+          })
+        )?.Name || `Project #${projectId}`
     }
   });
   return { message: 'Product Not Found' };

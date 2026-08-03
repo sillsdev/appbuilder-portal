@@ -64,6 +64,7 @@ export const WorkflowStateMachine = setup({
     productType: input.productType,
     options: input.options,
     productId: input.productId,
+    projectId: input.projectId,
     hasAuthors: input.hasAuthors,
     hasReviewers: input.hasReviewers,
     autoPublishOnRebuild: input.autoPublishOnRebuild,
@@ -540,6 +541,7 @@ export const WorkflowStateMachine = setup({
             {
               type: BullMQ.JobType.Build_Product,
               productId: context.productId,
+              projectId: context.projectId,
               defaultTargets:
                 context.workflowType === WorkflowType.Republish
                   ? 'play-listing'
@@ -887,6 +889,7 @@ export const WorkflowStateMachine = setup({
             {
               type: BullMQ.JobType.Publish_Product,
               productId: context.productId,
+              projectId: context.projectId,
               defaultChannel: 'production', //default unless overriden by WorkflowDefinition.Properties or ProductDefinition.Properties
               defaultTargets:
                 context.productType === ProductType.Android_GooglePlay

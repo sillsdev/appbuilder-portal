@@ -13,7 +13,7 @@
   // 20 is default width according to HTML 5 spec
 </script>
 
-<span class="inline-flex flex-row gap-x-1">
+<span class="inline-flex flex-row gap-x-1 font-mono">
   <input
     type={visible ? 'text' : 'password'}
     {value}

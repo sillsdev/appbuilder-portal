@@ -6,6 +6,7 @@ import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { addProductPropertiesToEnvironment, getWorkflowParameters } from './common.build-publish';
 import { BuildStatus } from '$lib/prisma';
+import { fetchPublicationDetails } from '$lib/products/server';
 import { projectUrl } from '$lib/projects/server';
 import { NotificationType } from '$lib/users';
 import { WorkflowAction } from '$lib/workflowTypes';
@@ -42,12 +43,12 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
     }
   });
   if (!productData) {
-    return await notifyProductNotFound(job.data.productId);
+    return await notifyProductNotFound(job.data.productId, job.data.projectId);
   }
   job.updateProgress(10);
   if (!productData.CurrentBuild) {
     // ISSUE: #1100 I don't like this, but it's the most appropriate message currently available
-    await notifyProductNotFound(job.data.productId);
+    await notifyProductNotFound(job.data.productId, job.data.projectId);
     const flow = await Workflow.restore(job.data.productId);
     flow?.send({
       type: WorkflowAction.Publish_Failed,
@@ -139,6 +140,7 @@ export async function product(job: Job<BullMQ.Publish.Product>): Promise<unknown
         data: {
           type: BullMQ.JobType.Poll_Publish,
           productId: job.data.productId,
+          projectId: job.data.projectId,
           organizationId: productData.Project.OrganizationId,
           jobId: productData.BuildEngineJobId,
           buildId: productData.CurrentBuild.BuildEngineBuildId,
@@ -184,7 +186,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
     }
   });
   if (!product) {
-    return await notifyProductNotFound(job.data.productId);
+    return await notifyProductNotFound(job.data.productId, job.data.projectId);
   }
   if (job.data.release.error) {
     job.log(job.data.release.error);
@@ -195,24 +197,6 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
   let publishLink: string | undefined = undefined;
   if (flow) {
     if (job.data.release.result === 'SUCCESS') {
-      const publishUrlFile = job.data.release.artifacts['publishUrl'];
-      publishLink = publishUrlFile
-        ? ((await fetch(publishUrlFile).then((r) => r.text()))?.trim() ?? undefined)
-        : undefined;
-      await DatabaseWrites.products.update(job.data.productId, {
-        DatePublished: new Date(),
-        PublishLink: publishLink
-      });
-      await notifyCompleted(
-        job.data.buildId,
-        job.data.release.id,
-        job.data.productId,
-        product.Project.OwnerId,
-        product.Project.Name!,
-        product.ProductDefinition.Name!,
-        job.data.transition
-      );
-      flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
       const packageFile = await DatabaseReads.productPublications.findUnique({
         where: {
           ProductId_BuildEngineReleaseId: {
@@ -228,6 +212,7 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
                   ArtifactType: 'package_name'
                 },
                 select: {
+                  ArtifactType: true,
                   Url: true
                 },
                 take: 1
@@ -236,11 +221,26 @@ export async function postProcess(job: Job<BullMQ.Publish.PostProcess>): Promise
           }
         }
       });
-      if (packageFile?.ProductBuild.ProductArtifacts[0]) {
-        packageName = (
-          await fetch(packageFile.ProductBuild.ProductArtifacts[0].Url!).then((r) => r.text())
-        )?.trim();
-      }
+      const details = await fetchPublicationDetails(
+        job.data.release,
+        packageFile?.ProductBuild.ProductArtifacts
+      );
+      publishLink = details.publishLink || undefined;
+      packageName = details.packageName || undefined;
+      await DatabaseWrites.products.update(job.data.productId, {
+        DatePublished: new Date(),
+        PublishLink: publishLink
+      });
+      await notifyCompleted(
+        job.data.buildId,
+        job.data.release.id,
+        job.data.productId,
+        product.Project.OwnerId,
+        product.Project.Name!,
+        product.ProductDefinition.Name!,
+        job.data.transition
+      );
+      flow.send({ type: WorkflowAction.Publish_Completed, userId: null });
     } else {
       await notifyFailed(
         job.data.buildId,
@@ -409,12 +409,19 @@ async function notifyFailed(
     }
   );
 }
-export async function notifyProductNotFound(productId: string) {
+export async function notifyProductNotFound(productId: string, projectId: number) {
   await getQueues().Emails.add(`Notify SuperAdmins of Failure to Find Product #${productId}`, {
     type: BullMQ.JobType.Email_NotifySuperAdminsLowPriority,
     messageKey: 'releaseProductRecordNotFound',
     messageProperties: {
-      productId
+      productId,
+      projectName:
+        (
+          await DatabaseReads.projects.findUnique({
+            where: { Id: projectId },
+            select: { Name: true }
+          })
+        )?.Name || `Project #${projectId}`
     }
   });
   return { message: 'Product Not Found' };

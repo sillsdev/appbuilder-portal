@@ -37,7 +37,7 @@ export const projectSelect = {
         select: {
           AppBuilderVersion: true
         },
-        orderBy: { DateUpdated: 'desc' },
+        orderBy: { DateCreated: 'desc' },
         take: 1
       },
       PackageName: true

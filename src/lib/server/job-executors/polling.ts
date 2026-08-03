@@ -26,7 +26,7 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
   if (!product?.WorkflowInstance || product.CurrentBuildId !== job.data.buildId) {
     await getQueues().Polling.removeJobScheduler(job.name);
     if (!product) {
-      return await build_notifyProductNotFound(job.data.productId);
+      return await build_notifyProductNotFound(job.data.productId, job.data.projectId);
     } else if (!product.WorkflowInstance) {
       job.log('No WorkflowInstance found. Workflow cancelled?');
     } else {
@@ -71,6 +71,7 @@ export async function build(job: Job<BullMQ.Polling.Build>): Promise<unknown> {
         `PostProcess Build #${job.data.buildId} for Product #${job.data.productId}`,
         {
           type: BullMQ.JobType.Build_PostProcess,
+          projectId: job.data.projectId,
           productId: job.data.productId,
           build: response,
           transition: job.data.transition
@@ -104,7 +105,7 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
   if (!product?.WorkflowInstance || product.CurrentReleaseId !== job.data.releaseId) {
     await getQueues().Polling.removeJobScheduler(job.name);
     if (!product) {
-      return await publish_notifyProductNotFound(job.data.productId);
+      return await publish_notifyProductNotFound(job.data.productId, job.data.projectId);
     } else if (!product.WorkflowInstance) {
       job.log('No WorkflowInstance found. Workflow cancelled?');
     } else {
@@ -151,6 +152,7 @@ export async function publish(job: Job<BullMQ.Polling.Publish>): Promise<unknown
         `PostProcess Release #${job.data.releaseId} for Product #${job.data.productId}`,
         {
           type: BullMQ.JobType.Publish_PostProcess,
+          projectId: job.data.projectId,
           productId: job.data.productId,
           buildId: job.data.buildId,
           release: response,

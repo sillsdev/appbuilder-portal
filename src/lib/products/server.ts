@@ -1,13 +1,15 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
+import type { Prisma } from '@prisma/client';
 import * as v from 'valibot';
 import { isLocale } from '$lib/google-play/paraglide/runtime';
 import { getBasicVariant } from '$lib/ldml';
 import { ProductTransitionType, WorkflowType } from '$lib/prisma';
+import type { BuildEngine } from '$lib/server/build-engine-api';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
 import { WorkflowAction, WorkflowState } from '$lib/workflowTypes';
-import { ProductActionType, getFileInfo } from '.';
+import { ProductActionType, fetchPackageName, getFileInfo } from '.';
 
 const tracer = trace.getTracer('LibProducts');
 
@@ -341,4 +343,18 @@ export async function getArtifactHeaders(product_id: string, type: string) {
   }
 
   return { product: productArtifact, headers };
+}
+
+export async function fetchPublicationDetails(
+  release: BuildEngine.Types.ReleaseResponse,
+  artifacts?: Prisma.ProductArtifactsGetPayload<{ select: { ArtifactType: true; Url: true } }>[]
+) {
+  const publishUrlFile = release.artifacts['publishUrl'];
+  const packageNameFile = artifacts?.find((a) => a.ArtifactType === 'package_name') ?? null;
+
+  return {
+    publishLink:
+      (publishUrlFile && (await fetch(publishUrlFile).then((r) => r.text()))?.trim()) || null,
+    packageName: packageNameFile && (await fetchPackageName(packageNameFile.Url))
+  };
 }

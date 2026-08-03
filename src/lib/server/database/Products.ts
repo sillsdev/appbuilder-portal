@@ -118,6 +118,7 @@ async function deleteProduct(productId: string) {
     {
       type: BullMQ.JobType.Product_Delete,
       organizationId: product!.Project.OrganizationId,
+      projectId: product!.Project.Id,
       buildEngineJobId: product!.BuildEngineJobId
     },
     BullMQ.Retry0f600
