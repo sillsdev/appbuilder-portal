@@ -1,5 +1,4 @@
 import { fail } from '@sveltejs/kit';
-import { randomInt } from 'crypto';
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
@@ -7,77 +6,35 @@ import type { Actions, PageServerLoad } from './$types';
 import { localizedEmailSchema } from '$lib/google-play';
 import { m } from '$lib/google-play/paraglide/messages';
 import type { Locale } from '$lib/google-play/paraglide/runtime';
-import { saveDeleteRequestVerificationCode } from '$lib/google-play/server';
 import { RoleId } from '$lib/prisma';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { sendEmail } from '$lib/server/email-service/EmailClient';
 
-const localizedSchemas = (locale: Locale) => ({
-  sendCodeSchema: v.object({
-    email: localizedEmailSchema(locale)
-  }),
-  verifyCodeSchema: v.object({
+const localizedSchema = (locale: Locale) =>
+  v.object({
     email: localizedEmailSchema(locale),
     code: v.pipe(v.string(), v.trim(), v.length(6, m.error_code_6_digits({}, { locale })))
-  })
-});
+  });
 
 export const load: PageServerLoad = async ({ parent, locals }) => {
   locals.security.requireNothing();
-  const locale = locals.locale as Locale;
-  const { sendCodeSchema, verifyCodeSchema } = localizedSchemas(locale);
 
-  const email = '';
-
-  const sendCodeForm = await superValidate({ email }, valibot(sendCodeSchema), { errors: false });
-  const verifyCodeForm = await superValidate({ email, code: '' }, valibot(verifyCodeSchema), {
-    errors: false
-  });
-
-  return { email, sendCodeForm, verifyCodeForm };
+  return {
+    form: await superValidate(
+      { email: '', code: '' },
+      valibot(localizedSchema(locals.locale as Locale)),
+      {
+        errors: false
+      }
+    )
+  };
 };
 
 export const actions: Actions = {
-  sendCode: async ({ request, locals, params }) => {
-    locals.security.requireNothing();
-    const locale = locals.locale as Locale;
-    const { sendCodeSchema } = localizedSchemas(locale);
-    const form = await superValidate(request, valibot(sendCodeSchema));
-
-    if (!form.valid) {
-      return fail(400, { form });
-    }
-
-    const code = randomInt(100_000, 1_000_000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
-
-    try {
-      await saveDeleteRequestVerificationCode({
-        productId: params.productId,
-        email: form.data.email,
-        change: null,
-        code,
-        expiresAt
-      });
-
-      await sendEmail(
-        [{ email: form.data.email, name: form.data.email }],
-        m.email_subject({}, { locale }),
-        m.email_body({ code }, { locale })
-      );
-
-      return message(form, { step: 'verify', email: form.data.email });
-    } catch {
-      return message(form, { error: m.alert_verification_failed({}, { locale }) }, { status: 500 });
-    }
-  },
-
   verifyCode: async ({ request, locals, params }) => {
     locals.security.requireNothing();
     const locale = locals.locale as Locale;
-    const { verifyCodeSchema } = localizedSchemas(locale);
-    const form = await superValidate(request, valibot(verifyCodeSchema));
+    const form = await superValidate(request, valibot(localizedSchema(locale)));
 
     if (!form.valid) {
       return fail(400, { form });

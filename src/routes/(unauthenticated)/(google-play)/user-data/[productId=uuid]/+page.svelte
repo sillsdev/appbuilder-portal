@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import { goto } from '$app/navigation';
   import { env } from '$env/dynamic/public';
   import { confirmationStorageKey, deletionTypes } from '$lib/google-play';
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
@@ -46,16 +47,9 @@
       $errors.turnstileToken = [];
     },
     onUpdated: ({ form: result }) => {
-      if (
-        result.valid &&
-        result.message?.step === 'verify' &&
-        typeof result.message?.email === 'string'
-      ) {
-        sessionStorage.setItem(confirmEmailStorageKey, result.message.email);
-        window.location.assign(
-          localizeHref(`/user-data/${data.app.id}/confirm`, { locale: currentLocale })
-        );
-        return;
+      if (result.valid) {
+        sessionStorage.setItem(confirmEmailStorageKey, $form.email);
+        goto(localizeHref(`/user-data/${data.app.id}/confirm`, { locale: currentLocale }));
       }
 
       if (result.message?.error) {

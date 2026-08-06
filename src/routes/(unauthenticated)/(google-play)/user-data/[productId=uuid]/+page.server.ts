@@ -181,7 +181,7 @@ export const actions: Actions = {
           );
         }
 
-        return message(form, { step: 'verify', email: form.data.email });
+        return { form, ok: true };
       } catch (e) {
         span.recordException(e as Error);
         span.setStatus({
