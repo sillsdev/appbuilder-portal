@@ -41,7 +41,6 @@ export async function saveDeleteRequestVerificationCode({
             }
           },
           data: {
-            DateUpdated: now,
             DateExpires: now
           }
         });
@@ -53,7 +52,6 @@ export async function saveDeleteRequestVerificationCode({
           data: {
             Change: change,
             ConfirmationCode: code,
-            DateUpdated: now,
             DateExpires: expiresAt
           }
         });
@@ -65,8 +63,6 @@ export async function saveDeleteRequestVerificationCode({
           Email: email,
           Change: change,
           ConfirmationCode: code,
-          DateCreated: now,
-          DateUpdated: now,
           DateExpires: expiresAt,
           DateConfirmed: null
         }

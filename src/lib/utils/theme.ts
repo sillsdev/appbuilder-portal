@@ -1,4 +1,4 @@
-type ThemeColor = string | { light: string; dark: string };
+type ThemeColor = { light: string; dark: string };
 
 function normalizeRgbHex(themeColor: string | null | undefined) {
   if (!themeColor) return null;
@@ -58,10 +58,7 @@ function getHslAndLuminance(hex: string) {
 }
 
 export function getThemeStyle(themeColor: ThemeColor | null | undefined) {
-  const lightHex =
-    typeof themeColor === 'string'
-      ? normalizeRgbHex(themeColor)
-      : normalizeRgbHex(themeColor?.light);
+  const lightHex = normalizeRgbHex(themeColor?.light);
   if (!lightHex) return '';
 
   const primary = getHslAndLuminance(lightHex);
