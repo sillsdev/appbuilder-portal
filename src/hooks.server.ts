@@ -7,11 +7,18 @@ import { type Handle, type HandleServerError, error } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { authRouteHandle, organizationInviteHandle, populateSecurityInfo } from './auth';
 import { building } from '$app/environment';
-import { extractLocaleFromUrl as GooglePlayGetLocaleForUrl } from '$lib/google-play/paraglide/runtime';
+import {
+  extractLocaleFromUrl as GooglePlayGetLocaleForUrl,
+  getTextDirection as GooglePlayGetTextDirection
+} from '$lib/google-play/paraglide/runtime';
 import { paraglideMiddleware as GooglePlayParaglideMiddleware } from '$lib/google-play/paraglide/server';
 import OTEL from '$lib/otel';
 
-import { baseLocale, extractLocaleFromUrl as defaultGetLocaleForUrl } from '$lib/paraglide/runtime';
+import {
+  baseLocale,
+  extractLocaleFromUrl as defaultGetLocaleForUrl,
+  getTextDirection as defaultGetTextDirection
+} from '$lib/paraglide/runtime';
 import { paraglideMiddleware as defaultParaglideMiddleware } from '$lib/paraglide/server';
 import { RoleId } from '$lib/prisma';
 import { QueueConnected, getQueues } from '$lib/server/bullmq';
@@ -38,13 +45,6 @@ if (!building) {
   });
 }
 
-function getTextDirectionFallback(locale: string) {
-  const normalized = locale.trim().toLowerCase();
-  const primary = normalized.split('-')[0];
-  const rtlLanguages = new Set(['ar', 'fa', 'he', 'iw', 'ps', 'ur', 'yi']);
-  return rtlLanguages.has(primary) ? 'rtl' : 'ltr';
-}
-
 // creating a handle to use the paraglide middleware
 const paraglideHandle: Handle = ({ event, resolve }) => {
   const isGooglePlayRoute = !!event.url.pathname.match(/\/(downloads|user-data)/);
@@ -60,7 +60,12 @@ const paraglideHandle: Handle = ({ event, resolve }) => {
       event.request = localizedRequest;
       return resolve(event, {
         transformPageChunk: ({ html }) => {
-          return html.replace('%lang%', locale).replace('%dir%', getTextDirectionFallback(locale));
+          return html
+            .replace('%lang%', locale)
+            .replace(
+              '%dir%',
+              (isGooglePlayRoute ? GooglePlayGetTextDirection : defaultGetTextDirection)(locale)
+            );
         }
       });
     }
