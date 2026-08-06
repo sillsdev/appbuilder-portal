@@ -1,10 +1,13 @@
 import { Prisma } from '@prisma/client';
-import prisma from '$lib/server/database/prisma';
+import { RoleId } from '$lib/prisma';
+import prisma, { DatabaseReads } from '$lib/server/database/prisma';
+import type { WorkflowInstanceContext } from '$lib/workflowTypes';
+import { ChangeRequestAction } from '.';
 
 interface SaveDeleteRequestVerificationCodeArgs {
   productId: string;
   email: string;
-  change: string;
+  change: string | null;
   code: string;
   expiresAt: Date;
 }
@@ -50,7 +53,7 @@ export async function saveDeleteRequestVerificationCode({
         return tx.productUserChanges.update({
           where: { Id: latestRequest.Id },
           data: {
-            Change: change,
+            Change: change ?? undefined,
             ConfirmationCode: code,
             DateExpires: expiresAt
           }
@@ -73,4 +76,40 @@ export async function saveDeleteRequestVerificationCode({
       isolationLevel: Prisma.TransactionIsolationLevel.Serializable
     }
   );
+}
+
+export async function getChangeRequest(productId: string, taskId: number) {
+  const request = await DatabaseReads.productUserChanges.findFirst({
+    where: { ProductId: productId, Tasks: { some: { Id: taskId } }, Change: { not: null } }
+  });
+  console.log(request);
+  if (!request) return null;
+  type NeededContext = Pick<
+    WorkflowInstanceContext,
+    'includeFields' | 'includeArtifacts' | 'includeReviewers' | 'instructions'
+  >;
+  const snap = {
+    state: request.Change!,
+    context: {
+      includeFields: ['ownerName', 'ownerEmail', 'packageName'],
+      includeArtifacts: null,
+      includeReviewers: false,
+      instructions: null
+    } satisfies NeededContext,
+    input: {}
+  };
+
+  return {
+    snap: snap as { state: string; context: NeededContext; input: unknown },
+    actions: [
+      ChangeRequestAction.Mark_Complete,
+      request.AssignedRole === RoleId.AppBuilder
+        ? ChangeRequestAction.Transfer_to_Admin
+        : ChangeRequestAction.Transfer_to_Owner
+    ],
+    request: {
+      email: request.Email,
+      submitted: request.DateConfirmed
+    }
+  };
 }
