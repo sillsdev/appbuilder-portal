@@ -292,14 +292,6 @@
           </form>
         </div>
       </div>
-
-      <p class="mt-4 text-center text-xs text-base-content/70">
-        {m.udm_footer_text({ appName: app.name })}
-        <a class="link link-primary no-underline hover:underline" href="/support">
-          {m.udm_contact_support()}
-        </a>
-        .
-      </p>
     </div>
   </div>
 </div>
