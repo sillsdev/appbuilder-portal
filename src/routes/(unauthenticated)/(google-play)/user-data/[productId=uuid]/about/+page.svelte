@@ -23,7 +23,7 @@
       <div class="min-w-0 grow text-start">
         <h2 class="text-lg font-bold tracking-tight leading-tight break-words">{data.app.name}</h2>
         <p class="mt-1 text-sm text-primary font-bold leading-tight break-words">
-          {data.app.developer}
+          <span class="bg-primary-content/70 p-1 rounded-sm">{data.app.developer}</span>
         </p>
       </div>
     </div>
@@ -37,7 +37,7 @@
             <summary
               class="list-none text-sm font-bold text-primary cursor-pointer hover:underline flex items-center gap-2 select-none"
             >
-              {m.show_more()}
+              <span class="bg-primary-content/70 p-1 rounded-sm">{m.show_more()}</span>
             </summary>
             <div class="pt-3 text-sm whitespace-pre-line leading-relaxed text-base-content/80">
               {data.app.longDesc}
