@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import { confirmationStorageKey } from '$lib/google-play';
   import { m } from '$lib/google-play/paraglide/messages';
   import { getThemeStyle } from '$lib/utils/theme';
 
@@ -14,10 +15,7 @@
 
   let { data }: Props = $props();
 
-  const app = data.app;
-  const iconSrc = app.icon || app.fallbackIcon;
-  const confirmEmailStorageKey = `udm-confirm-email:${app.id}`;
-  const themeStyle = getThemeStyle(app.themeColor);
+  const confirmEmailStorageKey = confirmationStorageKey(data.app.id);
 
   const {
     form: sendForm,
@@ -33,7 +31,7 @@
         $verifyForm.email = form.message.email;
         sessionStorage.setItem(confirmEmailStorageKey, form.message.email);
       } else if (!form.valid && !form.message?.error) {
-        $sendMessage = { error: m.udm_alert_verification_failed() };
+        $sendMessage = { error: m.alert_verification_failed() };
       }
     }
   });
@@ -50,7 +48,7 @@
         step = 'verified';
         sessionStorage.removeItem(confirmEmailStorageKey);
       } else if (!form.valid && !form.message?.error) {
-        $verifyMessage = { error: m.udm_error_invalid_code_retry() };
+        $verifyMessage = { error: m.error_invalid_code_retry() };
       }
     }
   });
@@ -75,7 +73,7 @@
 
 <div
   class="udm-theme udm-confirm-root min-h-screen flex items-center justify-center bg-base-200 font-sans p-4"
-  style={themeStyle}
+  style={getThemeStyle(data.app.themeColor)}
 >
   <div class="card bg-base-100 w-full max-w-[400px] shadow-xl overflow-hidden rounded-lg">
     <div class="bg-primary p-10 px-8 text-center text-primary-content">
@@ -83,7 +81,7 @@
         {#if step !== 'verified'}
           <div class="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center">
             <img
-              src={iconSrc}
+              src={data.app.icon}
               alt={m.app_icon_alt()}
               class="w-12 h-12 rounded-2xl shadow-sm bg-primary/5 p-0.5"
             />
@@ -99,11 +97,11 @@
       </div>
       <h1 class="m-0 text-2xl font-bold">
         {#if step === 'verified'}
-          {m.udm_verified_title()}
+          {m.verified_title()}
         {:else if step === 'code'}
-          {m.udm_check_email_title()}
+          {m.check_email_title()}
         {:else}
-          {m.udm_enter_email_title()}
+          {m.enter_email_title()}
         {/if}
       </h1>
     </div>
@@ -111,19 +109,18 @@
     <div class="p-8">
       {#if step === 'email'}
         <p class="text-base-content/70 text-center leading-relaxed mb-8">
-          {m.udm_enter_email_description()}
+          {m.enter_email_description()}
         </p>
 
         <form method="POST" action="?/sendCode" use:sendEnhance>
-          <input type="hidden" name="productId" bind:value={$sendForm.productId} />
           <div class="mb-6 flex flex-col gap-2">
-            <label for="email" class="sr-only">{m.udm_email_placeholder_name()}</label>
+            <label for="email" class="sr-only">{m.email_placeholder_name()}</label>
             <input
               id="email"
               type="email"
               name="email"
               bind:value={$sendForm.email}
-              placeholder={m.udm_email_placeholder_name()}
+              placeholder={m.email_placeholder_name()}
               required
               class="input h-14 w-full border border-base-300 text-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
             />
@@ -139,18 +136,17 @@
             {#if $sendDelayed}
               <span class="loading loading-spinner"></span>
             {:else}
-              {m.udm_send_code()}
+              {m.send_code()}
             {/if}
           </button>
         </form>
       {:else if step === 'code'}
         <p class="text-base-content/70 text-center leading-relaxed mb-8">
-          {m.udm_check_email_description({ email: $verifyForm.email })}
+          {m.check_email_description({ email: $verifyForm.email })}
         </p>
 
         <form method="POST" action="?/verifyCode" use:verifyEnhance>
           <input type="hidden" name="email" bind:value={$verifyForm.email} />
-          <input type="hidden" name="productId" bind:value={$verifyForm.productId} />
           <div class="mb-6 flex flex-col gap-2">
             <label for="code" class="sr-only">000000</label>
             <input
@@ -176,14 +172,14 @@
             {#if $verifyDelayed}
               <span class="loading loading-spinner"></span>
             {:else}
-              {m.udm_verify_code()}
+              {m.verify_code()}
             {/if}
           </button>
         </form>
 
         <div class="mt-6 text-center text-sm text-base-content/60">
           <p>
-            {m.udm_did_not_receive_code()}
+            {m.did_not_receive_code()}
             <button
               type="button"
               onclick={() => {
@@ -192,15 +188,15 @@
               }}
               class="link link-primary font-bold no-underline hover:underline bg-transparent border-none p-0 cursor-pointer"
             >
-              {m.udm_change_email()}
+              {m.change_email()}
             </button>
           </p>
         </div>
       {:else if step === 'verified'}
         <div class="text-center flex flex-col gap-4">
-          <p class="text-lg font-bold text-base-content">{m.udm_verification_complete_title()}</p>
+          <p class="text-lg font-bold text-base-content">{m.verification_complete_title()}</p>
           <p class="text-base-content/70 text-[0.95rem]">
-            {m.udm_verification_complete_description()}
+            {m.verification_complete_description()}
           </p>
         </div>
       {/if}

@@ -2,6 +2,7 @@ import { error } from '@sveltejs/kit';
 import { createHash } from 'node:crypto';
 import * as v from 'valibot';
 import { getAuthConnection } from '$lib/server/bullmq/queues';
+import { UUIDSchema } from '$lib/valibot.js';
 
 /**
  * Returns JSON object with API token (`id_token`), adjusted expiry time (`expires_in`), and empty `access_token`
@@ -15,7 +16,7 @@ export async function POST({ locals, request }) {
 
   const body = v.safeParse(
     v.object({
-      code: v.pipe(v.string(), v.uuid()),
+      code: UUIDSchema,
       verify: v.string()
     }),
     await request.json()
