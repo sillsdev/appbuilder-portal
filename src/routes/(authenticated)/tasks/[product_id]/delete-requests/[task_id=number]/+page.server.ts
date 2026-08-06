@@ -110,7 +110,6 @@ export const actions = {
         Id: { in: requestIds }
       },
       data: {
-        DateUpdated: new Date(),
         DateCompleted: new Date()
       }
     });

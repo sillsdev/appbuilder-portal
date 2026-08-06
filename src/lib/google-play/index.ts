@@ -1,4 +1,6 @@
-import { type Locale, locales } from './paraglide/runtime';
+import * as v from 'valibot';
+import { m } from '$lib/google-play/paraglide/messages';
+import { type Locale, locales } from '$lib/google-play/paraglide/runtime';
 import { ApplicationType } from '$lib/prisma';
 
 export const GooglePlayFlags = new Map<Locale, string>([
@@ -113,3 +115,16 @@ export function getGPFallbackIcon(type: ApplicationType) {
     ] ?? ''
   );
 }
+
+export const confirmationStorageKey = (appId: string) => `udm-confirm-email:${appId}`;
+
+export const localizedEmailSchema = (locale: Locale) =>
+  v.pipe(
+    v.string(),
+    v.email(m.alert_valid_email({}, { locale })),
+    v.trim(),
+    v.transform((email) => email.toLocaleLowerCase(locale))
+  );
+
+export const deletionTypes = ['data', 'account'] as const;
+export type DeletionType = (typeof deletionTypes)[number];

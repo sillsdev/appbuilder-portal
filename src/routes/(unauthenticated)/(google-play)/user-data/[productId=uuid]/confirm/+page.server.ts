@@ -4,9 +4,10 @@ import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { localizedEmailSchema } from '$lib/google-play';
 import { m } from '$lib/google-play/paraglide/messages';
 import type { Locale } from '$lib/google-play/paraglide/runtime';
-import { saveDeleteRequestVerificationCode } from '$lib/google-play/server/udm';
+import { saveDeleteRequestVerificationCode } from '$lib/google-play/server';
 import { RoleId } from '$lib/prisma';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
@@ -14,101 +15,79 @@ import { sendEmail } from '$lib/server/email-service/EmailClient';
 
 const UDM_CHANGE_DESCRIPTION = 'User data deletion request verification';
 
-function createSchemas(locale: Locale) {
-  const uuidSchema = v.pipe(v.string(), v.uuid(m.udm_error_invalid_product_id({}, { locale })));
-
-  const sendCodeSchema = v.object({
-    email: v.pipe(v.string(), v.email(m.udm_alert_valid_email({}, { locale }))),
-    productId: uuidSchema
-  });
-
-  const verifyCodeSchema = v.object({
-    email: v.pipe(v.string(), v.email()),
-    code: v.pipe(v.string(), v.length(6, m.udm_error_code_6_digits({}, { locale }))),
-    productId: uuidSchema
-  });
-
-  return { sendCodeSchema, verifyCodeSchema };
-}
+const localizedSchemas = (locale: Locale) => ({
+  sendCodeSchema: v.object({
+    email: localizedEmailSchema(locale)
+  }),
+  verifyCodeSchema: v.object({
+    email: localizedEmailSchema(locale),
+    code: v.pipe(v.string(), v.trim(), v.length(6, m.error_code_6_digits({}, { locale })))
+  })
+});
 
 export const load: PageServerLoad = async ({ parent, locals }) => {
   locals.security.requireNothing();
   const locale = locals.locale as Locale;
-  const { sendCodeSchema, verifyCodeSchema } = createSchemas(locale);
+  const { sendCodeSchema, verifyCodeSchema } = localizedSchemas(locale);
 
-  const { productId } = await parent();
   const email = '';
 
-  const sendCodeForm = await superValidate({ email, productId }, valibot(sendCodeSchema));
-  const verifyCodeForm = await superValidate(
-    { email, code: '', productId },
-    valibot(verifyCodeSchema)
-  );
+  const sendCodeForm = await superValidate({ email }, valibot(sendCodeSchema));
+  const verifyCodeForm = await superValidate({ email, code: '' }, valibot(verifyCodeSchema));
 
-  return { email, sendCodeForm, verifyCodeForm, productId };
+  return { email, sendCodeForm, verifyCodeForm };
 };
 
 export const actions: Actions = {
-  sendCode: async ({ request, locals }) => {
+  sendCode: async ({ request, locals, params }) => {
     locals.security.requireNothing();
     const locale = locals.locale as Locale;
-    const { sendCodeSchema } = createSchemas(locale);
+    const { sendCodeSchema } = localizedSchemas(locale);
     const form = await superValidate(request, valibot(sendCodeSchema));
 
     if (!form.valid) {
       return fail(400, { form });
     }
 
-    const normalizedEmail = form.data.email.trim().toLowerCase();
-    const productId = form.data.productId;
-
-    const code = randomInt(100000, 1000000).toString();
+    const code = randomInt(100_000, 1_000_000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 
     try {
       await saveDeleteRequestVerificationCode({
-        productId,
-        email: normalizedEmail,
+        productId: params.productId,
+        email: form.data.email,
         change: UDM_CHANGE_DESCRIPTION,
         code,
         expiresAt
       });
 
       await sendEmail(
-        [{ email: normalizedEmail, name: normalizedEmail }],
-        m.udm_email_subject({}, { locale }),
-        m.udm_email_body({ code }, { locale })
+        [{ email: form.data.email, name: form.data.email }],
+        m.email_subject({}, { locale }),
+        m.email_body({ code }, { locale })
       );
 
-      return message(form, { step: 'verify', email: normalizedEmail });
+      return message(form, { step: 'verify', email: form.data.email });
     } catch {
-      return message(
-        form,
-        { error: m.udm_alert_verification_failed({}, { locale }) },
-        { status: 500 }
-      );
+      return message(form, { error: m.alert_verification_failed({}, { locale }) }, { status: 500 });
     }
   },
 
-  verifyCode: async ({ request, locals }) => {
+  verifyCode: async ({ request, locals, params }) => {
     locals.security.requireNothing();
     const locale = locals.locale as Locale;
-    const { verifyCodeSchema } = createSchemas(locale);
+    const { verifyCodeSchema } = localizedSchemas(locale);
     const form = await superValidate(request, valibot(verifyCodeSchema));
 
     if (!form.valid) {
       return fail(400, { form });
     }
 
-    const normalizedEmail = form.data.email.trim().toLowerCase();
-    const normalizedCode = form.data.code.trim();
-    const productId = form.data.productId;
-
     try {
       const userChange = await DatabaseReads.productUserChanges.findFirst({
         where: {
-          Email: normalizedEmail,
-          ProductId: productId,
+          Email: form.data.email,
+          ProductId: params.productId,
           DateConfirmed: null
         },
         orderBy: {
@@ -117,13 +96,13 @@ export const actions: Actions = {
       });
 
       if (!userChange) {
-        return message(form, { error: m.udm_error_no_code_sent({}, { locale }) }, { status: 400 });
+        return message(form, { error: m.error_no_code_sent({}, { locale }) }, { status: 400 });
       }
       if (new Date() > userChange.DateExpires) {
-        return message(form, { error: m.udm_error_code_expired({}, { locale }) }, { status: 400 });
+        return message(form, { error: m.error_code_expired({}, { locale }) }, { status: 400 });
       }
 
-      if (userChange.ConfirmationCode !== normalizedCode) {
+      if (userChange.ConfirmationCode !== form.data.code) {
         await DatabaseWrites.productUserChanges.update({
           where: {
             Id: userChange.Id
@@ -134,7 +113,7 @@ export const actions: Actions = {
         });
         return message(
           form,
-          { error: m.udm_error_invalid_code({}, { locale }), step: 'verify' },
+          { error: m.error_invalid_code({}, { locale }), step: 'verify' },
           { status: 400 }
         );
       }
@@ -144,17 +123,16 @@ export const actions: Actions = {
           Id: userChange.Id
         },
         data: {
-          DateUpdated: new Date(),
           DateConfirmed: new Date()
         }
       });
 
       await getQueues().UserTasks.add(
-        `Update data deletion request task for Product #${productId}`,
+        `Update data deletion request task for Product #${params.productId}`,
         {
           type: BullMQ.JobType.UserTasks_DeleteRequest,
           scope: 'Product',
-          productId,
+          productId: params.productId,
           requestId: userChange.Id,
           comment: userChange.Change ?? undefined,
           operation: {
@@ -166,11 +144,7 @@ export const actions: Actions = {
 
       return message(form, { verified: true });
     } catch {
-      return message(
-        form,
-        { error: m.udm_error_invalid_code_retry({}, { locale }) },
-        { status: 500 }
-      );
+      return message(form, { error: m.error_invalid_code_retry({}, { locale }) }, { status: 500 });
     }
   }
 };

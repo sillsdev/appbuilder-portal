@@ -1,6 +1,7 @@
-import { pipe, safeParse, string, uuid } from 'valibot';
+import { safeParse } from 'valibot';
+import { UUIDSchema } from '$lib/valibot';
 
 export function match(param: string) {
-  const parsed = safeParse(pipe(string(), uuid()), param);
+  const parsed = safeParse(UUIDSchema, param);
   return parsed.success;
 }
