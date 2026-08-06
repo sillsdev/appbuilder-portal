@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
   import { m } from '$lib/google-play/paraglide/messages';
+  import { type Locale, localizeHref } from '$lib/google-play/paraglide/runtime';
   import {
     DEFAULT_ICON,
     applyThemeToDocument,
@@ -16,6 +17,7 @@
   let { data }: Props = $props();
 
   const app = data.app;
+  const currentLocale = data.locale as Locale;
   const iconSrc = app.icon ?? DEFAULT_ICON;
   let themeColor = $state(app.themeColor ?? '#0e795b');
 
@@ -55,9 +57,9 @@
         alt={m.app_icon_alt()}
         class="w-14 h-14 rounded-2xl shadow-sm bg-primary/5 p-0.5"
       />
-      <div class="grid justify-items-start text-left gap-0">
-        <h2 class="text-lg font-bold tracking-tight leading-none">{app.name}</h2>
-        <p class="text-sm text-primary font-bold leading-tight ml-4">{app.developer}</p>
+      <div class="min-w-0 grow text-start">
+        <h2 class="text-lg font-bold tracking-tight leading-tight break-words">{app.name}</h2>
+        <p class="mt-1 text-sm text-primary font-bold leading-tight break-words">{app.developer}</p>
       </div>
     </div>
     <div class="px-5 pb-8">
@@ -81,7 +83,7 @@
 
       <a
         class="btn w-full mt-6 border border-primary/20 text-black shadow-sm dark:text-white"
-        href={`/user-data?${data.udmQuery}`}
+        href={localizeHref(`/user-data?${data.udmQuery}`, { locale: currentLocale })}
         style="background-color: var(--color-primary);"
       >
         {m.udm_back_to_manage_data()}
