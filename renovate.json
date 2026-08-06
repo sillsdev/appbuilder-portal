@@ -1,7 +1,11 @@
 {
-  "labels": ["dependency upgrade"],
+  "labels": [
+    "dependency upgrade"
+  ],
   "dependencyDashboard": true,
-  "extends": ["config:recommended"],
+  "extends": [
+    "config:recommended"
+  ],
   "automerge": false,
   "enabled": true,
   "ignorePaths": [],
