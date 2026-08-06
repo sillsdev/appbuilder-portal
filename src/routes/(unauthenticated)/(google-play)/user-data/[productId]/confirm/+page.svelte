@@ -4,7 +4,9 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { m } from '$lib/google-play/paraglide/messages';
-  import { DEFAULT_ICON, applyThemeToDocument, deriveColorFromIcon } from '$lib/utils/theme';
+  import { DEFAULT_ICON, getThemeVariables } from '$lib/utils/theme';
+
+  type ConfirmStep = 'email' | 'code' | 'verified';
 
   interface Props {
     data: PageData;
@@ -16,10 +18,10 @@
   const iconSrc = app.icon ?? DEFAULT_ICON;
   const confirmEmailStorageKey = `udm-confirm-email:${app.id}`;
   let themeColor = $state(app.themeColor ?? '#0e795b');
-
-  $effect(() => {
-    applyThemeToDocument(themeColor);
-  });
+  let themeVars = $derived(getThemeVariables(themeColor));
+  let themeStyle = $derived(
+    `--color-primary: ${themeVars.primaryHex}; --color-primary-content: ${themeVars.primaryContentHex}; --outer-bg: ${themeVars.lightBgHex}; --udm-outer-light: ${themeVars.lightBgHex}; --udm-outer-dark: ${themeVars.darkBgHex};`
+  );
 
   const {
     form: sendForm,
@@ -57,7 +59,7 @@
     }
   });
 
-  let step = $state(
+  let step = $state<ConfirmStep>(
     data.verifyCodeForm?.message?.verified
       ? 'verified'
       : data.sendCodeForm?.message?.step === 'verify' || data.email
@@ -66,12 +68,6 @@
   );
 
   onMount(() => {
-    if (!app.themeColor) {
-      deriveColorFromIcon(iconSrc, themeColor).then((hex) => {
-        themeColor = hex;
-      });
-    }
-
     const storedEmail = sessionStorage.getItem(confirmEmailStorageKey)?.trim().toLowerCase();
     if (storedEmail && step === 'email') {
       $sendForm.email = storedEmail;
@@ -82,8 +78,8 @@
 </script>
 
 <div
-  class="min-h-screen flex items-center justify-center bg-base-200 font-sans p-4"
-  style="background-color: var(--outer-bg)"
+  class="udm-confirm-root min-h-screen flex items-center justify-center bg-base-200 font-sans p-4"
+  style={`${themeStyle}; background-color: var(--udm-outer-light);`}
 >
   <div class="card bg-base-100 w-full max-w-[400px] shadow-xl overflow-hidden rounded-lg">
     <div class="bg-primary p-10 px-8 text-center text-primary-content">
@@ -223,3 +219,9 @@
     </div>
   </div>
 </div>
+
+<style>
+  :global([data-theme='dark']) .udm-confirm-root {
+    background-color: var(--udm-outer-dark) !important;
+  }
+</style>

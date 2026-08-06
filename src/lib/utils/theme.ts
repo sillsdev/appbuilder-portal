@@ -96,48 +96,6 @@ export function hexToDaisyHSL(hex: string) {
   return `${(h * 360).toFixed(1)} ${(s * 100).toFixed(1)}% ${(l * 100).toFixed(1)}%`;
 }
 
-export function deriveColorFromIcon(iconSrc: string, fallbackColor: string): Promise<string> {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      const width = img.naturalWidth || img.width;
-      const height = img.naturalHeight || img.height;
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return resolve(fallbackColor);
-
-      try {
-        ctx.drawImage(img, 0, 0, width, height);
-        const { data } = ctx.getImageData(0, 0, width, height);
-
-        let r = 0,
-          g = 0,
-          b = 0,
-          count = 0;
-        for (let i = 0; i < data.length; i += 4) {
-          const alpha = data[i + 3];
-          if (alpha === 0) continue;
-          r += data[i];
-          g += data[i + 1];
-          b += data[i + 2];
-          count++;
-        }
-
-        if (!count) return resolve(fallbackColor);
-        resolve(rgbToHex(Math.round(r / count), Math.round(g / count), Math.round(b / count)));
-      } catch {
-        resolve(fallbackColor);
-      }
-    };
-
-    img.onerror = () => resolve(fallbackColor);
-    img.src = iconSrc;
-  });
-}
-
 export function getThemeVariables(themeColor: string) {
   const primaryContentHex = getReadableTextHex(themeColor);
   return {
@@ -152,23 +110,4 @@ export function getThemeVariables(themeColor: string) {
     headerLightHex: mixColors(themeColor, '#ffffff', 0.85),
     headerDarkHex: mixColors(themeColor, '#0f172a', 0.72)
   };
-}
-
-export function applyThemeToDocument(themeColor: string) {
-  if (typeof document === 'undefined') return;
-  const vars = getThemeVariables(themeColor);
-  const root = document.documentElement;
-  root.style.setProperty('--color-primary', vars.primaryHex);
-  root.style.setProperty('--color-primary-content', vars.primaryContentHex);
-  root.style.setProperty('--p', vars.primaryHSL);
-  root.style.setProperty('--pf', vars.primaryHSL);
-  root.style.setProperty('--pc', vars.primaryContentHSL);
-  root.style.setProperty('--outer-bg', vars.lightBgHex);
-  root.style.setProperty('--root-bg', vars.lightBgHex);
-  root.style.setProperty('--udm-outer-light', vars.lightBgHex);
-  root.style.setProperty('--udm-outer-dark', vars.darkBgHex);
-  root.style.setProperty('--udm-shell-light', vars.shellLightHex);
-  root.style.setProperty('--udm-shell-dark', vars.shellDarkHex);
-  root.style.setProperty('--udm-header-light', vars.headerLightHex);
-  root.style.setProperty('--udm-header-dark', vars.headerDarkHex);
 }
