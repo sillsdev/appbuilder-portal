@@ -21,10 +21,6 @@
   "udm_delete_account_description": "यामुळे तुमचे लॉगिन आणि जतन केलेली सामग्री कायमची काढून टाकली जाईल.",
   "udm_deletion_warning": "इशारा: हटवणे कायमस्वरूपी आहे आणि ते पूर्ववत केले जाऊ शकत नाही. कायदेशीर किंवा अनुपालन हेतूंसाठी काही डेटा राखून ठेवला जाऊ शकतो.",
   "udm_items_to_be_removed_title": "काढून टाकल्या जाणार्‍या बाबी",
-  "udm_item_bookmarks": "बुकमार्क्स",
-  "udm_item_notes": "टिपा",
-  "udm_item_highlights": "हायलाईट्स",
-  "udm_item_reading_plans": "वाचन योजनेची प्रगती",
   "udm_verification_label": "पडताळणी",
   "udm_send_verification_code": "पडताळणी कोड पाठवा",
   "udm_footer_text": "हे पृष्ठ Google Play वर {appName} साठी प्रदान केले आहे. मदतीची गरज आहे? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "या ईमेलवर कोणताही कोड पाठवला नाही.",
   "udm_error_code_expired": "कोडलबाह्य झाला.",
   "udm_error_invalid_code": "अवैध कोड.",
-  "udm_error_invalid_code_retry": "अवैध कोड. कृपया तुमचा ईमेल तपासा आणि पुन्हा प्रयत्न करा."
+  "udm_error_invalid_code_retry": "अवैध कोड. कृपया तुमचा ईमेल तपासा आणि पुन्हा प्रयत्न करा.",
+  "udm_items_to_be_removed_list": "बुकमार्क्स\nटिपा\nहायलाईट्स\nवाचन योजनेची प्रगती"
 }

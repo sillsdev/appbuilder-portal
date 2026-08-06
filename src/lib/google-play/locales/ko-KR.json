@@ -21,10 +21,6 @@
   "udm_delete_account_description": "로그인 및 저장된 콘텐츠가 영구적으로 제거됩니다.",
   "udm_deletion_warning": "경고: 삭제는 영구적이며 취소할 수 없습니다. 일부 데이터는 법적 또는 규정 준수 목적으로 보관될 수 있습니다.",
   "udm_items_to_be_removed_title": "삭제될 항목",
-  "udm_item_bookmarks": "북마크",
-  "udm_item_notes": "노트",
-  "udm_item_highlights": "하이라이트",
-  "udm_item_reading_plans": "독서 계획 진행 상황",
   "udm_verification_label": "인증",
   "udm_send_verification_code": "인증 코드 보내기",
   "udm_footer_text": "이 페이지는 Google Play의 {appName} 을(를) 위해 제공됩니다. 도움이 필요하신가요?",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "이 이메일로 전송된 코드가 없습니다.",
   "udm_error_code_expired": "코드가 만료되었습니다.",
   "udm_error_invalid_code": "잘못된 코드입니다.",
-  "udm_error_invalid_code_retry": "잘못된 코드입니다. 이메일을 확인하고 다시 시도해 주세요."
+  "udm_error_invalid_code_retry": "잘못된 코드입니다. 이메일을 확인하고 다시 시도해 주세요.",
+  "udm_items_to_be_removed_list": "북마크\n노트\n하이라이트\n독서 계획 진행 상황"
 }

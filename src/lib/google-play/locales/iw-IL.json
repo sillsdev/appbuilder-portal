@@ -21,10 +21,6 @@
   "udm_delete_account_description": "זה יסיר לצמיתות את פרטי ההתחברות והתוכן השמור שלך.",
   "udm_deletion_warning": "אזהרה: המחיקות הן סופיות ולא ניתן לבטלן. נתונים מסוימים עשויים להישמר מסיבות משפטיות או מטרות ציות.",
   "udm_items_to_be_removed_title": "פריטים שיוסרו",
-  "udm_item_bookmarks": "סימניות",
-  "udm_item_notes": "הערות",
-  "udm_item_highlights": "הדגשות",
-  "udm_item_reading_plans": "התקדמות תוכנית קריאה",
   "udm_verification_label": "אימות",
   "udm_send_verification_code": "שלח קוד אימות",
   "udm_footer_text": "דף זה מסופק עבור {appName} ב-Google Play. זקוק לעזרה? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "לא נשלח קוד לאימייל זה.",
   "udm_error_code_expired": "פג תוקף הקוד.",
   "udm_error_invalid_code": "קוד לא חוקי.",
-  "udm_error_invalid_code_retry": "קוד לא חוקי. אנא בדוק את האימייל שלך ונסה שוב."
+  "udm_error_invalid_code_retry": "קוד לא חוקי. אנא בדוק את האימייל שלך ונסה שוב.",
+  "udm_items_to_be_removed_list": "סימניות\nהערות\nהדגשות\nהתקדמות תוכנית קריאה"
 }

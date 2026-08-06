@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Thao tác này sẽ xóa vĩnh viễn thông tin đăng nhập và nội dung đã lưu của bạn.",
   "udm_deletion_warning": "Cảnh báo: Việc xóa là vĩnh viễn và không thể hoàn tác. Một số dữ liệu có thể được giữ lại vì mục đích pháp lý hoặc tuân thủ.",
   "udm_items_to_be_removed_title": "Các mục sẽ bị gỡ bỏ",
-  "udm_item_bookmarks": "Dấu trang",
-  "udm_item_notes": "Ghi chú",
-  "udm_item_highlights": "Điểm nổi bật",
-  "udm_item_reading_plans": "Tiến trình kế hoạch đọc",
   "udm_verification_label": "Xác minh",
   "udm_send_verification_code": "Gửi mã xác minh",
   "udm_footer_text": "Trang này được cung cấp cho {appName} trên Google Play. Cần trợ giúp?",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Không có mã nào được gửi đến email này.",
   "udm_error_code_expired": "Mã đã hết hạn.",
   "udm_error_invalid_code": "Mã không hợp lệ.",
-  "udm_error_invalid_code_retry": "Mã không hợp lệ. Vui lòng kiểm tra email của bạn và thử lại."
+  "udm_error_invalid_code_retry": "Mã không hợp lệ. Vui lòng kiểm tra email của bạn và thử lại.",
+  "udm_items_to_be_removed_list": "Dấu trang\nGhi chú\nĐiểm nổi bật\nTiến trình kế hoạch đọc"
 }

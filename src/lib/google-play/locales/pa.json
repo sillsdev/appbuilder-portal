@@ -21,10 +21,6 @@
   "udm_delete_account_description": "ਇਹ ਤੁਹਾਡੇ ਲੌਗਇਨ ਅਤੇ ਸੁਰੱਖਿਅਤ ਕੀਤੀ ਸਮੱਗਰੀ ਨੂੰ ਸਥਾਈ ਤੌਰ 'ਤੇ ਹਟਾ ਦੇਵੇਗਾ।",
   "udm_deletion_warning": "ਚੇਤਾਵਨੀ: ਹਟਾਉਣਾ ਸਥਾਈ ਹੈ ਅਤੇ ਇਸਨੂੰ ਵਾਪਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਕੁਝ ਡੇਟਾ ਕਾਨੂੰਨੀ ਜਾਂ ਪਾਲਣਾ ਦੇ ਉਦੇਸ਼ਾਂ ਲਈ ਰੱਖਿਆ ਜਾ ਸਕਦਾ ਹੈ।",
   "udm_items_to_be_removed_title": "ਹਟਾਏ ਜਾਣ ਵਾਲੇ ਆਈਟਮ",
-  "udm_item_bookmarks": "ਬੁੱਕਮਾਰਕ",
-  "udm_item_notes": "ਨੋਟਸ",
-  "udm_item_highlights": "ਹਾਈਲਾਈਟਸ",
-  "udm_item_reading_plans": "ਪੜ੍ਹਨ ਦੀ ਯੋਜਨਾ ਦੀ ਪ੍ਰਗਤੀ",
   "udm_verification_label": "ਤਸਦੀਕ",
   "udm_send_verification_code": "ਤਸਦੀਕ ਕੋਡ ਭੇਜੋ",
   "udm_footer_text": "ਇਹ ਪੰਨਾ Google Play 'ਤੇ {appName} ਲਈ ਪ੍ਰਦਾਨ ਕੀਤਾ ਗਿਆ ਹੈ। ਮਦਦ ਚਾਹੀਦੀ ਹੈ? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "ਇਸ ਈਮੇਲ 'ਤੇ ਕੋਈ ਕੋਡ ਨਹੀਂ ਭੇਜਿਆ ਗਿਆ।",
   "udm_error_code_expired": "ਕੋਡ ਦੀ ਮਿਆਦ ਖਤਮ ਹੋ ਗਈ।",
   "udm_error_invalid_code": "ਅਮਾਨਕ ਕੋਡ।",
-  "udm_error_invalid_code_retry": "ਅਮਾਨਕ ਕੋਡ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਈਮੇਲ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।"
+  "udm_error_invalid_code_retry": "ਅਮਾਨਕ ਕੋਡ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਈਮੇਲ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+  "udm_items_to_be_removed_list": "ਬੁੱਕਮਾਰਕ\nਨੋਟਸ\nਹਾਈਲਾਈਟਸ\nਪੜ੍ਹਨ ਦੀ ਯੋਜਨਾ ਦੀ ਪ੍ਰਗਤੀ"
 }

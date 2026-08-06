@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Ово ће трајно уклонити вашу пријаву и сачувани садржај.",
   "udm_deletion_warning": "Упозорење: Брисања су трајна и не могу се поништити. Неки подаци могу бити задржани из правних разлога или разлога усклађености.",
   "udm_items_to_be_removed_title": "Ставке које ће бити уклоњене",
-  "udm_item_bookmarks": "Обележивачи",
-  "udm_item_notes": "Белешке",
-  "udm_item_highlights": "Истакнути делови",
-  "udm_item_reading_plans": "Напредак у плану читања",
   "udm_verification_label": "Верификација",
   "udm_send_verification_code": "Пошаљи верификациони код",
   "udm_footer_text": "Ова страница је обезбеђена за {appName} на Google Play-у. Потребна вам је помоћ? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Ниједан код није послат на ову е-пошту.",
   "udm_error_code_expired": "Код је истекао.",
   "udm_error_invalid_code": "Неважећи код.",
-  "udm_error_invalid_code_retry": "Неважећи код. Молимо проверите своју е-пошту и покушајте поново."
+  "udm_error_invalid_code_retry": "Неважећи код. Молимо проверите своју е-пошту и покушајте поново.",
+  "udm_items_to_be_removed_list": "Обележивачи\nБелешке\nИстакнути делови\nНапредак у плану читања"
 }

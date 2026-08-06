@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Esto eliminará permanentemente su inicio de sesión y el contenido guardado.",
   "udm_deletion_warning": "Advertencia: Las eliminaciones son permanentes y no se pueden deshacer. Algunos datos pueden ser retenidos por motivos legales o de cumplimiento.",
   "udm_items_to_be_removed_title": "Elementos a eliminar",
-  "udm_item_bookmarks": "Marcadores",
-  "udm_item_notes": "Notas",
-  "udm_item_highlights": "Resaltados",
-  "udm_item_reading_plans": "Progreso del plan de lectura",
   "udm_verification_label": "Verificación",
   "udm_send_verification_code": "Enviar código de verificación",
   "udm_footer_text": "Esta página se proporciona para {appName} en Google Play. ¿Necesita ayuda? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "No se ha enviado ningún código a este correo electrónico.",
   "udm_error_code_expired": "El código ha caducado.",
   "udm_error_invalid_code": "Código no válido.",
-  "udm_error_invalid_code_retry": "Código no válido. Por favor, revise su correo electrónico e inténtelo de nuevo."
+  "udm_error_invalid_code_retry": "Código no válido. Por favor, revise su correo electrónico e inténtelo de nuevo.",
+  "udm_items_to_be_removed_list": "Marcadores\nNotas\nResaltados\nProgreso del plan de lectura"
 }

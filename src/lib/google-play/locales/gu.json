@@ -21,10 +21,6 @@
   "udm_delete_account_description": "આ તમારા લોગિન અને સાચવેલી સામગ્રીને કાયમી ધોરણે દૂર કરશે.",
   "udm_deletion_warning": "ચેતવણી: કાઢી નાખવું કાયમી છે અને તેને પૂર્વવત્ કરી શકાતું નથી. કાનૂની અથવા અનુપાલન હેતુઓ માટે કેટલાક ડેટા જાળવી રાખવામાં આવી શકે છે.",
   "udm_items_to_be_removed_title": "દૂર કરવાની આઇટમ્સ",
-  "udm_item_bookmarks": "બુકમાર્ક્સ",
-  "udm_item_notes": "નોંધો",
-  "udm_item_highlights": "હાઇલાઇટ્સ",
-  "udm_item_reading_plans": "વાંચન યોજનાની પ્રગતિ",
   "udm_verification_label": "વેરિફિકેશન",
   "udm_send_verification_code": "વેરિફિકેશન કોડ મોકલો",
   "udm_footer_text": "આ પૃષ્ઠ Google Play પર {appName} માટે પ્રદાન કરવામાં આવ્યું છે. મદદ જોઈએ છે? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "આ ઇમેઇલ પર કોઈ કોડ મોકલવામાં આવ્યો નથી.",
   "udm_error_code_expired": "કોડની મુદત પૂરી થઈ ગઈ.",
   "udm_error_invalid_code": "અમાન્ય કોડ.",
-  "udm_error_invalid_code_retry": "અમાન્ય કોડ. કૃપા કરીને તમારો ઇમેઇલ તપાસો અને ફરીથી પ્રયાસ કરો."
+  "udm_error_invalid_code_retry": "અમાન્ય કોડ. કૃપા કરીને તમારો ઇમેઇલ તપાસો અને ફરીથી પ્રયાસ કરો.",
+  "udm_items_to_be_removed_list": "બુકમાર્ક્સ\nનોંધો\nહાઇલાઇટ્સ\nવાંચન યોજનાની પ્રગતિ"
 }

@@ -21,10 +21,6 @@
   "udm_delete_account_description": "এটি আপনার লগইন এবং সংরক্ষিত বিষয়বস্তু স্থায়ীভাবে সরিয়ে দেবে।",
   "udm_deletion_warning": "সতর্কবার্তা: মুছে ফেলা স্থায়ী এবং পূর্বাবস্থায় ফেরানো যাবে না। আইনি বা সম্মতির উদ্দেশ্যে কিছু তথ্য সংরক্ষণ করা হতে পারে।",
   "udm_items_to_be_removed_title": "সরিয়ে ফেলার আইটেম",
-  "udm_item_bookmarks": "বুকমার্ক",
-  "udm_item_notes": "নোট",
-  "udm_item_highlights": "হাইলাইট",
-  "udm_item_reading_plans": "পড়ার পরিকল্পনার অগ্রগতি",
   "udm_verification_label": "যাচাইকরণ",
   "udm_send_verification_code": "যাচাইকরণ কোড পাঠান",
   "udm_footer_text": "এই পৃষ্ঠাটি Google Play-তে {appName} এর জন্য সরবরাহ করা হয়েছে। সাহায্য প্রয়োজন? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "এই ইমেলে কোনো কোড পাঠানো হয়নি।",
   "udm_error_code_expired": "কোডের মেয়াদ শেষ হয়ে গেছে।",
   "udm_error_invalid_code": "অকার্যকর কোড।",
-  "udm_error_invalid_code_retry": "অকার্যকর কোড। আপনার ইমেল পরীক্ষা করুন এবং আবার চেষ্টা করুন।"
+  "udm_error_invalid_code_retry": "অকার্যকর কোড। আপনার ইমেল পরীক্ষা করুন এবং আবার চেষ্টা করুন।",
+  "udm_items_to_be_removed_list": "বুকমার্ক\nনোট\nহাইলাইট\nপড়ার পরিকল্পনার অগ্রগতি"
 }

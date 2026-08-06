@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Això eliminarà permanentment el vostre inici de sessió i el contingut desat.",
   "udm_deletion_warning": "Advertiment: Les supressions són permanents i no es poden desfer. Algunes dades es poden conservar per motius legals o de compliment.",
   "udm_items_to_be_removed_title": "Elements a eliminar",
-  "udm_item_bookmarks": "Marcadors",
-  "udm_item_notes": "Notes",
-  "udm_item_highlights": "Ressaltats",
-  "udm_item_reading_plans": "Progress del pla de lectura",
   "udm_verification_label": "Verificació",
   "udm_send_verification_code": "Enviar codi de verificació",
   "udm_footer_text": "Aquesta pàgina es proporciona per a {appName} a Google Play. Necessiteu ajuda? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "No s'ha enviat cap codi a aquest correu electrònic.",
   "udm_error_code_expired": "El codi ha caducat.",
   "udm_error_invalid_code": "Codi no vàlid.",
-  "udm_error_invalid_code_retry": "Codi no vàlid. Reviseu el vostre correu electrònic i torneu-ho a intentar."
+  "udm_error_invalid_code_retry": "Codi no vàlid. Reviseu el vostre correu electrònic i torneu-ho a intentar.",
+  "udm_items_to_be_removed_list": "Marcadors\nNotes\nRessaltats\nProgress del pla de lectura"
 }

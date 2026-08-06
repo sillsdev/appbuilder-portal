@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Бул сиздин кирүүңүздү жана сакталган мазмунуңузду биротоло жок кылат.",
   "udm_deletion_warning": "Эскертүү: Жок кылуулар туруктуу жана аларды жокко чыгарууга болбойт. Кээ бир дайындар юридикалык же шайкештик максаттары үчүн сакталышы мүмкүн.",
   "udm_items_to_be_removed_title": "Өчүрүлө турган нерселер",
-  "udm_item_bookmarks": "Кыстармалар",
-  "udm_item_notes": "Жазгандар",
-  "udm_item_highlights": "Белгиленгендер",
-  "udm_item_reading_plans": "Окуу планынын жүрүшү",
   "udm_verification_label": "Ырастоо",
   "udm_send_verification_code": "Ырастоо кодун жөнөтүү",
   "udm_footer_text": "Бул барак Google Play'деги {appName} үчүн берилген. Жардам керекпи? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Бул электрондук почтага код жөнөтүлгөн эмес.",
   "udm_error_code_expired": "Коднун мөөнөтү бүттү.",
   "udm_error_invalid_code": "Жараксыз код.",
-  "udm_error_invalid_code_retry": "Жараксыз код. Сураныч, электрондук почтаңызды текшерип, кайра аракет кылыңыз."
+  "udm_error_invalid_code_retry": "Жараксыз код. Сураныч, электрондук почтаңызды текшерип, кайра аракет кылыңыз.",
+  "udm_items_to_be_removed_list": "Кыстармалар\nЖазгандар\nБелгиленгендер\nОкуу планынын жүрүшү"
 }

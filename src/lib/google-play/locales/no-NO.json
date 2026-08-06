@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Dette vil slette innloggingen din og lagret innhold permanent.",
   "udm_deletion_warning": "Advarsel: Slettinger er permanente og kan ikke angres. Enkelte data kan bli beholdt av juridiske årsaker eller for samsvarsformål.",
   "udm_items_to_be_removed_title": "Elementer som vil bli fjernet",
-  "udm_item_bookmarks": "Bokmerker",
-  "udm_item_notes": "Notater",
-  "udm_item_highlights": "Uthevinger",
-  "udm_item_reading_plans": "Fremdrift i leseplaner",
   "udm_verification_label": "Verifisering",
   "udm_send_verification_code": "Send verifiseringskode",
   "udm_footer_text": "Denne siden er levert for {appName} på Google Play. Trenger du hjelp? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Ingen kode sendt til denne e-postadressen.",
   "udm_error_code_expired": "Koden er utløpt.",
   "udm_error_invalid_code": "Ugyldig kode.",
-  "udm_error_invalid_code_retry": "Ugyldig kode. Vennligst sjekk e-posten din og prøv igjen."
+  "udm_error_invalid_code_retry": "Ugyldig kode. Vennligst sjekk e-posten din og prøv igjen.",
+  "udm_items_to_be_removed_list": "Bokmerker\nNotater\nUthevinger\nFremdrift i leseplaner"
 }

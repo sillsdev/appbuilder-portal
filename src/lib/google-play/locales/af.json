@@ -21,10 +21,6 @@
   "udm_delete_account_description": "Dit sal jou aanmelding en gestoorde inhoud permanent verwyder.",
   "udm_deletion_warning": "Waarskuwing: Skrappings is permanent en kan nie ongedaan gemaak word nie. Sommige data kan behou word vir wetlike of voldoeningsdoeleindes.",
   "udm_items_to_be_removed_title": "Items wat verwyder sal word",
-  "udm_item_bookmarks": "Boekmerke",
-  "udm_item_notes": "Notas",
-  "udm_item_highlights": "Hoogtepunte",
-  "udm_item_reading_plans": "Leesplanvordering",
   "udm_verification_label": "Verifikasie",
   "udm_send_verification_code": "Stuur verifikasiekode",
   "udm_footer_text": "Hierdie bladsy word verskaf vir {appName} op Google Play. Benodig hulp? ",
@@ -54,5 +50,6 @@
   "udm_error_no_code_sent": "Geen kode na hierdie e-pos gestuur nie.",
   "udm_error_code_expired": "Kode het verval.",
   "udm_error_invalid_code": "Ongeldige kode.",
-  "udm_error_invalid_code_retry": "Ongeldige kode. Gaan asseblief jou e-pos na en probeer weer."
+  "udm_error_invalid_code_retry": "Ongeldige kode. Gaan asseblief jou e-pos na en probeer weer.",
+  "udm_items_to_be_removed_list": "Boekmerke\nNotas\nHoogtepunte\nLeesplanvordering"
 }
