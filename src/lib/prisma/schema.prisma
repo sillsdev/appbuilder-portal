@@ -470,6 +470,7 @@ model Users {
   SoftwareUpdates               SoftwareUpdates[]
   ProjectActions                ProjectActions[]
   ModifiedAdminSettings         AdminSettings[]
+  CompletedUserChanges          ProductUserChanges[]
 }
 
 model WorkflowDefinitions {
@@ -502,8 +503,11 @@ model ProductUserChanges {
   ConfirmationCode String
   DateExpires      DateTime    @db.Timestamp(6)
   DateConfirmed    DateTime?   @db.Timestamp(6)
+  AssignedRole     Int         @default(3) // AppBuilder (i.e. the Project Owner)
+  CompletedById    Int?
   Product          Products    @relation(fields: [ProductId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductUserChanges_Products_ProductId")
   Tasks            UserTasks[]
+  CompletedBy      Users?      @relation(fields: [CompletedById], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ProductUserChanges_Users_CompletedById")
 
   @@index([ProductId], map: "IX_ProductUserChanges_ProductId")
 }

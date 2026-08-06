@@ -128,3 +128,9 @@ export const localizedEmailSchema = (locale: Locale) =>
 
 export const deletionTypes = ['data', 'account'] as const;
 export type DeletionType = (typeof deletionTypes)[number];
+
+export enum ChangeRequestAction {
+  Mark_Complete = 'Mark Complete',
+  Transfer_to_Owner = 'Transfer to Owner',
+  Transfer_to_Admin = 'Transfer to Admin'
+}

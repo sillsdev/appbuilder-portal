@@ -1,5 +1,6 @@
 import type { Session } from '@auth/sveltekit';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
+import type { Prisma } from '@prisma/client';
 import { ProjectActionString, ProjectActionType, RoleId, TaskType } from '$lib/prisma';
 import { getProductActions } from '$lib/products';
 import { canModifyProject } from '$lib/projects';
@@ -399,6 +400,10 @@ export async function getUserTasks(userId: number) {
     DateUpdated: true,
     ProductId: true,
     ChangeRequests: {
+      where: {
+        DateConfirmed: { not: null },
+        DateCompleted: null
+      },
       select: {
         Id: true,
         Change: true
@@ -428,7 +433,7 @@ export async function getUserTasks(userId: number) {
         }
       }
     }
-  } as const;
+  } as const satisfies Prisma.UserTasksSelect;
 
   const workflowTasks = await DatabaseReads.userTasks.findMany({
     where: {

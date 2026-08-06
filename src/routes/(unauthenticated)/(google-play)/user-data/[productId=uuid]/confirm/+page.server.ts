@@ -13,8 +13,6 @@ import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
 
-const UDM_CHANGE_DESCRIPTION = 'User data deletion request verification';
-
 const localizedSchemas = (locale: Locale) => ({
   sendCodeSchema: v.object({
     email: localizedEmailSchema(locale)
@@ -56,7 +54,7 @@ export const actions: Actions = {
       await saveDeleteRequestVerificationCode({
         productId: params.productId,
         email: form.data.email,
-        change: UDM_CHANGE_DESCRIPTION,
+        change: null,
         code,
         expiresAt
       });
