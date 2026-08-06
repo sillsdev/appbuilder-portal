@@ -7,7 +7,6 @@
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
   import { m } from '$lib/google-play/paraglide/messages';
   import { type Locale, localizeHref } from '$lib/google-play/paraglide/runtime';
-  import { getThemeStyle } from '$lib/utils/theme';
 
   interface Props {
     data: PageData;
@@ -100,7 +99,6 @@
 
 <div
   class="udm-theme udm-shell min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
-  style={getThemeStyle(data.app.themeColor)}
 >
   <div class="w-full bg-base-100 min-h-screen sm:max-w-xl sm:mx-auto">
     <div class="udm-header px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-4">
