@@ -35,6 +35,6 @@
   });
 </script>
 
-<div data-theme="light" class="flex flex-col w-full h-full overflow-auto">
+<div class="flex flex-col w-full h-full overflow-auto">
   {@render children?.()}
 </div>
