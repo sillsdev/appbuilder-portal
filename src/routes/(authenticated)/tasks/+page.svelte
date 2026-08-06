@@ -24,7 +24,7 @@
   function getTaskHref(task: (typeof userTasks)[number]) {
     const route =
       task.Type === TaskType.DeletionRequest
-        ? `/tasks/${task.ProductId}/delete-requests/${task.Id}`
+        ? `/tasks/${task.ProductId}/${task.Id}`
         : `/tasks/${task.ProductId}`;
     return localizeHref(route);
   }

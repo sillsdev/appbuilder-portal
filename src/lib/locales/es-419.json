@@ -635,5 +635,6 @@
         "scope=*": "Gestión de datos: {scope}"
       }
     }
-  ]
+  ],
+  "udm_submitted": "Enviado"
 }
