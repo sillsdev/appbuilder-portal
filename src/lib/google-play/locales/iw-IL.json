@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "פריטים שיוסרו",
   "udm_verification_label": "אימות",
   "udm_send_verification_code": "שלח קוד אימות",
-  "udm_footer_text": "דף זה מסופק עבור {appName} ב-Google Play. זקוק לעזרה? ",
-  "udm_contact_support": "צור קשר עם התמיכה",
   "udm_alert_verify_human": "אנא אשר שאתה אנושי.",
   "udm_alert_valid_email": "אנא הזן כתובת אימייל חוקית.",
   "udm_alert_verification_failed": "האימות נכשל. אנא נסה שוב.",

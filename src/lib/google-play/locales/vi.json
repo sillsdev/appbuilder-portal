@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Các mục sẽ bị gỡ bỏ",
   "udm_verification_label": "Xác minh",
   "udm_send_verification_code": "Gửi mã xác minh",
-  "udm_footer_text": "Trang này được cung cấp cho {appName} trên Google Play. Cần trợ giúp?",
-  "udm_contact_support": "Liên hệ hỗ trợ",
   "udm_alert_verify_human": "Vui lòng xác minh bạn là con người.",
   "udm_alert_valid_email": "Vui lòng nhập địa chỉ email hợp lệ.",
   "udm_alert_verification_failed": "Xác minh thất bại. Vui lòng thử lại.",

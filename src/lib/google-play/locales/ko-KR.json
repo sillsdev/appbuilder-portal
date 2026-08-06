@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "삭제될 항목",
   "udm_verification_label": "인증",
   "udm_send_verification_code": "인증 코드 보내기",
-  "udm_footer_text": "이 페이지는 Google Play의 {appName} 을(를) 위해 제공됩니다. 도움이 필요하신가요?",
-  "udm_contact_support": "고객 지원 문의",
   "udm_alert_verify_human": "사용자가 사람인지 확인하세요.",
   "udm_alert_valid_email": "유효한 이메일 주소를 입력하세요.",
   "udm_alert_verification_failed": "인증에 실패했습니다. 다시 시도해 주세요.",

@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Items om te verwijderen",
   "udm_verification_label": "Verificatie",
   "udm_send_verification_code": "Verificatiecode verzenden",
-  "udm_footer_text": "Deze pagina wordt aangeboden voor {appName} op Google Play. Hulp nodig? ",
-  "udm_contact_support": "Contact opnemen met support",
   "udm_alert_verify_human": "Bevestig dat u een mens bent.",
   "udm_alert_valid_email": "Voer een geldig e-mailadres in.",
   "udm_alert_verification_failed": "Verificatie mislukt. Probeer het opnieuw.",

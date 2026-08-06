@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "ធាតុដែលត្រូវដកចេញ",
   "udm_verification_label": "ការផ្ទៀងផ្ទាត់",
   "udm_send_verification_code": "ផ្ញើលេខកូដផ្ទៀងផ្ទាត់",
-  "udm_footer_text": "ទំព័រនេះត្រូវបានផ្តល់ជូនសម្រាប់ {appName} នៅលើ Google Play។ ត្រូវការជំនួយ? ",
-  "udm_contact_support": "ទាក់ទងផ្នែកគាំទ្រ",
   "udm_alert_verify_human": "សូមផ្ទៀងផ្ទាត់ថាអ្នកជាមនុស្ស។",
   "udm_alert_valid_email": "សូមបញ្ចូលអាសយដ្ឋានអ៊ីមែលដែលមានសុពលភាព។",
   "udm_alert_verification_failed": "ការផ្ទៀងផ្ទាត់បានបរាជ័យ។ សូមព្យាយាមម្តងទៀត។",

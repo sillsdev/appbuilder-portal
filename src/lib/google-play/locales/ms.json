@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Item yang akan dipadamkan",
   "udm_verification_label": "Pengesahan",
   "udm_send_verification_code": "Hantar kod pengesahan",
-  "udm_footer_text": "Halaman ini disediakan untuk {appName} di Google Play. Perlukan bantuan? ",
-  "udm_contact_support": "Hubungi sokongan",
   "udm_alert_verify_human": "Sila sahkan bahawa anda adalah manusia.",
   "udm_alert_valid_email": "Sila masukkan alamat e-mel yang sah.",
   "udm_alert_verification_failed": "Pengesahan gagal. Sila cuba lagi.",

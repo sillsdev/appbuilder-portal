@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "ລາຍການທີ່ຈະຖືກລຶບອອກ",
   "udm_verification_label": "ການຢືນຢັນ",
   "udm_send_verification_code": "ສົ່ງລະຫັດຢືນຢັນ",
-  "udm_footer_text": "ໜ້ານີ້ຖືກຈັດໃຫ້ສຳລັບ {appName} ໃນ Google Play. ຕ້ອງການຄວາມຊ່ວຍເຫຼືອບໍ? ",
-  "udm_contact_support": "ຕິດຕໍ່ສູນຊ່ວຍເຫຼືອ",
   "udm_alert_verify_human": "ກະລຸນາຢືນຢັນວ່າທ່ານເປັນມະນຸດ.",
   "udm_alert_valid_email": "ກະລຸນາປ້ອນທີ່ຢູ່ອີເມວທີ່ຖືກຕ້ອງ.",
   "udm_alert_verification_failed": "ການຢືນຢັນບໍ່ສຳເລັດ. ກະລຸນາລອງໃໝ່.",

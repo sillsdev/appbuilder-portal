@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Στοιχεία προς κατάργηση",
   "udm_verification_label": "Επαλήθευση",
   "udm_send_verification_code": "Αποστολή κωδικού επαλήθευσης",
-  "udm_footer_text": "Αυτή η σελίδα παρέχεται για το {appName} στο Google Play. Χρειάζεστε βοήθεια; ",
-  "udm_contact_support": "Επικοινωνία με την υποστήριξη",
   "udm_alert_verify_human": "Επαληθεύστε ότι είστε άνθρωπος.",
   "udm_alert_valid_email": "Εισαγάγετε μια έγκυρη διεύθυνση email.",
   "udm_alert_verification_failed": "Η επαλήθευση απέτυχε. Δοκιμάστε ξανά.",

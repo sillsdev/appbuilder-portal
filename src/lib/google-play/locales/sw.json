@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Vitu vitakavyoondolewa",
   "udm_verification_label": "Uthibitishaji",
   "udm_send_verification_code": "Tuma nambari ya kuthibitisha",
-  "udm_footer_text": "Ukurasa huu umetolewa kwa {appName} kwenye Google Play. Unahitaji msaada? ",
-  "udm_contact_support": "Wasiliana na usaidizi",
   "udm_alert_verify_human": "Tafadhali thibitisha kuwa wewe ni binadamu.",
   "udm_alert_valid_email": "Tafadhali ingiza barua pepe halali.",
   "udm_alert_verification_failed": "Uthibitishaji umeshindwa. Tafadhali jaribu tena.",

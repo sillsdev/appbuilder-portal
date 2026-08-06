@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "موارد قابل حذف",
   "udm_verification_label": "تأییدیه",
   "udm_send_verification_code": "ارسال کد تأیید",
-  "udm_footer_text": "این صفحه برای {appName} در Google Play ارائه شده است. به کمک نیاز دارید؟ ",
-  "udm_contact_support": "تماس با پشتیبانی",
   "udm_alert_verify_human": "لطفاً تأیید کنید که انسان هستید.",
   "udm_alert_valid_email": "لطفاً یک آدرس ایمیل معتبر وارد کنید.",
   "udm_alert_verification_failed": "تأیید انجام نشد. لطفاً دوباره امتحان کنید.",

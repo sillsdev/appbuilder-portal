@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Objekt som ska tas bort",
   "udm_verification_label": "Verifiering",
   "udm_send_verification_code": "Skicka verifieringskod",
-  "udm_footer_text": "Denna sida tillhandahålls för {appName} på Google Play. Behöver du hjälp? ",
-  "udm_contact_support": "Kontakta support",
   "udm_alert_verify_human": "Verifiera att du är en människa.",
   "udm_alert_valid_email": "Ange en giltig e-postadress.",
   "udm_alert_verification_failed": "Verifieringen misslyckades. Försök igen.",

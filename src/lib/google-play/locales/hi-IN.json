@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "हटाए जाने वाले आइटम",
   "udm_verification_label": "सत्यापन",
   "udm_send_verification_code": "सत्यापन कोड भेजें",
-  "udm_footer_text": "यह पृष्ठ Google Play पर {appName} के लिए प्रदान किया गया है। मदद चाहिए? ",
-  "udm_contact_support": "सहायता से संपर्क करें",
   "udm_alert_verify_human": "कृपया सत्यापित करें कि आप इंसान हैं।",
   "udm_alert_valid_email": "कृपया एक वैध ईमेल पता दर्ज करें।",
   "udm_alert_verification_failed": "सत्यापन विफल रहा। कृपया पुन: प्रयास करें।",

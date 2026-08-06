@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "తొలగించాల్సిన అంశాలు",
   "udm_verification_label": "ధృవీకరణ",
   "udm_send_verification_code": "ధృవీకరణ కోడ్‌ను పంపు",
-  "udm_footer_text": "ఈ పేజీ Google Playలో {appName} కోసం అందించబడింది. సహాయం కావాలా? ",
-  "udm_contact_support": "సపోర్ట్‌ని సంప్రదించండి",
   "udm_alert_verify_human": "దయచేసి మీరు మనిషి అని ధృవీకరించండి.",
   "udm_alert_valid_email": "దయచేసి చెల్లుబాటు అయ్యే ఇమెయిల్ చిరునామాను నమోదు చేయండి.",
   "udm_alert_verification_failed": "ధృవీకరణ విఫలమైంది. దయచేసి మళ్లీ ప్రయత్నించండి.",

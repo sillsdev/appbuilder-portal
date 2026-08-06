@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "العناصر التي سيتم إزالتها",
   "udm_verification_label": "التحقق",
   "udm_send_verification_code": "إرسال رمز التحقق",
-  "udm_footer_text": "تم توفير هذه الصفحة لـ {appName} على Google Play. هل تحتاج إلى مساعدة؟ ",
-  "udm_contact_support": "اتصل بالدعم",
   "udm_alert_verify_human": "يرجى التحقق من أنك إنسان.",
   "udm_alert_valid_email": "يرجى إدخال عنوان بريد إلكتروني صالح.",
   "udm_alert_verification_failed": "فشل التحقق. يرجى المحاولة مرة أخرى.",

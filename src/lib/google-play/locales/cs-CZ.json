@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Položky k odstranění",
   "udm_verification_label": "Ověření",
   "udm_send_verification_code": "Odeslat ověřovací kód",
-  "udm_footer_text": "Tato stránka je poskytována pro {appName} v Google Play. Potřebujete pomoc? ",
-  "udm_contact_support": "Kontaktovat podporu",
   "udm_alert_verify_human": "Potvrďte prosím, že jste člověk.",
   "udm_alert_valid_email": "Zadejte prosím platnou e-mailovou adresu.",
   "udm_alert_verification_failed": "Ověření selhalo. Zkuste to prosím znovu.",

@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Устгагдах зүйлс",
   "udm_verification_label": "Баталгаажуулалт",
   "udm_send_verification_code": "Баталгаажуулах код илгээх",
-  "udm_footer_text": "Энэ хуудсыг Google Play дээрх {appName}-д зориулан гаргасан болно. Тусламж хэрэгтэй юу? ",
-  "udm_contact_support": "Дэмжлэгтэй холбоо барих",
   "udm_alert_verify_human": "Та робот биш гэдгээ баталгаажуулна уу.",
   "udm_alert_valid_email": "Хүчинтэй имэйл хаяг оруулна уу.",
   "udm_alert_verification_failed": "Баталгаажуулалт амжилтгүй боллоо. Дахин оролдоно уу.",

@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "সরিয়ে ফেলার আইটেম",
   "udm_verification_label": "যাচাইকরণ",
   "udm_send_verification_code": "যাচাইকরণ কোড পাঠান",
-  "udm_footer_text": "এই পৃষ্ঠাটি Google Play-তে {appName} এর জন্য সরবরাহ করা হয়েছে। সাহায্য প্রয়োজন? ",
-  "udm_contact_support": "সহায়তার সাথে যোগাযোগ করুন",
   "udm_alert_verify_human": "আপনি মানুষ কিনা তা যাচাই করুন।",
   "udm_alert_valid_email": "একটি বৈধ ইমেল ঠিকানা লিখুন।",
   "udm_alert_verification_failed": "যাচাইকরণ ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",

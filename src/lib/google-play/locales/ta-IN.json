@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "நீக்கப்பட வேண்டியவை",
   "udm_verification_label": "சரிபார்ப்பு",
   "udm_send_verification_code": "சரிபார்ப்புக் குறியீட்டை அனுப்பு",
-  "udm_footer_text": "இந்தப் பக்கம் Google Play-ல் {appName}-க்காக வழங்கப்படுகிறது. உதவி தேவையா? ",
-  "udm_contact_support": "ஆதரவைத் தொடர்பு கொள்ளவும்",
   "udm_alert_verify_human": "நீங்கள் மனிதர்தான் என்பதைச் சரிபார்க்கவும்.",
   "udm_alert_valid_email": "செல்லுபடியாகும் மின்னஞ்சல் முகவரியை உள்ளிடவும்.",
   "udm_alert_verification_failed": "சரிபார்ப்பு தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும்.",

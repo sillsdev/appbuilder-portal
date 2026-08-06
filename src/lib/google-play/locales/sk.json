@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Položky na odstránenie",
   "udm_verification_label": "Overenie",
   "udm_send_verification_code": "Odoslať overovací kód",
-  "udm_footer_text": "Táto stránka je poskytovaná pre {appName} v Google Play. Potrebujete pomoc? ",
-  "udm_contact_support": "Kontaktovať podporu",
   "udm_alert_verify_human": "Potvrďte, že ste človek.",
   "udm_alert_valid_email": "Zadajte platnú e-mailovú adresu.",
   "udm_alert_verification_failed": "Overenie zlyhalo. Skúste to znova.",

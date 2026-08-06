@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "हटाउनु पर्ने वस्तुहरू",
   "udm_verification_label": "प्रमाणीकरण",
   "udm_send_verification_code": "प्रमाणीकरण कोड पठाउनुहोस्",
-  "udm_footer_text": "यो पृष्ठ Google Play मा {appName} को लागि प्रदान गरिएको हो। सहयोग चाहिन्छ? ",
-  "udm_contact_support": "सहयोग केन्द्रलाई सम्पर्क गर्नुहोस्",
   "udm_alert_verify_human": "कृपया तपाईं मानव हो भनी प्रमाणित गर्नुहोस्।",
   "udm_alert_valid_email": "कृपया मान्य इमेल ठेगाना प्रविष्ट गर्नुहोस्।",
   "udm_alert_verification_failed": "प्रमाणीकरण असफल भयो। कृपया फेरि प्रयास गर्नुहोस्।",

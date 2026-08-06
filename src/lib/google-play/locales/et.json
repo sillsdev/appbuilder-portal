@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Eemaldatavad üksused",
   "udm_verification_label": "Kinnitamine",
   "udm_send_verification_code": "Saada kinnituskood",
-  "udm_footer_text": "See leht on ette nähtud {appName} jaoks Google Plays. Vajate abi? ",
-  "udm_contact_support": "Võta ühendust klienditoega",
   "udm_alert_verify_human": "Palun kinnitage, et olete inimene.",
   "udm_alert_valid_email": "Palun sisestage kehtiv e-posti aadress.",
   "udm_alert_verification_failed": "Kinnitamine ebaõnnestus. Palun proovige uuesti.",

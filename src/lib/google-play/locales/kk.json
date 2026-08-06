@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Жойылатын элементтер",
   "udm_verification_label": "Растау",
   "udm_send_verification_code": "Растау кодын жіберу",
-  "udm_footer_text": "Бұл бет Google Play-дегі {appName} үшін берілген. Көмек керек пе? ",
-  "udm_contact_support": "Қолдау қызметіне хабарласу",
   "udm_alert_verify_human": "Адам екеніңізді растаңыз.",
   "udm_alert_valid_email": "Жарамды электрондық пошта мекенжайын енгізіңіз.",
   "udm_alert_verification_failed": "Растау сәтсіз аяқталды. Қайталап көріңіз.",

@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Kaldırılacak öğeler",
   "udm_verification_label": "Doğrulama",
   "udm_send_verification_code": "Doğrulama kodu gönder",
-  "udm_footer_text": "Bu sayfa Google Play'deki {appName} için sağlanmıştır. Yardıma mı ihtiyacınız var? ",
-  "udm_contact_support": "Destekle iletişime geçin",
   "udm_alert_verify_human": "Lütfen insan olduğunuzu doğrulayın.",
   "udm_alert_valid_email": "Lütfen geçerli bir e-post adresini girin.",
   "udm_alert_verification_failed": "Doğrulama başarısız oldu. Lütfen tekrar deneyin.",

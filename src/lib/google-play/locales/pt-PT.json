@@ -23,8 +23,6 @@
   "udm_items_to_be_removed_title": "Itens a serem removidos",
   "udm_verification_label": "Verificação",
   "udm_send_verification_code": "Enviar código de verificação",
-  "udm_footer_text": "Esta página é fornecida para {appName} no Google Play. Precisa de ajuda? ",
-  "udm_contact_support": "Contactar suporte",
   "udm_alert_verify_human": "Por favor, verifique que é humano.",
   "udm_alert_valid_email": "Por favor, introduza um endereço de e-mail válido.",
   "udm_alert_verification_failed": "Falha na verificação. Por favor, tente novamente.",
