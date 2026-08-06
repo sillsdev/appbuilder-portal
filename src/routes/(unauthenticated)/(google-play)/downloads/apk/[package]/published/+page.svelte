@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
+  import { m } from '$lib/google-play/paraglide/messages';
   import { type Locale } from '$lib/google-play/paraglide/runtime';
   import { bytesToHumanSize } from '$lib/utils';
 
@@ -33,8 +34,7 @@
     />
   </div>
   <div class="flex flex-col h-full items-center justify-center">
-    <!-- svelte-ignore a11y_missing_attribute -->
-    <img src={data.manifest.icon} />
+    <img src={data.manifest.icon} alt={m.app_icon_alt()} />
 
     <h3>{data.manifest['title.txt']}</h3>
     <p class="text-center w-70">{data.manifest['short_description.txt']}</p>
