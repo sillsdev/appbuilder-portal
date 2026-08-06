@@ -30,8 +30,10 @@ export const load: PageServerLoad = async ({ parent, locals }) => {
 
   const email = '';
 
-  const sendCodeForm = await superValidate({ email }, valibot(sendCodeSchema));
-  const verifyCodeForm = await superValidate({ email, code: '' }, valibot(verifyCodeSchema));
+  const sendCodeForm = await superValidate({ email }, valibot(sendCodeSchema), { errors: false });
+  const verifyCodeForm = await superValidate({ email, code: '' }, valibot(verifyCodeSchema), {
+    errors: false
+  });
 
   return { email, sendCodeForm, verifyCodeForm };
 };

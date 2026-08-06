@@ -43,6 +43,7 @@
 
       $form.turnstileToken = turnstileToken;
       formData.set('turnstileToken', turnstileToken);
+      $errors.turnstileToken = [];
     },
     onUpdated: ({ form: result }) => {
       if (
