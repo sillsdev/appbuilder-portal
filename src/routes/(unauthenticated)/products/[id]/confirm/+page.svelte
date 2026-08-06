@@ -4,6 +4,7 @@
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
   import { enhance } from '$app/forms';
+  import { m } from '$lib/paraglide/messages';
 
   interface Props {
     data: PageData;
@@ -189,7 +190,7 @@
         step = 'code';
       } else if (result.type === 'failure') {
         const message = (result.data as { message?: string } | undefined)?.message;
-        error = message || 'Failed to send code. Please try again.';
+        error = message || m.udm_confirm_send_code_failed();
       }
     };
   };
@@ -205,7 +206,7 @@
         step = 'verified';
       } else if (result.type === 'failure') {
         const message = (result.data as { message?: string } | undefined)?.message;
-        error = message || 'Invalid code. Please check your email and try again.';
+        error = message || m.udm_confirm_verify_failed();
       }
     };
   };
@@ -245,11 +246,11 @@
       </div>
       <h1 class="m-0 text-2xl font-bold">
         {#if step === 'verified'}
-          Verified
+          {m.udm_confirm_verified()}
         {:else if step === 'code'}
-          Check your email
+          {m.udm_confirm_check_email()}
         {:else}
-          Enter your email
+          {m.udm_confirm_enter_email()}
         {/if}
       </h1>
     </div>
@@ -257,7 +258,7 @@
     <div class="p-8">
       {#if step === 'email'}
         <p class="text-base-content/70 text-center leading-relaxed mb-8">
-          Enter your email address to receive a verification code.
+          {m.udm_confirm_enter_email_desc()}
         </p>
 
         <form method="POST" action="?/sendCode" use:enhance={handleSendCode}>
@@ -266,7 +267,7 @@
               type="email"
               name="email"
               bind:value={email}
-              placeholder="name@example.com"
+              placeholder={m.udm_confirm_email_placeholder()}
               required
               class="input input-bordered w-full h-14 text-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
             />
@@ -283,14 +284,13 @@
             {#if loading}
               <span class="loading loading-spinner"></span>
             {:else}
-              Send Code
+              {m.udm_confirm_send_code()}
             {/if}
           </button>
         </form>
       {:else if step === 'code'}
         <p class="text-base-content/70 text-center leading-relaxed mb-8">
-          We've sent a 6-digit verification code to <strong>{email}</strong>
-          . Enter it below to complete the process.
+          {m.udm_confirm_code_sent({ email })}
         </p>
 
         <form method="POST" action="?/verifyCode" use:enhance={handleVerifyCode}>
@@ -300,7 +300,7 @@
               type="text"
               name="code"
               bind:value={code}
-              placeholder="000000"
+              placeholder={m.udm_confirm_code_placeholder()}
               maxlength="6"
               autocomplete="one-time-code"
               required
@@ -319,28 +319,28 @@
             {#if loading}
               <span class="loading loading-spinner"></span>
             {:else}
-              Verify Code
+              {m.udm_confirm_verify_code()}
             {/if}
           </button>
         </form>
 
         <div class="mt-6 text-center text-sm text-base-content/60">
           <p>
-            Didn't receive the code?
+            {m.udm_confirm_didnt_receive()}
             <button
               type="button"
               onclick={() => (step = 'email')}
               class="link link-primary font-bold no-underline hover:underline bg-transparent border-none p-0 cursor-pointer"
             >
-              Change Email
+              {m.udm_confirm_change_email()}
             </button>
           </p>
         </div>
       {:else if step === 'verified'}
         <div class="text-center flex flex-col gap-4">
-          <p class="text-lg font-bold text-base-content">Verification Complete</p>
+          <p class="text-lg font-bold text-base-content">{m.udm_confirm_complete()}</p>
           <p class="text-base-content/70 text-[0.95rem]">
-            A request was submitted to delete your data.
+            {m.udm_confirm_submitted()}
           </p>
         </div>
       {/if}

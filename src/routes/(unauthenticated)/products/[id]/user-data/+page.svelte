@@ -154,14 +154,14 @@
     }
 
     if (!turnstileToken) {
-      alert("Please verify you're human.");
+      alert(m.udm_alert_verify_human());
       return;
     }
 
     const emailInput = document.getElementById('email') as HTMLInputElement | null;
     const email = emailInput?.value?.trim();
     if (!email || !emailInput?.checkValidity()) {
-      alert('Please enter a valid email address.');
+      alert(m.udm_alert_invalid_email());
       emailInput?.focus();
       return;
     }
@@ -174,14 +174,14 @@
         body: JSON.stringify({ email, token: turnstileToken, productId: app.id })
       });
     } catch {
-      alert('Verification failed.');
+      alert(m.udm_alert_verification_failed());
       return;
     }
 
     const data = await res.json();
 
     if (!res.ok || !data.success) {
-      alert('Verification failed.');
+      alert(m.udm_alert_verification_failed());
       window.turnstile?.reset?.();
       turnstileToken = null;
       return;
