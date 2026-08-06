@@ -106,7 +106,7 @@
             {m.manage_data_description()}
           </p>
         </div>
-        <div class="max-w-full shrink-0 rounded-xl bg-neutral p-1 shadow-sm">
+        <div class="max-w-full shrink-0 rounded-xl bg-neutral p-1 shadow-sm text-base-content">
           <LocaleSelector
             current={currentLocale}
             l10nMap={data.l10nMap}
@@ -126,7 +126,7 @@
       <div class="min-w-0 grow text-start">
         <h2 class="text-lg font-bold tracking-tight leading-tight break-words">{data.app.name}</h2>
         <p class="mt-1 text-sm text-primary font-bold leading-tight break-words">
-          {data.app.developer}
+          <span class="bg-primary-content/70 p-1 rounded-sm">{data.app.developer}</span>
         </p>
       </div>
     </div>

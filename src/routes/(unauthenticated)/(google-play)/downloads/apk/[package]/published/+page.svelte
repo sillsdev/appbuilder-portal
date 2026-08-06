@@ -3,6 +3,7 @@
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
   import { m } from '$lib/google-play/paraglide/messages';
   import { type Locale } from '$lib/google-play/paraglide/runtime';
+  import { isDarkMode } from '$lib/stores';
   import { bytesToHumanSize } from '$lib/utils';
 
   interface Props {
@@ -47,8 +48,13 @@
       href={data.manifest.link}
       download
       target="_blank"
-      class={['btn', lightness(data.manifest.color.light) < 0.5 ? 'text-white' : 'text-black']}
-      style="background-color: #{data.manifest.color.light}"
+      class={[
+        'btn',
+        lightness(data.manifest.color[$isDarkMode ? 'dark' : 'light']) < 0.5
+          ? 'text-white'
+          : 'text-black'
+      ]}
+      style="background-color: #{data.manifest.color[$isDarkMode ? 'dark' : 'light']}"
     >
       {data.manifest.downloadTitle}
     </a>
