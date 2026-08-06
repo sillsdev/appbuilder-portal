@@ -5,7 +5,6 @@
   import type { PageData } from './$types';
   import { confirmationStorageKey } from '$lib/google-play';
   import { m } from '$lib/google-play/paraglide/messages';
-  import { getThemeStyle } from '$lib/utils/theme';
 
   type ConfirmStep = 'email' | 'code' | 'verified';
 
@@ -73,7 +72,6 @@
 
 <div
   class="udm-theme udm-confirm-root min-h-screen flex items-center justify-center bg-base-200 font-sans p-4"
-  style={getThemeStyle(data.app.themeColor)}
 >
   <div class="card bg-base-100 w-full max-w-[400px] shadow-xl overflow-hidden rounded-lg">
     <div class="bg-primary p-10 px-8 text-center text-primary-content">

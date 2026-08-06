@@ -23,15 +23,17 @@
   background-color: var(--udm-outer-light);
 }
 
-[data-theme='dark'] .udm-theme.udm-shell {
-  /* Shade the manifest color directly so dark mode keeps the same hue. */
-  background-color: var(--udm-shell-dark);
-}
+@media (prefers-color-scheme: dark) {
+  .udm-theme.udm-shell {
+    /* Shade the manifest color directly so dark mode keeps the same hue. */
+    background-color: var(--udm-shell-dark);
+  }
 
-[data-theme='dark'] .udm-theme .udm-header {
-  background-color: var(--udm-header-dark);
-}
+  .udm-theme .udm-header {
+    background-color: var(--udm-header-dark);
+  }
 
-[data-theme='dark'] .udm-theme.udm-confirm-root {
-  background-color: var(--udm-outer-dark);
+  .udm-theme.udm-confirm-root {
+    background-color: var(--udm-outer-dark);
+  }
 }
