@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import type { PageData } from './$types';
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
+  import { m } from '$lib/google-play/paraglide/messages';
   import type { Locale } from '$lib/google-play/paraglide/runtime';
   import {
     DEFAULT_ICON,
@@ -36,14 +37,14 @@
     }
 
     if (!turnstileToken) {
-      alert('Please verify you are human.');
+      alert(m.udm_alert_verify_human());
       return;
     }
 
     const emailInput = document.getElementById('email') as HTMLInputElement | null;
     const email = emailInput?.value?.trim();
     if (!email || !emailInput?.checkValidity()) {
-      alert('Please enter a valid email address.');
+      alert(m.udm_alert_valid_email());
       emailInput?.focus();
       return;
     }
@@ -56,13 +57,13 @@
         body: JSON.stringify({ email, token: turnstileToken, productId: app.id, deletionType })
       });
     } catch {
-      alert('Verification failed. Please try again.');
+      alert(m.udm_alert_verification_failed());
       return;
     }
 
     const responseData = await res.json().catch(() => null);
     if (!res.ok || !responseData?.success) {
-      alert('Verification failed. Please try again.');
+      alert(m.udm_alert_verification_failed());
       window.turnstile?.reset?.();
       turnstileToken = null;
       return;
@@ -110,9 +111,11 @@
     <div class="udm-header px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-4">
       <div class="relative">
         <div class="min-w-0 border-l-4 border-base-content pl-3 pr-16">
-          <h1 class="text-2xl font-bold tracking-tight leading-none">Manage my data</h1>
+          <h1 class="text-2xl font-bold tracking-tight leading-none">
+            {m.udm_manage_data_title()}
+          </h1>
           <p class="mt-0 pl-8 text-xs leading-tight text-base-content/75">
-            Request account or data deletion for this app.
+            {m.udm_manage_data_description()}
           </p>
         </div>
         <div class="absolute top-0 right-0 rounded-xl bg-neutral p-1 shadow-sm">
@@ -128,7 +131,7 @@
     <div class="px-5 pb-4 mt-2 flex items-start gap-4">
       <div class="avatar">
         <div class="w-14 rounded-2xl shadow-sm bg-primary/5 p-0.5">
-          <img src={iconSrc} alt="App icon" />
+          <img src={iconSrc} alt={m.app_icon_alt()} />
         </div>
       </div>
       <div class="grid justify-items-start text-left gap-0">
@@ -142,7 +145,7 @@
         class="btn btn-ghost btn-sm border border-base-300 mb-4 btn-block"
         href={`/user-data/about?${data.udmQuery}`}
       >
-        About this app
+        {m.udm_about_app()}
       </a>
     </div>
 
@@ -150,15 +153,12 @@
       <div class="card bg-base-100 shadow-sm card-bordered">
         <div class="card-body p-5 space-y-4 break-words">
           <div>
-            <h2 class="card-title text-lg font-bold">Deletion Request</h2>
+            <h2 class="card-title text-lg font-bold">{m.udm_deletion_request_title()}</h2>
             <p class="mt-1 text-xs leading-relaxed text-base-content/80" style="text-indent: 10px;">
-              Enter the email address associated with your account to request data deletion. We will
-              send a one-time verification code to confirm your identity.
+              {m.udm_deletion_request_description_1()}
             </p>
             <p class="mt-1 text-xs leading-relaxed text-base-content/80" style="text-indent: 10px;">
-              Once confirmed, your request will be processed within 30 days in accordance with our
-              data retention obligations. Deletions are permanent and cannot be undone. Some
-              information may be retained where required by law or for compliance purposes.
+              {m.udm_deletion_request_description_2()}
             </p>
           </div>
 
@@ -167,19 +167,19 @@
               <span
                 class="label-text text-xs font-bold uppercase tracking-wide text-base-content/70"
               >
-                Email
+                {m.udm_email_label()}
               </span>
             </label>
             <input
               id="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder={m.udm_email_placeholder()}
               class="input input-bordered w-full text-base sm:text-sm h-11 focus:border-primary focus:outline-primary"
               name="email"
             />
             <label class="label pt-1 pb-0" for="email">
               <span class="label-text-alt text-[10px] text-base-content/70">
-                Use the email associated with your account.
+                {m.udm_email_hint()}
               </span>
             </label>
           </div>
@@ -189,7 +189,7 @@
               <span
                 class="label-text text-xs font-bold uppercase tracking-wide text-base-content/70"
               >
-                Deletion Scope
+                {m.udm_deletion_scope_label()}
               </span>
             </p>
             <div class="flex flex-col gap-3 mt-1">
@@ -205,13 +205,12 @@
                   <span
                     class="label-text font-bold text-sm group-hover:text-primary transition-colors whitespace-normal break-words"
                   >
-                    Delete my data
+                    {m.udm_delete_data_label()}
                   </span>
                   <p
                     class="mt-0.5 text-xs leading-tight whitespace-normal break-words text-base-content/75"
                   >
-                    Your login remains active, but your personal content will be permanently
-                    deleted.
+                    {m.udm_delete_data_description()}
                   </p>
                 </div>
               </label>
@@ -227,31 +226,30 @@
                   <span
                     class="label-text font-bold text-sm group-hover:text-primary transition-colors whitespace-normal break-words"
                   >
-                    Delete my account and all associated data
+                    {m.udm_delete_account_label()}
                   </span>
                   <p
                     class="mt-0.5 text-xs leading-tight whitespace-normal break-words text-base-content/75"
                   >
-                    This will permanently remove your login and saved content.
+                    {m.udm_delete_account_description()}
                   </p>
                 </div>
               </label>
               <p class="mt-0.5 text-xs leading-tight text-base-content/75">
-                Warning: Deletions are permanent and cannot be undone. Some data may be retained for
-                legal or compliance purposes.
+                {m.udm_deletion_warning()}
               </p>
             </div>
           </div>
 
           <div class="rounded-lg border border-base-300 bg-base-200 p-4">
             <div class="mb-2 text-[10px] font-bold uppercase tracking-wide text-base-content/70">
-              Items to be removed
+              {m.udm_items_to_be_removed_title()}
             </div>
             <ul class="list-disc list-inside space-y-1 text-xs text-base-content/80">
-              <li>Bookmarks</li>
-              <li>Notes</li>
-              <li>Highlights</li>
-              <li>Reading plan progress</li>
+              <li>{m.udm_item_bookmarks()}</li>
+              <li>{m.udm_item_notes()}</li>
+              <li>{m.udm_item_highlights()}</li>
+              <li>{m.udm_item_reading_plans()}</li>
             </ul>
           </div>
 
@@ -260,7 +258,7 @@
               <span
                 class="label-text text-xs font-bold uppercase tracking-wide text-base-content/70"
               >
-                Verification
+                {m.udm_verification_label()}
               </span>
             </p>
             <div class="mt-2">
@@ -277,15 +275,15 @@
             type="button"
             onclick={submitForm}
           >
-            Send verification code
+            {m.udm_send_verification_code()}
           </button>
         </div>
       </div>
 
       <p class="mt-4 text-center text-xs text-base-content/70">
-        This page is provided for {app.name} on Google Play. Need help?
+        {m.udm_footer_text({ appName: app.name })}
         <a class="link link-primary no-underline hover:underline" href="/support">
-          Contact support
+          {m.udm_contact_support()}
         </a>
         .
       </p>
