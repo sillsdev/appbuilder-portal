@@ -82,7 +82,6 @@ export async function getChangeRequest(productId: string, taskId: number) {
   const request = await DatabaseReads.productUserChanges.findFirst({
     where: { ProductId: productId, Tasks: { some: { Id: taskId } }, Change: { not: null } }
   });
-  console.log(request);
   if (!request) return null;
   type NeededContext = Pick<
     WorkflowInstanceContext,
