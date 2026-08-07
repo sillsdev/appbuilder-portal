@@ -121,9 +121,9 @@ export const confirmationStorageKey = (appId: string) => `udm-confirm-email:${ap
 export const localizedEmailSchema = (locale: Locale) =>
   v.pipe(
     v.string(),
-    v.email(m.alert_valid_email({}, { locale })),
     v.trim(),
-    v.transform((email) => email.toLocaleLowerCase(locale))
+    v.transform((s) => s.toLocaleLowerCase(locale)),
+    v.email(m.alert_valid_email({}, { locale }))
   );
 
 export const deletionTypes = ['data', 'account'] as const;

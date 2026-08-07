@@ -204,7 +204,9 @@ export async function getPublishedFile(from: ArtifactFrom, type: string) {
  */
 function normalizeColorString(color: string = '#1c3258') {
   const c = color.replaceAll('#', '');
-  return c.length < 6 ? `${c[0]}0${c[1]}0${c[2]}0` : c.substring(0, 6);
+  return c.length < 6 && c.length >= 3
+    ? `${c[0]}${c[0]}${c[1]}${c[1]}${c[2]}${c[2]}`
+    : (c + 'ff0000').substring(0, 6);
 }
 
 const manifestSchema = v.pipe(
