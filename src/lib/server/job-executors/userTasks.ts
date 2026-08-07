@@ -271,7 +271,8 @@ export async function deleteRequest(job: Job<BullMQ.UserTasks.DeleteRequest>): P
         where: {
           ProductId: product.Id,
           AssignedRole: roles && { in: roles },
-          Change: { not: null }
+          Change: { not: null },
+          Id: job.data.requestId
         }
       });
 

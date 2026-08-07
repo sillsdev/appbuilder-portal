@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
-  import type { PageData } from './$types';
+  import type { ActionData, PageData } from './$types';
   import { goto } from '$app/navigation';
   import { env } from '$env/dynamic/public';
   import { confirmationStorageKey, deletionTypes } from '$lib/google-play';
@@ -46,13 +46,14 @@
       formData.set('turnstileToken', turnstileToken);
       $errors.turnstileToken = [];
     },
-    onUpdated: ({ form: result }) => {
-      if (result.valid) {
+    onUpdate: ({ result }) => {
+      const resultData = result.data as ActionData;
+      if (resultData?.ok) {
         sessionStorage.setItem(confirmEmailStorageKey, $form.email);
         goto(localizeHref(`/user-data/${data.app.id}/confirm`, { locale: currentLocale }));
       }
 
-      if (result.message?.error) {
+      if (resultData?.form.message?.error) {
         window.turnstile?.reset?.();
         turnstileToken = null;
         $form.turnstileToken = '';

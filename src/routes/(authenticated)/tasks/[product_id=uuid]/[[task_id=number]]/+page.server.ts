@@ -395,7 +395,7 @@ export const actions = {
     return {
       form,
       ok: true,
-      hasTarget: !complete,
+      hasTarget: false,
       hasTransitions: false
     };
   }
@@ -413,7 +413,8 @@ async function verifyCanViewTask(
     where: {
       ProductId: productId,
       UserId: security.userId,
-      Type: taskId ? TaskType.DeletionRequest : TaskType.Workflow
+      Type: taskId ? TaskType.DeletionRequest : TaskType.Workflow,
+      Id: taskId
     },
     select: {
       Id: true
