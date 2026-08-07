@@ -69,7 +69,7 @@ export function getThemeStyle(themeColor: ThemeColor | null | undefined) {
     (Math.max(primary.luminance, darkContentLuminance) + 0.05) /
     (Math.min(primary.luminance, darkContentLuminance) + 0.05);
   // Pick readable button/header text for the manifest color.
-  const primaryContent = darkContrast >= lightContrast ? '#0f172a' : '#ffffff';
+  const primaryContent = darkContrast >= lightContrast ? '#000000' : '#ffffff';
 
   // Dark-mode shades are derived from --color-primary in CSS so the product hue stays consistent.
   return `--color-primary: ${primary.hsl}; --color-primary-content: ${primaryContent};`;

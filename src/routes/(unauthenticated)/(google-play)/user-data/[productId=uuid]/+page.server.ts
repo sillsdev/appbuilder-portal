@@ -88,7 +88,7 @@ export const actions: Actions = {
             code: SpanStatusCode.ERROR,
             message: (e as Error).message
           });
-          console.warn('Turnstile verification request failed', { error });
+          console.warn('Turnstile verification request failed', { error: e });
           return message(
             form,
             { error: m.alert_verification_failed({}, { locale }) },
