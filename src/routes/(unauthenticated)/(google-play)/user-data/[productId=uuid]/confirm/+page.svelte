@@ -3,8 +3,10 @@
   import { onMount } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import { goto } from '$app/navigation';
   import { confirmationStorageKey } from '$lib/google-play';
   import { m } from '$lib/google-play/paraglide/messages';
+  import { type Locale, localizeHref } from '$lib/google-play/paraglide/runtime';
   import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
 
@@ -19,11 +21,11 @@
   const confirmEmailStorageKey = confirmationStorageKey(data.app.id);
 
   const { form, enhance, message, delayed, errors } = superForm(data.form, {
-    onUpdated: ({ form }) => {
-      if (form.valid && form.message?.verified) {
+    onUpdated: ({ form: result }) => {
+      if (result.valid && result.message?.verified) {
         step = 'verified';
         sessionStorage.removeItem(confirmEmailStorageKey);
-      } else if (!form.valid && !form.message?.error) {
+      } else if (!result.valid && !result.message?.error) {
         $message = { error: m.error_invalid_code_retry() };
       }
     }
@@ -47,7 +49,11 @@
       <div class="card-actions justify-start">
         <button
           class="btn btn-square btn-sm btn-ghost text-primary-content"
-          onclick={() => history.back()}
+          onclick={() =>
+            goto(
+              localizeHref(`/user-data/${data.app.id}`, { locale: data.app.language as Locale }),
+              { replaceState: true }
+            )}
         >
           <IconContainer icon={Icons.Back} width={24} />
         </button>
