@@ -16,7 +16,12 @@ const tracer = trace.getTracer('UDMRequests');
 const localizedSchema = (locale: Locale) =>
   v.object({
     email: localizedEmailSchema(locale),
-    code: v.pipe(v.string(), v.trim(), v.length(6, m.error_code_6_digits({}, { locale })))
+    code: v.pipe(
+      v.string(),
+      v.trim(),
+      v.digits(m.error_code_6_digits({}, { locale })),
+      v.length(6, m.error_code_6_digits({}, { locale }))
+    )
   });
 
 export const load: PageServerLoad = async ({ parent, locals }) => {
