@@ -38,6 +38,7 @@ export enum JobType {
   System_RefreshLangTags = 'Refresh langtags.json',
   System_Migrate = 'Migrate Features from S1 to S2',
   System_CheckPendingUpdates = 'Check Pending Software Updates',
+  System_Cleanup = 'System Cleanup',
   // UserTasks Job
   UserTasks_Workflow = 'Modify Workflow UserTasks',
   UserTasks_DeleteRequest = 'Modify Data Deletion UserTasks',
@@ -63,5 +64,6 @@ export enum JobSchedulerId {
   RefreshLangTags = 'RefreshLangTags',
   CheckSystemStatuses = 'CheckSystemStatuses',
   CheckPendingUpdates = 'CheckPendingUpdates',
-  MigrateChunks = 'MigrateChunks'
+  MigrateChunks = 'MigrateChunks',
+  CleanupExpiredData = 'CleanupExpiredData'
 }

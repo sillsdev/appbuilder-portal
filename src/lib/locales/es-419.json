@@ -626,5 +626,15 @@
   "softwareUpdate_applicationTypes": "Tipos de aplicación",
   "softwareUpdate_applicationTypes_description": "SSeleccione uno o varios tipos de aplicación para actualizar.",
   "softwareUpdate_listActive": "Actualizaciones de software activas",
-  "softwareUpdate_listCompleted": "Actualizaciones de software completadas"
+  "softwareUpdate_listCompleted": "Actualizaciones de software completadas",
+  "udm_delete_type": [
+    {
+      "match": {
+        "scope=data": "Eliminar datos",
+        "scope=account": "Eliminar cuenta",
+        "scope=*": "Gestión de datos: {scope}"
+      }
+    }
+  ],
+  "udm_submitted": "Enviado"
 }

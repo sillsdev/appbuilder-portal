@@ -1,4 +1,7 @@
-import { type Locale, locales } from './paraglide/runtime';
+import * as v from 'valibot';
+import { m } from '$lib/google-play/paraglide/messages';
+import { type Locale, locales } from '$lib/google-play/paraglide/runtime';
+import { ApplicationType } from '$lib/prisma';
 
 export const GooglePlayFlags = new Map<Locale, string>([
   ['af', 'circle-flags:lang-af'],
@@ -97,4 +100,37 @@ export const AlternateCodes = new Map<Locale, Locale>([
 
 export function withAlternates() {
   return locales.concat(AlternateCodes.values().toArray());
+}
+
+const GPIcons = import.meta.glob('/src/lib/icons/google-play/*.png', {
+  eager: true,
+  import: 'default',
+  query: '?url'
+}) as Record<string, string>;
+
+export function getGPFallbackIcon(type: ApplicationType) {
+  return (
+    GPIcons[
+      `/src/lib/icons/google-play/${typeof type === 'string' ? type : ApplicationType[type]}.png`
+    ] ?? ''
+  );
+}
+
+export const confirmationStorageKey = (appId: string) => `udm-confirm-email:${appId}`;
+
+export const localizedEmailSchema = (locale: Locale) =>
+  v.pipe(
+    v.string(),
+    v.trim(),
+    v.transform((s) => s.toLocaleLowerCase(locale)),
+    v.email(m.alert_valid_email({}, { locale }))
+  );
+
+export const deletionTypes = ['data', 'account'] as const;
+export type DeletionType = (typeof deletionTypes)[number];
+
+export enum ChangeRequestAction {
+  Mark_Complete = 'Mark Complete',
+  Transfer_to_Owner = 'Transfer to Owner',
+  Transfer_to_Admin = 'Transfer to Admin'
 }

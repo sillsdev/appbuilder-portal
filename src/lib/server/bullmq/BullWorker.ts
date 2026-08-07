@@ -126,6 +126,19 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         }
       }
     );
+    getQueues().SystemRecurring.upsertJobScheduler(
+      BullMQ.JobSchedulerId.CleanupExpiredData,
+      {
+        pattern: '@daily',
+        immediately: false
+      },
+      {
+        name: 'Cleanup Old/Expired Data',
+        data: {
+          type: BullMQ.JobType.System_Cleanup
+        }
+      }
+    );
   }
   async run(job: Job<J>) {
     switch (job.data.type) {
@@ -137,6 +150,8 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         return Executor.System.lazyMigrate(job as Job<BullMQ.System.Migrate>);
       case BullMQ.JobType.System_CheckPendingUpdates:
         return Executor.System.checkPendingUpdates(job as Job<BullMQ.System.CheckPendingUpdates>);
+      case BullMQ.JobType.System_Cleanup:
+        return Executor.System.cleanup(job as Job<BullMQ.System.CleanupExpiredData>);
     }
   }
 }

@@ -7,6 +7,7 @@
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import SortTable from '$lib/components/SortTable.svelte';
+  import Tooltip from '$lib/components/Tooltip.svelte';
   import CopyField from '$lib/components/settings/CopyField.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import {
@@ -24,6 +25,7 @@
   import { userTasksSSE } from '$lib/stores';
   import { bytesToHumanSize, toast } from '$lib/utils';
   import { byName, byNumber, byString } from '$lib/utils/sorting';
+  import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
   interface Props {
     data: PageData;
@@ -48,7 +50,7 @@
       if (form.valid && result.type === 'success') {
         const actionData = result.data;
         waiting = !!actionData.hasTarget;
-        toast('success', m.tasks_submitted({ action: form.data.flowAction }));
+        toast('success', m.tasks_submitted({ action: form.data.flowAction ?? '' }));
         if (!actionData.hasTransitions) {
           history.back();
         }
@@ -111,6 +113,8 @@
       .flatMap((e) => [e.value, e.name])
       .filter(Boolean);
   });
+
+  const requestSubmitted = getRelativeTime(data.changeRequest?.submitted ?? null);
 </script>
 
 <div class="p-5">
@@ -136,7 +140,7 @@
     </div>
   </div>
   {#if !waiting}
-    <form method="POST" use:enhance>
+    <form method="POST" action="?/{data.changeRequest ? 'changeRequest' : 'workflow'}" use:enhance>
       {#if data.actions?.length}
         <div class="flex flex-col md:flex-row gap-3 py-4">
           {#each data.actions as action, i}
@@ -183,6 +187,28 @@
         <TaskComment comment={data.previousTask.Comment} />
       </LabeledFormInput>
     {/if}
+    {#if data.changeRequest}
+      <div class="task-fields">
+        <LabeledFormInput
+          key="transitions_user"
+          class={['w-full', data.changeRequest.submitted && 'md:w-1/2']}
+          input={{
+            readonly: true,
+            icon: Icons.Email
+          }}
+          value={data.changeRequest.email}
+          validate={false}
+        />
+        {#if data.changeRequest.submitted}
+          <LabeledFormInput key="udm_submitted" class="md:w-1/2">
+            <Tooltip tip={getTimeDateString(data.changeRequest.submitted)}>
+              <input class="input w-full" type="text" readonly value={$requestSubmitted} />
+            </Tooltip>
+          </LabeledFormInput>
+        {/if}
+      </div>
+      <hr class="border-t-2 my-4" />
+    {/if}
     <div class="flex flex-col w-full md:flex-row" class:gap-x-2={data.fields.packageName}>
       <LabeledFormInput
         key="project_name"
@@ -205,7 +231,7 @@
     <LabeledFormInput key="common_description">
       <textarea class="textarea w-full" readonly value={data.fields.projectDescription}></textarea>
     </LabeledFormInput>
-    <div id="fields" class="flex flex-col w-full md:flex-row md:flex-wrap">
+    <div class="task-fields">
       {#if data.fields.ownerName}
         <LabeledFormInput
           key="projectTable_owner"
@@ -503,14 +529,24 @@
     text-decoration-line: underline;
   }
 
+  .task-fields {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
   @media (width >= 48rem /* 768px */) {
-    #fields :global(label):nth-child(odd) {
+    .task-fields {
+      flex-wrap: wrap;
+      flex-direction: row;
+    }
+    .task-fields :global(label):nth-child(odd) {
       padding-right: calc(var(--spacing) * 1);
     }
-    #fields :global(label):nth-child(even) {
+    .task-fields :global(label):nth-child(even) {
       padding-left: calc(var(--spacing) * 1);
     }
-    #fields :global(label):nth-child(odd):last-child {
+    .task-fields :global(label):nth-child(odd):last-child {
       padding-right: 0px;
       width: 100%;
     }

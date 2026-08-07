@@ -1,7 +1,9 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
+  import { m } from '$lib/google-play/paraglide/messages';
   import { type Locale } from '$lib/google-play/paraglide/runtime';
+  import { isDarkMode } from '$lib/stores';
   import { bytesToHumanSize } from '$lib/utils';
 
   interface Props {
@@ -33,8 +35,7 @@
     />
   </div>
   <div class="flex flex-col h-full items-center justify-center">
-    <!-- svelte-ignore a11y_missing_attribute -->
-    <img src={data.manifest.icon} />
+    <img src={data.manifest.icon} alt={m.app_icon_alt()} />
 
     <h3>{data.manifest['title.txt']}</h3>
     <p class="text-center w-70">{data.manifest['short_description.txt']}</p>
@@ -49,9 +50,11 @@
       target="_blank"
       class={[
         'btn',
-        lightness(data.manifest.color.substring(1 /*ignore #*/)) < 0.5 ? 'text-white' : 'text-black'
+        lightness(data.manifest.color[$isDarkMode ? 'dark' : 'light']) < 0.5
+          ? 'text-white'
+          : 'text-black'
       ]}
-      style="background-color: {data.manifest.color}"
+      style="background-color: #{data.manifest.color[$isDarkMode ? 'dark' : 'light']}"
     >
       {data.manifest.downloadTitle}
     </a>
