@@ -21,6 +21,7 @@
   const confirmEmailStorageKey = confirmationStorageKey(data.app.id);
 
   const { form, enhance, message, delayed, errors } = superForm(data.form, {
+    invalidateAll: false,
     onSubmit: ({ cancel, formData }) => {
       deleteSubmitAttempted = true;
 
@@ -51,9 +52,7 @@
       if (resultData?.ok) {
         sessionStorage.setItem(confirmEmailStorageKey, $form.email);
         goto(localizeHref(`/user-data/${data.app.id}/confirm`, { locale: currentLocale }));
-      }
-
-      if (resultData?.form.message?.error) {
+      } else if (resultData?.form.message?.error) {
         window.turnstile?.reset?.();
         turnstileToken = null;
         $form.turnstileToken = '';
