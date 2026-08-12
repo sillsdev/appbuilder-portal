@@ -206,6 +206,15 @@
             </Tooltip>
           </LabeledFormInput>
         {/if}
+        {#if data.changeRequest.consoleUrl}
+          <LabeledFormInput key="udm_consoleUrl" class="md:w-1/2">
+            <span class="input w-full flex flex-row gap-2 items-center">
+              <IconContainer icon={Icons.URL} width={20} />
+              <input type="text" class="grow" readonly value={data.changeRequest.consoleUrl} />
+              <CopyField value={data.changeRequest.consoleUrl} />
+            </span>
+          </LabeledFormInput>
+        {/if}
       </div>
       <hr class="border-t-2 my-4" />
     {/if}

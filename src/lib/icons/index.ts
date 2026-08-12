@@ -69,6 +69,7 @@ export function getFileIcon(fileType: string) {
     case 'play-listing-manifest':
     case 'package_name':
     case 'whats_new':
+    case 'data-management':
       return Icons.Info;
     case 'cloudWatch':
     case 'consoleText':

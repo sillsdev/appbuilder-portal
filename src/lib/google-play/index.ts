@@ -134,3 +134,9 @@ export enum ChangeRequestAction {
   Transfer_to_Owner = 'Transfer to Owner',
   Transfer_to_Admin = 'Transfer to Admin'
 }
+
+export const dataManagementJSONSchema = v.pipe(
+  v.string(),
+  v.parseJson(),
+  v.object({ console_url: v.string() })
+);

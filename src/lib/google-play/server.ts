@@ -1,8 +1,9 @@
 import { Prisma } from '@prisma/client';
+import { safeParse } from 'valibot';
 import { RoleId } from '$lib/prisma';
 import prisma, { DatabaseReads } from '$lib/server/database/prisma';
 import type { WorkflowInstanceContext } from '$lib/workflowTypes';
-import { ChangeRequestAction } from '.';
+import { ChangeRequestAction, dataManagementJSONSchema } from '.';
 
 interface SaveDeleteRequestVerificationCodeArgs {
   productId: string;
@@ -80,7 +81,22 @@ export async function saveDeleteRequestVerificationCode({
 
 export async function getChangeRequest(productId: string, taskId: number) {
   const request = await DatabaseReads.productUserChanges.findFirst({
-    where: { ProductId: productId, Tasks: { some: { Id: taskId } }, Change: { not: null } }
+    where: { ProductId: productId, Tasks: { some: { Id: taskId } }, Change: { not: null } },
+    select: {
+      Change: true,
+      AssignedRole: true,
+      Email: true,
+      DateConfirmed: true,
+      Product: {
+        select: {
+          ProductArtifacts: {
+            where: { ArtifactType: 'data-management', Url: { not: null } },
+            take: 1,
+            orderBy: { DateCreated: 'desc' }
+          }
+        }
+      }
+    }
   });
   if (!request) return null;
   type NeededContext = Pick<
@@ -98,6 +114,18 @@ export async function getChangeRequest(productId: string, taskId: number) {
     input: {}
   };
 
+  let consoleUrl: string = '';
+  try {
+    const artifactUrl = request.Product.ProductArtifacts.at(0)?.Url;
+    const artifact = artifactUrl && (await fetch(artifactUrl).then((r) => r.text()));
+    const parsed = safeParse(dataManagementJSONSchema, artifact);
+    if (parsed.success) {
+      consoleUrl = parsed.output.console_url;
+    }
+  } catch {
+    // empty
+  }
+
   return {
     snap: snap as { state: string; context: NeededContext; input: unknown },
     actions: [
@@ -108,7 +136,8 @@ export async function getChangeRequest(productId: string, taskId: number) {
     ],
     request: {
       email: request.Email,
-      submitted: request.DateConfirmed
+      submitted: request.DateConfirmed,
+      consoleUrl
     }
   };
 }
