@@ -6,7 +6,12 @@ import { queryURLandToken } from '$lib/server/build-engine-api/requests';
 import { DatabaseReads } from '$lib/server/database';
 import { paginateSchema } from '$lib/valibot';
 
-export const load = (async ({ params, locals }) => {
+function parseId(security: Security, url: URL, param: string) {
+  const parsed = parseInt(url.searchParams.get(param) ?? 'NaN');
+  return security.isSuperAdmin && !isNaN(parsed) ? parsed : undefined;
+}
+
+export const load = (async ({ params, locals, url }) => {
   locals.security.requireAuthenticated();
   const project = (
     await DatabaseReads.products.findUnique({
@@ -24,6 +29,36 @@ export const load = (async ({ params, locals }) => {
     }),
     project
   );
+  const buildId = parseId(locals.security, url, 'buildId');
+  const releaseId = parseId(locals.security, url, 'releaseId');
+  let page: number | null = null;
+  if (buildId) {
+    const buildIds = await DatabaseReads.productBuilds.findMany({
+      orderBy: {
+        DateCreated: 'desc'
+      },
+      where: {
+        ProductId: params.id
+      },
+      select: { BuildEngineBuildId: true }
+    });
+    const index = buildIds.findIndex((b) => b.BuildEngineBuildId === buildId);
+    page = index >= 0 ? Math.floor(index / 3) : null;
+  } else if (releaseId) {
+    const releaseIds = await DatabaseReads.productBuilds.findMany({
+      orderBy: {
+        DateCreated: 'desc'
+      },
+      where: {
+        ProductId: params.id
+      },
+      select: { ProductPublications: { select: { BuildEngineReleaseId: true } } }
+    });
+    const index = releaseIds.findIndex((b) =>
+      b.ProductPublications.find((p) => p.BuildEngineReleaseId === releaseId)
+    );
+    page = index >= 0 ? Math.floor(index / 3) : null;
+  }
   const builds = await DatabaseReads.productBuilds.findMany({
     orderBy: {
       DateCreated: 'desc'
@@ -60,7 +95,8 @@ export const load = (async ({ params, locals }) => {
         take: 1
       }
     },
-    take: 3
+    take: 3,
+    skip: page !== null ? page * 3 : undefined
   });
   const product = await DatabaseReads.products.findUniqueOrThrow({
     where: {
@@ -93,7 +129,7 @@ export const load = (async ({ params, locals }) => {
       ? (await queryURLandToken(product.Project.OrganizationId)).url
       : undefined,
     builds,
-    form: await superValidate({ page: 0, size: 3 }, valibot(paginateSchema)),
+    form: await superValidate({ page: page !== null ? page : 0, size: 3 }, valibot(paginateSchema)),
     count: await DatabaseReads.productBuilds.count({ where: { ProductId: params.id } })
   };
 }) satisfies PageServerLoad;
