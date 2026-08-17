@@ -148,6 +148,7 @@ export type WorkflowInstanceContext = {
     | 'waiting'
     | 'web_verify'
     | 'evaluate_error'
+    | 'manage_data'
     | null;
   includeFields: (
     | 'ownerName'

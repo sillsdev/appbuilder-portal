@@ -10,11 +10,13 @@ import GooglePlay_Verify_And_Publish from './GooglePlay_Verify_And_Publish.svelt
 import Make_It_Live from './Make_It_Live.svelte';
 import Readiness_Check from './Readiness_Check.svelte';
 import Synchronize_Data from './Synchronize_Data.svelte';
+import User_Data_Management from './User_Data_Managment.svelte';
 import Verify_And_Publish from './Verify_And_Publish.svelte';
 import Waiting from './Waiting.svelte';
 import Web_Verify from './Web_Verify.svelte';
+import type { WorkflowInstanceContext } from '$lib/workflowTypes';
 
-export const instructions: Record<string, typeof Waiting> = {
+export const instructions = {
   asset_package_verify_and_publish: Asset_Package_Verify_And_Publish,
   app_configuration: App_Configuration,
   // may need to add "author_app_configuration" later
@@ -31,5 +33,6 @@ export const instructions: Record<string, typeof Waiting> = {
   verify_and_publish: Verify_And_Publish,
   waiting: Waiting,
   web_verify: Web_Verify,
-  evaluate_error: Evaluate_Error
-};
+  evaluate_error: Evaluate_Error,
+  manage_data: User_Data_Management
+} as const satisfies Record<NonNullable<WorkflowInstanceContext['instructions']>, typeof Waiting>;

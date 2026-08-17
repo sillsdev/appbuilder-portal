@@ -109,7 +109,7 @@ export async function getChangeRequest(productId: string, taskId: number) {
       includeFields: ['ownerName', 'ownerEmail', 'packageName'],
       includeArtifacts: null,
       includeReviewers: false,
-      instructions: null
+      instructions: 'manage_data'
     } satisfies NeededContext,
     input: {}
   };
