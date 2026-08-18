@@ -29,6 +29,7 @@ export const load = (async ({ params, locals, url }) => {
     }),
     project
   );
+  const defaultPageSize = 3;
   const buildId = parseId(locals.security, url, 'buildId');
   const releaseId = parseId(locals.security, url, 'releaseId');
   let page: number | null = null;
@@ -43,7 +44,7 @@ export const load = (async ({ params, locals, url }) => {
       select: { BuildEngineBuildId: true }
     });
     const index = buildIds.findIndex((b) => b.BuildEngineBuildId === buildId);
-    page = index >= 0 ? Math.floor(index / 3) : null;
+    page = index >= 0 ? Math.floor(index / defaultPageSize) : null;
   } else if (releaseId) {
     const releaseIds = await DatabaseReads.productBuilds.findMany({
       orderBy: {
@@ -57,7 +58,7 @@ export const load = (async ({ params, locals, url }) => {
     const index = releaseIds.findIndex((b) =>
       b.ProductPublications.find((p) => p.BuildEngineReleaseId === releaseId)
     );
-    page = index >= 0 ? Math.floor(index / 3) : null;
+    page = index >= 0 ? Math.floor(index / defaultPageSize) : null;
   }
   const builds = await DatabaseReads.productBuilds.findMany({
     orderBy: {
@@ -95,8 +96,8 @@ export const load = (async ({ params, locals, url }) => {
         take: 1
       }
     },
-    take: 3,
-    skip: page !== null ? page * 3 : undefined
+    take: defaultPageSize,
+    skip: page !== null ? page * defaultPageSize : undefined
   });
   const product = await DatabaseReads.products.findUniqueOrThrow({
     where: {
@@ -129,7 +130,10 @@ export const load = (async ({ params, locals, url }) => {
       ? (await queryURLandToken(product.Project.OrganizationId)).url
       : undefined,
     builds,
-    form: await superValidate({ page: page !== null ? page : 0, size: 3 }, valibot(paginateSchema)),
+    form: await superValidate(
+      { page: page !== null ? page : 0, size: defaultPageSize },
+      valibot(paginateSchema)
+    ),
     count: await DatabaseReads.productBuilds.count({ where: { ProductId: params.id } })
   };
 }) satisfies PageServerLoad;

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Props {
     data: PageData;
@@ -23,7 +24,7 @@
         ? data.defaultBuildEngine.BuildEngineUrl
         : project.Organization.System?.BuildEngineUrl}
       <tr>
-        <td><a class="link" href="/projects/{project.Id}">{project.Name}</a></td>
+        <td><a class="link" href={localizeHref(`/projects/${project.Id}`)}>{project.Name}</a></td>
         <td>{project.Organization.Name}</td>
         <td>
           {#if beURL}

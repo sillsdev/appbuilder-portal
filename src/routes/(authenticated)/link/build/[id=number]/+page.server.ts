@@ -1,5 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { getDefaultBuildEngine } from '$lib/organizations/server';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseReads } from '$lib/server/database';
 
@@ -7,46 +8,40 @@ export const load = (async ({ params, locals, url }) => {
   locals.security.requireSuperAdmin();
 
   const buildEngineBuildId = Number(params.id);
-  const bucket = decodeURIComponent(url.searchParams.get('bucket') ?? '');
-
-  const defaultBuildEngine = await DatabaseReads.systemStatuses.findFirstOrThrow({
+  const bucket = url.searchParams.get('bucket');
+  const builds = await DatabaseReads.productBuilds.findMany({
     where: {
-      OrganizationId: null
+      BuildEngineBuildId: buildEngineBuildId,
+      Product: bucket ? { Project: { RepositoryUrl: bucket } } : undefined
     },
-    select: { BuildEngineUrl: true }
-  });
-  const builds = (
-    await DatabaseReads.productBuilds.findMany({
-      where: { BuildEngineBuildId: buildEngineBuildId },
-      select: {
-        ProductId: true,
-        BuildEngineBuildId: true,
-        Product: {
-          select: {
-            ProductDefinition: {
-              select: {
-                Name: true,
-                Workflow: {
-                  select: {
-                    ProductType: true
-                  }
+    select: {
+      ProductId: true,
+      BuildEngineBuildId: true,
+      Product: {
+        select: {
+          ProductDefinition: {
+            select: {
+              Name: true,
+              Workflow: {
+                select: {
+                  ProductType: true
                 }
               }
-            },
-            Project: {
-              select: {
-                Id: true,
-                Name: true,
-                RepositoryUrl: true,
-                Organization: {
-                  select: {
-                    Id: true,
-                    Name: true,
-                    UseDefaultBuildEngine: true,
-                    System: {
-                      select: {
-                        BuildEngineUrl: true
-                      }
+            }
+          },
+          Project: {
+            select: {
+              Id: true,
+              Name: true,
+              RepositoryUrl: true,
+              Organization: {
+                select: {
+                  Id: true,
+                  Name: true,
+                  UseDefaultBuildEngine: true,
+                  System: {
+                    select: {
+                      BuildEngineUrl: true
                     }
                   }
                 }
@@ -55,8 +50,8 @@ export const load = (async ({ params, locals, url }) => {
           }
         }
       }
-    })
-  ).filter((b) => !bucket || b.Product.Project.RepositoryUrl === bucket);
+    }
+  });
   if (!builds.length) {
     error(404);
   } else if (builds.length === 1) {
@@ -65,5 +60,5 @@ export const load = (async ({ params, locals, url }) => {
       localizeHref(`/products/${builds[0].ProductId}/files?buildId=${buildEngineBuildId}`)
     );
   }
-  return { builds, defaultBuildEngine };
+  return { builds, defaultBuildEngine: await getDefaultBuildEngine() };
 }) satisfies PageServerLoad;

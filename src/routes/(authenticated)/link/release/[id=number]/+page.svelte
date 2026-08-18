@@ -3,6 +3,7 @@
   import { getProductIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Props {
     data: PageData;
@@ -32,7 +33,9 @@
         <td>
           <a
             class="link"
-            href="/products/{release.ProductId}/files?releaseId={release.BuildEngineReleaseId}"
+            href={localizeHref(
+              `/products/${release.ProductId}/files?releaseId=${release.BuildEngineReleaseId}`
+            )}
           >
             <IconContainer
               icon={getProductIcon(release.Product.ProductDefinition.Workflow.ProductType)}
