@@ -152,34 +152,39 @@ export async function doProductAction(
   });
 }
 
-type ArtifactFrom = { package: string } | { productId: string };
+type ArtifactFrom = { package: string } | { productId: string; requirePublished?: boolean };
 
 /**
  * Get the most recent published file of specified type associated with this product
- * @param from package/productId
+ * @param from package/productId + requirePublished (default true)
  * @param type ProductArtifact type to be returned
  */
-export async function getPublishedFile(from: ArtifactFrom, type: string) {
-  const publications = await DatabaseReads.productPublications.findMany({
+export async function getLatestFile(from: ArtifactFrom, type: string) {
+  const requirePublished = 'requirePublished' in from && from.requirePublished !== false;
+  const builds = await DatabaseReads.productBuilds.findMany({
     where: {
       ProductId: 'productId' in from ? from.productId : undefined,
-      Package: 'package' in from ? from.package : undefined,
+      ProductPublications:
+        'package' in from || requirePublished
+          ? {
+              some: {
+                Package: 'package' in from ? from.package : undefined,
+                Success: requirePublished || undefined
+              }
+            }
+          : undefined,
       Success: true
     },
     select: {
-      ProductBuild: {
+      ProductArtifacts: {
+        where: {
+          ArtifactType: type
+        },
         select: {
-          ProductArtifacts: {
-            where: {
-              ArtifactType: type
-            },
-            select: {
-              ProductId: true,
-              ArtifactType: true,
-              Url: true,
-              ContentType: true
-            }
-          }
+          ProductId: true,
+          ArtifactType: true,
+          Url: true,
+          ContentType: true
         }
       }
     },
@@ -187,11 +192,11 @@ export async function getPublishedFile(from: ArtifactFrom, type: string) {
       DateCreated: 'desc'
     }
   });
-  for (const publication of publications) {
-    if (!publication.ProductBuild.ProductArtifacts.length) {
+  for (const build of builds) {
+    if (!build.ProductArtifacts.length) {
       continue;
     }
-    return publication.ProductBuild.ProductArtifacts[0];
+    return build.ProductArtifacts[0];
   }
 
   // Return null if product has not been successfully published
@@ -252,12 +257,12 @@ export async function getFileFromManifest(
 }
 
 export async function getLatestManifest(from: ArtifactFrom) {
-  const artifact = await getPublishedFile(from, 'play-listing-manifest');
+  const artifact = await getLatestFile(from, 'play-listing-manifest');
 
   if (!artifact?.Url) return null;
 
   // Get the size of the apk
-  const apkArtifact = await getPublishedFile(from, 'apk');
+  const apkArtifact = await getLatestFile(from, 'apk');
   if (!apkArtifact?.Url) return null;
   const { fileSize: apkSize } = await getFileInfo(apkArtifact.Url);
 
@@ -339,7 +344,7 @@ export async function translateManifest<File extends string>(
 }
 
 export async function getArtifactHeaders(product_id: string, type: string) {
-  const productArtifact = await getPublishedFile({ productId: product_id }, type);
+  const productArtifact = await getLatestFile({ productId: product_id }, type);
   if (!productArtifact?.Url) return null;
 
   const { lastModified, fileSize, contentType } = await getFileInfo(productArtifact.Url);

@@ -18,7 +18,10 @@ export const load: LayoutServerLoad = async ({ locals, params, url }) => {
     try {
       let fetchedManifest: Awaited<ReturnType<typeof getLatestManifest>> = null;
       try {
-        fetchedManifest = await getLatestManifest({ productId: params.productId });
+        fetchedManifest = await getLatestManifest({
+          productId: params.productId,
+          requirePublished: false
+        });
       } catch (e) {
         span.recordException(e as Error);
         span.setStatus({

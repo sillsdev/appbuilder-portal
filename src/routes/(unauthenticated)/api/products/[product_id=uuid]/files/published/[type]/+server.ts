@@ -1,9 +1,9 @@
 import { error, redirect } from '@sveltejs/kit';
-import { getArtifactHeaders, getPublishedFile } from '$lib/products/server';
+import { getArtifactHeaders, getLatestFile } from '$lib/products/server';
 
 export async function GET({ params, locals }) {
   locals.security.requireNothing();
-  const productArtifact = await getPublishedFile({ productId: params.product_id }, params.type);
+  const productArtifact = await getLatestFile({ productId: params.product_id }, params.type);
   if (!productArtifact?.Url) {
     return error(404);
   }
