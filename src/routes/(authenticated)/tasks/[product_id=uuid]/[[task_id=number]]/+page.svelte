@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { untrack, type Component } from 'svelte';
+  import { type Component, untrack } from 'svelte';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { instructions } from './instructions';
+  import { type TaskInstructionProps } from './instructions/types';
   import { invalidate } from '$app/navigation';
   import { page } from '$app/state';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
@@ -26,7 +27,6 @@
   import { bytesToHumanSize, toast } from '$lib/utils';
   import { byName, byNumber, byString } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
-  import { type TaskInstructionProps } from './instructions/types';
 
   interface Props {
     data: PageData;
