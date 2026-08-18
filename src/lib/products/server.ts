@@ -254,8 +254,6 @@ export async function getFileFromManifest(
 export async function getLatestManifest(from: ArtifactFrom) {
   const artifact = await getPublishedFile(from, 'play-listing-manifest');
 
-  console.log('getLatestManifest: artifact', artifact);
-
   if (!artifact?.Url) return null;
 
   // Get the size of the apk
