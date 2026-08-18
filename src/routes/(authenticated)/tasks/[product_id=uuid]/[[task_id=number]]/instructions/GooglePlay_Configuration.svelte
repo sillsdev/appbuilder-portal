@@ -1,3 +1,9 @@
+<script lang="ts">
+  import type { TaskInstructionProps } from './types';
+
+  let {}: TaskInstructionProps = $props();
+</script>
+
 <h3>Introduction</h3>
 <div class="space-y-2">
   <p>

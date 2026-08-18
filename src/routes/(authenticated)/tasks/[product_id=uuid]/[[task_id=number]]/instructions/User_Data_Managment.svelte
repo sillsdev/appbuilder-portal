@@ -1,25 +1,20 @@
-<h3>Instructions</h3>
-<div class="space-y-2">
-  <p>A user has requested to delete data associated with their user account in an app.</p>
+<script lang="ts">
+  import type { TaskInstructionProps } from './types';
 
-  <p>
-    The task type denoted in the title will be either <strong>Delete Data</strong>
-    or
-    <strong>Delete Account</strong>
-    . If it is the latter, repeat the process to find the user identity and delete that entry after deleting
-    the user data.
-  </p>
-</div>
+  let { state }: TaskInstructionProps = $props();
+</script>
+
+<h3>Instructions</h3>
 <ul>
   <li>
     Browse to the website specified in the <strong>Console URL</strong>
     field.
   </li>
   <li>
-    If the Console URL is the Firebase Console:
+    <strong>Find the user identity</strong>
     <ul>
       <li>
-        To find the user identity, select <strong>Security</strong>
+        Select <strong>Security</strong>
         &gt;
         <strong>Authentication</strong>
         from the
@@ -38,6 +33,11 @@
         <strong>User UID</strong>
         field that appears.
       </li>
+    </ul>
+  </li>
+  <li>
+    <strong>Delete the user data</strong>
+    <ul>
       <li>
         To find the user data, select <strong>Databases & Storage</strong>
         &gt;
@@ -65,12 +65,24 @@
         <strong>Delete</strong>
         button in the confirmation dialog to confirm the deletion.
       </li>
-      <li>
-        If the task type is <strong>Delete Account</strong>
-        , repeat the process to find the user in the
-        <strong>Authentication</strong>
-        section and delete that entry after deleting the user data.
-      </li>
     </ul>
   </li>
+  {#if state === 'account'}
+    <li>
+      <strong>Delete the user identity</strong>
+      <ul>
+        <li>
+          Repeat the process to find the user in the
+          <strong>Authentication</strong>
+          section described above.
+        </li>
+        <li>
+          Hover your mouse over the row and click on the <strong>Delete</strong>
+          button that appears. Click on the
+          <strong>Delete</strong>
+          button in the confirmation dialog to confirm the deletion.
+        </li>
+      </ul>
+    </li>
+  {/if}
 </ul>

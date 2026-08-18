@@ -1,3 +1,4 @@
+import type { Component } from 'svelte';
 import App_Configuration from './App_Configuration.svelte';
 import Approval_Pending from './Approval_Pending.svelte';
 import Asset_Package_Verify_And_Publish from './Asset_Package_Verify_And_Publish.svelte';
@@ -14,6 +15,7 @@ import User_Data_Management from './User_Data_Managment.svelte';
 import Verify_And_Publish from './Verify_And_Publish.svelte';
 import Waiting from './Waiting.svelte';
 import Web_Verify from './Web_Verify.svelte';
+import type { TaskInstructionProps } from './types';
 import type { WorkflowInstanceContext } from '$lib/workflowTypes';
 
 export const instructions = {
@@ -35,4 +37,7 @@ export const instructions = {
   web_verify: Web_Verify,
   evaluate_error: Evaluate_Error,
   manage_data: User_Data_Management
-} as const satisfies Record<NonNullable<WorkflowInstanceContext['instructions']>, typeof Waiting>;
+} as const satisfies Record<
+  NonNullable<WorkflowInstanceContext['instructions']>,
+  Component<TaskInstructionProps>
+>;

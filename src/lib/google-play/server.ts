@@ -106,7 +106,7 @@ export async function getChangeRequest(productId: string, taskId: number) {
   const snap = {
     state: request.Change!,
     context: {
-      includeFields: ['ownerName', 'ownerEmail', 'packageName'],
+      includeFields: [],
       includeArtifacts: null,
       includeReviewers: false,
       instructions: 'manage_data'

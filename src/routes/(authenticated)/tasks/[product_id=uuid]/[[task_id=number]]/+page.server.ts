@@ -195,6 +195,7 @@ export const load = (async ({ params, locals, depends }) => {
     taskTitle: request
       ? m.udm_delete_type({ scope: snap.state }, { locale: locals.locale as Locale })
       : snap.state,
+    state: snap.state,
     previousTask: product.ProductTransitions.at(0),
     instructions: snap.context.instructions,
     projectId: product.Project.Id,

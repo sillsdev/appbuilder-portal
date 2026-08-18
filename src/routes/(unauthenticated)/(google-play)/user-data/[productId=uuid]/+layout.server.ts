@@ -20,6 +20,7 @@ export const load: LayoutServerLoad = async ({ locals, params, url }) => {
       try {
         fetchedManifest = await getLatestManifest({ productId: params.productId });
       } catch (e) {
+        console.log('Error fetching manifest for productId', params.productId, e);
         span.recordException(e as Error);
         span.setStatus({
           code: SpanStatusCode.ERROR,
@@ -27,6 +28,8 @@ export const load: LayoutServerLoad = async ({ locals, params, url }) => {
         });
         throw error(404);
       }
+
+      console.log('Fetched manifest for productId', params.productId, fetchedManifest);
 
       if (!fetchedManifest) throw error(404);
 

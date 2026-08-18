@@ -1,3 +1,9 @@
+<script lang="ts">
+  import type { TaskInstructionProps } from './types';
+
+  let {}: TaskInstructionProps = $props();
+</script>
+
 <h3>Instructions</h3>
 <p>
   To be sure you are updating the latest version of this published project, please download the
