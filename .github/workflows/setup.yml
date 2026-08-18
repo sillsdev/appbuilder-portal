@@ -128,7 +128,7 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'src/lib/prisma/schema.prisma') }}
 
-      - name: Build, and seed database
+      - name: Build, Install Playwright dependencies, and seed database
         run: |
           timeout 10m bash <<'EOF'
           print_command_output() {
@@ -136,10 +136,14 @@ jobs:
               echo "Build output:"
               cat command-output/build-output.txt
             fi
+            if [ -f command-output/playwright-output.txt ]; then
+              echo "Playwright output:"
+              cat command-output/playwright-output.txt
+            fi
           }
 
           timeout_handler() {
-            echo "Build, and database seeding timed out after 10 minutes. Printing captured output..."
+            echo "Build, Playwright installation, and database seeding timed out after 10 minutes. Printing captured output..."
             print_command_output
             exit 124
           }
@@ -154,6 +158,8 @@ jobs:
           echo "Building the docker project..."
           mkdir -p command-output
           (./run ci build > command-output/build-output.txt 2>&1 || echo $? > command-output/build-exit-code.txt) &
+          echo "Installing Playwright dependencies..."
+          (npx playwright install --with-deps > command-output/playwright-output.txt 2>&1 || echo $? > command-output/playwright-exit-code.txt) &
           echo "Beginning pull of images"
           ./run ci pull valkey > /dev/null &
           echo "Starting database..."
@@ -165,7 +171,7 @@ jobs:
           }
           echo "Seeding the database..."
           npx prisma migrate reset -f --skip-seed --skip-generate && npx prisma db seed -- --verbose --organizations
-          echo "Waiting for build to finish..."
+          echo "Waiting for build and Playwright installation to finish..."
           wait
           if [ -f command-output/build-exit-code.txt ]; then
             BUILD_EXIT_CODE=$(cat command-output/build-exit-code.txt)
@@ -173,7 +179,13 @@ jobs:
             cat command-output/build-output.txt
             exit $BUILD_EXIT_CODE
           fi
-          echo "Build completed."
+          if [ -f command-output/playwright-exit-code.txt ]; then
+            PLAYWRIGHT_EXIT_CODE=$(cat command-output/playwright-exit-code.txt)
+            echo "Playwright installation failed with exit code $PLAYWRIGHT_EXIT_CODE"
+            cat command-output/playwright-output.txt
+            exit $PLAYWRIGHT_EXIT_CODE
+          fi
+          echo "Build and Playwright installation completed."
           EOF
         env:
           DATABASE_URL: 'postgresql://db-user:1234@localhost:5432/development?schema=public'
@@ -183,7 +195,7 @@ jobs:
           echo "Starting docker-compose services..."
           ./run ci up -d
 
-      - name: Check availability
+      - name: Run tests
         run: |
           # Is the port open
           sleep 1
@@ -193,10 +205,12 @@ jobs:
             exit 1
           }
           npx svelte-kit sync
-      - name: Run Playwright tests
-        uses: docker://mcr.microsoft.com/playwright:v1.60.0-noble
-        with:
-          args: npm run test
+          echo "Running tests..."
+          npm run test || {
+            echo "Tests failed"
+            ./run ci logs portal
+            exit 1
+          }
         env:
           CI_PASSWORD: ${{ secrets.CI_PASSWORD }}
           CI_EMAIL: ci@scriptoria.io
