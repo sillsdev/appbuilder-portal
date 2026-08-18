@@ -12,6 +12,14 @@
   let { children, data }: Props = $props();
 </script>
 
+<svelte:head>
+  <script
+    src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+    async
+    defer
+  ></script>
+</svelte:head>
+
 <div class="relative w-full min-h-screen" style={getThemeStyle(data.app.themeColor)}>
   {@render children?.()}
 </div>

@@ -8,6 +8,7 @@
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
   import { m } from '$lib/google-play/paraglide/messages';
   import { type Locale, localizeHref } from '$lib/google-play/paraglide/runtime';
+  import { initTurnstile } from '$lib/google-play/turnstile';
 
   interface Props {
     data: PageData;
@@ -60,18 +61,14 @@
     }
   });
 
-  onMount(() => {
-    window.handleTurnstileSuccess = (token: string) => {
+  onMount(() =>
+    initTurnstile('#turnstile-container', env.PUBLIC_TURNSTILE_SITEKEY, (token: string) => {
       turnstileToken = token;
       $form.turnstileToken = token;
       clearDeleteError('turnstileToken');
       $message = undefined;
-    };
-
-    return () => {
-      delete window.handleTurnstileSuccess;
-    };
-  });
+    })
+  );
 
   function clearDeleteError(field: 'email' | 'turnstileToken') {
     if ($errors[field]) {
@@ -87,10 +84,6 @@
     }
   }
 </script>
-
-<svelte:head>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-</svelte:head>
 
 <div
   class="udm-theme udm-shell min-h-screen w-full place-self-start text-base-content font-sans antialiased break-words"
@@ -228,11 +221,7 @@
                 {m.verification_label()}
               </p>
               <div class="mt-2">
-                <div
-                  class="cf-turnstile"
-                  data-sitekey={env.PUBLIC_TURNSTILE_SITEKEY}
-                  data-callback="handleTurnstileSuccess"
-                ></div>
+                <div id="turnstile-container"></div>
               </div>
               {#if deleteSubmitAttempted && $errors.turnstileToken}
                 <span class="mt-2 text-error text-xs leading-tight">
