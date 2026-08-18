@@ -105,6 +105,8 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     needs: setup
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble
     env:
       CI: true
       BUILDENGINE_TOKEN: ${{ secrets.BUILD_ENGINE_TOKEN }}
@@ -128,22 +130,7 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'src/lib/prisma/schema.prisma') }}
 
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-
-      - name: Install Playwright browsers and system dependencies
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
-
-      - name: Install OS dependencies for browsers
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps
-
-      - name: Build, Install Playwright dependencies, and seed database
+      - name: Build, and seed database
         run: |
           timeout 10m bash <<'EOF'
           print_command_output() {
@@ -180,7 +167,7 @@ jobs:
           }
           echo "Seeding the database..."
           npx prisma migrate reset -f --skip-seed --skip-generate && npx prisma db seed -- --verbose --organizations
-          echo "Waiting for build and Playwright installation to finish..."
+          echo "Waiting for build and to finish..."
           wait
           if [ -f command-output/build-exit-code.txt ]; then
             BUILD_EXIT_CODE=$(cat command-output/build-exit-code.txt)
@@ -188,7 +175,7 @@ jobs:
             cat command-output/build-output.txt
             exit $BUILD_EXIT_CODE
           fi
-          echo "Build and Playwright installation completed."
+          echo "Build completed."
           EOF
         env:
           DATABASE_URL: 'postgresql://db-user:1234@localhost:5432/development?schema=public'
