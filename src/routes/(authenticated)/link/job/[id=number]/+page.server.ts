@@ -7,7 +7,7 @@ export const load = (async ({ params, locals, url }) => {
   locals.security.requireSuperAdmin();
 
   const buildEngineJobId = Number(params.id);
-  const origin = decodeURIComponent(url.searchParams.get('origin') ?? '');
+  const bucket = decodeURIComponent(url.searchParams.get('bucket') ?? '');
 
   const defaultBuildEngine = await DatabaseReads.systemStatuses.findFirstOrThrow({
     where: {
@@ -35,6 +35,7 @@ export const load = (async ({ params, locals, url }) => {
           select: {
             Id: true,
             Name: true,
+            RepositoryUrl: true,
             Organization: {
               select: {
                 Id: true,
@@ -51,13 +52,7 @@ export const load = (async ({ params, locals, url }) => {
         }
       }
     })
-  ).filter(
-    (p) =>
-      !origin ||
-      (p.Project.Organization.UseDefaultBuildEngine
-        ? defaultBuildEngine.BuildEngineUrl
-        : p.Project.Organization.System?.BuildEngineUrl) === origin
-  );
+  ).filter((p) => !bucket || p.Project.RepositoryUrl === bucket);
   if (!products.length) {
     error(404);
   } else if (products.length === 1) {
