@@ -107,6 +107,7 @@ jobs:
     needs: setup
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-noble
+      options: --user 1001
     env:
       CI: true
       BUILDENGINE_TOKEN: ${{ secrets.BUILD_ENGINE_TOKEN }}
