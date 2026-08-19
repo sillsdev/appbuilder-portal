@@ -91,12 +91,10 @@
   <div class="w-full bg-base-100 min-h-screen sm:max-w-xl sm:mx-auto">
     <div class="udm-header px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-4">
       <div class="flex items-start justify-between gap-3">
-        <div class="min-w-0 flex-1 border-s-4 border-base-content ps-3 pe-2">
-          <h1 class="text-2xl font-bold tracking-tight leading-none break-words">
-            {m.manage_data_title()}
-          </h1>
-        </div>
-        <div class="max-w-full shrink-0 rounded-xl bg-neutral shadow-sm">
+        <h1 class="text-2xl font-bold tracking-tight leading-none break-words py-2 ps-0">
+          {m.manage_data_title()}
+        </h1>
+        <div class="max-w-full shrink-0 rounded-xl bg-neutral shadow-sm mt-2 md:mt-0">
           <LocaleSelector
             class={{ label: 'rounded-xl' }}
             current={currentLocale}
@@ -115,10 +113,10 @@
         </div>
       </div>
       <div class="min-w-0 grow text-start">
-        <h2 class="text-lg font-bold tracking-tight leading-tight break-words">{data.app.name}</h2>
-        <p class="mt-1 text-sm font-bold leading-tight break-words">
-          <span class="p-1 rounded-sm">{data.app.developer}</span>
-        </p>
+        <h2 class="text-lg font-bold tracking-tight leading-tight break-words ps-0">
+          {data.app.name}
+        </h2>
+        <p class="mt-1 text-sm font-bold leading-tight break-words">{data.app.developer}</p>
       </div>
     </div>
 
@@ -135,7 +133,7 @@
       <div class="card bg-base-100 shadow-sm border border-base-300">
         <div class="card-body p-5 space-y-4 break-words">
           <div>
-            <h2 class="card-title text-lg font-bold">{m.deletion_request_title()}</h2>
+            <h2 class="card-title text-lg font-bold ps-0">{m.deletion_request_title()}</h2>
             <p class="mt-1 ps-3 text-xs leading-relaxed text-base-content/80">
               {m.deletion_request_description_1()}
             </p>

@@ -22,13 +22,13 @@
         class="w-14 h-14 rounded-2xl shadow-sm bg-primary/5 p-0.5"
       />
       <div class="min-w-0 grow text-start">
-        <h2 class="text-lg font-bold tracking-tight leading-tight break-words">{data.app.name}</h2>
-        <p class="mt-1 text-sm font-bold leading-tight break-words">
-          <span class="p-1 rounded-sm">{data.app.developer}</span>
-        </p>
+        <h2 class="text-lg font-bold tracking-tight leading-tight break-words ps-0">
+          {data.app.name}
+        </h2>
+        <p class="mt-1 text-sm font-bold leading-tight break-words">{data.app.developer}</p>
       </div>
     </div>
-    <div class="px-5 pb-8">
+    <div class="px-5 pb-8 pt-2">
       <div class="card bg-base-100 shadow-sm border border-base-300 rounded-lg">
         <div class="card-body space-y-3">
           <h2 class="card-title text-lg font-bold">{m.about_app()}</h2>
