@@ -99,8 +99,9 @@
             {m.manage_data_description()}
           </p>
         </div>
-        <div class="max-w-full shrink-0 rounded-xl bg-neutral p-1 shadow-sm text-base-content">
+        <div class="max-w-full shrink-0 rounded-xl bg-neutral shadow-sm">
           <LocaleSelector
+            class={{ label: 'rounded-xl' }}
             current={currentLocale}
             l10nMap={data.l10nMap}
             locales={data.app.languages as Locale[]}

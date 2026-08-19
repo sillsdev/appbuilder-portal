@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Dropdown from '$lib/components/Dropdown.svelte';
+  import Dropdown, { type DropdownClasses } from '$lib/components/Dropdown.svelte';
   import { GooglePlayFlags } from '$lib/google-play';
   import {
     type Locale,
@@ -12,6 +12,7 @@
   import { byString } from '$lib/utils/sorting';
 
   interface Props {
+    class?: DropdownClasses;
     current: Locale;
     onselect?: (lang: Locale) => void;
     l10nMap: L10NMap<Locale>;
@@ -19,7 +20,14 @@
     fallbacks?: ReadonlyMap<string, string>;
   }
 
-  let { current, onselect = setLocale, l10nMap, locales = allLocales, fallbacks }: Props = $props();
+  let {
+    class: classes,
+    current,
+    onselect = setLocale,
+    l10nMap,
+    locales = allLocales,
+    fallbacks
+  }: Props = $props();
 
   let open = $state(false);
 
@@ -48,23 +56,20 @@
 {#key current}
   <Dropdown
     class={{
-      dropdown: 'dropdown-end',
-      label: 'border-secondary pe-1',
-      content: 'max-h-64 overflow-y-auto'
+      dropdown: ['dropdown-end', classes?.dropdown],
+      label: ['pe-1 ps-2', classes?.label],
+      content: ['max-h-64 overflow-y-auto', classes?.content]
     }}
     bind:open
   >
     {#snippet label()}
       {@const { display, fallback } = displayNames.get(current) ?? {}}
-      <div class="flex flex-row py-1 w-full items-start h-full gap-1">
-        <IconContainer icon={getFlagIcon(current, GooglePlayFlags)} width={24} />
-        <span class="flex flex-col text-start grow">
-          <span>
-            {display}
-            {#if display !== fallback}
-              &ndash; {current}
-            {/if}
-          </span>
+      <div class="flex flex-row py-1 w-full items-center h-full gap-1">
+        <span class="grow text-start">
+          {display}
+          {#if display !== fallback}
+            &ndash; {current}
+          {/if}
         </span>
         <span class="h-full flex flex-row items-center">
           <IconContainer icon={Icons.Dropdown} width={20} />
