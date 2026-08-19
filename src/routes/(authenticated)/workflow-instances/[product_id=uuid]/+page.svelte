@@ -3,7 +3,6 @@
   import { superForm } from 'sveltekit-superforms';
   import { Anchor, Node, Svelvet } from 'svelvet';
   import type { PageData } from './$types';
-  import { browser } from '$app/environment';
   import BlockIfJobsUnavailable from '$lib/components/BlockIfJobsUnavailable.svelte';
   import Dropdown from '$lib/components/Dropdown.svelte';
   import { Icons, getProductIcon, getWorkflowActionIcon } from '$lib/icons';
@@ -14,6 +13,7 @@
     showProductDetails
   } from '$lib/products/components/ProductDetails.svelte';
   import { Springy } from '$lib/springyGraph';
+  import { isDarkMode } from '$lib/stores';
   import { toast } from '$lib/utils';
   import { WorkflowAction } from '$lib/workflowTypes';
 
@@ -98,16 +98,6 @@
     );
     renderer.start();
   });
-
-  // Note: At the moment, the site always follows prefered color scheme
-  // If at some point in the future a manual toggle is added, this will need to be changed
-  let isDarkMode: boolean = $state(
-    browser ? window.matchMedia('(prefers-color-scheme: dark)').matches : false
-  );
-  if (browser)
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
-      isDarkMode = event.matches;
-    });
 </script>
 
 <div class="h-full">
@@ -184,7 +174,7 @@
         controls
         fitView
         edgeStyle="straight"
-        theme={isDarkMode ? 'dark' : 'light'}
+        theme={$isDarkMode ? 'dark' : 'light'}
         translation={{ x: 0, y: 0 }}
         endStyles={[null, 'arrow']}
       >

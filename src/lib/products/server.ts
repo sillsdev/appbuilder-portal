@@ -152,34 +152,39 @@ export async function doProductAction(
   });
 }
 
-type ArtifactFrom = { package: string } | { productId: string };
+type ArtifactFrom = { package: string } | { productId: string; requirePublished?: boolean };
 
 /**
  * Get the most recent published file of specified type associated with this product
- * @param from package/productId
+ * @param from package/productId + requirePublished (default true)
  * @param type ProductArtifact type to be returned
  */
-export async function getPublishedFile(from: ArtifactFrom, type: string) {
-  const publications = await DatabaseReads.productPublications.findMany({
+export async function getLatestFile(from: ArtifactFrom, type: string) {
+  const requirePublished = 'requirePublished' in from && from.requirePublished !== false;
+  const builds = await DatabaseReads.productBuilds.findMany({
     where: {
       ProductId: 'productId' in from ? from.productId : undefined,
-      Package: 'package' in from ? from.package : undefined,
+      ProductPublications:
+        'package' in from || requirePublished
+          ? {
+              some: {
+                Package: 'package' in from ? from.package : undefined,
+                Success: requirePublished || undefined
+              }
+            }
+          : undefined,
       Success: true
     },
     select: {
-      ProductBuild: {
+      ProductArtifacts: {
+        where: {
+          ArtifactType: type
+        },
         select: {
-          ProductArtifacts: {
-            where: {
-              ArtifactType: type
-            },
-            select: {
-              ProductId: true,
-              ArtifactType: true,
-              Url: true,
-              ContentType: true
-            }
-          }
+          ProductId: true,
+          ArtifactType: true,
+          Url: true,
+          ContentType: true
         }
       }
     },
@@ -187,43 +192,45 @@ export async function getPublishedFile(from: ArtifactFrom, type: string) {
       DateCreated: 'desc'
     }
   });
-  for (const publication of publications) {
-    if (!publication.ProductBuild.ProductArtifacts.length) {
+  for (const build of builds) {
+    if (!build.ProductArtifacts.length) {
       continue;
     }
-    return publication.ProductBuild.ProductArtifacts[0];
+    return build.ProductArtifacts[0];
   }
 
   // Return null if product has not been successfully published
   return null;
 }
 
+/**
+ * Normalize an RGB hex color string to a length of 6+ with no leading #.
+ * eg. fb9 => f0b090
+ */
+function normalizeColorString(color: string = '#1c3258') {
+  const c = color.replaceAll('#', '');
+  return c.length < 6 && c.length >= 3
+    ? `${c[0]}${c[0]}${c[1]}${c[1]}${c[2]}${c[2]}`
+    : (c + 'ff0000').substring(0, 6);
+}
+
 const manifestSchema = v.pipe(
   v.string(),
   // make sure it is valid JSON
-  v.rawTransform(({ dataset, addIssue, NEVER }) => {
-    try {
-      return JSON.parse(dataset.value || '{}');
-    } catch (e) {
-      addIssue({
-        message: e instanceof Error ? e.message : String(e),
-        path: [
-          {
-            type: 'unknown',
-            origin: 'value',
-            input: dataset.value,
-            key: 'root',
-            value: dataset.value
-          }
-        ]
-      });
-      return NEVER;
-    }
-  }),
+  v.parseJson(),
   v.object({
     url: v.string(),
     icon: v.string(),
-    color: v.string(),
+    color: v.pipe(
+      v.string(),
+      v.transform((s) => {
+        const colors = s.trim().split('\n');
+        return {
+          light: normalizeColorString(colors[0]),
+          dark: normalizeColorString(colors.at(-1))
+        };
+      })
+    ),
     'default-language': v.string(),
     'download-apk-strings': v.record(v.string(), v.string()),
     languages: v.array(v.string()),
@@ -250,12 +257,12 @@ export async function getFileFromManifest(
 }
 
 export async function getLatestManifest(from: ArtifactFrom) {
-  const artifact = await getPublishedFile(from, 'play-listing-manifest');
+  const artifact = await getLatestFile(from, 'play-listing-manifest');
 
   if (!artifact?.Url) return null;
 
   // Get the size of the apk
-  const apkArtifact = await getPublishedFile(from, 'apk');
+  const apkArtifact = await getLatestFile(from, 'apk');
   if (!apkArtifact?.Url) return null;
   const { fileSize: apkSize } = await getFileInfo(apkArtifact.Url);
 
@@ -273,6 +280,19 @@ export async function getLatestManifest(from: ArtifactFrom) {
   // in the manifest file based on the hostname from the artifact query.
   const baseUrl = new URL(manifest.url);
   baseUrl.host = new URL(artifact.Url).host;
+
+  try {
+    const iconURL = new URL(manifest.icon, baseUrl);
+    // Empty manifest.icon before fetching so unreachable icons use the fallback.
+    manifest.icon = '';
+
+    const iconCheck = await fetch(iconURL, { method: 'HEAD' });
+    if (iconCheck.ok) {
+      manifest.icon = iconURL.href;
+    }
+  } catch {
+    // Empty manifest.icon means callers should use their fallback icon.
+  }
 
   return { manifest, baseUrl, productId: artifact.ProductId, apkSize };
 }
@@ -305,9 +325,8 @@ export async function translateManifest<File extends string>(
     id: productId,
     link: `/api/products/${productId}/files/published/apk`,
     size: apkSize,
-    icon: new URL(manifest.icon, baseUrl).href,
-    // use primary color if match not found
-    color: manifest.color.match(/^(#[0-9a-f]{6})/i)?.at(1) ?? '#1c3258',
+    icon: manifest.icon,
+    color: manifest.color,
     downloadTitle:
       manifest['download-apk-strings'][language] ||
       manifest['download-apk-strings'][getBasicVariant(language)],
@@ -325,7 +344,7 @@ export async function translateManifest<File extends string>(
 }
 
 export async function getArtifactHeaders(product_id: string, type: string) {
-  const productArtifact = await getPublishedFile({ productId: product_id }, type);
+  const productArtifact = await getLatestFile({ productId: product_id }, type);
   if (!productArtifact?.Url) return null;
 
   const { lastModified, fileSize, contentType } = await getFileInfo(productArtifact.Url);

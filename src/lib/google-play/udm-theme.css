@@ -1,0 +1,31 @@
+.udm-theme {
+  /* Product pages set --color-primary from the Google Play manifest. */
+  --udm-outer: color-mix(in oklch, var(--color-primary) 8%, white);
+  --udm-shell: color-mix(in oklch, var(--color-primary) 12%, white);
+  --udm-header: color-mix(in oklch, var(--color-primary) 30%, white);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-color-scheme: dark) {
+  .udm-theme {
+    /* Product pages set --color-primary from the Google Play manifest. */
+    --udm-outer: color-mix(in srgb, var(--color-primary) 45%, black);
+    --udm-shell: color-mix(in srgb, var(--color-primary) 28%, black);
+    --udm-header: color-mix(in srgb, var(--color-primary) 68%, black);
+  }
+}
+
+.udm-theme.udm-shell {
+  background-color: var(--udm-shell);
+}
+
+.udm-theme .udm-header {
+  background-color: var(--udm-header);
+}
+
+.udm-theme.udm-confirm-root {
+  background-color: var(--udm-outer);
+}
+
+

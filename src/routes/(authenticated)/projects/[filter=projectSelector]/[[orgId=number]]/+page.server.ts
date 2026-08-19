@@ -16,10 +16,10 @@ import {
 import { doProjectAction, projectFilter } from '$lib/projects/server';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
-import { stringIdSchema } from '$lib/valibot';
+import { UUIDSchema } from '$lib/valibot';
 
 const bulkProductActionSchema = v.object({
-  products: v.array(stringIdSchema),
+  products: v.array(UUIDSchema),
   operation: v.nullable(
     v.pipe(v.picklist([ProductActionType.Rebuild, ProductActionType.Republish]))
   )

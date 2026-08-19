@@ -1,4 +1,5 @@
 import type { Prisma } from '@prisma/client';
+import { ChangeRequestAction } from '$lib/google-play';
 import type { Locale as DefaultLocale } from '$lib/paraglide/runtime';
 import {
   ApplicationType,
@@ -68,6 +69,7 @@ export function getFileIcon(fileType: string) {
     case 'play-listing-manifest':
     case 'package_name':
     case 'whats_new':
+    case 'data-management':
       return Icons.Info;
     case 'cloudWatch':
     case 'consoleText':
@@ -282,10 +284,11 @@ export function getWorkflowIcon(type: WorkflowType) {
   }
 }
 
-export function getWorkflowActionIcon(type: WorkflowAction) {
+export function getWorkflowActionIcon(type: WorkflowAction | ChangeRequestAction) {
   switch (type) {
     case WorkflowAction.Continue:
       return 'wordpress:next';
+    case ChangeRequestAction.Mark_Complete:
     case WorkflowAction.Approve:
       return 'mdi:approve';
     case WorkflowAction.Hold:
@@ -299,6 +302,8 @@ export function getWorkflowActionIcon(type: WorkflowAction) {
       return 'mingcute:file-new-line';
     case WorkflowAction.Existing_App:
       return Icons.GooglePlay;
+    case ChangeRequestAction.Transfer_to_Admin:
+    case ChangeRequestAction.Transfer_to_Owner:
     case WorkflowAction.Transfer_to_Authors:
       return Icons.Transfer;
     case WorkflowAction.Take_Back:

@@ -626,5 +626,16 @@
   "softwareUpdate_applicationTypes": "Application Types",
   "softwareUpdate_applicationTypes_description": "Select one or more application types to update",
   "softwareUpdate_listActive": "Active Software Updates",
-  "softwareUpdate_listCompleted": "Completed Software Updates"
+  "softwareUpdate_listCompleted": "Completed Software Updates",
+  "udm_delete_type": [
+    {
+      "match": {
+        "scope=data": "Delete Data",
+        "scope=account": "Delete Account",
+        "scope=*": "Data Management: {scope}"
+      }
+    }
+  ],
+  "udm_submitted": "Submitted",
+  "udm_consoleUrl": "Console URL"
 }

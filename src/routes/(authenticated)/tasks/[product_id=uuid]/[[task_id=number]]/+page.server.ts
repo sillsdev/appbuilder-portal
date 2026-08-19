@@ -4,18 +4,33 @@ import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { RoleId } from '$lib/prisma';
+import { ChangeRequestAction } from '$lib/google-play';
+import { getChangeRequest } from '$lib/google-play/server';
+import { m } from '$lib/paraglide/messages';
+import type { Locale } from '$lib/paraglide/runtime';
+import { RoleId, TaskType } from '$lib/prisma';
 import { projectUrl } from '$lib/projects/server';
-import { QueueConnected } from '$lib/server/bullmq';
-import { DatabaseReads } from '$lib/server/database';
+import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { Workflow } from '$lib/server/workflow';
-import { WorkflowAction, WorkflowState, artifactLists } from '$lib/workflowTypes';
+import {
+  WorkflowAction,
+  type WorkflowInput,
+  WorkflowState,
+  artifactLists
+} from '$lib/workflowTypes';
 
-const sendActionSchema = v.object({
+const workflowActionSchema = v.object({
   state: v.enum(WorkflowState),
   flowAction: v.enum(WorkflowAction),
   comment: v.string(),
   options: v.optional(v.array(v.string()))
+});
+
+const changeActionSchema = v.object({
+  state: v.string(),
+  flowAction: v.optional(v.enum(ChangeRequestAction)),
+  comment: v.string()
 });
 
 type Fields = {
@@ -36,8 +51,10 @@ export const load = (async ({ params, locals, depends }) => {
   depends('task:id:load');
   // Auth handled in verifyCanViewTask
   locals.security.requireAuthenticated();
-  if (!(await verifyCanViewTask(locals.security, params.product_id))) return error(403);
-  const snap = await Workflow.getSnapshot(params.product_id);
+  const taskId = params.task_id ? Number(params.task_id) : undefined;
+  if (!(await verifyCanViewTask(locals.security, params.product_id, taskId))) return error(403);
+  const request = taskId ? await getChangeRequest(params.product_id, taskId) : null;
+  const snap = request ? request.snap : await Workflow.getSnapshot(params.product_id);
   if (!snap) return error(404);
 
   // product will not be null if snap exists
@@ -170,10 +187,15 @@ export const load = (async ({ params, locals, depends }) => {
 
   return {
     loadTime: new Date().valueOf(),
-    actions: Workflow.availableTransitionsFromName(snap.state, snap.input)
-      .filter((a) => filterAvailableActions(a, locals.security.userId, product.Project))
-      .map((a) => a[0].eventType as WorkflowAction),
-    taskTitle: snap.state,
+    actions: request
+      ? request.actions
+      : Workflow.availableTransitionsFromName(snap.state, snap.input as WorkflowInput)
+          .filter((a) => filterAvailableActions(a, locals.security.userId, product.Project))
+          .map((a) => a[0].eventType as WorkflowAction),
+    taskTitle: request
+      ? m.udm_delete_type({ scope: snap.state }, { locale: locals.locale as Locale })
+      : snap.state,
+    state: snap.state,
     previousTask: product.ProductTransitions.at(0),
     instructions: snap.context.instructions,
     projectId: product.Project.Id,
@@ -223,19 +245,20 @@ export const load = (async ({ params, locals, depends }) => {
       {
         state: snap.state as WorkflowState
       },
-      valibot(sendActionSchema)
+      valibot(request ? changeActionSchema : workflowActionSchema)
     ),
-    jobsAvailable: QueueConnected()
+    jobsAvailable: QueueConnected(),
+    changeRequest: request?.request ?? null
   };
 }) satisfies PageServerLoad;
 
 export const actions = {
-  default: async ({ request, params, locals }) => {
+  workflow: async ({ request, params, locals }) => {
     // Auth handled in verifyCanViewTask
     locals.security.requireAuthenticated();
     if (!(await verifyCanViewTask(locals.security, params.product_id))) return error(403);
     if (!QueueConnected()) return error(503);
-    const form = await superValidate(request, valibot(sendActionSchema));
+    const form = await superValidate(request, valibot(workflowActionSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
     const flow = await Workflow.restore(params.product_id);
@@ -315,17 +338,84 @@ export const actions = {
         ok: false
       });
     }
+  },
+  changeRequest: async ({ request, params, locals }) => {
+    // Auth handled in verifyCanViewTask
+    locals.security.requireAuthenticated();
+    const taskId = params.task_id ? Number(params.task_id) : undefined;
+    if (!(taskId && (await verifyCanViewTask(locals.security, params.product_id, taskId)))) {
+      return error(403);
+    }
+    const changeRequest = await DatabaseReads.productUserChanges.findFirst({
+      where: { Tasks: { some: { Id: taskId } }, ProductId: params.product_id, DateCompleted: null },
+      select: { Id: true }
+    });
+    if (!changeRequest) return error(404);
+    if (!QueueConnected()) return error(503);
+    const form = await superValidate(request, valibot(changeActionSchema));
+    if (!form.valid || !form.data.flowAction) return fail(400, { form, ok: false });
+
+    const complete = form.data.flowAction === ChangeRequestAction.Mark_Complete;
+
+    if (complete) {
+      await DatabaseWrites.productUserChanges.update({
+        where: { Id: changeRequest.Id },
+        data: { CompletedById: locals.security.userId, DateCompleted: new Date() }
+      });
+    } else {
+      await DatabaseWrites.productUserChanges.update({
+        where: { Id: changeRequest.Id },
+        data: {
+          AssignedRole:
+            form.data.flowAction === ChangeRequestAction.Transfer_to_Admin
+              ? RoleId.OrgAdmin
+              : RoleId.AppBuilder
+        }
+      });
+    }
+
+    await getQueues().UserTasks.add(`UDM Product ${params.product_id}: ${form.data.flowAction}`, {
+      type: BullMQ.JobType.UserTasks_DeleteRequest,
+      scope: 'Product',
+      productId: params.product_id,
+      requestId: changeRequest.Id,
+      comment: form.data.comment,
+      operation: complete
+        ? {
+            type: BullMQ.UserTasks.OpType.Delete
+          }
+        : {
+            type: BullMQ.UserTasks.OpType.Update,
+            targetRole:
+              form.data.flowAction === ChangeRequestAction.Transfer_to_Admin
+                ? RoleId.OrgAdmin
+                : RoleId.AppBuilder
+          }
+    });
+
+    return {
+      form,
+      ok: true,
+      hasTarget: false,
+      hasTransitions: false
+    };
   }
 } satisfies Actions;
 
 // allowed if the user has a UserTask for the Product
-async function verifyCanViewTask(security: Security, productId: string): Promise<boolean> {
+async function verifyCanViewTask(
+  security: Security,
+  productId: string,
+  taskId?: number
+): Promise<boolean> {
   if (!security.userId) return false;
 
   return !!(await DatabaseReads.userTasks.findFirst({
     where: {
       ProductId: productId,
-      UserId: security.userId
+      UserId: security.userId,
+      Type: taskId ? TaskType.DeletionRequest : TaskType.Workflow,
+      Id: taskId
     },
     select: {
       Id: true

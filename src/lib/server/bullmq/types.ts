@@ -166,6 +166,9 @@ export namespace System {
   export interface CheckPendingUpdates extends BaseJob {
     type: JobType.System_CheckPendingUpdates;
   }
+  export interface CleanupExpiredData extends BaseJob {
+    type: JobType.System_Cleanup;
+  }
 }
 
 export namespace UserTasks {
@@ -328,7 +331,8 @@ export type RecurringJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags
   | JobType.System_Migrate
-  | JobType.System_CheckPendingUpdates];
+  | JobType.System_CheckPendingUpdates
+  | JobType.System_Cleanup];
 export type StartupJob = JobTypeMap[
   | JobType.System_CheckEngineStatuses
   | JobType.System_RefreshLangTags
@@ -383,6 +387,7 @@ export type JobTypeMap = {
   [JobType.System_RefreshLangTags]: System.RefreshLangTags;
   [JobType.System_Migrate]: System.Migrate;
   [JobType.System_CheckPendingUpdates]: System.CheckPendingUpdates;
+  [JobType.System_Cleanup]: System.CleanupExpiredData;
   [JobType.UserTasks_Workflow]: UserTasks.Workflow;
   [JobType.UserTasks_DeleteRequest]: UserTasks.DeleteRequest;
   [JobType.Email_InviteUser]: Email.InviteUser;

@@ -8,7 +8,7 @@ import type {
 } from 'xstate';
 import { createActor } from 'xstate';
 import type { RoleId } from '../../prisma';
-import { ProductTransitionType, WorkflowType } from '../../prisma';
+import { ProductTransitionType, TaskType, WorkflowType } from '../../prisma';
 import {
   ActionType,
   ENVKeys,
@@ -365,7 +365,8 @@ export class Workflow {
       // Yes, the ModifyUserTasks will also delete tasks. I just have this here so the tasks are cleared immediately, and so that the tasks are also cleared when the instance is deleted.
       await DatabaseWrites.userTasks.deleteMany({
         where: {
-          ProductId: this.productId
+          ProductId: this.productId,
+          Type: TaskType.Workflow
         }
       });
       if (!isTerminal(xSnap.value)) {

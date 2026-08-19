@@ -1,3 +1,10 @@
+<script lang="ts">
+  import type { TaskInstructionProps } from './types';
+
+  // eslint-disable-next-line no-empty-pattern
+  let {}: TaskInstructionProps = $props();
+</script>
+
 <h3>Instructions</h3>
 <p>
   For apps being added to Scriptoria that are already published to Google Play, most of these steps

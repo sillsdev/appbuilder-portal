@@ -10,6 +10,14 @@ export function sanitizeInput(unsafe: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+export function stripHTML(unsafe: string): string {
+  return unsafe
+    .replace(/<\/?[^>]*>/g, ' ')
+    .replace(/ +/g, ' ')
+    .trim();
+}
+
 export function bytesToHumanSize(bytes: bigint | null) {
   if (bytes === null) {
     return '--';

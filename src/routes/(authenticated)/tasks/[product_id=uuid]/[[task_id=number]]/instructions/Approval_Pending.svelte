@@ -1,3 +1,10 @@
+<script lang="ts">
+  import type { TaskInstructionProps } from './types';
+
+  // eslint-disable-next-line no-empty-pattern
+  let {}: TaskInstructionProps = $props();
+</script>
+
 <h3>Instructions</h3>
 <p>
   Communicate with the end user if you have questions about whether this project should be

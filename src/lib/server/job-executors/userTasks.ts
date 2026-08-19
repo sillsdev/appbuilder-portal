@@ -261,26 +261,38 @@ export async function deleteRequest(job: Job<BullMQ.UserTasks.DeleteRequest>): P
       deletedCount = res.count;
       job.updateProgress(job.data.operation.type === BullMQ.UserTasks.OpType.Delete ? 90 : 40);
     }
+    const roles =
+      job.data.operation.roles ??
+      (job.data.operation.targetRole && [job.data.operation.targetRole]);
     for (let i = 0; i < products.length; i++) {
       const product = products[i];
 
+      const changes = await DatabaseReads.productUserChanges.findMany({
+        where: {
+          ProductId: product.Id,
+          AssignedRole: roles && { in: roles },
+          Change: { not: null },
+          Id: job.data.requestId
+        }
+      });
+
       // Create tasks for all users that could perform this activity
-      if (
-        job.data.operation.type !== BullMQ.UserTasks.OpType.Delete &&
-        (await DatabaseReads.productUserChanges.findFirst({ where: { ProductId: product.Id } }))
-      ) {
-        const toCreate = await createTasks(
-          new Set(
-            job.data.operation.roles ??
-              (job.data.operation.targetRole && [job.data.operation.targetRole])
-          ),
-          allUsers,
-          job.data.operation.users,
-          product.Id,
-          'Delete User Data',
-          job.data.comment,
-          TaskType.DeletionRequest
-        );
+      if (job.data.operation.type !== BullMQ.UserTasks.OpType.Delete && changes.length) {
+        const toCreate = (
+          await Promise.all(
+            changes.map((change) =>
+              createTasks(
+                new Set(roles),
+                allUsers,
+                job.data.operation.users,
+                product.Id,
+                change.Change!,
+                job.data.comment,
+                TaskType.DeletionRequest
+              )
+            )
+          )
+        ).flat();
         const res = await DatabaseWrites.userTasks.createManyAndReturn({
           data: toCreate
         });
