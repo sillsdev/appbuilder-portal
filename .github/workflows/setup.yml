@@ -128,9 +128,6 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json', 'src/lib/prisma/schema.prisma') }}
 
-      # TODO: Playwright install/tests are temporarily disabled because installing
-      # Playwright in CI takes too long and times out build-and-test. Re-enable
-      # once CI switches to the Playwright docker image instead of installing it.
       - name: Build and seed database
         run: |
           timeout 10m bash <<'EOF'
@@ -196,11 +193,11 @@ jobs:
             exit 1
           }
           npx svelte-kit sync
-          # TODO: Playwright (test:integration) is temporarily disabled, see setup.yml build step.
-          echo "Running unit tests..."
-          npm run test:unit || {
+          echo "Running tests..."
+          npm run test || {
             echo "Tests failed"
             ./run ci logs portal
+            ./run ci logs playwright
             exit 1
           }
         env:
@@ -211,6 +208,7 @@ jobs:
           MAIL_SENDER: 'AmazonSES'
           ADMIN_NAME: 'Scriptoria Staging'
           ADMIN_EMAIL: 'noreply@scriptoria.io'
+          PW_TEST_CONNECT_WS_ENDPOINT: ws://127.0.0.1:3000
       - name: Upload test results
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v6

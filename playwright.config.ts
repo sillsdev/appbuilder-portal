@@ -24,7 +24,7 @@ const config: PlaywrightTestConfig = {
     }
   },
   use: {
-    baseURL: 'http://localhost:6173',
+    baseURL: `http://${process.env.CI ? 'portal' : 'localhost'}:6173`,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure'
   },
