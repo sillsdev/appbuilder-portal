@@ -63,14 +63,8 @@
     bind:open
   >
     {#snippet label()}
-      {@const { display, fallback } = displayNames.get(current) ?? {}}
       <div class="flex flex-row py-1 w-full items-center h-full gap-1">
-        <span class="grow text-start">
-          {display}
-          {#if display !== fallback}
-            &ndash; {current}
-          {/if}
-        </span>
+        <IconContainer icon={getFlagIcon(current, GooglePlayFlags)} width={24} />
         <span class="h-full flex flex-row items-center">
           <IconContainer icon={Icons.Dropdown} width={20} />
         </span>
@@ -89,14 +83,15 @@
               ]}
               onclick={() => onclick(locale)}
             >
-              <div class="flex flex-row py-1 w-full items-start h-full gap-1">
-                <IconContainer icon={getFlagIcon(locale, GooglePlayFlags)} width={24} />
+              <div class="flex flex-row py-1 w-full items-center h-full gap-1 leading-4">
+                <IconContainer
+                  icon={getFlagIcon(locale, GooglePlayFlags)}
+                  width={24}
+                  class="me-1"
+                />
                 <span class="flex flex-col text-start grow">
                   <span>
                     {display}
-                    {#if display !== fallback}
-                      &ndash; {locale}
-                    {/if}
                   </span>
                   {#if native !== display && native !== fallback}
                     <i class="opacity-80">{native}</i>
