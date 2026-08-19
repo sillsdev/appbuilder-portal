@@ -1,9 +1,9 @@
 <script lang="ts">
-  /* eslint-disable svelte/no-at-html-tags */
   import type { PageData } from './$types';
   import { m } from '$lib/google-play/paraglide/messages';
   import type { Locale } from '$lib/google-play/paraglide/runtime';
   import { localizeHref } from '$lib/google-play/paraglide/runtime';
+  import { stripHTML } from '$lib/utils';
 
   interface Props {
     data: PageData;
@@ -33,7 +33,9 @@
       <div class="card bg-base-100 shadow-sm border border-base-300 rounded-lg">
         <div class="card-body space-y-3">
           <h2 class="card-title text-lg font-bold ps-0">{m.about_app()}</h2>
-          <p class="text-sm leading-relaxed text-base-content/80">{data.app.shortDesc}</p>
+          <p class="text-sm leading-relaxed text-base-content/80">
+            {stripHTML(data.app.shortDesc)}
+          </p>
 
           <details class="group">
             <summary
@@ -42,7 +44,7 @@
               <span class="p-1 rounded-sm">{m.show_more()}</span>
             </summary>
             <div class="pt-3 text-sm whitespace-pre-line leading-relaxed text-base-content/80">
-              {@html data.app.longDesc}
+              {stripHTML(data.app.longDesc)}
             </div>
           </details>
         </div>
