@@ -95,9 +95,6 @@
           <h1 class="text-2xl font-bold tracking-tight leading-none break-words">
             {m.manage_data_title()}
           </h1>
-          <p class="mt-1 text-xs leading-tight text-base-content/75 break-words">
-            {m.manage_data_description()}
-          </p>
         </div>
         <div class="max-w-full shrink-0 rounded-xl bg-neutral shadow-sm">
           <LocaleSelector
@@ -200,9 +197,6 @@
                     </div>
                   </label>
                 {/each}
-                <p class="mt-0.5 text-xs leading-tight text-base-content/75">
-                  {m.deletion_warning()}
-                </p>
               </div>
             </div>
 
