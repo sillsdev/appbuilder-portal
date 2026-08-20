@@ -6,7 +6,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { env } from '$env/dynamic/private';
-import { deletionTypes, localizedEmailSchema, type DeletionType } from '$lib/google-play';
+import { type DeletionType, deletionTypes, localizedEmailSchema } from '$lib/google-play';
 import { m } from '$lib/google-play/paraglide/messages';
 import type { Locale } from '$lib/google-play/paraglide/runtime';
 import { saveDeleteRequestVerificationCode } from '$lib/google-play/server';
