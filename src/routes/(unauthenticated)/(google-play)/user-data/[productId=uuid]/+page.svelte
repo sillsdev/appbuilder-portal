@@ -3,6 +3,7 @@
   import { superForm } from 'sveltekit-superforms';
   import type { ActionData, PageData } from './$types';
   import { goto } from '$app/navigation';
+  import { page } from '$app/state';
   import { env } from '$env/dynamic/public';
   import { confirmationStorageKey, deletionTypes } from '$lib/google-play';
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
@@ -123,7 +124,9 @@
     <div class="px-5">
       <a
         class="btn btn-ghost btn-sm mb-4 w-full border border-base-300"
-        href={localizeHref(`/user-data/${data.app.id}/about`, { locale: currentLocale })}
+        href={localizeHref(`/user-data/${data.app.id}/about${page.url.search}`, {
+          locale: currentLocale
+        })}
       >
         {m.about_app()}
       </a>

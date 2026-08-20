@@ -6,7 +6,7 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { env } from '$env/dynamic/private';
-import { localizedEmailSchema } from '$lib/google-play';
+import { type DeletionType, deletionTypes, localizedEmailSchema } from '$lib/google-play';
 import { m } from '$lib/google-play/paraglide/messages';
 import type { Locale } from '$lib/google-play/paraglide/runtime';
 import { saveDeleteRequestVerificationCode } from '$lib/google-play/server';
@@ -24,12 +24,17 @@ const localizedSchema = (locale: Locale) =>
     deletionType: v.picklist(['data', 'account'])
   });
 
-export const load: PageServerLoad = async ({ locals, parent }) => {
+export const load: PageServerLoad = async ({ locals, parent, url }) => {
   locals.security.requireNothing();
+
+  const requestedType = url.searchParams.get('type');
+  const deletionType: DeletionType = deletionTypes.includes(requestedType as DeletionType)
+    ? (requestedType as DeletionType)
+    : 'data';
 
   return {
     form: await superValidate(
-      { email: '', turnstileToken: '', deletionType: 'data' as const },
+      { email: '', turnstileToken: '', deletionType },
       valibot(localizedSchema(locals.locale as Locale))
     )
   };
