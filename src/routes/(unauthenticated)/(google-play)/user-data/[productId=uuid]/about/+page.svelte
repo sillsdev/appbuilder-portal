@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
+  import { page } from '$app/state';
   import { m } from '$lib/google-play/paraglide/messages';
   import type { Locale } from '$lib/google-play/paraglide/runtime';
   import { localizeHref } from '$lib/google-play/paraglide/runtime';
@@ -52,7 +53,9 @@
 
       <a
         class="btn btn-primary w-full mt-6"
-        href={localizeHref(`/user-data/${data.app.id}`, { locale: data.app.language as Locale })}
+        href={localizeHref(`/user-data/${data.app.id}${page.url.search}`, {
+          locale: data.app.language as Locale
+        })}
       >
         {m.back_to_manage_data()}
       </a>
