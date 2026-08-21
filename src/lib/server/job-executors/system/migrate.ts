@@ -142,6 +142,7 @@ async function backfillPublicationLogUrl(): Promise<MigrationOutput> {
     OR: [
       { LogUrl: null },
       { LogUrl: '' },
+      { LogUrl: { startsWith: 'https://console.aws.com' } },
       { PublishLink: null },
       { PublishLink: '' },
       {
