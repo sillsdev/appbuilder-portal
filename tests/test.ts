@@ -1,6 +1,9 @@
 import { type Page, expect, test } from '@playwright/test';
 
 test('auth shared to tests', async ({ page }) => {
+  page.on('console', (msg) => {
+    console.log(msg.text());
+  });
   await page.goto('/'); // should redirect to /tasks
   // Wait for the page to load
   await expect(page.getByRole('heading', { name: 'My Tasks' })).toBeVisible();
@@ -13,6 +16,10 @@ test.describe('Create a Test Project', () => {
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
     projectName = `CI Test Project ${new Date().toLocaleString('en-US')}`;
+
+    page.on('console', (msg) => {
+      console.log(msg.text());
+    });
   });
 
   test.afterAll(async () => {

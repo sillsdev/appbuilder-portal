@@ -10,6 +10,9 @@ setup('index page has expected h1', async ({ page }) => {
 });
 setup.describe('login setup', () => {
   setup('can login (full flow)', async ({ page }) => {
+    page.on('console', (msg) => {
+      console.log(msg.text());
+    });
     const { CI_EMAIL, CI_PASSWORD } = process.env;
     setup.skip(!CI_EMAIL || !CI_PASSWORD, 'CI credentials not set. Simulating logged in user.');
     await page.goto('/');
@@ -39,6 +42,9 @@ setup.describe('login setup', () => {
     await page.context().storageState({ path: authFile });
   });
   setup('setup login state', async ({ page }) => {
+    page.on('console', (msg) => {
+      console.log(msg.text());
+    });
     const { CI_EMAIL, CI_PASSWORD } = process.env;
     setup.skip(!!CI_EMAIL && !!CI_PASSWORD, 'CI credentials set. Skipping simulated login.');
     const token = await encode({
