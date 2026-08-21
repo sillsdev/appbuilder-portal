@@ -220,15 +220,23 @@ async function backfillPublicationLogUrl(): Promise<MigrationOutput> {
   return { before, chunk, after };
 }
 
+const vnum = /\d+\.\d+(\.\d+)?/;
+
+/** Preferred */
+const fromScriptVersion = new RegExp(`APPBUILDER_SCRIPT_VERSION=(${vnum.source})`);
+/** Alternates */
+const fromVersion_Parens = new RegExp(`Version (${vnum.source})`);
+const fromStarHeader = new RegExp(`\\*\\*\\* (${vnum.source}) \\*\\*\\*`);
+const manageVersionName = new RegExp('BUILD_MANAGE_VERSION_NAME=1');
+const fromVersionName = new RegExp(`VERSION_NAME=(${vnum.source})`);
+
 async function backfillAppBuilderVersion(): Promise<MigrationOutput> {
   const chunkSize = 20;
-  const vnum = /\d+\.\d+(\.\d+)?/;
-  const matchers = [
-    /** Preferred */
-    new RegExp(`APPBUILDER_SCRIPT_VERSION=(${vnum.source})`),
-    /** Alternates */
-    new RegExp(`Version (${vnum.source})`),
-    new RegExp(`\\*\\*\\* (${vnum.source}) \\*\\*\\*`)
+  const matchers: ((text: string) => string | undefined)[] = [
+    (text) => text.match(fromScriptVersion)?.at(1),
+    (text) => text.match(fromVersion_Parens)?.at(1),
+    (text) => text.match(fromStarHeader)?.at(1),
+    (text) => (text.match(manageVersionName) ? text.match(fromVersionName)?.at(1) : undefined)
   ];
   const where = {
     Success: true,
@@ -309,7 +317,7 @@ async function backfillAppBuilderVersion(): Promise<MigrationOutput> {
           const log = await fetch(logUrl).then((r) => r.text());
 
           for (const matcher of matchers) {
-            const match = log.match(matcher)?.at(1);
+            const match = matcher(log);
             if (match) {
               appVersion = match;
               break;
