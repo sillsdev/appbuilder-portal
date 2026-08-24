@@ -62,7 +62,7 @@ setup.describe('login setup', () => {
       {
         name: 'authjs.session-token',
         value: token!,
-        domain: 'localhost',
+        domain: process.env.CI ? 'portal' : 'localhost',
         path: '/'
       }
     ]);
