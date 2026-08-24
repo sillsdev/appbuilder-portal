@@ -12,6 +12,16 @@ export const activeSystems = {
   ]
 } as const satisfies Prisma.SystemStatusesWhereInput;
 
+export async function getDefaultBuildEngine() {
+  return DatabaseReads.systemStatuses.findFirstOrThrow({
+    where: { OrganizationId: null },
+    select: {
+      BuildEngineUrl: true,
+      SystemVersions: { select: { ApplicationTypeId: true, Version: true } }
+    }
+  });
+}
+
 export async function mapSystems(
   organizations: Prisma.OrganizationsGetPayload<{
     select: {
@@ -23,12 +33,7 @@ export async function mapSystems(
     };
   }>[]
 ) {
-  const defaultSystem = await DatabaseReads.systemStatuses.findFirstOrThrow({
-    where: { OrganizationId: null },
-    select: {
-      SystemVersions: { select: { ApplicationTypeId: true, Version: true } }
-    }
-  });
+  const defaultSystem = await getDefaultBuildEngine();
 
   return new Map<number, Map<number, string>>(
     organizations.map((o) => [

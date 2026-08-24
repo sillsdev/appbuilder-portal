@@ -1,6 +1,7 @@
 <script lang="ts">
   /* eslint-disable svelte/no-at-html-tags */
   import type { Prisma } from '@prisma/client';
+  import { page } from '$app/state';
   import Tooltip from '$lib/components/Tooltip.svelte';
   import { Icons, getFileIcon } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
@@ -8,6 +9,7 @@
   import { getLocale } from '$lib/paraglide/runtime';
   import ReleaseInfo, { type Release } from '$lib/products/components/ReleaseInfo.svelte';
   import { bytesToHumanSize } from '$lib/utils';
+  import { isSuperAdmin } from '$lib/utils/roles';
   import { byString } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
   import { WorkflowState, formatBuildEngineLink, linkToBuildEngine } from '$lib/workflowTypes';
@@ -62,7 +64,14 @@
   }
 </script>
 
-<div class="rounded-md border border-slate-400 w-full my-2">
+<div
+  class={[
+    'rounded-md border border-slate-400 w-full my-2',
+    isSuperAdmin(page.data.session?.user.roles ?? []) &&
+      page.url.searchParams.get('buildId') === String(build.BuildEngineBuildId) &&
+      'border-2 border-accent!'
+  ]}
+>
   <div class="bg-neutral p-2 flex flex-row flex-wrap rounded-t-md place-content-between">
     <span class="font-bold text-lg text-accent">
       {@html formatBuildEngineLink(
@@ -128,7 +137,19 @@
       </table>
     {/if}
   </div>
-  <div class="p-2"><ReleaseInfo {release} {buildEngineUrl} /></div>
+  <div class="p-2">
+    <ReleaseInfo
+      {release}
+      {buildEngineUrl}
+      class={{
+        default: [
+          isSuperAdmin(page.data.session?.user.roles ?? []) &&
+            page.url.searchParams.get('releaseId') === String(release?.BuildEngineReleaseId) &&
+            'rounded-md border-2 border-accent'
+        ]
+      }}
+    />
+  </div>
 </div>
 
 <style>

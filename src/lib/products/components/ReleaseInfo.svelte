@@ -33,114 +33,116 @@
 </script>
 
 {#if release}
-  <table class={['table table-auto bg-base-100 sm:hidden', classes?.default]}>
-    <tbody>
-      <tr>
-        <th class={[classes?.header]}>{m.publications_channel()}</th>
-        <td>{release.Channel}</td>
-      </tr>
-      <tr>
-        <th class={[classes?.header]}>{m.publications_status()}</th>
-        <td>
-          {@html formatBuildEngineLink(
-            linkToBuildEngine(
-              buildEngineUrl,
-              {
-                BuildEngineJobId: 0,
-                CurrentBuildId: null,
-                CurrentReleaseId: release.BuildEngineReleaseId
-              },
-              WorkflowState.Product_Publish
-            ),
-            release.Success ? m.publications_succeeded() : m.publications_failed()
-          )}
-        </td>
-      </tr>
-      {#if release.DateResolved}
+  <div class={['bg-base-100', classes?.default]}>
+    <table class="table table-auto sm:hidden">
+      <tbody>
         <tr>
-          <th class={[classes?.header]}>{m.publications_resolved()}</th>
-          <td>{getTimeDateString(release.DateResolved)}</td>
+          <th class={[classes?.header]}>{m.publications_channel()}</th>
+          <td>{release.Channel}</td>
         </tr>
-      {/if}
-      <tr>
-        <th class={[classes?.header]}>{m.publications_date()}</th>
-        <td>{getTimeDateString(release.DateCreated)}</td>
-      </tr>
-      <tr>
-        <th class={[classes?.header]}>
-          {#if release.PublishLink}
-            <a href={release.PublishLink} class="link" target="_blank">{m.publications_url()}</a>
-          {:else}
-            {m.publications_url()}
-          {/if}
-        </th>
-        <td>
-          {#if release.LogUrl}
-            <a class="link" href={release.LogUrl} target="_blank">
-              {m.publications_console()}
-            </a>
-          {:else}
-            <span class="link link-error">
-              {m.publications_console()}
-            </span>
-          {/if}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <table class={['hidden sm:table table-auto bg-base-100', classes]}>
-    <thead class={[classes?.header]}>
-      <tr>
-        <th>{m.publications_channel()}</th>
-        <th>{m.publications_status()}</th>
+        <tr>
+          <th class={[classes?.header]}>{m.publications_status()}</th>
+          <td>
+            {@html formatBuildEngineLink(
+              linkToBuildEngine(
+                buildEngineUrl,
+                {
+                  BuildEngineJobId: 0,
+                  CurrentBuildId: null,
+                  CurrentReleaseId: release.BuildEngineReleaseId
+                },
+                WorkflowState.Product_Publish
+              ),
+              release.Success ? m.publications_succeeded() : m.publications_failed()
+            )}
+          </td>
+        </tr>
         {#if release.DateResolved}
-          <th>{m.publications_resolved()}</th>
+          <tr>
+            <th class={[classes?.header]}>{m.publications_resolved()}</th>
+            <td>{getTimeDateString(release.DateResolved)}</td>
+          </tr>
         {/if}
-        <th>{m.publications_date()}</th>
-        <th>
-          {#if release.PublishLink}
-            <a href={release.PublishLink} class="link" target="_blank">{m.publications_url()}</a>
-          {:else}
-            {m.publications_url()}
+        <tr>
+          <th class={[classes?.header]}>{m.publications_date()}</th>
+          <td>{getTimeDateString(release.DateCreated)}</td>
+        </tr>
+        <tr>
+          <th class={[classes?.header]}>
+            {#if release.PublishLink}
+              <a href={release.PublishLink} class="link" target="_blank">{m.publications_url()}</a>
+            {:else}
+              {m.publications_url()}
+            {/if}
+          </th>
+          <td>
+            {#if release.LogUrl}
+              <a class="link" href={release.LogUrl} target="_blank">
+                {m.publications_console()}
+              </a>
+            {:else}
+              <span class="link link-error">
+                {m.publications_console()}
+              </span>
+            {/if}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="hidden sm:table table-auto">
+      <thead class={[classes?.header]}>
+        <tr>
+          <th>{m.publications_channel()}</th>
+          <th>{m.publications_status()}</th>
+          {#if release.DateResolved}
+            <th>{m.publications_resolved()}</th>
           {/if}
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>{release.Channel}</td>
-        <td>
-          {@html formatBuildEngineLink(
-            linkToBuildEngine(
-              buildEngineUrl,
-              {
-                BuildEngineJobId: 0,
-                CurrentBuildId: null,
-                CurrentReleaseId: release.BuildEngineReleaseId
-              },
-              WorkflowState.Product_Publish
-            ),
-            release.Success ? m.publications_succeeded() : m.publications_failed()
-          )}
-        </td>
-        {#if release.DateResolved}
-          <td>{getTimeDateString(release.DateResolved)}</td>
-        {/if}
-        <td>{getTimeDateString(release.DateCreated)}</td>
-        <td>
-          {#if release.LogUrl}
-            <a class="link" href={release.LogUrl} target="_blank">
-              {m.publications_console()}
-            </a>
-          {:else}
-            <span class="link link-error">
-              {m.publications_console()}
-            </span>
+          <th>{m.publications_date()}</th>
+          <th>
+            {#if release.PublishLink}
+              <a href={release.PublishLink} class="link" target="_blank">{m.publications_url()}</a>
+            {:else}
+              {m.publications_url()}
+            {/if}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{release.Channel}</td>
+          <td>
+            {@html formatBuildEngineLink(
+              linkToBuildEngine(
+                buildEngineUrl,
+                {
+                  BuildEngineJobId: 0,
+                  CurrentBuildId: null,
+                  CurrentReleaseId: release.BuildEngineReleaseId
+                },
+                WorkflowState.Product_Publish
+              ),
+              release.Success ? m.publications_succeeded() : m.publications_failed()
+            )}
+          </td>
+          {#if release.DateResolved}
+            <td>{getTimeDateString(release.DateResolved)}</td>
           {/if}
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          <td>{getTimeDateString(release.DateCreated)}</td>
+          <td>
+            {#if release.LogUrl}
+              <a class="link" href={release.LogUrl} target="_blank">
+                {m.publications_console()}
+              </a>
+            {:else}
+              <span class="link link-error">
+                {m.publications_console()}
+              </span>
+            {/if}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 {/if}
 
 <style>
