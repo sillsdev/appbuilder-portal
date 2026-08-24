@@ -78,4 +78,4 @@ services:
     # This tagged version should be the same as in package-lock.json
     image: mcr.microsoft.com/playwright:v1.62.1-noble
     env_file: .env
-    command: npx -y playwright@1.62.1 run-server --port 3000 --host 0.0.0.0
+    command: npx -y playwright@1.62.1 run-server --port 3000 --host 127.0.0.1
