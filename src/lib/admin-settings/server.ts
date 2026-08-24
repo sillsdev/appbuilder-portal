@@ -3,6 +3,7 @@ import {
   AdminSettings,
   AdminSettingsKeys,
   defaultSoftwareUpdatesRateLimit,
+  projectsParametersSchema,
   softwareUpdatesParametersSchema
 } from '$lib/admin-settings';
 import { DatabaseReads } from '$lib/server/database';
@@ -32,9 +33,28 @@ export async function getSoftwareUpdatesRateLimit() {
     : defaultSoftwareUpdatesRateLimit;
 }
 
-export async function getOrgAllowlist() {
+export async function getSoftwareUpdatesWhitelist() {
   const record = await getSoftwareUpdatesSettings();
   return record.success
     ? record.output[AdminSettingsKeys[AdminSettings.SoftwareUpdates].AllowOrgs]
     : [];
+}
+
+async function getProjectsSettings() {
+  return v.safeParse(
+    v.pipe(v.nullish(v.string(), ''), v.parseJson(), projectsParametersSchema),
+    (
+      await DatabaseReads.adminSettings.findUnique({
+        where: { Key: AdminSettings.Projects },
+        select: {
+          Value: true
+        }
+      })
+    )?.Value
+  );
+}
+
+export async function getProjectRepoURLWhitelist() {
+  const record = await getProjectsSettings();
+  return record.success ? record.output[AdminSettingsKeys[AdminSettings.Projects].ShowRepoURL] : [];
 }

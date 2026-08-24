@@ -2,7 +2,8 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { invalidate } from '$app/navigation';
-  import { AdminSettings, AdminSettingsKeys } from '$lib/admin-settings';
+  import type { AdminSetting } from '$lib/admin-settings';
+  import { AdminSettingsKeys } from '$lib/admin-settings';
   import JSONEditor from '$lib/components/settings/JSONEditor.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
@@ -38,7 +39,7 @@
 <form class="m-4" method="post" action="" use:enhance>
   {#each data.settings.toSorted((a, b) => byString(a.Key, b.Key, getLocale())) as setting, i}
     {@const user = setting.ModifiedBy}
-    {@const validKeys = Object.values(AdminSettingsKeys[AdminSettings.SoftwareUpdates] ?? {}).join(
+    {@const validKeys = Object.values(AdminSettingsKeys[setting.Key as AdminSetting] ?? {}).join(
       ', '
     )}
     <LabeledFormInput

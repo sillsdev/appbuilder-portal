@@ -167,27 +167,33 @@
             <br />
             <p>{projectData.project.Description}</p>
           </div>
-          <div>
-            <span>{m.project_location()}:</span>
-            <br />
-            <div class="flex rounded-md text-nowrap bg-base-200 p-3 pt-2 mt-2">
-              <IconContainer icon={Icons.URL} width={20} class="opacity-80 mr-1" />
-              <p>
-                {projectData.project.RepositoryUrl?.substring(0, 5) ?? ''}
-              </p>
-              {#if !projectData.project.RepositoryUrl}
-                <p class="italic">{m.project_location_placeholder()}</p>
-              {:else}
-                <p class="shrink overflow-hidden text-ellipsis">
-                  {projectData.project.RepositoryUrl.split('/').slice(2, -1).join('/')}
+          {#if data.showRepoURL}
+            <div>
+              <span>{m.project_location()}:</span>
+              <br />
+              <div class="flex rounded-md text-nowrap bg-base-200 p-3 pt-2 mt-2">
+                <IconContainer icon={Icons.URL} width={20} class="opacity-80 mr-1" />
+                <p>
+                  {projectData.project.RepositoryUrl?.substring(0, 5) ?? ''}
                 </p>
-                <p class="grow pr-2">
-                  /{projectData.project.RepositoryUrl.split('/').pop()}
-                </p>
-                <CopyField value={projectData.project.RepositoryUrl!} />
-              {/if}
+                {#if !projectData.project.RepositoryUrl}
+                  <p class="italic">{m.project_location_placeholder()}</p>
+                {:else}
+                  <p class="shrink overflow-hidden text-ellipsis">
+                    {projectData.project.RepositoryUrl.split('/').slice(2, -1).join('/')}
+                  </p>
+                  <p class="grow pr-2">
+                    /{projectData.project.RepositoryUrl.split('/').pop()}
+                  </p>
+                  <CopyField value={projectData.project.RepositoryUrl!} />
+                {/if}
+              </div>
             </div>
-          </div>
+          {:else if !projectData.project.RepositoryUrl}
+            <div class="flex rounded-md text-nowrap bg-base-200 p-3 pt-2 mt-2">
+              <p class="italic">{m.project_location_placeholder()}</p>
+            </div>
+          {/if}
         </div>
         <!-- Product List Header -->
         <div class="flex flex-row place-content-between items-end">
