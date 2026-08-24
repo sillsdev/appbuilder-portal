@@ -71,6 +71,7 @@
       page.url.searchParams.get('buildId') === String(build.BuildEngineBuildId) &&
       'border-2 border-accent!'
   ]}
+  id="build-{build.BuildEngineBuildId}"
 >
   <div class="bg-neutral p-2 flex flex-row flex-wrap rounded-t-md place-content-between">
     <span class="font-bold text-lg text-accent">

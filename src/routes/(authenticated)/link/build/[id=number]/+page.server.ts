@@ -2,6 +2,7 @@ import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getDefaultBuildEngine } from '$lib/organizations/server';
 import { localizeHref } from '$lib/paraglide/runtime';
+import { getLinkSuffix } from '$lib/products';
 import { DatabaseReads } from '$lib/server/database';
 
 export const load = (async ({ params, locals, url }) => {
@@ -57,7 +58,9 @@ export const load = (async ({ params, locals, url }) => {
   } else if (builds.length === 1) {
     return redirect(
       303,
-      localizeHref(`/products/${builds[0].ProductId}/files?buildId=${buildEngineBuildId}`)
+      localizeHref(
+        `/products/${builds[0].ProductId}/files${getLinkSuffix('build', buildEngineBuildId)}`
+      )
     );
   }
   return { builds, defaultBuildEngine: await getDefaultBuildEngine() };

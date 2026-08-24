@@ -120,3 +120,7 @@ export function getComputeType(properties: string | null) {
   }
   return null;
 }
+
+export function getLinkSuffix(scope: 'build' | 'release', id: number) {
+  return `?${scope}Id=${id}#${scope}-${id}`;
+}
