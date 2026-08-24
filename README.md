@@ -107,7 +107,7 @@ The `stg-tunnel` container can establish a tunnel to the build engine in your lo
 # Testing and linting
 
 ```bash
-CI_EMAIL= CI_PASSWORD= npm run test
+CI_EMAIL= CI_PASSWORD= PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:3000 npm run test
 npm run lint
 ```
 
