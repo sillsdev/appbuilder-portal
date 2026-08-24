@@ -5,6 +5,7 @@ import * as v from 'valibot';
 import { BuildEngine } from '../../build-engine-api';
 import { BullMQ, getQueues } from '../../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../../database';
+import { checkBuildRetryCondition } from '../common.build-publish';
 import { JobSchedulerId } from '$lib/bullmq';
 import { fetchPublicationDetails } from '$lib/products/server';
 import { getRelease } from '$lib/server/build-engine-api/requests';
@@ -332,9 +333,79 @@ async function backfillAppBuilderVersion(): Promise<MigrationOutput> {
   return { before, chunk, after };
 }
 
+async function renameRetryComments() {
+  const filter: Prisma.ProductTransitionsWhereInput = {
+    Comment: 'Build may have failed due to insufficient memory. Retrying with medium compute type.'
+  };
+  const chunkSize = 20;
+
+  const before = await DatabaseReads.productTransitions.count({
+    where: filter
+  });
+  const chunk = await DatabaseReads.productTransitions.findMany({
+    where: filter,
+    select: {
+      Id: true,
+      ProductBuilds: {
+        where: {
+          Success: false,
+          ProductArtifacts: {
+            some: {
+              ArtifactType: 'consoleText'
+            }
+          }
+        },
+        select: {
+          ProductArtifacts: {
+            where: {
+              ArtifactType: 'consoleText'
+            },
+            select: {
+              Url: true
+            }
+          }
+        },
+        orderBy: {
+          DateCreated: 'desc'
+        }
+      }
+    },
+    take: chunkSize,
+    skip: Math.max(0, randomInt(before || 1) - chunkSize)
+  });
+
+  const fixed = await Promise.all(
+    chunk.map(async (p) => {
+      try {
+        const urls = p.ProductBuilds.map((b) => b.ProductArtifacts?.at(0)?.Url ?? '');
+        let matchingUrl = '';
+        for (const url of urls) {
+          if (url && (await checkBuildRetryCondition(url))) matchingUrl = url;
+        }
+        await DatabaseWrites.productTransitions.update({
+          where: { Id: p.Id },
+          data: {
+            Comment: `system.build-retry,${matchingUrl}`
+          }
+        });
+        return { ...p, ConsoleText: matchingUrl };
+      } catch (e) {
+        return { ...p, Error: e };
+      }
+    })
+  );
+
+  const after = await DatabaseReads.productTransitions.count({
+    where: filter
+  });
+
+  return { before, chunk, fixed, after };
+}
+
 const migrationSteps = {
   'Patch ProductPublications.LogUrl': backfillPublicationLogUrl,
-  'Backfill Remaining ProductBuilds.AppBuilderVersion': backfillAppBuilderVersion
+  'Backfill Remaining ProductBuilds.AppBuilderVersion': backfillAppBuilderVersion,
+  'Rename Retry Comments': renameRetryComments
 } as const satisfies Record<string, () => Promise<MigrationOutput>>;
 
 export type MigrationStep = keyof typeof migrationSteps;

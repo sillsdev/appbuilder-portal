@@ -108,7 +108,8 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
           type: BullMQ.JobType.System_Migrate,
           steps: [
             'Patch ProductPublications.LogUrl',
-            'Backfill Remaining ProductBuilds.AppBuilderVersion'
+            'Backfill Remaining ProductBuilds.AppBuilderVersion',
+            'Rename Retry Comments'
           ]
         }
       }
