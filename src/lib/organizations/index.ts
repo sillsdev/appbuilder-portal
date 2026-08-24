@@ -12,7 +12,8 @@ export const infoSchema = v.object({
       ),
       v.pipe(v.string(), v.email())
     ])
-  )
+  ),
+  visibleToPublic: v.boolean()
 });
 
 export const infrastructureSchema = v.object({

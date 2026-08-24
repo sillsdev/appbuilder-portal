@@ -213,6 +213,8 @@
   "org_accessToken": "Token de acceso del motor de construcción",
   "org_emptyBuildEngineURL": "Se debe proporcionar una URL cuando no se utiliza el motor de compilación predeterminado",
   "org_emptyAccessToken": "Se debe proporcionar un token de API cuando no se utiliza el motor de compilación predeterminado",
+  "org_visible": "Visible para el público",
+  "org_visibleWarning": "Advertencia: si su organización es visible para el público, todos los visitantes de Scriptoria —incluidas las personas que no son usuarias— podrán ver su nombre, datos de contacto y logotipo.",
   "products_definition": "Archivos útiles que resultan de una serie de pasos.",
   "products_storeSelect": "Seleccione una tienda para {name}",
   "products_noStoresAvailable": "No hay tiendas disponibles para el producto seleccionado. Por favor, contacte con el administrador de su organización.",

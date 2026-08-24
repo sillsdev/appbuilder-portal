@@ -70,6 +70,7 @@ model Organizations {
   UseDefaultBuildEngine         Boolean                         @default(true)
   PublicByDefault               Boolean                         @default(true)
   ContactEmail                  String?
+  VisibleToPublic               Boolean                         @default(false)
   Groups                        Groups[]
   OrganizationMembershipInvites OrganizationMembershipInvites[]
   Users                         Users[]

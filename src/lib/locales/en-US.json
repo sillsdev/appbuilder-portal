@@ -213,6 +213,8 @@
   "org_accessToken": "Build Engine API Access Token",
   "org_emptyBuildEngineURL": "A URL must be provided when not using the Default Build Engine",
   "org_emptyAccessToken": "An API token must be provided when not using the Default Build Engine",
+  "org_visible": "Visible to Public",
+  "org_visibleWarning": "Warning: if your organization is visible to the public, all visitors of Scriptoria, including non-users, will be able to see your name, contact, and logo!",
   "products_definition": "Useful files that result from a series of steps.",
   "products_storeSelect": "Select a store for {name}",
   "products_noStoresAvailable": "There are no stores available for the selected product. Please contact your organization administrator.",
