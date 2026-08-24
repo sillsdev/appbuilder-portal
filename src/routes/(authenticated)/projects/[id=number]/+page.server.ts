@@ -4,7 +4,10 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
-import { getOrgAllowlist } from '$lib/admin-settings/server';
+import {
+  getProjectRepoURLWhitelist,
+  getSoftwareUpdatesWhitelist
+} from '$lib/admin-settings/server';
 import { baseLocale } from '$lib/paraglide/runtime';
 import {
   ProductTransitionType,
@@ -16,7 +19,7 @@ import {
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { projectActionSchema } from '$lib/projects';
-import { doProjectAction, userGroupsForOrg } from '$lib/projects/server';
+import { doProjectAction, projectUrl, userGroupsForOrg } from '$lib/projects/server';
 import { getProjectDetails } from '$lib/projects/sse';
 import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
@@ -59,7 +62,8 @@ export const load = (async ({ locals, params }) => {
     check
   );
 
-  const allowlist = await getOrgAllowlist();
+  const updatesAllowList = await getSoftwareUpdatesWhitelist();
+  const repoAllowList = await getProjectRepoURLWhitelist();
 
   return {
     projectData: await getProjectDetails(projectId, locals.security.sessionForm),
@@ -67,7 +71,13 @@ export const load = (async ({ locals, params }) => {
     reviewerForm: await superValidate({ language: baseLocale }, valibot(addReviewerSchema)),
     actionForm: await superValidate(valibot(projectActionSchema)),
     jobsAvailable: QueueConnected(),
-    showRebuildToggles: allowlist === 'all' || allowlist.includes(check!.OrganizationId)
+    showRebuildToggles:
+      updatesAllowList === 'all' || updatesAllowList.includes(check!.OrganizationId),
+    showRepoURL:
+      repoAllowList === 'all' ||
+      repoAllowList.includes(check!.OrganizationId) ||
+      locals.security.isSuperAdmin,
+    projectURL: projectUrl(projectId)
   };
 }) satisfies PageServerLoad;
 

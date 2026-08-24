@@ -3,7 +3,7 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { array, safeParse } from 'valibot';
 import type { LayoutServerLoad } from './$types';
-import { getOrgAllowlist } from '$lib/admin-settings/server';
+import { getSoftwareUpdatesWhitelist } from '$lib/admin-settings/server';
 import { langtagSchema } from '$lib/ldml';
 import { readLDML } from '$lib/ldml/server';
 import { locales } from '$lib/paraglide/runtime';
@@ -30,7 +30,7 @@ export const load: LayoutServerLoad = async (event) => {
 
   const localDir = join(process.cwd(), 'languages');
 
-  const updatesAllowList = await getOrgAllowlist();
+  const updatesAllowList = await getSoftwareUpdatesWhitelist();
 
   return {
     organizations,
