@@ -167,6 +167,17 @@
             <br />
             <p>{projectData.project.Description}</p>
           </div>
+          <div>
+            <span>{m.tasks_appProjectURL()}:</span>
+            <br />
+            <div class="flex rounded-md text-nowrap bg-base-200 p-3 pt-2 mt-2">
+              <IconContainer icon={Icons.URL} width={20} class="opacity-80 mr-1" />
+              <p class="grow">
+                {data.projectURL}
+              </p>
+              <CopyField value={data.projectURL} />
+            </div>
+          </div>
           {#if data.showRepoURL}
             <div>
               <span>{m.project_location()}:</span>

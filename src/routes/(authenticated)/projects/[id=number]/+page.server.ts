@@ -19,7 +19,7 @@ import {
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { projectActionSchema } from '$lib/projects';
-import { doProjectAction, userGroupsForOrg } from '$lib/projects/server';
+import { doProjectAction, projectUrl, userGroupsForOrg } from '$lib/projects/server';
 import { getProjectDetails } from '$lib/projects/sse';
 import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
@@ -76,7 +76,8 @@ export const load = (async ({ locals, params }) => {
     showRepoURL:
       repoAllowList === 'all' ||
       repoAllowList.includes(check!.OrganizationId) ||
-      locals.security.isSuperAdmin
+      locals.security.isSuperAdmin,
+    projectURL: projectUrl(projectId)
   };
 }) satisfies PageServerLoad;
 
