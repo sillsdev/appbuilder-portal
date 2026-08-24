@@ -4,6 +4,7 @@
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
+  import { getLinkSuffix } from '$lib/products';
 
   interface Props {
     data: PageData;
@@ -34,7 +35,7 @@
           <a
             class="link"
             href={localizeHref(
-              `/products/${build.ProductId}/files?buildId=${build.BuildEngineBuildId}`
+              `/products/${build.ProductId}/files${getLinkSuffix('build', build.BuildEngineBuildId)}`
             )}
           >
             <IconContainer

@@ -33,7 +33,7 @@
 </script>
 
 {#if release}
-  <div class={['bg-base-100', classes?.default]}>
+  <div class={['bg-base-100', classes?.default]} id="release-{release.BuildEngineReleaseId}">
     <table class="table table-auto sm:hidden">
       <tbody>
         <tr>
