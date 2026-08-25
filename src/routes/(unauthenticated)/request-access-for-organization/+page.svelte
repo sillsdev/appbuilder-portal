@@ -1,11 +1,20 @@
 <script lang="ts">
+  import type { PageData } from './$types';
   import { enhance } from '$app/forms';
   import { goto } from '$app/navigation';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
+
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 </script>
 
 <form
@@ -16,7 +25,7 @@
       if (result.type === 'success') {
         const data = result.data;
         if (data?.ok) {
-          goto('/request-access-for-organization/success');
+          goto(localizeHref('/request-access-for-organization/success'));
         }
       } else {
         toast('error', m.errors_generic({ errorMessage: '' }));
@@ -26,6 +35,15 @@
 >
   <div>
     <h1>{m.invitations_requestOrgInvite()}</h1>
+    {#if data.publicOrgExists}
+      <p class="text-left p-4 pt-0">
+        {m.invitations_verifyUser()}
+        <a class="link" href={localizeHref('/our-users')} target="_blank">
+          {m.invitations_ourUsers()}
+          <IconContainer icon={Icons.Open} width={18} />
+        </a>
+      </p>
+    {/if}
     <LabeledFormInput key="invitations_orgName">
       <input class="input w-full validator" type="text" name="organizationName" required />
     </LabeledFormInput>

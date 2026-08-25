@@ -164,6 +164,8 @@
   "invitations_orgSubmit": "Agregar organización",
   "invitations_requestOrgInvite": "Solicitar invitación de la organización",
   "invitations_orgAdminEmail": "Correo electrónico del administrador",
+  "invitations_ourUsers": "Nuestras Usuarias",
+  "invitations_verifyUser": "Antes de enviar una solicitud, por favor verifique que su organización no sea ya usuaria de Scriptoria.",
   "newOrganization_title": "Agregar organización",
   "org_title": "Organizaciones",
   "org_add": "Añadir organización",

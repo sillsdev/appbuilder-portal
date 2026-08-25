@@ -1,14 +1,28 @@
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
+import { DatabaseReads } from '$lib/server/database';
 
 const requestSchema = v.object({
   organizationName: v.pipe(v.string(), v.nonEmpty()),
   email: v.pipe(v.string(), v.nonEmpty(), v.email()),
   url: v.pipe(v.string(), v.nonEmpty())
 });
+
+export const load = (async ({ locals }) => {
+  locals.security.requireNothing();
+
+  return {
+    publicOrgExists: !!(await DatabaseReads.organizations.findFirst({
+      where: { VisibleToPublic: true },
+      select: {
+        Id: true
+      }
+    }))
+  };
+}) satisfies PageServerLoad;
 
 export const actions = {
   async request(event) {
