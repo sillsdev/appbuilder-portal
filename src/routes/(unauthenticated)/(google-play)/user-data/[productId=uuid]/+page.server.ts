@@ -66,7 +66,7 @@ export const actions: Actions = {
 
         const token = form.data.turnstileToken.trim();
 
-        const secret = env.TURNSTILE_SECRET_KEY;
+        const secret = env.USER_DATA_TURNSTILE_SECRET_KEY;
         if (!secret) {
           span.recordException('Turnstile secret key is not configured');
           span.setStatus({

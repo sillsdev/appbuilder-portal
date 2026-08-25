@@ -63,12 +63,16 @@
   });
 
   onMount(() =>
-    initTurnstile('#turnstile-container', env.PUBLIC_TURNSTILE_SITEKEY, (token: string) => {
-      turnstileToken = token;
-      $form.turnstileToken = token;
-      clearDeleteError('turnstileToken');
-      $message = undefined;
-    })
+    initTurnstile(
+      '#turnstile-container',
+      env.PUBLIC_USER_DATA_TURNSTILE_SITEKEY,
+      (token: string) => {
+        turnstileToken = token;
+        $form.turnstileToken = token;
+        clearDeleteError('turnstileToken');
+        $message = undefined;
+      }
+    )
   );
 
   function clearDeleteError(field: 'email' | 'turnstileToken') {
