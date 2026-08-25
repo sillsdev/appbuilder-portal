@@ -19,7 +19,7 @@
     "test:unit": "vitest run",
     "prepare": "svelte-kit sync",
     "fix-sourcemaps": "node --experimental-strip-types fixSourcemaps.cts",
-    "diff-db": "prisma migrate diff --from-schema-datasource src/lib/prisma/schema.prisma --to-schema-datamodel src/lib/prisma/schema.prisma --exit-code; EXIT=$?; [ $EXIT -eq 2 ] && echo '⚠️  Database is out of date. Run `npm run migrate-db` to update.'; exit $EXIT",
+    "diff-db": "sh scripts/diff-db.sh",
     "migrate-db": "prisma migrate dev"
   },
   "//zod": "sveltekit-superforms has a peerDep on zod, but it isn't installed in Docker for some reason",
