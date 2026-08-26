@@ -181,10 +181,19 @@ export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
         }
       ]
     ] as const;
-    startupJobs.forEach(([name, data]) => {
-      getQueues().SystemStartup.add(name, data);
-    });
-    this.jobsLeft = startupJobs.length;
+    if (!building) {
+      Promise.allSettled([
+        getQueues().SystemStartup.drain(true),
+        getQueues().SystemStartup.getActiveCount()
+      ]).then(([_drain, active]) => {
+        const activeCount = active.status === 'fulfilled' ? active.value : 0;
+        console.log(`${activeCount} jobs found in SystemStartup queue on startup`);
+        this.jobsLeft = startupJobs.length + activeCount;
+        startupJobs.forEach(([name, data]) => {
+          getQueues().SystemStartup.add(name, data);
+        });
+      });
+    }
   }
   async run(job: Job<J>) {
     // Close the worker after running the startup jobs
