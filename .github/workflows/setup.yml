@@ -24,7 +24,7 @@ jobs:
     outputs:
       BACKUP_AUTH0_SECRET: ${{ steps.set-vars.outputs.BACKUP_AUTH0_SECRET }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -114,7 +114,7 @@ jobs:
       AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
       AUTH0_CONNECTION: ${{ vars.AUTH0_CONNECTION }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: false
