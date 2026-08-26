@@ -101,6 +101,8 @@ async function fetchWithLog(url: string, logger: Logger, fetchInit?: RequestInit
   return res;
 }
 
+// timeout after 15s
+const UPDATE_TIMEOUT_MS = 15_000;
 async function shouldUpdate(
   localPath: string,
   remotePath: string,
@@ -116,7 +118,14 @@ async function shouldUpdate(
       const localLastModified = new Date((await stat(localPath)).mtimeMs);
       const res = await fetchWithLog(remotePath, logger, {
         method: 'HEAD',
-        headers: { 'If-Modified-Since': localLastModified.toUTCString() }
+        headers: { 'If-Modified-Since': localLastModified.toUTCString() },
+        signal: AbortSignal.timeout(UPDATE_TIMEOUT_MS)
+      }).catch((e) => {
+        return {
+          status: 500,
+          statusText: String(e),
+          headers: new Headers()
+        };
       });
       if (res.status === 304 || res.status >= 400) {
         // HTTP 304 Not Modified
