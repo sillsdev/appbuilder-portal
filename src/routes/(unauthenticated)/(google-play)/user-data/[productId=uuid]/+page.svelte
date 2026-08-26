@@ -245,7 +245,7 @@
             <button
               class="btn btn-primary w-full border border-primary/20 shadow-sm"
               type="submit"
-              disabled={$delayed}
+              disabled={$delayed || !$form.email}
             >
               {#if $delayed}
                 <span class="loading loading-spinner"></span>
