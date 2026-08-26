@@ -24,6 +24,7 @@
   "alert_valid_email": "请输入有效的电子邮件地址。",
   "alert_verification_failed": "验证失败。请重试。",
   "show_more": "显示更多",
+  "show_less": "显示更少",
   "back_to_manage_data": "返回管理我的数据",
   "verified_title": "已验证",
   "check_email_title": "检查您的电子邮件",

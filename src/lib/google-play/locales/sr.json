@@ -24,6 +24,7 @@
   "alert_valid_email": "Молимо унесите важећу адресу е-поште.",
   "alert_verification_failed": "Верификација није успела. Молимо покушајте поново.",
   "show_more": "Прикажи више",
+  "show_less": "Прикажи мање",
   "back_to_manage_data": "Назад на Управљање подацима",
   "verified_title": "Верификовано",
   "check_email_title": "Проверите своју е-пошту",

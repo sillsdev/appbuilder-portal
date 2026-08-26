@@ -23,7 +23,7 @@
     return (Math.max(r, g, b) + Math.min(r, g, b)) / 2;
   }
 
-  const current = $derived(data.manifest.language as Locale);
+  const current = $derived(data.locale as Locale);
 </script>
 
 <div class="flex flex-col h-full items-center justify-center">

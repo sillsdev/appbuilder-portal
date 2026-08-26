@@ -24,6 +24,7 @@
   "alert_valid_email": "Моля, въведете валиден имейл адрес.",
   "alert_verification_failed": "Потвърждението неуспешно. Моля, опитайте отново.",
   "show_more": "Покажи повече",
+  "show_less": "Покажи по-малко",
   "back_to_manage_data": "Назад към Управление на данни",
   "verified_title": "Потвърдено",
   "check_email_title": "Проверете имейла си",

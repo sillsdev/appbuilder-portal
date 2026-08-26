@@ -24,6 +24,7 @@
   "alert_valid_email": "有効なメールアドレスを入力してください。",
   "alert_verification_failed": "検証に失敗しました。もう一度お試しください。",
   "show_more": "詳細を表示",
+  "show_less": "表示を減らす",
   "back_to_manage_data": "データの管理に戻る",
   "verified_title": "確認済み",
   "check_email_title": "メールを確認してください",

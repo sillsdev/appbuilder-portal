@@ -24,6 +24,7 @@
   "alert_valid_email": "請輸入有效的電子郵件地址。",
   "alert_verification_failed": "驗證失敗。請重試。",
   "show_more": "顯示更多",
+  "show_less": "顯示較少",
   "back_to_manage_data": "返回管理我的資料",
   "verified_title": "已驗證",
   "check_email_title": "檢查您的電子郵件",

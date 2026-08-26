@@ -24,6 +24,7 @@
   "alert_valid_email": "Per favore, inserisci un indirizzo email valido.",
   "alert_verification_failed": "Verifica fallita. Per favore, riprova.",
   "show_more": "Mostra di più",
+  "show_less": "Mostra di meno",
   "back_to_manage_data": "Torna a Gestisci i miei dati",
   "verified_title": "Verificato",
   "check_email_title": "Controlla la tua email",

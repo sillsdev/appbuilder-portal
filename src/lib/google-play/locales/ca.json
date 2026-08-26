@@ -24,6 +24,7 @@
   "alert_valid_email": "Si us plau, introduïu una adreça de correu electrònic vàlida.",
   "alert_verification_failed": "La verificació ha fallat. Torneu-ho a intentar.",
   "show_more": "Mostra més",
+  "show_less": "Mostra menys",
   "back_to_manage_data": "Tornar a Gestionar les meves dades",
   "verified_title": "Verificat",
   "check_email_title": "Reviseu el vostre correu electrònic",

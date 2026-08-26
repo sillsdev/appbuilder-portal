@@ -24,6 +24,7 @@
   "alert_valid_email": "ກະລຸນາປ້ອນທີ່ຢູ່ອີເມວທີ່ຖືກຕ້ອງ.",
   "alert_verification_failed": "ການຢືນຢັນບໍ່ສຳເລັດ. ກະລຸນາລອງໃໝ່.",
   "show_more": "ສະແດງເພີ່ມເຕີມ",
+  "show_less": "ສະແດງໜ້ອຍລົງ",
   "back_to_manage_data": "ກັບຄືນໄປຫາຈັດການຂໍ້ມູນຂອງຂ້ອຍ",
   "verified_title": "ຢືນຢັນແລ້ວ",
   "check_email_title": "ກວດເບິ່ງອີເມວຂອງທ່ານ",

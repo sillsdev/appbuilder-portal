@@ -24,6 +24,7 @@
   "alert_valid_email": "একটি বৈধ ইমেল ঠিকানা লিখুন।",
   "alert_verification_failed": "যাচাইকরণ ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "show_more": "আরও দেখান",
+  "show_less": "কম দেখান",
   "back_to_manage_data": "তথ্য পরিচালনা করুন-এ ফিরে যান",
   "verified_title": "যাচাই করা হয়েছে",
   "check_email_title": "আপনার ইমেল পরীক্ষা করুন",

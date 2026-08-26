@@ -24,6 +24,7 @@
   "alert_valid_email": "कृपया वैध ईमेल पत्ता प्रविष्ट करा.",
   "alert_verification_failed": "पडताळणी अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
   "show_more": "अधिक दाखवा",
+  "show_less": "कमी दाखवा",
   "back_to_manage_data": "माझा डेटा व्यवस्थापित करा कडे परत जा",
   "verified_title": "पडताळणी झाली",
   "check_email_title": "तुमचा ईमेल तपासा",

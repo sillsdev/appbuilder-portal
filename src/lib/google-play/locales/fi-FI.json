@@ -24,6 +24,7 @@
   "alert_valid_email": "Anna voimassa oleva sähköpostiosoite.",
   "alert_verification_failed": "Vahvistus epäonnistui. Yritä uudelleen.",
   "show_more": "Näytä lisää",
+  "show_less": "Näytä vähemmän",
   "back_to_manage_data": "Takaisin Hallitse tietojani -sivulle",
   "verified_title": "Vahvistettu",
   "check_email_title": "Tarkista sähköpostisi",

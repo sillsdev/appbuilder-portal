@@ -9,7 +9,8 @@
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
   import { m } from '$lib/google-play/paraglide/messages';
   import { type Locale, localizeHref } from '$lib/google-play/paraglide/runtime';
-  import { initTurnstile } from '$lib/google-play/turnstile';
+  import { initTurnstile, toTurnstileLanguage } from '$lib/google-play/turnstile';
+  import { getBasicVariant } from '$lib/ldml';
 
   interface Props {
     data: PageData;
@@ -19,7 +20,7 @@
   let turnstileToken: string | null = null;
   let deleteSubmitAttempted = $state(false);
 
-  const currentLocale = data.app.language as Locale;
+  const currentLocale = $derived(data.locale as Locale);
   const confirmEmailStorageKey = confirmationStorageKey(data.app.id);
 
   const { form, enhance, message, delayed, errors } = superForm(data.form, {
@@ -71,7 +72,8 @@
         $form.turnstileToken = token;
         clearDeleteError('turnstileToken');
         $message = undefined;
-      }
+      },
+      toTurnstileLanguage(currentLocale)
     )
   );
 
@@ -126,14 +128,24 @@
     </div>
 
     <div class="px-5">
-      <a
-        class="btn btn-ghost btn-sm mb-4 w-full border border-base-300"
-        href={localizeHref(`/user-data/${data.app.id}/about${page.url.search}`, {
-          locale: currentLocale
-        })}
-      >
-        {m.about_app()}
-      </a>
+      {#if data.app.languages.some((l) => l === currentLocale || getBasicVariant(l) === getBasicVariant(currentLocale))}
+        <a
+          class="btn btn-ghost btn-sm mb-4 w-full border border-base-300"
+          href={localizeHref(`/user-data/${data.app.id}/about${page.url.search}`, {
+            locale: currentLocale
+          })}
+        >
+          {m.about_app()}
+        </a>
+      {:else}
+        <button
+          type="button"
+          class="btn btn-ghost btn-sm mb-4 w-full border border-base-300"
+          disabled
+        >
+          {m.about_app()}
+        </button>
+      {/if}
     </div>
 
     <div class="px-5 pb-8">
@@ -233,7 +245,7 @@
             <button
               class="btn btn-primary w-full border border-primary/20 shadow-sm"
               type="submit"
-              disabled={$delayed}
+              disabled={$delayed || !$form.email}
             >
               {#if $delayed}
                 <span class="loading loading-spinner"></span>

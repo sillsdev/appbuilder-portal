@@ -24,6 +24,7 @@
   "alert_valid_email": "Εισαγάγετε μια έγκυρη διεύθυνση email.",
   "alert_verification_failed": "Η επαλήθευση απέτυχε. Δοκιμάστε ξανά.",
   "show_more": "Εμφάνιση περισσότερων",
+  "show_less": "Εμφάνιση λιγότερων",
   "back_to_manage_data": "Επιστροφή στη Διαχείριση των δεδομένων μου",
   "verified_title": "Επαληθεύτηκε",
   "check_email_title": "Ελέγξτε το email σας",

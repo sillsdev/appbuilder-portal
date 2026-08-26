@@ -24,6 +24,7 @@
   "alert_valid_email": "Ange en giltig e-postadress.",
   "alert_verification_failed": "Verifieringen misslyckades. Försök igen.",
   "show_more": "Visa mer",
+  "show_less": "Visa mindre",
   "back_to_manage_data": "Tillbaka till Hantera mina data",
   "verified_title": "Verifierad",
   "check_email_title": "Kontrollera din e-post",

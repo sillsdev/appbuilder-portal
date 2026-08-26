@@ -24,6 +24,7 @@
   "alert_valid_email": "אנא הזן כתובת אימייל חוקית.",
   "alert_verification_failed": "האימות נכשל. אנא נסה שוב.",
   "show_more": "הצג עוד",
+  "show_less": "הצג פחות",
   "back_to_manage_data": "חזרה לניהול הנתונים שלי",
   "verified_title": "מאומת",
   "check_email_title": "בדוק את האימייל שלך",

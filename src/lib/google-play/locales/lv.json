@@ -24,6 +24,7 @@
   "alert_valid_email": "Lūdzu, ievadiet derīgu e-pasta adresi.",
   "alert_verification_failed": "Verifikācija neizdevās. Lūdzu, mēģiniet vēlreiz.",
   "show_more": "Rādīt vairāk",
+  "show_less": "Rādīt mazāk",
   "back_to_manage_data": "Atpakaļ uz Pārvaldīt datus",
   "verified_title": "Verificēts",
   "check_email_title": "Pārbaudiet savu e-pastu",

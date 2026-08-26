@@ -24,6 +24,7 @@
   "alert_valid_email": "Voer een geldig e-mailadres in.",
   "alert_verification_failed": "Verificatie mislukt. Probeer het opnieuw.",
   "show_more": "Meer tonen",
+  "show_less": "Minder tonen",
   "back_to_manage_data": "Terug naar Gegevens beheren",
   "verified_title": "Geverifieerd",
   "check_email_title": "Controleer uw e-mail",

@@ -24,6 +24,7 @@
   "alert_valid_email": "Veuillez saisir une adresse e-mail valide.",
   "alert_verification_failed": "Échec de la vérification. Veuillez réessayer.",
   "show_more": "En savoir plus",
+  "show_less": "Afficher moins",
   "back_to_manage_data": "Retour à Gérer mes données",
   "verified_title": "Vérifié",
   "check_email_title": "Consultez votre messagerie",

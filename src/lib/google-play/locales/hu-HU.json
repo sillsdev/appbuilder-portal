@@ -24,6 +24,7 @@
   "alert_valid_email": "Kérjük, adjon meg egy érvényes e-mail címet.",
   "alert_verification_failed": "Az ellenőrzés sikertelen. Kérjük, próbálja újra.",
   "show_more": "Mutass többet",
+  "show_less": "Mutass kevesebbet",
   "back_to_manage_data": "Vissza az adatok kezeléséhez",
   "verified_title": "Ellenőrizve",
   "check_email_title": "Ellenőrizze az e-mailjeit",
