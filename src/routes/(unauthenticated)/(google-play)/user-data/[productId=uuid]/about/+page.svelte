@@ -4,6 +4,8 @@
   import { m } from '$lib/google-play/paraglide/messages';
   import type { Locale } from '$lib/google-play/paraglide/runtime';
   import { localizeHref } from '$lib/google-play/paraglide/runtime';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { stripHTML } from '$lib/utils';
 
   interface Props {
@@ -11,6 +13,8 @@
   }
 
   let { data }: Props = $props();
+
+  let showLongDesc = $state(false);
 </script>
 
 <div
@@ -38,11 +42,17 @@
             {stripHTML(data.app.shortDesc)}
           </p>
 
-          <details class="group">
+          <details class="group" bind:open={showLongDesc}>
             <summary
               class="list-none text-sm font-bold cursor-pointer hover:underline flex items-center gap-2 select-none"
             >
-              <span class="p-1 rounded-sm">{m.show_more()}</span>
+              <span class="p-1 rounded-sm">
+                <IconContainer
+                  icon={showLongDesc ? Icons.TriangleUp : Icons.TriangleDown}
+                  width={16}
+                />
+                {showLongDesc ? m.show_less() : m.show_more()}
+              </span>
             </summary>
             <div class="pt-3 text-sm whitespace-pre-line leading-relaxed text-base-content/80">
               {stripHTML(data.app.longDesc)}
