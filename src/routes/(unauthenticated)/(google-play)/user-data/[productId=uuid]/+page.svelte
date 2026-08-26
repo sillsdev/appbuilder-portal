@@ -9,7 +9,7 @@
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
   import { m } from '$lib/google-play/paraglide/messages';
   import { type Locale, localizeHref } from '$lib/google-play/paraglide/runtime';
-  import { initTurnstile } from '$lib/google-play/turnstile';
+  import { initTurnstile, toTurnstileLanguage } from '$lib/google-play/turnstile';
 
   interface Props {
     data: PageData;
@@ -71,7 +71,8 @@
         $form.turnstileToken = token;
         clearDeleteError('turnstileToken');
         $message = undefined;
-      }
+      },
+      toTurnstileLanguage(currentLocale)
     )
   );
 
