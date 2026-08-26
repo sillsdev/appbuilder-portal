@@ -118,8 +118,10 @@ async function shouldUpdate(
         method: 'HEAD',
         headers: { 'If-Modified-Since': localLastModified.toUTCString() }
       });
-      if (res.status === 304) {
+      if (res.status === 304 || res.status >= 400) {
         // HTTP 304 Not Modified
+        // HTTP 400+ Client error
+        // HTTP 500+ Server error
         return {
           shouldUpdate: false,
           status: res.status + ' ' + res.statusText
