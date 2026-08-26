@@ -2,7 +2,10 @@
 // https://developers.cloudflare.com/turnstile/reference/supported-languages/
 const LANGUAGE_OVERRIDES = /** @type {Record<string, string>} */ ({
   'iw-IL': 'he', // Hebrew: Google Play uses the legacy ISO 639-1 code
-  'no-NO': 'nb' // Norwegian: Turnstile only supports Bokmål
+  'no-NO': 'nb', // Norwegian: Turnstile only supports Bokmål
+  'fil': 'tl-ph', // Filipino: Ternstile only supports Tagalog (better than defaulting to English)
+  'zh-TW': 'zh-tw', // Chinese (Traditional, Taiwan): base 'zh' would default to Simplified
+  'zh-HK': 'zh-tw' // Chinese (Traditional, Hong Kong): Turnstile has no zh-hk, zh-tw is closer than Simplified
 });
 
 const TURNSTILE_BASE_LANGUAGES = new Set([
