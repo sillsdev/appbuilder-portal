@@ -183,25 +183,22 @@ export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
       ]
     ] as const;
     if (!building) {
-      Promise.allSettled([
-        getQueues().SystemStartup.drain(true),
-        getQueues().SystemStartup.getActiveCount()
-      ]).then(([_drain, active]) => {
-        const activeCount = active.status === 'fulfilled' ? active.value : 0;
-        console.log(`${activeCount} jobs found in SystemStartup queue on startup`);
-        // allow refresh langtags to be skipped on startup in dev
-        // refresh langtags is a time-intensive operation, and rerunning it after every time a change is made in local dev is very costly on the ldml api server
-        const filteredJobs = startupJobs.filter(
-          (j) =>
-            env.NODE_ENV !== 'development' ||
-            j[1].type !== BullMQ.JobType.System_RefreshLangTags ||
-            !env.SKIP_LANGTAG_REFRESH_STARTUP
-        );
-        this.jobsLeft = filteredJobs.length + activeCount;
-        filteredJobs.forEach(([name, data]) => {
-          getQueues().SystemStartup.add(name, data);
+      getQueues()
+        .SystemStartup.drain(true)
+        .then(() => {
+          // allow refresh langtags to be skipped on startup in dev
+          // refresh langtags is a time-intensive operation, and rerunning it after every time a change is made in local dev is very costly on the ldml api server
+          const filteredJobs = startupJobs.filter(
+            (j) =>
+              env.NODE_ENV !== 'development' ||
+              j[1].type !== BullMQ.JobType.System_RefreshLangTags ||
+              !env.SKIP_LANGTAG_REFRESH_STARTUP
+          );
+          this.jobsLeft = filteredJobs.length;
+          filteredJobs.forEach(([name, data]) => {
+            getQueues().SystemStartup.add(name, data);
+          });
         });
-      });
     }
   }
   async run(job: Job<J>) {
