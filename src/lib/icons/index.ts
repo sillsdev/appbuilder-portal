@@ -392,6 +392,8 @@ export const Icons = {
   Timezone: 'mdi:timezone',
   Transfer: 'bx:transfer',
   Trash: 'mdi:trash',
+  TriangleDown: 'mdi:triangle-small-down',
+  TriangleUp: 'mdi:triangle-small-up',
   Unlocked: 'mdi:lock-open-variant',
   UpdateOff: 'ic:baseline-update-disabled',
   UpdateOn: 'ic:baseline-update',

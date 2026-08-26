@@ -113,12 +113,13 @@
           <li class="w-full">
             <button
               type="button"
-              class="btn btn-ghost flex-nowrap justify-start pl-2 pr-1 h-auto min-w-2xs"
+              class="btn btn-ghost flex-nowrap justify-start pl-2 pr-1 h-auto min-w-2xs gap-1"
               onclick={(e) => {
                 e.stopPropagation();
                 showAll = !showAll;
               }}
             >
+              <IconContainer icon={showAll ? Icons.TriangleUp : Icons.TriangleDown} width={16} />
               {showAll ? m.show_less() : m.show_more()}
             </button>
           </li>
