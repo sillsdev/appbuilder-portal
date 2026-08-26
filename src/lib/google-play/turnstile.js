@@ -11,19 +11,18 @@ const LANGUAGE_OVERRIDES = /** @type {Record<string, string>} */ ({
 const TURNSTILE_BASE_LANGUAGES = new Set([
   'ar',
   'bg',
-  'zh',
-  'hr',
   'cs',
   'da',
-  'nl',
+  'de',
+  'el',
   'en',
+  'es',
   'fa',
   'fi',
   'fr',
-  'de',
-  'el',
   'he',
   'hi',
+  'hr',
   'hu',
   'id',
   'it',
@@ -32,25 +31,27 @@ const TURNSTILE_BASE_LANGUAGES = new Set([
   'lt',
   'ms',
   'nb',
+  'nl',
   'pl',
   'pt',
   'ro',
   'ru',
-  'sr',
   'sk',
   'sl',
-  'es',
+  'sr',
   'sv',
-  'tl',
   'th',
+  'tl',
   'tr',
   'uk',
-  'vi'
+  'vi',
+  'zh'
 ]);
 
 /**
  * Maps a Google Play locale code to a Turnstile-supported language code,
  * falling back to 'auto' (browser detection) when Turnstile has no match.
+ * There are currently 34 languages that don't have a match in Turnstile.
  * @param {string} locale
  * @returns {string}
  */
