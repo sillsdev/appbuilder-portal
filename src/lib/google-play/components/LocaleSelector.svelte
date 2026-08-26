@@ -135,7 +135,10 @@
                 showAll = !showAll;
               }}
             >
-              <IconContainer icon={showAll ? Icons.TriangleUp : Icons.TriangleDown} width={16} />
+              <IconContainer
+                icon={showAll ? Icons.TriangleSmallUp : Icons.TriangleSmallDown}
+                width={16}
+              />
               {showAll ? m.show_less() : m.show_more()}
             </button>
           </li>

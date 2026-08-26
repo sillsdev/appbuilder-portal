@@ -49,7 +49,7 @@
               <span class="p-1 rounded-sm">
                 <IconContainer
                   icon={showLongDesc ? Icons.TriangleUp : Icons.TriangleDown}
-                  width={16}
+                  width={12}
                 />
                 {showLongDesc ? m.show_less() : m.show_more()}
               </span>
