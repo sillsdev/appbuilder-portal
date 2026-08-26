@@ -19,7 +19,7 @@
   let turnstileToken: string | null = null;
   let deleteSubmitAttempted = $state(false);
 
-  const currentLocale = data.locale as Locale;
+  const currentLocale = $derived(data.locale as Locale);
   const confirmEmailStorageKey = confirmationStorageKey(data.app.id);
 
   const { form, enhance, message, delayed, errors } = superForm(data.form, {
