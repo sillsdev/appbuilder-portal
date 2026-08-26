@@ -24,6 +24,7 @@
   "alert_valid_email": "Please enter a valid email address.",
   "alert_verification_failed": "Verification failed. Please try again.",
   "show_more": "Show more",
+  "show_less": "Show less",
   "back_to_manage_data": "Back to Manage my data",
   "verified_title": "Verified",
   "check_email_title": "Check your email",

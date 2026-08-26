@@ -19,7 +19,7 @@
   let turnstileToken: string | null = null;
   let deleteSubmitAttempted = $state(false);
 
-  const currentLocale = data.app.language as Locale;
+  const currentLocale = data.locale as Locale;
   const confirmEmailStorageKey = confirmationStorageKey(data.app.id);
 
   const { form, enhance, message, delayed, errors } = superForm(data.form, {
@@ -126,14 +126,24 @@
     </div>
 
     <div class="px-5">
-      <a
-        class="btn btn-ghost btn-sm mb-4 w-full border border-base-300"
-        href={localizeHref(`/user-data/${data.app.id}/about${page.url.search}`, {
-          locale: currentLocale
-        })}
-      >
-        {m.about_app()}
-      </a>
+      {#if data.app.languages.includes(currentLocale)}
+        <a
+          class="btn btn-ghost btn-sm mb-4 w-full border border-base-300"
+          href={localizeHref(`/user-data/${data.app.id}/about${page.url.search}`, {
+            locale: currentLocale
+          })}
+        >
+          {m.about_app()}
+        </a>
+      {:else}
+        <button
+          type="button"
+          class="btn btn-ghost btn-sm mb-4 w-full border border-base-300"
+          disabled
+        >
+          {m.about_app()}
+        </button>
+      {/if}
     </div>
 
     <div class="px-5 pb-8">

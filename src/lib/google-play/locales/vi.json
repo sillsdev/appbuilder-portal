@@ -24,6 +24,7 @@
   "alert_valid_email": "Vui lòng nhập địa chỉ email hợp lệ.",
   "alert_verification_failed": "Xác minh thất bại. Vui lòng thử lại.",
   "show_more": "Xem thêm",
+  "show_less": "Thu gọn",
   "back_to_manage_data": "Quay lại Quản lý dữ liệu của tôi",
   "verified_title": "Đã xác minh",
   "check_email_title": "Kiểm tra email của bạn",

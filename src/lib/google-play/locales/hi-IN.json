@@ -24,6 +24,7 @@
   "alert_valid_email": "कृपया एक वैध ईमेल पता दर्ज करें।",
   "alert_verification_failed": "सत्यापन विफल रहा। कृपया पुन: प्रयास करें।",
   "show_more": "और दिखाएं",
+  "show_less": "कम दिखाएं",
   "back_to_manage_data": "मेरे डेटा प्रबंधन पर वापस जाएं",
   "verified_title": "सत्यापित",
   "check_email_title": "अपना ईमेल जांचें",

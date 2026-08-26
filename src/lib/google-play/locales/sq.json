@@ -24,6 +24,7 @@
   "alert_valid_email": "Ju lutemi vendosni një adresë emaili të vlefshme.",
   "alert_verification_failed": "Verifikimi dështoi. Ju lutemi provoni përsëri.",
   "show_more": "Shiko më shumë",
+  "show_less": "Shiko më pak",
   "back_to_manage_data": "Kthehu te Menaxho të dhënat e mia",
   "verified_title": "I verifikuar",
   "check_email_title": "Kontrolloni emailin tuaj",

@@ -24,6 +24,7 @@
   "alert_valid_email": "Lütfen geçerli bir e-post adresini girin.",
   "alert_verification_failed": "Doğrulama başarısız oldu. Lütfen tekrar deneyin.",
   "show_more": "Daha fazla göster",
+  "show_less": "Daha az göster",
   "back_to_manage_data": "Verilerimi yönet sayfasına dön",
   "verified_title": "Doğrulandı",
   "check_email_title": "E-postanızı kontrol edin",

@@ -1,6 +1,7 @@
 <script lang="ts">
   import Dropdown, { type DropdownClasses } from '$lib/components/Dropdown.svelte';
   import { GooglePlayFlags } from '$lib/google-play';
+  import { m } from '$lib/google-play/paraglide/messages';
   import {
     type Locale,
     locales as allLocales,
@@ -30,15 +31,22 @@
   }: Props = $props();
 
   let open = $state(false);
+  // Start expanded when the active locale isn't part of the curated set
+  // (e.g. reached via a direct link), so it stays visible and selected.
+  // This is only an initial default — the user can still toggle it freely.
+  let showAll = $state(!locales.includes(current));
 
   function onclick(locale: Locale) {
     open = false;
     onselect(locale);
   }
 
+  const hasMore = $derived(locales.length < allLocales.length);
+  const shownLocales = $derived(showAll ? allLocales : locales);
+
   const displayNames = $derived(
     new Map(
-      locales.map((locale) => {
+      shownLocales.map((locale) => {
         const fallback = fallbacks?.get(locale) ?? locale;
         return [
           locale,
@@ -58,7 +66,7 @@
     class={{
       dropdown: ['dropdown-end', classes?.dropdown],
       label: ['pe-1 ps-2', classes?.label],
-      content: ['max-h-64 overflow-y-auto', classes?.content]
+      content: [showAll ? 'max-h-128' : 'max-h-64', 'overflow-y-auto', classes?.content]
     }}
     bind:open
   >
@@ -72,7 +80,7 @@
     {/snippet}
     {#snippet content()}
       <ul class="menu menu-sm gap-1 p-2">
-        {#each locales.toSorted( (a, b) => byString(displayNames.get(a)?.display, displayNames.get(b)?.display, current) ) as locale}
+        {#each shownLocales.toSorted( (a, b) => byString(displayNames.get(a)?.display, displayNames.get(b)?.display, current) ) as locale}
           {@const { display, native, fallback } = displayNames.get(locale)!}
           <li class="w-full">
             <button
@@ -101,6 +109,20 @@
             </button>
           </li>
         {/each}
+        {#if hasMore}
+          <li class="w-full">
+            <button
+              type="button"
+              class="btn btn-ghost flex-nowrap justify-start pl-2 pr-1 h-auto min-w-2xs"
+              onclick={(e) => {
+                e.stopPropagation();
+                showAll = !showAll;
+              }}
+            >
+              {showAll ? m.show_less() : m.show_more()}
+            </button>
+          </li>
+        {/if}
       </ul>
     {/snippet}
   </Dropdown>

@@ -24,6 +24,7 @@
   "alert_valid_email": "لطفاً یک آدرس ایمیل معتبر وارد کنید.",
   "alert_verification_failed": "تأیید انجام نشد. لطفاً دوباره امتحان کنید.",
   "show_more": "نمایش بیشتر",
+  "show_less": "نمایش کمتر",
   "back_to_manage_data": "بازگشت به مدیریت داده‌ها",
   "verified_title": "تأیید شد",
   "check_email_title": "ایمیل خود را بررسی کنید",

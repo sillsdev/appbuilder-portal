@@ -1,8 +1,7 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
-import { error, isRedirect, redirect } from '@sveltejs/kit';
+import { error, isRedirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import { getGPFallbackIcon } from '$lib/google-play';
-import { deLocalizeUrl, localizeUrl } from '$lib/google-play/paraglide/runtime';
 import {
   getLatestManifest,
   resolveManifestLanguage,
@@ -12,7 +11,7 @@ import { DatabaseReads } from '$lib/server/database';
 
 const tracer = trace.getTracer('UDMRequests');
 
-export const load: LayoutServerLoad = async ({ locals, params, url }) => {
+export const load: LayoutServerLoad = async ({ locals, params }) => {
   locals.security.requireNothing();
   return tracer.startActiveSpan('UDM - Load Manifest', async (span) => {
     try {
@@ -33,10 +32,12 @@ export const load: LayoutServerLoad = async ({ locals, params, url }) => {
 
       if (!fetchedManifest) throw error(404);
 
+      // Falls back to the manifest's default language when the app has no
+      // translation for the current UI locale, so the page keeps rendering
+      // in that locale instead of being redirected to a different one.
+      // Content served this way may not match the UI locale; callers that
+      // care can compare `app.languages` against the UI locale themselves.
       const manifestLanguage = resolveManifestLanguage(locals.locale, fetchedManifest.manifest);
-      if (locals.locale !== manifestLanguage) {
-        throw redirect(302, localizeUrl(deLocalizeUrl(url), { locale: manifestLanguage }));
-      }
 
       const translatedManifest = await translateManifest(fetchedManifest, manifestLanguage, [
         'title.txt',

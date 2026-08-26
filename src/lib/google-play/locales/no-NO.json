@@ -24,6 +24,7 @@
   "alert_valid_email": "Vennligst skriv inn en gyldig e-postadresse.",
   "alert_verification_failed": "Verifisering mislyktes. Vennligst prøv igjen.",
   "show_more": "Vis mer",
+  "show_less": "Vis mindre",
   "back_to_manage_data": "Tilbake til Administrer mine data",
   "verified_title": "Verifisert",
   "check_email_title": "Sjekk e-posten din",

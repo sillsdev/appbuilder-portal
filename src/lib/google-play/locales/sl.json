@@ -24,6 +24,7 @@
   "alert_valid_email": "Vnesite veljaven e-poštni naslov.",
   "alert_verification_failed": "Preverjanje ni uspelo. Poskusite znova.",
   "show_more": "Prikaži več",
+  "show_less": "Prikaži manj",
   "back_to_manage_data": "Nazaj na Upravljanje podatkov",
   "verified_title": "Potrjeno",
   "check_email_title": "Preverite e-pošto",

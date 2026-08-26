@@ -24,6 +24,7 @@
   "alert_valid_email": "Palun sisestage kehtiv e-posti aadress.",
   "alert_verification_failed": "Kinnitamine ebaõnnestus. Palun proovige uuesti.",
   "show_more": "Näita rohkem",
+  "show_less": "Näita vähem",
   "back_to_manage_data": "Tagasi andmete haldamise juurde",
   "verified_title": "Kinnitatud",
   "check_email_title": "Kontrollige oma e-posti",

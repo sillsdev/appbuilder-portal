@@ -24,6 +24,7 @@
   "alert_valid_email": "Vinsamlegast sláðu inn gilt netfang.",
   "alert_verification_failed": "Staðfesting tókst ekki. Vinsamlegast reyndu aftur.",
   "show_more": "Sýna meira",
+  "show_less": "Sýna minna",
   "back_to_manage_data": "Aftur í Sýsla með gögnin mín",
   "verified_title": "Staðfest",
   "check_email_title": "Athugaðu netfangið þitt",

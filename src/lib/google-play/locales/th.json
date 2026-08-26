@@ -24,6 +24,7 @@
   "alert_valid_email": "โปรดป้อนที่อยู่อีเมลที่ถูกต้อง",
   "alert_verification_failed": "การยืนยันล้มเหลว โปรดลองอีกครั้ง",
   "show_more": "แสดงเพิ่มเติม",
+  "show_less": "แสดงน้อยลง",
   "back_to_manage_data": "กลับไปที่จัดการข้อมูลของฉัน",
   "verified_title": "ยืนยันแล้ว",
   "check_email_title": "ตรวจสอบอีเมลของคุณ",

@@ -24,6 +24,7 @@
   "alert_valid_email": "እባክዎ ትክክለኛ የኢሜይል አድራሻ ያስገቡ።",
   "alert_verification_failed": "ማረጋገጥ አልተቻለም። እባክዎ እንደገና ይሞክሩ።",
   "show_more": "ተጨማሪ አሳይ",
+  "show_less": "ያነሰ አሳይ",
   "back_to_manage_data": "ወደ ውሂብ ማስተዳደር ተመለስ",
   "verified_title": "ተረጋግጧል",
   "check_email_title": "ኢሜይልዎን ያረጋግጡ",

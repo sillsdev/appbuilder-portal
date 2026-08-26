@@ -24,6 +24,7 @@
   "alert_valid_email": "유효한 이메일 주소를 입력하세요.",
   "alert_verification_failed": "인증에 실패했습니다. 다시 시도해 주세요.",
   "show_more": "더 보기",
+  "show_less": "간략히 보기",
   "back_to_manage_data": "내 데이터 관리로 돌아가기",
   "verified_title": "인증됨",
   "check_email_title": "이메일을 확인하세요",

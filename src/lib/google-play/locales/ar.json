@@ -24,6 +24,7 @@
   "alert_valid_email": "يرجى إدخال عنوان بريد إلكتروني صالح.",
   "alert_verification_failed": "فشل التحقق. يرجى المحاولة مرة أخرى.",
   "show_more": "عرض المزيد",
+  "show_less": "عرض أقل",
   "back_to_manage_data": "العودة إلى إدارة بياناتي",
   "verified_title": "تم التحقق",
   "check_email_title": "تحقق من بريدك الإلكتروني",

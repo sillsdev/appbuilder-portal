@@ -24,6 +24,7 @@
   "alert_valid_email": "Indtast venligst en gyldig e-mailadresse.",
   "alert_verification_failed": "Bekræftelse mislykkedes. Prøv venligst igen.",
   "show_more": "Vis mere",
+  "show_less": "Vis mindre",
   "back_to_manage_data": "Tilbage til Administrer mine data",
   "verified_title": "Bekræftet",
   "check_email_title": "Tjek din e-mail",

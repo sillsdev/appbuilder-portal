@@ -24,6 +24,7 @@
   "alert_valid_email": "Хүчинтэй имэйл хаяг оруулна уу.",
   "alert_verification_failed": "Баталгаажуулалт амжилтгүй боллоо. Дахин оролдоно уу.",
   "show_more": "Дэлгэрэнгүй үзэх",
+  "show_less": "Бага харуулах",
   "back_to_manage_data": "Өгөгдлийг удирдах руу буцах",
   "verified_title": "Баталгаажсан",
   "check_email_title": "Имэйлээ шалгана уу",
