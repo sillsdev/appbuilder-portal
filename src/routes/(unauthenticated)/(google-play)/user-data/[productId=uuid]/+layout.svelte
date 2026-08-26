@@ -13,6 +13,7 @@
 </script>
 
 <svelte:head>
+  <meta name="google" content="notranslate" />
   <script
     src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
     async
