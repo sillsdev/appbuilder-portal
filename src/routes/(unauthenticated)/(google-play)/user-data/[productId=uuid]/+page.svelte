@@ -9,8 +9,8 @@
   import LocaleSelector from '$lib/google-play/components/LocaleSelector.svelte';
   import { m } from '$lib/google-play/paraglide/messages';
   import { type Locale, localizeHref } from '$lib/google-play/paraglide/runtime';
-  import { initTurnstile, toTurnstileLanguage } from '$lib/google-play/turnstile';
   import { getBasicVariant } from '$lib/ldml';
+  import { initTurnstile, resolveToken, toTurnstileLanguage } from '$lib/turnstile';
 
   interface Props {
     data: PageData;
@@ -28,17 +28,7 @@
     onSubmit: ({ cancel, formData }) => {
       deleteSubmitAttempted = true;
 
-      if (!turnstileToken) {
-        const tokenFromForm = formData.get('cf-turnstile-response');
-        const tokenFromWidget = window.turnstile?.getResponse?.();
-        const token =
-          typeof tokenFromForm === 'string' && tokenFromForm.length > 0
-            ? tokenFromForm
-            : tokenFromWidget;
-        if (typeof token === 'string' && token.length > 0) {
-          turnstileToken = token;
-        }
-      }
+      turnstileToken ||= resolveToken(formData);
 
       if (!turnstileToken) {
         $message = { error: m.alert_verify_human() };
