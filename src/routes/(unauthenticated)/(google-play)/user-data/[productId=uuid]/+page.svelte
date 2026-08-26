@@ -10,6 +10,7 @@
   import { m } from '$lib/google-play/paraglide/messages';
   import { type Locale, localizeHref } from '$lib/google-play/paraglide/runtime';
   import { initTurnstile, toTurnstileLanguage } from '$lib/google-play/turnstile';
+  import { getBasicVariant } from '$lib/ldml';
 
   interface Props {
     data: PageData;
@@ -127,7 +128,7 @@
     </div>
 
     <div class="px-5">
-      {#if data.app.languages.includes(currentLocale)}
+      {#if data.app.languages.some((l) => l === currentLocale || getBasicVariant(l) === getBasicVariant(currentLocale))}
         <a
           class="btn btn-ghost btn-sm mb-4 w-full border border-base-300"
           href={localizeHref(`/user-data/${data.app.id}/about${page.url.search}`, {

@@ -54,7 +54,7 @@
       <a
         class="btn btn-primary w-full mt-6"
         href={localizeHref(`/user-data/${data.app.id}${page.url.search}`, {
-          locale: data.app.language as Locale
+          locale: data.locale as Locale
         })}
       >
         {m.back_to_manage_data()}
