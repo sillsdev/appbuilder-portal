@@ -44,21 +44,34 @@
   const hasMore = $derived(locales.length < allLocales.length);
   const shownLocales = $derived(showAll ? allLocales : locales);
 
-  const displayNames = $derived(
-    new Map(
-      shownLocales.map((locale) => {
-        const fallback = fallbacks?.get(locale) ?? locale;
-        return [
-          locale,
-          {
-            display: tryLocalize(l10nMap, current, 'languages', locale, fallback),
-            native: tryLocalize(l10nMap, locale, 'languages', locale, fallback),
-            fallback
-          }
-        ];
-      })
-    )
-  );
+  const displayNames = $derived.by(() => {
+    const entries = shownLocales.map((locale) => {
+      const fallback = fallbacks?.get(locale) ?? locale;
+      return [
+        locale,
+        {
+          display: tryLocalize(l10nMap, current, 'languages', locale, fallback),
+          native: tryLocalize(l10nMap, locale, 'languages', locale, fallback),
+          fallback
+        }
+      ] as const;
+    });
+
+    // When two or more locales share the same display name (e.g. Chinese
+    // variants, or English/Spanish locales without a distinct CLDR name),
+    // append the locale code so they can still be told apart.
+    const counts = new Map<string, number>();
+    for (const [, { display }] of entries) {
+      counts.set(display, (counts.get(display) ?? 0) + 1);
+    }
+
+    return new Map(
+      entries.map(([locale, names]) => [
+        locale,
+        { ...names, ambiguous: (counts.get(names.display) ?? 0) > 1 }
+      ])
+    );
+  });
 </script>
 
 {#key current}
@@ -81,7 +94,7 @@
     {#snippet content()}
       <ul class="menu menu-sm gap-1 p-2">
         {#each shownLocales.toSorted( (a, b) => byString(displayNames.get(a)?.display, displayNames.get(b)?.display, current) ) as locale}
-          {@const { display, native, fallback } = displayNames.get(locale)!}
+          {@const { display, native, fallback, ambiguous } = displayNames.get(locale)!}
           <li class="w-full">
             <button
               type="button"
@@ -100,6 +113,9 @@
                 <span class="flex flex-col text-start grow">
                   <span>
                     {display}
+                    {#if ambiguous}
+                      <span class="opacity-60">({locale})</span>
+                    {/if}
                   </span>
                   {#if native !== display && native !== fallback}
                     <i class="opacity-80">{native}</i>
