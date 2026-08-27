@@ -4,10 +4,6 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad, RequestEvent } from './$types';
 import { addAuthorSchema, addReviewerSchema } from './forms/valibot';
-import {
-  getProjectRepoURLWhitelist,
-  getSoftwareUpdatesWhitelist
-} from '$lib/admin-settings/server';
 import { baseLocale } from '$lib/paraglide/runtime';
 import {
   ProductTransitionType,
@@ -23,6 +19,7 @@ import { doProjectAction, projectUrl, userGroupsForOrg } from '$lib/projects/ser
 import { getProjectDetails } from '$lib/projects/sse';
 import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { getSiteParam } from '$lib/site-params/server';
 import { UUIDSchema, deleteSchema, idSchema, propertiesSchema } from '$lib/valibot';
 
 const updateOwnerGroupSchema = v.object({
@@ -62,8 +59,8 @@ export const load = (async ({ locals, params }) => {
     check
   );
 
-  const updatesAllowList = await getSoftwareUpdatesWhitelist();
-  const repoAllowList = await getProjectRepoURLWhitelist();
+  const updatesAllowList = await getSiteParam('software-updates', 'allow-orgs');
+  const repoAllowList = await getSiteParam('projects', 'org-show-repo-url');
 
   return {
     projectData: await getProjectDetails(projectId, locals.security.sessionForm),

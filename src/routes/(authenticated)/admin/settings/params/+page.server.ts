@@ -38,7 +38,7 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
 
-    await DatabaseWrites.adminSettings.update(locals.security.userId, form.data.entries);
+    await DatabaseWrites.adminSettings.updateMany(locals.security.userId, form.data.entries);
     return { ok: true, form };
   }
 } satisfies Actions;

@@ -1,5 +1,6 @@
 import * as v from 'valibot';
-import { getSchemaForSetting } from './admin-settings';
+import type { SiteParams } from './site-params';
+import { SiteParamSchemas } from './site-params';
 
 export const idSchema = v.pipe(v.number(), v.minValue(0), v.integer());
 
@@ -44,8 +45,8 @@ export const JSONStringSchema = v.pipe(
   v.stringifyJson({ space: 4 })
 );
 
-export const siteParamsSchema = (param: string) =>
-  v.pipe(v.string(), v.parseJson(), getSchemaForSetting(param), v.stringifyJson({ space: 4 }));
+export const siteParamsSchema = (param: SiteParams) =>
+  v.pipe(v.string(), v.parseJson(), SiteParamSchemas[param], v.stringifyJson({ space: 4 }));
 
 export type JsonSchema =
   | typeof propertiesSchema

@@ -3,9 +3,9 @@ import type { Job } from 'bullmq';
 import { BuildEngine } from '../../build-engine-api';
 import { BullMQ, getQueues } from '../../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../../database';
-import { getSoftwareUpdatesRateLimit } from '$lib/admin-settings/server';
 import { activeSystems } from '$lib/organizations/server';
 import { Workflow } from '$lib/server/workflow';
+import { getSiteParam } from '$lib/site-params/server';
 import { WorkflowAction, WorkflowState } from '$lib/workflowTypes';
 
 export async function checkSystemStatuses(
@@ -144,7 +144,7 @@ export async function checkPendingUpdates(
   ).map((u) => [u.State, u._count.State] as [string, number]);
 
   const totalBuilding = buildingProducts.reduce((p, c) => p + c[1], 0);
-  const rateLimit = await getSoftwareUpdatesRateLimit();
+  const rateLimit = await getSiteParam('software-updates', 'rate-limit');
 
   const summary: Record<string, unknown> = {
     totalBuilding,

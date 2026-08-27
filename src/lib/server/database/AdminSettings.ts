@@ -1,10 +1,10 @@
 import type { Prisma } from '@prisma/client';
 import prisma from './prisma';
-import { AdminSettings } from '$lib/admin-settings';
+import { SiteParamSchemas, type SiteParams } from '$lib/site-params';
 
-export async function update(
-  userId: number,
-  data: Record<Prisma.AdminSettingsCreateInput['Key'], Prisma.AdminSettingsCreateInput['Value']>
+export async function updateMany(
+  userId: number | null,
+  data: Partial<Record<SiteParams, Prisma.AdminSettingsCreateInput['Value']>>
 ) {
   return await prisma.$transaction(async (tx) => {
     const existing = new Map(
@@ -28,7 +28,7 @@ export async function update(
 
 export async function insertPlaceholders() {
   return await prisma.adminSettings.createMany({
-    data: Object.values(AdminSettings).map((v) => ({
+    data: Object.keys(SiteParamSchemas).map((v) => ({
       Key: v,
       Value: '{}',
       ModifiedById: null

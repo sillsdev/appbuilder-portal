@@ -2,13 +2,12 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import { invalidate } from '$app/navigation';
-  import type { AdminSetting } from '$lib/admin-settings';
-  import { AdminSettingsKeys } from '$lib/admin-settings';
   import JSONEditor from '$lib/components/settings/JSONEditor.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
+  import { SiteParamSchemas, type SiteParams } from '$lib/site-params';
   import { toast } from '$lib/utils';
   import { byString } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
@@ -39,21 +38,20 @@
 <form class="m-4" method="post" action="" use:enhance>
   {#each data.settings.toSorted((a, b) => byString(a.Key, b.Key, getLocale())) as setting, i}
     {@const user = setting.ModifiedBy}
-    {@const validKeys = Object.values(AdminSettingsKeys[setting.Key as AdminSetting] ?? {}).join(
-      ', '
-    )}
+    {@const key = setting.Key as SiteParams}
+    {@const validKeys = Object.keys(SiteParamSchemas[key]?.entries ?? {}).join(', ')}
     <LabeledFormInput
       key="common_passThrough"
       params={{
-        value: `${setting.Key}: ${user ? (user.Name ?? `User #${setting.ModifiedById}`) : m.appName()} (${getTimeDateString(setting.DateUpdated)})`
+        value: `${key}: ${user ? (user.Name ?? `User #${setting.ModifiedById}`) : m.appName()} (${getTimeDateString(setting.DateUpdated)})`
       }}
     >
       <JSONEditor
         name="properties"
         class="w-full"
-        bind:value={$form.entries[setting.Key]}
+        bind:value={$form.entries[key]}
         bind:ok={ok[i]}
-        schema={siteParamsSchema(setting.Key)}
+        schema={siteParamsSchema(key)}
         hint={validKeys
           ? {
               key: 'common_passThrough',

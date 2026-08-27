@@ -2,12 +2,12 @@ import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
-import { getSoftwareUpdatesWhitelist } from '$lib/admin-settings/server';
 import { mapSystems } from '$lib/organizations/server';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { getSiteParam } from '$lib/site-params/server';
 import { startFormSchema } from '$lib/software-updates';
 import { getProducts, getUpdates, updatableProductsFilter } from '$lib/software-updates/server';
 import { filterAdminOrgs } from '$lib/utils/roles';
@@ -22,7 +22,7 @@ export const load = (async ({ locals, params }) => {
     locals.security.requireAdminOfAny();
   }
 
-  const allowlist = await getSoftwareUpdatesWhitelist();
+  const allowlist = await getSiteParam('software-updates', 'allow-orgs');
   if (orgId && allowlist !== 'all' && !allowlist?.includes(orgId)) {
     return error(403);
   }
@@ -63,7 +63,7 @@ export const actions = {
       locals.security.requireAdminOfAny();
     }
 
-    const allowlist = await getSoftwareUpdatesWhitelist();
+    const allowlist = await getSiteParam('software-updates', 'allow-orgs');
     if (orgId && allowlist !== 'all' && !allowlist?.includes(orgId)) {
       return error(403);
     }
