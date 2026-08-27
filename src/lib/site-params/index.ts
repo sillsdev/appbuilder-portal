@@ -1,16 +1,5 @@
-import * as v from 'valibot';
-
-const whitelist = v.optional(v.union([v.array(v.number()), v.picklist(['all'])]), []);
-
-export const SiteParamSchemas = {
-  'software-updates': v.strictObject({
-    'rate-limit': v.optional(v.number(), 20),
-    'allow-orgs': whitelist
-  }),
-  projects: v.strictObject({
-    'org-show-repo-url': whitelist
-  })
-} as const;
+import type * as v from 'valibot';
+import type { SiteParamSchemas } from '$lib/valibot';
 
 export type SiteParams = keyof typeof SiteParamSchemas;
 

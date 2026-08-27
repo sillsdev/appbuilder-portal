@@ -6,12 +6,10 @@
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
-  import { SiteParamSchemas, type SiteParams } from '$lib/site-params';
+  import type { SiteParams } from '$lib/site-params';
   import { toast } from '$lib/utils';
-  import { byString } from '$lib/utils/sorting';
   import { getTimeDateString } from '$lib/utils/time';
-  import { siteParamsSchema } from '$lib/valibot';
+  import { SiteParamSchemas, siteParamsJSONSchema } from '$lib/valibot';
 
   interface Props {
     data: PageData;
@@ -36,7 +34,7 @@
 <h3 class="pl-4">{m.admin_nav_params()}</h3>
 
 <form class="m-4" method="post" action="" use:enhance>
-  {#each data.settings.toSorted((a, b) => byString(a.Key, b.Key, getLocale())) as setting, i}
+  {#each data.settings as setting, i}
     {@const user = setting.ModifiedBy}
     {@const key = setting.Key as SiteParams}
     {@const validKeys = Object.keys(SiteParamSchemas[key]?.entries ?? {}).join(', ')}
@@ -49,9 +47,9 @@
       <JSONEditor
         name="properties"
         class="w-full"
-        bind:value={$form.entries[key]}
+        bind:value={$form.params[i].Value}
         bind:ok={ok[i]}
-        schema={siteParamsSchema(key)}
+        schema={siteParamsJSONSchema(key)}
         hint={validKeys
           ? {
               key: 'common_passThrough',

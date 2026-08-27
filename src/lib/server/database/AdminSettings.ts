@@ -1,26 +1,30 @@
 import type { Prisma } from '@prisma/client';
 import prisma from './prisma';
-import { SiteParamSchemas, type SiteParams } from '$lib/site-params';
+import { SiteParamSchemas } from '$lib/valibot';
 
 export async function updateMany(
   userId: number | null,
-  data: Partial<Record<SiteParams, Prisma.AdminSettingsCreateInput['Value']>>
+  params: Prisma.AdminSettingsGetPayload<{ select: { Key: true; Value: true } }>[]
 ) {
   return await prisma.$transaction(async (tx) => {
     const existing = new Map(
       (
         await tx.adminSettings.findMany({
-          where: { Key: { in: Object.keys(data) } },
+          where: { Key: { in: params.map((p) => p.Key) } },
           select: { Key: true, Value: true }
         })
       ).map(({ Key, Value }) => [Key, Value])
     );
 
     return await Promise.all(
-      Object.entries(data)
-        .filter(([Key, Value]) => existing.has(Key) && existing.get(Key) !== Value)
-        .map(([Key, Value]) =>
-          tx.adminSettings.update({ where: { Key }, data: { Value, ModifiedById: userId } })
+      params
+        .filter(({ Key, Value }) => !existing.has(Key) || existing.get(Key) !== Value)
+        .map(({ Key, Value }) =>
+          tx.adminSettings.upsert({
+            where: { Key },
+            create: { Key, Value, ModifiedById: userId },
+            update: { Value, ModifiedById: userId }
+          })
         )
     );
   });

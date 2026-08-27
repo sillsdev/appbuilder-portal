@@ -1,6 +1,7 @@
 import * as v from 'valibot';
 import { DatabaseReads } from '$lib/server/database';
-import { SiteParamSchemas, type SiteParamValueKey, type SiteParams } from '$lib/site-params';
+import type { SiteParamValue, SiteParamValueKey, SiteParams } from '$lib/site-params';
+import { SiteParamSchemas } from '$lib/valibot';
 
 export async function getSiteParam<P extends SiteParams, K extends SiteParamValueKey<P>>(
   param: P,
@@ -22,5 +23,5 @@ export async function getSiteParam<P extends SiteParams, K extends SiteParamValu
   return res.success
     ? res.output[key]
     : // @ts-expect-error I can't quite get the TS magic to work here, but it otherwise functions as it should
-      (schema.entries[key].default as SiteParamValue<P, K>);
+      (structuredClone(schema.entries[key].default) as SiteParamValue<P, K>);
 }
