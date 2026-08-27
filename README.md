@@ -46,10 +46,6 @@ ADMIN_EMAIL=
 
 USER_DATA_TURNSTILE_SECRET_KEY=
 PUBLIC_USER_DATA_TURNSTILE_SITEKEY=
-
-# The langtag refresh process can be very time intensive, and makes a lot of requests to an external server
-# This process is also readded to the queue every time the dev server updates, which means it can quickly have a lot of intances added after every change
-# SKIP_LANGTAG_REFRESH_STARTUP=
 ```
 
 > **Note:** Contact [@sillsdev/scriptoria-developers](https://github.com/orgs/sillsdev/teams/scriptoria-developers/members) for help obtaining the secret values.

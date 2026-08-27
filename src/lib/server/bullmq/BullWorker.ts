@@ -5,7 +5,6 @@ import * as Executor from '../job-executors';
 import { getQueues, getWorkerConfig } from './queues';
 import * as BullMQ from './types';
 import { building } from '$app/environment';
-import { env } from '$env/dynamic/private';
 import { SSEPageUpdates } from '$lib/projects/listener';
 
 const tracer = trace.getTracer('BullWorker');
@@ -186,16 +185,8 @@ export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
       getQueues()
         .SystemStartup.drain(true)
         .then(() => {
-          // allow refresh langtags to be skipped on startup in dev
-          // refresh langtags is a time-intensive operation, and rerunning it after every time a change is made in local dev is very costly on the ldml api server
-          const filteredJobs = startupJobs.filter(
-            (j) =>
-              env.NODE_ENV !== 'development' ||
-              j[1].type !== BullMQ.JobType.System_RefreshLangTags ||
-              !env.SKIP_LANGTAG_REFRESH_STARTUP
-          );
-          this.jobsLeft = filteredJobs.length;
-          filteredJobs.forEach(([name, data]) => {
+          this.jobsLeft = startupJobs.length;
+          startupJobs.forEach(([name, data]) => {
             getQueues().SystemStartup.add(name, data);
           });
         });

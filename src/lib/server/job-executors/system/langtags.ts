@@ -5,7 +5,7 @@ import { existsSync } from 'fs';
 import { mkdir, readFile, stat, writeFile } from 'fs/promises';
 import { join } from 'path';
 import * as v from 'valibot';
-import type { BullMQ } from '../../bullmq';
+import { BullMQ } from '../../bullmq';
 import { withAlternates } from '$lib/google-play';
 import { addBasicVariants, langtagSchema } from '$lib/ldml';
 import { locales as defaultLocales } from '$lib/paraglide/runtime';
@@ -26,6 +26,31 @@ export async function refreshLangTags(job: Job<BullMQ.System.RefreshLangTags>): 
 
   const log = (msg: string) => job.log(msg);
 
+  const lastUpdatedPath = join(localDir, 'last_updated');
+  let lastUpdatedMS = 0;
+  const startDateMS = Date.now();
+  const thirtyDaysMS = 1000 * 60 * 60 * 24 * 30;
+  const isStartup = job.queueName === BullMQ.QueueName.System_Startup;
+
+  if (isStartup && existsSync(lastUpdatedPath)) {
+    try {
+      lastUpdatedMS = parseInt(String(await readFile(lastUpdatedPath)));
+    } catch (e) {
+      log(`${e}`);
+    }
+  }
+
+  if (isStartup && startDateMS < lastUpdatedMS + thirtyDaysMS) {
+    log(`Last Updated ${new Date(lastUpdatedMS)}`);
+    job.updateProgress(100);
+    return {
+      lastUpdatedMS,
+      __thresholdMS: lastUpdatedMS + thirtyDaysMS,
+      __startDateMS: startDateMS
+    };
+  } else {
+    await writeFile(lastUpdatedPath, String(startDateMS));
+  }
   try {
     job.log(sectionDelim);
 
