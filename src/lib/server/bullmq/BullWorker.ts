@@ -181,10 +181,16 @@ export class SystemStartup<J extends BullMQ.StartupJob> extends BullWorker<J> {
         }
       ]
     ] as const;
-    startupJobs.forEach(([name, data]) => {
-      getQueues().SystemStartup.add(name, data);
-    });
-    this.jobsLeft = startupJobs.length;
+    if (!building) {
+      getQueues()
+        .SystemStartup.drain(true)
+        .then(() => {
+          this.jobsLeft = startupJobs.length;
+          startupJobs.forEach(([name, data]) => {
+            getQueues().SystemStartup.add(name, data);
+          });
+        });
+    }
   }
   async run(job: Job<J>) {
     // Close the worker after running the startup jobs
