@@ -3,13 +3,13 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { array, safeParse } from 'valibot';
 import type { LayoutServerLoad } from './$types';
-import { getSoftwareUpdatesWhitelist } from '$lib/admin-settings/server';
 import { langtagSchema } from '$lib/ldml';
 import { readLDML } from '$lib/ldml/server';
 import { locales } from '$lib/paraglide/runtime';
 import { getUserTasks } from '$lib/projects/sse';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
+import { getSiteParam } from '$lib/site-params/server';
 
 export const load: LayoutServerLoad = async (event) => {
   event.locals.security.requireAuthenticated();
@@ -30,7 +30,7 @@ export const load: LayoutServerLoad = async (event) => {
 
   const localDir = join(process.cwd(), 'languages');
 
-  const updatesAllowList = await getSoftwareUpdatesWhitelist();
+  const updatesAllowList = await getSiteParam('software-updates', 'allow-orgs');
 
   return {
     organizations,

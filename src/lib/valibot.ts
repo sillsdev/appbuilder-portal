@@ -1,5 +1,5 @@
 import * as v from 'valibot';
-import { getSchemaForSetting } from './admin-settings';
+import type { SiteParams } from '$lib/site-params';
 
 export const idSchema = v.pipe(v.number(), v.minValue(0), v.integer());
 
@@ -44,13 +44,13 @@ export const JSONStringSchema = v.pipe(
   v.stringifyJson({ space: 4 })
 );
 
-export const siteParamsSchema = (param: string) =>
-  v.pipe(v.string(), v.parseJson(), getSchemaForSetting(param), v.stringifyJson({ space: 4 }));
+export const siteParamsJSONSchema = (param: SiteParams) =>
+  v.pipe(v.string(), v.parseJson(), SiteParamSchemas[param], v.stringifyJson({ space: 4 }));
 
 export type JsonSchema =
   | typeof propertiesSchema
   | typeof JSONStringSchema
-  | ReturnType<typeof siteParamsSchema>;
+  | ReturnType<typeof siteParamsJSONSchema>;
 
 /** Legal phone numbers: +1 (123) 456-7890 1234567890 123-4567890 123 456-7890 */
 // eslint-disable-next-line no-useless-escape
@@ -109,3 +109,15 @@ export function resetValidity(form: HTMLFormElement) {
     el.setCustomValidity('');
   }
 }
+
+const whitelist = v.optional(v.union([v.array(idSchema), v.picklist(['all'])]), []);
+
+export const SiteParamSchemas = {
+  'software-updates': v.strictObject({
+    'rate-limit': v.optional(idSchema, 20),
+    'allow-orgs': whitelist
+  }),
+  projects: v.strictObject({
+    'org-show-repo-url': whitelist
+  })
+} as const;

@@ -1,26 +1,30 @@
 import type { Prisma } from '@prisma/client';
 import prisma from './prisma';
-import { AdminSettings } from '$lib/admin-settings';
+import { SiteParamSchemas } from '$lib/valibot';
 
-export async function update(
-  userId: number,
-  data: Record<Prisma.AdminSettingsCreateInput['Key'], Prisma.AdminSettingsCreateInput['Value']>
+export async function updateMany(
+  userId: number | null,
+  params: Prisma.AdminSettingsGetPayload<{ select: { Key: true; Value: true } }>[]
 ) {
   return await prisma.$transaction(async (tx) => {
     const existing = new Map(
       (
         await tx.adminSettings.findMany({
-          where: { Key: { in: Object.keys(data) } },
+          where: { Key: { in: params.map((p) => p.Key) } },
           select: { Key: true, Value: true }
         })
       ).map(({ Key, Value }) => [Key, Value])
     );
 
     return await Promise.all(
-      Object.entries(data)
-        .filter(([Key, Value]) => existing.has(Key) && existing.get(Key) !== Value)
-        .map(([Key, Value]) =>
-          tx.adminSettings.update({ where: { Key }, data: { Value, ModifiedById: userId } })
+      params
+        .filter(({ Key, Value }) => !existing.has(Key) || existing.get(Key) !== Value)
+        .map(({ Key, Value }) =>
+          tx.adminSettings.upsert({
+            where: { Key },
+            create: { Key, Value, ModifiedById: userId },
+            update: { Value, ModifiedById: userId }
+          })
         )
     );
   });
@@ -28,7 +32,7 @@ export async function update(
 
 export async function insertPlaceholders() {
   return await prisma.adminSettings.createMany({
-    data: Object.values(AdminSettings).map((v) => ({
+    data: Object.keys(SiteParamSchemas).map((v) => ({
       Key: v,
       Value: '{}',
       ModifiedById: null
