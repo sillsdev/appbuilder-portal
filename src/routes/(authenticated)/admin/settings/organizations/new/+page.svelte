@@ -106,6 +106,17 @@
     onIcon={Icons.Visible}
     offIcon={Icons.Invisible}
   />
+  <Toggle
+    title={{ key: 'org_visible' }}
+    message={{
+      key: 'org_visibleWarning'
+    }}
+    bind:checked={$form.visibleToPublic}
+    name="visibleToPublic"
+    onIcon={Icons.Visible}
+    offIcon={Icons.Invisible}
+    class="border border-warning p-2 rounded-md"
+  />
   <div class="my-4">
     <CancelButton returnTo={localizeHref(base)} />
     <SubmitButton icon={Icons.AddGeneric} />

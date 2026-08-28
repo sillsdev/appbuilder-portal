@@ -168,6 +168,7 @@
   "invitations_ourUsers": "Nuestras Usuarias",
   "invitations_verifyUser": "Antes de enviar una solicitud, por favor verifique que su organización no sea ya usuaria de Scriptoria.",
   "invitations_verifyWebsite": "Scriptoria tuvo problemas para verificar que tu sitio web existe.",
+  "newOrganization_title": "Agregar organización",
   "org_title": "Organizaciones",
   "org_add": "Añadir organización",
   "org_addSuccess": "Organización añadida",

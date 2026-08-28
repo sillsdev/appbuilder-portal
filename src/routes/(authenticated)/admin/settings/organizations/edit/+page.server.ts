@@ -44,7 +44,8 @@ export const load = (async ({ url, locals }) => {
         buildEngineApiAccessToken: data.BuildEngineApiAccessToken,
         logoUrl: data.LogoUrl,
         useDefaultBuildEngine: data.UseDefaultBuildEngine,
-        publicByDefault: data.PublicByDefault ?? false
+        publicByDefault: data.PublicByDefault ?? false,
+        visibleToPublic: data.VisibleToPublic ?? false
       },
       valibot(editSchema)
     ),
@@ -81,7 +82,8 @@ export const actions = {
       ContactEmail: form.data.contact,
       PublicByDefault: form.data.publicByDefault,
       UseDefaultBuildEngine: form.data.useDefaultBuildEngine,
-      WebsiteUrl: form.data.websiteUrl
+      WebsiteUrl: form.data.websiteUrl,
+      VisibleToPublic: form.data.visibleToPublic
     });
 
     return { ok: true, form };

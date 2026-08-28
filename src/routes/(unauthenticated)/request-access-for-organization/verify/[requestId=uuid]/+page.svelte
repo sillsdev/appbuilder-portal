@@ -22,7 +22,7 @@
         if (val) {
           return val - 1;
         } else {
-          goto(localizeHref(`request-access-for-organization`), { replaceState: true });
+          goto(localizeHref(`/request-access-for-organization`), { replaceState: true });
           return val;
         }
       });
@@ -30,11 +30,9 @@
     return () => clearInterval(interval);
   });
 
-  const expireTime = derived(expiresIn, ($elapsed) => {
-    const date = new Date(0);
-    date.setTime($elapsed * 1000);
-    const minutes = String(date.getMinutes());
-    const seconds = String(date.getSeconds());
+  const expireTime = derived(expiresIn, (elapsed) => {
+    const minutes = String(Math.floor(elapsed / 60));
+    const seconds = String(elapsed % 60);
     return `${minutes}:${seconds.length > 1 ? '' : '0'}${seconds}`;
   });
 
@@ -79,6 +77,7 @@
       autocomplete="one-time-code"
       required
       class="input h-16 w-36 validator text-center text-[2rem] mx-auto"
+      oninput={(e) => e.currentTarget.setCustomValidity('')}
     />
     <span class="validator-hint">
       {gp.error_invalid_code({}, { locale: getLocale() })}

@@ -40,7 +40,6 @@
     },
     onUpdate: ({ result }) => {
       const resultData = result.data as ActionData;
-      console.log(resultData);
       if (!resultData?.ok || !resultData?.form.data.turnstileToken) {
         window.turnstile?.reset?.();
         $form.turnstileToken = '';

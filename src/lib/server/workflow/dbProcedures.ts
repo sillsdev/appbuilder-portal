@@ -3,7 +3,6 @@ import { ProductTransitionType } from '../../prisma';
 import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseWrites } from '../database';
 import { DatabaseReads } from '../database/prisma';
-import { stringifyError } from '$lib/utils';
 import type { WorkflowState } from '$lib/workflowTypes';
 
 export async function deleteWorkflow(productId: string, status: WorkflowState) {
@@ -65,7 +64,7 @@ export async function markResolved(productId: string) {
       });
     }
   } catch (err) {
-    const exception = stringifyError(err);
+    const exception = err instanceof Error ? err : new Error(String(err));
     const span = trace.getActiveSpan();
     span?.recordException(exception);
     span?.setStatus({
@@ -104,7 +103,7 @@ export async function notifyAutoPublishOwner(productId: string) {
       }
     });
   } catch (err) {
-    const exception = stringifyError(err);
+    const exception = err instanceof Error ? err : new Error(String(err));
     const span = trace.getActiveSpan();
     span?.recordException(exception);
     span?.setStatus({
