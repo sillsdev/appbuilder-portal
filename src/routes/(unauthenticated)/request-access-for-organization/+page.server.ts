@@ -49,7 +49,6 @@ export const actions = {
         const formData = await request.formData();
         resolveToken(formData);
         const form = await superValidate(formData, valibot(requestSchema));
-        console.log(form);
         if (!form.valid) return fail(400, { form, ok: false });
 
         const verifyResult = await verifyToken(

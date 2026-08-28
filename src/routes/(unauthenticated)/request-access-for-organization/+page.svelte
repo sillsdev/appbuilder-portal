@@ -59,8 +59,6 @@
       }
     )
   );
-
-  $inspect($form);
 </script>
 
 <svelte:head>
