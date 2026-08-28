@@ -46,6 +46,9 @@ ADMIN_EMAIL=
 
 USER_DATA_TURNSTILE_SECRET_KEY=
 PUBLIC_USER_DATA_TURNSTILE_SITEKEY=
+
+ORG_REQUEST_TURNSTILE_SECRET_KEY=
+PUBLIC_ORG_REQUEST_TURNSTILE_SITEKEY=
 ```
 
 > **Note:** Contact [@sillsdev/scriptoria-developers](https://github.com/orgs/sillsdev/teams/scriptoria-developers/members) for help obtaining the secret values.
