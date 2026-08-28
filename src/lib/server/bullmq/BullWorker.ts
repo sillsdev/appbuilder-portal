@@ -6,6 +6,7 @@ import { getQueues, getWorkerConfig } from './queues';
 import * as BullMQ from './types';
 import { building } from '$app/environment';
 import { SSEPageUpdates } from '$lib/projects/listener';
+import { logLocalDev } from '$lib/utils/server';
 
 const tracer = trace.getTracer('BullWorker');
 
@@ -41,7 +42,7 @@ export abstract class BullWorker<T extends BullMQ.Job> {
           code: SpanStatusCode.ERROR, // Error
           message: (error as Error).message
         });
-        console.error(error);
+        logLocalDev?.(error);
         throw error;
       } finally {
         span.end();

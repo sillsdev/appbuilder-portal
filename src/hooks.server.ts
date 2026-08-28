@@ -25,6 +25,8 @@ import { QueueConnected, getQueues } from '$lib/server/bullmq';
 import { bullboardHandle } from '$lib/server/bullmq/BullBoard';
 import { allWorkers } from '$lib/server/bullmq/BullMQ';
 import { DatabaseConnected, DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { stringifyError } from '$lib/utils';
+import { logLocalDev } from '$lib/utils/server';
 
 if (!building) {
   // Start OTEL collector
@@ -190,7 +192,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 export const handleError: HandleServerError = ({ error, event, status }) => {
   // Log the error with OTEL
   OTEL.instance.logger.error('Error in handleError', {
-    error: error instanceof Error ? error.message : String(error),
+    error: stringifyError(error),
     route: event.route.id,
     method: event.request.method,
     url: event.url.href
@@ -198,7 +200,7 @@ export const handleError: HandleServerError = ({ error, event, status }) => {
   trace.getActiveSpan()?.recordException(error as Error);
   trace.getActiveSpan()?.setStatus({
     code: SpanStatusCode.ERROR, // Error
-    message: error instanceof Error ? error.message : String(error)
+    message: stringifyError(error)
   });
 
   if (status === 404) {
@@ -209,7 +211,7 @@ export const handleError: HandleServerError = ({ error, event, status }) => {
     };
   }
 
-  console.error('Error occurred:', error);
+  logLocalDev?.('Error occurred:', error);
 
   return {
     message: 'An unexpected error occurred. Please try again later.',
