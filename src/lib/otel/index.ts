@@ -19,6 +19,7 @@ import { LoggerProvider, SimpleLogRecordProcessor } from '@opentelemetry/sdk-log
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
+import { inLocalDevelopment } from '$lib/utils/server';
 
 class Logger {
   constructor(
@@ -60,8 +61,7 @@ export default class OTEL {
   private _logger: Logger;
 
   private constructor() {
-    const isDev = process.env.NODE_ENV === 'development';
-    const endpoint = `http://${isDev ? 'localhost' : 'otel'}:6317`;
+    const endpoint = `http://${inLocalDevelopment ? 'localhost' : 'otel'}:6317`;
 
     const resource = resourceFromAttributes({
       [ATTR_SERVICE_NAME]: 'scriptoria',
@@ -79,7 +79,7 @@ export default class OTEL {
         resource,
         processors: [logProcessor]
       }).getLogger('scriptoria-logger'),
-      isDev
+      inLocalDevelopment
     );
 
     this.sdk = new NodeSDK({

@@ -2,6 +2,9 @@ import { error } from '@sveltejs/kit';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import type { RequestEvent } from './$types';
+import OTEL from '$lib/otel';
+import { stringifyError } from '$lib/utils';
+import { logLocalDev } from '$lib/utils/server';
 
 export async function GET({ params, locals }: RequestEvent) {
   locals.security.requireNothing();
@@ -32,7 +35,8 @@ export async function GET({ params, locals }: RequestEvent) {
       }
     });
   } catch (err) {
-    console.error('Error reading PDF:', err);
+    OTEL.instance.logger.error(stringifyError(err));
+    logLocalDev?.('Error reading PDF:', err);
     throw error(404, 'PDF not found');
   }
 }

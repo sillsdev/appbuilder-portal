@@ -1,4 +1,5 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { logLocalDev } from '$lib/utils/server';
 
 const tracer = trace.getTracer('TurnstileVerification');
 
@@ -25,6 +26,7 @@ export async function verifyToken(token: string, secret: string | undefined) {
           code: SpanStatusCode.ERROR,
           message: 'Turnstile secret key is not configured'
         });
+        logLocalDev?.('Turnstile secret key is not configured');
         return 500;
       }
 
@@ -41,7 +43,7 @@ export async function verifyToken(token: string, secret: string | undefined) {
           code: SpanStatusCode.ERROR,
           message: (e as Error).message
         });
-        console.warn('Turnstile verification request failed', { error: e });
+        logLocalDev?.('Turnstile verification request failed', { error: e });
         return 503;
       }
 
@@ -51,14 +53,14 @@ export async function verifyToken(token: string, secret: string | undefined) {
           code: SpanStatusCode.ERROR,
           message: `Turnstile verification returned an invalid response: ${JSON.stringify(result)}`
         });
-        console.warn('Turnstile verification returned an invalid response', {
+        logLocalDev?.('Turnstile verification returned an invalid response', {
           status: verification.status
         });
         return 502;
       }
 
       if (!result.success) {
-        console.warn('Turnstile verification failed', {
+        logLocalDev?.('Turnstile verification failed', {
           errorCodes: result['error-codes'],
           hostname: result.hostname,
           action: result.action
@@ -73,7 +75,7 @@ export async function verifyToken(token: string, secret: string | undefined) {
         code: SpanStatusCode.ERROR,
         message: (e as Error).message
       });
-      console.warn('Turnstile verification request failed', { error: e });
+      logLocalDev?.('Turnstile verification request failed', { error: e });
       return 500;
     } finally {
       span.end();

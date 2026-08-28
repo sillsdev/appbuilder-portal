@@ -4,6 +4,7 @@ import { BullMQ, getQueues } from '../bullmq/index';
 import { delete as deleteInstance } from './WorkflowInstances';
 import prisma from './prisma';
 import type { RequirePrimitive } from './utility';
+import { logLocalDev } from '$lib/utils/server';
 import { WorkflowState } from '$lib/workflowTypes';
 
 export async function create(
@@ -290,9 +291,7 @@ async function validateProductBase(
         'product.product-definition-allowed': productInOrg,
         'product.project-type-allowed': projectTypeAllowed
       };
-      if (process.env.NODE_ENV === 'development') {
-        console.log(log);
-      }
+      logLocalDev?.(log);
       span.addEvent(msg, log);
 
       span.recordException(new Error(msg));

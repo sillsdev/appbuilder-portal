@@ -13,6 +13,7 @@ import { saveDeleteRequestVerificationCode } from '$lib/google-play/server';
 import { DatabaseWrites } from '$lib/server/database';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
 import { resolveToken, verifyToken } from '$lib/turnstile/server';
+import { logLocalDev } from '$lib/utils/server';
 
 const tracer = trace.getTracer('UDMRequests');
 
@@ -88,7 +89,7 @@ export const actions: Actions = {
             code: SpanStatusCode.ERROR,
             message: (e as Error).message
           });
-          console.error(e);
+          logLocalDev?.(e);
           return message(
             form,
             { error: m.alert_verification_failed({}, { locale }) },
@@ -117,7 +118,7 @@ export const actions: Actions = {
               DateExpires: new Date()
             }
           });
-          console.error(e);
+          logLocalDev?.(e);
           return message(
             form,
             { error: m.alert_verification_failed({}, { locale }) },
@@ -132,7 +133,7 @@ export const actions: Actions = {
           code: SpanStatusCode.ERROR,
           message: (e as Error).message
         });
-        console.error(e);
+        logLocalDev?.(e);
         return error(500);
       } finally {
         span.end();

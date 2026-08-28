@@ -31,7 +31,6 @@ export async function POST(request) {
       // This is a little wasteful because it will calculate much of the same data
       // multiple times if multiple users are connected to the same project page.
       if (updateId.includes(id)) {
-        // console.log(`Project page SSE update for project ${id}`);
         const projectData = await getProjectDetails(id, request.locals.security.sessionForm);
         const { error } = emit('projectData', stringify(projectData));
         if (error) {
