@@ -233,8 +233,8 @@ const fromScriptVersion = new RegExp(`APPBUILDER_SCRIPT_VERSION=(${vnum.source})
 /** Alternates */
 const fromVersion = new RegExp(`Version (${vnum.source})`);
 const fromStarHeader = new RegExp(`\\*\\*\\* (${vnum.source}) \\*\\*\\*`);
-const manageVersionName = new RegExp('^BUILD_MANAGE_VERSION_NAME=1');
-const fromVersionName = new RegExp(`^VERSION_NAME=(${vnum.source})`);
+const manageVersionName = new RegExp('(^|\\n)BUILD_MANAGE_VERSION_NAME=1');
+const fromVersionName = new RegExp(`(^|\\n)VERSION_NAME=(${vnum.source})`);
 
 async function backfillAppBuilderVersion(): Promise<MigrationOutput> {
   const chunkSize = 20;
@@ -242,7 +242,7 @@ async function backfillAppBuilderVersion(): Promise<MigrationOutput> {
     (text) => text.match(fromScriptVersion)?.at(1),
     (text) => text.match(fromVersion)?.at(1),
     (text) => text.match(fromStarHeader)?.at(1),
-    (text) => (text.match(manageVersionName) ? text.match(fromVersionName)?.at(1) : undefined)
+    (text) => (text.match(manageVersionName) ? text.match(fromVersionName)?.at(2) : undefined)
   ];
   const where = {
     Success: true,
