@@ -5,7 +5,6 @@ import * as v from 'valibot';
 import { BuildEngine } from '../../build-engine-api';
 import { BullMQ, getQueues } from '../../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../../database';
-import { checkBuildRetryCondition } from '../common.build-publish';
 import { JobSchedulerId } from '$lib/bullmq';
 import { fetchPublicationDetails } from '$lib/products/server';
 import { getRelease } from '$lib/server/build-engine-api/requests';
@@ -145,7 +144,12 @@ async function backfillPublicationLogUrl(): Promise<MigrationOutput> {
       { LogUrl: '' },
       { LogUrl: { startsWith: 'https://console.aws.com' } },
       {
-        AND: [{ OR: [{ PublishLink: null }, { PublishLink: '' }] }, { Success: true }]
+        AND: [
+          { OR: [{ PublishLink: null }, { PublishLink: '' }] },
+          { Success: true },
+          // Date when publishUrl artifact was implemented
+          { DateCreated: { gt: new Date('2019-06-21 20:33:18.000Z') } }
+        ]
       },
       {
         AND: [
@@ -155,7 +159,7 @@ async function backfillPublicationLogUrl(): Promise<MigrationOutput> {
       }
     ],
     // releases created before this time don't have the correct variables set in BuildEngine
-    DateCreated: { gt: new Date('2018-08-30 19:12:02.000') }
+    DateCreated: { gt: new Date('2018-08-30 19:12:02.000Z') }
   } as const satisfies Prisma.ProductPublicationsWhereInput;
 
   const before = await DatabaseReads.productPublications.count({ where });
@@ -229,8 +233,8 @@ const fromScriptVersion = new RegExp(`APPBUILDER_SCRIPT_VERSION=(${vnum.source})
 /** Alternates */
 const fromVersion = new RegExp(`Version (${vnum.source})`);
 const fromStarHeader = new RegExp(`\\*\\*\\* (${vnum.source}) \\*\\*\\*`);
-const manageVersionName = new RegExp('^BUILD_MANAGE_VERSION_NAME=1');
-const fromVersionName = new RegExp(`^VERSION_NAME=(${vnum.source})`);
+const manageVersionName = new RegExp('(^|\\n)BUILD_MANAGE_VERSION_NAME=1');
+const fromVersionName = new RegExp(`(^|\\n)VERSION_NAME=(${vnum.source})`);
 
 async function backfillAppBuilderVersion(): Promise<MigrationOutput> {
   const chunkSize = 20;
@@ -238,7 +242,7 @@ async function backfillAppBuilderVersion(): Promise<MigrationOutput> {
     (text) => text.match(fromScriptVersion)?.at(1),
     (text) => text.match(fromVersion)?.at(1),
     (text) => text.match(fromStarHeader)?.at(1),
-    (text) => (text.match(manageVersionName) ? text.match(fromVersionName)?.at(1) : undefined)
+    (text) => (text.match(manageVersionName) ? text.match(fromVersionName)?.at(2) : undefined)
   ];
   const where = {
     Success: true,
@@ -343,79 +347,9 @@ async function backfillAppBuilderVersion(): Promise<MigrationOutput> {
   return { before, chunk, after };
 }
 
-async function renameRetryComments() {
-  const filter: Prisma.ProductTransitionsWhereInput = {
-    Comment: 'Build may have failed due to insufficient memory. Retrying with medium compute type.'
-  };
-  const chunkSize = 20;
-
-  const before = await DatabaseReads.productTransitions.count({
-    where: filter
-  });
-  const chunk = await DatabaseReads.productTransitions.findMany({
-    where: filter,
-    select: {
-      Id: true,
-      ProductBuilds: {
-        where: {
-          Success: false,
-          ProductArtifacts: {
-            some: {
-              ArtifactType: 'consoleText'
-            }
-          }
-        },
-        select: {
-          ProductArtifacts: {
-            where: {
-              ArtifactType: 'consoleText'
-            },
-            select: {
-              Url: true
-            }
-          }
-        },
-        orderBy: {
-          DateCreated: 'desc'
-        }
-      }
-    },
-    take: chunkSize,
-    skip: Math.max(0, randomInt(before || 1) - chunkSize)
-  });
-
-  const fixed = await Promise.all(
-    chunk.map(async (p) => {
-      try {
-        const urls = p.ProductBuilds.map((b) => b.ProductArtifacts?.at(0)?.Url ?? '');
-        let matchingUrl = '';
-        for (const url of urls) {
-          if (url && (await checkBuildRetryCondition(url))) matchingUrl = url;
-        }
-        await DatabaseWrites.productTransitions.update({
-          where: { Id: p.Id },
-          data: {
-            Comment: `system.build-retry,${matchingUrl}`
-          }
-        });
-        return { ...p, ConsoleText: matchingUrl };
-      } catch (e) {
-        return { ...p, Error: e };
-      }
-    })
-  );
-
-  const after = await DatabaseReads.productTransitions.count({
-    where: filter
-  });
-
-  return { before, chunk, fixed, after };
-}
-
 const migrationSteps = {
   'Patch ProductPublications.LogUrl': backfillPublicationLogUrl,
-  'Backfill Remaining ProductBuilds.AppBuilderVersion': backfillAppBuilderVersion,
-  'Rename Retry Comments': renameRetryComments
+  'Backfill Remaining ProductBuilds.AppBuilderVersion': backfillAppBuilderVersion
 } as const satisfies Record<string, () => Promise<MigrationOutput>>;
 
 export type MigrationStep = keyof typeof migrationSteps;
