@@ -144,7 +144,12 @@ async function backfillPublicationLogUrl(): Promise<MigrationOutput> {
       { LogUrl: '' },
       { LogUrl: { startsWith: 'https://console.aws.com' } },
       {
-        AND: [{ OR: [{ PublishLink: null }, { PublishLink: '' }] }, { Success: true }]
+        AND: [
+          { OR: [{ PublishLink: null }, { PublishLink: '' }] },
+          { Success: true },
+          // Date when publishUrl artifact was implemented
+          { DateCreated: { gt: new Date('2019-06-21 15:33:18') } }
+        ]
       },
       {
         AND: [
