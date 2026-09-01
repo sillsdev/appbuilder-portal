@@ -27,7 +27,8 @@ export const actions = {
       ContactEmail: form.data.contact,
       PublicByDefault: form.data.publicByDefault,
       UseDefaultBuildEngine: form.data.useDefaultBuildEngine,
-      WebsiteUrl: form.data.websiteUrl
+      WebsiteUrl: form.data.websiteUrl,
+      VisibleToPublic: form.data.visibleToPublic
     });
     return { ok: true, form };
   }

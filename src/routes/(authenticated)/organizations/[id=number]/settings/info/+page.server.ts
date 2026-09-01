@@ -11,7 +11,8 @@ export const load = (async (event) => {
     {
       name: organization.Name,
       logoUrl: organization.LogoUrl,
-      contact: organization.ContactEmail
+      contact: organization.ContactEmail,
+      visibleToPublic: organization.VisibleToPublic
     },
     valibot(infoSchema)
   );
@@ -26,7 +27,8 @@ export const actions = {
     await DatabaseWrites.organizations.update(parseInt(event.params.id), {
       Name: form.data.name,
       LogoUrl: form.data.logoUrl,
-      ContactEmail: form.data.contact
+      ContactEmail: form.data.contact,
+      VisibleToPublic: form.data.visibleToPublic
     });
     return { form, ok: true };
   }

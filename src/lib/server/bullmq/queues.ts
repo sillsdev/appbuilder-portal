@@ -19,13 +19,15 @@ import type {
 } from './types';
 import { QueueName } from './types';
 import OTEL from '$lib/otel';
+import { stringifyError } from '$lib/utils';
+import { inLocalDevelopment, logLocalDev } from '$lib/utils/server';
 
 class Connection {
   private conn: Redis;
   private connected: boolean;
   constructor(isQueueConnection = false, keyPrefix?: string) {
     this.conn = new Redis({
-      host: process.env.NODE_ENV === 'development' ? 'localhost' : process.env.VALKEY_HOST,
+      host: inLocalDevelopment ? 'localhost' : process.env.VALKEY_HOST,
       maxRetriesPerRequest: isQueueConnection ? undefined : null,
       keyPrefix
     });
@@ -49,10 +51,10 @@ class Connection {
       });
       this.connected = false;
       if (err.message.includes('ENOTFOUND')) {
-        console.error('Fatal Valkey connection', err);
+        logLocalDev?.('Fatal Valkey connection', err);
         process.exit(1);
       } else if (!err.message.includes('ECONNREFUSED')) {
-        console.error('Valkey connection error', err);
+        logLocalDev?.('Valkey connection error', err);
       }
     });
     setInterval(() => {
@@ -64,8 +66,8 @@ class Connection {
           })
           .catch((err) => {
             if (this.connected) {
-              console.error(err);
-              console.log('Valkey disconnected');
+              logLocalDev?.(err);
+              logLocalDev?.('Valkey disconnected');
               this.connected = false;
               OTEL.instance.logger.error('Valkey disconnected', {
                 error: err.message,
@@ -149,7 +151,8 @@ async function createJobRecord(job: Job<BaseJob>) {
           }
           if (!found) {
             job.log('Error recovering transition. No job record created.');
-            console.error(`Error recovering transition ${job.data.transition}`);
+            logLocalDev?.(`Error recovering transition ${job.data.transition}`);
+            OTEL.instance.logger.error(`Error recovering transition ${job.data.transition}`);
             return;
           } else {
             job.log(`Transition ${job.data.transition} not found. Replacing with ${found}`);
@@ -171,7 +174,8 @@ async function createJobRecord(job: Job<BaseJob>) {
     }
   } catch (e) {
     job.log(`Error creating job records: ${e}`);
-    console.error(e);
+    logLocalDev?.(e);
+    OTEL.instance.logger.error(`Error creating job records`, { error: stringifyError(e) });
   }
 }
 

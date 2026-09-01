@@ -2,6 +2,7 @@ import type { Session } from '@auth/sveltekit';
 import type { Prisma } from '@prisma/client';
 import * as v from 'valibot';
 import { RoleId } from '$lib/prisma';
+import { stringifyError } from '$lib/utils';
 import { isAdminForOrg } from '$lib/utils/roles';
 import { idSchema, langtagRegex, paginateSchema, requiredString } from '$lib/valibot';
 
@@ -165,7 +166,7 @@ export const importJSONSchema = v.pipe(
       return JSON.parse(dataset.value || '{}');
     } catch (e) {
       addIssue({
-        message: e instanceof Error ? e.message : String(e),
+        message: stringifyError(e),
         path: [
           {
             type: 'unknown',

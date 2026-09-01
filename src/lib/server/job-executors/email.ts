@@ -16,6 +16,7 @@ import { activeSystems } from '$lib/organizations/server';
 import { RoleId } from '$lib/prisma';
 import type { ProjectImportJSON } from '$lib/projects';
 import { NotificationType } from '$lib/users';
+import { inLocalDevelopment } from '$lib/utils/server';
 
 export async function inviteUser(job: Job<BullMQ.Email.InviteUser>): Promise<unknown> {
   const inviteInformation = await DatabaseReads.organizationMembershipInvites.findFirstOrThrow({
@@ -238,7 +239,7 @@ export async function notifySuperAdminsOfOfflineSystems(
     await getQueues().Emails.removeJobScheduler(BullMQ.JobSchedulerId.SystemStatusEmail);
     return;
   }
-  if (process.env.NODE_ENV === 'development') {
+  if (inLocalDevelopment) {
     console.log(
       'Not notifying super admins of offline systems - ',
       statuses.map((s) => s.BuildEngineUrl).join(', ')

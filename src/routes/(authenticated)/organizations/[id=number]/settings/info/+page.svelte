@@ -3,6 +3,7 @@
   import type { PageData } from './$types';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import Toggle from '$lib/components/settings/Toggle.svelte';
   import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
   import { toast } from '$lib/utils';
@@ -53,6 +54,17 @@
           icon: Icons.Image
         }}
         bind:value={$form.logoUrl}
+      />
+      <Toggle
+        title={{ key: 'org_visible' }}
+        message={{
+          key: 'org_visibleWarning'
+        }}
+        bind:checked={$form.visibleToPublic}
+        name="visibleToPublic"
+        onIcon={Icons.Visible}
+        offIcon={Icons.Invisible}
+        class="border border-warning p-2 rounded-md"
       />
       <div class="w-1/3 mx-auto sm:hidden">
         <img src={$form.logoUrl} alt="Logo" class="object-contain" />
