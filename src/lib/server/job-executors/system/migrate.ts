@@ -148,7 +148,7 @@ async function backfillPublicationLogUrl(): Promise<MigrationOutput> {
           { OR: [{ PublishLink: null }, { PublishLink: '' }] },
           { Success: true },
           // Date when publishUrl artifact was implemented
-          { DateCreated: { gt: new Date('2019-06-21 15:33:18') } }
+          { DateCreated: { gt: new Date('2019-06-21 20:33:18.000Z') } }
         ]
       },
       {
@@ -159,7 +159,7 @@ async function backfillPublicationLogUrl(): Promise<MigrationOutput> {
       }
     ],
     // releases created before this time don't have the correct variables set in BuildEngine
-    DateCreated: { gt: new Date('2018-08-30 19:12:02.000') }
+    DateCreated: { gt: new Date('2018-08-30 19:12:02.000Z') }
   } as const satisfies Prisma.ProductPublicationsWhereInput;
 
   const before = await DatabaseReads.productPublications.count({ where });
