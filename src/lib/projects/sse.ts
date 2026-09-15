@@ -260,7 +260,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           Properties: isSuper
             ? project.Properties
             : /* we still need the relevant key; hide the others for security */
-              project.Properties?.match(manualVersionCodeMatch)?.at(0),
+              (project.Properties?.match(manualVersionCodeMatch)?.at(0) ?? null),
           OwnerId: project.Owner.Id,
           GroupId: project.Group.Id,
           Products: project.Products.map((product) => ({
