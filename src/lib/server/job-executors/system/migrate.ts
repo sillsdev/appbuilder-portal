@@ -8,6 +8,7 @@ import { DatabaseReads, DatabaseWrites } from '../../database';
 import { JobSchedulerId } from '$lib/bullmq';
 import { fetchPublicationDetails } from '$lib/products/server';
 import { getRelease } from '$lib/server/build-engine-api/requests';
+import { JSONStringSchema } from '$lib/valibot';
 
 export async function migrate(job: Job<BullMQ.System.Migrate>): Promise<unknown> {
   /**
@@ -347,9 +348,76 @@ async function backfillAppBuilderVersion(): Promise<MigrationOutput> {
   return { before, chunk, after };
 }
 
+async function backfillProjectProperties(): Promise<MigrationOutput> {
+  const chunkSize = 20;
+  const where = {
+    Properties: null,
+    Products: {
+      some: {
+        ProductArtifacts: {
+          some: {
+            ArtifactType: 'publish_properties',
+            Url: { not: null }
+          }
+        }
+      }
+    }
+  } as const satisfies Prisma.ProjectsWhereInput;
+
+  const before = await DatabaseReads.projects.count({ where });
+
+  const chunk = await Promise.all(
+    (
+      await DatabaseReads.projects.findMany({
+        where,
+        ...sample(before, chunkSize),
+        select: {
+          Id: true,
+          Products: {
+            where: where.Products.some,
+            select: {
+              ProductArtifacts: {
+                where: where.Products.some.ProductArtifacts.some,
+                select: {
+                  Url: true
+                },
+                take: 1
+              }
+            },
+            orderBy: { DateBuilt: 'asc' },
+            take: 1
+          }
+        }
+      })
+    ).map(async (p) => {
+      let props = '';
+      try {
+        const text = await fetch(p.Products[0].ProductArtifacts[0].Url!).then((r) => r.text());
+        const parsed = v.safeParse(JSONStringSchema, text);
+        if (parsed.success) {
+          props = parsed.output;
+        }
+      } catch {
+        //empty
+      }
+      if (props) {
+        await DatabaseWrites.projects.update(p.Id, {
+          Properties: props
+        });
+      }
+      return { project: p, props };
+    })
+  );
+
+  const after = await DatabaseReads.projects.count({ where });
+
+  return { before, chunk, after };
+}
+
 const migrationSteps = {
   'Patch ProductPublications.LogUrl': backfillPublicationLogUrl,
-  'Backfill Remaining ProductBuilds.AppBuilderVersion': backfillAppBuilderVersion
+  'Backfill Remaining ProductBuilds.AppBuilderVersion': backfillAppBuilderVersion,
+  'Backfill Projects.Properties': backfillProjectProperties
 } as const satisfies Record<string, () => Promise<MigrationOutput>>;
 
 export type MigrationStep = keyof typeof migrationSteps;
