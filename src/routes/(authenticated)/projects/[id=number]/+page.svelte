@@ -21,6 +21,7 @@
     showProjectDetails
   } from '$lib/projects/components/ProjectDetails.svelte';
   import type { ProjectDataSSE } from '$lib/projects/sse';
+  import { isSuperAdmin } from '$lib/utils/roles';
   import { byName } from '$lib/utils/sorting';
   import { getRelativeTime, getTimeDateString } from '$lib/utils/time';
 
@@ -203,6 +204,18 @@
           {:else if !projectData.project.RepositoryUrl}
             <div class="flex rounded-md text-nowrap bg-base-200 p-3 pt-2 mt-2">
               <p class="italic">{m.project_location_placeholder()}</p>
+            </div>
+          {/if}
+          {#if isSuperAdmin(data.session.user.roles) && projectData.project.Properties}
+            <div>
+              <details>
+                <summary><span>{m.products_properties_title()}:</span></summary>
+                <textarea
+                  class="textarea w-full bg-base-200 p-3 pt-2 mt-2 min-h-48"
+                  readonly
+                  value={projectData.project.Properties}
+                ></textarea>
+              </details>
             </div>
           {/if}
         </div>

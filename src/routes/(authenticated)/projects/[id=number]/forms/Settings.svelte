@@ -3,6 +3,7 @@
   import ToggleForm from '$lib/components/settings/ToggleForm.svelte';
   import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
+  import { manualVersionCodeMatch } from '$lib/workflowTypes';
 
   interface Props {
     project: Prisma.ProjectsGetPayload<{
@@ -11,6 +12,7 @@
         AllowDownloads: true;
         AutoPublishOnRebuild: true;
         RebuildOnSoftwareUpdate: true;
+        Properties: true;
       };
     }>;
     canEdit: boolean;
@@ -28,6 +30,7 @@
   let allowDownloads = $state(!!project.AllowDownloads);
   let autoRebuild = $state(!!project.RebuildOnSoftwareUpdate);
   let autoPublish = $state(!!project.AutoPublishOnRebuild);
+  const manualVersionCode = $derived(project.Properties?.match(manualVersionCodeMatch));
 </script>
 
 <h2 class="pl-0 pt-0">{m.project_settings_title()}</h2>
@@ -66,13 +69,15 @@
       method="POST"
       action="?/{rebuildEndpoint}"
       title={{ key: 'project_autoRebuild_on_update_title' }}
-      message={{ key: 'project_autoRebuild_on_update_description' }}
+      message={{
+        key: 'project_autoRebuild_on_update_description' /* TODO: should this message be changed when disabled? */
+      }}
       onmsg={m.project_acts_autoBuilds_on()}
       offmsg={m.project_acts_autoBuilds_off()}
-      formVar={autoRebuild}
+      formVar={autoRebuild && !manualVersionCode}
       onIcon={Icons.UpdateOn}
       offIcon={Icons.UpdateOff}
-      {canEdit}
+      canEdit={canEdit && !manualVersionCode}
     />
 
     <ToggleForm

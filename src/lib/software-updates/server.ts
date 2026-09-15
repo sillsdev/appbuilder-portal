@@ -4,7 +4,7 @@ import { mapSystems } from '$lib/organizations/server';
 import { DatabaseReads } from '$lib/server/database';
 import type { RebuildableProductsData, UpdateSummaryData } from '$lib/software-updates';
 import { filterAdminOrgs } from '$lib/utils/roles';
-import { WorkflowState } from '$lib/workflowTypes';
+import { WorkflowState, manualVersionCodeMatch } from '$lib/workflowTypes';
 
 const tracer = trace.getTracer('SoftwareUpdates');
 
@@ -160,9 +160,11 @@ export const updatableProductsFilter = {
   NOT: {
     ProductDefinition: { RebuildWorkflow: null }
   },
+  Properties: { not: { contains: manualVersionCodeMatch } },
   Project: {
     DateArchived: null,
-    RebuildOnSoftwareUpdate: true
+    RebuildOnSoftwareUpdate: true,
+    Properties: { not: { contains: manualVersionCodeMatch } }
   },
   ProductBuilds: {
     some: productBuildsWhere

@@ -211,6 +211,8 @@ export enum ENVKeys {
   BUILD_SHARE_APP_LINK = 'BUILD_SHARE_APP_LINK'
 }
 
+export const manualVersionCodeMatch = `"${ENVKeys.BUILD_MANAGE_VERSION_CODE}": "0"`;
+
 export type WorkflowContext = WorkflowInstanceContext & WorkflowInput;
 
 export type WorkflowConfig = {
