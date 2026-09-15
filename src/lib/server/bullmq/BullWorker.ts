@@ -14,6 +14,16 @@ const tracer = trace.getTracer('BullWorker');
  */
 function withExceptionLog<T>(
   spanName: string,
+  rethrowError: true,
+  exec: (span: Span) => Promise<T>
+): Promise<T | never>;
+function withExceptionLog<T>(
+  spanName: string,
+  rethrowError: false,
+  exec: (span: Span) => Promise<T>
+): Promise<T | undefined>;
+function withExceptionLog<T>(
+  spanName: string,
   rethrowError: boolean,
   exec: (span: Span) => Promise<T>
 ) {
