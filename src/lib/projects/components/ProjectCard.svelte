@@ -110,6 +110,19 @@
               {getTimeDateString(project.DateArchived)}
             </span>
           </span>
+        {:else if route === 'projects'}
+          <span class="flex items-center">
+            <IconContainer
+              icon={project.RebuildEnabled ? Icons.UpdateOn : Icons.UpdateOff}
+              width={20}
+              class={['mr-1', project.RebuildEnabled ? 'text-success' : 'opacity-60']}
+            />
+            <span class="text-nowrap w-40 text-center">
+              {project.RebuildEnabled
+                ? m.project_acts_autoBuilds_on()
+                : m.project_acts_autoBuilds_off()}
+            </span>
+          </span>
         {/if}
       </div>
     </div>

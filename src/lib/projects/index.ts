@@ -4,6 +4,7 @@ import * as v from 'valibot';
 import { RoleId } from '$lib/prisma';
 import { isAdminForOrg } from '$lib/utils/roles';
 import { idSchema, langtagRegex, paginateSchema, requiredString } from '$lib/valibot';
+import { manualVersionCodeMatch } from '$lib/workflowTypes';
 
 export const projectSelect = {
   Id: true,
@@ -13,6 +14,8 @@ export const projectSelect = {
   DateActive: true,
   DateArchived: true,
   DateUpdated: true,
+  RebuildOnSoftwareUpdate: true,
+  Properties: true,
   Products: {
     select: {
       Id: true,
@@ -75,6 +78,8 @@ export function pruneProjects(
       Owner: { Name: OwnerName, Id: OwnerId },
       Organization: { Name: OrganizationName, Id: OrganizationId },
       Group: { Name: GroupName, Id: GroupId },
+      RebuildOnSoftwareUpdate,
+      Properties,
       DateActive,
       DateUpdated,
       DateArchived,
@@ -93,6 +98,7 @@ export function pruneProjects(
       DateUpdated,
       DateActive,
       DateArchived,
+      RebuildEnabled: RebuildOnSoftwareUpdate && !Properties?.match(manualVersionCodeMatch),
       Products: Products.map(
         ({
           Id,
