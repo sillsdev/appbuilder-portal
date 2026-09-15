@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Prisma } from '@prisma/client';
+  import Tooltip from '$lib/components/Tooltip.svelte';
   import ToggleForm from '$lib/components/settings/ToggleForm.svelte';
   import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
@@ -64,21 +65,28 @@
   />
 
   {#if showRebuildToggles}
-    <ToggleForm
-      name="autoRebuildOnSoftwareUpdate"
-      method="POST"
-      action="?/{rebuildEndpoint}"
-      title={{ key: 'project_autoRebuild_on_update_title' }}
-      message={{
-        key: 'project_autoRebuild_on_update_description' /* TODO: should this message be changed when disabled? */
-      }}
-      onmsg={m.project_acts_autoBuilds_on()}
-      offmsg={m.project_acts_autoBuilds_off()}
-      formVar={autoRebuild && !manualVersionCode}
-      onIcon={Icons.UpdateOn}
-      offIcon={Icons.UpdateOff}
-      canEdit={canEdit && !manualVersionCode}
-    />
+    <Tooltip class="tooltip-warning!">
+      {#if manualVersionCode}
+        <span class="tooltip-content">
+          {m.project_autoRebuild_on_update_requirement()}
+        </span>
+      {/if}
+      <ToggleForm
+        name="autoRebuildOnSoftwareUpdate"
+        method="POST"
+        action="?/{rebuildEndpoint}"
+        title={{ key: 'project_autoRebuild_on_update_title' }}
+        message={{
+          key: 'project_autoRebuild_on_update_description'
+        }}
+        onmsg={m.project_acts_autoBuilds_on()}
+        offmsg={m.project_acts_autoBuilds_off()}
+        formVar={autoRebuild && !manualVersionCode}
+        onIcon={Icons.UpdateOn}
+        offIcon={Icons.UpdateOff}
+        canEdit={canEdit && !manualVersionCode}
+      />
+    </Tooltip>
 
     <ToggleForm
       name="autoPublishOnRebuild"
