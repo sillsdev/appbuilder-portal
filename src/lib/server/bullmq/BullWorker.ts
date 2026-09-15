@@ -1,4 +1,4 @@
-import { SpanStatusCode, trace } from '@opentelemetry/api';
+import { type Span, SpanStatusCode, trace } from '@opentelemetry/api';
 import type { Exception, Job } from 'bullmq';
 import { Worker } from 'bullmq';
 import * as Executor from '../job-executors';
@@ -9,6 +9,33 @@ import { SSEPageUpdates } from '$lib/projects/listener';
 
 const tracer = trace.getTracer('BullWorker');
 
+/**
+ * runs some code wrapped in OTEL exception logging. Optionally rethrows encountered error.
+ */
+function withExceptionLog<T>(
+  spanName: string,
+  rethrowError: boolean,
+  exec: (span: Span) => Promise<T>
+) {
+  return tracer.startActiveSpan(spanName, async (span) => {
+    try {
+      return await exec(span);
+    } catch (error) {
+      span.recordException(error as Exception);
+      span.setStatus({
+        code: SpanStatusCode.ERROR, // Error
+        message: (error as Error).message
+      });
+      console.error(spanName, error);
+      if (rethrowError) {
+        throw error;
+      }
+    } finally {
+      span.end();
+    }
+  });
+}
+
 export abstract class BullWorker<T extends BullMQ.Job> {
   public worker?: Worker;
   constructor(public queue: BullMQ.QueueName) {
@@ -17,7 +44,7 @@ export abstract class BullWorker<T extends BullMQ.Job> {
       this.worker = new Worker<T>(queue, this.runInternal.bind(this), getWorkerConfig());
   }
   private async runInternal(job: Job<T>) {
-    return await tracer.startActiveSpan(`${job.queueName} - ${job.data.type}`, async (span) => {
+    return withExceptionLog(`${job.queueName} - ${job.data.type}`, true, async (span) => {
       span.setAttributes({
         'job.id': job.id,
         'job.name': job.name,
@@ -26,26 +53,15 @@ export abstract class BullWorker<T extends BullMQ.Job> {
         'job.opts': JSON.stringify(job.opts),
         'job.data': JSON.stringify(job.data)
       });
-      try {
-        job.updateProgress(0);
-        if (job.id && job.data.transition) {
-          span.setAttribute(
-            'job.record',
-            `${encodeURIComponent(job.queueName)}/${encodeURIComponent(job.id)}`
-          );
-        }
-        return await this.run(job);
-      } catch (error) {
-        span.recordException(error as Exception);
-        span.setStatus({
-          code: SpanStatusCode.ERROR, // Error
-          message: (error as Error).message
-        });
-        console.error(error);
-        throw error;
-      } finally {
-        span.end();
+
+      job.updateProgress(0);
+      if (job.id && job.data.transition) {
+        span.setAttribute(
+          'job.record',
+          `${encodeURIComponent(job.queueName)}/${encodeURIComponent(job.id)}`
+        );
       }
+      return await this.run(job);
     });
   }
   abstract run(job: Job<T>): Promise<unknown>;
@@ -70,75 +86,85 @@ export class Builds<J extends BullMQ.BuildJob> extends BullWorker<J> {
 export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J> {
   constructor() {
     super(BullMQ.QueueName.System_Recurring);
-    getQueues().SystemRecurring.upsertJobScheduler(
-      BullMQ.JobSchedulerId.CheckSystemStatuses,
-      {
-        pattern: '*/5 * * * *', // every 5 minutes
-        immediately: false
-      },
-      {
-        name: 'Check System Statuses',
-        data: {
-          type: BullMQ.JobType.System_CheckEngineStatuses
+    withExceptionLog('SystemRecurring - Enqueue: Check System Statuses', false, () =>
+      getQueues().SystemRecurring.upsertJobScheduler(
+        BullMQ.JobSchedulerId.CheckSystemStatuses,
+        {
+          pattern: '*/5 * * * *', // every 5 minutes
+          immediately: false
+        },
+        {
+          name: 'Check System Statuses',
+          data: {
+            type: BullMQ.JobType.System_CheckEngineStatuses
+          }
         }
-      }
+      )
     );
-    getQueues().SystemRecurring.upsertJobScheduler(
-      BullMQ.JobSchedulerId.RefreshLangTags,
-      {
-        pattern: '@weekly', // every Sunday at midnight
-        immediately: false
-      },
-      {
-        name: 'Refresh LangTags',
-        data: {
-          type: BullMQ.JobType.System_RefreshLangTags
+    withExceptionLog('SystemRecurring - Enqueue: Refresh LangTags', false, () =>
+      getQueues().SystemRecurring.upsertJobScheduler(
+        BullMQ.JobSchedulerId.RefreshLangTags,
+        {
+          pattern: '@weekly', // every Sunday at midnight
+          immediately: false
+        },
+        {
+          name: 'Refresh LangTags',
+          data: {
+            type: BullMQ.JobType.System_RefreshLangTags
+          }
         }
-      }
+      )
     );
-    getQueues().SystemRecurring.upsertJobScheduler(
-      BullMQ.JobSchedulerId.MigrateChunks,
-      {
-        pattern: '*/15 * * * *', // every 15 minutes
-        immediately: false
-      },
-      {
-        name: 'Migrate Features (chunked)',
-        data: {
-          type: BullMQ.JobType.System_Migrate,
-          steps: [
-            'Patch ProductPublications.LogUrl',
-            'Backfill Remaining ProductBuilds.AppBuilderVersion',
-            'Backfill Projects.Properties'
-          ]
+    withExceptionLog('SystemRecurring - Enqueue: Migrate Features', false, () =>
+      getQueues().SystemRecurring.upsertJobScheduler(
+        BullMQ.JobSchedulerId.MigrateChunks,
+        {
+          pattern: '*/15 * * * *', // every 15 minutes
+          immediately: false
+        },
+        {
+          name: 'Migrate Features (chunked)',
+          data: {
+            type: BullMQ.JobType.System_Migrate,
+            steps: [
+              'Patch ProductPublications.LogUrl',
+              'Backfill Remaining ProductBuilds.AppBuilderVersion',
+              'Backfill Projects.Properties'
+            ]
+          }
         }
-      }
+      )
     );
-    getQueues().SystemRecurring.upsertJobScheduler(
-      BullMQ.JobSchedulerId.CheckPendingUpdates,
-      {
-        pattern: '*/5 * * * *', // every 5 minutes
-        immediately: false
-      },
-      {
-        name: 'Rate-limit Pending Software Updates',
-        data: {
-          type: BullMQ.JobType.System_CheckPendingUpdates
+    withExceptionLog('SystemRecurring - Enqueue: Rate-limit Pending Software Updates', false, () =>
+      getQueues().SystemRecurring.upsertJobScheduler(
+        BullMQ.JobSchedulerId.CheckPendingUpdates,
+        {
+          pattern: '*/5 * * * *', // every 5 minutes
+          immediately: false
+        },
+        {
+          name: 'Rate-limit Pending Software Updates',
+          data: {
+            type: BullMQ.JobType.System_CheckPendingUpdates
+          }
         }
-      }
+      )
     );
-    getQueues().SystemRecurring.upsertJobScheduler(
-      BullMQ.JobSchedulerId.CleanupExpiredData,
-      {
-        pattern: '@daily',
-        immediately: false
-      },
-      {
-        name: 'Cleanup Old/Expired Data',
-        data: {
-          type: BullMQ.JobType.System_Cleanup
+    withExceptionLog('SystemRecurring - Enqueue: Cleanup Old/Expired Data', false, () =>
+      getQueues().SystemRecurring.upsertJobScheduler(
+        BullMQ.JobSchedulerId.CleanupExpiredData,
+        {
+          pattern: '@daily',
+          immediately: false
+        },
+        {
+          name: 'Cleanup Old/Expired Data',
+          data: {
+            type: BullMQ.JobType.System_Cleanup
+          }
         }
-      }
+      )
     );
   }
   async run(job: Job<J>) {
