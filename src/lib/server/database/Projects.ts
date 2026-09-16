@@ -4,6 +4,7 @@ import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
 import type { RequirePrimitive, TXClient } from './utility';
 import { RoleId } from '$lib/prisma';
+import { manualVersionCodeMatch } from '$lib/workflowTypes';
 
 /**
  * For a project to be valid:
@@ -103,10 +104,11 @@ export async function update(
 
   if (
     (projectData.RebuildOnSoftwareUpdate ?? existing!.RebuildOnSoftwareUpdate) !==
-    existing!.RebuildOnSoftwareUpdate
+      existing!.RebuildOnSoftwareUpdate ||
+    (projectData.Properties ?? existing!.Properties) !== existing!.Properties
   ) {
     getQueues().SvelteSSE.add(
-      `Update Updatable Products (project #${id} set RebuildOnSoftwareUpdate to (${projectData.RebuildOnSoftwareUpdate}))`,
+      `Update Updatable Products (project #${id} changed eligibility (RebuildOnSoftwareUpdate: ${projectData.RebuildOnSoftwareUpdate}, Properties: ${projectData.Properties?.match(manualVersionCodeMatch)}))`,
       {
         type: BullMQ.JobType.SvelteSSE_UpdateUpdatableProducts,
         orgIds: [existing!.OrganizationId]

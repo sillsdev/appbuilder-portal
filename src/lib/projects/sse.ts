@@ -8,6 +8,7 @@ import { userGroupsForOrg } from '$lib/projects/server';
 import { getURLandToken } from '$lib/server/build-engine-api/requests';
 import { DatabaseReads } from '$lib/server/database';
 import { isSuperAdmin } from '$lib/utils/roles';
+import { manualVersionCodeMatch } from '$lib/workflowTypes';
 
 const tracer = trace.getTracer('ProjectSSE');
 export type ProjectDataSSE = Awaited<ReturnType<typeof getProjectDetails>>;
@@ -33,6 +34,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
           AllowDownloads: true,
           AutoPublishOnRebuild: true,
           RebuildOnSoftwareUpdate: true,
+          Properties: true,
 
           DateCreated: true,
           DateArchived: true,
@@ -255,6 +257,10 @@ export async function getProjectDetails(id: number, userSession: Session['user']
       return {
         project: {
           ...project,
+          Properties: isSuper
+            ? project.Properties
+            : /* we still need the relevant key; hide the others for security */
+              (project.Properties?.match(manualVersionCodeMatch)?.at(0) ?? null),
           OwnerId: project.Owner.Id,
           GroupId: project.Group.Id,
           Products: project.Products.map((product) => ({

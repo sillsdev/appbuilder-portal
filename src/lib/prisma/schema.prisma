@@ -282,6 +282,7 @@ model Projects {
   RepositoryUrl           String?
   DateActive              DateTime?        @db.Timestamp(6)
   ImportId                Int?
+  Properties              String?
   Authors                 Authors[]
   Products                Products[]
   ApplicationType         ApplicationTypes @relation(fields: [TypeId], references: [Id], onUpdate: NoAction, map: "FK_Projects_ApplicationTypes_TypeId")

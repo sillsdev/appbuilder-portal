@@ -85,7 +85,7 @@ export async function getWorkflowParameters(
 
   if (instance.WorkflowDefinition.ProductType !== ProductType.Web) {
     environment[ENVKeys.BUILD_MANAGE_VERSION_CODE] = '1';
-    environment[ENVKeys.BUILD_MANAGE_VERSION_NAME] = '1';
+    environment[ENVKeys.BUILD_MANAGE_VERSION_NAME] = '0';
     if (
       instance.WorkflowDefinition.Type === WorkflowType.Rebuild ||
       (instance.WorkflowDefinition.ProductType === ProductType.Android_GooglePlay &&
