@@ -35,9 +35,19 @@ export async function POST({ params, locals, request }) {
     return createAppBuildersError(404, `Project id=${projectId} not found or access denied`);
   }
 
-  const parsed = v.safeParse(bodySchema, request.json());
-  if (parsed.success && parsed.output) {
-    await DatabaseWrites.projects.update(projectId, { Properties: parsed.output.properties });
+  let props: string | null = null;
+
+  try {
+    const parsed = v.safeParse(bodySchema, await request.json());
+    if (parsed.success && parsed.output) {
+      props = parsed.output.properties;
+    }
+  } catch {
+    return createAppBuildersError(400, `Error validating request body`);
+  }
+
+  if (props) {
+    await DatabaseWrites.projects.update(projectId, { Properties: props });
   }
 
   return json({

@@ -160,11 +160,19 @@ export const updatableProductsFilter = {
   NOT: {
     ProductDefinition: { RebuildWorkflow: null }
   },
-  Properties: { not: { contains: manualVersionCodeMatch } },
+  OR: [
+    { Properties: { not: { contains: manualVersionCodeMatch } } },
+    { Properties: null },
+    { Properties: '' }
+  ],
   Project: {
     DateArchived: null,
     RebuildOnSoftwareUpdate: true,
-    Properties: { not: { contains: manualVersionCodeMatch } }
+    OR: [
+      { Properties: { not: { contains: manualVersionCodeMatch } } },
+      { Properties: null },
+      { Properties: '' }
+    ]
   },
   ProductBuilds: {
     some: productBuildsWhere

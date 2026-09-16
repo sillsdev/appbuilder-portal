@@ -384,7 +384,7 @@ async function backfillProjectProperties(): Promise<MigrationOutput> {
                 take: 1
               }
             },
-            orderBy: { DateBuilt: 'asc' },
+            orderBy: { DateBuilt: 'desc' },
             take: 1
           }
         }
