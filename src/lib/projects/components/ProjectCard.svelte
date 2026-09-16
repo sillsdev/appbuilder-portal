@@ -113,12 +113,12 @@
         {:else if route === 'projects'}
           <span class="flex items-center">
             <IconContainer
-              icon={project.RebuildEnabled ? Icons.UpdateOn : Icons.UpdateOff}
+              icon={project.SoftwareUpdateAllowed ? Icons.UpdateOn : Icons.UpdateOff}
               width={20}
-              class={['mr-1', project.RebuildEnabled ? 'text-success' : 'opacity-60']}
+              class={['mr-1', project.SoftwareUpdateAllowed ? 'text-success' : 'opacity-60']}
             />
             <span class="text-nowrap w-40 text-center">
-              {project.RebuildEnabled
+              {project.SoftwareUpdateAllowed
                 ? m.project_acts_autoBuilds_on()
                 : m.project_acts_autoBuilds_off()}
             </span>

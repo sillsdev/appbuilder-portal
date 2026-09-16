@@ -98,7 +98,7 @@ export function pruneProjects(
       DateUpdated,
       DateActive,
       DateArchived,
-      RebuildEnabled: RebuildOnSoftwareUpdate && !Properties?.match(manualVersionCodeMatch),
+      SoftwareUpdateAllowed: RebuildOnSoftwareUpdate && !Properties?.match(manualVersionCodeMatch),
       Products: Products.map(
         ({
           Id,
