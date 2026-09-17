@@ -150,6 +150,14 @@ const productBuildsWhere = {
   ProductPublications: { some: { Success: true } }
 } as const satisfies Prisma.ProductBuildsWhereInput;
 
+const filterBuildManageVersionCode = {
+  OR: [
+    { Properties: { not: { contains: manualVersionCodeMatch } } },
+    { Properties: null },
+    { Properties: '' }
+  ]
+} as const satisfies Prisma.ProductsWhereInput;
+
 export const updatableProductsFilter = {
   // Products that are rebuildable:
   // - Have already been published once
@@ -160,19 +168,15 @@ export const updatableProductsFilter = {
   NOT: {
     ProductDefinition: { RebuildWorkflow: null }
   },
-  OR: [
-    { Properties: { not: { contains: manualVersionCodeMatch } } },
-    { Properties: null },
-    { Properties: '' }
-  ],
+  ...filterBuildManageVersionCode,
+  ProductDefinition: {
+    ...filterBuildManageVersionCode,
+    RebuildWorkflow: filterBuildManageVersionCode
+  },
   Project: {
     DateArchived: null,
     RebuildOnSoftwareUpdate: true,
-    OR: [
-      { Properties: { not: { contains: manualVersionCodeMatch } } },
-      { Properties: null },
-      { Properties: '' }
-    ]
+    ...filterBuildManageVersionCode
   },
   ProductBuilds: {
     some: productBuildsWhere
