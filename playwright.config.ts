@@ -9,7 +9,6 @@ if (!process.env.AUTH0_SECRET) {
 
 const config: PlaywrightTestConfig = {
   webServer: {
-    // With more elaborate tests stg-tunnel could also be started
     // In CI, the docker compose stack should be started before the tests
     // and the web server should already be running
     command: process.env.CI
