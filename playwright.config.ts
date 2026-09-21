@@ -1,5 +1,12 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 import { randomBytes } from 'crypto';
+import dotenv from 'dotenv';
+
+if (process.env.NODE_ENV === 'development') {
+  console.log(`NODE_ENV=${process.env.NODE_ENV}`);
+  console.log('Using local .env file...');
+  dotenv.config({ path: '.env' });
+}
 
 const signingSecret = randomBytes(32).toString('hex');
 
