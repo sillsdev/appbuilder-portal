@@ -46,17 +46,6 @@ services:
     volumes:
       - valkey-data:/data
 
-  stg-tunnel:
-    build:
-      context: ./deployment/development
-      dockerfile: Dockerfile.stg-tunnel
-    ports:
-      - "8443:8443"
-    # yikes
-    command: bash -c "cp -r /root/ssh /root/.ssh; chmod -R 600 /root/.ssh; ssh -N -L \*:8443:localhost:\$(ssh aps-stg \"docker ps --format '{{.Names}} {{.Ports}}' | grep -E 'buildengine.*web' | awk -F '->' '{print \\$1}' | awk -F ':' '{print \\$2}'\") aps-stg"
-    volumes:
-      - ~/.ssh:/root/ssh
-
   otel:
     image: otel/opentelemetry-collector-contrib:0.136.0
     ports:
