@@ -57,7 +57,8 @@ export const actions = {
     const form = await superValidate(event, valibot(toggleRoleSchema));
 
     if (!form.valid) return fail(400, { form, ok: false });
-    
+    event.locals.security.requireAdminOfOrg(form.data.orgId);
+
     const supportAgentOrgAllowList = await getSiteParam('users', 'org-show-support-agent');
     if (
       form.data.roleId === RoleId.SupportAgent &&
