@@ -9,15 +9,22 @@
   import { byString } from '$lib/utils/sorting';
   interface Props {
     selector?: Snippet<[RoleId]>;
+    showSupportAgent?: boolean;
   }
 
-  let { selector }: Props = $props();
+  let { selector, showSupportAgent }: Props = $props();
 </script>
 
 <div class="flex w-full">
   <div class="shrink space-y-2">
     {#each enumNumVals(RoleId)
       .filter((r) => r !== RoleId.SuperAdmin)
+      .filter(
+        (r) =>
+          r !== RoleId.SupportAgent ||
+          showSupportAgent === undefined ||
+          showSupportAgent
+      )
       .toSorted( (a, b) => byString(m.users_roles( { role: a } ), m.users_roles( { role: b } ), getLocale()) ) as role}
       <div class="flex space-x-2">
         {@render selector?.(role)}

@@ -486,7 +486,8 @@
         "role=1": "Super Admin",
         "role=2": "Organization Admin",
         "role=3": "App Builder",
-        "role=4": "Author"
+        "role=4": "Author",
+        "role=5": "SupportAgent"
       }
     }
   ],
