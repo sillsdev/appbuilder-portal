@@ -18,7 +18,11 @@
   {#each data.subjectOrgs.toSorted((a, b) => byName(a, b, getLocale())) as org}
     {@const rolesForOrg = data.rolesByOrg.find((o) => o.Id === org.Id)?.UserRoles ?? []}
     <h3>{org.Name}</h3>
-    <RolesSelector>
+    <RolesSelector
+      showSupportAgent={
+        data.supportAgentOrgAllowList === 'all' || data.supportAgentOrgAllowList.includes(org.Id)
+      }
+    >
       {#snippet selector(role)}
         <form
           action=""
