@@ -210,6 +210,8 @@ export function getRoleIcon(role: RoleId) {
       return 'mdi:worker';
     case RoleId.Author:
       return 'mdi:pencil';
+    case RoleId.SupportAgent:
+      return 'mdi:headset';
   }
 }
 

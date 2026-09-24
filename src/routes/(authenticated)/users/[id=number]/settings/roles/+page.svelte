@@ -4,6 +4,7 @@
   import { enhance } from '$app/forms';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
+  import { RoleId } from '$lib/prisma';
   import { toast } from '$lib/utils';
   import { byName } from '$lib/utils/sorting';
 
@@ -18,7 +19,11 @@
   {#each data.subjectOrgs.toSorted((a, b) => byName(a, b, getLocale())) as org}
     {@const rolesForOrg = data.rolesByOrg.find((o) => o.Id === org.Id)?.UserRoles ?? []}
     <h3>{org.Name}</h3>
-    <RolesSelector>
+    <RolesSelector
+      showSupportAgent={rolesForOrg.some((role) => role.RoleId === RoleId.SupportAgent) ||
+        data.supportAgentOrgAllowList === 'all' ||
+        data.supportAgentOrgAllowList.includes(org.Id)}
+    >
       {#snippet selector(role)}
         <form
           action=""

@@ -14,6 +14,7 @@
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
+  import { RoleId } from '$lib/prisma';
   import { orgActive } from '$lib/stores';
   import { toast } from '$lib/utils';
 
@@ -44,6 +45,18 @@
   let currentGroups = $derived(
     data.groupsByOrg.find((o) => o.Id === $form.organizationId)?.Groups ?? []
   );
+  let selectedOrganization = $derived(data.groupsByOrg.find((o) => o.Id === $form.organizationId));
+  let showSupportAgent = $derived(
+    selectedOrganization !== undefined &&
+      (data.supportAgentOrgAllowList === 'all' ||
+        data.supportAgentOrgAllowList.includes(selectedOrganization.Id))
+  );
+
+  $effect(() => {
+    if (!showSupportAgent && $form.roles.includes(RoleId.SupportAgent)) {
+      $form.roles = $form.roles.filter((role) => role !== RoleId.SupportAgent);
+    }
+  });
 
   onMount(() => {
     if ($orgActive) {
@@ -91,7 +104,7 @@
           <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
             <div>
               <span class="font-bold opacity-75">{m.users_userRoles()}</span>
-              <RolesSelector>
+              <RolesSelector {showSupportAgent}>
                 {#snippet selector(role)}
                   <input
                     type="checkbox"

@@ -5,7 +5,8 @@ export enum RoleId {
   SuperAdmin = 1,
   OrgAdmin,
   AppBuilder,
-  Author
+  Author,
+  SupportAgent
 }
 
 export enum StoreType {

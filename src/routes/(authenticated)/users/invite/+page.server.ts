@@ -6,6 +6,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { RoleId } from '$lib/prisma';
 import { BullMQ, QueueConnected, getQueues } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { getSiteParam } from '$lib/site-params/server';
 import { idSchema } from '$lib/valibot';
 
 const createSchema = v.object({
@@ -18,6 +19,7 @@ const createSchema = v.object({
 export const load = (async ({ locals }) => {
   locals.security.requireAdminOfAny();
   const form = await superValidate(valibot(createSchema));
+  const supportAgentOrgAllowList = await getSiteParam('users', 'org-show-support-agent');
 
   const groupsByOrg = await DatabaseReads.organizations.findMany({
     where: {
@@ -37,7 +39,7 @@ export const load = (async ({ locals }) => {
       Groups: true
     }
   });
-  return { form, groupsByOrg, jobsAvailable: QueueConnected() };
+  return { form, groupsByOrg, supportAgentOrgAllowList, jobsAvailable: QueueConnected() };
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -47,6 +49,15 @@ export const actions = {
       return fail(400, { form, ok: false });
     }
     locals.security.requireAdminOfOrg(form.data.organizationId);
+
+    const supportAgentOrgAllowList = await getSiteParam('users', 'org-show-support-agent');
+    if (
+      form.data.roles.includes(RoleId.SupportAgent) &&
+      supportAgentOrgAllowList !== 'all' &&
+      !supportAgentOrgAllowList.includes(form.data.organizationId)
+    ) {
+      return error(403);
+    }
 
     if (!QueueConnected()) return error(503);
 

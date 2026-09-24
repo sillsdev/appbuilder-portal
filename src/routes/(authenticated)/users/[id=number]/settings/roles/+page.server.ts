@@ -5,6 +5,7 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { RoleId } from '$lib/prisma';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { getSiteParam } from '$lib/site-params/server';
 import { adminOrgs } from '$lib/users/server';
 import { idSchema } from '$lib/valibot';
 
@@ -23,8 +24,10 @@ export const load = (async ({ params, locals }) => {
   });
   if (!user) return error(404);
   locals.security.requireAdminOfOrgIn(user.Organizations.map((o) => o.Id));
+  const supportAgentOrgAllowList = await getSiteParam('users', 'org-show-support-agent');
 
   return {
+    supportAgentOrgAllowList,
     rolesByOrg: await DatabaseReads.organizations.findMany({
       where: adminOrgs(subjectId, locals.security.userId, locals.security.isSuperAdmin),
       select: {
@@ -54,6 +57,17 @@ export const actions = {
     const form = await superValidate(event, valibot(toggleRoleSchema));
 
     if (!form.valid) return fail(400, { form, ok: false });
+    event.locals.security.requireAdminOfOrg(form.data.orgId);
+
+    const supportAgentOrgAllowList = await getSiteParam('users', 'org-show-support-agent');
+    if (
+      form.data.roleId === RoleId.SupportAgent &&
+      form.data.enabled &&
+      supportAgentOrgAllowList !== 'all' &&
+      !supportAgentOrgAllowList.includes(form.data.orgId)
+    ) {
+      return error(403);
+    }
 
     // if user modified hidden values
     if (
