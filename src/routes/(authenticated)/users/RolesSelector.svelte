@@ -9,7 +9,7 @@
   import { byString } from '$lib/utils/sorting';
   interface Props {
     selector?: Snippet<[RoleId]>;
-    showSupportAgent: boolean;
+    showSupportAgent?: boolean;
   }
 
   let { selector, showSupportAgent = false }: Props = $props();
