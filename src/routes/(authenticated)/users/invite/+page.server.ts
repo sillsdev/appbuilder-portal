@@ -21,25 +21,31 @@ export const load = (async ({ locals }) => {
   const form = await superValidate(valibot(createSchema));
   const supportAgentOrgAllowList = await getSiteParam('users', 'org-show-support-agent');
 
-  const groupsByOrg = await DatabaseReads.organizations.findMany({
-    where: {
-      // Only send a list of groups for orgs that the current user has access to
-      UserRoles: locals.security.isSuperAdmin
-        ? undefined
-        : {
-            some: {
-              UserId: locals.security.userId,
-              RoleId: RoleId.OrgAdmin
+  const groupsByOrg = (
+    await DatabaseReads.organizations.findMany({
+      where: {
+        // Only send a list of groups for orgs that the current user has access to
+        UserRoles: locals.security.isSuperAdmin
+          ? undefined
+          : {
+              some: {
+                UserId: locals.security.userId,
+                RoleId: RoleId.OrgAdmin
+              }
             }
-          }
-    },
-    select: {
-      Id: true,
-      Name: true,
-      Groups: true
-    }
-  });
-  return { form, groupsByOrg, supportAgentOrgAllowList, jobsAvailable: QueueConnected() };
+      },
+      select: {
+        Id: true,
+        Name: true,
+        Groups: true
+      }
+    })
+  ).map((organization) => ({
+    ...organization,
+    showSupportAgent:
+      supportAgentOrgAllowList === 'all' || supportAgentOrgAllowList.includes(organization.Id)
+  }));
+  return { form, groupsByOrg, jobsAvailable: QueueConnected() };
 }) satisfies PageServerLoad;
 
 export const actions = {
