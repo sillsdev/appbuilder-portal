@@ -46,11 +46,7 @@
     data.groupsByOrg.find((o) => o.Id === $form.organizationId)?.Groups ?? []
   );
   let selectedOrganization = $derived(data.groupsByOrg.find((o) => o.Id === $form.organizationId));
-  let showSupportAgent = $derived(
-    selectedOrganization !== undefined &&
-      (data.supportAgentOrgAllowList === 'all' ||
-        data.supportAgentOrgAllowList.includes(selectedOrganization.Id))
-  );
+  let showSupportAgent = $derived(selectedOrganization?.showSupportAgent ?? false);
 
   $effect(() => {
     if (!showSupportAgent && $form.roles.includes(RoleId.SupportAgent)) {
