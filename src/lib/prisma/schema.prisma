@@ -472,6 +472,7 @@ model Users {
   ProjectActions                ProjectActions[]
   ModifiedAdminSettings         AdminSettings[]
   CompletedUserChanges          ProductUserChanges[]
+  SupportDataCreated            SupportData[]
 }
 
 model WorkflowDefinitions {
@@ -533,4 +534,14 @@ model AdminSettings {
   DateUpdated  DateTime? @updatedAt @db.Timestamp
   ModifiedById Int?
   ModifiedBy   Users?    @relation(fields: [ModifiedById], references: [Id], onDelete: Restrict, onUpdate: NoAction)
+}
+
+model SupportData {
+  Id                String    @id(map: "PK_SupportData") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  ExternalTicketUrl String?
+  CreatedById       Int
+  DateUploaded      DateTime? @db.Timestamp(6)
+  CreatedBy         Users     @relation(fields: [CreatedById], references: [Id], onDelete: Restrict, onUpdate: NoAction, map: "FK_SupportData_Users_CreatedById")
+
+  @@index([CreatedById], map: "IX_SupportData_CreatedById")
 }
