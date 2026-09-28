@@ -121,6 +121,9 @@ export const SiteParamSchemas = {
     'org-show-repo-url': whitelist
   }),
   users: v.strictObject({
-    'org-show-support-agent': v.optional(v.union([v.array(idSchema), v.picklist(['all'])]), [1])
+    'org-show-support-agent': v.optional(
+      v.union([v.array(idSchema), v.picklist(['all'])]),
+      [1] as number[]
+    )
   })
 } as const;

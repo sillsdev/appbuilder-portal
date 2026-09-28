@@ -13,6 +13,7 @@
   }
 
   let { data }: Props = $props();
+  const supportAgentOrgAllowList = data.supportAgentOrgAllowList as number[] | 'all';
 </script>
 
 <div class="flex flex-col px-4">
@@ -21,8 +22,8 @@
     <h3>{org.Name}</h3>
     <RolesSelector
       showSupportAgent={rolesForOrg.some((role) => role.RoleId === RoleId.SupportAgent) ||
-        data.supportAgentOrgAllowList === 'all' ||
-        data.supportAgentOrgAllowList.includes(org.Id)}
+        supportAgentOrgAllowList === 'all' ||
+        supportAgentOrgAllowList.includes(org.Id)}
     >
       {#snippet selector(role)}
         <form
