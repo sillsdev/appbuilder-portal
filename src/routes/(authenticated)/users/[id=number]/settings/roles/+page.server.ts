@@ -41,11 +41,11 @@ export const load = (async ({ params, locals }) => {
   const supportAgentOrgAllowList = await getSiteParam('users', 'org-show-support-agent');
 
   return {
-    supportAgentOrgAllowList:
-      supportAgentOrgAllowList === 'all'
-        ? 'all'
-        : supportAgentOrgAllowList.filter((orgId) => rolesByOrg.some((org) => org.Id === orgId)),
-    rolesByOrg
+    rolesByOrg: rolesByOrg.map((org) => ({
+      ...org,
+      showSupportAgent:
+        supportAgentOrgAllowList === 'all' || supportAgentOrgAllowList.includes(org.Id)
+    }))
   };
 }) satisfies PageServerLoad;
 

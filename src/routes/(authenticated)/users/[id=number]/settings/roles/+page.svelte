@@ -17,12 +17,12 @@
 
 <div class="flex flex-col px-4">
   {#each data.subjectOrgs.toSorted((a, b) => byName(a, b, getLocale())) as org}
-    {@const rolesForOrg = data.rolesByOrg.find((o) => o.Id === org.Id)?.UserRoles ?? []}
+    {@const orgRoles = data.rolesByOrg.find((o) => o.Id === org.Id)}
+    {@const rolesForOrg = orgRoles?.UserRoles ?? []}
     <h3>{org.Name}</h3>
     <RolesSelector
       showSupportAgent={rolesForOrg.some((role) => role.RoleId === RoleId.SupportAgent) ||
-        data.supportAgentOrgAllowList === 'all' ||
-        data.supportAgentOrgAllowList.includes(org.Id)}
+        !!orgRoles?.showSupportAgent}
     >
       {#snippet selector(role)}
         <form
