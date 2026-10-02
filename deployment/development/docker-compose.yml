@@ -47,7 +47,7 @@ services:
       - valkey-data:/data
 
   otel:
-    image: otel/opentelemetry-collector-contrib:0.136.0
+    image: otel/opentelemetry-collector-contrib:0.161.0
     ports:
       - "6317:6317"   # gRPC
       - "6318:6318"   # HTTP
