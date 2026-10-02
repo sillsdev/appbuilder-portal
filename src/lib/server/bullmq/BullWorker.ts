@@ -137,11 +137,7 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
           name: 'Migrate Features (chunked)',
           data: {
             type: BullMQ.JobType.System_Migrate,
-            steps: [
-              'Patch ProductPublications.LogUrl',
-              'Backfill Remaining ProductBuilds.AppBuilderVersion',
-              'Backfill Projects.Properties'
-            ]
+            steps: []
           }
         }
       )
