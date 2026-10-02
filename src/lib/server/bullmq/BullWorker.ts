@@ -2,6 +2,7 @@ import { type Span, SpanStatusCode, trace } from '@opentelemetry/api';
 import type { Exception, Job } from 'bullmq';
 import { Worker } from 'bullmq';
 import * as Executor from '../job-executors';
+import type { MigrationStep } from '../job-executors/system/migrate';
 import { getQueues, getWorkerConfig } from './queues';
 import * as BullMQ from './types';
 import { building } from '$app/environment';
@@ -126,26 +127,25 @@ export class SystemRecurring<J extends BullMQ.RecurringJob> extends BullWorker<J
         }
       )
     );
-    withExceptionLog('SystemRecurring - Enqueue: Migrate Features', false, () =>
-      getQueues().SystemRecurring.upsertJobScheduler(
-        BullMQ.JobSchedulerId.MigrateChunks,
-        {
-          pattern: '*/15 * * * *', // every 15 minutes
-          immediately: false
-        },
-        {
-          name: 'Migrate Features (chunked)',
-          data: {
-            type: BullMQ.JobType.System_Migrate,
-            steps: [
-              'Patch ProductPublications.LogUrl',
-              'Backfill Remaining ProductBuilds.AppBuilderVersion',
-              'Backfill Projects.Properties'
-            ]
+    const steps = [] satisfies MigrationStep[];
+    if (steps.length) {
+      withExceptionLog('SystemRecurring - Enqueue: Migrate Features', false, () =>
+        getQueues().SystemRecurring.upsertJobScheduler(
+          BullMQ.JobSchedulerId.MigrateChunks,
+          {
+            pattern: '*/15 * * * *', // every 15 minutes
+            immediately: false
+          },
+          {
+            name: 'Migrate Features (chunked)',
+            data: {
+              type: BullMQ.JobType.System_Migrate,
+              steps
+            }
           }
-        }
-      )
-    );
+        )
+      );
+    }
     withExceptionLog('SystemRecurring - Enqueue: Rate-limit Pending Software Updates', false, () =>
       getQueues().SystemRecurring.upsertJobScheduler(
         BullMQ.JobSchedulerId.CheckPendingUpdates,
