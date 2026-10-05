@@ -119,5 +119,8 @@ export const SiteParamSchemas = {
   }),
   projects: v.strictObject({
     'org-show-repo-url': whitelist
+  }),
+  users: v.strictObject({
+    'org-show-support-agent': whitelist
   })
 } as const;

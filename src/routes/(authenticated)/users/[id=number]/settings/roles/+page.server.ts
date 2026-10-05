@@ -5,6 +5,7 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { RoleId } from '$lib/prisma';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { getSiteParam } from '$lib/site-params/server';
 import { adminOrgs } from '$lib/users/server';
 import { idSchema } from '$lib/valibot';
 
@@ -23,22 +24,28 @@ export const load = (async ({ params, locals }) => {
   });
   if (!user) return error(404);
   locals.security.requireAdminOfOrgIn(user.Organizations.map((o) => o.Id));
-
-  return {
-    rolesByOrg: await DatabaseReads.organizations.findMany({
-      where: adminOrgs(subjectId, locals.security.userId, locals.security.isSuperAdmin),
-      select: {
-        Id: true,
-        UserRoles: {
-          where: {
-            UserId: subjectId
-          },
-          select: {
-            RoleId: true
-          }
+  const rolesByOrg = await DatabaseReads.organizations.findMany({
+    where: adminOrgs(subjectId, locals.security.userId, locals.security.isSuperAdmin),
+    select: {
+      Id: true,
+      UserRoles: {
+        where: {
+          UserId: subjectId
+        },
+        select: {
+          RoleId: true
         }
       }
-    })
+    }
+  });
+  const supportAgentOrgAllowList = await getSiteParam('users', 'org-show-support-agent');
+
+  return {
+    rolesByOrg: rolesByOrg.map((org) => ({
+      ...org,
+      showSupportAgent:
+        supportAgentOrgAllowList === 'all' || supportAgentOrgAllowList.includes(org.Id)
+    }))
   };
 }) satisfies PageServerLoad;
 
@@ -68,6 +75,16 @@ export const actions = {
           )
         }))
       )
+    ) {
+      return error(403);
+    }
+
+    const supportAgentOrgAllowList = await getSiteParam('users', 'org-show-support-agent');
+    if (
+      form.data.roleId === RoleId.SupportAgent &&
+      form.data.enabled &&
+      supportAgentOrgAllowList !== 'all' &&
+      !supportAgentOrgAllowList.includes(form.data.orgId)
     ) {
       return error(403);
     }
