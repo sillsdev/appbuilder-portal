@@ -538,11 +538,11 @@ model AdminSettings {
 
 model SupportData {
   Id           String    @id(map: "PK_SupportData") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  TicketId     String?
-  CreatedById  Int
+  TicketUrl     String?
+  AgentId  Int
   DateUploaded DateTime? @db.Timestamp(6)
 
-  CreatedBy Users @relation(fields: [CreatedById], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_SupportData_Users_CreatedById")
+  Agent Users @relation(fields: [AgentId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_SupportData_Users_AgentId")
 
-  @@index([CreatedById], map: "IX_SupportData_CreatedById")
+  @@index([AgentId], map: "IX_SupportData_AgentId")
 }
