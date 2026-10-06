@@ -57,9 +57,22 @@ export const actions = {
 
         let websiteVerified = false;
         try {
-          const res = await fetch(form.data.url, { method: 'HEAD' });
-          if (res.status < 400) {
-            websiteVerified = true;
+          // adapted from: https://vulnradar.dev/checks/code-ssrf-fetch-port
+          const url = new URL(form.data.url);
+          const BLOCKED_PORTS = new Set(['22', '3306', '5432', '6379', '8080']);
+          // require http or https
+          // require non-local hostname (i.e. no localhost no IP address)
+          if (
+            url.protocol.match(/^https?:$/) &&
+            url.hostname &&
+            url.hostname !== 'localhost' &&
+            !v.safeParse(v.pipe(v.string(), v.ip()), url.hostname).success &&
+            !BLOCKED_PORTS.has(url.port)
+          ) {
+            const res = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(5_000) });
+            if (res.status < 300) {
+              websiteVerified = true;
+            }
           }
         } catch {
           // empty
