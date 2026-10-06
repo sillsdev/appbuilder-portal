@@ -12,10 +12,10 @@ import type { Locale } from '$lib/google-play/paraglide/runtime';
 import { saveDeleteRequestVerificationCode } from '$lib/google-play/server';
 import { DatabaseWrites } from '$lib/server/database';
 import { sendEmail } from '$lib/server/email-service/EmailClient';
+import { resolveToken, verifyToken } from '$lib/turnstile/server';
+import { logLocalDev } from '$lib/utils/server';
 
 const tracer = trace.getTracer('UDMRequests');
-
-const TURNSTILE_TIMEOUT_MS = 5000;
 
 const localizedSchema = (locale: Locale) =>
   v.object({
@@ -46,15 +46,7 @@ export const actions: Actions = {
     return tracer.startActiveSpan('UDM - Send Code', async (span) => {
       try {
         const formData = await request.formData();
-        const turnstileToken = formData.get('turnstileToken');
-        const turnstileResponse = formData.get('cf-turnstile-response');
-
-        if (
-          (!turnstileToken || (typeof turnstileToken === 'string' && !turnstileToken.trim())) &&
-          typeof turnstileResponse === 'string'
-        ) {
-          formData.set('turnstileToken', turnstileResponse);
-        }
+        resolveToken(formData);
 
         const locale = locals.locale as Locale;
 
@@ -64,69 +56,17 @@ export const actions: Actions = {
           return fail(400, { form });
         }
 
-        const token = form.data.turnstileToken.trim();
+        const verifyResult = await verifyToken(
+          form.data.turnstileToken,
+          env.USER_DATA_TURNSTILE_SECRET_KEY
+        );
 
-        const secret = env.USER_DATA_TURNSTILE_SECRET_KEY;
-        if (!secret) {
-          span.recordException('Turnstile secret key is not configured');
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-            message: 'Turnstile secret key is not configured'
-          });
+        if (verifyResult !== 200) {
+          // logging handled in verifyToken
           return message(
             form,
             { error: m.alert_verification_failed({}, { locale }) },
-            { status: 500 }
-          );
-        }
-
-        let verification: Response;
-        try {
-          verification = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-            method: 'POST',
-            body: new URLSearchParams({ secret, response: token }),
-            signal: AbortSignal.timeout(TURNSTILE_TIMEOUT_MS)
-          });
-        } catch (e) {
-          span.recordException(e as Error);
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-            message: (e as Error).message
-          });
-          console.warn('Turnstile verification request failed', { error: e });
-          return message(
-            form,
-            { error: m.alert_verification_failed({}, { locale }) },
-            { status: 503 }
-          );
-        }
-
-        const result = await verification.json().catch(() => null);
-        if (!verification.ok || !result || typeof result.success !== 'boolean') {
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-            message: `Turnstile verification returned an invalid response: ${JSON.stringify(result)}`
-          });
-          console.warn('Turnstile verification returned an invalid response', {
-            status: verification.status
-          });
-          return message(
-            form,
-            { error: m.alert_verification_failed({}, { locale }) },
-            { status: 502 }
-          );
-        }
-
-        if (!result.success) {
-          console.warn('Turnstile verification failed', {
-            errorCodes: result['error-codes'],
-            hostname: result.hostname,
-            action: result.action
-          });
-          return message(
-            form,
-            { error: m.alert_verification_failed({}, { locale }) },
-            { status: 400 }
+            { status: verifyResult }
           );
         }
 
@@ -149,7 +89,7 @@ export const actions: Actions = {
             code: SpanStatusCode.ERROR,
             message: (e as Error).message
           });
-          console.error(e);
+          logLocalDev?.(e);
           return message(
             form,
             { error: m.alert_verification_failed({}, { locale }) },
@@ -178,7 +118,7 @@ export const actions: Actions = {
               DateExpires: new Date()
             }
           });
-          console.error(e);
+          logLocalDev?.(e);
           return message(
             form,
             { error: m.alert_verification_failed({}, { locale }) },
@@ -193,7 +133,7 @@ export const actions: Actions = {
           code: SpanStatusCode.ERROR,
           message: (e as Error).message
         });
-        console.error(e);
+        logLocalDev?.(e);
         return error(500);
       } finally {
         span.end();

@@ -13,6 +13,7 @@ import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { stringifyError } from '$lib/utils';
 
 declare module '@auth/sveltekit' {
   interface Session {
@@ -332,7 +333,7 @@ export const populateSecurityInfo: Handle = async ({ event, resolve }) => {
       // Suppress auth failures but log for debugging
       trace.getActiveSpan()?.addEvent('API auth failed', {
         'auth.hasToken': !!authToken,
-        'auth.validationError': e instanceof Error ? e.message : String(e)
+        'auth.validationError': stringifyError(e)
       });
     }
   }

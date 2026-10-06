@@ -1,7 +1,10 @@
 import { stringify } from 'devalue';
 import { produce } from 'sveltekit-sse';
+import OTEL from '$lib/otel/index.js';
 import { SSEPageUpdates } from '$lib/projects/listener';
 import { getProducts } from '$lib/software-updates/server';
+import { stringifyError } from '$lib/utils/index.js';
+import { logLocalDev } from '$lib/utils/server.js';
 
 // Handle POST requests to establish an SSE connection for products data
 export async function POST({ locals, params }) {
@@ -32,7 +35,8 @@ export async function POST({ locals, params }) {
           }
         }
       } catch (err) {
-        console.error('Error in software-update SSE updateCb:', err);
+        OTEL.instance.logger.error(stringifyError(err));
+        logLocalDev?.('Error in software-update SSE updateCb:', err);
         SSEPageUpdates.off('updatableProducts', updateCb);
         clearInterval(pingInterval);
         emit('error', stringify({ message: 'Failed to fetch updatable products' }));

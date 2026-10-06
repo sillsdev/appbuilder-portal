@@ -2,14 +2,32 @@
   import IconButton, { type IconButtonProps } from './IconButton.svelte';
   import { Icons } from '$lib/icons';
 
+  interface Props extends IconButtonProps {
+    waiting?: boolean;
+  }
+
   let {
     class: classes,
     icon = Icons.Save,
     disabled = false,
     key = 'common_save',
+    waiting = false,
+    children,
     // eslint-disable-next-line svelte/valid-compile
     ...rest
-  }: IconButtonProps = $props();
+  }: Props = $props();
 </script>
 
-<IconButton type="submit" class={['btn-primary', classes]} {icon} {key} {disabled} {...rest} />
+<IconButton
+  type="submit"
+  class={['btn-primary', classes]}
+  {icon}
+  {key}
+  disabled={disabled || waiting}
+  {...rest}
+  children={waiting ? loading : children}
+/>
+
+{#snippet loading()}
+  <span class="loading loading-spinner"></span>
+{/snippet}

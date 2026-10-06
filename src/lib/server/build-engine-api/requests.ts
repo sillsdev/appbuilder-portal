@@ -4,6 +4,7 @@ import { DatabaseReads } from '../database/prisma';
 import * as Types from './types';
 import { env } from '$env/dynamic/private';
 import { activeSystems } from '$lib/organizations/server';
+import { stringifyError } from '$lib/utils';
 
 const tracer = trace.getTracer('build-engine-api');
 
@@ -97,7 +98,7 @@ export async function request(resource: string, auth: Types.Auth, opts?: Types.R
           name: '',
           status: 500,
           code: 500,
-          message: typeof e === 'string' ? e.toUpperCase() : e instanceof Error ? e.message : e,
+          message: stringifyError(e),
           type: ''
         } as Types.ErrorResponse
       };
