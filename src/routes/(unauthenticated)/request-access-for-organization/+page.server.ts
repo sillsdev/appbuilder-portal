@@ -44,15 +44,29 @@ export const actions = {
         const form = await superValidate(formData, valibot(requestSchema));
         if (!form.valid) return fail(400, { form, ok: false });
 
-        const verifyResult = await verifyToken(
+        const turnstileResult = await verifyToken(
           form.data.turnstileToken,
           env.ORG_REQUEST_TURNSTILE_SECRET_KEY
         );
 
-        if (verifyResult !== 200) {
+        if (turnstileResult !== 200) {
           // logging handled in verifyToken
           form.data.turnstileToken = '';
-          return fail(verifyResult, { form, ok: false });
+          return fail(turnstileResult, { form, ok: false });
+        }
+
+        let websiteVerified = false;
+        try {
+          const res = await fetch(form.data.url, { method: 'HEAD' });
+          if (res.status < 400) {
+            websiteVerified = true;
+          }
+        } catch {
+          // empty
+        }
+
+        if (!websiteVerified) {
+          return fail(400, { form, ok: false, websiteVerified });
         }
 
         // code to use for exchange

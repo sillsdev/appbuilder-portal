@@ -46,6 +46,14 @@
 
         toast('error', m.errors_generic({ errorMessage: '' }));
       }
+      if (
+        resultData &&
+        !resultData.ok &&
+        'websiteVerified' in resultData &&
+        !resultData.websiteVerified
+      ) {
+        toast('error', m.invitations_verifyWebsite());
+      }
     }
   });
 
@@ -92,57 +100,17 @@
       }}
       bind:value={$form.email}
     />
-    <LabeledFormInput key="invitations_orgUrl">
-      <span class="input w-full flex flex-row gap-2 items-center validator">
-        <IconContainer icon={Icons.URL} width={20} />
-        <input
-          name="url"
-          type="url"
-          class="grow"
-          required
-          bind:value={$form.url}
-          oninput={(e) => {
-            websiteVerified = 'empty';
-            e.currentTarget.setCustomValidity('');
-          }}
-          onchange={(e) => {
-            const input = e.currentTarget;
-            let url = '';
-            try {
-              url = new URL($form.url).toString();
-            } catch {
-              // empty
-              websiteVerified = 'empty';
-            }
-
-            if (url) {
-              websiteVerified = 'pending';
-              fetch(url, { mode: 'no-cors' })
-                .then(() => {
-                  websiteVerified = 'verified';
-                  input.setCustomValidity('');
-                })
-                .catch(() => {
-                  websiteVerified = 'unreachable';
-                  input.setCustomValidity(m.invitations_verifyWebsite());
-                });
-            }
-          }}
-        />
-        {#if websiteVerified === 'pending'}
-          <span class="loading-spinner"></span>
-        {:else if websiteVerified === 'verified'}
-          <IconContainer icon={Icons.Checkmark} width={24} class="text-success" />
-        {:else if websiteVerified === 'unreachable'}
-          <IconContainer icon={Icons.Close} width={24} class="text-error" />
-        {/if}
-      </span>
-      <span class="validator-hint">
-        {$form.url
-          ? m.invitations_verifyWebsite()
-          : m.errors_requiredField({ field: m.invitations_orgUrl() })}
-      </span>
-    </LabeledFormInput>
+    <LabeledFormInput
+      key="invitations_orgUrl"
+      input={{
+        name: 'url',
+        type: 'url',
+        icon: Icons.URL,
+        required: true,
+        err: m.errors_requiredField({ field: m.invitations_orgUrl() })
+      }}
+      bind:value={$form.url}
+    />
   </div>
   <div class="mt-2 text-center">
     <div id="turnstile-container"></div>
