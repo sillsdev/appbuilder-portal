@@ -7,7 +7,6 @@
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { m as gp } from '$lib/google-play/paraglide/messages';
   import { Icons } from '$lib/icons';
-  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
   import { initTurnstile, resolveToken } from '$lib/turnstile';
@@ -20,8 +19,6 @@
   let { data }: Props = $props();
 
   let submitAttempted = $state(false);
-
-  let websiteVerified: 'empty' | 'pending' | 'verified' | 'unreachable' = $state('empty');
 
   const { form, enhance, delayed } = superForm(data.form, {
     invalidateAll: false,
@@ -126,7 +123,7 @@
       key="common_passThrough"
       params={{ value: gp.send_verification_code({}, { locale: getLocale() }) }}
       icon={Icons.Send}
-      disabled={!$form.organizationName || !$form.email || websiteVerified !== 'verified'}
+      disabled={!$form.organizationName || !$form.email || !$form.url}
       waiting={$delayed}
     />
   </div>
