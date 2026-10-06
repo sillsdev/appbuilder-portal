@@ -5,6 +5,7 @@
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { Icons } from '$lib/icons';
   import { m } from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import { toast } from '$lib/utils';
 </script>
 
@@ -16,7 +17,7 @@
       if (result.type === 'success') {
         const data = result.data;
         if (data?.ok) {
-          goto('/request-access-for-organization/success');
+          goto(localizeHref('/request-access-for-organization/success'));
         }
       } else {
         toast('error', m.errors_generic({ errorMessage: '' }));
