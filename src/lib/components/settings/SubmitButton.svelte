@@ -12,6 +12,7 @@
     disabled = false,
     key = 'common_save',
     waiting = false,
+    children,
     // eslint-disable-next-line svelte/valid-compile
     ...rest
   }: Props = $props();
@@ -24,7 +25,7 @@
   {key}
   disabled={disabled || waiting}
   {...rest}
-  children={waiting ? loading : undefined}
+  children={waiting ? loading : children}
 />
 
 {#snippet loading()}
