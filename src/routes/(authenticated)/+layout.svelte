@@ -235,6 +235,19 @@
                   </li>
                 {/if}
               {/if}
+              {#if import.meta.env.DEV || data.session.user.roles.some(([, role]) => role === RoleId.SuperAdmin || role === RoleId.OrgAdmin || role === RoleId.SupportAgent)}
+                <li>
+                  <a
+                    class="rounded-none"
+                    class:active-menu-item={isUrlActive('/support-data')}
+                    href={localizeHref('/support-data')}
+                    onclick={closeDrawer}
+                  >
+                    <IconContainer icon={Icons.Help} width={24} />
+                    Support Data
+                  </a>
+                </li>
+              {/if}
               {#if isSuperAdmin(data.session.user.roles)}
                 <li>
                   <a
