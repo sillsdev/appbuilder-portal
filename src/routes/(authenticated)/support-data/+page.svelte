@@ -17,10 +17,8 @@
   const { form, enhance, submit } = superForm(data.form, {
     dataType: 'json',
     resetForm: false,
-    onChange(event) {
-      if (!event.paths.includes('search')) {
-        submit();
-      }
+    onChange() {
+      submit();
     },
     onUpdate(event) {
       const result = event.result.data as FormResult<{
@@ -42,9 +40,9 @@
   }
 </script>
 
-<div class="w-full p-4">
+<div class="mx-auto w-full max-w-6xl p-4">
   <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-    <h1 class="text-2xl font-semibold">Support Data</h1>
+    <h1 class="p-0">Support Data</h1>
     <a class="btn btn-primary" href={localizeHref('/support-data/new')}>New request</a>
   </div>
 
@@ -54,7 +52,7 @@
         <table class="table table-zebra w-full">
           <thead>
             <tr>
-              <th>Request ID</th>
+              <th>Request</th>
               <th>Ticket</th>
               <th>Agent</th>
               <th>Uploaded</th>
@@ -64,14 +62,26 @@
             {#each items as item}
               <tr>
                 <td>
-                  <a class="link font-mono" href={localizeHref(`/support-data/${item.Id}`)}>
-                    {item.Id}
+                  <a class="link font-semibold" href={localizeHref(`/support-data/${item.Id}`)}>
+                    {item.Name}
                   </a>
+                  {#if item.Description}
+                    <p class="mt-1 max-w-xl truncate text-sm opacity-70" title={item.Description}>
+                      {item.Description}
+                    </p>
+                  {/if}
+                  <p class="mt-1 font-mono text-xs opacity-60">{item.Id}</p>
                 </td>
                 <td>
                   {#if item.TicketUrl}
-                    <a class="link" href={item.TicketUrl} target="_blank" rel="noreferrer">
-                      {item.TicketUrl}
+                    <a
+                      class="link"
+                      href={item.TicketUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={item.TicketUrl}
+                    >
+                      Open ticket
                     </a>
                   {:else}
                     <span>—</span>

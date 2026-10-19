@@ -226,9 +226,9 @@ export class Security {
     }
     if (
       !this.isSuperAdmin &&
-      !this.roles.values().some(
-        (r) => r.includes(RoleId.OrgAdmin) || r.includes(RoleId.SupportAgent)
-      )
+      !this.roles
+        .values()
+        .some((r) => r.includes(RoleId.OrgAdmin) || r.includes(RoleId.SupportAgent))
     ) {
       error(403, 'User does not have access to support data');
     }

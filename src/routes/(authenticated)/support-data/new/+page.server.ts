@@ -12,7 +12,13 @@ export const actions: Actions = {
     locals.security.requireSupportDataAccess();
 
     const formData = await request.formData();
+    const name = String(formData.get('name') ?? '').trim();
+    const description = String(formData.get('description') ?? '').trim();
     const ticketUrl = String(formData.get('ticketUrl') ?? '').trim();
+
+    if (!name) {
+      return fail(400, { message: 'Name is required.' });
+    }
 
     if (!ticketUrl) {
       return fail(400, { message: 'Ticket URL is required.' });
@@ -20,6 +26,8 @@ export const actions: Actions = {
 
     const newRequest = await DatabaseWrites.supportData.create({
       data: {
+        Name: name,
+        Description: description || null,
         TicketUrl: ticketUrl,
         AgentId: locals.security.userId,
         DateUploaded: new Date()
