@@ -17,36 +17,50 @@
   }
 </script>
 
-<div class="w-full p-4">
-  <div class="flex items-center justify-between gap-3">
-    <h1 class="text-2xl font-semibold">Support Data Request</h1>
-    <a class="btn btn-ghost" href={localizeHref('/support-data')}>Back to list</a>
+<div class="relative mx-auto w-full max-w-6xl p-4">
+  <div class="flex flex-wrap items-start gap-4">
+    <div class="grow">
+      <h1 class="p-0">{data.request.Name}</h1>
+      <p class="font-mono text-sm opacity-70">{data.request.Id}</p>
+    </div>
+    <a class="btn btn-secondary" href={localizeHref('/support-data')}>Back to list</a>
   </div>
 
-  <div class="mt-6 card bg-base-200 shadow-sm">
-    <div class="card-body gap-4">
+  <section class="mt-6">
+    <h2 class="pl-0">Request information</h2>
+    <div class="grid gap-x-6 gap-y-3 md:grid-cols-2">
       <div>
-        <p class="text-sm opacity-70">Request ID</p>
-        <p class="font-mono">{data.request.Id}</p>
+        <p class="font-semibold">Agent</p>
+        <p>
+          {data.request.Agent?.Name ?? data.request.Agent?.Email ?? `User ${data.request.AgentId}`}
+        </p>
       </div>
       <div>
-        <p class="text-sm opacity-70">Ticket URL</p>
-        {#if data.request.TicketUrl}
-          <a class="link" href={data.request.TicketUrl} target="_blank" rel="noreferrer">
-            {data.request.TicketUrl}
-          </a>
-        {:else}
-          <p>—</p>
-        {/if}
-      </div>
-      <div>
-        <p class="text-sm opacity-70">Agent</p>
-        <p>{data.request.Agent?.Name ?? data.request.Agent?.Email ?? `User ${data.request.AgentId}`}</p>
-      </div>
-      <div>
-        <p class="text-sm opacity-70">Date uploaded</p>
+        <p class="font-semibold">Date uploaded</p>
         <p>{formatDate(data.request.DateUploaded)}</p>
       </div>
     </div>
-  </div>
+    {#if data.request.Description}
+      <div class="mt-4">
+        <p class="font-semibold">Description</p>
+        <p class="whitespace-pre-wrap">{data.request.Description}</p>
+      </div>
+    {/if}
+  </section>
+
+  <section class="mt-6">
+    <h2 class="pl-0">Support ticket</h2>
+    {#if data.request.TicketUrl}
+      <a
+        class="block break-all rounded-md bg-base-200 p-3"
+        href={data.request.TicketUrl}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {data.request.TicketUrl}
+      </a>
+    {:else}
+      <p>—</p>
+    {/if}
+  </section>
 </div>
