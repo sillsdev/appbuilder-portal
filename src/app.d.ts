@@ -31,6 +31,7 @@ declare global {
     requireAdminOfOrg(organizationId: number): this | never;
     requireAdminOfOrgIn(organizationIds: number[]): this | never;
     requireAdminOfAny(): this | never;
+    requireSupportDataAccess(): this | never;
     requireHasRole(organizationId: number, roleId: number, orOrgAdmin?: boolean): this | never;
     requireMemberOfOrg(organizationId: number): this | never;
     requireMemberOfOrgOrSuperAdmin(organizationId: number): this | never;
