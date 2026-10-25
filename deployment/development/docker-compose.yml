@@ -65,6 +65,6 @@ services:
     # host only works on Linux or Docker Desktop 4.34+ (requires setting to be enabled)
     network_mode: host
     # This tagged version should be the same as in package-lock.json
-    image: mcr.microsoft.com/playwright:v1.62.1-noble
+    image: mcr.microsoft.com/playwright:v1.64.1-noble
     env_file: .env
     command: npx -y playwright@1.62.1 run-server --port 3000 --host 127.0.0.1
