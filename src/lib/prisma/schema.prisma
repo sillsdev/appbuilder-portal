@@ -538,6 +538,8 @@ model AdminSettings {
 
 model SupportData {
   Id           String    @id(map: "PK_SupportData") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  Name         String
+  Description  String?
   TicketUrl     String?
   AgentId  Int
   DateUploaded DateTime? @db.Timestamp(6)
