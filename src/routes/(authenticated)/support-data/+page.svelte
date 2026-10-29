@@ -3,6 +3,8 @@
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
   import Pagination from '$lib/components/Pagination.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Props {
@@ -46,62 +48,69 @@
     <a class="btn btn-primary" href={localizeHref('/support-data/new')}>New request</a>
   </div>
 
-  <form method="POST" action="?/page" use:enhance class="mt-4">
-    {#if items.length > 0}
-      <div class="overflow-x-auto">
-        <table class="table table-zebra w-full">
-          <thead>
-            <tr>
-              <th>Request</th>
-              <th>Ticket</th>
-              <th>Agent</th>
-              <th>Uploaded</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each items as item}
-              <tr>
-                <td>
-                  <a class="link font-semibold" href={localizeHref(`/support-data/${item.Id}`)}>
-                    {item.Name}
-                  </a>
-                  {#if item.Description}
-                    <p class="mt-1 max-w-xl truncate text-sm opacity-70" title={item.Description}>
-                      {item.Description}
-                    </p>
-                  {/if}
-                  <p class="mt-1 font-mono text-xs opacity-60">{item.Id}</p>
-                </td>
-                <td>
-                  {#if item.TicketUrl}
-                    <a
-                      class="link"
-                      href={item.TicketUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      title={item.TicketUrl}
-                    >
-                      Open ticket
-                    </a>
-                  {:else}
-                    <span>—</span>
-                  {/if}
-                </td>
-                <td>
-                  {item.Agent?.Name ?? item.Agent?.Email ?? `User ${item.AgentId}`}
-                </td>
-                <td>{formatDate(item.DateUploaded)}</td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    {:else}
-      <div class="mt-6 alert">
-        <span>No support data requests yet.</span>
-      </div>
-    {/if}
+  {#if items.length > 0}
+    <div class="w-full relative p-4">
+      {#each items as item}
+        <div class="rounded-md bg-neutral border border-slate-400 my-4 overflow-hidden w-full">
+          <div class="p-4 pb-2 w-full">
+            <div class="flex flex-row flex-wrap items-start gap-2">
+              <a
+                href={localizeHref(`/support-data/${item.Id}`)}
+                class="flex flex-row grow items-start"
+              >
+                <b class="[color:var(--color-link)]">{item.Name}</b>
+              </a>
+              <a
+                class="btn btn-ghost btn-sm"
+                href={localizeHref(`/support-data/${item.Id}/edit`)}
+                title="Edit request"
+              >
+                <IconContainer icon={Icons.Edit} width={20} />
+                Edit
+              </a>
+            </div>
+            <div class="mt-2 flex flex-wrap justify-between gap-x-4 gap-y-1">
+              <span class="flex items-center">
+                <IconContainer icon={Icons.User} width={20} class="mr-1 shrink-0" />
+                {item.Agent?.Name ?? item.Agent?.Email ?? `User ${item.AgentId}`}
+              </span>
+              <span class="flex items-center" title="Date uploaded">
+                <IconContainer icon={Icons.DateRange} width={20} class="mr-1 shrink-0" />
+                {formatDate(item.DateUploaded)}
+              </span>
+              <span class="font-mono text-xs opacity-60">{item.Id}</span>
+            </div>
+          </div>
+          <div class="w-full bg-base-100 p-4 pt-2">
+            {#if item.Description}
+              <p class="whitespace-pre-wrap">{item.Description}</p>
+            {/if}
+            {#if item.TicketUrl}
+              <a
+                class="link mt-2 inline-block break-all"
+                href={item.TicketUrl}
+                target="_blank"
+                rel="noreferrer"
+                title={item.TicketUrl}
+              >
+                <IconContainer icon={Icons.URL} width={20} class="mr-1 inline-block" />
+                Open ticket
+              </a>
+            {:else}
+              <span class="mt-2 inline-flex items-center opacity-70">
+                <IconContainer icon={Icons.URL} width={20} class="mr-1" />
+                No ticket URL
+              </span>
+            {/if}
+          </div>
+        </div>
+      {/each}
+    </div>
+  {:else}
+    <p class="m-8">No support data requests yet.</p>
+  {/if}
 
+  <form method="POST" action="?/page" use:enhance>
     <div class="mt-4">
       <Pagination bind:size={$form.page.size} total={count} bind:page={$form.page.page} />
     </div>
