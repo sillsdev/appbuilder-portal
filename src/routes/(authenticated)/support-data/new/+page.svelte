@@ -39,7 +39,7 @@
         </label>
       </div>
       <div class="row">
-        <label class="flex w-full flex-col md:max-w-xs">
+        <label class="flex w-full flex-col md:max-w-2xl">
           <div class="label">
             <span class="fieldset-label">Description</span>
           </div>

@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Props {
@@ -23,7 +25,17 @@
       <h1 class="p-0">{data.request.Name}</h1>
       <p class="font-mono text-sm opacity-70">{data.request.Id}</p>
     </div>
-    <a class="btn btn-secondary" href={localizeHref('/support-data')}>Back to list</a>
+    <div class="flex gap-2">
+      <a
+        class="btn btn-secondary"
+        href={localizeHref(`/support-data/${data.request.Id}/edit`)}
+        title="Edit request"
+      >
+        <IconContainer width={20} icon={Icons.Edit} />
+        Edit request
+      </a>
+      <a class="btn btn-secondary" href={localizeHref('/support-data')}>Back to list</a>
+    </div>
   </div>
 
   <section class="mt-6">
@@ -32,12 +44,17 @@
       <div>
         <p class="font-semibold">Agent</p>
         <p>
+          <IconContainer icon={Icons.User} width={20} class="mr-1" />
           {data.request.Agent?.Name ?? data.request.Agent?.Email ?? `User ${data.request.AgentId}`}
         </p>
       </div>
       <div>
         <p class="font-semibold">Date uploaded</p>
-        <p>{formatDate(data.request.DateUploaded)}</p>
+        <p>
+          <IconContainer icon={Icons.DateRange} width={20} class="mr-1" />{formatDate(
+            data.request.DateUploaded
+          )}
+        </p>
       </div>
     </div>
     {#if data.request.Description}
@@ -57,6 +74,7 @@
         target="_blank"
         rel="noreferrer"
       >
+        <IconContainer icon={Icons.URL} width={20} class="mr-1 inline-block" />
         {data.request.TicketUrl}
       </a>
     {:else}
