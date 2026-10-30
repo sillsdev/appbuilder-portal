@@ -70,6 +70,13 @@
     <input type="text" name="description" class="input" bind:value={$form.description} />
     <span class="validator-hint">&nbsp;</span>
   </LabeledFormInput>
+  <LabeledFormInput key="stores_instructions" class="mb-4">
+    <textarea
+      name="instructions"
+      class="textarea w-full h-32"
+      bind:value={$form.instructions}
+    ></textarea>
+  </LabeledFormInput>
   <InputWithMessage title={{ key: 'flowDefs_enabled' }}>
     <input
       name="enabled"

@@ -507,6 +507,7 @@
   "stores_publisherIdEmpty": "ID del editor no puede estar vacío",
   "stores_gpTitle": "Nombre del propietario de Google Play",
   "stores_gpTitleEmpty": "Nombre del propietario de Google Play no puede estar vacío",
+  "stores_instructions": "Instrucciones",
   "stores_emptyStoreType": "Necesita seleccionar un tipo de tienda para esta tienda",
   "storeTypes_listTitle": "Tipos de tienda",
   "admin_title": "Configuración del administrador",

@@ -89,6 +89,13 @@
     bind:value={$form.description}
     class="md:max-w-xs"
   />
+  <LabeledFormInput key="stores_instructions" class="mb-4">
+    <textarea
+      name="instructions"
+      class="textarea w-full h-32"
+      bind:value={$form.instructions}
+    ></textarea>
+  </LabeledFormInput>
   <div class="my-4">
     <CancelButton returnTo={localizeHref(base)} />
     <SubmitButton />

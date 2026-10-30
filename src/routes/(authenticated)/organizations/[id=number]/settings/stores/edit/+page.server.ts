@@ -11,6 +11,7 @@ const editSchema = v.object({
   id: idSchema,
   description: v.nullable(v.string()),
   gpTitle: v.nullable(v.string()),
+  instructions: v.nullable(v.string()),
   enabled: v.boolean()
 });
 export const load = (async ({ url, locals, params }) => {
@@ -46,6 +47,7 @@ export const load = (async ({ url, locals, params }) => {
         id: store.Id,
         description: store.Description,
         gpTitle: store.GooglePlayTitle,
+        instructions: store.Instructions,
         enabled: !!store._count.Organizations
       },
       valibot(editSchema)
@@ -70,7 +72,8 @@ export const actions = {
       // Changing the publisherId of the store will require a more involved UI.
       // See #1383 and #1378
       Description: form.data.description,
-      GooglePlayTitle: form.data.gpTitle
+      GooglePlayTitle: form.data.gpTitle,
+      Instructions: form.data.instructions?.trim() || null
     });
     await DatabaseWrites.stores.toggleForOrg(form.data.id, orgId, form.data.enabled);
     return { ok: true, form };
