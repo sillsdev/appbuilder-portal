@@ -354,6 +354,7 @@ model Stores {
   Description            String?
   StoreTypeId            Int
   GooglePlayTitle        String?
+  Instructions           String?
   OwnerId                Int?
   Organizations          Organizations[] @relation("OrganizationsToStores")
   Products               Products[]

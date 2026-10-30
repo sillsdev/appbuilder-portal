@@ -11,6 +11,7 @@ const createSchema = v.object({
   storeType: v.pipe(v.number(), v.minValue(1), v.integer()),
   description: v.nullable(v.string()),
   gpTitle: v.nullable(v.string()),
+  instructions: v.nullable(v.string()),
   owner: v.nullable(idSchema)
 });
 
@@ -35,6 +36,7 @@ export const actions = {
       Description: form.data.description,
       StoreTypeId: form.data.storeType,
       GooglePlayTitle: form.data.gpTitle,
+      Instructions: form.data.instructions?.trim() || null,
       OwnerId: form.data.owner
     });
     return { ok: true, form };
