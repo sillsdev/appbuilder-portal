@@ -179,6 +179,7 @@ export async function getProjectDetails(id: number, userSession: Session['user']
               Id: true,
               BuildEnginePublisherId: true,
               GooglePlayTitle: true,
+              Instructions: true,
               Description: true,
               StoreTypeId: true
             }

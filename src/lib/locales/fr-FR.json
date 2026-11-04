@@ -506,6 +506,7 @@
   "stores_publisherIdEmpty": "Publisher Id cannot be empty",
   "stores_gpTitle": "Google Play Owner Name",
   "stores_gpTitleEmpty": "Google Play Owner Name cannot be empty",
+  "stores_instructions": "Instructions",
   "storeTypes_listTitle": "Store Types",
   "admin_title": "Admin settings",
   "admin_nav_orgs": "Organizations",

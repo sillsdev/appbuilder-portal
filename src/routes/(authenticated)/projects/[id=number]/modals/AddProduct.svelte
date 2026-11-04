@@ -30,6 +30,7 @@
         Id: true;
         BuildEnginePublisherId: true;
         GooglePlayTitle: true;
+        Instructions: true;
         Description: true;
         StoreTypeId: true;
       };
@@ -149,6 +150,12 @@
                   <b>{m.stores_publisherId()}:</b>
                   <span>{store.BuildEnginePublisherId}</span>
                 </p>
+                {#if store.Instructions}
+                  <div class="p-2 pt-0 text-sm">
+                    <b>{m.stores_instructions()}:</b>
+                    <p class="whitespace-pre-line wrap-anywhere">{store.Instructions}</p>
+                  </div>
+                {/if}
                 <input
                   type="submit"
                   name="storeId"

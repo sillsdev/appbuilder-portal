@@ -59,6 +59,12 @@
       : [])
   ]}
 >
+  {#if store.Instructions}
+    <div>
+      <b>{m.stores_instructions()}:</b>
+      <p class="pl-4 whitespace-pre-line wrap-anywhere">{store.Instructions}</p>
+    </div>
+  {/if}
   {@render extra?.(store)}
   {#snippet title()}
     <h3>

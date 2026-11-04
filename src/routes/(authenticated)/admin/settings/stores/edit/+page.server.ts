@@ -11,6 +11,7 @@ const editSchema = v.object({
   id: idSchema,
   description: v.nullable(v.string()),
   gpTitle: v.nullable(v.string()),
+  instructions: v.nullable(v.string()),
   owner: v.nullable(idSchema)
 });
 export const load = (async ({ url, locals }) => {
@@ -34,6 +35,7 @@ export const load = (async ({ url, locals }) => {
         id: store.Id,
         description: store.Description,
         gpTitle: store.GooglePlayTitle,
+        instructions: store.Instructions,
         owner: store.OwnerId
       },
       valibot(editSchema)
@@ -56,6 +58,7 @@ export const actions = {
       // See #1383 and #1378
       Description: form.data.description,
       GooglePlayTitle: form.data.gpTitle,
+      Instructions: form.data.instructions?.trim() || null,
       OwnerId: form.data.owner
     });
     return { ok: true, form };
