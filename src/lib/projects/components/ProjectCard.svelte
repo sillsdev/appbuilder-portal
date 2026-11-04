@@ -14,9 +14,10 @@
     select?: Snippet;
     actions?: Snippet;
     search?: string;
+    showRebuildInfo?: boolean;
   }
 
-  let { project, route = 'projects', select, actions, search }: Props = $props();
+  let { project, route = 'projects', select, actions, search, showRebuildInfo }: Props = $props();
 </script>
 
 {#snippet langIcon(lang: string | null)}
@@ -110,7 +111,7 @@
               {getTimeDateString(project.DateArchived)}
             </span>
           </span>
-        {:else if route === 'projects'}
+        {:else if route === 'projects' && showRebuildInfo}
           <span class="flex items-center">
             <IconContainer
               icon={project.SoftwareUpdateAllowed ? Icons.UpdateOn : Icons.UpdateOff}

@@ -16,6 +16,7 @@ import {
 import { doProjectAction, projectFilter } from '$lib/projects/server';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
+import { getSiteParam } from '$lib/site-params/server';
 import { UUIDSchema } from '$lib/valibot';
 
 const bulkProductActionSchema = v.object({
@@ -125,6 +126,9 @@ export const load = (async ({ params, locals }) => {
       { Id: 'asc' }
     ]
   });
+
+  const updatesAllowList = await getSiteParam('software-updates', 'allow-orgs');
+
   return {
     projects: pruneProjects(projects),
     pageForm: await superValidate(
@@ -158,7 +162,13 @@ export const load = (async ({ params, locals }) => {
         }
       })
     ).map((g) => g.Id),
-    jobsAvailable: QueueConnected()
+    jobsAvailable: QueueConnected(),
+    allowedOrgs:
+      updatesAllowList === 'all'
+        ? updatesAllowList
+        : locals.security.isSuperAdmin
+          ? updatesAllowList
+          : Array.from(new Set(updatesAllowList).intersection(new Set(orgIds)))
   };
 }) satisfies PageServerLoad;
 
