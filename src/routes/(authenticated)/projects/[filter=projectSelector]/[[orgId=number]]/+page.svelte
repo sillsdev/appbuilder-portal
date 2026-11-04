@@ -430,7 +430,12 @@
     {@const locale = getLocale()}
     <div class="w-full relative p-4">
       {#each projects.toSorted((a, b) => byName(a, b, locale)) as project}
-        <ProjectCard {project} search={$pageForm.search}>
+        <ProjectCard
+          {project}
+          search={$pageForm.search}
+          showRebuildInfo={data.updatesAllowList === 'all' ||
+            data.updatesAllowList.includes(project.OrganizationId)}
+        >
           {#snippet select()}
             {#if canModifyProjects}
               <input
