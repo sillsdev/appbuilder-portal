@@ -13,6 +13,7 @@ import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { canAccessSupportData, canAccessSupportDataForOrg } from '$lib/utils/roles';
 
 declare module '@auth/sveltekit' {
   interface Session {
@@ -217,18 +218,12 @@ export class Security {
     return this;
   }
 
-  requireSupportDataAccess() {
+  requireSupportDataAccess(organizationId?: number) {
     this.requireAuthenticated();
-    // TEMPORARY: allow all authenticated users in development so support-data routes can be
-    // smoke-tested locally without being blocked by role checks while the feature is being wired up.
-    if (process.env.NODE_ENV === 'development') {
-      return this;
-    }
     if (
-      !this.isSuperAdmin &&
-      !this.roles
-        .values()
-        .some((r) => r.includes(RoleId.OrgAdmin) || r.includes(RoleId.SupportAgent))
+      organizationId === undefined
+        ? !canAccessSupportData(this.sessionForm.roles)
+        : !canAccessSupportDataForOrg(organizationId, this.sessionForm.roles)
     ) {
       error(403, 'User does not have access to support data');
     }

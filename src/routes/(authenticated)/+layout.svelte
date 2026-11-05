@@ -15,7 +15,12 @@
   import { deLocalizeUrl, getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
   import { orgActive, userTasksSSE } from '$lib/stores';
-  import { isAdminForAny, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
+  import {
+    canAccessSupportData,
+    isAdminForAny,
+    isAdminForOrg,
+    isSuperAdmin
+  } from '$lib/utils/roles';
   import { byName } from '$lib/utils/sorting';
 
   interface Props {
@@ -235,7 +240,7 @@
                   </li>
                 {/if}
               {/if}
-              {#if import.meta.env.DEV || data.session.user.roles.some(([, role]) => role === RoleId.SuperAdmin || role === RoleId.OrgAdmin || role === RoleId.SupportAgent)}
+              {#if canAccessSupportData(data.session.user.roles)}
                 <li>
                   <a
                     class="rounded-none"

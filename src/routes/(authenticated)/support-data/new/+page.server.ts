@@ -1,10 +1,23 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { DatabaseWrites } from '$lib/server/database';
+import { localizeHref } from '$lib/paraglide/runtime';
+import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { orgsForSupportDataAccess } from '$lib/utils/roles';
 
-export const load: PageServerLoad = async (event) => {
-  event.locals.security.requireSupportDataAccess();
-  return {};
+export const load: PageServerLoad = async ({ locals }) => {
+  locals.security.requireSupportDataAccess();
+  const security = locals.security;
+  const organizations = await DatabaseReads.organizations.findMany({
+    where: security.isSuperAdmin
+      ? undefined
+      : { Id: { in: orgsForSupportDataAccess(security.sessionForm.roles) } },
+    select: {
+      Id: true,
+      Name: true
+    },
+    orderBy: { Name: 'asc' }
+  });
+  return { organizations };
 };
 
 export const actions: Actions = {
@@ -12,16 +25,33 @@ export const actions: Actions = {
     locals.security.requireSupportDataAccess();
 
     const formData = await request.formData();
+    const organizationId = Number(formData.get('organizationId'));
     const name = String(formData.get('name') ?? '').trim();
     const description = String(formData.get('description') ?? '').trim();
     const ticketUrl = String(formData.get('ticketUrl') ?? '').trim();
+    const values = { organizationId, name, description, ticketUrl };
 
+    if (!Number.isSafeInteger(organizationId) || organizationId <= 0) {
+      return fail(400, { message: 'Select an organization.', values });
+    }
+    locals.security.requireSupportDataAccess(organizationId);
+
+    const organization = await DatabaseReads.organizations.findUnique({
+      where: { Id: organizationId },
+      select: { Id: true }
+    });
+    if (!organization) {
+      return fail(400, { message: 'Select a valid organization.', values });
+    }
     if (!name) {
-      return fail(400, { message: 'Name is required.' });
+      return fail(400, { message: 'Name is required.', values });
     }
 
     if (!ticketUrl) {
-      return fail(400, { message: 'Ticket URL is required.' });
+      return fail(400, {
+        message: 'Ticket URL is required.',
+        values
+      });
     }
 
     const newRequest = await DatabaseWrites.supportData.create({
@@ -30,10 +60,11 @@ export const actions: Actions = {
         Description: description || null,
         TicketUrl: ticketUrl,
         AgentId: locals.security.userId,
+        OrganizationId: organizationId,
         DateUploaded: new Date()
       }
     });
 
-    throw redirect(303, `/support-data/${newRequest.Id}`);
+    throw redirect(303, localizeHref(`/support-data/${newRequest.Id}`));
   }
 };

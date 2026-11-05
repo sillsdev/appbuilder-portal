@@ -1,28 +1,38 @@
+import type { Prisma } from '@prisma/client';
 import { fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads } from '$lib/server/database';
-import { paginateSchema } from '$lib/valibot';
+import { orgsForSupportDataAccess } from '$lib/utils/roles';
 
 const tableSchema = v.object({
-  page: paginateSchema
+  page: v.object({
+    page: v.pipe(v.number(), v.integer(), v.minValue(0)),
+    size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(100))
+  })
 });
 
-export const load: PageServerLoad = async (event) => {
-  event.locals.security.requireSupportDataAccess();
+function visibleWhere(security: App.Locals['security']): Prisma.SupportDataWhereInput {
+  return security.isSuperAdmin
+    ? {}
+    : { OrganizationId: { in: orgsForSupportDataAccess(security.sessionForm.roles) } };
+}
 
-  const page = Number(event.url.searchParams.get('page') ?? '0');
-  const size = Number(event.url.searchParams.get('size') ?? '25');
-  const safePage = Number.isFinite(page) && page >= 0 ? page : 0;
-  const safeSize = Number.isFinite(size) && size > 0 ? size : 25;
-
-  const [count, items] = await Promise.all([
-    DatabaseReads.supportData.count(),
+async function querySupportData(where: Prisma.SupportDataWhereInput, page: number, size: number) {
+  return Promise.all([
+    DatabaseReads.supportData.count({ where }),
     DatabaseReads.supportData.findMany({
-      orderBy: { DateUploaded: 'desc' },
+      where,
+      orderBy: [{ DateUploaded: 'desc' }, { Organization: { Name: 'asc' } }, { Id: 'asc' }],
       include: {
+        Organization: {
+          select: {
+            Id: true,
+            Name: true
+          }
+        },
         Agent: {
           select: {
             Id: true,
@@ -31,10 +41,17 @@ export const load: PageServerLoad = async (event) => {
           }
         }
       },
-      skip: safePage * safeSize,
-      take: safeSize
+      skip: page * size,
+      take: size
     })
   ]);
+}
+
+export const load: PageServerLoad = async (event) => {
+  event.locals.security.requireSupportDataAccess();
+  const security = event.locals.security;
+
+  const [count, items] = await querySupportData(visibleWhere(security), 0, 25);
 
   return {
     items,
@@ -42,8 +59,8 @@ export const load: PageServerLoad = async (event) => {
     form: await superValidate(
       {
         page: {
-          page: safePage,
-          size: safeSize
+          page: 0,
+          size: 25
         }
       },
       valibot(tableSchema)
@@ -57,25 +74,11 @@ export const actions: Actions = {
     const form = await superValidate(request, valibot(tableSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
-    const page = form.data.page.page;
-    const size = form.data.page.size;
-    const [count, items] = await Promise.all([
-      DatabaseReads.supportData.count(),
-      DatabaseReads.supportData.findMany({
-        orderBy: { DateUploaded: 'desc' },
-        include: {
-          Agent: {
-            select: {
-              Id: true,
-              Name: true,
-              Email: true
-            }
-          }
-        },
-        skip: page * size,
-        take: size
-      })
-    ]);
+    const [count, items] = await querySupportData(
+      visibleWhere(locals.security),
+      form.data.page.page,
+      form.data.page.size
+    );
 
     return {
       form,

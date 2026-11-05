@@ -42,6 +42,10 @@
     <h2 class="pl-0">Request information</h2>
     <div class="grid gap-x-6 gap-y-3 md:grid-cols-2">
       <div>
+        <p class="font-semibold">Organization</p>
+        <p>{data.request.Organization.Name}</p>
+      </div>
+      <div>
         <p class="font-semibold">Agent</p>
         <p>
           <IconContainer icon={Icons.User} width={20} class="mr-1" />

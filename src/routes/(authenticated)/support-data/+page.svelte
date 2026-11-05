@@ -19,6 +19,7 @@
   const { form, enhance, submit } = superForm(data.form, {
     dataType: 'json',
     resetForm: false,
+    multipleSubmits: 'abort',
     onChange() {
       submit();
     },
@@ -73,6 +74,10 @@
               <span class="flex items-center">
                 <IconContainer icon={Icons.User} width={20} class="mr-1 shrink-0" />
                 {item.Agent?.Name ?? item.Agent?.Email ?? `User ${item.AgentId}`}
+              </span>
+              <span class="flex items-center">
+                <IconContainer icon={Icons.Organization} width={20} class="mr-1 shrink-0" />
+                {item.Organization.Name}
               </span>
               <span class="flex items-center" title="Date uploaded">
                 <IconContainer icon={Icons.DateRange} width={20} class="mr-1 shrink-0" />
