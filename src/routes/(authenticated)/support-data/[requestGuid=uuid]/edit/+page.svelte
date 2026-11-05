@@ -2,6 +2,8 @@
   import type { ActionData, PageData } from './$types';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
+  import { Icons } from '$lib/icons';
+  import IconContainer from '$lib/icons/IconContainer.svelte';
   import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Props {
@@ -10,28 +12,33 @@
   }
 
   let { data, form }: Props = $props();
+
+  function formatDate(value?: Date | string | null) {
+    if (!value) return '—';
+    return new Intl.DateTimeFormat(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short'
+    }).format(new Date(value));
+  }
 </script>
 
-<div class="relative mx-auto w-full max-w-6xl p-2">
-  <form method="POST">
-    <h1 class="pl-2">Edit Support Data Request</h1>
-    {#if form?.message}
-      <div class="alert alert-error mb-4" role="alert">{form.message}</div>
-    {/if}
-    <div class="flex flex-col items-center gap-2">
-      <div class="row">
-        <div class="flex w-full flex-col md:max-w-xs">
-          <div class="label">
-            <span class="fieldset-label">Organization</span>
-          </div>
-          <p class="input flex items-center">{data.request.Organization.Name}</p>
-        </div>
+<div class="relative mx-auto w-full max-w-6xl p-4">
+  <h1 class="p-0">Edit Support Data Request</h1>
+  <p class="font-mono text-sm opacity-70">{data.request.Id}</p>
+
+  {#if form?.message}
+    <div class="alert alert-error my-4" role="alert">{form.message}</div>
+  {/if}
+
+  <form method="POST" class="maingrid mt-4 grid w-full">
+    <!-- Editable fields -->
+    <div class="mainarea card min-w-0 overflow-hidden rounded-md border border-slate-400">
+      <div class="bg-neutral">
+        <h2>Request details</h2>
       </div>
-      <div class="row">
-        <label class="flex w-full flex-col md:max-w-xs">
-          <div class="label">
-            <span class="fieldset-label">Request name</span>
-          </div>
+      <div class="flex flex-col gap-2 p-4">
+        <label class="flex w-full flex-col">
+          <span class="fieldset-label mb-1">Request name</span>
           <input
             class="input validator w-full"
             name="name"
@@ -42,10 +49,8 @@
           />
           <span class="validator-hint">Enter a name for this request.</span>
         </label>
-        <label class="flex w-full flex-col md:max-w-xs">
-          <div class="label">
-            <span class="fieldset-label">Ticket URL</span>
-          </div>
+        <label class="flex w-full flex-col">
+          <span class="fieldset-label mb-1">Ticket URL</span>
           <input
             class="input validator w-full"
             name="ticketUrl"
@@ -55,42 +60,87 @@
           />
           <span class="validator-hint">Enter a valid ticket URL.</span>
         </label>
-      </div>
-      <div class="row">
-        <label class="flex w-full flex-col md:max-w-2xl">
-          <div class="label">
-            <span class="fieldset-label">Description</span>
-          </div>
+        <label class="flex w-full flex-col">
+          <span class="fieldset-label mb-1">Description</span>
           <textarea
             class="textarea h-48 w-full"
             name="description"
             maxlength="5000"
             placeholder="Add relevant context, symptoms, and troubleshooting details"
-          >
-            {form?.values?.description ?? data.request.Description ?? ''}
-          </textarea>
-          <span class="validator-hint">&nbsp;</span>
+            value={form?.values?.description ?? data.request.Description ?? ''}
+          ></textarea>
         </label>
       </div>
-      <div class="flex w-full flex-row flex-wrap place-content-center gap-4 p-4">
-        <CancelButton
-          returnTo={localizeHref(`/support-data/${data.request.Id}`)}
-          class="w-full max-w-xs"
-        />
-        <SubmitButton class="w-full max-w-xs">Save changes</SubmitButton>
+    </div>
+
+    <!-- Read-only info, styled like the project page's Organization/Owner card -->
+    <div class="sidebararea card h-fit min-w-0 rounded-md border border-slate-400 bg-neutral">
+      <div class="flex flex-col py-4">
+        <div class="flex flex-col px-4">
+          <span class="flex items-center gap-x-1">
+            <IconContainer icon={Icons.Organization} width={20} />
+            Organization
+          </span>
+          <span class="text-right">{data.request.Organization.Name}</span>
+        </div>
+        <div class="divider my-2"></div>
+        <div class="flex flex-col px-4">
+          <span class="flex items-center gap-x-1">
+            <IconContainer icon={Icons.User} width={20} />
+            Agent
+          </span>
+          <span class="text-right">
+            {data.request.Agent?.Name ??
+              data.request.Agent?.Email ??
+              `User ${data.request.AgentId}`}
+          </span>
+        </div>
+        <div class="divider my-2"></div>
+        <div class="flex flex-col px-4">
+          <span class="flex items-center gap-x-1">
+            <IconContainer icon={Icons.DateRange} width={20} />
+            Date uploaded
+          </span>
+          <span class="text-right">{formatDate(data.request.DateUploaded)}</span>
+        </div>
       </div>
+    </div>
+
+    <div class="actionsarea flex flex-row flex-wrap place-content-center gap-4 p-4">
+      <CancelButton
+        returnTo={localizeHref(`/support-data/${data.request.Id}`)}
+        class="w-full max-w-xs"
+      />
+      <SubmitButton class="w-full max-w-xs">Save changes</SubmitButton>
     </div>
   </form>
 </div>
 
 <style>
-  .row {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: calc(var(--spacing) * 2);
-    column-gap: calc(var(--spacing) * 8);
-    width: 100%;
-    justify-content: center;
+  .maingrid {
+    grid-template-areas:
+      'main sidebar'
+      'actions sidebar';
+    grid-template-columns: 2fr 1fr;
+    column-gap: 0.75rem;
+    row-gap: 0.75rem;
+  }
+  .mainarea {
+    grid-area: main;
+  }
+  .sidebararea {
+    grid-area: sidebar;
+  }
+  .actionsarea {
+    grid-area: actions;
+  }
+  @media (max-width: 700px) {
+    .maingrid {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        'sidebar'
+        'main'
+        'actions';
+    }
   }
 </style>

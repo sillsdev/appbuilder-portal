@@ -2,6 +2,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { validateSupportDataFields } from '$lib/supportData';
 import { orgsForSupportDataAccess } from '$lib/utils/roles';
 
 export const load: PageServerLoad = async (event) => {
@@ -20,6 +21,13 @@ export const load: PageServerLoad = async (event) => {
         select: {
           Id: true,
           Name: true
+        }
+      },
+      Agent: {
+        select: {
+          Id: true,
+          Name: true,
+          Email: true
         }
       }
     }
@@ -43,25 +51,9 @@ export const actions: Actions = {
     const ticketUrl = String(formData.get('ticketUrl') ?? '').trim();
     const values = { name, description, ticketUrl };
 
-    if (!name) {
-      return fail(400, { message: 'Name is required.', values });
-    }
-    if (name.length > 200) {
-      return fail(400, { message: 'Name must be 200 characters or fewer.', values });
-    }
-    if (description.length > 5000) {
-      return fail(400, { message: 'Description must be 5000 characters or fewer.', values });
-    }
-
-    let parsedTicketUrl: URL;
-    try {
-      parsedTicketUrl = new URL(ticketUrl);
-    } catch {
-      return fail(400, { message: 'Enter a valid ticket URL.', values });
-    }
-
-    if (parsedTicketUrl.protocol !== 'http:' && parsedTicketUrl.protocol !== 'https:') {
-      return fail(400, { message: 'Ticket URL must use HTTP or HTTPS.', values });
+    const validationError = validateSupportDataFields(values);
+    if (validationError) {
+      return fail(400, { message: validationError, values });
     }
 
     const existingRequest = await DatabaseReads.supportData.findFirst({
