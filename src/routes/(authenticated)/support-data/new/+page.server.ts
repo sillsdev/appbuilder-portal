@@ -2,6 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { validateSupportDataFields } from '$lib/supportData';
 import { orgsForSupportDataAccess } from '$lib/utils/roles';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -43,15 +44,9 @@ export const actions: Actions = {
     if (!organization) {
       return fail(400, { message: 'Select a valid organization.', values });
     }
-    if (!name) {
-      return fail(400, { message: 'Name is required.', values });
-    }
-
-    if (!ticketUrl) {
-      return fail(400, {
-        message: 'Ticket URL is required.',
-        values
-      });
+    const validationError = validateSupportDataFields(values);
+    if (validationError) {
+      return fail(400, { message: validationError, values });
     }
 
     const newRequest = await DatabaseWrites.supportData.create({

@@ -6,12 +6,10 @@ import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads } from '$lib/server/database';
 import { orgsForSupportDataAccess } from '$lib/utils/roles';
+import { paginateSchema } from '$lib/valibot';
 
 const tableSchema = v.object({
-  page: v.object({
-    page: v.pipe(v.number(), v.integer(), v.minValue(0)),
-    size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(100))
-  })
+  page: paginateSchema
 });
 
 function visibleWhere(security: App.Locals['security']): Prisma.SupportDataWhereInput {

@@ -13,8 +13,8 @@ export const deleteSchema = v.object({
 });
 
 export const paginateSchema = v.object({
-  page: v.number(),
-  size: v.number()
+  page: v.pipe(v.number(), v.integer(), v.minValue(0)),
+  size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(100))
 });
 
 export type PaginateSchema = typeof paginateSchema;
