@@ -1,14 +1,43 @@
 <script lang="ts">
+  import type { ActionData, PageData } from './$types';
   import { enhance } from '$app/forms';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { localizeHref } from '$lib/paraglide/runtime';
+
+  interface Props {
+    data: PageData;
+    form?: ActionData;
+  }
+
+  let { data, form }: Props = $props();
 </script>
 
 <div class="relative mx-auto w-full max-w-6xl p-2">
   <form method="POST" use:enhance>
     <h1 class="pl-2">New Support Data Request</h1>
+    {#if form?.message}
+      <div class="alert alert-error mb-4" role="alert">{form.message}</div>
+    {/if}
     <div class="flex flex-col items-center gap-2">
+      <div class="row">
+        <label class="flex w-full flex-col md:max-w-xs">
+          <div class="label">
+            <span class="fieldset-label">Organization</span>
+          </div>
+          <select class="select w-full" name="organizationId" required>
+            <option value="">Select an organization</option>
+            {#each data.organizations as organization}
+              <option
+                value={organization.Id}
+                selected={form?.values?.organizationId === organization.Id}
+              >
+                {organization.Name}
+              </option>
+            {/each}
+          </select>
+        </label>
+      </div>
       <div class="row">
         <label class="flex w-full flex-col md:max-w-xs">
           <div class="label">
@@ -21,6 +50,7 @@
             required
             maxlength="200"
             placeholder="Short summary of the support request"
+            value={form?.values?.name ?? ''}
           />
           <span class="validator-hint">Enter a name for this request.</span>
         </label>
@@ -34,6 +64,7 @@
             type="url"
             required
             placeholder="https://support.example.com/tickets/123"
+            value={form?.values?.ticketUrl ?? ''}
           />
           <span class="validator-hint">Enter a valid ticket URL.</span>
         </label>
@@ -48,7 +79,9 @@
             name="description"
             maxlength="5000"
             placeholder="Add relevant context, symptoms, and troubleshooting details"
-          ></textarea>
+          >
+            {form?.values?.description ?? ''}
+          </textarea>
           <span class="validator-hint">&nbsp;</span>
         </label>
       </div>

@@ -20,6 +20,14 @@
     {/if}
     <div class="flex flex-col items-center gap-2">
       <div class="row">
+        <div class="flex w-full flex-col md:max-w-xs">
+          <div class="label">
+            <span class="fieldset-label">Organization</span>
+          </div>
+          <p class="input flex items-center">{data.request.Organization.Name}</p>
+        </div>
+      </div>
+      <div class="row">
         <label class="flex w-full flex-col md:max-w-xs">
           <div class="label">
             <span class="fieldset-label">Request name</span>

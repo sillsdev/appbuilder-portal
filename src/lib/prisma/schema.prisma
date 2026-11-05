@@ -77,6 +77,7 @@ model Organizations {
   ProjectImports                ProjectImports[]
   Projects                      Projects[]
   UserRoles                     UserRoles[]
+  SupportDataRequests           SupportData[]
   Stores                        Stores[]                        @relation("OrganizationsToStores")
   ManagedStores                 Stores[]                        @relation("ManagedStores")
   System                        SystemStatuses?
@@ -538,14 +539,17 @@ model AdminSettings {
 }
 
 model SupportData {
-  Id           String    @id(map: "PK_SupportData") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  Name         String
-  Description  String?
-  TicketUrl     String?
-  AgentId  Int
-  DateUploaded DateTime? @db.Timestamp(6)
+  Id             String        @id(map: "PK_SupportData") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  Name           String
+  Description    String?
+  TicketUrl      String?
+  AgentId        Int
+  OrganizationId Int
+  DateUploaded   DateTime?     @db.Timestamp(6)
 
-  Agent Users @relation(fields: [AgentId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_SupportData_Users_AgentId")
+  Agent        Users         @relation(fields: [AgentId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_SupportData_Users_AgentId")
+  Organization Organizations @relation(fields: [OrganizationId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_SupportData_Organizations_OrganizationId")
 
   @@index([AgentId], map: "IX_SupportData_AgentId")
+  @@index([OrganizationId], map: "IX_SupportData_OrganizationId")
 }
