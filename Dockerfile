@@ -1,5 +1,5 @@
 # Temporary container to build output
-FROM node:24-alpine3.21 AS builder
+FROM node:24-alpine3 AS builder
 
 WORKDIR /build
 RUN apk add --no-cache openssl
@@ -34,7 +34,7 @@ RUN libreoffice --headless --convert-to pdf /docs/*.fodt --outdir /docs/pdf && \
   libreoffice --headless --convert-to pdf /docs/*.fodg --outdir /docs/pdf
 
 # Real container that will run
-FROM node:24-alpine3.21
+FROM node:24-alpine3
 
 WORKDIR /app
 RUN apk add --no-cache openssl
