@@ -10,7 +10,7 @@
 
 <div
   data-theme="light"
-  class="grid w-full h-full place-items-center place-content-center text-base-content"
+  class="grid w-full h-full place-items-center place-content-center text-base-content [background-color:#0068a6]"
 >
   {@render children?.()}
 </div>

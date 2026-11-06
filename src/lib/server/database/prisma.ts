@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { ReadonlyClient } from './ReadonlyPrisma';
 import OTEL from '$lib/otel';
+import { logLocalDev } from '$lib/utils/server';
 
 // This is the home of all database operations through prisma
 // It is used from both the node-server package (which runs tasks) and from the sveltekit
@@ -48,7 +49,7 @@ class ConnectionChecker {
             error: e.message
           });
           this.connected = false;
-          console.log('Error checking database connection:', e);
+          logLocalDev?.('Error checking database connection:', e);
         }
       } else {
         throw e;

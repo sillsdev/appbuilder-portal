@@ -10,10 +10,9 @@ import {
 } from './EmailTemplates';
 import { building } from '$app/environment';
 import { RoleId } from '$lib/prisma';
+import { inLocalDevelopment } from '$lib/utils/server';
 
-const EMAIL_NAME =
-  process.env.ADMIN_NAME ??
-  'Scriptoria' + (process.env.NODE_ENV === 'development' ? ' Staging' : '');
+const EMAIL_NAME = process.env.ADMIN_NAME ?? 'Scriptoria' + (inLocalDevelopment ? ' Staging' : '');
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '<no-email>';
 let transporter: Transporter | null = null;
 if (!building) {

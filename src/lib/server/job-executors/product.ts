@@ -4,6 +4,7 @@ import { BullMQ, getQueues } from '../bullmq';
 import { DatabaseReads, DatabaseWrites } from '../database';
 import { Workflow } from '../workflow';
 import { NotificationType } from '$lib/users';
+import { stringifyError } from '$lib/utils';
 import type { WorkflowInstanceContext } from '$lib/workflowTypes';
 import { ENVKeys, WorkflowAction } from '$lib/workflowTypes';
 
@@ -268,7 +269,7 @@ export async function createLocal(job: Job<BullMQ.Product.CreateLocal>): Promise
 
     return productId;
   } catch (err) {
-    await job.log(err instanceof Error ? err.message : String(err));
+    await job.log(stringifyError(err));
     return false;
   }
 }

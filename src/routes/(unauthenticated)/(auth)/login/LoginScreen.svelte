@@ -4,6 +4,7 @@
   import { browser } from '$app/environment';
   import ScriptoriaIcon from '$lib/icons/ScriptoriaIcon.svelte';
   import * as m from '$lib/paraglide/messages';
+  import { localizeHref } from '$lib/paraglide/runtime';
 
   let timeout: ReturnType<typeof setInterval> | null = null;
 
@@ -71,7 +72,7 @@
   <span>
     {m.invitations_orgPrompt()}
   </span>
-  <a class="font-bold" href="/request-access-for-organization">
+  <a class="font-bold" href={localizeHref('/request-access-for-organization')}>
     {m.contactUs()}
   </a>
 </div>

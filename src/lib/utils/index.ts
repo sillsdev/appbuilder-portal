@@ -98,3 +98,7 @@ export type ValueKey<T extends ValidI13nKey = ValidI13nKey> = {
   params?: Parameters<(typeof m)[T]>[0];
   class?: ClassValue;
 };
+
+export function stringifyError(err: unknown) {
+  return err instanceof Error ? err.message : String(err);
+}
