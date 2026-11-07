@@ -15,7 +15,12 @@
   import { deLocalizeUrl, getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
   import { orgActive, userTasksSSE } from '$lib/stores';
-  import { isAdminForAny, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
+  import {
+    canAccessSupportData,
+    isAdminForAny,
+    isAdminForOrg,
+    isSuperAdmin
+  } from '$lib/utils/roles';
   import { byName } from '$lib/utils/sorting';
 
   interface Props {
@@ -234,6 +239,19 @@
                     </a>
                   </li>
                 {/if}
+              {/if}
+              {#if canAccessSupportData(data.session.user.roles)}
+                <li>
+                  <a
+                    class="rounded-none"
+                    class:active-menu-item={isUrlActive('/support-data')}
+                    href={localizeHref('/support-data')}
+                    onclick={closeDrawer}
+                  >
+                    <IconContainer icon={Icons.Help} width={24} />
+                    Support Data
+                  </a>
+                </li>
               {/if}
               {#if isSuperAdmin(data.session.user.roles)}
                 <li>

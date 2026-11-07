@@ -4,15 +4,20 @@ import { RoleId } from '$lib/prisma';
 
 type ClientRolesArray = Session['user']['roles'];
 
+/** returns true if a user has the specified role for the organization
+ * @param roles [OrganizationId, RoleId][]
+ */
+export function hasRoleForOrg(orgId: number, role: RoleId, roles: ClientRolesArray): boolean {
+  return roles.some(
+    ([assignedOrgId, assignedRole]) => assignedOrgId === orgId && assignedRole === role
+  );
+}
+
 /** returns true if user is a SuperAdmin, or is an OrgAdmin for the specified organization
  * @param roles [OrganizationId, RoleId][]
  */
 export function isAdminForOrg(orgId: number, roles: ClientRolesArray): boolean {
-  const orgRoles = roles.filter(([oId]) => oId === orgId).map(([, r]) => r);
-  return (
-    !!orgRoles &&
-    (roles.some(([_, r]) => r === RoleId.SuperAdmin) || orgRoles.includes(RoleId.OrgAdmin))
-  );
+  return isSuperAdmin(roles) || hasRoleForOrg(orgId, RoleId.OrgAdmin, roles);
 }
 /** returns a list of organizations where the user has the specified role
  *
@@ -28,6 +33,40 @@ export function orgsForRole(role: RoleId, roles: ClientRolesArray): number[] {
 export function isAdminForAny(roles: ClientRolesArray): boolean {
   return roles.some(([_, r]) => r === RoleId.SuperAdmin || r === RoleId.OrgAdmin);
 }
+
+/** returns organization IDs where the user is an OrgAdmin or SupportAgent
+ * @param roles [OrganizationId, RoleId][]
+ */
+export function orgsForSupportDataAccess(roles: ClientRolesArray): number[] {
+  return [
+    ...new Set(
+      roles
+        .filter(([, role]) => role === RoleId.OrgAdmin || role === RoleId.SupportAgent)
+        .map(([orgId]) => orgId)
+    )
+  ];
+}
+
+/** returns true if a user can access support data
+ * @param roles [OrganizationId, RoleId][]
+ */
+export function canAccessSupportData(roles: ClientRolesArray): boolean {
+  return isSuperAdmin(roles) || orgsForSupportDataAccess(roles).length > 0;
+}
+
+/** returns true if a user can access support data for the specified organization
+ * @param roles [OrganizationId, RoleId][]
+ */
+export function canAccessSupportDataForOrg(orgId: number, roles: ClientRolesArray): boolean {
+  return (
+    isSuperAdmin(roles) ||
+    roles.some(
+      ([assignedOrgId, role]) =>
+        assignedOrgId === orgId && (role === RoleId.OrgAdmin || role === RoleId.SupportAgent)
+    )
+  );
+}
+
 /** returns true if user is a SuperAdmin
  * @param roles [OrganizationId, RoleId][]
  */

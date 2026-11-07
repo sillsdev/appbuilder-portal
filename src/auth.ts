@@ -13,6 +13,7 @@ import { checkInviteErrors } from '$lib/organizationInvites';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { RoleId } from '$lib/prisma';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { canAccessSupportData, canAccessSupportDataForOrg } from '$lib/utils/roles';
 
 declare module '@auth/sveltekit' {
   interface Session {
@@ -214,6 +215,18 @@ export class Security {
     this.requireAuthenticated();
     if (!this.isSuperAdmin && !this.roles.values().some((r) => r.includes(RoleId.OrgAdmin)))
       error(403, 'User is not an admin of any organization');
+    return this;
+  }
+
+  requireSupportDataAccess(organizationId?: number) {
+    this.requireAuthenticated();
+    if (
+      organizationId === undefined
+        ? !canAccessSupportData(this.sessionForm.roles)
+        : !canAccessSupportDataForOrg(organizationId, this.sessionForm.roles)
+    ) {
+      error(403, 'User does not have access to support data');
+    }
     return this;
   }
 
