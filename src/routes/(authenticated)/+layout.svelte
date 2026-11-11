@@ -15,7 +15,13 @@
   import { deLocalizeUrl, getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
   import { orgActive, userTasksSSE } from '$lib/stores';
-  import { isAdminForAny, isAdminForOrg, isSuperAdmin } from '$lib/utils/roles';
+  import {
+    hasRoleForAny,
+    hasRoleForOrg,
+    isAdminForAny,
+    isAdminForOrg,
+    isSuperAdmin
+  } from '$lib/utils/roles';
   import { byName } from '$lib/utils/sorting';
 
   interface Props {
@@ -234,6 +240,19 @@
                     </a>
                   </li>
                 {/if}
+              {/if}
+              {#if $orgActive ? isAdminForOrg($orgActive, data.session.user.roles) || hasRoleForOrg($orgActive, RoleId.SupportAgent, data.session.user.roles) : isAdminForAny(data.session.user.roles) || hasRoleForAny(RoleId.SupportAgent, data.session.user.roles)}
+                <li>
+                  <a
+                    class="rounded-none"
+                    class:active-menu-item={isUrlActive('/support-data')}
+                    href={activeOrgUrl('/support-data')}
+                    onclick={closeDrawer}
+                  >
+                    <IconContainer icon={Icons.FolderZip} width={24} />
+                    {m.sidebar_supportData()}
+                  </a>
+                </li>
               {/if}
               {#if isSuperAdmin(data.session.user.roles)}
                 <li>

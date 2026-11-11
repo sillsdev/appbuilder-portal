@@ -2,9 +2,9 @@ import type { Prisma } from '@prisma/client';
 import { BullMQ, getQueues } from '../bullmq/index';
 import prisma from './prisma';
 import type { RequirePrimitive, TXClient } from './utility';
+import { filterAdminOrgs } from '$lib/organizations/server';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
-import { filterAdminOrgs } from '$lib/utils/roles';
 import { WorkflowState } from '$lib/workflowTypes';
 
 export async function create(

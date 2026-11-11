@@ -1,9 +1,8 @@
 import { SpanStatusCode, trace } from '@opentelemetry/api';
 import type { Prisma } from '@prisma/client';
-import { mapSystems } from '$lib/organizations/server';
+import { filterAdminOrgs, mapSystems } from '$lib/organizations/server';
 import { DatabaseReads } from '$lib/server/database';
 import type { RebuildableProductsData, UpdateSummaryData } from '$lib/software-updates';
-import { filterAdminOrgs } from '$lib/utils/roles';
 import { WorkflowState, manualVersionCodeMatch } from '$lib/workflowTypes';
 
 const tracer = trace.getTracer('SoftwareUpdates');

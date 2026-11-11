@@ -348,6 +348,7 @@ export const Icons = {
   Email: 'ic:baseline-email',
   Empty: '',
   File: 'mdi:file',
+  FolderZip: 'mdi:folder-zip-outline',
   Forum: 'charm:messages',
   GearOff: 'pepicons-pop:gear-off',
   GearOn: 'pepicons-pop:gear',
