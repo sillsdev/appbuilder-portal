@@ -249,7 +249,7 @@
                     href={activeOrgUrl('/support-data')}
                     onclick={closeDrawer}
                   >
-                    <IconContainer icon={Icons.Help} width={24} />
+                    <IconContainer icon={Icons.FolderZip} width={24} />
                     {m.sidebar_supportData()}
                   </a>
                 </li>
