@@ -4,6 +4,11 @@ import { requiredString } from '$lib/valibot';
 export const SUPPORT_DATA_NAME_MAX = 200;
 export const SUPPORT_DATA_DESCRIPTION_MAX = 5000;
 
+/** a name must contain at least one non-whitespace character */
+export const notBlankRegex = /.*\S.*/;
+/** a ticket URL must be http(s); also used as the input's native `pattern` so the browser agrees with the server */
+export const ticketUrlRegex = /^https?:\/\/\S+$/;
+
 /**
  * Valibot entries shared by the support-data create and edit forms.
  * The ticket URL is optional (the TicketUrl column is nullable), but when it is
@@ -16,6 +21,6 @@ export const supportDataFields = {
   ticketUrl: v.pipe(
     v.string(),
     v.trim(),
-    v.union([v.literal(''), v.pipe(v.string(), v.url(), v.regex(/^https?:\/\//i))])
+    v.union([v.literal(''), v.pipe(v.string(), v.url(), v.regex(ticketUrlRegex))])
   )
 };

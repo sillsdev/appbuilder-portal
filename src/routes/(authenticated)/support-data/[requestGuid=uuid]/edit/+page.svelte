@@ -9,7 +9,9 @@
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
+  import { notBlankRegex, ticketUrlRegex } from '$lib/supportData';
   import { getTimeDateString } from '$lib/utils/time';
+  import { regExpToInputPattern } from '$lib/valibot';
 
   interface Props {
     data: PageData;
@@ -45,6 +47,7 @@
             err: m.formErrors_nameEmpty(),
             icon: Icons.Name,
             required: true,
+            pattern: regExpToInputPattern(notBlankRegex),
             maxlength: 200,
             placeholder: m.supportData_namePlaceholder()
           }}
@@ -55,6 +58,7 @@
           input={{
             name: 'ticketUrl',
             type: 'url',
+            pattern: regExpToInputPattern(ticketUrlRegex),
             err: m.supportData_ticketUrlInvalid(),
             icon: Icons.URL,
             placeholder: 'https://support.example.com/tickets/123'

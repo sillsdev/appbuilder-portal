@@ -2,6 +2,7 @@
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/state';
   import Pagination from '$lib/components/Pagination.svelte';
   import { Icons } from '$lib/icons';
@@ -22,6 +23,11 @@
 
   let items = $state(data.items);
   let count = $state(data.count);
+
+  afterNavigate(() => {
+    items = data.items;
+    count = data.count;
+  });
 
   const { form, enhance, submit } = superForm(data.form, {
     dataType: 'json',

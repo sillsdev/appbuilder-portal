@@ -11,8 +11,10 @@
   import { localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
   import { orgActive } from '$lib/stores';
+  import { notBlankRegex, ticketUrlRegex } from '$lib/supportData';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
   import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
+  import { regExpToInputPattern } from '$lib/valibot';
 
   interface Props {
     data: PageData;
@@ -61,6 +63,7 @@
             err: m.formErrors_nameEmpty(),
             icon: Icons.Name,
             required: true,
+            pattern: regExpToInputPattern(notBlankRegex),
             maxlength: 200,
             placeholder: m.supportData_namePlaceholder()
           }}
@@ -71,6 +74,7 @@
           input={{
             name: 'ticketUrl',
             type: 'url',
+            pattern: regExpToInputPattern(ticketUrlRegex),
             err: m.supportData_ticketUrlInvalid(),
             icon: Icons.URL,
             placeholder: 'https://support.example.com/tickets/123'
