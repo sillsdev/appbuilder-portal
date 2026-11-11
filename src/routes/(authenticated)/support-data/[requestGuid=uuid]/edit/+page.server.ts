@@ -1,21 +1,20 @@
-import { error, fail, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
+import { fail, superValidate } from 'sveltekit-superforms';
+import { valibot } from 'sveltekit-superforms/adapters';
+import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
-import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { validateSupportDataFields } from '$lib/supportData';
-import { orgsForSupportDataAccess } from '$lib/utils/roles';
+import { filterSupportData } from '$lib/support-data/server';
+import { supportDataFields } from '$lib/supportData';
+
+const editSupportDataSchema = v.object(supportDataFields);
 
 export const load: PageServerLoad = async (event) => {
   event.locals.security.requireSupportDataAccess();
   const security = event.locals.security;
 
   const request = await DatabaseReads.supportData.findFirst({
-    where: security.isSuperAdmin
-      ? { Id: event.params.requestGuid }
-      : {
-          Id: event.params.requestGuid,
-          OrganizationId: { in: orgsForSupportDataAccess(security.sessionForm.roles) }
-        },
+    where: { Id: event.params.requestGuid, ...filterSupportData(security) },
     include: {
       Organization: {
         select: {
@@ -38,33 +37,27 @@ export const load: PageServerLoad = async (event) => {
   }
   security.requireSupportDataAccess(request.OrganizationId);
 
-  return { request };
+  return {
+    request,
+    form: await superValidate(
+      {
+        name: request.Name,
+        description: request.Description ?? '',
+        ticketUrl: request.TicketUrl ?? ''
+      },
+      valibot(editSupportDataSchema)
+    )
+  };
 };
 
 export const actions: Actions = {
   default: async ({ request, params, locals }) => {
     locals.security.requireSupportDataAccess();
-
-    const formData = await request.formData();
-    const name = String(formData.get('name') ?? '').trim();
-    const description = String(formData.get('description') ?? '').trim();
-    const ticketUrl = String(formData.get('ticketUrl') ?? '').trim();
-    const values = { name, description, ticketUrl };
-
-    const validationError = validateSupportDataFields(values);
-    if (validationError) {
-      return fail(400, { message: validationError, values });
-    }
+    const form = await superValidate(request, valibot(editSupportDataSchema));
+    if (!form.valid) return fail(400, { form, ok: false });
 
     const existingRequest = await DatabaseReads.supportData.findFirst({
-      where: locals.security.isSuperAdmin
-        ? { Id: params.requestGuid }
-        : {
-            Id: params.requestGuid,
-            OrganizationId: {
-              in: orgsForSupportDataAccess(locals.security.sessionForm.roles)
-            }
-          },
+      where: { Id: params.requestGuid, ...filterSupportData(locals.security) },
       select: {
         Id: true,
         OrganizationId: true
@@ -79,12 +72,12 @@ export const actions: Actions = {
     await DatabaseWrites.supportData.update({
       where: { Id: params.requestGuid },
       data: {
-        Name: name,
-        Description: description || null,
-        TicketUrl: ticketUrl
+        Name: form.data.name,
+        Description: form.data.description || null,
+        TicketUrl: form.data.ticketUrl || null
       }
     });
 
-    throw redirect(303, localizeHref(`/support-data/${params.requestGuid}`));
+    return { form, ok: true };
   }
 };

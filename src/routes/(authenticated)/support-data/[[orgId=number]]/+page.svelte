@@ -2,10 +2,17 @@
   import type { FormResult } from 'sveltekit-superforms';
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
+  import { page } from '$app/state';
   import Pagination from '$lib/components/Pagination.svelte';
   import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
+  import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
+  import { RoleId } from '$lib/prisma';
+  import { orgActive } from '$lib/stores';
+  import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
+  import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
+  import { getTimeDateString } from '$lib/utils/time';
 
   interface Props {
     data: PageData;
@@ -34,19 +41,26 @@
     }
   });
 
-  function formatDate(value?: Date | string | null) {
-    if (!value) return '—';
-    return new Intl.DateTimeFormat(undefined, {
-      dateStyle: 'medium',
-      timeStyle: 'short'
-    }).format(new Date(value));
-  }
+  $effect(() => {
+    const roles = data.session.user.roles;
+    const hasAccess =
+      !!$orgActive &&
+      (isAdminForOrg($orgActive, roles) || hasRoleForOrg($orgActive, RoleId.SupportAgent, roles));
+    if (!selectGotoFromOrg(hasAccess, `/support-data/${$orgActive}`, `/support-data`)) {
+      setOrgFromParams($orgActive, page.params.orgId);
+    }
+  });
 </script>
 
 <div class="mx-auto w-full max-w-6xl p-4">
   <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-    <h1 class="p-0">Support Data</h1>
-    <a class="btn btn-primary" href={localizeHref('/support-data/new')}>New request</a>
+    <h1 class="p-0">{m.sidebar_supportData()}</h1>
+    <a
+      class="btn btn-primary"
+      href={localizeHref(data.orgId ? `/support-data/new/${data.orgId}` : '/support-data/new')}
+    >
+      {m.supportData_newRequest()}
+    </a>
   </div>
 
   {#if items.length > 0}
@@ -64,24 +78,26 @@
               <a
                 class="btn btn-ghost btn-sm"
                 href={localizeHref(`/support-data/${item.Id}/edit`)}
-                title="Edit request"
+                title={m.supportData_editRequest()}
               >
                 <IconContainer icon={Icons.Edit} width={20} />
-                Edit
+                {m.supportData_edit()}
               </a>
             </div>
             <div class="mt-2 flex flex-wrap justify-between gap-x-4 gap-y-1">
               <span class="flex items-center">
                 <IconContainer icon={Icons.User} width={20} class="mr-1 shrink-0" />
-                {item.Agent?.Name ?? item.Agent?.Email ?? `User ${item.AgentId}`}
+                {item.Agent?.Name ??
+                  item.Agent?.Email ??
+                  m.supportData_userFallback({ id: item.AgentId })}
               </span>
               <span class="flex items-center">
                 <IconContainer icon={Icons.Organization} width={20} class="mr-1 shrink-0" />
                 {item.Organization.Name}
               </span>
-              <span class="flex items-center" title="Date uploaded">
+              <span class="flex items-center" title={m.supportData_dateUploaded()}>
                 <IconContainer icon={Icons.DateRange} width={20} class="mr-1 shrink-0" />
-                {formatDate(item.DateUploaded)}
+                {getTimeDateString(item.DateUploaded)}
               </span>
               <span class="font-mono text-xs opacity-60">{item.Id}</span>
             </div>
@@ -99,12 +115,12 @@
                 title={item.TicketUrl}
               >
                 <IconContainer icon={Icons.URL} width={20} class="mr-1 inline-block" />
-                Open ticket
+                {m.supportData_openTicket()}
               </a>
             {:else}
               <span class="mt-2 inline-flex items-center opacity-70">
                 <IconContainer icon={Icons.URL} width={20} class="mr-1" />
-                No ticket URL
+                {m.supportData_noTicketUrl()}
               </span>
             {/if}
           </div>
@@ -112,7 +128,7 @@
       {/each}
     </div>
   {:else}
-    <p class="m-8">No support data requests yet.</p>
+    <p class="m-8">{m.supportData_noRequests()}</p>
   {/if}
 
   <form method="POST" action="?/page" use:enhance>

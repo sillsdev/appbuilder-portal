@@ -1,6 +1,4 @@
--- Existing support requests are test data and have no reliable organization association.
-DELETE FROM "SupportData";
-
+-- no need to clear test data with a delete command.
 -- Add project-style identifying details and organization association to support requests.
 ALTER TABLE "SupportData"
 ADD COLUMN "Name" TEXT NOT NULL,

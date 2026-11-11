@@ -16,7 +16,8 @@
   import { RoleId } from '$lib/prisma';
   import { orgActive, userTasksSSE } from '$lib/stores';
   import {
-    canAccessSupportData,
+    hasRoleForAny,
+    hasRoleForOrg,
     isAdminForAny,
     isAdminForOrg,
     isSuperAdmin
@@ -240,16 +241,16 @@
                   </li>
                 {/if}
               {/if}
-              {#if canAccessSupportData(data.session.user.roles)}
+              {#if $orgActive ? isAdminForOrg($orgActive, data.session.user.roles) || hasRoleForOrg($orgActive, RoleId.SupportAgent, data.session.user.roles) : isAdminForAny(data.session.user.roles) || hasRoleForAny(RoleId.SupportAgent, data.session.user.roles)}
                 <li>
                   <a
                     class="rounded-none"
                     class:active-menu-item={isUrlActive('/support-data')}
-                    href={localizeHref('/support-data')}
+                    href={activeOrgUrl('/support-data')}
                     onclick={closeDrawer}
                   >
                     <IconContainer icon={Icons.Help} width={24} />
-                    Support Data
+                    {m.sidebar_supportData()}
                   </a>
                 </li>
               {/if}

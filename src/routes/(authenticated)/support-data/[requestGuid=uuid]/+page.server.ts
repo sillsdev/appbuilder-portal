@@ -1,19 +1,14 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { DatabaseReads } from '$lib/server/database';
-import { orgsForSupportDataAccess } from '$lib/utils/roles';
+import { filterSupportData } from '$lib/support-data/server';
 
 export const load: PageServerLoad = async (event) => {
   event.locals.security.requireSupportDataAccess();
   const security = event.locals.security;
 
   const request = await DatabaseReads.supportData.findFirst({
-    where: security.isSuperAdmin
-      ? { Id: event.params.requestGuid }
-      : {
-          Id: event.params.requestGuid,
-          OrganizationId: { in: orgsForSupportDataAccess(security.sessionForm.roles) }
-        },
+    where: { Id: event.params.requestGuid, ...filterSupportData(security) },
     include: {
       Organization: {
         select: {

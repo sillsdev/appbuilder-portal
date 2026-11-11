@@ -2,21 +2,15 @@
   import type { PageData } from './$types';
   import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
+  import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
+  import { getTimeDateString } from '$lib/utils/time';
 
   interface Props {
     data: PageData;
   }
 
   let { data }: Props = $props();
-
-  function formatDate(value?: Date | string | null) {
-    if (!value) return '—';
-    return new Intl.DateTimeFormat(undefined, {
-      dateStyle: 'medium',
-      timeStyle: 'short'
-    }).format(new Date(value));
-  }
 </script>
 
 <div class="relative mx-auto w-full max-w-6xl p-4">
@@ -29,33 +23,37 @@
       <a
         class="btn btn-secondary"
         href={localizeHref(`/support-data/${data.request.Id}/edit`)}
-        title="Edit request"
+        title={m.supportData_editRequest()}
       >
         <IconContainer width={20} icon={Icons.Edit} />
-        Edit request
+        {m.supportData_editRequest()}
       </a>
-      <a class="btn btn-secondary" href={localizeHref('/support-data')}>Back to list</a>
+      <a class="btn btn-secondary" href={localizeHref('/support-data')}>
+        {m.supportData_backToList()}
+      </a>
     </div>
   </div>
 
   <section class="mt-6">
-    <h2 class="pl-0">Request information</h2>
+    <h2 class="pl-0">{m.supportData_requestInformation()}</h2>
     <div class="grid gap-x-6 gap-y-3 md:grid-cols-2">
       <div>
-        <p class="font-semibold">Organization</p>
+        <p class="font-semibold">{m.project_org()}</p>
         <p>{data.request.Organization.Name}</p>
       </div>
       <div>
-        <p class="font-semibold">Agent</p>
+        <p class="font-semibold">{m.supportData_agent()}</p>
         <p>
           <IconContainer icon={Icons.User} width={20} class="mr-1" />
-          {data.request.Agent?.Name ?? data.request.Agent?.Email ?? `User ${data.request.AgentId}`}
+          {data.request.Agent?.Name ??
+            data.request.Agent?.Email ??
+            m.supportData_userFallback({ id: data.request.AgentId })}
         </p>
       </div>
       <div>
-        <p class="font-semibold">Date uploaded</p>
+        <p class="font-semibold">{m.supportData_dateUploaded()}</p>
         <p>
-          <IconContainer icon={Icons.DateRange} width={20} class="mr-1" />{formatDate(
+          <IconContainer icon={Icons.DateRange} width={20} class="mr-1" />{getTimeDateString(
             data.request.DateUploaded
           )}
         </p>
@@ -63,14 +61,14 @@
     </div>
     {#if data.request.Description}
       <div class="mt-4">
-        <p class="font-semibold">Description</p>
+        <p class="font-semibold">{m.common_description()}</p>
         <p class="whitespace-pre-wrap">{data.request.Description}</p>
       </div>
     {/if}
   </section>
 
   <section class="mt-6">
-    <h2 class="pl-0">Support ticket</h2>
+    <h2 class="pl-0">{m.supportData_supportTicket()}</h2>
     {#if data.request.TicketUrl}
       <a
         class="block break-all rounded-md bg-base-200 p-3"

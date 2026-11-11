@@ -2,7 +2,7 @@ import { error, fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { Actions, PageServerLoad } from './$types';
-import { mapSystems } from '$lib/organizations/server';
+import { filterAdminOrgs, mapSystems } from '$lib/organizations/server';
 import { ProductActionType } from '$lib/products';
 import { doProductAction } from '$lib/products/server';
 import { BullMQ, getQueues } from '$lib/server/bullmq';
@@ -10,7 +10,6 @@ import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { getSiteParam } from '$lib/site-params/server';
 import { startFormSchema } from '$lib/software-updates';
 import { getProducts, getUpdates, updatableProductsFilter } from '$lib/software-updates/server';
-import { filterAdminOrgs } from '$lib/utils/roles';
 import { deleteSchema } from '$lib/valibot';
 import { WorkflowState } from '$lib/workflowTypes';
 

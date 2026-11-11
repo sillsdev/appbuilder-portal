@@ -1,75 +1,75 @@
 <script lang="ts">
-  import type { ActionData, PageData } from './$types';
+  import { superForm } from 'sveltekit-superforms';
+  import type { PageData } from './$types';
+  import { goto } from '$app/navigation';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
+  import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
   import { Icons } from '$lib/icons';
   import IconContainer from '$lib/icons/IconContainer.svelte';
+  import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
+  import { getTimeDateString } from '$lib/utils/time';
 
   interface Props {
     data: PageData;
-    form?: ActionData;
   }
 
-  let { data, form }: Props = $props();
+  let { data }: Props = $props();
 
-  function formatDate(value?: Date | string | null) {
-    if (!value) return '—';
-    return new Intl.DateTimeFormat(undefined, {
-      dateStyle: 'medium',
-      timeStyle: 'short'
-    }).format(new Date(value));
-  }
+  const { form, enhance } = superForm(data.form, {
+    dataType: 'json',
+    onUpdated({ form: f }) {
+      if (f.valid) {
+        goto(localizeHref(`/support-data/${data.request.Id}`));
+      }
+    }
+  });
 </script>
 
 <div class="relative mx-auto w-full max-w-6xl p-4">
-  <h1 class="p-0">Edit Support Data Request</h1>
+  <h1 class="p-0">{m.supportData_editTitle()}</h1>
   <p class="font-mono text-sm opacity-70">{data.request.Id}</p>
 
-  {#if form?.message}
-    <div class="alert alert-error my-4" role="alert">{form.message}</div>
-  {/if}
-
-  <form method="POST" class="maingrid mt-4 grid w-full">
+  <form method="POST" use:enhance class="maingrid mt-4 grid w-full">
     <!-- Editable fields -->
     <div class="mainarea card min-w-0 overflow-hidden rounded-md border border-slate-400">
       <div class="bg-neutral">
-        <h2>Request details</h2>
+        <h2>{m.supportData_requestDetails()}</h2>
       </div>
       <div class="flex flex-col gap-2 p-4">
-        <label class="flex w-full flex-col">
-          <span class="fieldset-label mb-1">Request name</span>
-          <input
-            class="input validator w-full"
-            name="name"
-            type="text"
-            required
-            maxlength="200"
-            value={form?.values?.name ?? data.request.Name}
-          />
-          <span class="validator-hint">Enter a name for this request.</span>
-        </label>
-        <label class="flex w-full flex-col">
-          <span class="fieldset-label mb-1">Ticket URL</span>
-          <input
-            class="input validator w-full"
-            name="ticketUrl"
-            type="url"
-            required
-            value={form?.values?.ticketUrl ?? data.request.TicketUrl ?? ''}
-          />
-          <span class="validator-hint">Enter a valid ticket URL.</span>
-        </label>
-        <label class="flex w-full flex-col">
-          <span class="fieldset-label mb-1">Description</span>
+        <LabeledFormInput
+          key="supportData_requestName"
+          input={{
+            name: 'name',
+            err: m.formErrors_nameEmpty(),
+            icon: Icons.Name,
+            required: true,
+            maxlength: 200,
+            placeholder: m.supportData_namePlaceholder()
+          }}
+          bind:value={$form.name}
+        />
+        <LabeledFormInput
+          key="supportData_ticketUrl"
+          input={{
+            name: 'ticketUrl',
+            type: 'url',
+            err: m.supportData_ticketUrlInvalid(),
+            icon: Icons.URL,
+            placeholder: 'https://support.example.com/tickets/123'
+          }}
+          bind:value={$form.ticketUrl}
+        />
+        <LabeledFormInput key="common_description">
           <textarea
             class="textarea h-48 w-full"
             name="description"
             maxlength="5000"
-            placeholder="Add relevant context, symptoms, and troubleshooting details"
-            value={form?.values?.description ?? data.request.Description ?? ''}
+            placeholder={m.supportData_descriptionPlaceholder()}
+            bind:value={$form.description}
           ></textarea>
-        </label>
+        </LabeledFormInput>
       </div>
     </div>
 
@@ -79,7 +79,7 @@
         <div class="flex flex-col px-4">
           <span class="flex items-center gap-x-1">
             <IconContainer icon={Icons.Organization} width={20} />
-            Organization
+            {m.project_org()}
           </span>
           <span class="text-right">{data.request.Organization.Name}</span>
         </div>
@@ -87,21 +87,21 @@
         <div class="flex flex-col px-4">
           <span class="flex items-center gap-x-1">
             <IconContainer icon={Icons.User} width={20} />
-            Agent
+            {m.supportData_agent()}
           </span>
           <span class="text-right">
             {data.request.Agent?.Name ??
               data.request.Agent?.Email ??
-              `User ${data.request.AgentId}`}
+              m.supportData_userFallback({ id: data.request.AgentId })}
           </span>
         </div>
         <div class="divider my-2"></div>
         <div class="flex flex-col px-4">
           <span class="flex items-center gap-x-1">
             <IconContainer icon={Icons.DateRange} width={20} />
-            Date uploaded
+            {m.supportData_dateUploaded()}
           </span>
-          <span class="text-right">{formatDate(data.request.DateUploaded)}</span>
+          <span class="text-right">{getTimeDateString(data.request.DateUploaded)}</span>
         </div>
       </div>
     </div>
@@ -111,7 +111,7 @@
         returnTo={localizeHref(`/support-data/${data.request.Id}`)}
         class="w-full max-w-xs"
       />
-      <SubmitButton class="w-full max-w-xs">Save changes</SubmitButton>
+      <SubmitButton class="w-full max-w-xs" />
     </div>
   </form>
 </div>
