@@ -48,11 +48,15 @@
   });
 
   $effect(() => {
-    const roles = data.session.user.roles;
-    const hasAccess =
-      !!$orgActive &&
-      (isAdminForOrg($orgActive, roles) || hasRoleForOrg($orgActive, RoleId.SupportAgent, roles));
-    if (!selectGotoFromOrg(hasAccess, `/support-data/${$orgActive}`, `/support-data`)) {
+    if (
+      !selectGotoFromOrg(
+        !!$orgActive &&
+          (isAdminForOrg($orgActive, data.session.user.roles) ||
+            hasRoleForOrg($orgActive, RoleId.SupportAgent, data.session.user.roles)),
+        `/support-data/${$orgActive}`,
+        `/support-data`
+      )
+    ) {
       setOrgFromParams($orgActive, page.params.orgId);
     }
   });
@@ -80,14 +84,6 @@
                 class="flex flex-row grow items-start"
               >
                 <b class="[color:var(--color-link)]">{item.Name}</b>
-              </a>
-              <a
-                class="btn btn-ghost btn-sm"
-                href={localizeHref(`/support-data/${item.Id}/edit`)}
-                title={m.supportData_editRequest()}
-              >
-                <IconContainer icon={Icons.Edit} width={20} />
-                {m.supportData_edit()}
               </a>
             </div>
             <div class="mt-2 flex flex-wrap justify-between gap-x-4 gap-y-1">

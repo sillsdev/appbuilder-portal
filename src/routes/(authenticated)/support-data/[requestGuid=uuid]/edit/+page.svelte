@@ -1,7 +1,6 @@
 <script lang="ts">
   import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-  import { goto } from '$app/navigation';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
@@ -9,9 +8,8 @@
   import IconContainer from '$lib/icons/IconContainer.svelte';
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
-  import { notBlankRegex, ticketUrlRegex } from '$lib/supportData';
   import { getTimeDateString } from '$lib/utils/time';
-  import { regExpToInputPattern } from '$lib/valibot';
+  import { notBlankRegex, regExpToInputPattern, requireHTTPRegex } from '$lib/valibot';
 
   interface Props {
     data: PageData;
@@ -20,12 +18,7 @@
   let { data }: Props = $props();
 
   const { form, enhance } = superForm(data.form, {
-    dataType: 'json',
-    onUpdated({ form: f }) {
-      if (f.valid) {
-        goto(localizeHref(`/support-data/${data.request.Id}`));
-      }
-    }
+    dataType: 'json'
   });
 </script>
 
@@ -48,7 +41,6 @@
             icon: Icons.Name,
             required: true,
             pattern: regExpToInputPattern(notBlankRegex),
-            maxlength: 200,
             placeholder: m.supportData_namePlaceholder()
           }}
           bind:value={$form.name}
@@ -58,7 +50,7 @@
           input={{
             name: 'ticketUrl',
             type: 'url',
-            pattern: regExpToInputPattern(ticketUrlRegex),
+            pattern: regExpToInputPattern(requireHTTPRegex),
             err: m.supportData_ticketUrlInvalid(),
             icon: Icons.URL,
             placeholder: 'https://support.example.com/tickets/123'
@@ -69,7 +61,6 @@
           <textarea
             class="textarea h-48 w-full"
             name="description"
-            maxlength="5000"
             placeholder={m.supportData_descriptionPlaceholder()}
             bind:value={$form.description}
           ></textarea>

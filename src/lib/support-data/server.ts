@@ -1,18 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import { RoleId } from '$lib/prisma';
 
-/** Roles that grant access to an organization's support data */
-const SUPPORT_DATA_ROLES = [RoleId.OrgAdmin, RoleId.SupportAgent];
-
-function hasSupportDataRole(sec: Security) {
-  return {
-    some: {
-      UserId: sec.userId,
-      RoleId: { in: SUPPORT_DATA_ROLES }
-    }
-  };
-}
-
 /** returns a Prisma filter for the support data requests that a user can see
  *
  * DOES NOT CHECK IF USER HAS ACCESS TO A SPECIFIC ORG (this needs to be checked externally with the security object)
@@ -22,7 +10,18 @@ function hasSupportDataRole(sec: Security) {
 export function filterSupportData(sec: Security, orgId?: number) {
   return {
     OrganizationId: orgId,
-    ...(sec.isSuperAdmin ? {} : { Organization: { UserRoles: hasSupportDataRole(sec) } })
+    ...(sec.isSuperAdmin
+      ? {}
+      : {
+          Organization: {
+            UserRoles: {
+              some: {
+                UserId: sec.userId,
+                RoleId: { in: [RoleId.OrgAdmin, RoleId.SupportAgent] }
+              }
+            }
+          }
+        })
   } satisfies Prisma.SupportDataWhereInput;
 }
 
@@ -35,6 +34,15 @@ export function filterSupportData(sec: Security, orgId?: number) {
 export function filterSupportDataOrgs(sec: Security, orgId?: number) {
   return {
     Id: orgId,
-    ...(sec.isSuperAdmin ? {} : { UserRoles: hasSupportDataRole(sec) })
+    ...(sec.isSuperAdmin
+      ? {}
+      : {
+          UserRoles: {
+            some: {
+              UserId: sec.userId,
+              RoleId: { in: [RoleId.OrgAdmin, RoleId.SupportAgent] }
+            }
+          }
+        })
   } satisfies Prisma.OrganizationsWhereInput;
 }

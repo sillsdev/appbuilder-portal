@@ -1,11 +1,12 @@
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { supportDataFields } from '$lib/support-data';
 import { filterSupportData } from '$lib/support-data/server';
-import { supportDataFields } from '$lib/supportData';
 
 const editSupportDataSchema = v.object(supportDataFields);
 
@@ -78,6 +79,6 @@ export const actions: Actions = {
       }
     });
 
-    return { form, ok: true };
+    return redirect(303, localizeHref(`/support-data/${params.requestGuid}`));
   }
 };

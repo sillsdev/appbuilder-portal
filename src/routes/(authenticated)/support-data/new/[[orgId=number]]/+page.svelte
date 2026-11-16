@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { type FormResult, superForm } from 'sveltekit-superforms';
+  import { superForm } from 'sveltekit-superforms';
   import type { PageData } from './$types';
-  import { goto } from '$app/navigation';
   import { page } from '$app/state';
+  import OrganizationDropdown from '$lib/components/OrganizationDropdown.svelte';
   import CancelButton from '$lib/components/settings/CancelButton.svelte';
   import LabeledFormInput from '$lib/components/settings/LabeledFormInput.svelte';
   import SubmitButton from '$lib/components/settings/SubmitButton.svelte';
@@ -11,10 +11,9 @@
   import { localizeHref } from '$lib/paraglide/runtime';
   import { RoleId } from '$lib/prisma';
   import { orgActive } from '$lib/stores';
-  import { notBlankRegex, ticketUrlRegex } from '$lib/supportData';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
   import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
-  import { regExpToInputPattern } from '$lib/valibot';
+  import { notBlankRegex, regExpToInputPattern, requireHTTPRegex } from '$lib/valibot';
 
   interface Props {
     data: PageData;
@@ -23,24 +22,19 @@
   let { data }: Props = $props();
 
   const { form, enhance } = superForm(data.form, {
-    dataType: 'json',
-    onUpdate({ form: f, result }) {
-      const createdId =
-        result.type === 'success'
-          ? (result.data as FormResult<{ createdId: string }>).createdId
-          : undefined;
-      if (f.valid && createdId) {
-        goto(localizeHref(`/support-data/${createdId}`));
-      }
-    }
+    dataType: 'json'
   });
 
   $effect(() => {
-    const roles = data.session.user.roles;
-    const hasAccess =
-      !!$orgActive &&
-      (isAdminForOrg($orgActive, roles) || hasRoleForOrg($orgActive, RoleId.SupportAgent, roles));
-    if (!selectGotoFromOrg(hasAccess, `/support-data/new/${$orgActive}`, `/support-data/new`)) {
+    if (
+      !selectGotoFromOrg(
+        !!$orgActive &&
+          (isAdminForOrg($orgActive, data.session.user.roles) ||
+            hasRoleForOrg($orgActive, RoleId.SupportAgent, data.session.user.roles)),
+        `/support-data/new/${$orgActive}`,
+        `/support-data/new`
+      )
+    ) {
       setOrgFromParams($orgActive, page.params.orgId);
     }
   });
@@ -64,7 +58,6 @@
             icon: Icons.Name,
             required: true,
             pattern: regExpToInputPattern(notBlankRegex),
-            maxlength: 200,
             placeholder: m.supportData_namePlaceholder()
           }}
           bind:value={$form.name}
@@ -74,7 +67,7 @@
           input={{
             name: 'ticketUrl',
             type: 'url',
-            pattern: regExpToInputPattern(ticketUrlRegex),
+            pattern: regExpToInputPattern(requireHTTPRegex),
             err: m.supportData_ticketUrlInvalid(),
             icon: Icons.URL,
             placeholder: 'https://support.example.com/tickets/123'
@@ -85,7 +78,6 @@
           <textarea
             class="textarea h-48 w-full"
             name="description"
-            maxlength="5000"
             placeholder={m.supportData_descriptionPlaceholder()}
             bind:value={$form.description}
           ></textarea>
@@ -96,17 +88,12 @@
     <!-- Organization, styled like the project page's Organization/Owner card -->
     <div class="sidebararea card h-fit min-w-0 rounded-md border border-slate-400 bg-neutral">
       <LabeledFormInput key="project_org" class="p-4">
-        <select
-          class="select w-full"
-          name="organizationId"
-          required
+        <OrganizationDropdown
+          class="w-full"
+          selectProperties={{ name: 'organizationId', required: true }}
+          organizations={data.organizations}
           bind:value={$form.organizationId}
-        >
-          <option value={0}>{m.supportData_selectOrganization()}</option>
-          {#each data.organizations as organization}
-            <option value={organization.Id}>{organization.Name}</option>
-          {/each}
-        </select>
+        />
       </LabeledFormInput>
     </div>
 

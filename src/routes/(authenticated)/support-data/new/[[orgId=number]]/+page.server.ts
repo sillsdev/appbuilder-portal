@@ -1,14 +1,16 @@
+import { redirect } from '@sveltejs/kit';
 import { fail, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
+import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
+import { supportDataFields } from '$lib/support-data';
 import { filterSupportDataOrgs } from '$lib/support-data/server';
-import { supportDataFields } from '$lib/supportData';
 import { idSchema } from '$lib/valibot';
 
 const newSupportDataSchema = v.object({
-  organizationId: v.pipe(idSchema, v.minValue(1)),
+  organizationId: idSchema,
   ...supportDataFields
 });
 
@@ -47,11 +49,10 @@ export const actions: Actions = {
         Description: form.data.description || null,
         TicketUrl: form.data.ticketUrl || null,
         AgentId: locals.security.userId,
-        OrganizationId: form.data.organizationId,
-        DateUploaded: new Date()
+        OrganizationId: form.data.organizationId
       }
     });
 
-    return { form, ok: true, createdId: created.Id };
+    return redirect(303, localizeHref(`/support-data/${created.Id}`));
   }
 };

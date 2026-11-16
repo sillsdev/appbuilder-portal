@@ -28,9 +28,6 @@
         <IconContainer width={20} icon={Icons.Edit} />
         {m.supportData_editRequest()}
       </a>
-      <a class="btn btn-secondary" href={localizeHref('/support-data')}>
-        {m.supportData_backToList()}
-      </a>
     </div>
   </div>
 
