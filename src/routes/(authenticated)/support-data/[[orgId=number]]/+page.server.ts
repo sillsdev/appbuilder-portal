@@ -5,7 +5,11 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import type { Actions, PageServerLoad } from './$types';
 import { DatabaseReads } from '$lib/server/database';
-import { filterSupportData } from '$lib/support-data/server';
+import {
+  filterSupportData,
+  getSupportDataAllowList,
+  requireSupportDataEnabled
+} from '$lib/support-data/server';
 import { paginateSchema } from '$lib/valibot';
 
 const tableSchema = v.object({
@@ -42,9 +46,15 @@ async function querySupportData(where: Prisma.SupportDataWhereInput, page: numbe
 export const load: PageServerLoad = async (event) => {
   const orgId = event.params.orgId ? Number(event.params.orgId) : undefined;
   event.locals.security.requireSupportDataAccess(orgId);
+  await requireSupportDataEnabled(event.locals.security, orgId);
   const security = event.locals.security;
+  const allowlist = await getSupportDataAllowList();
 
-  const [count, items] = await querySupportData(filterSupportData(security, orgId), 0, 25);
+  const [count, items] = await querySupportData(
+    filterSupportData(security, orgId, allowlist),
+    0,
+    25
+  );
 
   return {
     items,
@@ -66,11 +76,13 @@ export const actions: Actions = {
   page: async ({ request, locals, params }) => {
     const orgId = params.orgId ? Number(params.orgId) : undefined;
     locals.security.requireSupportDataAccess(orgId);
+    await requireSupportDataEnabled(locals.security, orgId);
+    const allowlist = await getSupportDataAllowList();
     const form = await superValidate(request, valibot(tableSchema));
     if (!form.valid) return fail(400, { form, ok: false });
 
     const [count, items] = await querySupportData(
-      filterSupportData(locals.security, orgId),
+      filterSupportData(locals.security, orgId, allowlist),
       form.data.page.page,
       form.data.page.size
     );

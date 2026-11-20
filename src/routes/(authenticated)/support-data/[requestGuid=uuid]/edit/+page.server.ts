@@ -6,7 +6,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { supportDataFields } from '$lib/support-data';
-import { filterSupportData } from '$lib/support-data/server';
+import { filterSupportData, requireSupportDataEnabled } from '$lib/support-data/server';
 
 const editSupportDataSchema = v.object(supportDataFields);
 
@@ -37,6 +37,7 @@ export const load: PageServerLoad = async (event) => {
     throw error(404, 'Support data request not found');
   }
   security.requireSupportDataAccess(request.OrganizationId);
+  await requireSupportDataEnabled(security, request.OrganizationId);
 
   return {
     request,
@@ -69,6 +70,7 @@ export const actions: Actions = {
       throw error(404, 'Support data request not found');
     }
     locals.security.requireSupportDataAccess(existingRequest.OrganizationId);
+    await requireSupportDataEnabled(locals.security, existingRequest.OrganizationId);
 
     await DatabaseWrites.supportData.update({
       where: { Id: params.requestGuid },

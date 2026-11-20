@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { DatabaseReads } from '$lib/server/database';
-import { filterSupportData } from '$lib/support-data/server';
+import { filterSupportData, requireSupportDataEnabled } from '$lib/support-data/server';
 
 export const load: PageServerLoad = async (event) => {
   event.locals.security.requireSupportDataAccess();
@@ -30,6 +30,7 @@ export const load: PageServerLoad = async (event) => {
     throw error(404, 'Support data request not found');
   }
   security.requireSupportDataAccess(request.OrganizationId);
+  await requireSupportDataEnabled(security, request.OrganizationId);
 
   return { request };
 };

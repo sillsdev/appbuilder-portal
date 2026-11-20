@@ -9,7 +9,7 @@
   import { m } from '$lib/paraglide/messages';
   import { localizeHref } from '$lib/paraglide/runtime';
   import { getTimeDateString } from '$lib/utils/time';
-  import { notBlankRegex, regExpToInputPattern, requireHTTPRegex } from '$lib/valibot';
+  import { regExpToInputPattern, requireHTTPRegex } from '$lib/valibot';
 
   interface Props {
     data: PageData;
@@ -40,7 +40,6 @@
             err: m.formErrors_nameEmpty(),
             icon: Icons.Name,
             required: true,
-            pattern: regExpToInputPattern(notBlankRegex),
             placeholder: m.supportData_namePlaceholder()
           }}
           bind:value={$form.name}

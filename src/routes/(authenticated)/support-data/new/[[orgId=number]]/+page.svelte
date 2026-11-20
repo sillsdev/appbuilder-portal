@@ -13,7 +13,7 @@
   import { orgActive } from '$lib/stores';
   import { selectGotoFromOrg, setOrgFromParams } from '$lib/utils/goto-org';
   import { hasRoleForOrg, isAdminForOrg } from '$lib/utils/roles';
-  import { notBlankRegex, regExpToInputPattern, requireHTTPRegex } from '$lib/valibot';
+  import { regExpToInputPattern, requireHTTPRegex } from '$lib/valibot';
 
   interface Props {
     data: PageData;
@@ -57,7 +57,6 @@
             err: m.formErrors_nameEmpty(),
             icon: Icons.Name,
             required: true,
-            pattern: regExpToInputPattern(notBlankRegex),
             placeholder: m.supportData_namePlaceholder()
           }}
           bind:value={$form.name}

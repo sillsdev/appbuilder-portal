@@ -241,7 +241,7 @@
                   </li>
                 {/if}
               {/if}
-              {#if $orgActive ? isAdminForOrg($orgActive, data.session.user.roles) || hasRoleForOrg($orgActive, RoleId.SupportAgent, data.session.user.roles) : isAdminForAny(data.session.user.roles) || hasRoleForAny(RoleId.SupportAgent, data.session.user.roles)}
+              {#if isSuperAdmin(data.session.user.roles) || (data.supportDataAllowList && (data.supportDataAllowList === 'all' || ($orgActive ? data.supportDataAllowList.includes($orgActive) : data.anyAllowedForSupportData)) && ($orgActive ? isAdminForOrg($orgActive, data.session.user.roles) || hasRoleForOrg($orgActive, RoleId.SupportAgent, data.session.user.roles) : isAdminForAny(data.session.user.roles) || hasRoleForAny(RoleId.SupportAgent, data.session.user.roles)))}
                 <li>
                   <a
                     class="rounded-none"

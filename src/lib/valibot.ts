@@ -56,8 +56,6 @@ export type JsonSchema =
 // eslint-disable-next-line no-useless-escape
 export const phoneRegex = new RegExp(/[\d\(\) \-+]{0,24}/); // arbitrary max-length for phone number
 
-/** a value must contain at least one non-whitespace character */
-export const notBlankRegex = /.*\S.*/;
 /** a value must be an http(s) URL; also usable as an input's native `pattern` so the browser agrees with the server */
 export const requireHTTPRegex = /^https?:\/\/\S+$/;
 

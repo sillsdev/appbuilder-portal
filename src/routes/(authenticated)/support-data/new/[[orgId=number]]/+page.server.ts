@@ -6,7 +6,11 @@ import type { Actions, PageServerLoad } from './$types';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
 import { supportDataFields } from '$lib/support-data';
-import { filterSupportDataOrgs } from '$lib/support-data/server';
+import {
+  filterSupportDataOrgs,
+  getSupportDataAllowList,
+  requireSupportDataEnabled
+} from '$lib/support-data/server';
 import { idSchema } from '$lib/valibot';
 
 const newSupportDataSchema = v.object({
@@ -17,9 +21,11 @@ const newSupportDataSchema = v.object({
 export const load: PageServerLoad = async ({ locals, params }) => {
   const orgId = params.orgId ? Number(params.orgId) : undefined;
   locals.security.requireSupportDataAccess(orgId);
+  await requireSupportDataEnabled(locals.security, orgId);
   const security = locals.security;
+  const allowlist = await getSupportDataAllowList();
   const organizations = await DatabaseReads.organizations.findMany({
-    where: filterSupportDataOrgs(security),
+    where: filterSupportDataOrgs(security, allowlist),
     select: {
       Id: true,
       Name: true
@@ -42,6 +48,7 @@ export const actions: Actions = {
     const form = await superValidate(request, valibot(newSupportDataSchema));
     if (!form.valid) return fail(400, { form, ok: false });
     locals.security.requireSupportDataAccess(form.data.organizationId);
+    await requireSupportDataEnabled(locals.security, form.data.organizationId);
 
     const created = await DatabaseWrites.supportData.create({
       data: {
