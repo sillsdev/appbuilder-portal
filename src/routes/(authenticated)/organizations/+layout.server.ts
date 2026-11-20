@@ -1,6 +1,6 @@
 import type { LayoutServerLoad } from './$types';
+import { filterAdminOrgs } from '$lib/organizations/server';
 import { DatabaseReads } from '$lib/server/database';
-import { filterAdminOrgs } from '$lib/utils/roles';
 
 export const load = (async (event) => {
   event.locals.security.requireAdminOfAny();

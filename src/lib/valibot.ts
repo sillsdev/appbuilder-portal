@@ -13,8 +13,8 @@ export const deleteSchema = v.object({
 });
 
 export const paginateSchema = v.object({
-  page: v.number(),
-  size: v.number()
+  page: v.pipe(v.number(), v.integer(), v.minValue(0)),
+  size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(100))
 });
 
 export type PaginateSchema = typeof paginateSchema;
@@ -55,6 +55,9 @@ export type JsonSchema =
 /** Legal phone numbers: +1 (123) 456-7890 1234567890 123-4567890 123 456-7890 */
 // eslint-disable-next-line no-useless-escape
 export const phoneRegex = new RegExp(/[\d\(\) \-+]{0,24}/); // arbitrary max-length for phone number
+
+/** a value must be an http(s) URL; also usable as an input's native `pattern` so the browser agrees with the server */
+export const requireHTTPRegex = /^https?:\/\/\S+$/;
 
 //language tag regex sourced from: https://stackoverflow.com/a/60899733
 export const langtagRegex = new RegExp(

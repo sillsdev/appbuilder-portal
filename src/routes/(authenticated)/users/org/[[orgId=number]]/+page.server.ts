@@ -5,9 +5,9 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 import { minifyUser } from '../../common';
 import type { Actions, PageServerLoad } from './$types';
+import { filterAdminOrgs } from '$lib/organizations/server';
 import { QueueConnected } from '$lib/server/bullmq';
 import { DatabaseReads, DatabaseWrites } from '$lib/server/database';
-import { filterAdminOrgs } from '$lib/utils/roles';
 import { idSchema, paginateSchema } from '$lib/valibot';
 
 const lockSchema = v.object({

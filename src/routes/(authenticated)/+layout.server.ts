@@ -10,6 +10,7 @@ import { getUserTasks } from '$lib/projects/sse';
 import { QueueConnected } from '$lib/server/bullmq/queues';
 import { DatabaseReads } from '$lib/server/database';
 import { getSiteParam } from '$lib/site-params/server';
+import { getSupportDataAllowList } from '$lib/support-data/server';
 
 export const load: LayoutServerLoad = async (event) => {
   event.locals.security.requireAuthenticated();
@@ -31,6 +32,7 @@ export const load: LayoutServerLoad = async (event) => {
   const localDir = join(process.cwd(), 'languages');
 
   const updatesAllowList = await getSiteParam('software-updates', 'allow-orgs');
+  const supportDataAllowList = await getSupportDataAllowList();
 
   return {
     organizations,
@@ -50,6 +52,10 @@ export const load: LayoutServerLoad = async (event) => {
     updatesAllowList,
     anyAllowedForUpdates:
       updatesAllowList === 'all' ||
-      !new Set(updatesAllowList).isDisjointFrom(new Set(organizations.map((o) => o.Id)))
+      !new Set(updatesAllowList).isDisjointFrom(new Set(organizations.map((o) => o.Id))),
+    supportDataAllowList,
+    anyAllowedForSupportData:
+      supportDataAllowList === 'all' ||
+      !new Set(supportDataAllowList).isDisjointFrom(new Set(organizations.map((o) => o.Id)))
   };
 };
